@@ -82,7 +82,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tosLastUpdated" datatype="html">
-        <source>Last updated: April 6, 2025</source>
+        <source>Last updated: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tos/tos.component.html</context>
           <context context-type="linenumber">7</context>
@@ -222,7 +222,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="privacyLastUpdated" datatype="html">
-        <source>Last updated: April 6, 2025</source>
+        <source>Last updated: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/privacy/privacy.component.html</context>
           <context context-type="linenumber">7</context>
