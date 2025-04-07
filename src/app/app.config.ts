@@ -8,27 +8,33 @@ import { LoggerService, LogLevel } from './core/services/logger.service';
 
 // Get locale from URL or localStorage or navigator
 function getLocale(): string {
-  // Check URL query parameter
+  const supportedLocales = ['en-US', 'de', 'zh', 'ar'];
+  
+  // Check URL query parameter (highest priority - explicit user choice)
   const urlParams = new URLSearchParams(window.location.search);
   const langParam = urlParams.get('lang');
   if (langParam) {
-    // Store this choice in localStorage
-    localStorage.setItem('preferredLanguage', langParam);
-    return langParam;
+    // Validate the language parameter
+    if (supportedLocales.includes(langParam)) {
+      // Store this explicit choice in localStorage
+      localStorage.setItem('preferredLanguage', langParam);
+      // Remove the query parameter to keep the URL clean
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('lang');
+      window.history.replaceState({}, '', newUrl.toString());
+      return langParam;
+    }
   }
 
-  // Check localStorage
+  // Check localStorage (second priority - previously selected language)
   const storedLang = localStorage.getItem('preferredLanguage');
-  if (storedLang) {
+  if (storedLang && supportedLocales.includes(storedLang)) {
     return storedLang;
   }
 
-  // Check browser locale
+  // Check browser locale (third priority - browser preference)
   const browserLang = navigator.language || (navigator as any).userLanguage;
   if (browserLang) {
-    // Check if the browser locale is one we support
-    const supportedLocales = ['en-US', 'de', 'zh', 'ar'];
-    
     // First try exact match
     if (supportedLocales.includes(browserLang)) {
       return browserLang;
@@ -42,7 +48,7 @@ function getLocale(): string {
     }
   }
 
-  // Default to English
+  // Default to English (lowest priority - fallback)
   return 'en-US';
 }
 

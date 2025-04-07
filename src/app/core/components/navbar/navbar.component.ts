@@ -101,19 +101,30 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
   
-  // Load language preference from localStorage or use browser locale
+  // Load language preference - this should sync with app.config.ts logic
   loadLanguagePreference(): void {
-    const savedLang = localStorage.getItem('preferredLanguage');
-    
-    if (savedLang) {
-      const lang = this.languages.find(l => l.code === savedLang);
-      if (lang) {
-        this.currentLanguage = lang;
+    // First check URL query parameter (highest priority - explicit user choice)
+    const urlParams = new URLSearchParams(window.location.search);
+    const langParam = urlParams.get('lang');
+    if (langParam) {
+      const langFromParam = this.languages.find(l => l.code === langParam);
+      if (langFromParam) {
+        this.currentLanguage = langFromParam;
         return;
       }
     }
     
-    // Try to use browser locale
+    // Then check localStorage (second priority - previously selected language)
+    const savedLang = localStorage.getItem('preferredLanguage');
+    if (savedLang) {
+      const langFromStorage = this.languages.find(l => l.code === savedLang);
+      if (langFromStorage) {
+        this.currentLanguage = langFromStorage;
+        return;
+      }
+    }
+    
+    // Try to use browser locale (third priority - browser preference)
     const browserLang = navigator.language || (navigator as any).userLanguage;
     if (browserLang) {
       // Look for an exact match
@@ -131,18 +142,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
       }
     }
     
-    // Fallback to English
+    // Fallback to English (lowest priority - fallback)
     this.currentLanguage = this.languages[0];
   }
   
   // Switch language
   switchLanguage(lang: Language): void {
     if (lang.code !== this.currentLanguage.code) {
-      // Save preference
+      // Save preference to localStorage
       localStorage.setItem('preferredLanguage', lang.code);
       
-      // Reload page with new locale
-      window.location.href = `${window.location.pathname}?lang=${lang.code}`;
+      // Force reload with the new language parameter
+      // This will trigger the locale change in app.config.ts
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('lang', lang.code);
+      window.location.href = currentUrl.toString();
     }
   }
 }
