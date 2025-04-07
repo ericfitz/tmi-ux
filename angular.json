@@ -67,11 +67,36 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
+              "sourceMap": true
+            },
+            "staging": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "test": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.test.ts"
+                }
+              ],
+              "optimization": false,
               "sourceMap": true
             },
             "de": {
@@ -94,6 +119,12 @@
             },
             "development": {
               "buildTarget": "tmi-app:build:development"
+            },
+            "staging": {
+              "buildTarget": "tmi-app:build:staging"
+            },
+            "test": {
+              "buildTarget": "tmi-app:build:test"
             }
           },
           "defaultConfiguration": "development"

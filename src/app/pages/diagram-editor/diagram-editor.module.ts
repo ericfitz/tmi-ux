@@ -6,13 +6,11 @@ import { DiagramEditorComponent } from './diagram-editor.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [
-    DiagramEditorComponent
-  ],
   imports: [
     CommonModule,
     SharedModule,
-    DiagramEditorRoutingModule
+    DiagramEditorRoutingModule,
+    DiagramEditorComponent
   ]
 })
 export class DiagramEditorModule { }

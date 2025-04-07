@@ -6,13 +6,11 @@ import { TosComponent } from './tos.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [
-    TosComponent
-  ],
   imports: [
     CommonModule,
     SharedModule,
-    TosRoutingModule
+    TosRoutingModule,
+    TosComponent
   ]
 })
 export class TosModule { }

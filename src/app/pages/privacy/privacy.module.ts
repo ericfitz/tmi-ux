@@ -6,13 +6,11 @@ import { PrivacyComponent } from './privacy.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [
-    PrivacyComponent
-  ],
   imports: [
     CommonModule,
     SharedModule,
-    PrivacyRoutingModule
+    PrivacyRoutingModule,
+    PrivacyComponent
   ]
 })
 export class PrivacyModule { }

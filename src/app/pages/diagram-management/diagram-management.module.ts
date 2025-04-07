@@ -6,13 +6,11 @@ import { DiagramManagementComponent } from './diagram-management.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [
-    DiagramManagementComponent
-  ],
   imports: [
     CommonModule,
     SharedModule,
-    DiagramManagementRoutingModule
+    DiagramManagementRoutingModule,
+    DiagramManagementComponent
   ]
 })
 export class DiagramManagementModule { }

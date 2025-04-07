@@ -1,31 +1,32 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/guards/auth.guard';
+import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule)
+    component: HomeComponent
   },
   {
     path: 'about',
-    loadChildren: () => import('./pages/about/about.module').then(m => m.AboutModule)
+    loadComponent: () => import('./pages/about/about.component').then(c => c.AboutComponent)
   },
   {
     path: 'tos',
-    loadChildren: () => import('./pages/tos/tos.module').then(m => m.TosModule)
+    loadComponent: () => import('./pages/tos/tos.component').then(c => c.TosComponent)
   },
   {
     path: 'privacy',
-    loadChildren: () => import('./pages/privacy/privacy.module').then(m => m.PrivacyModule)
+    loadComponent: () => import('./pages/privacy/privacy.component').then(c => c.PrivacyComponent)
   },
   {
     path: 'diagram-management',
-    loadChildren: () => import('./pages/diagram-management/diagram-management.module').then(m => m.DiagramManagementModule),
+    loadComponent: () => import('./pages/diagram-management/diagram-management.component').then(c => c.DiagramManagementComponent),
     canActivate: [authGuard]
   },
   {
     path: 'diagram-editor/:id',
-    loadChildren: () => import('./pages/diagram-editor/diagram-editor.module').then(m => m.DiagramEditorModule),
+    loadComponent: () => import('./pages/diagram-editor/diagram-editor.component').then(c => c.DiagramEditorComponent),
     canActivate: [authGuard]
   },
   { 

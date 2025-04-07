@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from '../../shared/material/material.module';
 
 @Component({
   selector: 'app-diagram-editor',
-  imports: [SharedModule],
+  standalone: true,
+  imports: [CommonModule, SharedModule, MaterialModule],
   templateUrl: './diagram-editor.component.html',
   styleUrl: './diagram-editor.component.scss'
 })

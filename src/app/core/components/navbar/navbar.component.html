@@ -1,31 +1,38 @@
 <mat-toolbar color="primary">
   <div class="navbar-container">
-    <!-- Left side: Home and App Title -->
+    <!-- Left side: Home, App Title, and Language Selector -->
     <div class="navbar-left">
-      <button mat-icon-button routerLink="/">
+      <button mat-icon-button [routerLink]="homeLink">
         <mat-icon>home</mat-icon>
       </button>
-      <span class="app-title">TMI: Threat Modeling Interface</span>
+      <span class="app-title" i18n="@@appTitle">TMI: Threat Modeling Improved</span>
+      
+      <!-- Language Selector -->
+      <button mat-button [matMenuTriggerFor]="languageMenu" class="language-selector">
+        <mat-icon>language</mat-icon>
+        <span>{{ currentLanguage.localName }}</span>
+      </button>
+      
+      <mat-menu #languageMenu="matMenu">
+        <button mat-menu-item *ngFor="let lang of languages" (click)="switchLanguage(lang)">
+          <span>{{ lang.localName }}</span>
+        </button>
+      </mat-menu>
     </div>
 
-    <!-- Right side: User info, auth buttons, and links -->
+    <!-- Right side: User info and logout button -->
     <div class="navbar-right">
       <!-- User info and logout when authenticated -->
       <ng-container *ngIf="isAuthenticated">
         <span class="username">{{ username }}</span>
         <button mat-button (click)="logout()">
           <mat-icon>logout</mat-icon>
-          Logout
+          <span i18n="@@logoutButton">Logout</span>
         </button>
         
         <!-- Diagrams links when authenticated -->
-        <button mat-button routerLink="/diagram-management">Diagrams</button>
+        <button mat-button routerLink="/diagram-management" i18n="@@diagramsButton">Diagrams</button>
       </ng-container>
-
-      <!-- About, Privacy, TOS links -->
-      <button mat-button routerLink="/about">About</button>
-      <button mat-button routerLink="/privacy">Privacy</button>
-      <button mat-button routerLink="/tos">Terms</button>
     </div>
   </div>
 </mat-toolbar>

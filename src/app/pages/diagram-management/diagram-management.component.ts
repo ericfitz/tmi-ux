@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from '../../shared/material/material.module';
 
 @Component({
   selector: 'app-diagram-management',
-  imports: [SharedModule],
+  standalone: true,
+  imports: [CommonModule, SharedModule, MaterialModule],
   templateUrl: './diagram-management.component.html',
   styleUrl: './diagram-management.component.scss'
 })

@@ -1,27 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-@use '@angular/material' as mat;
-@include mat.core();
-
-// Define the cyan theme
-$primary: mat.$cyan-palette;
-$accent: mat.$teal-palette;
-$warn: mat.$red-palette;
-
-$theme: mat.define-light-theme((
-  color: (
-    primary: $primary,
-    accent: $accent,
-    warn: $warn,
-  ),
-  typography: mat.define-typography-config(
-    $font-family: 'Roboto, "Helvetica Neue", sans-serif'
-  ),
-  density: 0,
-));
-
-// Apply the theme
-@include mat.all-component-themes($theme);
+// Note: The pre-built theme is included via angular.json
 
 // Global styles
 html, body { 
@@ -49,7 +28,7 @@ html[dir="rtl"] {
 
 .page-title {
   margin-bottom: 16px;
-  color: mat.get-color-from-palette($primary, 700);
+  color: #1976d2; /* Use explicit blue color instead of function */
   font-weight: 500;
 }
 
