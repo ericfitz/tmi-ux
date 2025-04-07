@@ -53,7 +53,7 @@
   justify-content: center;
   align-items: center;
   color: #0097a7;
-  background-color: rgba(0, 151, 167, 0.05);
+  background-color: rgb(0 151 167 / 5%);
 }
 
 .small-note {
@@ -88,7 +88,7 @@
 }
 
 // RTL support
-:host-context([dir="rtl"]) {
+:host-context([dir='rtl']) {
   .editor-sidebar {
     border-left: 1px solid #e0e0e0;
     border-right: none;

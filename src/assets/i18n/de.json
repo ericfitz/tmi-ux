@@ -15,6 +15,7 @@
   "loginButton": "Anmelden zum Starten",
   "tos": {
     "title": "Nutzungsbedingungen",
+    "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Zuletzt aktualisiert: {{date}}",
     "intro": "Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der \"Über\"-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird.",
     "section1": {
@@ -53,6 +54,7 @@
   },
   "privacy": {
     "title": "Datenschutzrichtlinie",
+    "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Zuletzt aktualisiert: {{date}}",
     "intro1": "Diese Website ist eine Instanz einer Open-Source-Webanwendung (\"TMI\"), die vom auf der \"Über\"-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird.",
     "intro2": "Der Betreiber verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",

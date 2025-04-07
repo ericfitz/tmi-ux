@@ -27,7 +27,7 @@
 }
 
 // RTL support
-:host-context([dir="rtl"]) {
+:host-context([dir='rtl']) {
   .footer-links {
     flex-direction: row-reverse;
   }

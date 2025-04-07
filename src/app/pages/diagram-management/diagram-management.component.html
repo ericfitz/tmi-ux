@@ -8,20 +8,31 @@
   </div>
 
   <div class="diagrams-list">
-    <mat-card *ngFor="let diagram of diagrams" 
-              class="diagram-card" 
-              (click)="openDiagram(diagram.id)">
+    <mat-card
+      *ngFor="let diagram of diagrams"
+      class="diagram-card"
+      (click)="openDiagram(diagram.id)"
+    >
       <mat-card-content>
         <div class="diagram-info">
           <mat-icon class="diagram-icon">account_tree</mat-icon>
           <div class="diagram-details">
-            <h3 class="diagram-title">{{diagram.name}}</h3>
-            <p class="diagram-date" [transloco]="'diagrams.lastModified'" [translocoParams]="{date: diagram.modifiedAt | date:'medium'}">Last modified: {{diagram.modifiedAt | date:'medium'}}</p>
+            <h3 class="diagram-title">{{ diagram.name }}</h3>
+            <p
+              class="diagram-date"
+              [transloco]="'diagrams.lastModified'"
+              [translocoParams]="{ date: diagram.modifiedAt | date: 'medium' }"
+            >
+              Last modified: {{ diagram.modifiedAt | date: 'medium' }}
+            </p>
           </div>
         </div>
-        <button mat-icon-button color="warn" 
-                class="delete-button" 
-                (click)="deleteDiagram(diagram.id, $event)">
+        <button
+          mat-icon-button
+          color="warn"
+          class="delete-button"
+          (click)="deleteDiagram(diagram.id, $event)"
+        >
           <mat-icon>delete</mat-icon>
         </button>
       </mat-card-content>

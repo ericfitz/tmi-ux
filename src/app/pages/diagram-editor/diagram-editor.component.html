@@ -1,7 +1,7 @@
 <div class="diagram-editor-container">
   <div class="editor-header">
     <div class="editor-title">
-      <h2>{{diagramTitle}}</h2>
+      <h2>{{ diagramTitle }}</h2>
     </div>
     <div class="editor-actions">
       <button mat-raised-button color="primary" (click)="saveDiagram()">
@@ -19,8 +19,12 @@
     <div class="editor-canvas">
       <!-- This will be replaced with maxGraph diagram editor -->
       <div class="placeholder-editor">
-        <p [transloco]="'editor.placeholder'" [translocoParams]="{id: diagramId}">Diagram editor placeholder (ID: {{diagramId}})</p>
-        <p class="small-note" [transloco]="'editor.integrationNote'">MaxGraph will be integrated here</p>
+        <p [transloco]="'editor.placeholder'" [translocoParams]="{ id: diagramId }">
+          Diagram editor placeholder (ID: {{ diagramId }})
+        </p>
+        <p class="small-note" [transloco]="'editor.integrationNote'">
+          MaxGraph will be integrated here
+        </p>
       </div>
     </div>
 
@@ -30,7 +34,9 @@
           <mat-card-title [transloco]="'editor.properties.title'">Properties</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p [transloco]="'editor.properties.help'">Element properties will appear here when an element is selected.</p>
+          <p [transloco]="'editor.properties.help'">
+            Element properties will appear here when an element is selected.
+          </p>
         </mat-card-content>
       </mat-card>
 
@@ -43,7 +49,9 @@
             <div class="palette-item" [transloco]="'editor.palette.items.server'">Server</div>
             <div class="palette-item" [transloco]="'editor.palette.items.database'">Database</div>
             <div class="palette-item" [transloco]="'editor.palette.items.user'">User</div>
-            <div class="palette-item" [transloco]="'editor.palette.items.connection'">Connection</div>
+            <div class="palette-item" [transloco]="'editor.palette.items.connection'">
+              Connection
+            </div>
           </div>
         </mat-card-content>
       </mat-card>

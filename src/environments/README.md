@@ -51,6 +51,7 @@ Controls the application's logging verbosity. Valid options from least to most v
 ### apiUrl: string
 
 Base URL for API requests. Examples:
+
 - Development: `http://localhost:3000/api`
 - Staging: `https://api.staging.example.com/v1`
 - Production: `https://api.example.com/v1`
@@ -58,6 +59,7 @@ Base URL for API requests. Examples:
 ### authTokenExpiryMinutes: number
 
 How long the authentication token is valid for (in minutes) before requiring re-authentication.
+
 - Development: 1440 (24 hours) is recommended for easier testing
 - Production: 60 (1 hour) is recommended for security
 

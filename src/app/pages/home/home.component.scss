@@ -23,7 +23,7 @@
 }
 
 // RTL support
-:host-context([dir="rtl"]) {
+:host-context([dir='rtl']) {
   .action-row button mat-icon {
     margin-left: 8px;
     margin-right: 0;

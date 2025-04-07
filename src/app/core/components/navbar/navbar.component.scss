@@ -5,7 +5,8 @@
   align-items: center;
 }
 
-.navbar-left, .navbar-right {
+.navbar-left,
+.navbar-right {
   display: flex;
   align-items: center;
 }
@@ -18,7 +19,7 @@
 
 .language-selector {
   margin-left: 8px;
-  
+
   .mat-icon {
     margin-right: 4px;
   }
@@ -30,22 +31,22 @@
 }
 
 // RTL adjustments
-:host-context([dir="rtl"]) {
+:host-context([dir='rtl']) {
   .app-title {
     margin-left: 16px;
     margin-right: 8px;
   }
-  
+
   .language-selector {
     margin-left: 0;
     margin-right: 8px;
-    
+
     .mat-icon {
       margin-right: 0;
       margin-left: 4px;
     }
   }
-  
+
   .username {
     margin-right: 0;
     margin-left: 16px;

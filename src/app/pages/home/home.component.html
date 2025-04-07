@@ -1,16 +1,18 @@
 <div class="home-container">
   <div class="title-row">
-    <h1 class="page-title" [transloco]="'homeWelcomeTitle'">Welcome to TMI: Threat Modeling Improved</h1>
+    <h1 class="page-title" [transloco]="'homeWelcomeTitle'">
+      Welcome to TMI: Threat Modeling Improved
+    </h1>
   </div>
-  
+
   <div class="content-row">
     <p class="page-content" [transloco]="'homeDescription'">
-      A collaborative threat modeling tool designed to help teams identify, analyze, and 
-      document security threats in their systems. Create, share, and collaboratively edit 
-      threat models and diagrams to improve your application security.
+      A collaborative threat modeling tool designed to help teams identify, analyze, and document
+      security threats in their systems. Create, share, and collaboratively edit threat models and
+      diagrams to improve your application security.
     </p>
   </div>
-  
+
   <div class="action-row" *ngIf="!isAuthenticated">
     <button mat-raised-button color="primary" (click)="login()">
       <mat-icon>login</mat-icon>

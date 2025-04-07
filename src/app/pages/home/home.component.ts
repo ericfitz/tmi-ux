@@ -1,24 +1,24 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 // Direct Material Imports
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 
 // Services
 import { AuthService } from '../../auth/services/auth.service';
 
 // Transloco
-import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
@@ -26,16 +26,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     // Subscribe to auth state changes
-    this.authSubscription = this.authService.isAuthenticated$.subscribe(
-      (isAuthenticated) => {
-        this.isAuthenticated = isAuthenticated;
-      }
-    );
+    this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuthenticated => {
+      this.isAuthenticated = isAuthenticated;
+    });
   }
 
   ngOnDestroy(): void {

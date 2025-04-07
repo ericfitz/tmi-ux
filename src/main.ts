@@ -1,11 +1,20 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
 
-// Import locale data
-import '@angular/common/locales/global/de';
-import '@angular/common/locales/global/zh';
-import '@angular/common/locales/global/ar';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+// Import locale data for date/number localization
+import { registerLocaleData } from '@angular/common';
+import localeAr from '@angular/common/locales/ar';
+import localeDe from '@angular/common/locales/de';
+import localeEn from '@angular/common/locales/en';
+import localeZh from '@angular/common/locales/zh';
+
+// Register all locales
+registerLocaleData(localeEn, 'en-US');
+registerLocaleData(localeDe, 'de');
+registerLocaleData(localeZh, 'zh');
+registerLocaleData(localeAr, 'ar');
 
 // Register RTL for Arabic
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,5 +25,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(AppComponent, appConfig).catch(err => console.error(err));

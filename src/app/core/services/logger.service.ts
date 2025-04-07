@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { environment } from '../../../environments/environment';
 
 /**
@@ -8,7 +9,7 @@ export enum LogLevel {
   DEBUG = 'DEBUG',
   INFO = 'INFO',
   WARNING = 'WARNING',
-  ERROR = 'ERROR'
+  ERROR = 'ERROR',
 }
 
 /**
@@ -28,7 +29,7 @@ const LOG_LEVEL_PRIORITY = {
   [LogLevel.DEBUG]: 0,
   [LogLevel.INFO]: 1,
   [LogLevel.WARNING]: 2,
-  [LogLevel.ERROR]: 3
+  [LogLevel.ERROR]: 3,
 };
 
 /**
@@ -36,9 +37,10 @@ const LOG_LEVEL_PRIORITY = {
  * Logs are formatted with ISO8601 timestamps and configurable log levels
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LoggerService {
+  // Private members
   private logLevel: LogLevel;
 
   constructor() {
@@ -53,6 +55,99 @@ export class LoggerService {
   setLogLevel(level: LogLevel): void {
     this.logLevel = level;
     this.info(`Log level changed to: ${level}`);
+  }
+  
+  // Public logging methods
+  
+  /**
+   * Log a debug message
+   */
+  debug(message: string, ...optionalParams: unknown[]): void {
+    if (this.shouldLog(LogLevel.DEBUG)) {
+      // Using console.debug for development only
+      console.debug(this.formatMessage(LogLevel.DEBUG, message), ...optionalParams);
+    }
+  }
+
+  /**
+   * Log an info message
+   */
+  info(message: string, ...optionalParams: unknown[]): void {
+    if (this.shouldLog(LogLevel.INFO)) {
+      // Using console.info for development only
+      console.info(this.formatMessage(LogLevel.INFO, message), ...optionalParams);
+    }
+  }
+
+  /**
+   * Log a warning message
+   */
+  warn(message: string, ...optionalParams: unknown[]): void {
+    if (this.shouldLog(LogLevel.WARNING)) {
+      console.warn(this.formatMessage(LogLevel.WARNING, message), ...optionalParams);
+    }
+  }
+
+  /**
+   * Log an error message
+   */
+  error(message: string, ...optionalParams: unknown[]): void {
+    if (this.shouldLog(LogLevel.ERROR)) {
+      console.error(this.formatMessage(LogLevel.ERROR, message), ...optionalParams);
+    }
+  }
+  
+  /**
+   * Log initialization of a variable
+   * @param name Variable name
+   * @param value Variable value
+   * @param source Optional source (class/method/file)
+   * @returns The original value for easy chaining
+   */
+  logInit<T>(name: string, value: T, source?: string): T {
+    return this.logVar({ name, value, source }, 'initialized');
+  }
+
+  /**
+   * Log update of a variable's value
+   * @param name Variable name
+   * @param value New variable value
+   * @param source Optional source (class/method/file)
+   * @returns The original value for easy chaining
+   */
+  logUpdate<T>(name: string, value: T, source?: string): T {
+    return this.logVar({ name, value, source }, 'updated');
+  }
+  
+  /**
+   * Log variable initialization or value change
+   * @param varInfo Object containing variable name, value, and optional source
+   * @param operation The operation being performed (initialize, update, etc.)
+   * @returns The original value for easy chaining
+   */
+  logVar<T>(varInfo: VarInit<T>, operation = 'initialized'): T {
+    if (this.shouldLog(LogLevel.DEBUG)) {
+      const source = varInfo.source ? ` in ${varInfo.source}` : '';
+      let valueStr = '';
+
+      try {
+        // For objects and arrays, stringify with pretty printing (2 spaces)
+        if (typeof varInfo.value === 'object' && varInfo.value !== null) {
+          valueStr = JSON.stringify(varInfo.value, null, 2);
+          // Truncate if too long
+          if (valueStr.length > 500) {
+            valueStr = valueStr.substring(0, 500) + '... (truncated)';
+          }
+        } else {
+          valueStr = String(varInfo.value);
+        }
+      } catch {
+        valueStr = '[Unstringifiable value]';
+      }
+
+      this.debug(`Variable '${varInfo.name}'${source} ${operation} to: ${valueStr}`);
+    }
+    return varInfo.value;
   }
 
   /**
@@ -69,96 +164,5 @@ export class LoggerService {
   private formatMessage(level: LogLevel, message: string): string {
     const timestamp = new Date().toISOString();
     return `${timestamp} [${level}] ${message}`;
-  }
-
-  /**
-   * Log a debug message
-   */
-  debug(message: string, ...optionalParams: any[]): void {
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      console.debug(this.formatMessage(LogLevel.DEBUG, message), ...optionalParams);
-    }
-  }
-
-  /**
-   * Log an info message
-   */
-  info(message: string, ...optionalParams: any[]): void {
-    if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage(LogLevel.INFO, message), ...optionalParams);
-    }
-  }
-
-  /**
-   * Log a warning message
-   */
-  warn(message: string, ...optionalParams: any[]): void {
-    if (this.shouldLog(LogLevel.WARNING)) {
-      console.warn(this.formatMessage(LogLevel.WARNING, message), ...optionalParams);
-    }
-  }
-
-  /**
-   * Log an error message
-   */
-  error(message: string, ...optionalParams: any[]): void {
-    if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(this.formatMessage(LogLevel.ERROR, message), ...optionalParams);
-    }
-  }
-  
-  /**
-   * Log variable initialization or value change
-   * @param varInfo Object containing variable name, value, and optional source
-   * @param operation The operation being performed (initialize, update, etc.)
-   * @returns The original value for easy chaining
-   */
-  logVar<T>(varInfo: VarInit<T>, operation: string = 'initialized'): T {
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      const source = varInfo.source ? ` in ${varInfo.source}` : '';
-      let valueStr = '';
-      
-      try {
-        // For objects and arrays, stringify with pretty printing (2 spaces)
-        if (typeof varInfo.value === 'object' && varInfo.value !== null) {
-          valueStr = JSON.stringify(varInfo.value, null, 2);
-          // Truncate if too long
-          if (valueStr.length > 500) {
-            valueStr = valueStr.substring(0, 500) + '... (truncated)';
-          }
-        } else {
-          valueStr = String(varInfo.value);
-        }
-      } catch (e) {
-        valueStr = '[Unstringifiable value]';
-      }
-      
-      this.debug(
-        `Variable '${varInfo.name}'${source} ${operation} to: ${valueStr}`
-      );
-    }
-    return varInfo.value;
-  }
-  
-  /**
-   * Log initialization of a variable
-   * @param name Variable name
-   * @param value Variable value
-   * @param source Optional source (class/method/file)
-   * @returns The original value for easy chaining
-   */
-  logInit<T>(name: string, value: T, source?: string): T {
-    return this.logVar({ name, value, source }, 'initialized');
-  }
-  
-  /**
-   * Log update of a variable's value
-   * @param name Variable name
-   * @param value New variable value
-   * @param source Optional source (class/method/file)
-   * @returns The original value for easy chaining
-   */
-  logUpdate<T>(name: string, value: T, source?: string): T {
-    return this.logVar({ name, value, source }, 'updated');
   }
 }

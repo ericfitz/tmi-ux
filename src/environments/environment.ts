@@ -8,5 +8,5 @@ export const environment: Environment = {
   production: false,
   logLevel: 'DEBUG', // Most verbose logging in development
   apiUrl: 'https://api.dev.example.com/v1',
-  authTokenExpiryMinutes: 60
+  authTokenExpiryMinutes: 60,
 };

@@ -6,13 +6,13 @@
         <mat-icon>home</mat-icon>
       </button>
       <span class="app-title" [transloco]="'navbar.appTitle'">TMI: Threat Modeling Improved</span>
-      
+
       <!-- Language Selector -->
       <button mat-button [matMenuTriggerFor]="languageMenu" class="language-selector">
         <mat-icon>language</mat-icon>
         <span>{{ currentLanguage.localName }}</span>
       </button>
-      
+
       <mat-menu #languageMenu="matMenu">
         <button mat-menu-item *ngFor="let lang of languages" (click)="switchLanguage(lang)">
           <span>{{ lang.localName }}</span>
@@ -29,9 +29,11 @@
           <mat-icon>logout</mat-icon>
           <span [transloco]="'navbar.logoutButton'">Logout</span>
         </button>
-        
+
         <!-- Diagrams links when authenticated -->
-        <button mat-button routerLink="/diagram-management" [transloco]="'navbar.diagramsButton'">Diagrams</button>
+        <button mat-button routerLink="/diagram-management" [transloco]="'navbar.diagramsButton'">
+          Diagrams
+        </button>
       </ng-container>
     </div>
   </div>

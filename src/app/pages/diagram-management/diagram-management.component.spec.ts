@@ -8,9 +8,8 @@ describe('DiagramManagementComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DiagramManagementComponent]
-    })
-    .compileComponents();
+      imports: [DiagramManagementComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DiagramManagementComponent);
     component = fixture.componentInstance;

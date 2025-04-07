@@ -3,20 +3,22 @@
 // Note: The pre-built theme is included via angular.json
 
 // Global styles
-html, body { 
-  height: 100%; 
+html,
+body {
+  height: 100%;
   margin: 0;
 }
 
-body { 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   display: flex;
   flex-direction: column;
 }
 
 // RTL support for Arabic
-html[dir="rtl"] {
-  body, .mat-typography {
+html[dir='rtl'] {
+  body,
+  .mat-typography {
     text-align: right;
   }
 }

@@ -8,5 +8,5 @@ export const environment: Environment = {
   production: true,
   logLevel: 'ERROR', // Only show errors in production
   apiUrl: 'https://api.example.com/v1',
-  authTokenExpiryMinutes: 60
+  authTokenExpiryMinutes: 60,
 };

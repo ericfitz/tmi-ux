@@ -8,5 +8,5 @@ export const environment: Environment = {
   production: false, // Not true production but mimics it
   logLevel: 'WARNING', // Only show warnings and errors in staging
   apiUrl: 'https://api.staging.example.com/v1',
-  authTokenExpiryMinutes: 60
+  authTokenExpiryMinutes: 60,
 };

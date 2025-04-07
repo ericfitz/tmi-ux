@@ -1,26 +1,25 @@
-import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-import { 
-  TranslocoModule, 
-  TRANSLOCO_CONFIG, 
-  TranslocoConfig,
+import { NgModule, APP_INITIALIZER } from '@angular/core';
+import {
+  TranslocoModule,
   provideTransloco,
-  TranslocoService
+  TranslocoService,
 } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
+
 import { TranslocoHttpLoader } from './transloco-loader';
 import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
 
 // Function to get the initial language
 function getInitialLang(): string {
   const supportedLangs = ['en-US', 'de', 'zh', 'ar'];
-  
+
   // Check localStorage for saved preference
   const savedLang = localStorage.getItem('preferredLanguage');
   if (savedLang && supportedLangs.includes(savedLang)) {
     return savedLang;
   }
-  
+
   // Check browser language
   const browserLang = navigator.language;
   if (browserLang) {
@@ -28,7 +27,7 @@ function getInitialLang(): string {
     if (supportedLangs.includes(browserLang)) {
       return browserLang;
     }
-    
+
     // Try base language match
     const baseLang = browserLang.split('-')[0];
     const baseMatch = supportedLangs.find(l => l.startsWith(baseLang));
@@ -36,42 +35,38 @@ function getInitialLang(): string {
       return baseMatch;
     }
   }
-  
+
   // Default to English
   return 'en-US';
 }
 
 // This function initializes Transloco during app startup
-export function preloadTranslations(transloco: TranslocoService): () => Promise<any> {
+export function preloadTranslations(transloco: TranslocoService): () => Promise<unknown> {
   return () => {
     // Get preferred language
     const langToLoad = getInitialLang();
-    
+
     // Set active language and load it
     transloco.setActiveLang(langToLoad);
-    
+
     // Set document language
     document.documentElement.lang = langToLoad;
-    
+
     // Set RTL if needed
     if (langToLoad === 'ar') {
       document.documentElement.dir = 'rtl';
     } else {
       document.documentElement.dir = 'ltr';
     }
-    
+
     // Preload the default language and return Promise
     return firstValueFrom(transloco.load(langToLoad));
   };
 }
 
 @NgModule({
-  imports: [
-    HttpClientModule
-  ],
-  exports: [
-    TranslocoModule
-  ],
+  imports: [HttpClientModule],
+  exports: [TranslocoModule],
   providers: [
     provideTransloco({
       config: {
@@ -81,17 +76,17 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
         reRenderOnLangChange: true,
         prodMode: environment.production,
         missingHandler: {
-          useFallbackTranslation: true
-        }
+          useFallbackTranslation: true,
+        },
       },
-      loader: TranslocoHttpLoader
+      loader: TranslocoHttpLoader,
     }),
     {
       provide: APP_INITIALIZER,
       useFactory: preloadTranslations,
       deps: [TranslocoService],
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class TranslocoRootModule {}

@@ -15,6 +15,7 @@
   "loginButton": "Login to Start",
   "tos": {
     "title": "Terms of Service",
+    "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Last updated: {{date}}",
     "intro": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
     "section1": {
@@ -53,6 +54,7 @@
   },
   "privacy": {
     "title": "Privacy Policy",
+    "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Last updated: {{date}}",
     "intro1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
