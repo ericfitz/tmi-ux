@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="footerCopyright" datatype="html">
-        <source>© <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Threat Modeling Improved</source>
+        <source>©          <x id="INTERPOLATION" equiv-text="{{currentYear}}"/>
+ TMI: Threat Modeling Improved</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/components/footer/footer.component.html</context>
           <context context-type="linenumber">3,4</context>
@@ -70,6 +72,79 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.component.html</context>
           <context context-type="linenumber">17,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tosTitle" datatype="html">
+        <source> Terms of Service </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tos/tos.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tosTerms" datatype="html">
+        <source> Last updated: April 6, 2025
+
+Welcome to our instance of TMI. These Terms of Use ("Terms") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the "About" page of this web site ("The Operator").
+
+1. Acceptance of Terms
+   By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.
+
+2. Use of the Website
+   This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems.
+
+3. No Warranty
+   The website is provided "as is" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.
+
+4. Limitation of Liability
+   To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.
+
+5. Open Source Software
+   This website runs the TMI software, and its source code is available at the link provided on the "About" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators.
+
+6. Changes to Terms
+   The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms.
+
+7. Termination
+   The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason.
+
+8. Governing Law
+   These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual)', without regard to conflict of law principles.
+
+If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the "About" page. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tos/tos.component.html</context>
+          <context context-type="linenumber">8,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="privacyTitle" datatype="html">
+        <source> Privacy Policy </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/privacy/privacy.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="privacyPolicy" datatype="html">
+        <source> Last updated: April 6, 2025
+
+This web site is an instance of an open-source web application ("TMI") that is made available by the operator listed on the "About" page of this web site ("The Operator").
+
+The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.
+
+No Data Collection or Storage
+The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.
+
+Legal Compliance
+The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.
+
+Changes to This Policy
+The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated "Last Updated" date.
+
+Contact Us
+If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the "About" page.
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/privacy/privacy.component.html</context>
+          <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
     </body>
