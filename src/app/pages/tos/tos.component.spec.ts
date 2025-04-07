@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { TosComponent } from './tos.component';
+import { TranslocoTestingModule } from '../../i18n/testing.module';
 
 describe('TosComponent', () => {
   let component: TosComponent;
@@ -8,7 +10,11 @@ describe('TosComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TosComponent],
+      imports: [
+        TosComponent,
+        RouterTestingModule,
+        TranslocoTestingModule
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TosComponent);
