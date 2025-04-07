@@ -3,12 +3,12 @@
   <file source-language="en-US" target-language="de" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="footerCopyright" datatype="html">
-        <source>� <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Threat Modeling Improved</source>
-        <target>� <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Verbesserte Bedrohungsmodellierung</target>
+        <source>© <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Threat Modeling Improved</source>
+        <target>© <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Verbesserte Bedrohungsmodellierung</target>
       </trans-unit>
       <trans-unit id="footerAbout" datatype="html">
         <source>About</source>
-        <target>�ber</target>
+        <target>Über</target>
       </trans-unit>
       <trans-unit id="footerPrivacy" datatype="html">
         <source>Privacy Policy</source>
@@ -41,6 +41,210 @@
       <trans-unit id="loginButton" datatype="html">
         <source>Login to Start</source>
         <target>Anmelden zum Starten</target>
+      </trans-unit>
+      <trans-unit id="tosTitle" datatype="html">
+        <source>Terms of Service</source>
+        <target>Nutzungsbedingungen</target>
+      </trans-unit>
+      <trans-unit id="tosLastUpdated" datatype="html">
+        <source>Last updated: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></source>
+        <target>Zuletzt aktualisiert: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></target>
+      </trans-unit>
+      <trans-unit id="tosIntro" datatype="html">
+        <source>Welcome to our instance of TMI. These Terms of Use ("Terms") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the "About" page of this web site ("The Operator").</source>
+        <target>Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen ("Bedingungen") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der "Über"-Seite dieser Website aufgeführten Betreiber ("Der Betreiber") zur Verfügung gestellt wird.</target>
+      </trans-unit>
+      <trans-unit id="tosSection1Title" datatype="html">
+        <source>1. Acceptance of Terms</source>
+        <target>1. Annahme der Bedingungen</target>
+      </trans-unit>
+      <trans-unit id="tosSection1Content" datatype="html">
+        <source>By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.</source>
+        <target>Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich damit einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie diese Website bitte nicht.</target>
+      </trans-unit>
+      <trans-unit id="tosSection2Title" datatype="html">
+        <source>2. Use of the Website</source>
+        <target>2. Nutzung der Website</target>
+      </trans-unit>
+      <trans-unit id="tosSection2Content" datatype="html">
+        <source>This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems.</source>
+        <target>Diese Website wird im Ist-Zustand bereitgestellt und verwendet TMI, eine Open-Source-Software, die unter der Apache 2.0-Lizenz lizenziert ist. Sie dürfen die Website nur für rechtmäßige Zwecke nutzen. Sie verpflichten sich, die Website oder ihre zugrunde liegenden Systeme nicht zu missbrauchen, zu stören oder zu versuchen, unbefugten Zugriff darauf zu erlangen.</target>
+      </trans-unit>
+      <trans-unit id="tosSection3Title" datatype="html">
+        <source>3. No Warranty</source>
+        <target>3. Keine Garantie</target>
+      </trans-unit>
+      <trans-unit id="tosSection3Content" datatype="html">
+        <source>The website is provided "as is" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.</source>
+        <target>Die Website wird "wie sie ist" ohne jegliche Garantien, ausdrücklich oder implizit, einschließlich, aber nicht beschränkt auf Eignung für einen bestimmten Zweck, Verfügbarkeit oder Genauigkeit bereitgestellt. Wir garantieren keinen unterbrechungsfreien oder fehlerfreien Betrieb.</target>
+      </trans-unit>
+      <trans-unit id="tosSection4Title" datatype="html">
+        <source>4. Limitation of Liability</source>
+        <target>4. Haftungsbeschränkung</target>
+      </trans-unit>
+      <trans-unit id="tosSection4Content" datatype="html">
+        <source>To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.</source>
+        <target>Im maximal gesetzlich zulässigen Umfang haftet der Betreiber nicht für direkte, indirekte, zufällige oder Folgeschäden, die aus Ihrer Nutzung oder Unmöglichkeit der Nutzung der Website entstehen.</target>
+      </trans-unit>
+      <trans-unit id="tosSection5Title" datatype="html">
+        <source>5. Open Source Software</source>
+        <target>5. Open-Source-Software</target>
+      </trans-unit>
+      <trans-unit id="tosSection5Content" datatype="html">
+        <source>This website runs the TMI software, and its source code is available at the link provided on the "About" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators.</source>
+        <target>Diese Website verwendet die TMI-Software, und ihr Quellcode ist über den auf der "Über"-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Der Betreiber dieser Website ist möglicherweise nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden.</target>
+      </trans-unit>
+      <trans-unit id="tosSection6Title" datatype="html">
+        <source>6. Changes to Terms</source>
+        <target>6. Änderungen der Bedingungen</target>
+      </trans-unit>
+      <trans-unit id="tosSection6Content" datatype="html">
+        <source>The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms.</source>
+        <target>Der Betreiber kann diese Bedingungen jederzeit aktualisieren. Die fortgesetzte Nutzung der Website nach Änderungen stellt die Annahme der aktualisierten Bedingungen dar.</target>
+      </trans-unit>
+      <trans-unit id="tosSection7Title" datatype="html">
+        <source>7. Termination</source>
+        <target>7. Kündigung</target>
+      </trans-unit>
+      <trans-unit id="tosSection7Content" datatype="html">
+        <source>The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason.</source>
+        <target>Der Betreiber behält sich das Recht vor, den Zugang zur Website nach eigenem Ermessen des Betreibers ohne Vorankündigung und aus beliebigem Grund auszusetzen oder zu beenden.</target>
+      </trans-unit>
+      <trans-unit id="tosSection8Title" datatype="html">
+        <source>8. Governing Law</source>
+        <target>8. Geltendes Recht</target>
+      </trans-unit>
+      <trans-unit id="tosSection8Content" datatype="html">
+        <source>These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual)', without regard to conflict of law principles.</source>
+        <target>Diese Bedingungen unterliegen den Gesetzen der Rechtsordnung, in der der Betreiber seinen Hauptsitz hat (im Falle einer Organisation) oder wohnt (im Falle einer Einzelperson), ungeachtet der Grundsätze des Kollisionsrechts.</target>
+      </trans-unit>
+      <trans-unit id="tosContactInfo" datatype="html">
+        <source>If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the "About" page.</source>
+        <target>Wenn Sie Fragen zu diesen Bedingungen haben, können Sie sich gerne über die Kontaktinformationen auf der "Über"-Seite an den Betreiber dieser Website wenden.</target>
+      </trans-unit>
+      <trans-unit id="privacyTitle" datatype="html">
+        <source>Privacy Policy</source>
+        <target>Datenschutzrichtlinie</target>
+      </trans-unit>
+      <trans-unit id="privacyLastUpdated" datatype="html">
+        <source>Last updated: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></source>
+        <target>Zuletzt aktualisiert: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></target>
+      </trans-unit>
+      <trans-unit id="privacyIntro1" datatype="html">
+        <source>This web site is an instance of an open-source web application ("TMI") that is made available by the operator listed on the "About" page of this web site ("The Operator").</source>
+        <target>Diese Website ist eine Instanz einer Open-Source-Webanwendung ("TMI"), die vom auf der "Über"-Seite dieser Website aufgeführten Betreiber ("Der Betreiber") zur Verfügung gestellt wird.</target>
+      </trans-unit>
+      <trans-unit id="privacyIntro2" datatype="html">
+        <source>The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.</source>
+        <target>Der Betreiber verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.</target>
+      </trans-unit>
+      <trans-unit id="privacyDataTitle" datatype="html">
+        <source>No Data Collection or Storage</source>
+        <target>Keine Datenerfassung oder -speicherung</target>
+      </trans-unit>
+      <trans-unit id="privacyDataContent" datatype="html">
+        <source>The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.</source>
+        <target>Der Betreiber sammelt, speichert oder verarbeitet keine personenbezogenen Daten von Benutzern. Der Betreiber verfolgt nicht Ihre Aktivitäten, speichert Ihre Informationen nicht und teilt keine Daten über Sie mit Dritten für irgendeinen Zweck.</target>
+      </trans-unit>
+      <trans-unit id="privacyComplianceTitle" datatype="html">
+        <source>Legal Compliance</source>
+        <target>Gesetzliche Konformität</target>
+      </trans-unit>
+      <trans-unit id="privacyComplianceContent" datatype="html">
+        <source>The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.</source>
+        <target>Der Betreiber wird Informationen nur dann offenlegen, wenn er gesetzlich dazu verpflichtet ist, z.B. als Reaktion auf eine gültige behördliche Anordnung oder Vorladung. In solchen Fällen wird der Betreiber die geltenden gesetzlichen Verpflichtungen einhalten.</target>
+      </trans-unit>
+      <trans-unit id="privacyChangesTitle" datatype="html">
+        <source>Changes to This Policy</source>
+        <target>Änderungen an dieser Richtlinie</target>
+      </trans-unit>
+      <trans-unit id="privacyChangesContent" datatype="html">
+        <source>The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated "Last Updated" date.</source>
+        <target>Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten "Zuletzt aktualisiert"-Datum veröffentlicht.</target>
+      </trans-unit>
+      <trans-unit id="privacyContactTitle" datatype="html">
+        <source>Contact Us</source>
+        <target>Kontaktiere uns</target>
+      </trans-unit>
+      <trans-unit id="privacyContactContent" datatype="html">
+        <source>If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the "About" page.</source>
+        <target>Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der "Über"-Seite an den Betreiber dieser Website.</target>
+      </trans-unit>
+      <trans-unit id="aboutTitle" datatype="html">
+        <source>About TMI</source>
+        <target>Über TMI</target>
+      </trans-unit>
+      <trans-unit id="aboutDescription1" datatype="html">
+        <source>TMI (Threat Modeling Interface) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.</source>
+        <target>TMI (Threat Modeling Interface) ist eine kollaborative Plattform für die Erstellung, Verwaltung und gemeinsame Nutzung von Bedrohungsmodellen. Unsere Mission ist es, die Modellierung von Sicherheitsbedrohungen zugänglich, effizient und in den Software-Entwicklungslebenszyklus integriert zu gestalten.</target>
+      </trans-unit>
+      <trans-unit id="aboutDescription2" datatype="html">
+        <source>The platform features interactive diagram creation, real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling.</source>
+        <target>Die Plattform bietet interaktive Diagrammerstellung, Echtzeit-Zusammenarbeit und umfassende Funktionen zur Dokumentation von Bedrohungen. TMI wurde mit modernen Webtechnologien entwickelt und hilft Teams, Sicherheitsbedrohungen durch kollaborative Modellierung zu identifizieren, zu analysieren und zu mindern.</target>
+      </trans-unit>
+      <trans-unit id="diagramsPageTitle" datatype="html">
+        <source>My Diagrams</source>
+        <target>Meine Diagramme</target>
+      </trans-unit>
+      <trans-unit id="newDiagramButton" datatype="html">
+        <source>New Diagram</source>
+        <target>Neues Diagramm</target>
+      </trans-unit>
+      <trans-unit id="lastModified" datatype="html">
+        <source>Last modified: <x id="INTERPOLATION" equiv-text="{{diagram.modifiedAt | date:'short'}}"/></source>
+        <target>Zuletzt geändert: <x id="INTERPOLATION" equiv-text="{{diagram.modifiedAt | date:'short'}}"/></target>
+      </trans-unit>
+      <trans-unit id="noDiagramsMessage" datatype="html">
+        <source>You don't have any diagrams yet.</source>
+        <target>Sie haben noch keine Diagramme.</target>
+      </trans-unit>
+      <trans-unit id="createFirstDiagramButton" datatype="html">
+        <source>Create your first diagram</source>
+        <target>Erstellen Sie Ihr erstes Diagramm</target>
+      </trans-unit>
+      <trans-unit id="saveButton" datatype="html">
+        <source>Save</source>
+        <target>Speichern</target>
+      </trans-unit>
+      <trans-unit id="backToDiagramsButton" datatype="html">
+        <source>Back to Diagrams</source>
+        <target>Zurück zu Diagrammen</target>
+      </trans-unit>
+      <trans-unit id="placeholderEditorText" datatype="html">
+        <source>Diagram editor placeholder (ID: <x id="INTERPOLATION" equiv-text="{{diagramId}}"/>)</source>
+        <target>Diagramm-Editor-Platzhalter (ID: <x id="INTERPOLATION" equiv-text="{{diagramId}}"/>)</target>
+      </trans-unit>
+      <trans-unit id="maxGraphIntegrationNote" datatype="html">
+        <source>MaxGraph will be integrated here</source>
+        <target>MaxGraph wird hier integriert</target>
+      </trans-unit>
+      <trans-unit id="propertiesTitle" datatype="html">
+        <source>Properties</source>
+        <target>Eigenschaften</target>
+      </trans-unit>
+      <trans-unit id="propertiesHelp" datatype="html">
+        <source>Element properties will appear here when an element is selected.</source>
+        <target>Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist.</target>
+      </trans-unit>
+      <trans-unit id="paletteTitle" datatype="html">
+        <source>Palette</source>
+        <target>Palette</target>
+      </trans-unit>
+      <trans-unit id="paletteItemServer" datatype="html">
+        <source>Server</source>
+        <target>Server</target>
+      </trans-unit>
+      <trans-unit id="paletteItemDatabase" datatype="html">
+        <source>Database</source>
+        <target>Datenbank</target>
+      </trans-unit>
+      <trans-unit id="paletteItemUser" datatype="html">
+        <source>User</source>
+        <target>Benutzer</target>
+      </trans-unit>
+      <trans-unit id="paletteItemConnection" datatype="html">
+        <source>Connection</source>
+        <target>Verbindung</target>
       </trans-unit>
     </body>
   </file>

@@ -3,44 +3,248 @@
   <file source-language="en-US" target-language="ar" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="footerCopyright" datatype="html">
-        <source>� <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Threat Modeling Improved</source>
-        <target>� <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: *-3JF FE0,) 'D*G/J/'*</target>
+        <source>© <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> TMI: Threat Modeling Improved</source>
+        <target>© <x id="INTERPOLATION" equiv-text="{{currentYear}}"/> تي إم آي: نمذجة التهديدات المحسنة</target>
       </trans-unit>
       <trans-unit id="footerAbout" datatype="html">
         <source>About</source>
-        <target>-HD</target>
+        <target>حول</target>
       </trans-unit>
       <trans-unit id="footerPrivacy" datatype="html">
         <source>Privacy Policy</source>
-        <target>3J'3) 'D.5H5J)</target>
+        <target>سياسة الخصوصية</target>
       </trans-unit>
       <trans-unit id="footerTos" datatype="html">
         <source>Terms of Service</source>
-        <target>41H7 'D./E)</target>
+        <target>شروط الخدمة</target>
       </trans-unit>
       <trans-unit id="appTitle" datatype="html">
         <source>TMI: Threat Modeling Improved</source>
-        <target>TMI: *-3JF FE0,) 'D*G/J/'*</target>
+        <target>تي إم آي: نمذجة التهديدات المحسنة</target>
       </trans-unit>
       <trans-unit id="logoutButton" datatype="html">
         <source>Logout</source>
-        <target>*3,JD 'D.1H,</target>
+        <target>تسجيل الخروج</target>
       </trans-unit>
       <trans-unit id="diagramsButton" datatype="html">
         <source>Diagrams</source>
-        <target>'D13HE 'D(J'FJ)</target>
+        <target>الرسوم البيانية</target>
       </trans-unit>
       <trans-unit id="homeWelcomeTitle" datatype="html">
         <source>Welcome to TMI: Threat Modeling Improved</source>
-        <target>E1-(K' (CE AJ TMI: *-3JF FE0,) 'D*G/J/'*</target>
+        <target>مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة</target>
       </trans-unit>
       <trans-unit id="homeDescription" datatype="html">
         <source> A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security. </source>
-        <target> #/') *9'HFJ) DFE0,) 'D*G/J/'* E5EE) DE3'9/) 'DA1B 9DI *-/J/ H*-DJD H*H+JB 'D*G/J/'* 'D#EFJ) AJ #F8E*GE. %F4'! HE4'1C) H*-1J1 FE'0, 'D*G/J/'* H'D13HE 'D(J'FJ) (4CD *9'HFJ D*-3JF #E'F 'D*7(JB 'D.'5 (C. </target>
+        <target>أداة تعاونية لنمذجة التهديدات مصممة لمساعدة الفرق على تحديد وتحليل وتوثيق التهديدات الأمنية في أنظمتهم. إنشاء ومشاركة وتحرير نماذج التهديدات والرسوم البيانية بشكل تعاوني لتحسين أمان التطبيق الخاص بك.</target>
       </trans-unit>
       <trans-unit id="loginButton" datatype="html">
         <source>Login to Start</source>
-        <target>*3,JD 'D/.HD DD(/!</target>
+        <target>تسجيل الدخول للبدء</target>
+      </trans-unit>
+      <trans-unit id="tosTitle" datatype="html">
+        <source>Terms of Service</source>
+        <target>شروط الخدمة</target>
+      </trans-unit>
+      <trans-unit id="tosLastUpdated" datatype="html">
+        <source>Last updated: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></source>
+        <target>آخر تحديث: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></target>
+      </trans-unit>
+      <trans-unit id="tosIntro" datatype="html">
+        <source>Welcome to our instance of TMI. These Terms of Use ("Terms") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the "About" page of this web site ("The Operator").</source>
+        <target>مرحبًا بك في نسختنا من تي إم آي. تحكم شروط الاستخدام هذه ("الشروط") وصولك إلى واستخدامك لهذا الموقع الإلكتروني، وهو نسخة من تطبيق ويب مفتوح المصدر متاح من قبل المشغل المدرج في صفحة "حول" هذا الموقع ("المشغل").</target>
+      </trans-unit>
+      <trans-unit id="tosSection1Title" datatype="html">
+        <source>1. Acceptance of Terms</source>
+        <target>1. قبول الشروط</target>
+      </trans-unit>
+      <trans-unit id="tosSection1Content" datatype="html">
+        <source>By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.</source>
+        <target>من خلال الوصول إلى هذا الموقع واستخدامه، فإنك تقبل وتوافق على الالتزام بشروط وأحكام هذه الاتفاقية. إذا كنت لا توافق على هذه الشروط، يرجى عدم استخدام هذا الموقع.</target>
+      </trans-unit>
+      <trans-unit id="tosSection2Title" datatype="html">
+        <source>2. Use of the Website</source>
+        <target>2. استخدام الموقع</target>
+      </trans-unit>
+      <trans-unit id="tosSection2Content" datatype="html">
+        <source>This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems.</source>
+        <target>يتم توفير هذا الموقع كما هو، باستخدام تي إم آي، وهو برنامج مفتوح المصدر مرخص بموجب ترخيص أباتشي 2.0. يمكنك استخدام الموقع للأغراض القانونية فقط. أنت توافق على عدم إساءة استخدام الموقع أو تعطيله أو محاولة الوصول غير المصرح به إلى الموقع أو أنظمته الأساسية.</target>
+      </trans-unit>
+      <trans-unit id="tosSection3Title" datatype="html">
+        <source>3. No Warranty</source>
+        <target>3. لا ضمان</target>
+      </trans-unit>
+      <trans-unit id="tosSection3Content" datatype="html">
+        <source>The website is provided "as is" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.</source>
+        <target>يتم توفير الموقع "كما هو" دون أي ضمانات من أي نوع، صريحة أو ضمنية، بما في ذلك على سبيل المثال لا الحصر الملاءمة لغرض معين أو التوافر أو الدقة. نحن لا نضمن التشغيل دون انقطاع أو خالي من الأخطاء.</target>
+      </trans-unit>
+      <trans-unit id="tosSection4Title" datatype="html">
+        <source>4. Limitation of Liability</source>
+        <target>4. حدود المسؤولية</target>
+      </trans-unit>
+      <trans-unit id="tosSection4Content" datatype="html">
+        <source>To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.</source>
+        <target>إلى أقصى حد يسمح به القانون، لن يكون المشغل مسؤولاً عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو تبعية ناشئة عن استخدامك أو عدم قدرتك على استخدام الموقع.</target>
+      </trans-unit>
+      <trans-unit id="tosSection5Title" datatype="html">
+        <source>5. Open Source Software</source>
+        <target>5. برمجيات مفتوحة المصدر</target>
+      </trans-unit>
+      <trans-unit id="tosSection5Content" datatype="html">
+        <source>This website runs the TMI software, and its source code is available at the link provided on the "About" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators.</source>
+        <target>يستخدم هذا الموقع برنامج تي إم آي، ويتوفر رمزه المصدري في الرابط المتوفر في صفحة "حول" هذا الموقع. يخضع استخدامك للبرنامج لشروط ترخيصه مفتوح المصدر. نحن لسنا مسؤولين عن البرنامج نفسه، ولكن فقط عن تشغيل هذه النسخة. قد لا يكون مشغل هذا الموقع مرتبطًا بمشروع تي إم آي أو مبتكريه.</target>
+      </trans-unit>
+      <trans-unit id="tosSection6Title" datatype="html">
+        <source>6. Changes to Terms</source>
+        <target>6. تغييرات في الشروط</target>
+      </trans-unit>
+      <trans-unit id="tosSection6Content" datatype="html">
+        <source>The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms.</source>
+        <target>يجوز للمشغل تحديث هذه الشروط في أي وقت. يشكل الاستمرار في استخدام الموقع بعد التغييرات قبولاً للشروط المحدثة.</target>
+      </trans-unit>
+      <trans-unit id="tosSection7Title" datatype="html">
+        <source>7. Termination</source>
+        <target>7. الإنهاء</target>
+      </trans-unit>
+      <trans-unit id="tosSection7Content" datatype="html">
+        <source>The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason.</source>
+        <target>يحتفظ المشغل بالحق في تعليق أو إنهاء الوصول إلى الموقع وفقًا لتقدير المشغل، دون إشعار، لأي سبب من الأسباب.</target>
+      </trans-unit>
+      <trans-unit id="tosSection8Title" datatype="html">
+        <source>8. Governing Law</source>
+        <target>8. القانون الحاكم</target>
+      </trans-unit>
+      <trans-unit id="tosSection8Content" datatype="html">
+        <source>These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual)', without regard to conflict of law principles.</source>
+        <target>تخضع هذه الشروط لقوانين الولاية القضائية التي يقع فيها مقر المشغل (في حالة المنظمة) أو يقيم فيها (في حالة الفرد)، بغض النظر عن مبادئ تنازع القوانين.</target>
+      </trans-unit>
+      <trans-unit id="tosContactInfo" datatype="html">
+        <source>If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the "About" page.</source>
+        <target>إذا كانت لديك أي أسئلة حول هذه الشروط، فلا تتردد في الاتصال بمشغل هذا الموقع عبر معلومات الاتصال الموجودة على صفحة "حول".</target>
+      </trans-unit>
+      <trans-unit id="privacyTitle" datatype="html">
+        <source>Privacy Policy</source>
+        <target>سياسة الخصوصية</target>
+      </trans-unit>
+      <trans-unit id="privacyLastUpdated" datatype="html">
+        <source>Last updated: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></source>
+        <target>آخر تحديث: <x id="INTERPOLATION" equiv-text="{{'2025-04-06' | date:'longDate'}}"/></target>
+      </trans-unit>
+      <trans-unit id="privacyIntro1" datatype="html">
+        <source>This web site is an instance of an open-source web application ("TMI") that is made available by the operator listed on the "About" page of this web site ("The Operator").</source>
+        <target>هذا الموقع هو نسخة من تطبيق ويب مفتوح المصدر ("تي إم آي") الذي يتم توفيره بواسطة المشغل المدرج في صفحة "حول" هذا الموقع ("المشغل").</target>
+      </trans-unit>
+      <trans-unit id="privacyIntro2" datatype="html">
+        <source>The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.</source>
+        <target>يلتزم المشغل بحماية خصوصيتك. توضح سياسة الخصوصية هذه كيفية التعامل مع معلوماتك.</target>
+      </trans-unit>
+      <trans-unit id="privacyDataTitle" datatype="html">
+        <source>No Data Collection or Storage</source>
+        <target>لا جمع للبيانات أو تخزينها</target>
+      </trans-unit>
+      <trans-unit id="privacyDataContent" datatype="html">
+        <source>The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.</source>
+        <target>لا يقوم المشغل بجمع أو تخزين أو معالجة أي بيانات شخصية من المستخدمين. لا يتتبع المشغل أنشطتك، ولا يخزن معلوماتك، ولا يشارك أي بيانات عنك مع أطراف ثالثة لأي غرض كان.</target>
+      </trans-unit>
+      <trans-unit id="privacyComplianceTitle" datatype="html">
+        <source>Legal Compliance</source>
+        <target>الامتثال القانوني</target>
+      </trans-unit>
+      <trans-unit id="privacyComplianceContent" datatype="html">
+        <source>The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.</source>
+        <target>لن يكشف المشغل عن المعلومات إلا إذا كان مطلوبًا منه القيام بذلك بموجب القانون، مثل الاستجابة لأمر حكومي صالح أو استدعاء. في مثل هذه الحالات، سيمتثل المشغل للالتزامات القانونية المعمول بها.</target>
+      </trans-unit>
+      <trans-unit id="privacyChangesTitle" datatype="html">
+        <source>Changes to This Policy</source>
+        <target>التغييرات في هذه السياسة</target>
+      </trans-unit>
+      <trans-unit id="privacyChangesContent" datatype="html">
+        <source>The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated "Last Updated" date.</source>
+        <target>قد يقوم المشغل بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة مع تاريخ "آخر تحديث" محدث.</target>
+      </trans-unit>
+      <trans-unit id="privacyContactTitle" datatype="html">
+        <source>Contact Us</source>
+        <target>اتصل بنا</target>
+      </trans-unit>
+      <trans-unit id="privacyContactContent" datatype="html">
+        <source>If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the "About" page.</source>
+        <target>إذا كانت لديك أي أسئلة حول سياسة الخصوصية هذه، فلا تتردد في الاتصال بمشغل هذا الموقع عبر معلومات الاتصال الموجودة على صفحة "حول".</target>
+      </trans-unit>
+      <trans-unit id="aboutTitle" datatype="html">
+        <source>About TMI</source>
+        <target>حول تي إم آي</target>
+      </trans-unit>
+      <trans-unit id="aboutDescription1" datatype="html">
+        <source>TMI (Threat Modeling Interface) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.</source>
+        <target>تي إم آي (واجهة نمذجة التهديدات) هي منصة تعاونية لإنشاء وإدارة ومشاركة نماذج التهديدات. مهمتنا هي جعل نمذجة تهديدات الأمان سهلة الوصول وفعالة ومتكاملة في دورة حياة تطوير البرمجيات.</target>
+      </trans-unit>
+      <trans-unit id="aboutDescription2" datatype="html">
+        <source>The platform features interactive diagram creation, real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling.</source>
+        <target>تتميز المنصة بإنشاء مخططات تفاعلية، وتعاون في الوقت الفعلي، وقدرات شاملة لتوثيق التهديدات. تم بناؤها باستخدام تقنيات الويب الحديثة، وتساعد تي إم آي الفرق على تحديد وتحليل وتخفيف التهديدات الأمنية من خلال النمذجة التعاونية.</target>
+      </trans-unit>
+      <trans-unit id="diagramsPageTitle" datatype="html">
+        <source>My Diagrams</source>
+        <target>مخططاتي</target>
+      </trans-unit>
+      <trans-unit id="newDiagramButton" datatype="html">
+        <source>New Diagram</source>
+        <target>مخطط جديد</target>
+      </trans-unit>
+      <trans-unit id="lastModified" datatype="html">
+        <source>Last modified: <x id="INTERPOLATION" equiv-text="{{diagram.modifiedAt | date:'short'}}"/></source>
+        <target>آخر تعديل: <x id="INTERPOLATION" equiv-text="{{diagram.modifiedAt | date:'short'}}"/></target>
+      </trans-unit>
+      <trans-unit id="noDiagramsMessage" datatype="html">
+        <source>You don't have any diagrams yet.</source>
+        <target>ليس لديك أي مخططات حتى الآن.</target>
+      </trans-unit>
+      <trans-unit id="createFirstDiagramButton" datatype="html">
+        <source>Create your first diagram</source>
+        <target>أنشئ مخططك الأول</target>
+      </trans-unit>
+      <trans-unit id="saveButton" datatype="html">
+        <source>Save</source>
+        <target>حفظ</target>
+      </trans-unit>
+      <trans-unit id="backToDiagramsButton" datatype="html">
+        <source>Back to Diagrams</source>
+        <target>العودة إلى المخططات</target>
+      </trans-unit>
+      <trans-unit id="placeholderEditorText" datatype="html">
+        <source>Diagram editor placeholder (ID: <x id="INTERPOLATION" equiv-text="{{diagramId}}"/>)</source>
+        <target>مكان محرر المخطط (المعرف: <x id="INTERPOLATION" equiv-text="{{diagramId}}"/>)</target>
+      </trans-unit>
+      <trans-unit id="maxGraphIntegrationNote" datatype="html">
+        <source>MaxGraph will be integrated here</source>
+        <target>سيتم دمج MaxGraph هنا</target>
+      </trans-unit>
+      <trans-unit id="propertiesTitle" datatype="html">
+        <source>Properties</source>
+        <target>الخصائص</target>
+      </trans-unit>
+      <trans-unit id="propertiesHelp" datatype="html">
+        <source>Element properties will appear here when an element is selected.</source>
+        <target>ستظهر خصائص العنصر هنا عند تحديد عنصر.</target>
+      </trans-unit>
+      <trans-unit id="paletteTitle" datatype="html">
+        <source>Palette</source>
+        <target>لوحة الألوان</target>
+      </trans-unit>
+      <trans-unit id="paletteItemServer" datatype="html">
+        <source>Server</source>
+        <target>خادم</target>
+      </trans-unit>
+      <trans-unit id="paletteItemDatabase" datatype="html">
+        <source>Database</source>
+        <target>قاعدة بيانات</target>
+      </trans-unit>
+      <trans-unit id="paletteItemUser" datatype="html">
+        <source>User</source>
+        <target>مستخدم</target>
+      </trans-unit>
+      <trans-unit id="paletteItemConnection" datatype="html">
+        <source>Connection</source>
+        <target>اتصال</target>
       </trans-unit>
     </body>
   </file>
