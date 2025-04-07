@@ -6,11 +6,11 @@
     <div class="editor-actions">
       <button mat-raised-button color="primary" (click)="saveDiagram()">
         <mat-icon>save</mat-icon>
-        Save
+        <span i18n="@@saveButton"></span>
       </button>
       <button mat-button [routerLink]="['/diagram-management']">
         <mat-icon>arrow_back</mat-icon>
-        Back to Diagrams
+        <span i18n="@@backToDiagramsButton"></span>
       </button>
     </div>
   </div>
@@ -19,31 +19,31 @@
     <div class="editor-canvas">
       <!-- This will be replaced with maxGraph diagram editor -->
       <div class="placeholder-editor">
-        <p>Diagram editor placeholder (ID: {{diagramId}})</p>
-        <p class="small-note">MaxGraph will be integrated here</p>
+        <p i18n="@@placeholderEditorText"></p>
+        <p class="small-note" i18n="@@maxGraphIntegrationNote"></p>
       </div>
     </div>
 
     <div class="editor-sidebar">
       <mat-card>
         <mat-card-header>
-          <mat-card-title>Properties</mat-card-title>
+          <mat-card-title i18n="@@propertiesTitle"></mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p>Element properties will appear here when an element is selected.</p>
+          <p i18n="@@propertiesHelp"></p>
         </mat-card-content>
       </mat-card>
 
       <mat-card>
         <mat-card-header>
-          <mat-card-title>Palette</mat-card-title>
+          <mat-card-title i18n="@@paletteTitle"></mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="palette-items">
-            <div class="palette-item">Server</div>
-            <div class="palette-item">Database</div>
-            <div class="palette-item">User</div>
-            <div class="palette-item">Connection</div>
+            <div class="palette-item" i18n="@@paletteItemServer"></div>
+            <div class="palette-item" i18n="@@paletteItemDatabase"></div>
+            <div class="palette-item" i18n="@@paletteItemUser"></div>
+            <div class="palette-item" i18n="@@paletteItemConnection"></div>
           </div>
         </mat-card-content>
       </mat-card>

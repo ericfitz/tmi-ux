@@ -1,9 +1,9 @@
 <div class="diagram-management-container">
   <div class="header-row">
-    <h1 class="page-title">My Diagrams</h1>
+    <h1 class="page-title" i18n="@@diagramsPageTitle"></h1>
     <button mat-raised-button color="primary" (click)="createDiagram()">
       <mat-icon>add</mat-icon>
-      New Diagram
+      <span i18n="@@newDiagramButton"></span>
     </button>
   </div>
 
@@ -16,7 +16,7 @@
           <mat-icon class="diagram-icon">account_tree</mat-icon>
           <div class="diagram-details">
             <h3 class="diagram-title">{{diagram.name}}</h3>
-            <p class="diagram-date">Last modified: {{diagram.modifiedAt | date:'short'}}</p>
+            <p class="diagram-date" i18n="@@lastModified"></p>
           </div>
         </div>
         <button mat-icon-button color="warn" 
@@ -29,9 +29,9 @@
 
     <div *ngIf="diagrams.length === 0" class="no-diagrams">
       <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
-      <p>You don't have any diagrams yet.</p>
+      <p i18n="@@noDiagramsMessage"></p>
       <button mat-raised-button color="primary" (click)="createDiagram()">
-        Create your first diagram
+        <span i18n="@@createFirstDiagramButton"></span>
       </button>
     </div>
   </div>
