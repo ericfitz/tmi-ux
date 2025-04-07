@@ -10,10 +10,13 @@ import { MatIconModule } from '@angular/material/icon';
 // Services
 import { AuthService } from '../../auth/services/auth.service';
 
+// Transloco
+import { TranslocoModule } from '@jsverse/transloco';
+
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

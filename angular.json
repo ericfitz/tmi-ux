@@ -3,22 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "tmi-app": {
-      "i18n": {
-        "sourceLocale": "en-US",
-        "locales": {
-          "de": {
-            "translation": "src/locale/messages.de.xlf"
-          },
-          "zh": {
-            "translation": "src/locale/messages.zh.xlf"
-          },
-          "ar": {
-            "translation": "src/locale/messages.ar.xlf",
-            "baseHref": ""
-          }
-        }
-      },
+    "tmi-ux": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -32,12 +17,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/tmi-app",
+            "outputPath": "dist/tmi-ux",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js",
-              "@angular/localize/init"
+              "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -45,6 +29,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": [
@@ -98,15 +87,6 @@
               ],
               "optimization": false,
               "sourceMap": true
-            },
-            "de": {
-              "localize": ["de"]
-            },
-            "zh": {
-              "localize": ["zh"]
-            },
-            "ar": {
-              "localize": ["ar"]
             }
           },
           "defaultConfiguration": "production"
@@ -115,34 +95,26 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "tmi-app:build:production"
+              "buildTarget": "tmi-ux:build:production"
             },
             "development": {
-              "buildTarget": "tmi-app:build:development"
+              "buildTarget": "tmi-ux:build:development"
             },
             "staging": {
-              "buildTarget": "tmi-app:build:staging"
+              "buildTarget": "tmi-ux:build:staging"
             },
             "test": {
-              "buildTarget": "tmi-app:build:test"
+              "buildTarget": "tmi-ux:build:test"
             }
           },
           "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "outputPath": "src/locale",
-            "outFile": "messages.xlf"
-          }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing",
-              "@angular/localize/init"
+              "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
@@ -150,6 +122,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": [

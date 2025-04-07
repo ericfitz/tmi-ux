@@ -3,11 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../shared/material/material.module';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-diagram-editor',
   standalone: true,
-  imports: [CommonModule, SharedModule, MaterialModule],
+  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule],
   templateUrl: './diagram-editor.component.html',
   styleUrl: './diagram-editor.component.scss'
 })

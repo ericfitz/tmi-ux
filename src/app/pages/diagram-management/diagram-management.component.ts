@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../shared/material/material.module';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-diagram-management',
   standalone: true,
-  imports: [CommonModule, SharedModule, MaterialModule],
+  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule],
   templateUrl: './diagram-management.component.html',
   styleUrl: './diagram-management.component.scss'
 })

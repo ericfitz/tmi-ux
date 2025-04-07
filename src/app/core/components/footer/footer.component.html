@@ -1,10 +1,10 @@
 <footer class="footer">
   <div class="footer-content">
-    <span i18n="@@footerCopyright">© {{currentYear}} TMI: Threat Modeling Improved</span>
+    <span [transloco]="'footer.copyright'" [translocoParams]="{ currentYear: currentYear }">© {{currentYear}} TMI: Threat Modeling Improved</span>
     <div class="footer-links">
-      <a routerLink="/about" i18n="@@footerAbout">About</a>
-      <a routerLink="/privacy" i18n="@@footerPrivacy">Privacy Policy</a>
-      <a routerLink="/tos" i18n="@@footerTos">Terms of Service</a>
+      <a routerLink="/about" [transloco]="'footer.about'">About</a>
+      <a routerLink="/privacy" [transloco]="'footer.privacy'">Privacy Policy</a>
+      <a routerLink="/tos" [transloco]="'footer.tos'">Terms of Service</a>
     </div>
   </div>
 </footer>

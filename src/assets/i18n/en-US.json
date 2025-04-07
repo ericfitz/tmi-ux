@@ -1,0 +1,99 @@
+{
+  "navbar": {
+    "appTitle": "TMI: Threat Modeling Improved",
+    "logoutButton": "Logout",
+    "diagramsButton": "Diagrams"
+  },
+  "footer": {
+    "copyright": "© {{currentYear}} TMI: Threat Modeling Improved",
+    "about": "About",
+    "privacy": "Privacy Policy",
+    "tos": "Terms of Service"
+  },
+  "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
+  "loginButton": "Login to Start",
+  "tos": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: {{date}}",
+    "intro": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
+    "section1": {
+      "title": "1. Acceptance of Terms",
+      "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site."
+    },
+    "section2": {
+      "title": "2. Use of the Website",
+      "content": "This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems."
+    },
+    "section3": {
+      "title": "3. No Warranty",
+      "content": "The website is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation."
+    },
+    "section4": {
+      "title": "4. Limitation of Liability",
+      "content": "To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website."
+    },
+    "section5": {
+      "title": "5. Open Source Software",
+      "content": "This website runs the TMI software, and its source code is available at the link provided on the \"About\" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
+    },
+    "section6": {
+      "title": "6. Changes to Terms",
+      "content": "The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms."
+    },
+    "section7": {
+      "title": "7. Termination",
+      "content": "The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason."
+    },
+    "section8": {
+      "title": "8. Governing Law",
+      "content": "These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual), without regard to conflict of law principles."
+    },
+    "contactInfo": "If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the \"About\" page."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: {{date}}",
+    "intro1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
+    "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
+    "dataTitle": "No Data Collection or Storage",
+    "dataContent": "The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.",
+    "complianceTitle": "Legal Compliance",
+    "complianceContent": "The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
+    "changesTitle": "Changes to This Policy",
+    "changesContent": "The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
+    "contactTitle": "Contact Us",
+    "contactContent": "If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the \"About\" page."
+  },
+  "about": {
+    "title": "About TMI",
+    "description1": "TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.",
+    "description2": "The platform features interactive diagram creation, real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling."
+  },
+  "diagrams": {
+    "pageTitle": "My Diagrams",
+    "newButton": "New Diagram",
+    "lastModified": "Last modified: {{date}}",
+    "noItemsMessage": "You don't have any diagrams yet.",
+    "createFirstButton": "Create your first diagram"
+  },
+  "editor": {
+    "saveButton": "Save",
+    "backButton": "Back to Diagrams",
+    "placeholder": "Diagram editor placeholder (ID: {{id}})",
+    "integrationNote": "MaxGraph will be integrated here",
+    "properties": {
+      "title": "Properties",
+      "help": "Element properties will appear here when an element is selected."
+    },
+    "palette": {
+      "title": "Palette",
+      "items": {
+        "server": "Server",
+        "database": "Database",
+        "user": "User",
+        "connection": "Connection"
+      }
+    }
+  }
+}

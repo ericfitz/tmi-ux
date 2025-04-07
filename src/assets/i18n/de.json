@@ -1,0 +1,99 @@
+{
+  "navbar": {
+    "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
+    "logoutButton": "Abmelden",
+    "diagramsButton": "Diagramme"
+  },
+  "footer": {
+    "copyright": "© {{currentYear}} TMI: Verbesserte Bedrohungsmodellierung",
+    "about": "Über",
+    "privacy": "Datenschutzrichtlinie",
+    "tos": "Nutzungsbedingungen"
+  },
+  "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
+  "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
+  "loginButton": "Anmelden zum Starten",
+  "tos": {
+    "title": "Nutzungsbedingungen",
+    "lastUpdated": "Zuletzt aktualisiert: {{date}}",
+    "intro": "Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der \"Über\"-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird.",
+    "section1": {
+      "title": "1. Annahme der Bedingungen",
+      "content": "Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich damit einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie diese Website bitte nicht."
+    },
+    "section2": {
+      "title": "2. Nutzung der Website",
+      "content": "Diese Website wird im Ist-Zustand bereitgestellt und verwendet TMI, eine Open-Source-Software, die unter der Apache 2.0-Lizenz lizenziert ist. Sie dürfen die Website nur für rechtmäßige Zwecke nutzen. Sie verpflichten sich, die Website oder ihre zugrunde liegenden Systeme nicht zu missbrauchen, zu stören oder zu versuchen, unbefugten Zugriff darauf zu erlangen."
+    },
+    "section3": {
+      "title": "3. Keine Garantie",
+      "content": "Die Website wird \"wie sie ist\" ohne jegliche Garantien, ausdrücklich oder implizit, einschließlich, aber nicht beschränkt auf Eignung für einen bestimmten Zweck, Verfügbarkeit oder Genauigkeit bereitgestellt. Wir garantieren keinen unterbrechungsfreien oder fehlerfreien Betrieb."
+    },
+    "section4": {
+      "title": "4. Haftungsbeschränkung",
+      "content": "Im maximal gesetzlich zulässigen Umfang haftet der Betreiber nicht für direkte, indirekte, zufällige oder Folgeschäden, die aus Ihrer Nutzung oder Unmöglichkeit der Nutzung der Website entstehen."
+    },
+    "section5": {
+      "title": "5. Open-Source-Software",
+      "content": "Diese Website verwendet die TMI-Software, und ihr Quellcode ist über den auf der \"Über\"-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Der Betreiber dieser Website ist möglicherweise nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden."
+    },
+    "section6": {
+      "title": "6. Änderungen der Bedingungen",
+      "content": "Der Betreiber kann diese Bedingungen jederzeit aktualisieren. Die fortgesetzte Nutzung der Website nach Änderungen stellt die Annahme der aktualisierten Bedingungen dar."
+    },
+    "section7": {
+      "title": "7. Kündigung",
+      "content": "Der Betreiber behält sich das Recht vor, den Zugang zur Website nach eigenem Ermessen des Betreibers ohne Vorankündigung und aus beliebigem Grund auszusetzen oder zu beenden."
+    },
+    "section8": {
+      "title": "8. Geltendes Recht",
+      "content": "Diese Bedingungen unterliegen den Gesetzen der Rechtsordnung, in der der Betreiber seinen Hauptsitz hat (im Falle einer Organisation) oder wohnt (im Falle einer Einzelperson), ungeachtet der Grundsätze des Kollisionsrechts."
+    },
+    "contactInfo": "Wenn Sie Fragen zu diesen Bedingungen haben, können Sie sich gerne über die Kontaktinformationen auf der \"Über\"-Seite an den Betreiber dieser Website wenden."
+  },
+  "privacy": {
+    "title": "Datenschutzrichtlinie",
+    "lastUpdated": "Zuletzt aktualisiert: {{date}}",
+    "intro1": "Diese Website ist eine Instanz einer Open-Source-Webanwendung (\"TMI\"), die vom auf der \"Über\"-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird.",
+    "intro2": "Der Betreiber verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",
+    "dataTitle": "Keine Datenerfassung oder -speicherung",
+    "dataContent": "Der Betreiber sammelt, speichert oder verarbeitet keine personenbezogenen Daten von Benutzern. Der Betreiber verfolgt nicht Ihre Aktivitäten, speichert Ihre Informationen nicht und teilt keine Daten über Sie mit Dritten für irgendeinen Zweck.",
+    "complianceTitle": "Gesetzliche Konformität",
+    "complianceContent": "Der Betreiber wird Informationen nur dann offenlegen, wenn er gesetzlich dazu verpflichtet ist, z.B. als Reaktion auf eine gültige behördliche Anordnung oder Vorladung. In solchen Fällen wird der Betreiber die geltenden gesetzlichen Verpflichtungen einhalten.",
+    "changesTitle": "Änderungen an dieser Richtlinie",
+    "changesContent": "Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
+    "contactTitle": "Kontaktiere uns",
+    "contactContent": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der \"Über\"-Seite an den Betreiber dieser Website."
+  },
+  "about": {
+    "title": "Über TMI",
+    "description1": "TMI (Threat Modeling Interface) ist eine kollaborative Plattform für die Erstellung, Verwaltung und gemeinsame Nutzung von Bedrohungsmodellen. Unsere Mission ist es, die Modellierung von Sicherheitsbedrohungen zugänglich, effizient und in den Software-Entwicklungslebenszyklus integriert zu gestalten.",
+    "description2": "Die Plattform bietet interaktive Diagrammerstellung, Echtzeit-Zusammenarbeit und umfassende Funktionen zur Dokumentation von Bedrohungen. TMI wurde mit modernen Webtechnologien entwickelt und hilft Teams, Sicherheitsbedrohungen durch kollaborative Modellierung zu identifizieren, zu analysieren und zu mindern."
+  },
+  "diagrams": {
+    "pageTitle": "Meine Diagramme",
+    "newButton": "Neues Diagramm",
+    "lastModified": "Zuletzt geändert: {{date}}",
+    "noItemsMessage": "Sie haben noch keine Diagramme.",
+    "createFirstButton": "Erstellen Sie Ihr erstes Diagramm"
+  },
+  "editor": {
+    "saveButton": "Speichern",
+    "backButton": "Zurück zu Diagrammen",
+    "placeholder": "Diagramm-Editor-Platzhalter (ID: {{id}})",
+    "integrationNote": "MaxGraph wird hier integriert",
+    "properties": {
+      "title": "Eigenschaften",
+      "help": "Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist."
+    },
+    "palette": {
+      "title": "Palette",
+      "items": {
+        "server": "Server",
+        "database": "Datenbank",
+        "user": "Benutzer",
+        "connection": "Verbindung"
+      }
+    }
+  }
+}

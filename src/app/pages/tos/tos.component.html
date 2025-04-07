@@ -1,37 +1,37 @@
 <div class="page-container">
   <div class="title-row">
-    <h1 class="page-title" i18n="@@tosTitle">Terms of Service</h1>
+    <h1 class="page-title" [transloco]="'tos.title'">Terms of Service</h1>
   </div>
   
   <div class="content-row">
-    <p class="update-date" i18n="@@tosLastUpdated">Last updated: {{'2025-04-06' | date:'longDate'}}</p>
+    <p class="update-date" [transloco]="'tos.lastUpdated'" [translocoParams]="{date: '2025-04-06' | date:'longDate'}">Last updated: {{'2025-04-06' | date:'longDate'}}</p>
     
-    <p class="page-content" i18n="@@tosIntro">Welcome to our instance of TMI. These Terms of Use ("Terms") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the "About" page of this web site ("The Operator").</p>
+    <p class="page-content" [transloco]="'tos.intro'">Welcome to our instance of TMI. These Terms of Use ("Terms") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the "About" page of this web site ("The Operator").</p>
     
-    <h2 i18n="@@tosSection1Title">1. Acceptance of Terms</h2>
-    <p class="page-content" i18n="@@tosSection1Content">By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.</p>
+    <h2 [transloco]="'tos.section1.title'">1. Acceptance of Terms</h2>
+    <p class="page-content" [transloco]="'tos.section1.content'">By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.</p>
     
-    <h2 i18n="@@tosSection2Title">2. Use of the Website</h2>
-    <p class="page-content" i18n="@@tosSection2Content">This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems.</p>
+    <h2 [transloco]="'tos.section2.title'">2. Use of the Website</h2>
+    <p class="page-content" [transloco]="'tos.section2.content'">This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems.</p>
     
-    <h2 i18n="@@tosSection3Title">3. No Warranty</h2>
-    <p class="page-content" i18n="@@tosSection3Content">The website is provided "as is" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.</p>
+    <h2 [transloco]="'tos.section3.title'">3. No Warranty</h2>
+    <p class="page-content" [transloco]="'tos.section3.content'">The website is provided "as is" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.</p>
     
-    <h2 i18n="@@tosSection4Title">4. Limitation of Liability</h2>
-    <p class="page-content" i18n="@@tosSection4Content">To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.</p>
+    <h2 [transloco]="'tos.section4.title'">4. Limitation of Liability</h2>
+    <p class="page-content" [transloco]="'tos.section4.content'">To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.</p>
     
-    <h2 i18n="@@tosSection5Title">5. Open Source Software</h2>
-    <p class="page-content" i18n="@@tosSection5Content">This website runs the TMI software, and its source code is available at the link provided on the "About" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators.</p>
+    <h2 [transloco]="'tos.section5.title'">5. Open Source Software</h2>
+    <p class="page-content" [transloco]="'tos.section5.content'">This website runs the TMI software, and its source code is available at the link provided on the "About" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators.</p>
     
-    <h2 i18n="@@tosSection6Title">6. Changes to Terms</h2>
-    <p class="page-content" i18n="@@tosSection6Content">The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms.</p>
+    <h2 [transloco]="'tos.section6.title'">6. Changes to Terms</h2>
+    <p class="page-content" [transloco]="'tos.section6.content'">The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms.</p>
     
-    <h2 i18n="@@tosSection7Title">7. Termination</h2>
-    <p class="page-content" i18n="@@tosSection7Content">The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason.</p>
+    <h2 [transloco]="'tos.section7.title'">7. Termination</h2>
+    <p class="page-content" [transloco]="'tos.section7.content'">The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason.</p>
     
-    <h2 i18n="@@tosSection8Title">8. Governing Law</h2>
-    <p class="page-content" i18n="@@tosSection8Content">These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual)', without regard to conflict of law principles.</p>
+    <h2 [transloco]="'tos.section8.title'">8. Governing Law</h2>
+    <p class="page-content" [transloco]="'tos.section8.content'">These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual)', without regard to conflict of law principles.</p>
     
-    <p class="page-content contact-info" i18n="@@tosContactInfo">If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the "About" page.</p>
+    <p class="page-content contact-info" [transloco]="'tos.contactInfo'">If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the "About" page.</p>
   </div>
 </div>

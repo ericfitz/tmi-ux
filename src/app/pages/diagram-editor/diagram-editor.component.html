@@ -6,11 +6,11 @@
     <div class="editor-actions">
       <button mat-raised-button color="primary" (click)="saveDiagram()">
         <mat-icon>save</mat-icon>
-        <span i18n="@@saveButton"></span>
+        <span [transloco]="'editor.saveButton'">Save</span>
       </button>
       <button mat-button [routerLink]="['/diagram-management']">
         <mat-icon>arrow_back</mat-icon>
-        <span i18n="@@backToDiagramsButton"></span>
+        <span [transloco]="'editor.backButton'">Back to Diagrams</span>
       </button>
     </div>
   </div>
@@ -19,31 +19,31 @@
     <div class="editor-canvas">
       <!-- This will be replaced with maxGraph diagram editor -->
       <div class="placeholder-editor">
-        <p i18n="@@placeholderEditorText"></p>
-        <p class="small-note" i18n="@@maxGraphIntegrationNote"></p>
+        <p [transloco]="'editor.placeholder'" [translocoParams]="{id: diagramId}">Diagram editor placeholder (ID: {{diagramId}})</p>
+        <p class="small-note" [transloco]="'editor.integrationNote'">MaxGraph will be integrated here</p>
       </div>
     </div>
 
     <div class="editor-sidebar">
       <mat-card>
         <mat-card-header>
-          <mat-card-title i18n="@@propertiesTitle"></mat-card-title>
+          <mat-card-title [transloco]="'editor.properties.title'">Properties</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p i18n="@@propertiesHelp"></p>
+          <p [transloco]="'editor.properties.help'">Element properties will appear here when an element is selected.</p>
         </mat-card-content>
       </mat-card>
 
       <mat-card>
         <mat-card-header>
-          <mat-card-title i18n="@@paletteTitle"></mat-card-title>
+          <mat-card-title [transloco]="'editor.palette.title'">Palette</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="palette-items">
-            <div class="palette-item" i18n="@@paletteItemServer"></div>
-            <div class="palette-item" i18n="@@paletteItemDatabase"></div>
-            <div class="palette-item" i18n="@@paletteItemUser"></div>
-            <div class="palette-item" i18n="@@paletteItemConnection"></div>
+            <div class="palette-item" [transloco]="'editor.palette.items.server'">Server</div>
+            <div class="palette-item" [transloco]="'editor.palette.items.database'">Database</div>
+            <div class="palette-item" [transloco]="'editor.palette.items.user'">User</div>
+            <div class="palette-item" [transloco]="'editor.palette.items.connection'">Connection</div>
           </div>
         </mat-card-content>
       </mat-card>
