@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use '@angular/material' as mat;
+@include mat.core();
+
+// Define the cyan theme
+$primary: mat.$cyan-palette;
+$accent: mat.$teal-palette;
+$warn: mat.$red-palette;
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  ),
+  typography: mat.define-typography-config(
+    $font-family: 'Roboto, "Helvetica Neue", sans-serif'
+  ),
+  density: 0,
+));
+
+// Apply the theme
+@include mat.all-component-themes($theme);
+
+// Global styles
+html, body { 
+  height: 100%; 
+  margin: 0;
+}
+
+body { 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  display: flex;
+  flex-direction: column;
+}
+
+// RTL support for Arabic
+html[dir="rtl"] {
+  body, .mat-typography {
+    text-align: right;
+  }
+}
+
+.content-container {
+  padding: 16px;
+  flex: 1;
+}
+
+.page-title {
+  margin-bottom: 16px;
+  color: mat.get-color-from-palette($primary, 700);
+  font-weight: 500;
+}
+
+.page-content {
+  margin-bottom: 24px;
+}
+
+// Common card styles
+.mat-card {
+  margin-bottom: 16px;
+}

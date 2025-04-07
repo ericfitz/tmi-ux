@@ -1,0 +1,38 @@
+<div class="diagram-management-container">
+  <div class="header-row">
+    <h1 class="page-title">My Diagrams</h1>
+    <button mat-raised-button color="primary" (click)="createDiagram()">
+      <mat-icon>add</mat-icon>
+      New Diagram
+    </button>
+  </div>
+
+  <div class="diagrams-list">
+    <mat-card *ngFor="let diagram of diagrams" 
+              class="diagram-card" 
+              (click)="openDiagram(diagram.id)">
+      <mat-card-content>
+        <div class="diagram-info">
+          <mat-icon class="diagram-icon">account_tree</mat-icon>
+          <div class="diagram-details">
+            <h3 class="diagram-title">{{diagram.name}}</h3>
+            <p class="diagram-date">Last modified: {{diagram.modifiedAt | date:'short'}}</p>
+          </div>
+        </div>
+        <button mat-icon-button color="warn" 
+                class="delete-button" 
+                (click)="deleteDiagram(diagram.id, $event)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="diagrams.length === 0" class="no-diagrams">
+      <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
+      <p>You don't have any diagrams yet.</p>
+      <button mat-raised-button color="primary" (click)="createDiagram()">
+        Create your first diagram
+      </button>
+    </div>
+  </div>
+</div>

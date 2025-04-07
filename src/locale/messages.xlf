@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <!-- Common UI text -->
+      <trans-unit id="navbar.home" datatype="html">
+        <source>Home</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/components/navbar/navbar.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navbar.about" datatype="html">
+        <source>About</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/components/navbar/navbar.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navbar.privacy" datatype="html">
+        <source>Privacy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/components/navbar/navbar.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navbar.tos" datatype="html">
+        <source>Terms</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/components/navbar/navbar.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navbar.logout" datatype="html">
+        <source>Logout</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/components/navbar/navbar.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.login" datatype="html">
+        <source>Login to Start</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.component.html</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

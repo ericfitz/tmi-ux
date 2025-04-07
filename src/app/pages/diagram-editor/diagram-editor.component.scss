@@ -1,0 +1,96 @@
+.diagram-editor-container {
+  height: calc(100vh - 144px); // Adjust based on navbar and footer height
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.editor-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.editor-canvas {
+  flex: 1;
+  overflow: auto;
+  background-color: #fafafa;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.editor-sidebar {
+  width: 300px;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Temporary placeholder styles
+.placeholder-editor {
+  width: 80%;
+  height: 80%;
+  border: 2px dashed #0097a7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #0097a7;
+  background-color: rgba(0, 151, 167, 0.05);
+}
+
+.small-note {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+// Palette items
+.palette-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.palette-item {
+  padding: 12px 8px;
+  text-align: center;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: grab;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #e3f2fd;
+    border-color: #0097a7;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// RTL support
+:host-context([dir="rtl"]) {
+  .editor-sidebar {
+    border-left: 1px solid #e0e0e0;
+    border-right: none;
+  }
+}

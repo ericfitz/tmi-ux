@@ -1,0 +1,93 @@
+.diagram-management-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.diagrams-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.diagram-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+mat-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diagram-info {
+  display: flex;
+  align-items: center;
+}
+
+.diagram-icon {
+  margin-right: 16px;
+  color: #0097a7; // Cyan 700
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+}
+
+.diagram-title {
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.diagram-date {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.delete-button {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.no-diagrams {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 0;
+  color: rgba(0, 0, 0, 0.6);
+
+  .empty-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin-bottom: 16px;
+  }
+}
+
+// RTL support
+:host-context([dir="rtl"]) {
+  .diagram-icon {
+    margin-right: 0;
+    margin-left: 16px;
+  }
+}

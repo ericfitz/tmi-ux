@@ -1,0 +1,34 @@
+.navbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-left, .navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.app-title {
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.username {
+  margin-right: 16px;
+  font-weight: 400;
+}
+
+// RTL adjustments
+:host-context([dir="rtl"]) {
+  .app-title {
+    margin-left: 0;
+    margin-right: 8px;
+  }
+  
+  .username {
+    margin-right: 0;
+    margin-left: 16px;
+  }
+}
