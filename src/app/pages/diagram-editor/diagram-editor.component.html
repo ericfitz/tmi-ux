@@ -1,7 +1,7 @@
 <div class="diagram-editor-container">
   <div class="editor-header">
     <div class="editor-title">
-      <h2>{{ diagramTitle }}</h2>
+      <h2 [transloco]="'editor.diagramTitle'" [translocoParams]="{ title: diagramTitle }">{{ diagramTitle }}</h2>
     </div>
     <div class="editor-actions">
       <button mat-raised-button color="primary" (click)="saveDiagram()">
@@ -20,10 +20,8 @@
       <!-- This will be replaced with maxGraph diagram editor -->
       <div class="placeholder-editor">
         <p [transloco]="'editor.placeholder'" [translocoParams]="{ id: diagramId }">
-          Diagram editor placeholder (ID: {{ diagramId }})
         </p>
         <p class="small-note" [transloco]="'editor.integrationNote'">
-          MaxGraph will be integrated here
         </p>
       </div>
     </div>

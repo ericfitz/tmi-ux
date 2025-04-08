@@ -9,4 +9,6 @@ export const environment: Environment = {
   logLevel: 'WARNING', // Only show warnings and errors in staging
   apiUrl: 'https://api.staging.example.com/v1',
   authTokenExpiryMinutes: 60,
+  operatorName: 'TMI Operator (Staging)',
+  operatorContact: 'contact@example.com',
 };

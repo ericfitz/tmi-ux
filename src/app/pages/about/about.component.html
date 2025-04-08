@@ -16,4 +16,31 @@
       identify, analyze, and mitigate security threats through collaborative modeling.
     </p>
   </div>
+
+  <div class="contact-title-row">
+    <h1 class="page-title" [transloco]="'about.contacttitle'">Operated By</h1>
+  </div>
+
+  <div class="contact-content-row">
+    <p class="page-content">
+      {{ 'about.contactoperator' | transloco }}<strong>{{ operatorName }}</strong>
+    </p>
+
+    <p class="page-content">
+      {{ 'about.contactoperatordetails' | transloco }}<strong>{{ operatorContact }}</strong>
+    </p>
+  </div>
+  <div class="source-title-row">
+    <h1 class="page-title" [transloco]="'about.sourcetitle'">TMI Source Code</h1>
+  </div>
+
+  <div class="contact-content-row">
+    <p class="page-content">
+      {{ 'about.sourceCode' | transloco: { url: '' } }}<a href="{{ 'about.sourceCodeUrl' | transloco }}" target="_blank" rel="noopener noreferrer">{{ 'about.sourceCodeUrl' | transloco }}</a>
+    </p>
+
+    <p class="page-content">
+      {{ 'about.bugReport' | transloco: { url: '' } }}<a href="{{ 'about.bugReportUrl' | transloco }}" target="_blank" rel="noopener noreferrer">{{ 'about.bugReportUrl' | transloco }}</a>
+    </p>
+  </div>
 </div>

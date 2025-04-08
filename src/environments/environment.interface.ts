@@ -27,4 +27,19 @@ export interface Environment {
    * Default: 60 (1 hour)
    */
   authTokenExpiryMinutes: number;
+  
+  /**
+   * Name of the operator/entity that hosts this instance of TMI
+   * Example: 'Acme Corporation', 'Security Team', 'John Doe'
+   * Default: 'TMI Operator'
+   */
+  operatorName: string;
+  
+  /**
+   * Contact information for the operator of this TMI instance
+   * Can be an email address, URL, or other contact information
+   * Example: 'contact@example.com', 'https://example.com/contact'
+   * Default: 'contact@example.com'
+   */
+  operatorContact: string;
 }

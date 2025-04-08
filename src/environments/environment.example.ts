@@ -67,4 +67,32 @@ export const environment: Environment = {
    * Default: 60
    */
   authTokenExpiryMinutes: 120,
+  
+  /**
+   * Name of the operator/entity that hosts this instance of TMI
+   * This will be displayed on the About page and in other places
+   * that reference the operator of the service
+   *
+   * Examples:
+   * - 'Acme Corporation'
+   * - 'Security Team'
+   * - 'John Doe'
+   *
+   * Default: 'TMI Operator'
+   */
+  operatorName: 'Example Operator',
+  
+  /**
+   * Contact information for the operator of this TMI instance
+   * This will be displayed on the About page and can be an
+   * email address, URL, or other contact information
+   *
+   * Examples:
+   * - 'contact@example.com'
+   * - 'https://example.com/contact'
+   * - '+1 (555) 123-4567'
+   *
+   * Default: 'contact@example.com'
+   */
+  operatorContact: 'contact@example.com',
 };

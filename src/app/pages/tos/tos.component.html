@@ -4,12 +4,8 @@
   </div>
 
   <div class="content-row">
-    <p
-      class="update-date"
-      [transloco]="'tos.lastUpdated'"
-      [translocoParams]="{ date: ('tos.lastUpdatedDate' | transloco) | date: 'longDate' }"
-    >
-      Last updated: {{ ('tos.lastUpdatedDate' | transloco) | date: 'longDate' }}
+    <p class="update-date">
+      {{ 'tos.lastUpdated' | transloco }}<strong>{{ 'tos.lastUpdatedDate' | transloco | date: 'longDate' }}</strong>
     </p>
 
     <p class="page-content" [transloco]="'tos.intro'">

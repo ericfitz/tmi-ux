@@ -2,10 +2,13 @@
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "logoutButton": "Logout",
-    "diagramsButton": "Diagrams"
+    "diagramsButton": "Diagrams",
+    "currentLanguage": "{{language}}",
+    "username": "{{username}}",
+    "languageName": "{{language}}"
   },
   "footer": {
-    "copyright": "© {{currentYear}} TMI: Threat Modeling Improved",
+    "copyright": "© {{currentYear}} Eric Fitzgerald",
     "about": "About",
     "privacy": "Privacy Policy",
     "tos": "Terms of Service"
@@ -16,15 +19,15 @@
   "tos": {
     "title": "Terms of Service",
     "lastUpdatedDate": "2025-04-06",
-    "lastUpdated": "Last updated: {{date}}",
-    "intro": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is an instance of an open-source web application made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
+    "lastUpdated": "Last updated: ",
+    "intro": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
     "section1": {
       "title": "1. Acceptance of Terms",
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site."
     },
     "section2": {
       "title": "2. Use of the Website",
-      "content": "This website is provided as-is, leveraging TMI, an open-source software licensed under the Apache 2.0 License. You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems."
+      "content": "You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems."
     },
     "section3": {
       "title": "3. No Warranty",
@@ -36,7 +39,7 @@
     },
     "section5": {
       "title": "5. Open Source Software",
-      "content": "This website runs the TMI software, and its source code is available at the link provided on the \"About\" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
+      "content": "This website runs the TMI open source software. Its source code is available at the link provided on the \"About\" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
     },
     "section6": {
       "title": "6. Changes to Terms",
@@ -55,7 +58,7 @@
   "privacy": {
     "title": "Privacy Policy",
     "lastUpdatedDate": "2025-04-06",
-    "lastUpdated": "Last updated: {{date}}",
+    "lastUpdated": "Last updated: ",
     "intro1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "dataTitle": "No Data Collection or Storage",
@@ -70,20 +73,30 @@
   "about": {
     "title": "About TMI",
     "description1": "TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.",
-    "description2": "The platform features interactive diagram creation, real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling."
+    "description2": "The platform features interactive diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling.",
+    "contacttitle": "Operated By",
+    "contactoperator": "Operator: ",
+    "contactoperatordetails": "Operator Contact: ",
+    "sourcetitle": "TMI Application",
+    "sourceCode": "Source Code:",
+    "bugReport": "File a Bug:",
+    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "bugReportUrl": "https://github.com/ericfitz/tmi/issues"
   },
   "diagrams": {
     "pageTitle": "My Diagrams",
     "newButton": "New Diagram",
     "lastModified": "Last modified: {{date}}",
     "noItemsMessage": "You don't have any diagrams yet.",
-    "createFirstButton": "Create your first diagram"
+    "createFirstButton": "Create your first diagram",
+    "diagramTitle": "{{name}}"
   },
   "editor": {
     "saveButton": "Save",
     "backButton": "Back to Diagrams",
     "placeholder": "Diagram editor placeholder (ID: {{id}})",
     "integrationNote": "MaxGraph will be integrated here",
+    "diagramTitle": "{{title}}",
     "properties": {
       "title": "Properties",
       "help": "Element properties will appear here when an element is selected."

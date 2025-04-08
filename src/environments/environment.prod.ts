@@ -9,4 +9,6 @@ export const environment: Environment = {
   logLevel: 'ERROR', // Only show errors in production
   apiUrl: 'https://api.example.com/v1',
   authTokenExpiryMinutes: 60,
+  operatorName: 'TMI Operator',
+  operatorContact: 'contact@example.com',
 };
