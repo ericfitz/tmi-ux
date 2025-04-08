@@ -78,8 +78,8 @@
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
     "sourcetitle": "TMI Application",
-    "sourceCode": "Source Code:",
-    "bugReport": "File a Bug:",
+    "sourceCode": "Source Code: ",
+    "bugReport": "File a Bug: ",
     "sourceCodeUrl": "https://github.com/ericfitz/tmi",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues"
   },
