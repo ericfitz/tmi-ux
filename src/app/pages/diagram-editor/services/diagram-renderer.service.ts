@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as mxgraph from '@maxgraph/core';
+import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { DiagramService } from './diagram.service';
@@ -416,10 +417,11 @@ export class DiagramRendererService {
       if (component.type === 'vertex') {
         const { x, y, width, height, label, style } = component.data;
         
-        // Insert the vertex with the component ID as the cell ID
+        // Generate UUID for the cell ID
+        const cellId = uuidv4();
         const vertex = this.graph.insertVertex(
           parent,
-          null, // Let mxGraph generate the ID
+          cellId, // Use UUID for cell ID
           label || '',
           x || 0,
           y || 0,
@@ -429,11 +431,11 @@ export class DiagramRendererService {
         );
         
         // Store the mapping for later batch updating
-        componentIdToCellId.set(component.id, vertex.id);
+        componentIdToCellId.set(component.id, cellId);
         
         // Add to vertices list for debugging
         vertexComponents.push(component);
-        this.logger.debug(`Rendered vertex: component=${component.id}, cell=${vertex.id}`);
+        this.logger.debug(`Rendered vertex: component=${component.id}, cell=${cellId}`);
       } else if (component.type === 'edge') {
         // Collect edges for second pass
         edgeComponents.push(component);
@@ -471,9 +473,11 @@ export class DiagramRendererService {
       const targetCell = this.getCellById(targetCellId);
       
       if (sourceCell && targetCell) {
+        // Generate UUID for the cell ID
+        const cellId = uuidv4();
         const edge = this.graph.insertEdge(
           parent,
-          null, // Let mxGraph generate the ID
+          cellId, // Use UUID for cell ID
           label || '',
           sourceCell,
           targetCell,
@@ -481,9 +485,9 @@ export class DiagramRendererService {
         );
         
         // Store the mapping for later batch updating
-        componentIdToCellId.set(component.id, edge.id);
+        componentIdToCellId.set(component.id, cellId);
         
-        this.logger.debug(`Rendered edge: component=${component.id}, cell=${edge.id}, source=${source}, target=${target}`);
+        this.logger.debug(`Rendered edge: component=${component.id}, cell=${cellId}, source=${source}, target=${target}`);
         edgesRendered++;
       } else {
         this.logger.warn(`Could not create edge ${component.id}: missing source (${source}) or target (${target}) cell`);
@@ -745,9 +749,11 @@ export class DiagramRendererService {
       try {
         // 1. FIRST CREATE THE CELL IN MXGRAPH
         const parent = this.graph.getDefaultParent();
+        // Generate UUID for the cell ID
+        const cellId = uuidv4();
         const vertex = this.graph.insertVertex(
           parent,
-          null, // Let mxGraph generate the ID
+          cellId, // Use UUID instead of letting mxGraph generate the ID
           label || '',
           x || 0,
           y || 0,
@@ -756,8 +762,8 @@ export class DiagramRendererService {
           style
         );
         
-        // Get the generated cell ID
-        const cellId = vertex.id;
+        // Verify the cell ID is what we provided
+        // (mxGraph should have used our UUID)
         this.logger.debug(`Created mxGraph cell with ID: ${cellId}`);
         
         // 2. THEN CREATE THE COMPONENT THAT REFERENCES THE MXGRAPH CELL
@@ -873,10 +879,11 @@ export class DiagramRendererService {
         // 1. FIRST CREATE THE MXGRAPH EDGE
         const parent = this.graph.getDefaultParent();
         
-        // Let mxGraph generate the cell ID
+        // Generate UUID for the cell ID
+        const cellId = uuidv4();
         const edge = this.graph.insertEdge(
           parent,
-          null, // Let mxGraph generate the ID
+          cellId, // Use UUID instead of letting mxGraph generate the ID
           label || '',
           sourceCell,
           targetCell,
@@ -887,8 +894,8 @@ export class DiagramRendererService {
           throw new Error('Edge creation failed: insertEdge returned null or undefined');
         }
         
-        // Get the generated cell ID
-        const cellId = edge.id;
+        // Verify the cell ID is what we provided
+        // (mxGraph should have used our UUID)
         this.logger.debug(`Created mxGraph edge with ID: ${cellId}`);
         
         // 2. THEN CREATE THE COMPONENT THAT REFERENCES THE MXGRAPH EDGE
@@ -1111,10 +1118,11 @@ export class DiagramRendererService {
         // Create the source vertex first
         const parent = this.graph.getDefaultParent();
         
-        // 1. First create the source vertex in mxGraph
+        // 1. First create the source vertex in mxGraph with UUID
+        const sourceCellId = uuidv4();
         const sourceVertex = this.graph.insertVertex(
           parent,
-          null, // Let mxGraph generate the ID
+          sourceCellId, // Use UUID
           'Source',
           sourceX,
           sourceY,
@@ -1122,9 +1130,6 @@ export class DiagramRendererService {
           40,  // height
           'rounded=1;whiteSpace=wrap;html=1;'
         );
-        
-        // Get the cell ID generated by mxGraph
-        const sourceCellId = sourceVertex.id;
         
         // 2. Then create the component that references the cell
         const sourceComponentData = {
@@ -1134,17 +1139,18 @@ export class DiagramRendererService {
           height: 40,
           label: 'Source',
           style: 'rounded=1;whiteSpace=wrap;html=1;',
-          cellId: sourceCellId // Include the cell ID from the start
+          cellId: sourceCellId // Use our UUID
         };
         
         // Add source component to diagram model
         const sourceComponent = this.diagramService.addComponent('vertex', sourceComponentData);
         this.logger.debug(`Created source vertex: component=${sourceComponent.id}, cell=${sourceCellId}`);
 
-        // 1. First create the target vertex in mxGraph
+        // 1. First create the target vertex in mxGraph with UUID
+        const targetCellId = uuidv4();
         const targetVertex = this.graph.insertVertex(
           parent,
-          null, // Let mxGraph generate the ID
+          targetCellId, // Use UUID
           'Target',
           targetX,
           targetY,
@@ -1152,9 +1158,6 @@ export class DiagramRendererService {
           40,  // height
           'rounded=1;whiteSpace=wrap;html=1;'
         );
-        
-        // Get the cell ID generated by mxGraph
-        const targetCellId = targetVertex.id;
         
         // 2. Then create the component that references the cell
         const targetComponentData = {
@@ -1164,25 +1167,23 @@ export class DiagramRendererService {
           height: 40,
           label: 'Target',
           style: 'rounded=1;whiteSpace=wrap;html=1;',
-          cellId: targetCellId // Include the cell ID from the start
+          cellId: targetCellId // Use our UUID
         };
         
         // Add target component to diagram model
         const targetComponent = this.diagramService.addComponent('vertex', targetComponentData);
         this.logger.debug(`Created target vertex: component=${targetComponent.id}, cell=${targetCellId}`);
         
-        // First create the edge in the graph (mxGraph first)
+        // First create the edge in the graph (mxGraph first) with UUID
+        const edgeCellId = uuidv4();
         const edge = this.graph.insertEdge(
           parent,
-          null, // Let mxGraph generate the ID
+          edgeCellId, // Use UUID
           label,
           sourceVertex,
           targetVertex,
           'edgeStyle=orthogonalEdgeStyle;rounded=1;'
         );
-        
-        // Get the cell ID generated by mxGraph
-        const edgeCellId = edge.id;
         
         // Then create the edge component with the cell ID
         const edgeComponentData = {
@@ -1234,10 +1235,11 @@ export class DiagramRendererService {
       try {
         const parent = this.graph.getDefaultParent();
         
-        // 1. First create source vertex in mxGraph
+        // 1. First create source vertex in mxGraph with UUID
+        const sourceCellId = uuidv4();
         const sourceVertex = this.graph.insertVertex(
           parent,
-          null, // Let mxGraph generate the ID
+          sourceCellId, // Use UUID
           sourceLabel,
           sourceX,
           sourceY,
@@ -1246,10 +1248,11 @@ export class DiagramRendererService {
           'rounded=1;whiteSpace=wrap;html=1;'
         );
         
-        // 2. Create target vertex in mxGraph
+        // 2. Create target vertex in mxGraph with UUID
+        const targetCellId = uuidv4();
         const targetVertex = this.graph.insertVertex(
           parent,
-          null, // Let mxGraph generate the ID
+          targetCellId, // Use UUID
           targetLabel,
           targetX,
           targetY,
@@ -1258,20 +1261,16 @@ export class DiagramRendererService {
           'rounded=1;whiteSpace=wrap;html=1;'
         );
         
-        // 3. Create the edge in mxGraph
+        // 3. Create the edge in mxGraph with UUID
+        const edgeCellId = uuidv4();
         const edge = this.graph.insertEdge(
           parent,
-          null, // Let mxGraph generate the ID
+          edgeCellId, // Use UUID
           edgeLabel,
           sourceVertex,
           targetVertex,
           'edgeStyle=orthogonalEdgeStyle;rounded=1;'
         );
-        
-        // Get generated cell IDs
-        const sourceCellId = sourceVertex.id;
-        const targetCellId = targetVertex.id;
-        const edgeCellId = edge.id;
         
         // Create an array of component updates to batch together
         const componentsToAdd = [];
