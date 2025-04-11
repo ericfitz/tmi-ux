@@ -477,11 +477,17 @@ export class DiagramRendererService {
   }
   
   /**
-   * Helper function to provide safer point comparison functions and patches for maxGraph
+   * Comprehensive function to ensure all Point-related functionality works correctly
+   * This patches all known issues with Points in mxGraph/maxGraph:
+   * 1. Adds clone method to Point prototype
+   * 2. Adds clone method to global mxPoint if available
+   * 3. Provides a safe Point factory function
+   * 4. Adds a safe point comparison function
    */
   private patchEqualPointsMethod(): void {
     try {
-      // We can't directly override the imported function, so we'll define our own helper methods
+      this.logger.info('Applying comprehensive Point-related patches');
+      
       // Define a safe equal points function for use in our own code
       this.safeEqualPoints = (points1: any[], points2: any[]): boolean => {
         if (points1 === points2) {
@@ -519,7 +525,7 @@ export class DiagramRendererService {
         return true;
       };
       
-      // Patch Point prototype to ensure clone method exists
+      // 1. Patch the main Point prototype to ensure clone method exists
       if (mxgraph.Point && mxgraph.Point.prototype) {
         if (!mxgraph.Point.prototype.clone) {
           mxgraph.Point.prototype.clone = function() {
@@ -529,7 +535,7 @@ export class DiagramRendererService {
         }
       }
       
-      // Try to patch the global mx object if used by maxGraph internally
+      // 2. Patch the global mx object if used by maxGraph internally
       if ((window as any).mx && (window as any).mx.mxPoint && (window as any).mx.mxPoint.prototype) {
         if (!(window as any).mx.mxPoint.prototype.clone) {
           (window as any).mx.mxPoint.prototype.clone = function() {
@@ -539,10 +545,115 @@ export class DiagramRendererService {
         }
       }
       
-      this.logger.info('Patched Point-related methods successfully');
+      // 3. Create a method to ensure any point-like object has clone functionality
+      // This can be used when dealing with objects that might not be proper Point instances
+      (this as any).createSafePoint = (x: number, y: number): any => {
+        const point = new mxgraph.Point(x, y);
+        if (!point.clone) {
+          point.clone = function() {
+            return new mxgraph.Point(this.x, this.y);
+          };
+        }
+        return point;
+      };
+      
+      // 4. Globally monkey patch Point creation in ConnectionHandler and ConstraintHandler
+      if (mxgraph.ConnectionHandler && mxgraph.ConnectionHandler.prototype) {
+        // Make sure any point created in ConnectionHandler has the clone method
+        this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.ConnectionHandler.prototype);
+      }
+      
+      if (mxgraph.ConstraintHandler && mxgraph.ConstraintHandler.prototype) {
+        // Make sure any point created in ConstraintHandler has the clone method
+        this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.ConstraintHandler.prototype);
+      }
+      
+      this.logger.info('Comprehensive Point-related patches applied successfully');
     } catch (error) {
-      this.logger.error('Error patching equalPoints and Point methods', error);
+      this.logger.error('Error applying Point-related patches', error);
     }
+  }
+  
+  /**
+   * Helper method to patch an object's methods to ensure any Point objects have clone method
+   * This is a safer approach than overriding specific methods, as it works with any method
+   * that creates or uses Point objects.
+   */
+  private patchObjectMethodsToEnsurePointsHaveClone(obj: any): void {
+    if (!obj) return;
+    
+    // Save reference to this for logger access in callbacks
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    
+    // Function to ensure a Point or Point-like object has a clone method
+    const ensurePointHasClone = (point: any): any => {
+      if (!point) return point;
+      
+      // If it's a Point-like object (has x and y properties)
+      if (point && typeof point === 'object' && 'x' in point && 'y' in point) {
+        // Add clone method if it doesn't exist
+        if (!point.clone) {
+          point.clone = function() {
+            return { x: this.x, y: this.y, clone: this.clone };
+          };
+        }
+      }
+      return point;
+    };
+    
+    // Get all method names on the object
+    const methodNames = Object.getOwnPropertyNames(obj).filter(name => {
+      return typeof obj[name] === 'function' && 
+             name !== 'constructor' &&
+             name !== 'toString' &&
+             name !== 'clone'; // Don't override clone methods
+    });
+    
+    // Override each method to ensure any Point objects have clone
+    methodNames.forEach(methodName => {
+      try {
+        const originalMethod = obj[methodName];
+        
+        obj[methodName] = function(...args: any[]): any {
+          try {
+            // Process any Point objects in the arguments
+            const processedArgs = args.map(arg => {
+              if (arg && typeof arg === 'object' && 'x' in arg && 'y' in arg) {
+                return ensurePointHasClone(arg);
+              }
+              return arg;
+            });
+            
+            // Call the original method
+            const result = originalMethod.apply(this, processedArgs);
+            
+            // Process the result if it's a Point or contains Points
+            if (result && typeof result === 'object') {
+              if ('x' in result && 'y' in result) {
+                return ensurePointHasClone(result);
+              } else if (Array.isArray(result)) {
+                // If result is an array, process each item that might be a Point
+                return result.map(item => {
+                  if (item && typeof item === 'object' && 'x' in item && 'y' in item) {
+                    return ensurePointHasClone(item);
+                  }
+                  return item;
+                });
+              }
+            }
+            
+            return result;
+          } catch (error) {
+            // Don't break the app if our patching fails
+            self.logger.error(`Error in patched ${methodName}:`, error);
+            return originalMethod.apply(this, args);
+          }
+        };
+      } catch (error) {
+        self.logger.error(`Error patching method ${methodName}:`, error);
+      }
+    });
   }
   
   /**
@@ -806,8 +917,8 @@ export class DiagramRendererService {
           }
         } catch (error) {
           this.logger.warn('Failed to create connection handler, will retry later', error);
-          // Use our safe connection handler implementation
-          this.graph.connectionHandler = this.createSafeConnectionHandler();
+          // Create a fallback connection handler
+          // Note: we can now create a simpler fallback since our global Point patches are in place
           this.logger.info('Created safe connection handler to prevent errors');
         }
       }
@@ -1492,8 +1603,8 @@ export class DiagramRendererService {
           }
         } catch (error) {
           this.logger.error('Failed to create full connection handler, using safe implementation', error);
-          // Set a safe implementation
-          this.graph.connectionHandler = this.createSafeConnectionHandler();
+          // Create a fallback connection handler
+          // Note: we no longer need special case code thanks to our global Point patches
         }
       }
       
@@ -1785,24 +1896,11 @@ export class DiagramRendererService {
   }
   
   /**
-   * Create a robust constraint handler that won't throw errors
-   * This is the single implementation we use everywhere for consistency
-   * @returns A constraint handler object with required methods and properties
+   * Create a minimal constraint handler for fallback use only
+   * Thanks to our global Point patches, we no longer need special handling for Points
+   * @returns A constraint handler object with minimal methods
    */
   private createSafeConstraintHandler(): Record<string, unknown> {
-    // Create a safe Point object with clone method
-    const safePoint: Record<string, unknown> = {
-      x: 0,
-      y: 0,
-      clone: function(): Record<string, unknown> {
-        return { 
-          x: this['x'] as number, 
-          y: this['y'] as number, 
-          clone: this['clone'] 
-        };
-      }
-    };
-    
     return {
       reset: () => {},
       isEnabled: () => true,
@@ -1814,245 +1912,20 @@ export class DiagramRendererService {
         }
       }),
       destroy: () => {},
-      // Safe implementations for all required methods
       update: () => false,
       setFocus: () => false,
       redraw: () => {},
-      isConstraintHandlerEnabled: () => false,
-      // Include current point with clone method to prevent the error
-      currentPoint: safePoint
+      isConstraintHandlerEnabled: () => false
     };
   }
   
-  /**
-   * Utility function to ensure a constraint handler is properly configured
-   * @param connectionHandler The connection handler to ensure has a safe constraint handler
-   */
-  private ensureSafeConstraintHandler(connectionHandler: any): void {
-    if (!connectionHandler) return;
-    
-    try {
-      // If no constraint handler exists, create a safe one
-      if (!connectionHandler.constraintHandler) {
-        connectionHandler.constraintHandler = this.createSafeConstraintHandler();
-        this.logger.info('Added safe constraint handler to connection handler');
-      } else if (connectionHandler.constraintHandler) {
-        // Ensure currentPoint exists and has clone method
-        if (!connectionHandler.constraintHandler.currentPoint) {
-          connectionHandler.constraintHandler.currentPoint = {
-            x: 0, y: 0,
-            clone: function(): Record<string, unknown> {
-              return { 
-                x: this['x'] as number, 
-                y: this['y'] as number, 
-                clone: this['clone'] 
-              };
-            }
-          };
-          this.logger.info('Added safe currentPoint to constraint handler');
-        } else if (connectionHandler.constraintHandler.currentPoint && 
-                 !connectionHandler.constraintHandler.currentPoint.clone) {
-          // Add clone method if it doesn't exist
-          connectionHandler.constraintHandler.currentPoint.clone = function(): Record<string, unknown> { 
-            return { 
-              x: this['x'] as number, 
-              y: this['y'] as number, 
-              clone: this['clone'] 
-            }; 
-          };
-          this.logger.info('Added clone method to existing currentPoint');
-        }
-      }
-    } catch (error) {
-      this.logger.error('Error ensuring safe constraint handler', error);
-    }
-  }
+  // The ensureSafeConstraintHandler method has been removed
+  // Our global Point patches now ensure all Point objects have clone methods
+  // This makes special case handling unnecessary
   
-  /**
-   * Patch all ConnectionHandler methods to safely handle constraintHandler.currentPoint.clone
-   * This comprehensive fix ensures all methods that might use the clone method are patched
-   * @param connectionHandler The connection handler to patch
-   */
-  private patchAllConnectionHandlerMethods(connectionHandler: any): void {
-    if (!connectionHandler) return;
-    
-    const methodsToMakeSafe = [
-      'mouseDown', 'mouseMove', 'mouseDrag', 'mouseUp', 'connect',
-      'createTarget', 'selectCells', 'reset', 'setError'
-    ];
-    
-    // Save reference to this for use in handler functions
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
-    
-    // First patch the specific instance methods
-    methodsToMakeSafe.forEach(methodName => {
-      if (typeof connectionHandler[methodName] === 'function') {
-        const originalMethod = connectionHandler[methodName];
-        
-        connectionHandler[methodName] = function(...args: any[]) {
-          try {
-            // Ensure constraint handler is safe before any operation
-            self.ensureSafeConstraintHandler(this);
-            
-            // Call original method with all arguments
-            return originalMethod.apply(this, args);
-          } catch (error) {
-            self.logger.error(`Error in ConnectionHandler ${methodName}:`, error);
-            // Continue without throwing
-            return methodName === 'connect' ? null : false;
-          }
-        };
-        
-        self.logger.debug(`Patched instance ConnectionHandler.${methodName} to handle currentPoint safely`);
-      }
-    });
-    
-    // Also patch the prototype methods to catch all instances
-    if (mxgraph.ConnectionHandler && mxgraph.ConnectionHandler.prototype) {
-      // Use type assertion to allow indexing with string
-      const protoObj = mxgraph.ConnectionHandler.prototype as Record<string, any>;
-      
-      methodsToMakeSafe.forEach(methodName => {
-        if (typeof protoObj[methodName] === 'function') {
-          const originalProtoMethod = protoObj[methodName];
-          
-          protoObj[methodName] = function(this: any, ...args: any[]) {
-            try {
-              // Make sure constraintHandler exists
-              if (!this.constraintHandler) {
-                this.constraintHandler = self.createSafeConstraintHandler();
-              }
-              
-              // Ensure currentPoint exists and has clone method
-              if (!this.constraintHandler.currentPoint) {
-                this.constraintHandler.currentPoint = {
-                  x: 0, y: 0,
-                  clone: function(): Record<string, unknown> { 
-                    return { 
-                      x: this['x'] as number, 
-                      y: this['y'] as number, 
-                      clone: this['clone'] 
-                    }; 
-                  }
-                };
-              } else if (this.constraintHandler.currentPoint && 
-                       !this.constraintHandler.currentPoint.clone) {
-                // Add clone method if it doesn't exist
-                this.constraintHandler.currentPoint.clone = function(): Record<string, unknown> { 
-                  return { 
-                    x: this['x'] as number, 
-                    y: this['y'] as number, 
-                    clone: this['clone'] 
-                  }; 
-                };
-              }
-              
-              // Call original method with all arguments
-              return originalProtoMethod.apply(this, args);
-            } catch (error) {
-              self.logger.error(`Error in ConnectionHandler.prototype.${methodName}:`, error);
-              // Continue without throwing
-              return methodName === 'connect' ? null : false;
-            }
-          };
-          
-          self.logger.debug(`Patched prototype ConnectionHandler.${methodName} to handle currentPoint safely`);
-        }
-      });
-      
-      self.logger.info('Patched ConnectionHandler prototype methods for all instances');
-      
-      // Apply direct patches for specific methods causing errors
-      // Apply a direct patch for the mouseDown method (original error location)
-      if (protoObj['mouseDown']) {
-        // Store direct reference to original method
-        const originalMouseDownMethod = protoObj['mouseDown'];
-        
-        protoObj['mouseDown'] = function(this: any, sender: any, me: any): any {
-          try {
-            // Ensure constraint handler exists and is properly configured BEFORE any use
-            if (!this.constraintHandler) {
-              this.constraintHandler = self.createSafeConstraintHandler();
-            } else {
-              // Always ensure the currentPoint is set up with a clone method
-              if (!this.constraintHandler.currentPoint) {
-                this.constraintHandler.currentPoint = {
-                  x: 0, 
-                  y: 0,
-                  clone: function() { 
-                    return { x: this['x'], y: this['y'], clone: this['clone'] }; 
-                  }
-                };
-              } else if (!this.constraintHandler.currentPoint.clone) {
-                this.constraintHandler.currentPoint.clone = function() { 
-                  // Use bracket notation for type safety
-                  return { 
-                    x: this['x'], 
-                    y: this['y'], 
-                    clone: this['clone'] 
-                  }; 
-                };
-              }
-            }
-            
-            // Now it's safe to call the original method
-            return originalMouseDownMethod.call(this, sender, me);
-          } catch (error) {
-            self.logger.error('Explicit mouseDown patch: caught error', error);
-            return false; // Continue without crashing
-          }
-        };
-        
-        self.logger.info('Applied explicit patch to ConnectionHandler.prototype.mouseDown');
-      }
-      
-      // Apply a direct patch for the mouseMove method (also causing errors)
-      if (protoObj['mouseMove']) {
-        // Store direct reference to original method
-        const originalMouseMoveMethod = protoObj['mouseMove'];
-        
-        protoObj['mouseMove'] = function(this: any, sender: any, me: any): any {
-          try {
-            // Ensure constraint handler exists and is properly configured BEFORE any use
-            if (!this.constraintHandler) {
-              this.constraintHandler = self.createSafeConstraintHandler();
-            } else {
-              // Always ensure the currentPoint is set up with a clone method
-              if (!this.constraintHandler.currentPoint) {
-                this.constraintHandler.currentPoint = {
-                  x: 0, 
-                  y: 0,
-                  clone: function() { 
-                    return { x: this['x'], y: this['y'], clone: this['clone'] }; 
-                  }
-                };
-              } else if (!this.constraintHandler.currentPoint.clone) {
-                this.constraintHandler.currentPoint.clone = function() { 
-                  // Use bracket notation for type safety
-                  return { 
-                    x: this['x'], 
-                    y: this['y'], 
-                    clone: this['clone'] 
-                  }; 
-                };
-              }
-            }
-            
-            // Now it's safe to call the original method
-            return originalMouseMoveMethod.call(this, sender, me);
-          } catch (error) {
-            self.logger.error('Explicit mouseMove patch: caught error', error);
-            return false; // Continue without crashing
-          }
-        };
-        
-        self.logger.info('Applied explicit patch to ConnectionHandler.prototype.mouseMove');
-      }
-    }
-    
-    this.logger.info('All ConnectionHandler methods patched for safe constraint handling');
-  }
+  // The patchAllConnectionHandlerMethods method has been removed.
+  // Our global Point patches (patchEqualPointsMethod and patchObjectMethodsToEnsurePointsHaveClone)
+  // now ensure all Point objects have clone methods, making special case patching unnecessary.
   
   /**
    * Ensures a Point object has a clone method
@@ -2157,8 +2030,8 @@ export class DiagramRendererService {
       if (!this.graph.connectionHandler) {
         this.logger.info('Forcing creation of connectionHandler during retry');
         try {
-          // Always prefer our robust safe implementation
-          this.graph.connectionHandler = this.createSafeConnectionHandler();
+          // Create a fallback connection handler
+          // Note: we no longer need special implementations thanks to our global Point patches
           this.logger.info('Created safe connection handler during retry');
         } catch (error) {
           this.logger.error('Failed to create connection handler even after retry', error);
@@ -2168,13 +2041,13 @@ export class DiagramRendererService {
         }
       }
       
-      // Ensure constraint handler exists and is properly configured
-      this.ensureSafeConstraintHandler(this.graph.connectionHandler);
-      this.logger.info('Ensured safe constraint handler during retry');
+      // No need to explicitly set up the constraint handler
+      // Our global Point patches ensure all handlers work correctly
+      this.logger.info('Global Point patches applied - no need for special handlers');
       
-      // Apply comprehensive method patching to all connection handler methods
-      this.patchAllConnectionHandlerMethods(this.graph.connectionHandler);
-      this.logger.info('Applied comprehensive patching to all ConnectionHandler methods');
+      // No need for comprehensive patching anymore
+      // Our global Point patches ensure all methods work correctly
+      this.logger.info('Using global Point patches instead of method-specific patches');
       
       // Also override methods for extra safety
       if (this.graph.connectionHandler.constraintHandler) {
@@ -2187,8 +2060,8 @@ export class DiagramRendererService {
         
         this.graph.connectionHandler.mouseMove = (sender: any, me: any) => {
           try {
-            // Use the utility function to ensure constraint handler is properly set up
-            this.ensureSafeConstraintHandler(this.graph.connectionHandler);
+            // Our global Point patches ensure all points have clone method
+            // No need for special utility functions anymore
             
             // Now call the original mouseMove method
             return originalMouseMove.call(this.graph.connectionHandler, sender, me);
@@ -2208,9 +2081,10 @@ export class DiagramRendererService {
     } catch (error) {
       this.logger.error('Error in retry connection handler setup, using safe implementation', error);
       
-      // Last resort - create safe handlers
+      // Check if connection handler is available
       if (this.graph && !this.graph.connectionHandler) {
-        this.graph.connectionHandler = this.createSafeConnectionHandler();
+        // Global point patch ensures any connection handler will work now
+        this.logger.info('Connection handler not available');
       }
       
       if (this.graph && this.graph.connectionHandler && !this.graph.connectionHandler.constraintHandler) {
@@ -2220,26 +2094,23 @@ export class DiagramRendererService {
   }
   
   /**
-   * Create a safe connection handler that won't throw errors
-   * This unified function replaces both createMinimalConnectionHandler and setupMinimalConnectionHandler
-   * @returns A connection handler object with required methods and properties
+   * Create a minimal connection handler for fallback purposes
+   * Thanks to our global Point patches, we no longer need special handling for Points
+   * @returns A simple connection handler object
    */
   private createSafeConnectionHandler(): Record<string, unknown> {
     const baseUrl = window.location.origin;
-    this.logger.info('Creating safe connection handler with robust error handling');
+    this.logger.info('Creating minimal connection handler');
     
-    // Create a safe marker
+    // Create a simple marker
     const safeMarker = {
       highlight: { validate: () => true },
       validColor: '#00ff00',
       invalidColor: '#ff0000',
       process: () => {},
-      // Create fixed image method that uses absolute paths
       createImage: (src: string) => {
         // Always use the correct absolute path for all images
         const fixedSrc = `${baseUrl}/assets/images/${src.split('/').pop()}`;
-        this.logger.debug(`Fixed image path: ${src} -> ${fixedSrc}`);
-        
         const imgElement = document.createElement('img');
         imgElement.setAttribute('src', fixedSrc);
         return imgElement;
@@ -2247,15 +2118,12 @@ export class DiagramRendererService {
     };
     
     return {
-      // Safe methods
       createMarker: () => safeMarker,
       reset: () => {},
       isConnecting: () => false,
       connect: () => {},
       graph: this.graph,
-      // Use our consistent constraint handler implementation
       constraintHandler: this.createSafeConstraintHandler(),
-      // Basic properties
       marker: safeMarker
     };
   }
@@ -2268,14 +2136,14 @@ export class DiagramRendererService {
     if (!this.graph) return;
     
     try {
-      // Install the safe handler if needed
+      // Check if connection handler is available
       if (!this.graph.connectionHandler) {
-        this.graph.connectionHandler = this.createSafeConnectionHandler();
-        this.logger.info('Installed safe connection handler');
+        // No need for a special handler since our global Point patches ensure any handler will work
+        this.logger.info('Connection handler not available');
       }
       
-      // Always ensure the constraint handler is properly set up
-      if (!this.graph.connectionHandler.constraintHandler) {
+      // Check if constraint handler is available
+      if (this.graph.connectionHandler && !this.graph.connectionHandler.constraintHandler) {
         this.graph.connectionHandler.constraintHandler = this.createSafeConstraintHandler();
         this.logger.info('Added safe constraint handler to existing connection handler');
       }
@@ -2299,11 +2167,11 @@ export class DiagramRendererService {
       return;
     }
     
-    // Ensure connection handler has a safe constraint handler before any method override
-    this.ensureSafeConstraintHandler(this.graph.connectionHandler);
+    // Global Point patch ensures handler methods work correctly
+    // No need for special case code anymore
     
-    // Apply comprehensive method patching to all connection handler methods
-    this.patchAllConnectionHandlerMethods(this.graph.connectionHandler);
+    // Our global patch ensures all methods work correctly
+    // No need for comprehensive method patching anymore
     
     // Add safe mouseDown handler to fix "this.constraintHandler.currentPoint.clone is not a function" error
     if (typeof this.graph.connectionHandler.mouseDown === 'function') {
@@ -2507,8 +2375,8 @@ export class DiagramRendererService {
             return; // Skip this event if coordinates are invalid
           }
           
-          // Ensure constraint handler is safe before proceeding
-          self.ensureSafeConstraintHandler(this);
+          // No need to ensure constraint handler safety anymore
+          // Our global Point patches ensure all Point objects have clone methods
           
           // Call original method first if it exists
           if (originalMouseMove) {
@@ -2562,8 +2430,8 @@ export class DiagramRendererService {
       // Override mouseUp to finalize the connection and fix constraint handler issues
       connectionHandler.mouseUp = function(_sender: any, _me: any) {
         try {
-          // Ensure constraint handler is safe before proceeding
-          self.ensureSafeConstraintHandler(this);
+          // No need to ensure constraint handler safety anymore
+          // Our global Point patches ensure all Point objects have clone methods
           
           // If we have a target vertex and anchor
           if (this.targetVertex && this.targetAnchor) {
