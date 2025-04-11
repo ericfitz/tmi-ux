@@ -20,7 +20,11 @@
     "title": "Terms of Service",
     "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Last updated: ",
-    "intro": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
+    "intro": {
+      "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the operator listed on the ",
+      "aboutLink": "About",
+      "part2": " page of this web site (\"The Operator\")."
+    },
     "section1": {
       "title": "1. Acceptance of Terms",
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site."
@@ -39,7 +43,11 @@
     },
     "section5": {
       "title": "5. Open Source Software",
-      "content": "This website runs the TMI open source software. Its source code is available at the link provided on the \"About\" page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
+      "content": {
+        "part1": "This website runs the TMI open source software. Its source code is available at the link provided on the ",
+        "aboutLink": "About",
+        "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
+      }
     },
     "section6": {
       "title": "6. Changes to Terms",
@@ -53,13 +61,21 @@
       "title": "8. Governing Law",
       "content": "These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual), without regard to conflict of law principles."
     },
-    "contactInfo": "If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the \"About\" page."
+    "contactInfo": {
+      "part1": "If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the ",
+      "aboutLink": "About",
+      "part2": " page."
+    }
   },
   "privacy": {
     "title": "Privacy Policy",
     "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Last updated: ",
-    "intro1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the \"About\" page of this web site (\"The Operator\").",
+    "intro1": {
+      "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the ",
+      "aboutLink": "About",
+      "part2": " page of this web site (\"The Operator\")."
+    },
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "dataTitle": "No Data Collection or Storage",
     "dataContent": "The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.",
@@ -68,7 +84,11 @@
     "changesTitle": "Changes to This Policy",
     "changesContent": "The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
     "contactTitle": "Contact Us",
-    "contactContent": "If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the \"About\" page."
+    "contactContent": {
+      "part1": "If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the ",
+      "aboutLink": "About",
+      "part2": " page."
+    }
   },
   "about": {
     "title": "About TMI",
@@ -81,7 +101,14 @@
     "sourceCode": "Source Code: ",
     "bugReport": "File a Bug: ",
     "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "bugReportUrl": "https://github.com/ericfitz/tmi/issues"
+    "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "opensourcetitle": "Open Source",
+    "opensource": {
+      "paragraph1-intro": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind ",
+      "paragraph1-outro": " for their outstanding tools and resources that bring our interface and functionality to life.",
+      "paragraph2-intro": "A special thanks goes to the ",
+      "paragraph2-outro": " open-source project for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application."
+    }
   },
   "diagrams": {
     "pageTitle": "My Diagrams",
@@ -94,6 +121,7 @@
   "editor": {
     "saveButton": "Save",
     "backButton": "Back to Diagrams",
+    "closeButton": "Close",
     "placeholder": "Diagram editor placeholder (ID: {{id}})",
     "integrationNote": "MaxGraph will be integrated here",
     "diagramTitle": "{{title}}",
@@ -104,6 +132,12 @@
     "palette": {
       "title": "Palette",
       "items": {
+        "process": "Process",
+        "store": "Store",
+        "actor": "Actor",
+        "flow": "Flow",
+        "flowCancel": "Cancel Flow",
+        "delete": "Delete",
         "server": "Server",
         "database": "Database",
         "user": "User",

@@ -33,11 +33,7 @@
         <!-- Diagrams links when authenticated -->
         <button mat-button routerLink="/diagram-management">
           <mat-icon>dashboard</mat-icon>
-          <span>Manage Diagrams</span>
-        </button>
-        <button mat-button routerLink="/diagram-editor/new">
-          <mat-icon>add_box</mat-icon>
-          <span>New Diagram</span>
+          <span [transloco]="'navbar.diagramsButton'">Manage Diagrams</span>
         </button>
       </ng-container>
     </div>

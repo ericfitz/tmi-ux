@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { LoggerService } from '../../core/services/logger.service';
@@ -42,13 +42,24 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     private logger: LoggerService,
     private diagramService: DiagramService,
     private diagramRenderer: DiagramRendererService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translocoService: TranslocoService
   ) {
     this.logger.info('DiagramEditorComponent constructed');
   }
 
   ngOnInit(): void {
     this.logger.info('DiagramEditorComponent initializing');
+    
+    // Init tooltip translations from translation service
+    this.updateTooltipTranslations();
+    
+    // Subscribe to language change events to update tooltips when language changes
+    this.subscriptions.push(
+      this.translocoService.langChanges$.subscribe(() => {
+        this.updateTooltipTranslations();
+      })
+    );
     
     // Subscribe to route params to get diagram ID
     this.subscriptions.push(
@@ -101,10 +112,14 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           this.hasSelectedCell = true;
           this._selectedCellId = selectionData.cellId;
           this.logger.info(`DELETE BUTTON SHOULD BE ENABLED: hasSelectedCell=${this.hasSelectedCell}`);
+          
+          // Get the cell properties and populate the properties panel
+          this.updateSelectedCellProperties(selectionData.cellId);
         } else {
           this.logger.info('Cell selection cleared in component');
           this.hasSelectedCell = false;
           this._selectedCellId = null;
+          this.selectedCellProperties = null;
           this.logger.info(`DELETE BUTTON SHOULD BE DISABLED: hasSelectedCell=${this.hasSelectedCell}`);
         }
         
@@ -266,6 +281,16 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   public hasSelectedCell = false;
   // Store the currently selected cell's ID
   private _selectedCellId: string | null = null;
+  // Properties of the selected cell as JSON string
+  public selectedCellProperties: string | null = null;
+  
+  // Tooltip text properties
+  public processTooltip = 'Process';
+  public storeTooltip = 'Store';
+  public actorTooltip = 'Actor';
+  public flowTooltip = 'Flow';
+  public flowCancelTooltip = 'Cancel Flow';
+  public deleteTooltip = 'Delete';
   
   /**
    * Create a test edge between the last two vertices created
@@ -566,6 +591,78 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       
       // Delete the selected item
       this.deleteSelected();
+    }
+  }
+  
+  /**
+   * Update tooltip translations from the translation service
+   */
+  private updateTooltipTranslations(): void {
+    this.processTooltip = this.translocoService.translate('editor.palette.items.process');
+    this.storeTooltip = this.translocoService.translate('editor.palette.items.store');
+    this.actorTooltip = this.translocoService.translate('editor.palette.items.actor');
+    this.flowTooltip = this.translocoService.translate('editor.palette.items.flow');
+    this.flowCancelTooltip = this.translocoService.translate('editor.palette.items.flowCancel');
+    this.deleteTooltip = this.translocoService.translate('editor.palette.items.delete');
+  }
+  
+  /**
+   * Update the properties panel with the selected cell's properties
+   * @param cellId The ID of the selected cell
+   */
+  private updateSelectedCellProperties(cellId: string): void {
+    try {
+      // Get the cell from the renderer
+      const graph = this.diagramRenderer.getGraph();
+      if (!graph) {
+        this.logger.error('Cannot get properties: Graph not initialized');
+        return;
+      }
+      
+      // Find the cell by ID
+      const cell = this.diagramRenderer.getCellById(cellId);
+      if (!cell) {
+        this.logger.error(`Cell not found with ID: ${cellId}`);
+        return;
+      }
+      
+      // Find the component associated with this cell
+      const component = this.diagramService.findComponentByCellId(cellId);
+      
+      // Create a properties object with both cell and component data
+      const properties: any = {
+        // Cell properties
+        id: cell.id,
+        value: cell.value,
+        style: cell.style,
+        type: cell.isVertex() ? 'vertex' : cell.isEdge() ? 'edge' : 'unknown',
+        geometry: cell.geometry ? {
+          x: cell.geometry.x,
+          y: cell.geometry.y,
+          width: cell.geometry.width,
+          height: cell.geometry.height
+        } : null,
+        // Connection info for edges
+        source: cell.source ? cell.source.id : null,
+        target: cell.target ? cell.target.id : null
+      };
+      
+      // Add component properties if available
+      if (component) {
+        properties.component = {
+          id: component.id,
+          type: component.type,
+          data: component.data,
+          metadata: component.metadata || []
+        };
+      }
+      
+      // Convert to formatted JSON string
+      this.selectedCellProperties = JSON.stringify(properties, null, 2);
+      this.logger.debug(`Updated properties panel for cell ${cellId}`);
+    } catch (error) {
+      this.logger.error('Error getting cell properties', error);
+      this.selectedCellProperties = JSON.stringify({ error: 'Failed to get cell properties' }, null, 2);
     }
   }
 }

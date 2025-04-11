@@ -8,34 +8,9 @@
         <mat-icon>save</mat-icon>
         <span [transloco]="'editor.saveButton'">Save</span>
       </button>
-      <button mat-button [routerLink]="['/diagram-management']">
-        <mat-icon>arrow_back</mat-icon>
-        <span [transloco]="'editor.backButton'">Back to Diagrams</span>
-      </button>
-      <!-- Process vertex button -->
-      <button mat-button color="primary" (click)="addVertex('process')">
-        <mat-icon>crop_square</mat-icon>
-        <span>Process</span>
-      </button>
-      <!-- Store vertex button -->
-      <button mat-button color="primary" (click)="addVertex('store')">
-        <mat-icon>storage</mat-icon>
-        <span>Store</span>
-      </button>
-      <!-- Actor vertex button -->
-      <button mat-button color="primary" (click)="addVertex('actor')">
-        <mat-icon>person</mat-icon>
-        <span>Actor</span>
-      </button>
-      <!-- Flow edge creation toggle -->
-      <button mat-button [color]="isCreatingEdge ? 'warn' : 'primary'" (click)="toggleEdgeCreationMode()">
-        <mat-icon>arrow_forward</mat-icon>
-        <span>{{ isCreatingEdge ? 'Cancel Flow' : 'Flow' }}</span>
-      </button>
-      <!-- Delete button - disabled unless an element is selected -->
-      <button mat-button color="warn" [disabled]="!hasSelectedCell" (click)="deleteSelected()">
-        <mat-icon>delete</mat-icon>
-        <span>Delete</span>
+      <button mat-raised-button [routerLink]="['/diagram-management']">
+        <mat-icon>close</mat-icon>
+        <span [transloco]="'editor.closeButton'">Close</span>
       </button>
     </div>
   </div>
@@ -47,14 +22,60 @@
     </div>
 
     <div class="editor-sidebar">
+      <!-- Palette Panel -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title [transloco]="'editor.palette.title'">Palette</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="palette-grid">
+            <!-- Process vertex button -->
+            <button mat-mini-fab color="primary" (click)="addVertex('process')" 
+                    [matTooltip]="processTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">crop_square</span>
+            </button>
+
+            <!-- Store vertex button -->
+            <button mat-mini-fab color="primary" (click)="addVertex('store')" 
+                    [matTooltip]="storeTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">database</span>
+            </button>
+
+            <!-- Actor vertex button -->
+            <button mat-mini-fab color="primary" (click)="addVertex('actor')" 
+                    [matTooltip]="actorTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">person</span>
+            </button>
+
+            <!-- Flow edge creation toggle -->
+            <button mat-mini-fab [color]="isCreatingEdge ? 'warn' : 'primary'" (click)="toggleEdgeCreationMode()" 
+                    [matTooltip]="isCreatingEdge ? flowCancelTooltip : flowTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">conversion_path</span>
+            </button>
+
+            <!-- Delete button - disabled unless an element is selected -->
+            <button mat-mini-fab color="warn" [disabled]="!hasSelectedCell" (click)="deleteSelected()" 
+                    [matTooltip]="deleteTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">delete_forever</span>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Properties Panel -->
       <mat-card>
         <mat-card-header>
           <mat-card-title [transloco]="'editor.properties.title'">Properties</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p [transloco]="'editor.properties.help'">
-            Element properties will appear here when an element is selected.
-          </p>
+          <div *ngIf="selectedCellProperties; else noSelection">
+            <textarea class="properties-textarea" readonly [value]="selectedCellProperties"></textarea>
+          </div>
+          <ng-template #noSelection>
+            <p [transloco]="'editor.properties.help'">
+              Element properties will appear here when an element is selected.
+            </p>
+          </ng-template>
         </mat-card-content>
       </mat-card>
     </div>

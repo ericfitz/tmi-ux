@@ -12,7 +12,7 @@ import { environment } from '../../environments/environment';
 
 // Function to get the initial language
 function getInitialLang(): string {
-  const supportedLangs = ['en-US', 'de', 'zh', 'ar'];
+  const supportedLangs = ['en-US', 'de', 'zh', 'ar', 'th'];
 
   // Check localStorage for saved preference
   const savedLang = localStorage.getItem('preferredLanguage');
@@ -70,7 +70,7 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
   providers: [
     provideTransloco({
       config: {
-        availableLangs: ['en-US', 'de', 'zh', 'ar'],
+        availableLangs: ['en-US', 'de', 'zh', 'ar', 'th'],
         defaultLang: 'en-US',
         fallbackLang: 'en-US',
         reRenderOnLangChange: true,

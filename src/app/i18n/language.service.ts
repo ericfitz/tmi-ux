@@ -19,6 +19,7 @@ export class LanguageService implements OnDestroy {
     { code: 'de', name: 'German', localName: 'Deutsch' },
     { code: 'zh', name: 'Chinese', localName: '中文' },
     { code: 'ar', name: 'Arabic', localName: 'العربية', rtl: true },
+    { code: 'th', name: 'Thai', localName: 'ไทย' },
   ];
 
   // Private subjects

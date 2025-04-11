@@ -8,10 +8,10 @@
       {{ 'tos.lastUpdated' | transloco }}<strong>{{ 'tos.lastUpdatedDate' | transloco | date: 'longDate' }}</strong>
     </p>
 
-    <p class="page-content" [transloco]="'tos.intro'">
-      Welcome to our instance of TMI. These Terms of Use ("Terms") govern your access to and use of
-      this website, which is an instance of an open-source web application made available by the
-      operator listed on the "About" page of this web site ("The Operator").
+    <p class="page-content">
+      {{ 'tos.intro.part1' | transloco }}
+      <a [routerLink]="['/about']">{{ 'tos.intro.aboutLink' | transloco }}</a>
+      {{ 'tos.intro.part2' | transloco }}
     </p>
 
     <h2 [transloco]="'tos.section1.title'">1. Acceptance of Terms</h2>
@@ -43,12 +43,10 @@
     </p>
 
     <h2 [transloco]="'tos.section5.title'">5. Open Source Software</h2>
-    <p class="page-content" [transloco]="'tos.section5.content'">
-      This website runs the TMI software, and its source code is available at the link provided on
-      the "About" page of this web site. Your use of the software is subject to its open-source
-      license terms. We are not responsible for the software itself, only for operating this
-      instance. The operator of this web site may not be affiliated with the TMI project or its
-      creators.
+    <p class="page-content">
+      {{ 'tos.section5.content.part1' | transloco }}
+      <a [routerLink]="['/about']">{{ 'tos.section5.content.aboutLink' | transloco }}</a>
+      {{ 'tos.section5.content.part2' | transloco }}
     </p>
 
     <h2 [transloco]="'tos.section6.title'">6. Changes to Terms</h2>
@@ -70,9 +68,10 @@
       without regard to conflict of law principles.
     </p>
 
-    <p class="page-content contact-info" [transloco]="'tos.contactInfo'">
-      If you have any questions about these Terms, please feel free to contact the operator of this
-      web site via the contact information on the "About" page.
+    <p class="page-content contact-info">
+      {{ 'tos.contactInfo.part1' | transloco }}
+      <a [routerLink]="['/about']">{{ 'tos.contactInfo.aboutLink' | transloco }}</a>
+      {{ 'tos.contactInfo.part2' | transloco }}
     </p>
   </div>
 </div>

@@ -17,7 +17,11 @@
     "title": "Nutzungsbedingungen",
     "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Zuletzt aktualisiert: {{date}}",
-    "intro": "Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der \"Über\"-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird.",
+    "intro": {
+      "part1": "Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der ",
+      "aboutLink": "Über",
+      "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
+    },
     "section1": {
       "title": "1. Annahme der Bedingungen",
       "content": "Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich damit einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie diese Website bitte nicht."
@@ -36,7 +40,11 @@
     },
     "section5": {
       "title": "5. Open-Source-Software",
-      "content": "Diese Website verwendet die TMI-Software, und ihr Quellcode ist über den auf der \"Über\"-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Der Betreiber dieser Website ist möglicherweise nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden."
+      "content": {
+        "part1": "Diese Website verwendet die TMI-Software, und ihr Quellcode ist über den auf der ",
+        "aboutLink": "Über",
+        "part2": "-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Der Betreiber dieser Website ist möglicherweise nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden."
+      }
     },
     "section6": {
       "title": "6. Änderungen der Bedingungen",
@@ -50,13 +58,21 @@
       "title": "8. Geltendes Recht",
       "content": "Diese Bedingungen unterliegen den Gesetzen der Rechtsordnung, in der der Betreiber seinen Hauptsitz hat (im Falle einer Organisation) oder wohnt (im Falle einer Einzelperson), ungeachtet der Grundsätze des Kollisionsrechts."
     },
-    "contactInfo": "Wenn Sie Fragen zu diesen Bedingungen haben, können Sie sich gerne über die Kontaktinformationen auf der \"Über\"-Seite an den Betreiber dieser Website wenden."
+    "contactInfo": {
+      "part1": "Wenn Sie Fragen zu diesen Bedingungen haben, können Sie sich gerne über die Kontaktinformationen auf der ",
+      "aboutLink": "Über",
+      "part2": "-Seite an den Betreiber dieser Website wenden."
+    }
   },
   "privacy": {
     "title": "Datenschutzrichtlinie",
     "lastUpdatedDate": "2025-04-06",
     "lastUpdated": "Zuletzt aktualisiert: {{date}}",
-    "intro1": "Diese Website ist eine Instanz einer Open-Source-Webanwendung (\"TMI\"), die vom auf der \"Über\"-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird.",
+    "intro1": {
+      "part1": "Diese Website ist eine Instanz einer Open-Source-Webanwendung (\"TMI\"), die vom auf der ",
+      "aboutLink": "Über",
+      "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
+    },
     "intro2": "Der Betreiber verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",
     "dataTitle": "Keine Datenerfassung oder -speicherung",
     "dataContent": "Der Betreiber sammelt, speichert oder verarbeitet keine personenbezogenen Daten von Benutzern. Der Betreiber verfolgt nicht Ihre Aktivitäten, speichert Ihre Informationen nicht und teilt keine Daten über Sie mit Dritten für irgendeinen Zweck.",
@@ -65,12 +81,31 @@
     "changesTitle": "Änderungen an dieser Richtlinie",
     "changesContent": "Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
     "contactTitle": "Kontaktiere uns",
-    "contactContent": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der \"Über\"-Seite an den Betreiber dieser Website."
+    "contactContent": {
+      "part1": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der ",
+      "aboutLink": "Über",
+      "part2": "-Seite an den Betreiber dieser Website."
+    }
   },
   "about": {
     "title": "Über TMI",
-    "description1": "TMI (Threat Modeling Interface) ist eine kollaborative Plattform für die Erstellung, Verwaltung und gemeinsame Nutzung von Bedrohungsmodellen. Unsere Mission ist es, die Modellierung von Sicherheitsbedrohungen zugänglich, effizient und in den Software-Entwicklungslebenszyklus integriert zu gestalten.",
-    "description2": "Die Plattform bietet interaktive Diagrammerstellung, Echtzeit-Zusammenarbeit und umfassende Funktionen zur Dokumentation von Bedrohungen. TMI wurde mit modernen Webtechnologien entwickelt und hilft Teams, Sicherheitsbedrohungen durch kollaborative Modellierung zu identifizieren, zu analysieren und zu mindern."
+    "description1": "TMI (Threat Modeling Improved) ist eine kollaborative Plattform für die Erstellung, Verwaltung und gemeinsame Nutzung von Bedrohungsmodellen. Unsere Mission ist es, die Modellierung von Sicherheitsbedrohungen zugänglich, effizient und in den Software-Entwicklungslebenszyklus integriert zu gestalten.",
+    "description2": "Die Plattform bietet interaktive Diagrammerstellung, Echtzeit-Zusammenarbeit und umfassende Funktionen zur Dokumentation von Bedrohungen. TMI wurde mit modernen Webtechnologien entwickelt und hilft Teams, Sicherheitsbedrohungen durch kollaborative Modellierung zu identifizieren, zu analysieren und zu mindern.",
+    "contacttitle": "Betrieben von",
+    "contactoperator": "Betreiber: ",
+    "contactoperatordetails": "Kontaktinformation des Betreibers: ",
+    "sourcetitle": "TMI-Anwendung",
+    "sourceCode": "Quellcode: ",
+    "bugReport": "Fehler melden: ",
+    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "opensourcetitle": "Open Source",
+    "opensource": {
+      "paragraph1-intro": "Diese Anwendung wird mit Unterstützung von außergewöhnlichen Open-Source-Projekten erstellt. Wir sind den Gemeinschaften hinter ",
+      "paragraph1-outro": " für ihre hervorragenden Tools und Ressourcen dankbar, die unsere Benutzeroberfläche und Funktionalität zum Leben erwecken.",
+      "paragraph2-intro": "Ein besonderer Dank geht an das ",
+      "paragraph2-outro": " Open-Source-Projekt, das Inspiration für unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung geliefert hat."
+    }
   },
   "diagrams": {
     "pageTitle": "Meine Diagramme",
@@ -82,6 +117,7 @@
   "editor": {
     "saveButton": "Speichern",
     "backButton": "Zurück zu Diagrammen",
+    "closeButton": "Schließen",
     "placeholder": "Diagramm-Editor-Platzhalter (ID: {{id}})",
     "integrationNote": "MaxGraph wird hier integriert",
     "properties": {
@@ -91,6 +127,12 @@
     "palette": {
       "title": "Palette",
       "items": {
+        "process": "Prozess",
+        "store": "Speicher",
+        "actor": "Akteur",
+        "flow": "Fluss",
+        "flowCancel": "Fluss abbrechen",
+        "delete": "Löschen",
         "server": "Server",
         "database": "Datenbank",
         "user": "Benutzer",

@@ -526,9 +526,11 @@ export class DiagramRendererService {
   }
   
   /**
-   * Helper method to get a cell by ID
+   * Get a cell by ID
+   * @param cellId The ID of the cell to retrieve
+   * @returns The mxGraph cell or null if not found
    */
-  private getCellById(cellId?: string): any {
+  getCellById(cellId?: string): any {
     if (!cellId || !this.graph) return null;
     
     // Get all cells from the graph
