@@ -1,0 +1,86 @@
+{
+  "defaultVertexStyle": {
+    "fillColor": "#2a2a2a",
+    "strokeColor": "#e0e0e0",
+    "fontColor": "#ffffff",
+    "rounded": true,
+    "shadow": true
+  },
+  "defaultEdgeStyle": {
+    "strokeColor": "#a0a0a0",
+    "edgeStyle": "orthogonalEdgeStyle",
+    "shadow": true,
+    "rounded": true,
+    "jettySize": "auto",
+    "orthogonalLoop": 1,
+    "fontColor": "#ffffff"
+  },
+  "styles": {
+    "highlighted": {
+      "strokeColor": "#ff5252",
+      "strokeWidth": 3,
+      "fillColor": "#2a2a2a",
+      "rounded": true,
+      "shadow": true,
+      "fontColor": "#ffffff"
+    },
+    "edgeCreation": {
+      "strokeColor": "#81c784",
+      "strokeWidth": 2,
+      "fillColor": "#1b5e20",
+      "rounded": true,
+      "shadow": true,
+      "fontColor": "#ffffff"
+    },
+    "process": {
+      "fillColor": "#424242",
+      "strokeColor": "#e0e0e0",
+      "rounded": true,
+      "shadow": true,
+      "whiteSpace": "wrap",
+      "html": 1,
+      "fontColor": "#ffffff"
+    },
+    "store": {
+      "shape": "cylinder",
+      "whiteSpace": "wrap",
+      "html": 1,
+      "boundedLbl": 1,
+      "fillColor": "#263238",
+      "strokeColor": "#90caf9",
+      "rounded": true,
+      "shadow": true,
+      "fontColor": "#ffffff"
+    },
+    "actor": {
+      "shape": "umlActor",
+      "verticalLabelPosition": "bottom",
+      "verticalAlign": "top",
+      "html": 1,
+      "fillColor": "#388e3c",
+      "strokeColor": "#a5d6a7",
+      "rounded": true,
+      "shadow": true,
+      "fontColor": "#ffffff"
+    },
+    "flow": {
+      "strokeColor": "#e0e0e0",
+      "endArrow": "classic",
+      "rounded": true,
+      "edgeStyle": "orthogonalEdgeStyle",
+      "shadow": true,
+      "jettySize": "auto",
+      "orthogonalLoop": 1,
+      "fontColor": "#ffffff",
+      "html": 1
+    }
+  },
+  "gridEnabled": true,
+  "gridSize": 10,
+  "backgroundColor": "#121212",
+  "marker": {
+    "validColor": "#81c784",
+    "invalidColor": "#e57373",
+    "hotspot": 0.3
+  }
+}

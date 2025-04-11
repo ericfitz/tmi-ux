@@ -1,0 +1,12 @@
+[
+  {
+    "id": "default-theme",
+    "name": "Default",
+    "description": "Default diagram theme with blue accents"
+  },
+  {
+    "id": "dark-theme",
+    "name": "Dark Mode",
+    "description": "Dark theme with light accents"
+  }
+]

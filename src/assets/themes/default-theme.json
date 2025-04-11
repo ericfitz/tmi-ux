@@ -1,0 +1,78 @@
+{
+  "defaultVertexStyle": {
+    "fillColor": "#ffffff",
+    "strokeColor": "#1565c0",
+    "rounded": true,
+    "shadow": true
+  },
+  "defaultEdgeStyle": {
+    "strokeColor": "#78909c",
+    "edgeStyle": "orthogonalEdgeStyle",
+    "shadow": true,
+    "rounded": true,
+    "jettySize": "auto",
+    "orthogonalLoop": 1
+  },
+  "styles": {
+    "highlighted": {
+      "strokeColor": "#ff0000",
+      "strokeWidth": 3,
+      "fillColor": "#ffffff",
+      "rounded": true,
+      "shadow": true
+    },
+    "edgeCreation": {
+      "strokeColor": "#4caf50",
+      "strokeWidth": 2,
+      "fillColor": "#e8f5e9",
+      "rounded": true,
+      "shadow": true
+    },
+    "process": {
+      "fillColor": "#f5f5f5",
+      "strokeColor": "#666666",
+      "rounded": true,
+      "shadow": true,
+      "whiteSpace": "wrap",
+      "html": 1
+    },
+    "store": {
+      "shape": "cylinder",
+      "whiteSpace": "wrap",
+      "html": 1,
+      "boundedLbl": 1,
+      "fillColor": "#dae8fc",
+      "strokeColor": "#6c8ebf",
+      "rounded": true,
+      "shadow": true
+    },
+    "actor": {
+      "shape": "umlActor",
+      "verticalLabelPosition": "bottom",
+      "verticalAlign": "top",
+      "html": 1,
+      "fillColor": "#d5e8d4",
+      "strokeColor": "#82b366",
+      "rounded": true,
+      "shadow": true
+    },
+    "flow": {
+      "strokeColor": "#4D4D4D",
+      "endArrow": "classic",
+      "rounded": true,
+      "edgeStyle": "orthogonalEdgeStyle",
+      "shadow": true,
+      "jettySize": "auto",
+      "orthogonalLoop": 1,
+      "html": 1
+    }
+  },
+  "gridEnabled": true,
+  "gridSize": 10,
+  "backgroundColor": "#ffffff",
+  "marker": {
+    "validColor": "#00ff00",
+    "invalidColor": "#ff0000",
+    "hotspot": 0.3
+  }
+}

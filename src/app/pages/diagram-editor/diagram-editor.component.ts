@@ -10,11 +10,19 @@ import { SharedModule } from '../../shared/shared.module';
 import { Diagram } from './models/diagram.model';
 import { DiagramService } from './services/diagram.service';
 import { DiagramRendererService } from './services/diagram-renderer.service';
+import { ThemeSelectorComponent } from './components/theme-selector.component';
 
 @Component({
   selector: 'app-diagram-editor',
   standalone: true,
-  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule, RouterModule],
+  imports: [
+    CommonModule, 
+    SharedModule, 
+    MaterialModule, 
+    TranslocoModule, 
+    RouterModule,
+    ThemeSelectorComponent
+  ],
   templateUrl: './diagram-editor.component.html',
   styleUrl: './diagram-editor.component.scss',
 })
@@ -113,8 +121,15 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           this._selectedCellId = selectionData.cellId;
           this.logger.info(`DELETE BUTTON SHOULD BE ENABLED: hasSelectedCell=${this.hasSelectedCell}`);
           
-          // Get the cell properties and populate the properties panel
-          this.updateSelectedCellProperties(selectionData.cellId);
+          try {
+            // Get the cell properties and populate the properties panel
+            this.updateSelectedCellProperties(selectionData.cellId).catch(err => {
+              this.logger.error('Error in updateSelectedCellProperties:', err);
+            });
+          } catch (error) {
+            this.logger.error('Error updating selected cell properties:', error);
+            // If properties can't be loaded, still keep the cell selected
+          }
         } else {
           this.logger.info('Cell selection cleared in component');
           this.hasSelectedCell = false;
@@ -131,22 +146,40 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   }
   
   ngAfterViewInit(): void {
-    // Initialize the diagram renderer with the canvas element
-    if (this.diagramCanvas) {
+    if (!this.diagramCanvas) {
+      this.logger.error('Diagram canvas element not found');
+      return;
+    }
+    
+    try {
+      // Initialize the renderer
       this.logger.debug('Initializing diagram renderer with canvas element');
       this.diagramRenderer.initialize(this.diagramCanvas.nativeElement);
       
-      // Subscribe to renderer initialization state
-      this.subscriptions.push(
-        this.diagramRenderer.isInitialized$.subscribe(initialized => {
+      // Wait for initialization using the Promise-based approach
+      this.diagramRenderer.initializeRenderer()
+        .then(initialized => {
           if (initialized && this.diagram) {
             this.logger.debug('Renderer initialized, updating diagram');
             this.diagramRenderer.updateDiagram();
+            
+            // Wait for full stabilization
+            return this.diagramRenderer.waitForStabilization();
           }
+          return Promise.resolve();
         })
-      );
-    } else {
-      this.logger.error('Diagram canvas element not found');
+        .then(() => {
+          this._isRendererReady = true;
+          this.logger.info('Renderer fully ready for operations');
+          
+          this._isFullyStabilized = true;
+          this.logger.info('Diagram fully stabilized and ready for all operations');
+        })
+        .catch(error => {
+          this.logger.error('Error during renderer initialization chain', error);
+        });
+    } catch (error) {
+      this.logger.error('Error during diagram renderer initialization', error);
     }
   }
   
@@ -154,15 +187,26 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     // Clean up subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
     
+    // Reset flags
+    this._isRendererReady = false;
+    this._isFullyStabilized = false;
+    
+    // Clean up any ongoing retry operations
+    this._vertexCreationRetries = {};
+    
     // Clean up renderer
-    this.diagramRenderer.destroy();
+    try {
+      this.diagramRenderer.destroy();
+    } catch (error) {
+      this.logger.error('Error during renderer destruction', error);
+    }
     
     this.logger.info('DiagramEditorComponent destroyed');
   }
 
   /**
    * Load a diagram by ID or create a new one
-   * Following our architecture: load diagram structure first, then create mxGraph cells
+   * Following our architecture: load diagram structure first, then create maxGraph cells
    */
   loadDiagram(id: string): void {
     this.logger.info(`Loading diagram: ${id}`);
@@ -221,54 +265,156 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
    * Add a vertex of the specified type to the diagram
    * @param type The type of vertex to create (process, store, actor)
    */
-  addVertex(type: 'process' | 'store' | 'actor'): void {
-    if (!this.diagramRenderer.isInitialized()) {
-      this.logger.error(`Cannot add ${type} vertex: Renderer not initialized`);
-      return;
-    }
+  async addVertex(type: 'process' | 'store' | 'actor'): Promise<void> {
+    // For tracking
+    const maxRetries = 5;
+    let retryCount = 0;
+    const retryKey = `${type}-${Date.now()}`;
+    this._vertexCreationRetries[retryKey] = 0;
     
-    // Add the vertex at a random position within the visible canvas area
-    const x = Math.floor(Math.random() * 500);
-    const y = Math.floor(Math.random() * 300);
-    
-    // Define vertex style and label based on type
-    let style = '';
-    let width = 100;
-    let height = 60;
-    let label = '';
-    
-    switch (type) {
-      case 'process':
-        style = 'rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;';
-        label = 'Process';
-        width = 120;
-        height = 60;
-        break;
+    // Keep trying until success or max retries reached
+    while (retryCount <= maxRetries) {
+      try {
+        // Wait for renderer to be ready if it's not
+        if (!this.diagramRenderer.isInitialized() || !this._isRendererReady) {
+          if (retryCount === 0) {
+            this.logger.warn(`Cannot add ${type} vertex: Renderer not initialized. Please wait...`);
+            
+            // Give feedback to user about readiness state
+            if (!this.diagramRenderer.isInitialized()) {
+              this.logger.error('Renderer is not initialized yet');
+            }
+            if (!this._isRendererReady) {
+              this.logger.warn('Renderer is initialized but not fully ready - internal flag is false');
+            }
+          }
+          
+          // Force readiness if we're in a retry
+          if (retryCount > 0 && this.diagramRenderer.isInitialized()) {
+            this._isRendererReady = true;
+          }
+          
+          // Wait before retrying
+          const retryDelay = 1000 + (retryCount * 500);
+          this.logger.info(`Waiting ${retryDelay}ms before retry #${retryCount + 1} for ${type} vertex`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          retryCount++;
+          continue;
+        }
         
-      case 'store':
-        style = 'shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#dae8fc;strokeColor=#6c8ebf;';
-        label = 'Store';
-        width = 80; 
-        height = 80;
-        break;
+        // Add the vertex at a random position within the visible canvas area
+        const x = Math.floor(Math.random() * 500);
+        const y = Math.floor(Math.random() * 300);
         
-      case 'actor':
-        style = 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;';
-        label = 'Actor';
-        width = 40;
-        height = 80;
-        break;
+        // Define vertex style and label based on type
+        let style = '';
+        let width = 100;
+        let height = 60;
+        let label = '';
+        
+        switch (type) {
+          case 'process':
+            style = 'rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;';
+            label = 'Process';
+            width = 120;
+            height = 60;
+            break;
+            
+          case 'store':
+            style = 'shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#dae8fc;strokeColor=#6c8ebf;';
+            label = 'Store';
+            width = 80; 
+            height = 80;
+            break;
+            
+          case 'actor':
+            style = 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;';
+            label = 'Actor';
+            width = 40;
+            height = 80;
+            break;
+        }
+        
+        // Verify graph is available
+        const graph = this.diagramRenderer.getGraph();
+        if (!graph) {
+          this.logger.error(`Cannot create ${type} vertex: Graph object is null`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          retryCount++;
+          continue;
+        }
+        
+        // Handle connection handler if necessary
+        if (!graph.connectionHandler && retryCount > 2) {
+          try {
+            this.logger.warn('Connection handler missing - attempting to force create one');
+            
+            if (graph.getConnectionHandler) {
+              // Try using a factory method if available
+              graph.connectionHandler = graph.getConnectionHandler();
+              this.logger.info('Created connection handler using factory method');
+            } else {
+              // Create ConnectionHandler directly using the constructor from the graph's prototype
+              // Access maxgraph internals through prototype
+              const ConnectionHandlerClass = Object.getPrototypeOf(graph).constructor.ConnectionHandler;
+              if (ConnectionHandlerClass) {
+                graph.connectionHandler = new ConnectionHandlerClass(graph);
+                this.logger.info('Created connection handler using constructor from prototype');
+              } else {
+                throw new Error('Could not find ConnectionHandler class');
+              }
+            }
+          } catch (error) {
+            this.logger.error('Could not force create connection handler', error);
+            // Create a minimal implementation if we couldn't create a real one
+            graph.connectionHandler = {
+              createMarker: () => null,
+              reset: () => {},
+              isConnecting: () => false,
+              constraintHandler: {
+                reset: () => {},
+                createHighlightShape: () => null
+              }
+            } as any;
+            this.logger.info('Created minimal connection handler to prevent errors');
+          }
+        }
+        
+        const connectionHandlerAvailable = graph.connectionHandler !== undefined;
+        this.logger.debug(`Connection handler available: ${connectionHandlerAvailable}`);
+        
+        // Create the vertex with the appropriate style
+        const result = this.diagramRenderer.createVertexWithIds(x, y, label, width, height, style);
+        
+        if (!result) {
+          throw new Error(`Failed to create ${type} vertex`);
+        }
+        
+        const { componentId, cellId } = result;
+        this.logger.info(`Added ${type} vertex at (${x}, ${y}) with ID: ${componentId} (cell: ${cellId})`);
+        
+        // Save a reference to the test vertex for potential edge creation
+        this._secondTestVertex = this._lastTestVertex;
+        this._lastTestVertex = { componentId, cellId };
+        
+        // Clean up retry tracking
+        delete this._vertexCreationRetries[retryKey];
+        return;
+        
+      } catch (error) {
+        this.logger.error(`Exception while creating ${type} vertex`, error);
+        
+        if (retryCount < maxRetries) {
+          this.logger.info(`Will retry ${type} vertex creation after error (attempt ${retryCount + 1})`);
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          retryCount++;
+        } else {
+          this.logger.error(`Failed to create ${type} vertex after ${maxRetries} attempts - giving up`);
+          delete this._vertexCreationRetries[retryKey];
+          return;
+        }
+      }
     }
-    
-    // Create the vertex with the appropriate style
-    const result = this.diagramRenderer.createVertexWithIds(x, y, label, width, height, style);
-    if (!result) {
-      this.logger.error(`Failed to create ${type} vertex`);
-      return;
-    }
-    
-    const { componentId, cellId } = result;
-    this.logger.info(`Added ${type} vertex at (${x}, ${y}) with ID: ${componentId} (cell: ${cellId})`);
   }
   
   // Store information about the last created test vertex
@@ -283,6 +429,12 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   private _selectedCellId: string | null = null;
   // Properties of the selected cell as JSON string
   public selectedCellProperties: string | null = null;
+  // Track if the renderer is ready for operations
+  private _isRendererReady = false;
+  // Track if the graph is fully stabilized
+  private _isFullyStabilized = false;
+  // Track vertex creation retries
+  private _vertexCreationRetries: Record<string, number> = {};
   
   // Tooltip text properties
   public processTooltip = 'Process';
@@ -610,8 +762,14 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
    * Update the properties panel with the selected cell's properties
    * @param cellId The ID of the selected cell
    */
-  private updateSelectedCellProperties(cellId: string): void {
+  private async updateSelectedCellProperties(cellId: string): Promise<void> {
     try {
+      // Wait for renderer to be fully initialized if it's not already
+      if (!this.diagramRenderer.isInitialized()) {
+        this.logger.debug('Waiting for renderer initialization before getting properties');
+        await this.diagramRenderer.initializeRenderer();
+      }
+      
       // Get the cell from the renderer
       const graph = this.diagramRenderer.getGraph();
       if (!graph) {

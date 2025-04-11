@@ -19,6 +19,21 @@ export interface DiagramMetadata {
 }
 
 /**
+ * Anchor point positions for vertices
+ */
+export type AnchorPointPosition = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW' | 'C';
+
+/**
+ * Anchor point interface
+ */
+export interface AnchorPoint {
+  id: string;
+  position: AnchorPointPosition;
+  x: number; // Relative to vertex bounds (0-1)
+  y: number; // Relative to vertex bounds (0-1)
+}
+
+/**
  * Diagram component types
  */
 export type DiagramComponentType = 'vertex' | 'edge';
@@ -31,7 +46,7 @@ export interface DiagramComponent {
   type: DiagramComponentType;
   data: Record<string, unknown>;
   metadata?: DiagramMetadata[];
-  cellId?: string; // Reference to mxGraph cell ID
+  cellId?: string; // Reference to maxGraph cell ID
 }
 
 /**
