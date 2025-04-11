@@ -42,4 +42,45 @@ export interface Environment {
    * Default: 'contact@example.com'
    */
   operatorContact: string;
+  
+  /**
+   * Port on which the application server will listen
+   * Default: 4200
+   */
+  serverPort?: number;
+  
+  /**
+   * Network interface on which the application server will listen
+   * Use '0.0.0.0' to listen on all interfaces
+   * Use 'localhost' or '127.0.0.1' to only listen on the loopback interface
+   * Default: '0.0.0.0'
+   */
+  serverInterface?: string;
+  
+  /**
+   * Whether to enable TLS/HTTPS for the application server
+   * Default: false
+   */
+  enableTLS?: boolean;
+  
+  /**
+   * Path to the TLS private key file
+   * Only used if enableTLS is true
+   * Default: undefined
+   */
+  tlsKeyPath?: string;
+  
+  /**
+   * Path to the TLS certificate file
+   * Only used if enableTLS is true
+   * Default: undefined
+   */
+  tlsCertPath?: string;
+  
+  /**
+   * TLS subject name
+   * Only used if enableTLS is true
+   * Default: system hostname
+   */
+  tlsSubjectName?: string;
 }

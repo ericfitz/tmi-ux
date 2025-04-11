@@ -24,13 +24,11 @@ export class LanguageService implements OnDestroy {
   // Private subjects
   private currentLanguageSubject = new BehaviorSubject<Language>(this.availableLanguages[0]);
   private directionSubject = new BehaviorSubject<'ltr' | 'rtl'>('ltr');
+  private langChangeSub: Subscription | null = null;
   
   // Public observables
   public currentLanguage$ = this.currentLanguageSubject.asObservable();
   public direction$ = this.directionSubject.asObservable();
-
-  // Subscription to clean up
-  private langChangeSub: Subscription | null = null;
 
   constructor(private translocoService: TranslocoService) {
     // Initialize by syncing with Transloco's active language

@@ -34,7 +34,7 @@ export class ApiService {
 
     return this.http.get<T>(url, { params }).pipe(
       retry(1),
-      catchError(error => this.handleError(error, 'GET', endpoint)),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
     );
   }
 
@@ -49,7 +49,7 @@ export class ApiService {
 
     return this.http
       .post<T>(url, body)
-      .pipe(catchError(error => this.handleError(error, 'POST', endpoint)));
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, 'POST', endpoint)));
   }
 
   /**
@@ -63,7 +63,7 @@ export class ApiService {
 
     return this.http
       .put<T>(url, body)
-      .pipe(catchError(error => this.handleError(error, 'PUT', endpoint)));
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)));
   }
 
   /**
@@ -76,7 +76,7 @@ export class ApiService {
 
     return this.http
       .delete<T>(url)
-      .pipe(catchError(error => this.handleError(error, 'DELETE', endpoint)));
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)));
   }
 
   /**

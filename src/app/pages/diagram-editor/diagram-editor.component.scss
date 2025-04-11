@@ -34,6 +34,20 @@
   align-items: center;
 }
 
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  background-image:
+    linear-gradient(#f1f1f1 1px, transparent 1px),
+    linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
+  background-size: 20px 20px;
+  
+  &.edge-creation-mode {
+    cursor: crosshair;
+  }
+}
+
 .editor-sidebar {
   width: 300px;
   padding: 16px;
@@ -41,24 +55,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-// Temporary placeholder styles
-.placeholder-editor {
-  width: 80%;
-  height: 80%;
-  border: 2px dashed #0097a7;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #0097a7;
-  background-color: rgb(0 151 167 / 5%);
-}
-
-.small-note {
-  font-size: 0.85rem;
-  opacity: 0.7;
 }
 
 // Palette items

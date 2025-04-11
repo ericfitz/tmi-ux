@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## API and Backend
+- Backend API specification is available in `tmi-openapi.json`
+- Local development server runs at http://localhost:8080
+- API URL is configured in environment files (e.g., environment.dev.ts)
+- Authentication and authorization details are documented in `AUTHORIZATION.md`
+- The server uses a role-based access control model with Owner, Writer, and Reader roles
+- Authorization middleware enforces permissions for object access and modification
+
 ## Build/Test Commands
 - Development server: `ng serve` or `npm run dev`
 - Production build: `ng build --configuration=production` or `npm run build:prod`

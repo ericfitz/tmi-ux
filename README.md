@@ -1,59 +1,130 @@
-# TmiApp
+# TMI UX
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
+Angular-based user interface for the TMI application.
 
-## Development server
+## Development
 
-To start a local development server, run:
+### Prerequisites
 
-```bash
-ng serve
-```
+- Node.js (see `.nvmrc` for version)
+- npm or pnpm
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Setup
 
 ```bash
-ng generate component component-name
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Environment Configuration
 
-```bash
-ng generate --help
-```
+The application supports multiple environment configurations:
+
+1. **Default Configuration**
+   ```bash
+   npm run dev  # Uses environment.ts file
+   ```
+
+2. **Environment-specific Configurations**
+   ```bash
+   npm run dev:staging  # Uses environment.staging.ts file
+   npm run dev:test     # Uses environment.test.ts file
+   npm run dev:prod     # Uses environment.prod.ts file
+   ```
+
+3. **Custom Configuration with Environment Variables**
+   ```bash
+   # Set environment variables first
+   export TMI_INTERFACE=0.0.0.0    # Listen on all interfaces
+   export TMI_PORT=8080            # Custom port
+   export TMI_SSL=true             # Enable HTTPS
+   export TMI_SSL_KEY=./certs/key.pem    # Path to SSL key
+   export TMI_SSL_CERT=./certs/cert.pem  # Path to SSL certificate
+   
+   # Run with custom configuration
+   npm run dev:custom
+   ```
+
+### Environment Files
+
+Environment files are located in `src/environments/`. The application uses:
+
+- `environment.ts` - Default development environment
+- `environment.dev.ts` - Development environment (when configured)
+- `environment.prod.ts` - Production environment
+- `environment.staging.ts` - Staging environment
+- `environment.test.ts` - Test environment
+- `environment.example.ts` - Example with documentation
+
+To create a custom environment:
+1. Copy `environment.example.ts` to a new file (e.g., `environment.custom.ts`)
+2. Configure values as needed
+3. Update `angular.json` with a new configuration if needed
+
+### Available Environment Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `production` | Enable production mode | `false` |
+| `logLevel` | Logging verbosity ('DEBUG', 'INFO', 'WARNING', 'ERROR') | `'ERROR'` |
+| `apiUrl` | API server URL | `'https://api.example.com/v1'` |
+| `authTokenExpiryMinutes` | Authentication token validity | `60` |
+| `operatorName` | Name of service operator | `'TMI Operator'` |
+| `operatorContact` | Contact information | `'contact@example.com'` |
+| `serverPort` | Server listening port | `4200` |
+| `serverInterface` | Server listening interface | `'0.0.0.0'` |
+| `enableTLS` | Enable HTTPS | `false` |
+| `tlsKeyPath` | Path to TLS private key | `undefined` |
+| `tlsCertPath` | Path to TLS certificate | `undefined` |
+| `tlsSubjectName` | TLS subject name | System hostname |
 
 ## Building
 
-To build the project run:
-
 ```bash
-ng build
+# Production build
+npm run build:prod
+
+# Staging build
+npm run build:staging
+
+# Test build
+npm run build:test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Code Quality
 
 ```bash
-ng test
+# Run linting
+npm run lint
+
+# Run SCSS linting
+npm run lint:scss
+
+# Run all linting
+npm run lint:all
+
+# Format code
+npm run format
+
+# Check formatting
+npm run format:check
+
+# Run all checks
+npm run check
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Testing
 
 ```bash
-ng e2e
+# Run all tests
+npm test
+
+# Run specific test file
+ng test --include=**/path/to/file.spec.ts
+
+# Run tests for a specific component
+ng test --include=**/component-name/*.spec.ts
 ```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

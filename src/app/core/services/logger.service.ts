@@ -64,7 +64,6 @@ export class LoggerService {
    */
   debug(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      // Using console.debug for development only
       console.debug(this.formatMessage(LogLevel.DEBUG, message), ...optionalParams);
     }
   }
@@ -74,7 +73,6 @@ export class LoggerService {
    */
   info(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      // Using console.info for development only
       console.info(this.formatMessage(LogLevel.INFO, message), ...optionalParams);
     }
   }

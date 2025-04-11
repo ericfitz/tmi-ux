@@ -25,4 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-bootstrapApplication(AppComponent, appConfig).catch(err => console.error(err));
+// Use a self-executing function to avoid exposing the logger in global scope
+void (async () => {
+  try {
+    await bootstrapApplication(AppComponent, appConfig);
+  } catch (err) {
+    // We need to use console.error here since LoggerService isn't available yet
+    console.error('Application bootstrap failed:', err);
+  }
+})();

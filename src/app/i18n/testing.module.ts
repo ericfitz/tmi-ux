@@ -5,11 +5,11 @@ import {
   provideTransloco,
   TranslocoLoader,
 } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 // Mock loader that implements the TranslocoLoader interface
 class TestLoader implements TranslocoLoader {
-  getTranslation(lang: string) {
+  getTranslation(_lang: string): Observable<Record<string, string>> {
     return of({
       // Add mock translations for dates in TOS and Privacy components
       'tos.lastUpdatedDate': '2025-04-06',

@@ -12,18 +12,38 @@
         <mat-icon>arrow_back</mat-icon>
         <span [transloco]="'editor.backButton'">Back to Diagrams</span>
       </button>
+      <!-- Process vertex button -->
+      <button mat-button color="primary" (click)="addVertex('process')">
+        <mat-icon>crop_square</mat-icon>
+        <span>Process</span>
+      </button>
+      <!-- Store vertex button -->
+      <button mat-button color="primary" (click)="addVertex('store')">
+        <mat-icon>storage</mat-icon>
+        <span>Store</span>
+      </button>
+      <!-- Actor vertex button -->
+      <button mat-button color="primary" (click)="addVertex('actor')">
+        <mat-icon>person</mat-icon>
+        <span>Actor</span>
+      </button>
+      <!-- Flow edge creation toggle -->
+      <button mat-button [color]="isCreatingEdge ? 'warn' : 'primary'" (click)="toggleEdgeCreationMode()">
+        <mat-icon>arrow_forward</mat-icon>
+        <span>{{ isCreatingEdge ? 'Cancel Flow' : 'Flow' }}</span>
+      </button>
+      <!-- Delete button - disabled unless an element is selected -->
+      <button mat-button color="warn" [disabled]="!hasSelectedCell" (click)="deleteSelected()">
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+      </button>
     </div>
   </div>
 
   <div class="editor-content">
     <div class="editor-canvas">
-      <!-- This will be replaced with maxGraph diagram editor -->
-      <div class="placeholder-editor">
-        <p [transloco]="'editor.placeholder'" [translocoParams]="{ id: diagramId }">
-        </p>
-        <p class="small-note" [transloco]="'editor.integrationNote'">
-        </p>
-      </div>
+      <!-- maxGraph diagram editor container -->
+      <div #diagramCanvas class="canvas-container"></div>
     </div>
 
     <div class="editor-sidebar">
@@ -35,22 +55,6 @@
           <p [transloco]="'editor.properties.help'">
             Element properties will appear here when an element is selected.
           </p>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title [transloco]="'editor.palette.title'">Palette</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="palette-items">
-            <div class="palette-item" [transloco]="'editor.palette.items.server'">Server</div>
-            <div class="palette-item" [transloco]="'editor.palette.items.database'">Database</div>
-            <div class="palette-item" [transloco]="'editor.palette.items.user'">User</div>
-            <div class="palette-item" [transloco]="'editor.palette.items.connection'">
-              Connection
-            </div>
-          </div>
         </mat-card-content>
       </mat-card>
     </div>

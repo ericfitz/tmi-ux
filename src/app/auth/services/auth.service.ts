@@ -16,8 +16,16 @@ export class AuthService {
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   username$ = this.usernameSubject.asObservable();
   
-  // Public properties and getters
-  
+  constructor(
+    private router: Router,
+    private logger: LoggerService,
+  ) {
+
+    this.logger.info('Auth Service initialized');
+    // Initialize from localStorage on service creation
+    this.checkAuthStatus();
+  }
+
   // Get authentication status
   get isAuthenticated(): boolean {
     return this.isAuthenticatedSubject.value;
@@ -27,16 +35,7 @@ export class AuthService {
   get username(): string {
     return this.usernameSubject.value;
   }
-
-  constructor(
-    private router: Router,
-    private logger: LoggerService,
-  ) {
-    this.logger.info('Auth Service initialized');
-    // Initialize from localStorage on service creation
-    this.checkAuthStatus();
-  }
-
+  
   // Check auth status from local storage
   checkAuthStatus(): void {
     // Log variable initialization with source information

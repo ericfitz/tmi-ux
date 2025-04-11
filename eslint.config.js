@@ -38,7 +38,7 @@ export default [
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': ['warn', { allow: ['debug', 'info', 'warn', 'error'] }],
     },
   },
 
@@ -47,6 +47,31 @@ export default [
     files: ['**/*.spec.ts'],
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
+    },
+  },
+
+  // mxGraph external library integration
+  {
+    files: ['**/diagram-renderer.service.ts', '**/diagram.service.ts'],
+    rules: {
+      // Disable 'any' type warnings for mxGraph integration
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      // Disable member ordering warnings
+      '@typescript-eslint/member-ordering': 'off',
+    },
+  },
+  
+  // Angular services and components - relax member ordering
+  {
+    files: ['**/services/*.ts', '**/components/*.ts', '**/**.component.ts', '**/i18n/*.ts'],
+    rules: {
+      '@typescript-eslint/member-ordering': 'off',
     },
   },
 

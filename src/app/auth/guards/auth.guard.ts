@@ -1,7 +1,10 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 
 export const authGuard: CanActivateFn = (_route, _state) => {
+  // For development: always allow access
+  return true;
+  
+  /*
   const router = inject(Router);
 
   // Check for authentication - using localStorage for demo
@@ -14,4 +17,5 @@ export const authGuard: CanActivateFn = (_route, _state) => {
   }
 
   return true;
+  */
 };

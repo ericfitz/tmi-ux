@@ -15,6 +15,7 @@
     "dev:staging": "ng serve --configuration=staging --open",
     "dev:test": "ng serve --configuration=test --open",
     "dev:prod": "ng serve --configuration=production --open",
+    "dev:custom": "ng serve --host=${TMI_INTERFACE:-0.0.0.0} --port=${TMI_PORT:-4200} --ssl=${TMI_SSL:-false} --ssl-key=${TMI_SSL_KEY:-} --ssl-cert=${TMI_SSL_CERT:-} --open",
     "lint": "eslint \"src/**/*.{ts,html}\" --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --fix",
     "lint:all": "npm run lint && npm run lint:scss",
@@ -41,6 +42,7 @@
     "lmdb": "^3.2.6",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "uuid": "^11.1.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
@@ -53,6 +55,7 @@
     "@angular/compiler-cli": "^19.2.0",
     "@eslint/js": "^9.24.0",
     "@types/jasmine": "~5.1.0",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
     "eslint": "^9.24.0",
