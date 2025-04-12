@@ -62,6 +62,10 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     // Set initial loading message
     this.loadingMessage = 'Initializing renderer...';
     
+    // Make sure we're showing the loading spinner
+    this._isRendererReady = false;
+    this._isFullyStabilized = false;
+    
     // Init tooltip translations from translation service
     this.updateTooltipTranslations();
     
@@ -149,6 +153,9 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
         this.logger.info(`Change detection triggered: hasSelectedCell=${this.hasSelectedCell}`);
       })
     );
+    
+    // Set up listener for label editing state
+    this.setupEditingStateListener();
   }
 
   ngAfterViewInit(): void {
@@ -163,6 +170,10 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       this.diagramRenderer.initialize(this.diagramCanvas.nativeElement);
       
       // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+      // Explicitly set renderer as not ready and force change detection
+      this._isRendererReady = false;
+      this.cdr.detectChanges();
+      
       setTimeout(() => {
         // Wait for initialization using the Promise-based approach
         this.diagramRenderer.initializeRenderer()
@@ -178,6 +189,8 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
               
               // Wait for full stabilization
               this.loadingMessage = 'Stabilizing diagram...';
+              // Force change detection to update the loading message
+              this.cdr.detectChanges();
               return this.diagramRenderer.waitForStabilization();
             }
             return Promise.resolve();
@@ -188,9 +201,15 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
             
             this._isFullyStabilized = true;
             this.logger.info('Diagram fully stabilized and ready for all operations');
+            
+            // Force change detection after setting ready state
+            this.cdr.detectChanges();
           })
           .catch(error => {
             this.logger.error('Error during renderer initialization chain', error);
+            // Also set ready to true on error to hide spinner
+            this._isRendererReady = true;
+            this.cdr.detectChanges();
           });
       });
     } catch (error) {
@@ -409,6 +428,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   // Properties of the selected cell as JSON string
   public selectedCellProperties: string | null = null;
   // Track if the renderer is ready for operations - made public so template can access it
+  // Initialize to false to show the spinner during loading
   public _isRendererReady = false;
   // Track if the graph is fully stabilized
   public _isFullyStabilized = false;
@@ -916,18 +936,119 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
   
+  // Track if we're currently editing a label
+  private _isEditingLabel = false;
+  
+  // Subscribe to editing state changes from the event handler service
+  private setupEditingStateListener(): void {
+    this.subscriptions.push(
+      this.diagramRenderer.getEventHandlingService().labelEditingState$.subscribe(isEditing => {
+        this._isEditingLabel = isEditing;
+        this.logger.debug(`Label editing state changed to: ${isEditing}`);
+      })
+    );
+  }
+  
   /**
-   * Handle keyboard events for delete and backspace
+   * Handle keyboard events for diagram editing:
+   * - Delete/Backspace: Delete selected cell (only when not editing a label)
+   * - F2: Edit label of selected cell
+   * - Escape: Cancel selection or exit editing mode
+   * - Enter: Complete label editing (when in edit mode)
+   * 
+   * When editing a label, keyboard events for Backspace/Delete are carefully 
+   * handled to prevent accidental deletion of the object while allowing normal
+   * text editing operations.
    */
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent): void {
-    // Only handle delete/backspace when a cell is selected
-    if (this.hasSelectedCell && (event.key === 'Delete' || event.key === 'Backspace')) {
-      // Prevent the default browser behavior (like navigating back with backspace)
-      event.preventDefault();
+    // IMPORTANT: We need to check for active text inputs to determine
+    // if we're in label editing mode, since the graph editing events
+    // might not fire perfectly in sync with keydown events
+    const activeElement = document.activeElement;
+    const isTextInput = activeElement && 
+                       (activeElement.tagName === 'INPUT' || 
+                        activeElement.tagName === 'TEXTAREA' ||
+                        (activeElement as HTMLElement).hasAttribute('contenteditable') ||
+                        activeElement.className.includes('mxCellEditor') ||
+                        activeElement.parentElement?.className.includes('mxCellEditor'));
+    
+    // Local check takes precedence over event-based flag
+    const isCurrentlyEditing = isTextInput || this._isEditingLabel;
+    
+    // Get graph for operations
+    const graph = this.diagramRenderer.getGraph();
+    if (!graph) return;
+    
+    // Debugging logs only if not in common edit operations
+    if (!(isCurrentlyEditing && 
+         (event.key === 'Backspace' || 
+          event.key === 'Delete' || 
+          event.key.length === 1))) { // Single character keys
+      this.logger.debug(`Key pressed: ${event.key}, editing: ${isCurrentlyEditing}, element: ${activeElement?.tagName}`);
+    }
+    
+    // If editing a label, handle special cases and let other events pass through
+    if (isCurrentlyEditing) {
+      // Handle Escape key to exit editing
+      if (event.key === 'Escape' && graph.cellEditor && graph.cellEditor.stopEditing) {
+        graph.cellEditor.stopEditing(true); // true = cancel editing
+        event.preventDefault();
+        this.logger.debug('Stopped label editing with Escape');
+        return;
+      }
       
-      // Delete the selected item
-      this.deleteSelected();
+      // Handle Enter key to complete editing (unless Shift+Enter for new line)
+      if (event.key === 'Enter' && !event.shiftKey && graph.cellEditor && graph.cellEditor.stopEditing) {
+        graph.cellEditor.stopEditing(false); // false = accept changes
+        event.preventDefault();
+        this.logger.debug('Completed label editing with Enter');
+        return;
+      }
+      
+      // For Delete/Backspace, stop propagation but don't prevent default
+      // This allows the editor to handle the key normally but prevents
+      // the cell from being deleted
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.stopPropagation();
+        // DO NOT call preventDefault() - we want the default text editing behavior
+        return;
+      }
+      
+      // IMPORTANT: Let everything else pass through to the editor
+      return;
+    }
+    
+    // Only handle keys when a cell is selected (and not in edit mode)
+    if (this.hasSelectedCell) {
+      // Handle delete/backspace to delete the selected cell
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        // Prevent the default browser behavior
+        event.preventDefault();
+        
+        this.logger.debug(`Deleting selected cell with ${event.key} key`);
+        this.deleteSelected();
+      }
+      
+      // Handle F2 or Enter to start editing the label
+      else if (event.key === 'F2' || event.key === 'Enter') {
+        event.preventDefault();
+        
+        // Start editing the selected cell's label
+        if (this._selectedCellId) {
+          const cell = this.diagramRenderer.getCellById(this._selectedCellId);
+          if (cell) {
+            this.logger.debug(`Starting label edit via ${event.key} key for cell ${this._selectedCellId}`);
+            graph.startEditingAtCell(cell);
+          }
+        }
+      }
+      
+      // Handle Escape to cancel selection
+      else if (event.key === 'Escape') {
+        this.logger.debug('Escape key pressed, clearing selection');
+        graph.clearSelection();
+      }
     }
   }
   

@@ -117,6 +117,32 @@
     box-shadow: inset 0 0 20px rgb(33 150 243 / 20%);
     transition: all 0.2s ease-in-out;
   }
+  
+  // Custom styling for the label editor to ensure it's visible across themes
+  ::ng-deep .mxCellEditor {
+    border: 2px dashed #2196F3 !important;
+    box-shadow: 0 0 6px rgba(33, 150, 243, 0.5) !important;
+    padding: 4px !important;
+    border-radius: 2px !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    z-index: 999 !important;
+    opacity: 1 !important;
+    
+    // Make the textarea fully visible
+    textarea {
+      margin: 0 !important;
+      opacity: 1 !important;
+      background-color: transparent !important;
+      color: #333 !important;
+      font-family: inherit !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
+      border: none !important;
+      outline: none !important;
+      min-width: 50px !important;
+      z-index: 1000 !important;
+    }
+  }
 }
 
 .editor-sidebar {

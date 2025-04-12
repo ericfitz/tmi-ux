@@ -24,11 +24,46 @@ export class AnchorPointService {
   }
   
   /**
+   * Clean up anchor points for a deleted cell
+   * This should be called before actually deleting the cell
+   */
+  cleanupForDeletedCell(cellId: string): void {
+    if (!cellId) return;
+    
+    try {
+      this.logger.debug(`Cleaning up anchor points for deleted cell: ${cellId}`);
+      
+      const markersToRemove: string[] = [];
+      
+      // Find all markers for this cell
+      this.activeAnchorMarkers.forEach((marker, key) => {
+        if (key.startsWith(`${cellId}_`)) {
+          markersToRemove.push(key);
+        }
+      });
+      
+      // Remove them
+      for (const key of markersToRemove) {
+        const marker = this.activeAnchorMarkers.get(key);
+        if (marker && marker.destroy) {
+          marker.destroy();
+        }
+        this.activeAnchorMarkers.delete(key);
+        this.anchorPositionMap.delete(key);
+      }
+      
+      this.logger.debug(`Removed ${markersToRemove.length} anchor points for deleted cell ${cellId}`);
+    } catch (error) {
+      this.logger.error(`Error cleaning up anchor points for cell ${cellId}`, error);
+    }
+  }
+  
+  /**
    * Set the graph instance
    */
   setGraph(graph: any): void {
     this.graph = graph;
-    this.model = graph ? graph.getModel() : null;
+    this.model = graph ? graph.model : null;
   }
   
   /**
@@ -158,10 +193,98 @@ export class AnchorPointService {
       marker.style.left = `${x - 4}px`;
       marker.style.top = `${y - 4}px`;
       marker.style.zIndex = '100';
+      marker.style.cursor = 'crosshair'; // Show crosshair cursor to indicate connection point
       marker.setAttribute('data-vertex-id', vertexId);
       marker.setAttribute('data-position', position);
       
-      // Add to container
+      // Add our own event listeners for connection handling
+      marker.addEventListener('mousedown', (event) => {
+        this.logger.debug(`Anchor point mousedown at ${position} for vertex ${vertexId}`);
+        
+        // Start connection from this anchor point
+        const cell = this.model.getCell(vertexId);
+        if (!cell) {
+          this.logger.error(`Could not find cell with ID: ${vertexId}`);
+          return;
+        }
+        
+        try {
+          // Prevent default behavior
+          event.preventDefault();
+          event.stopPropagation();
+          
+          // Highlight the marker
+          this.highlightAnchorPoint(vertexId, position, true);
+          
+          // Keep track of this anchor point for creating the edge
+          const startPoint = { x, y };
+          const startCell = cell;
+          
+          // Create custom connection handlers
+          const mouseMoveHandler = (moveEvent: MouseEvent) => {
+            moveEvent.preventDefault();
+            moveEvent.stopPropagation();
+            // We're not implementing visual feedback in this version
+          };
+          
+          const mouseUpHandler = (upEvent: MouseEvent) => {
+            upEvent.preventDefault();
+            upEvent.stopPropagation();
+            
+            // Remove event listeners when done
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+            
+            // Get mouse coordinates relative to container
+            const containerRect = this.graph.container.getBoundingClientRect();
+            const endX = upEvent.clientX - containerRect.left;
+            const endY = upEvent.clientY - containerRect.top;
+            
+            // Try to find target cell under mouse
+            const targetCell = this.getCellAt(endX, endY);
+            
+            if (targetCell && this.model.isVertex(targetCell) && targetCell !== startCell) {
+              this.logger.debug(`Creating edge from ${startCell.id} to ${targetCell.id}`);
+              
+              // Create the edge between vertices
+              this.model.beginUpdate();
+              try {
+                // Get parent for the edge
+                const parent = this.graph.getDefaultParent();
+                
+                // Insert the edge with default style
+                const edge = this.graph.insertEdge(
+                  parent, 
+                  null, 
+                  'Edge', 
+                  startCell, 
+                  targetCell, 
+                  'endArrow=classic;html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;'
+                );
+                
+                this.logger.debug(`Edge created with ID: ${edge.id}`);
+              } catch (error) {
+                this.logger.error('Error creating edge', error);
+              } finally {
+                this.model.endUpdate();
+              }
+            } else {
+              this.logger.debug('No valid target for edge - connection canceled');
+            }
+            
+            // Reset highlight on the original anchor point
+            this.highlightAnchorPoint(vertexId, position, false);
+          };
+          
+          // Add temporary event listeners for tracking mouse
+          document.addEventListener('mousemove', mouseMoveHandler);
+          document.addEventListener('mouseup', mouseUpHandler);
+        } catch (err) {
+          this.logger.error('Error handling anchor point interaction', err);
+        }
+      });
+      
+      // Add marker to container
       this.graph.container.appendChild(marker);
       
       // Add marker to the collection to track for cleanup
@@ -364,6 +487,54 @@ export class AnchorPointService {
       this.model.setGeometry(edge, newGeometry);
     } catch (error) {
       this.logger.error('Error setting edge terminal point', error);
+    }
+  }
+  
+  /**
+   * Get the cell at a specific coordinate
+   * @param x X coordinate relative to container
+   * @param y Y coordinate relative to container
+   * @returns The cell at the coordinates or null
+   */
+  private getCellAt(x: number, y: number): any {
+    if (!this.graph) {
+      return null;
+    }
+    
+    try {
+      // Convert screen coordinates to model coordinates
+      let pt = {x, y};
+      
+      // Use the appropriate method depending on what's available
+      if (typeof this.graph.convertScreenToGraphPoint === 'function') {
+        // Use MaxGraph's method if available
+        pt = this.graph.convertScreenToGraphPoint({x, y});
+      } else if (typeof this.graph.getPointForEvent === 'function') {
+        // Simulate an event object with clientX/Y properties
+        const mockEvent = { clientX: x, clientY: y };
+        pt = this.graph.getPointForEvent(mockEvent);
+      }
+      
+      // Get the cell at the coordinates, with fallbacks for different API versions
+      if (typeof this.graph.getCellAt === 'function') {
+        // Direct method
+        return this.graph.getCellAt(pt.x, pt.y);
+      } else if (this.graph.getCellsAt) {
+        // Some versions return array of cells
+        const cells = this.graph.getCellsAt(pt.x, pt.y);
+        // Return the first vertex if any
+        return cells && cells.length > 0 ? cells[0] : null;
+      } else {
+        // Final fallback - use findNearestAnchorPoint
+        const nearest = this.findNearestAnchorPoint(pt.x, pt.y, 20);
+        if (nearest) {
+          return this.model.getCell(nearest.vertexId);
+        }
+        return null;
+      }
+    } catch (error) {
+      this.logger.error('Error getting cell at coordinates', error);
+      return null;
     }
   }
 }

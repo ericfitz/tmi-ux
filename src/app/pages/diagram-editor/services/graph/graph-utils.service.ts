@@ -22,7 +22,7 @@ export class GraphUtilsService {
    */
   setGraph(graph: any): void {
     this.graph = graph;
-    this.model = graph ? graph.getModel() : null;
+    this.model = graph ? graph.model : null;
   }
   
   /**
@@ -61,14 +61,59 @@ export class GraphUtilsService {
    * Check if a cell is a vertex
    */
   isVertex(cell: any): boolean {
-    return this.model && cell && this.model.isVertex(cell);
+    if (!this.model || !cell) {
+      return false;
+    }
+    
+    // MaxGraph API uses different methods to check cell types
+    // Try different approaches to determine if it's a vertex
+    try {
+      // Check if the vertex has a geometry property with width and height
+      const geometry = cell.geometry;
+      if (geometry && geometry.width !== undefined && geometry.height !== undefined) {
+        return true;
+      }
+      
+      // Try to check if it's not an edge
+      if (cell.isEdge !== undefined) {
+        return !cell.isEdge;
+      }
+      
+      // Check for edge-specific properties
+      return !(cell.source && cell.target);
+    } catch (error) {
+      this.logger.error('Error checking if cell is vertex', error);
+      return false;
+    }
   }
   
   /**
    * Check if a cell is an edge
    */
   isEdge(cell: any): boolean {
-    return this.model && cell && this.model.isEdge(cell);
+    if (!this.model || !cell) {
+      return false;
+    }
+    
+    // MaxGraph API uses different methods to check cell types
+    try {
+      // Check for source and target properties (edges connect vertices)
+      if (cell.source && cell.target) {
+        return true;
+      }
+      
+      // Try to check if it has isEdge property
+      if (cell.isEdge !== undefined) {
+        return cell.isEdge;
+      }
+      
+      // Check for typical edge geometry (no width/height)
+      const geometry = cell.geometry;
+      return geometry && geometry.width === undefined && geometry.height === undefined;
+    } catch (error) {
+      this.logger.error('Error checking if cell is edge', error);
+      return false;
+    }
   }
   
   /**

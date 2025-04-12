@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DiagramComponentMapperService } from './diagram-component-mapper.service';
 import { VertexCreationResult } from '../interfaces/diagram-renderer.interface';
+import { CellDeleteInfo } from '../utils/cell-delete-info.model';
 
 /**
  * Service to manage vertex creation and manipulation
@@ -28,7 +29,7 @@ export class VertexManagementService {
    */
   setGraph(graph: any): void {
     this.graph = graph;
-    this.model = graph ? graph.getModel() : null;
+    this.model = graph ? graph.model : null;
   }
   
   /**
@@ -162,7 +163,7 @@ export class VertexManagementService {
       
       // Get current style
       const style = this.graph.getCellStyle(cell);
-      let styleString = this.graph.getModel().getStyle(cell);
+      let styleString = this.model.getStyle(cell);
       
       if (highlight) {
         // Add highlight style if not already present
@@ -176,7 +177,7 @@ export class VertexManagementService {
       }
       
       // Apply the updated style
-      this.graph.getModel().setStyle(cell, styleString);
+      this.model.setStyle(cell, styleString);
       
       // Refresh cell to show highlight
       this.graph.refresh(cell);
@@ -193,32 +194,146 @@ export class VertexManagementService {
       return;
     }
     
+    // Store cellId as a primitive string value right away
+    // This prevents issues with logging after the cell is deleted
+    const cellIdStr = String(cellId);
+    
     try {
-      this.logger.debug(`Deleting vertex with cell ID: ${cellId}`);
+      this.logger.debug(`Deleting vertex with cell ID: ${cellIdStr}`);
       
+      // Use the stored primitive string value
       const cell = this.model.getCell(cellId);
-      if (!cell || !this.model.isVertex(cell)) {
-        this.logger.warn(`Cell is not a vertex or does not exist: ${cellId}`);
+      if (!cell) {
+        this.logger.warn(`Cell does not exist: ${cellIdStr}`);
         return;
       }
+      
+      // In MaxGraph, model.isVertex might not exist - use a more reliable check
+      if (cell.isEdge && cell.isEdge()) {
+        this.logger.warn(`Cell is an edge, not a vertex: ${cellIdStr}`);
+        return;
+      }
+      
+      // Capture vertex info before deletion
+      const info = this.captureVertexDeleteInfo(cell);
+      
+      // Now delete using the captured info
+      this.deleteVertexWithInfo(info);
+    } catch (error) {
+      this.logger.error(`Error deleting vertex: ${cellIdStr}`, error);
+    }
+  }
+  
+  /**
+   * Delete a vertex using pre-captured information
+   * This avoids accessing the cell after it's deleted
+   */
+  deleteVertexWithInfo(info: CellDeleteInfo): void {
+    if (!this.graph || !info || !info.id) {
+      return;
+    }
+    
+    try {
+      this.logger.debug(`Deleting vertex with info: ${info.id} (${info.description || 'no description'})`);
       
       // Begin update
       this.model.beginUpdate();
       
       try {
-        // First delete all connected edges
-        this.deleteEdgesConnectedToVertex(cell);
+        // Get connected edges from info or directly from the graph
+        if (info.connectedEdgeIds && info.connectedEdgeIds.length > 0) {
+          // Use pre-captured edge IDs
+          const edgeCells = info.connectedEdgeIds
+            .map(id => this.model.getCell(id))
+            .filter(cell => cell !== null);
+          
+          if (edgeCells.length > 0) {
+            // Remove the edges
+            this.graph.removeCells(edgeCells);
+            
+            // Delete components for these edges
+            for (const edge of edgeCells) {
+              if (edge) {
+                const component = this.componentMapper.findComponentByCellId(edge.id);
+                if (component) {
+                  this.componentMapper.deleteComponent(component.id);
+                }
+              }
+            }
+          }
+        } else {
+          // Fall back to getting edges from the graph
+          const cell = this.model.getCell(info.id);
+          if (cell) {
+            this.deleteEdgesConnectedToVertex(cell);
+          }
+        }
         
-        // Then delete the vertex
-        this.graph.removeCells([cell]);
+        // Delete the vertex cell
+        const vertexCell = this.model.getCell(info.id);
+        if (vertexCell) {
+          this.graph.removeCells([vertexCell]);
+        }
       } finally {
         // End update
         this.model.endUpdate();
       }
       
-      this.logger.debug(`Vertex deleted: ${cellId}`);
+      this.logger.debug(`Vertex deleted: ${info.id}`);
     } catch (error) {
-      this.logger.error(`Error deleting vertex: ${cellId}`, error);
+      this.logger.error(`Error deleting vertex with info: ${info.id}`, error);
+    }
+  }
+  
+  /**
+   * Capture all information needed from a vertex before deletion
+   */
+  captureVertexDeleteInfo(vertex: any): CellDeleteInfo {
+    if (!this.graph || !vertex) {
+      return { id: '', type: 'vertex', label: '' };
+    }
+    
+    try {
+      const cellId = vertex.id;
+      const label = vertex.value || '';
+      const geometry = vertex.geometry;
+      
+      // Get connected edges
+      const edges = this.graph.getEdges(vertex) || [];
+      const connectedEdgeIds = edges.map((edge: any) => edge.id);
+      
+      // Get associated component
+      const component = this.componentMapper.findComponentByCellId(cellId);
+      const componentId = component?.id;
+      
+      // Create the delete info
+      const info: CellDeleteInfo = {
+        id: cellId,
+        type: 'vertex',
+        label,
+        connectedEdgeIds,
+        componentId,
+        description: `vertex "${label}" (ID: ${cellId})`
+      };
+      
+      // Add geometry if available
+      if (geometry) {
+        info.geometry = {
+          x: geometry.x,
+          y: geometry.y,
+          width: geometry.width,
+          height: geometry.height
+        };
+      }
+      
+      return info;
+    } catch (error) {
+      this.logger.error(`Error capturing vertex delete info for cell: ${vertex?.id}`, error);
+      return { 
+        id: vertex?.id || '', 
+        type: 'vertex', 
+        label: vertex?.value || '' 
+      };
     }
   }
   

@@ -11,6 +11,7 @@ import {
   VertexCreationResult,
   EdgeCreationResult
 } from './interfaces/diagram-renderer.interface';
+import { CellDeleteInfo } from './utils/cell-delete-info.model';
 
 // Import specialized services
 import { GraphInitializationService } from './graph/graph-initialization.service';
@@ -48,6 +49,36 @@ export class DiagramRendererService implements IDiagramRendererService {
     private componentMapper: DiagramComponentMapperService
   ) {
     this.logger.info('DiagramRendererService initialized');
+  }
+  
+  /**
+   * Capture all information needed about a cell before deletion
+   */
+  private capturePreDeleteInfo(cellId: string): CellDeleteInfo | null {
+    if (!this.isInitialized() || !cellId) {
+      return null;
+    }
+    
+    try {
+      const cell = this.getCellById(cellId);
+      if (!cell) {
+        this.logger.warn(`Cannot capture pre-delete info: Cell not found: ${cellId}`);
+        return null;
+      }
+      
+      // Determine cell type and use appropriate service
+      if (this.graphUtils.isVertex(cell)) {
+        return this.vertexService.captureVertexDeleteInfo(cell);
+      } else if (this.graphUtils.isEdge(cell)) {
+        return this.edgeService.captureEdgeDeleteInfo(cell);
+      } else {
+        this.logger.warn(`Unknown cell type for pre-delete info: ${cellId}`);
+        return null;
+      }
+    } catch (error) {
+      this.logger.error(`Error capturing pre-delete info for cell: ${cellId}`, error);
+      return null;
+    }
   }
   
   // Event observables for component interaction
@@ -151,7 +182,7 @@ export class DiagramRendererService implements IDiagramRendererService {
       
       // Get graph and model
       const graph = this.graphInitService.getGraph();
-      const model = graph.getModel();
+      const model = graph.model;
       
       // Start batch update
       model.beginUpdate();
@@ -415,16 +446,36 @@ export class DiagramRendererService implements IDiagramRendererService {
       }
       
       const cellId = component.cellId;
-      const cell = this.getCellById(cellId);
       
-      // Delete from model first, then delete the cell
+      // Capture all needed information BEFORE deletion
+      const deleteInfo = this.capturePreDeleteInfo(cellId);
+      
+      // Clean up anchor points
+      this.anchorService.cleanupForDeletedCell(cellId);
+      
+      // Delete component from model first
       this.componentMapper.deleteComponent(componentId);
       
-      if (cell) {
-        if (this.graphUtils.isVertex(cell)) {
-          this.vertexService.deleteVertexByCellId(cellId);
-        } else if (this.graphUtils.isEdge(cell)) {
-          this.edgeService.deleteEdgeByCellId(cellId);
+      // Now delete the cell using the pre-delete info
+      if (deleteInfo) {
+        // Determine cell type and use appropriate service
+        if (deleteInfo.type === 'vertex') {
+          this.vertexService.deleteVertexWithInfo(deleteInfo);
+        } else if (deleteInfo.type === 'edge') {
+          this.edgeService.deleteEdgeWithInfo(deleteInfo);
+        }
+        
+        this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
+      } else {
+        // Fall back to direct deletion if we couldn't get pre-delete info
+        this.logger.warn(`No pre-delete info available, using direct deletion for cell: ${cellId}`);
+        const cell = this.getCellById(cellId);
+        if (cell) {
+          if (this.graphUtils.isVertex(cell)) {
+            this.vertexService.deleteVertexByCellId(cellId);
+          } else if (this.graphUtils.isEdge(cell)) {
+            this.edgeService.deleteEdgeByCellId(cellId);
+          }
         }
       }
     } catch (error) {
@@ -441,11 +492,16 @@ export class DiagramRendererService implements IDiagramRendererService {
     }
     
     try {
-      const cell = this.getCellById(cellId);
-      if (!cell) {
-        this.logger.warn(`Cannot delete: Cell not found: ${cellId}`);
+      // Capture all needed information BEFORE deletion
+      const deleteInfo = this.capturePreDeleteInfo(cellId);
+      
+      if (!deleteInfo) {
+        this.logger.warn(`Cannot delete: Unable to get info for cell: ${cellId}`);
         return;
       }
+      
+      // Clean up anchor points
+      this.anchorService.cleanupForDeletedCell(cellId);
       
       // Find and delete component first
       const component = this.componentMapper.findComponentByCellId(cellId);
@@ -453,12 +509,14 @@ export class DiagramRendererService implements IDiagramRendererService {
         this.componentMapper.deleteComponent(component.id);
       }
       
-      // Delete the cell
-      if (this.graphUtils.isVertex(cell)) {
-        this.vertexService.deleteVertexByCellId(cellId);
-      } else if (this.graphUtils.isEdge(cell)) {
-        this.edgeService.deleteEdgeByCellId(cellId);
+      // Delete the cell using the pre-delete info
+      if (deleteInfo.type === 'vertex') {
+        this.vertexService.deleteVertexWithInfo(deleteInfo);
+      } else if (deleteInfo.type === 'edge') {
+        this.edgeService.deleteEdgeWithInfo(deleteInfo);
       }
+      
+      this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
     } catch (error) {
       this.logger.error(`Error deleting cell: ${cellId}`, error);
     }
@@ -483,5 +541,13 @@ export class DiagramRendererService implements IDiagramRendererService {
    */
   getGraph(): any {
     return this.graphInitService.getGraph();
+  }
+  
+  /**
+   * Get the event handling service
+   * This gives access to additional events and state
+   */
+  getEventHandlingService(): GraphEventHandlingService {
+    return this.eventHandlingService;
   }
 }

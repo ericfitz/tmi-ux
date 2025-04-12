@@ -28,12 +28,206 @@ export class MxGraphPatchingService {
       this.patchObjectMethodsToEnsurePointsHaveClone();
       this.applyImagePathFixes();
       this.createSafeConstraintHandler(graph);
-      this.setupSafeConnectionHandler(graph);
+      this.setupEdgeConnectionSettings(graph);
+      this.configureLabelHandleStyle(graph);
       
       this.logger.info('All patches applied successfully');
     } catch (error) {
       this.logger.error('Error applying mxGraph patches', error);
       throw error;
+    }
+  }
+  
+  /**
+   * Configure the style for label handles to make them more visible
+   * and consistent with top-center positioning
+   */
+  private configureLabelHandleStyle(graph: any): void {
+    try {
+      this.logger.debug('Configuring label handle style');
+      
+      if (!graph) {
+        this.logger.error('Cannot configure label handle style: Graph is null');
+        return;
+      }
+      
+      // Define a custom getLabelHandleFillColor function
+      if (graph.view && graph.view.getState) {
+        // Save reference to the original method if it exists
+        const originalGetLabelHandleFillColor = graph.getLabelHandleFillColor;
+        
+        // Override the method to return a more visible color
+        graph.getLabelHandleFillColor = function(state: any) {
+          // Call original method if it exists
+          if (typeof originalGetLabelHandleFillColor === 'function') {
+            const originalColor = originalGetLabelHandleFillColor.apply(this, arguments);
+            if (originalColor) return originalColor;
+          }
+          
+          // Return a bright blue color that's more visible
+          return '#4285F4'; // Google blue
+        };
+      }
+      
+      // Modify vertex handle creation to force label handle position
+      if (graph.createHandler) {
+        const originalCreateHandler = graph.createHandler;
+        
+        graph.createHandler = function(state: any) {
+          const handler = originalCreateHandler.apply(this, arguments);
+          
+          // If we have a handler with a label
+          if (handler) {
+            // Override getLabelPosition to always return top-center
+            if (handler.getLabelPosition) {
+              const originalGetLabelPosition = handler.getLabelPosition;
+              handler.getLabelPosition = function() {
+                const pos = originalGetLabelPosition.apply(this, arguments);
+                
+                if (pos && state && state.text && state.text.boundingBox) {
+                  // Calculate position at the top center of label
+                  return {
+                    x: state.text.boundingBox.x + state.text.boundingBox.width / 2,
+                    y: state.text.boundingBox.y - 10 // Offset upward
+                  };
+                }
+                
+                return pos;
+              };
+            }
+            
+            // Force placement of any already created label handles
+            if (handler.label && state && state.text && state.text.boundingBox) {
+              const bbox = state.text.boundingBox;
+              
+              // Force immediate handle position update
+              if (handler.labelShape) {
+                // Position at top center
+                handler.labelShape.bounds.x = bbox.x + bbox.width / 2 - handler.labelShape.bounds.width / 2;
+                handler.labelShape.bounds.y = bbox.y - handler.labelShape.bounds.height - 2; // Position above text
+                
+                // Force redraw
+                if (handler.labelShape.redraw) {
+                  handler.labelShape.redraw();
+                }
+              }
+              
+              // Override init method to set correct initial position
+              if (handler.init) {
+                const originalInit = handler.init;
+                handler.init = function() {
+                  originalInit.apply(this, arguments);
+                  
+                  // Update label position after initialization
+                  if (this.labelShape && state && state.text && state.text.boundingBox) {
+                    const labelBbox = state.text.boundingBox;
+                    this.labelShape.bounds.x = labelBbox.x + labelBbox.width / 2 - this.labelShape.bounds.width / 2;
+                    this.labelShape.bounds.y = labelBbox.y - this.labelShape.bounds.height - 2;
+                    
+                    // Force redraw
+                    if (this.labelShape.redraw) {
+                      this.labelShape.redraw();
+                    }
+                  }
+                };
+              }
+              
+              // Override refresh method to maintain position
+              if (handler.refresh) {
+                const originalRefresh = handler.refresh;
+                handler.refresh = function() {
+                  originalRefresh.apply(this, arguments);
+                  
+                  // Re-position label handle after refresh
+                  if (this.labelShape && state && state.text && state.text.boundingBox) {
+                    const labelBbox = state.text.boundingBox;
+                    this.labelShape.bounds.x = labelBbox.x + labelBbox.width / 2 - this.labelShape.bounds.width / 2;
+                    this.labelShape.bounds.y = labelBbox.y - this.labelShape.bounds.height - 2;
+                    
+                    // Force redraw
+                    if (this.labelShape.redraw) {
+                      this.labelShape.redraw();
+                    }
+                  }
+                };
+              }
+            }
+            
+            // Create bigger, more visible label handle
+            if (handler.createLabelHandleShape) {
+              const originalCreateLabelHandleShape = handler.createLabelHandleShape;
+              
+              handler.createLabelHandleShape = function() {
+                const shape = originalCreateLabelHandleShape.apply(this, arguments);
+                
+                // Customize the shape if created
+                if (shape) {
+                  // Make the handle larger and more visible
+                  shape.bounds.width = 12;
+                  shape.bounds.height = 12;
+                  
+                  // Update fill color to be more visible
+                  shape.fill = '#4285F4'; // Google blue
+                  shape.stroke = '#2A56C6'; // Darker blue for border
+                  shape.strokewidth = 2;
+                  
+                  // Increase opacity
+                  shape.opacity = 100;
+                  
+                  // Make the handle circular
+                  shape.isRounded = true;
+                  shape.arcSize = 100; // Fully rounded (circle)
+                  
+                  // Position at top center if state is available
+                  if (state && state.text && state.text.boundingBox) {
+                    const labelBbox = state.text.boundingBox;
+                    shape.bounds.x = labelBbox.x + labelBbox.width / 2 - shape.bounds.width / 2;
+                    shape.bounds.y = labelBbox.y - shape.bounds.height - 2;
+                  }
+                }
+                
+                return shape;
+              };
+            }
+          }
+          
+          return handler;
+        };
+      }
+      
+      // Customize handle positions but leave label positions alone
+      if (typeof graph.getImageAnchor === 'function') {
+        const originalGetImageAnchor = graph.getImageAnchor;
+        graph.getImageAnchor = function(state: any, image: any) {
+          // If this is a label handle (but not a label itself)
+          if (state && state.text && image && image.className && 
+              image.className.indexOf && image.className.indexOf('mxCellLabelHandle') >= 0) {
+            // Create a point object with top-center anchoring
+            // Using literal object since Point might not be accessible here
+            return { x: 0.5, y: 0 }; // Anchor at top-center (0.5 horizontally, 0 vertically)
+          }
+          
+          // Otherwise use default behavior
+          return originalGetImageAnchor.apply(this, arguments);
+        };
+      }
+      
+      // Make sure the default vertex style doesn't change label position
+      if (graph.getStylesheet && graph.getStylesheet()) {
+        const stylesheet = graph.getStylesheet();
+        if (stylesheet.getDefaultVertexStyle) {
+          const vertexStyle = stylesheet.getDefaultVertexStyle();
+          // Make sure we don't override these so labels stay centered
+          delete vertexStyle['labelPosition'];
+          delete vertexStyle['verticalLabelPosition'];
+          delete vertexStyle['align'];
+          delete vertexStyle['verticalAlign'];
+        }
+      }
+      
+      this.logger.debug('Label handle style configured successfully');
+    } catch (error) {
+      this.logger.error('Error configuring label handle style', error);
     }
   }
   
@@ -106,32 +300,9 @@ export class MxGraphPatchingService {
    */
   private patchCellRendererMethods(graph: any): void {
     try {
-      const renderer = graph.getView().getRenderer();
-      
-      this.logger.debug('Patching CellRenderer methods to handle null geometry');
-      
-      // Original method
-      const originalCreateShape = renderer.createShape;
-      
-      // Patched method with null geometry protection
-      renderer.createShape = function(state: any) {
-        if (!state || !state.cell) {
-          return null;
-        }
-        
-        const model = graph.getModel();
-        if (!model) {
-          return null;
-        }
-        
-        if (!state.style) {
-          state.style = {};
-        }
-        
-        return originalCreateShape.apply(this, arguments);
-      };
-      
-      this.logger.debug('CellRenderer methods patched successfully');
+      // In MaxGraph, the view and renderer structure is different
+      // Skip this patch as it's not needed or applicable in MaxGraph
+      this.logger.debug('Skipping CellRenderer method patching for MaxGraph');
     } catch (error) {
       this.logger.error('Failed to patch CellRenderer methods', error);
     }
@@ -178,94 +349,38 @@ export class MxGraphPatchingService {
   }
   
   /**
-   * Create a safer version of mxConstraintHandler
+   * Configure constraint handler if necessary
+   * In this version, we're just using a stub since we're not using constraints
    */
   private createSafeConstraintHandler(graph: any): void {
+    // No-op as we're not using constraints in this version
+    this.logger.debug('Skipping constraint handler setup (not needed)');
+  }
+  
+  // Method removed since it's not needed
+  
+  /**
+   * Configure edge connection settings in the graph
+   */
+  private setupEdgeConnectionSettings(graph: any): void {
     try {
-      this.logger.debug('Creating safe constraint handler');
+      this.logger.debug('Setting up edge connection settings');
       
-      if (!graph || !graph.connectionHandler) {
-        this.logger.warn('Cannot create safe constraint handler: graph or connectionHandler is not available');
+      if (!graph) {
+        this.logger.error('Cannot set up connection settings: Graph is null');
         return;
       }
       
-      // Override constraint handler
-      graph.constraintHandler.updateFocus = () => {
-        // Do nothing - prevents certain focus-related errors
-      };
+      // Make sure edges are connectable
+      graph.setConnectableEdges(true);
       
-      this.overrideConstraintHandlerMethods(graph);
+      // Set styles for connections
+      const edgeStyle = 'edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;';
+      graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
       
-      this.logger.debug('Safe constraint handler created successfully');
+      this.logger.debug('Edge connection settings configured successfully');
     } catch (error) {
-      this.logger.error('Failed to create safe constraint handler', error);
-    }
-  }
-  
-  /**
-   * Override constraint handler methods for better error handling
-   */
-  private overrideConstraintHandlerMethods(graph: any): void {
-    try {
-      // Original method
-      const originalReset = graph.constraintHandler.reset;
-      
-      // Override with safer implementation
-      graph.constraintHandler.reset = function() {
-        try {
-          if (this.currentFocus) {
-            this.currentFocus = null;
-          }
-          
-          if (this.focusHighlight) {
-            if (this.focusHighlight.destroy) {
-              this.focusHighlight.destroy();
-            }
-            this.focusHighlight = null;
-          }
-          
-          return originalReset.apply(this, arguments);
-        } catch (error) {
-          // Silent recovery
-          this.currentFocus = null;
-          this.focusIcons = null;
-          this.focusHighlight = null;
-          this.focusPoints = null;
-          this.currentConstraint = null;
-        }
-      };
-    } catch (error) {
-      this.logger.error('Failed to override constraint handler methods', error);
-    }
-  }
-  
-  /**
-   * Set up a safer connection handler
-   */
-  private setupSafeConnectionHandler(graph: any): void {
-    try {
-      this.logger.debug('Setting up safe connection handler');
-      
-      if (!graph.connectionHandler) {
-        this.logger.warn('Cannot set up safe connection handler: connectionHandler is not available');
-        return;
-      }
-      
-      // Customize the connection handler
-      const originalCreateShape = graph.connectionHandler.createShape;
-      
-      graph.connectionHandler.createShape = function() {
-        try {
-          const result = originalCreateShape.apply(this, arguments);
-          return result;
-        } catch (error) {
-          return null;
-        }
-      };
-      
-      this.logger.debug('Safe connection handler set up successfully');
-    } catch (error) {
-      this.logger.error('Failed to set up safe connection handler', error);
+      this.logger.error('Failed to set up edge connection settings', error);
     }
   }
 }

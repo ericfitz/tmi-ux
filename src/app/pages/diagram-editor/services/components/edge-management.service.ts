@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DiagramComponentMapperService } from './diagram-component-mapper.service';
 import { EdgeCreationResult } from '../interfaces/diagram-renderer.interface';
+import { CellDeleteInfo } from '../utils/cell-delete-info.model';
 
 /**
  * Service to manage edge creation and manipulation
@@ -31,7 +32,7 @@ export class EdgeManagementService {
    */
   setGraph(graph: any): void {
     this.graph = graph;
-    this.model = graph ? graph.getModel() : null;
+    this.model = graph ? graph.model : null;
   }
   
   /**
@@ -206,7 +207,7 @@ export class EdgeManagementService {
       
       // Get current style
       const style = this.graph.getCellStyle(cell);
-      let styleString = this.graph.getModel().getStyle(cell);
+      let styleString = this.model.getStyle(cell);
       
       if (highlight) {
         // Add highlight style if not already present
@@ -220,7 +221,7 @@ export class EdgeManagementService {
       }
       
       // Apply the updated style
-      this.graph.getModel().setStyle(cell, styleString);
+      this.model.setStyle(cell, styleString);
       
       // Refresh cell to show highlight
       this.graph.refresh(cell);
@@ -237,29 +238,129 @@ export class EdgeManagementService {
       return;
     }
     
+    // Store cellId as a primitive string value right away
+    // This prevents issues with logging after the cell is deleted
+    const cellIdStr = String(cellId);
+    
     try {
-      this.logger.debug(`Deleting edge with cell ID: ${cellId}`);
+      this.logger.debug(`Deleting edge with cell ID: ${cellIdStr}`);
       
+      // Use the stored primitive string value
       const cell = this.model.getCell(cellId);
       if (!cell || !this.model.isEdge(cell)) {
-        this.logger.warn(`Cell is not an edge or does not exist: ${cellId}`);
+        this.logger.warn(`Cell is not an edge or does not exist: ${cellIdStr}`);
         return;
       }
+      
+      // Capture edge info before deletion
+      const info = this.captureEdgeDeleteInfo(cell);
+      
+      // Now delete using the captured info
+      this.deleteEdgeWithInfo(info);
+      
+    } catch (error) {
+      this.logger.error(`Error deleting edge: ${cellIdStr}`, error);
+    }
+  }
+  
+  /**
+   * Delete an edge using pre-captured information
+   * This avoids accessing the cell after it's deleted
+   */
+  deleteEdgeWithInfo(info: CellDeleteInfo): void {
+    if (!this.graph || !info || !info.id) {
+      return;
+    }
+    
+    try {
+      this.logger.debug(`Deleting edge with info: ${info.id} (${info.description || 'no description'})`);
       
       // Begin update
       this.model.beginUpdate();
       
       try {
-        // Delete the edge
-        this.graph.removeCells([cell]);
+        // Delete the edge cell
+        const edgeCell = this.model.getCell(info.id);
+        if (edgeCell) {
+          this.graph.removeCells([edgeCell]);
+        }
       } finally {
         // End update
         this.model.endUpdate();
       }
       
-      this.logger.debug(`Edge deleted: ${cellId}`);
+      this.logger.debug(`Edge deleted: ${info.id}`);
     } catch (error) {
-      this.logger.error(`Error deleting edge: ${cellId}`, error);
+      this.logger.error(`Error deleting edge with info: ${info.id}`, error);
+    }
+  }
+  
+  /**
+   * Capture all information needed from an edge before deletion
+   */
+  captureEdgeDeleteInfo(edge: any): CellDeleteInfo {
+    if (!this.graph || !edge) {
+      return { id: '', type: 'edge', label: '' };
+    }
+    
+    try {
+      const cellId = edge.id;
+      const label = edge.value || '';
+      const sourceId = edge.source?.id || '';
+      const targetId = edge.target?.id || '';
+      const geometry = edge.geometry;
+      
+      // Get associated component
+      const component = this.componentMapper.findComponentByCellId(cellId);
+      const componentId = component?.id;
+      
+      // Create the delete info
+      const info: CellDeleteInfo = {
+        id: cellId,
+        type: 'edge',
+        label,
+        source: sourceId,
+        target: targetId,
+        componentId,
+        description: `edge "${label}" (ID: ${cellId}) from ${sourceId} to ${targetId}`
+      };
+      
+      // Add geometry if available
+      if (geometry) {
+        info.geometry = {};
+        
+        // Add points array if it exists
+        if (geometry.points && Array.isArray(geometry.points)) {
+          info.geometry.points = geometry.points.map((point: any) => ({
+            x: point.x,
+            y: point.y
+          }));
+        }
+        
+        // Add source and target points if they exist
+        if (geometry.sourcePoint) {
+          info.geometry.sourcePoint = {
+            x: geometry.sourcePoint.x,
+            y: geometry.sourcePoint.y
+          };
+        }
+        
+        if (geometry.targetPoint) {
+          info.geometry.targetPoint = {
+            x: geometry.targetPoint.x,
+            y: geometry.targetPoint.y
+          };
+        }
+      }
+      
+      return info;
+    } catch (error) {
+      this.logger.error(`Error capturing edge delete info for cell: ${edge?.id}`, error);
+      return { 
+        id: edge?.id || '', 
+        type: 'edge', 
+        label: edge?.value || '' 
+      };
     }
   }
 }
