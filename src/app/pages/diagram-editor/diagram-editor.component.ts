@@ -99,6 +99,9 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       })
     );
     
+    // No longer subscribing to grid state changes from renderer
+  // as we're using our own grid state for the CSS grid
+    
     // Subscribe to cell click events from the renderer
     this.subscriptions.push(
       this.diagramRenderer.cellClicked$.subscribe(cellData => {
@@ -162,6 +165,10 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           if (initialized && this.diagram) {
             this.logger.debug('Renderer initialized, updating diagram');
             this.diagramRenderer.updateDiagram();
+            
+            // Set initial grid state
+            // this.gridEnabled = this.diagramRenderer.isGridEnabled(); - not using maxGraph grid anymore
+            this.gridEnabled = true; // Default to show CSS grid
             
             // Wait for full stabilization
             return this.diagramRenderer.waitForStabilization();
@@ -443,6 +450,11 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   public flowTooltip = 'Flow';
   public flowCancelTooltip = 'Cancel Flow';
   public deleteTooltip = 'Delete';
+  public styleTooltip = 'Style';
+  public gridTooltip = 'Toggle Grid';
+  
+  // Grid state
+  public gridEnabled = true;
   
   /**
    * Create a test edge between the last two vertices created
@@ -558,9 +570,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
   
-  /**
-   * Start or cancel flow (edge) creation mode
-   */
+  // Method left in place but unused - flow button removed from UI
   toggleEdgeCreationMode(): void {
     this.isCreatingEdge = !this.isCreatingEdge;
     this.sourceVertexId = null;
@@ -573,6 +583,15 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     
     // Update the UI to show that flow creation mode is active
     this.diagramRenderer.setEdgeCreationMode(this.isCreatingEdge);
+  }
+  
+  /**
+   * Toggle the grid visibility
+   */
+  toggleGridVisibility(): void {
+    this.logger.info('Toggling grid visibility');
+    this.gridEnabled = !this.gridEnabled;
+    this.logger.debug(`Grid visibility toggled to: ${this.gridEnabled}`);
   }
   
   /**
@@ -755,7 +774,9 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     this.actorTooltip = this.translocoService.translate('editor.palette.items.actor');
     this.flowTooltip = this.translocoService.translate('editor.palette.items.flow');
     this.flowCancelTooltip = this.translocoService.translate('editor.palette.items.flowCancel');
-    this.deleteTooltip = this.translocoService.translate('editor.palette.items.delete');
+    this.deleteTooltip = this.translocoService.translate('editor.toolbar.items.delete');
+    this.styleTooltip = this.translocoService.translate('editor.toolbar.items.style');
+    this.gridTooltip = this.translocoService.translate('editor.toolbar.items.grid');
   }
   
   /**

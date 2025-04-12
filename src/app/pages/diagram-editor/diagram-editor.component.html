@@ -4,11 +4,11 @@
       <h2 [transloco]="'editor.diagramTitle'" [translocoParams]="{ title: diagramTitle }">{{ diagramTitle }}</h2>
     </div>
     <div class="editor-actions">
-      <button mat-raised-button color="primary" (click)="saveDiagram()">
+      <button mat-raised-button color="primary" (click)="saveDiagram()" class="compact-button">
         <mat-icon>save</mat-icon>
         <span [transloco]="'editor.saveButton'">Save</span>
       </button>
-      <button mat-raised-button [routerLink]="['/diagram-management']">
+      <button mat-raised-button [routerLink]="['/diagram-management']" class="compact-button">
         <mat-icon>close</mat-icon>
         <span [transloco]="'editor.closeButton'">Close</span>
       </button>
@@ -21,10 +21,36 @@
   <div class="editor-content">
     <div class="editor-canvas">
       <!-- maxGraph diagram editor container -->
-      <div #diagramCanvas class="canvas-container"></div>
+      <div #diagramCanvas class="canvas-container" [ngClass]="{'grid-enabled': gridEnabled}"></div>
     </div>
 
     <div class="editor-sidebar">
+      <!-- Toolbar Panel -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title [transloco]="'editor.toolbar.title'">Toolbar</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="toolbar-grid">
+            <!-- Delete button - disabled unless an element is selected -->
+            <button mat-mini-fab color="warn" [disabled]="!hasSelectedCell" (click)="deleteSelected()" 
+                    [matTooltip]="deleteTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">delete_forever</span>
+            </button>
+            <!-- Style button - for formatting selected elements -->
+            <button mat-mini-fab color="primary" [disabled]="!hasSelectedCell"
+                    [matTooltip]="styleTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">tune</span>
+            </button>
+            <!-- Grid toggle button -->
+            <button mat-mini-fab color="accent" (click)="toggleGridVisibility()"
+                    [matTooltip]="gridTooltip" matTooltipPosition="above">
+              <span class="material-symbols-outlined">{{ gridEnabled ? 'grid_on' : 'grid_off' }}</span>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Palette Panel -->
       <mat-card>
         <mat-card-header>
@@ -48,18 +74,6 @@
             <button mat-mini-fab color="primary" (click)="addVertex('actor')" 
                     [matTooltip]="actorTooltip" matTooltipPosition="above">
               <span class="material-symbols-outlined">person</span>
-            </button>
-
-            <!-- Flow edge creation toggle -->
-            <button mat-mini-fab [color]="isCreatingEdge ? 'warn' : 'primary'" (click)="toggleEdgeCreationMode()" 
-                    [matTooltip]="isCreatingEdge ? flowCancelTooltip : flowTooltip" matTooltipPosition="above">
-              <span class="material-symbols-outlined">conversion_path</span>
-            </button>
-
-            <!-- Delete button - disabled unless an element is selected -->
-            <button mat-mini-fab color="warn" [disabled]="!hasSelectedCell" (click)="deleteSelected()" 
-                    [matTooltip]="deleteTooltip" matTooltipPosition="above">
-              <span class="material-symbols-outlined">delete_forever</span>
             </button>
           </div>
         </mat-card-content>

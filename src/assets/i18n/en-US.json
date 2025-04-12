@@ -129,6 +129,14 @@
       "title": "Properties",
       "help": "Element properties will appear here when an element is selected."
     },
+    "toolbar": {
+      "title": "Toolbar",
+      "items": {
+        "delete": "Delete",
+        "style": "Style",
+        "grid": "Toggle Grid"
+      }
+    },
     "palette": {
       "title": "Palette",
       "items": {

@@ -86,6 +86,10 @@ export class DiagramRendererService {
   private _cellSelected = new BehaviorSubject<{ cellId: string; cellType: 'vertex' | 'edge' } | null>(null);
   public cellSelected$ = this._cellSelected.asObservable();
   
+  // Grid state
+  private _gridEnabled = new BehaviorSubject<boolean>(true);
+  public gridEnabled$ = this._gridEnabled.asObservable();
+  
   // Edge creation mode
   private _edgeCreationMode = false;
   
@@ -1192,6 +1196,34 @@ export class DiagramRendererService {
            cell.getAttribute?.('edge') === 1 || 
            (cell.style && typeof cell.style === 'string' && cell.style.includes('edgeStyle')) || 
            Boolean(cell.source && cell.target);
+  }
+  
+  /**
+   * Toggle grid visibility
+   * @returns The new grid state
+   */
+  toggleGridVisibility(): boolean {
+    if (!this.graph) {
+      this.logger.error('Cannot toggle grid: Graph not initialized');
+      return false;
+    }
+    
+    const currentGridState = this._gridEnabled.getValue();
+    const newGridState = !currentGridState;
+    
+    this.graph.setGridEnabled(newGridState);
+    this._gridEnabled.next(newGridState);
+    
+    this.logger.debug(`Grid visibility toggled to: ${newGridState}`);
+    return newGridState;
+  }
+  
+  /**
+   * Get the current grid enabled state
+   * @returns Whether the grid is currently enabled
+   */
+  isGridEnabled(): boolean {
+    return this._gridEnabled.getValue();
   }
   
   private handleCellClick(cell: any): void {

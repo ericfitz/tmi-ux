@@ -124,6 +124,14 @@
       "title": "Eigenschaften",
       "help": "Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist."
     },
+    "toolbar": {
+      "title": "Werkzeugleiste",
+      "items": {
+        "delete": "Löschen",
+        "style": "Stil",
+        "grid": "Raster umschalten"
+      }
+    },
     "palette": {
       "title": "Palette",
       "items": {

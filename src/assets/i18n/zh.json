@@ -124,6 +124,14 @@
       "title": "属性",
       "help": "选择元素后，元素属性将显示在此处。"
     },
+    "toolbar": {
+      "title": "工具栏",
+      "items": {
+        "delete": "删除",
+        "style": "样式",
+        "grid": "切换网格"
+      }
+    },
     "palette": {
       "title": "调色板",
       "items": {
