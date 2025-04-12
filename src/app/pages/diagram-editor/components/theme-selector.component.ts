@@ -73,7 +73,10 @@ export class ThemeSelectorComponent implements OnInit {
 
   ngOnInit(): void {
     // Get saved theme preference
-    this.currentThemeId = this.diagramRenderer.getCurrentThemeId();
+    const themeId = this.diagramRenderer.getCurrentThemeId();
+    if (themeId) {
+      this.currentThemeId = themeId;
+    }
     
     // Load available themes
     this.diagramRenderer.getAvailableThemes().subscribe(themes => {

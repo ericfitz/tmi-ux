@@ -59,6 +59,9 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   ngOnInit(): void {
     this.logger.info('DiagramEditorComponent initializing');
     
+    // Set initial loading message
+    this.loadingMessage = 'Initializing renderer...';
+    
     // Init tooltip translations from translation service
     this.updateTooltipTranslations();
     
@@ -100,7 +103,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     );
     
     // No longer subscribing to grid state changes from renderer
-  // as we're using our own grid state for the CSS grid
+    // as we're using our own grid state for the CSS grid
     
     // Subscribe to cell click events from the renderer
     this.subscriptions.push(
@@ -147,7 +150,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       })
     );
   }
-  
+
   ngAfterViewInit(): void {
     if (!this.diagramCanvas) {
       this.logger.error('Diagram canvas element not found');
@@ -159,32 +162,37 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       this.logger.debug('Initializing diagram renderer with canvas element');
       this.diagramRenderer.initialize(this.diagramCanvas.nativeElement);
       
-      // Wait for initialization using the Promise-based approach
-      this.diagramRenderer.initializeRenderer()
-        .then(initialized => {
-          if (initialized && this.diagram) {
-            this.logger.debug('Renderer initialized, updating diagram');
-            this.diagramRenderer.updateDiagram();
+      // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+      setTimeout(() => {
+        // Wait for initialization using the Promise-based approach
+        this.diagramRenderer.initializeRenderer()
+          .then(() => {
+            if (this.diagram) {
+              this.logger.debug('Renderer initialized, updating diagram');
+              this.loadingMessage = 'Loading diagram...';
+              this.diagramRenderer.updateDiagram();
+              
+              // Set initial grid state
+              // this.gridEnabled = this.diagramRenderer.isGridEnabled(); - not using maxGraph grid anymore
+              this.gridEnabled = true; // Default to show CSS grid
+              
+              // Wait for full stabilization
+              this.loadingMessage = 'Stabilizing diagram...';
+              return this.diagramRenderer.waitForStabilization();
+            }
+            return Promise.resolve();
+          })
+          .then(() => {
+            this._isRendererReady = true;
+            this.logger.info('Renderer fully ready for operations');
             
-            // Set initial grid state
-            // this.gridEnabled = this.diagramRenderer.isGridEnabled(); - not using maxGraph grid anymore
-            this.gridEnabled = true; // Default to show CSS grid
-            
-            // Wait for full stabilization
-            return this.diagramRenderer.waitForStabilization();
-          }
-          return Promise.resolve();
-        })
-        .then(() => {
-          this._isRendererReady = true;
-          this.logger.info('Renderer fully ready for operations');
-          
-          this._isFullyStabilized = true;
-          this.logger.info('Diagram fully stabilized and ready for all operations');
-        })
-        .catch(error => {
-          this.logger.error('Error during renderer initialization chain', error);
-        });
+            this._isFullyStabilized = true;
+            this.logger.info('Diagram fully stabilized and ready for all operations');
+          })
+          .catch(error => {
+            this.logger.error('Error during renderer initialization chain', error);
+          });
+      });
     } catch (error) {
       this.logger.error('Error during diagram renderer initialization', error);
     }
@@ -400,10 +408,12 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   private _selectedCellId: string | null = null;
   // Properties of the selected cell as JSON string
   public selectedCellProperties: string | null = null;
-  // Track if the renderer is ready for operations
-  private _isRendererReady = false;
+  // Track if the renderer is ready for operations - made public so template can access it
+  public _isRendererReady = false;
   // Track if the graph is fully stabilized
-  private _isFullyStabilized = false;
+  public _isFullyStabilized = false;
+  // Loading message for the spinner
+  public loadingMessage = 'Initializing diagram editor...';
   // Track vertex creation retries
   private _vertexCreationRetries: Record<string, number> = {};
   
@@ -473,23 +483,23 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     this.logger.info('Creating test diagram with ultra-reliable method');
     
     try {
-      // Create complete edges with vertices in a single operation
+      // First create the vertices and get their IDs
+      const serverId = this.diagramRenderer.createVertex(100, 100, 'Server');
+      const databaseId = this.diagramRenderer.createVertex(300, 100, 'Database');
+      const clientId = this.diagramRenderer.createVertex(100, 250, 'Client');
+      const logId = this.diagramRenderer.createVertex(300, 300, 'Log');
+      
+      // Then create edges between them
       this.diagramRenderer.createSingleEdgeWithVertices(
-        100, 100, 'Server', 
-        300, 100, 'Database', 
-        'Server to Database'
+        serverId, databaseId, 'Server to Database'
       );
       
       this.diagramRenderer.createSingleEdgeWithVertices(
-        100, 250, 'Client', 
-        100, 100, 'Server',
-        'Client to Server'
+        clientId, serverId, 'Client to Server'
       );
       
       this.diagramRenderer.createSingleEdgeWithVertices(
-        300, 300, 'Log', 
-        300, 100, 'Database',
-        'Log to Database'
+        logId, databaseId, 'Log to Database'
       );
       
       this.logger.info('Test diagram created successfully');
@@ -518,14 +528,18 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     
     // Use the single operation method that lets mxGraph generate IDs
     try {
+      // First create source and target vertices
+      const sourceId = this.diagramRenderer.createVertex(
+        sourceX, sourceY, 'Source Node'
+      );
+      
+      const targetId = this.diagramRenderer.createVertex(
+        targetX, targetY, 'Target Node'
+      );
+      
+      // Then create the edge between them
       const edgeId = this.diagramRenderer.createSingleEdgeWithVertices(
-        sourceX,
-        sourceY,
-        'Source Node',
-        targetX,
-        targetY,
-        'Target Node',
-        'Direct Test Edge'
+        sourceId, targetId, 'Direct Test Edge'
       );
       
       if (edgeId) {

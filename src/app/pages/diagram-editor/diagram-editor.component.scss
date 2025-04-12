@@ -69,6 +69,31 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative; /* Needed for absolute positioning of loading overlay */
+  
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 250, 250, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    .loading-text {
+      margin-top: 16px;
+      font-size: 16px;
+      color: #1976d2;
+      font-weight: 500;
+    }
+    
+    /* Add a subtle fade-in animation */
+    animation: fade-in 0.3s ease-in-out;
+  }
 }
 
 .canvas-container {
@@ -207,5 +232,15 @@
   .editor-sidebar {
     border-left: 1px solid #e0e0e0;
     border-right: none;
+  }
+}
+
+// Animation for loading overlay
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -27,6 +27,12 @@
            (dragover)="onDragOver($event)"
            (dragleave)="onDragLeave($event)"
            (drop)="onDrop($event)"></div>
+      
+      <!-- Loading overlay with spinner -->
+      <div class="loading-overlay" *ngIf="!_isRendererReady">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">{{ loadingMessage }}</p>
+      </div>
     </div>
 
     <div class="editor-sidebar">
