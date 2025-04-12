@@ -10,11 +10,7 @@ describe('DiagramManagementComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        DiagramManagementComponent,
-        RouterTestingModule,
-        TranslocoTestingModule
-      ],
+      imports: [DiagramManagementComponent, RouterTestingModule, TranslocoTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DiagramManagementComponent);

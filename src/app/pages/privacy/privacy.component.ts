@@ -14,4 +14,3 @@ import { SharedModule } from '../../shared/shared.module';
   styleUrl: './privacy.component.scss',
 })
 export class PrivacyComponent {}
-

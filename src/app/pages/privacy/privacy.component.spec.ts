@@ -10,11 +10,7 @@ describe('PrivacyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        PrivacyComponent,
-        RouterTestingModule,
-        TranslocoTestingModule
-      ],
+      imports: [PrivacyComponent, RouterTestingModule, TranslocoTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PrivacyComponent);

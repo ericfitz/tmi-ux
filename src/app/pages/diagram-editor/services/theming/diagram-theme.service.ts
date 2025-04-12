@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, of } from 'rxjs';
-import { constants as mxConstants } from '@maxgraph/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DiagramTheme, ThemeInfo } from '../../models/diagram-theme.model';
@@ -12,13 +11,14 @@ import { DiagramTheme, ThemeInfo } from '../../models/diagram-theme.model';
 export class DiagramThemeService {
   // Theme tracking
   private _themeLoaded = new BehaviorSubject<boolean>(false);
-  public themeLoaded$ = this._themeLoaded.asObservable();
-
   private _currentTheme: DiagramTheme | null = null;
   private _currentThemeId: string | null = null;
 
   // Reference to graph instance - will be set by DiagramRendererService
   private graph: any = null;
+
+  // Public observables
+  public themeLoaded$ = this._themeLoaded.asObservable();
 
   constructor(
     private logger: LoggerService,
@@ -94,60 +94,6 @@ export class DiagramThemeService {
   }
 
   /**
-   * Apply the loaded theme to the graph
-   */
-  private applyTheme(theme: DiagramTheme): void {
-    if (!this.graph) {
-      this.logger.error('Cannot apply theme: Graph instance not set');
-      return;
-    }
-
-    try {
-      this.logger.debug('Applying theme to graph', theme);
-
-      const stylesheet = this.graph.getStylesheet();
-
-      // Apply default vertex style
-      const defaultVertexStyle = stylesheet.getDefaultVertexStyle();
-      Object.assign(defaultVertexStyle, theme.defaultVertexStyle);
-
-      // Apply default edge style
-      const defaultEdgeStyle = stylesheet.getDefaultEdgeStyle();
-      Object.assign(defaultEdgeStyle, theme.defaultEdgeStyle);
-
-      // Apply custom styles
-      for (const [styleName, styleDefinition] of Object.entries(theme.styles)) {
-        stylesheet.putCellStyle(styleName, styleDefinition);
-      }
-
-      // Apply other theme settings
-      if (this.graph.container && theme.backgroundColor) {
-        this.graph.container.style.backgroundColor = theme.backgroundColor;
-      }
-
-      // Update marker colors if available
-      // Note: In MaxGraph, constants are read-only so we can't modify them directly
-      // We'll use the theme values in our own code instead
-      if (theme.marker) {
-        this.logger.debug('Using theme marker colors for visualization');
-        // MaxGraph has different constants API, so we'll store these values locally
-        // and use them in our visualization code
-      }
-
-      // Force refresh
-      this.graph.refresh();
-
-      // Emit theme loaded event
-      this._themeLoaded.next(true);
-
-      this.logger.info('Theme applied successfully');
-    } catch (error) {
-      this.logger.error('Error applying theme', error);
-      throw error;
-    }
-  }
-
-  /**
    * Configure grid settings based on theme
    */
   configureGrid(theme: DiagramTheme | null = null): void {
@@ -207,5 +153,59 @@ export class DiagramThemeService {
     }
 
     return this.graph.isGridEnabled();
+  }
+
+  /**
+   * Apply the loaded theme to the graph
+   */
+  private applyTheme(theme: DiagramTheme): void {
+    if (!this.graph) {
+      this.logger.error('Cannot apply theme: Graph instance not set');
+      return;
+    }
+
+    try {
+      this.logger.debug('Applying theme to graph', theme);
+
+      const stylesheet = this.graph.getStylesheet();
+
+      // Apply default vertex style
+      const defaultVertexStyle = stylesheet.getDefaultVertexStyle();
+      Object.assign(defaultVertexStyle, theme.defaultVertexStyle);
+
+      // Apply default edge style
+      const defaultEdgeStyle = stylesheet.getDefaultEdgeStyle();
+      Object.assign(defaultEdgeStyle, theme.defaultEdgeStyle);
+
+      // Apply custom styles
+      for (const [styleName, styleDefinition] of Object.entries(theme.styles)) {
+        stylesheet.putCellStyle(styleName, styleDefinition);
+      }
+
+      // Apply other theme settings
+      if (this.graph.container && theme.backgroundColor) {
+        this.graph.container.style.backgroundColor = theme.backgroundColor;
+      }
+
+      // Update marker colors if available
+      // Note: In MaxGraph, constants are read-only so we can't modify them directly
+      // We'll use the theme values in our own code instead
+      if (theme.marker) {
+        this.logger.debug('Using theme marker colors for visualization');
+        // MaxGraph has different constants API, so we'll store these values locally
+        // and use them in our visualization code
+      }
+
+      // Force refresh
+      this.graph.refresh();
+
+      // Emit theme loaded event
+      this._themeLoaded.next(true);
+
+      this.logger.info('Theme applied successfully');
+    } catch (error) {
+      this.logger.error('Error applying theme', error);
+      throw error;
+    }
   }
 }

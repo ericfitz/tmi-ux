@@ -27,11 +27,11 @@ export class AboutComponent implements OnInit {
     { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
     { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
     { name: 'Material Icons Outlined', url: 'https://fonts.google.com/icons' },
-    { name: 'maxGraph', url: 'https://github.com/maxGraph/maxGraph' }
+    { name: 'maxGraph', url: 'https://github.com/maxGraph/maxGraph' },
   ];
-  
+
   constructor(private operatorService: OperatorService) {}
-  
+
   ngOnInit(): void {
     this.operatorName = this.operatorService.getOperatorName();
     this.operatorContact = this.operatorService.getOperatorContact();

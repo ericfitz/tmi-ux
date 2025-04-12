@@ -50,40 +50,59 @@ export interface IDiagramRendererService {
   destroy(): void;
   isInitialized(): boolean;
   waitForStabilization(): Promise<void>;
-  
+
   // Graph Observation
   readonly cellClicked$: Observable<CellClickData | null>;
   readonly cellSelected$: Observable<CellSelectionData | null>;
-  
+
   // Theme
   getAvailableThemes(): Observable<ThemeInfo[]>;
   getCurrentThemeId(): string | null;
   loadTheme(themeId: string): Promise<DiagramTheme>;
   switchTheme(themeId: string): Promise<void>;
-  
+
   // Grid
   isGridEnabled(): boolean;
   toggleGridVisibility(): boolean;
-  
+
   // Cell Creation
-  createVertex(x: number, y: number, label: string, width?: number, height?: number, style?: string): string;
-  createVertexWithIds(x: number, y: number, label: string, width?: number, height?: number, style?: string): VertexCreationResult;
-  createEdgeBetweenComponents(sourceComponentId: string, targetComponentId: string, label?: string, style?: string): EdgeCreationResult;
-  createSingleEdgeWithVertices(
-    sourceId: string, 
-    targetId: string, 
-    label?: string, 
-    style?: string, 
-    sourceIsCell?: boolean, 
-    targetIsCell?: boolean
+  createVertex(
+    x: number,
+    y: number,
+    label: string,
+    width?: number,
+    height?: number,
+    style?: string,
   ): string;
-  
+  createVertexWithIds(
+    x: number,
+    y: number,
+    label: string,
+    width?: number,
+    height?: number,
+    style?: string,
+  ): VertexCreationResult;
+  createEdgeBetweenComponents(
+    sourceComponentId: string,
+    targetComponentId: string,
+    label?: string,
+    style?: string,
+  ): EdgeCreationResult;
+  createSingleEdgeWithVertices(
+    sourceId: string,
+    targetId: string,
+    label?: string,
+    style?: string,
+    sourceIsCell?: boolean,
+    targetIsCell?: boolean,
+  ): string;
+
   // Cell Manipulation
   highlightCell(cellOrComponentId: string, highlight: boolean, isComponentId?: boolean): void;
   deleteComponent(componentId: string): void;
   deleteCellById(cellId: string): void;
   setEdgeCreationMode(enabled: boolean): void;
-  
+
   // Diagram Management
   updateDiagram(): void;
   getCellById(id: string): any;

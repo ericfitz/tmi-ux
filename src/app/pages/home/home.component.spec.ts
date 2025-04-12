@@ -10,11 +10,7 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        HomeComponent,
-        RouterTestingModule,
-        TranslocoTestingModule
-      ],
+      imports: [HomeComponent, RouterTestingModule, TranslocoTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);

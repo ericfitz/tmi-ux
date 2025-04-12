@@ -14,4 +14,3 @@ import { SharedModule } from '../../shared/shared.module';
   styleUrl: './tos.component.scss',
 })
 export class TosComponent {}
-

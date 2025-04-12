@@ -16,12 +16,9 @@ describe('AppComponent', () => {
         RouterTestingModule,
         TranslocoRootModule,
         NavbarComponent,
-        FooterComponent
+        FooterComponent,
       ],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
   });
 

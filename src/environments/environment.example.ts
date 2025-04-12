@@ -67,7 +67,7 @@ export const environment: Environment = {
    * Default: 60
    */
   authTokenExpiryMinutes: 120,
-  
+
   /**
    * Name of the operator/entity that hosts this instance of TMI
    * This will be displayed on the About page and in other places
@@ -81,7 +81,7 @@ export const environment: Environment = {
    * Default: 'TMI Operator'
    */
   operatorName: 'Example Operator',
-  
+
   /**
    * Contact information for the operator of this TMI instance
    * This will be displayed on the About page and can be an
@@ -99,71 +99,71 @@ export const environment: Environment = {
   /**
    * Port on which the application server will listen
    * This controls the port number used by the Angular dev server
-   * 
+   *
    * Allowed values: Any valid port number (1-65535)
    * Recommended:
    * - Development: 4200 (Angular default)
    * - Production: 80 (HTTP) or 443 (HTTPS)
-   * 
+   *
    * Default: 4200
    */
   serverPort: 4200,
-  
+
   /**
    * Network interface on which the application server will listen
    * Controls which network interfaces can access the application
-   * 
+   *
    * Allowed values:
    * - 'localhost' or '127.0.0.1': Only local connections (more secure)
    * - '0.0.0.0': All network interfaces (accessible from other machines)
    * - Specific IP: Only connections to that IP
-   * 
+   *
    * Default: '0.0.0.0'
    */
   serverInterface: '0.0.0.0',
-  
+
   /**
    * Whether to enable TLS/HTTPS for the application server
    * When true, the server will use HTTPS instead of HTTP
-   * 
+   *
    * Allowed values: true, false
    * Recommended:
    * - Development: false (for easier testing)
    * - Production: true (for security)
-   * 
+   *
    * Default: false
    */
   enableTLS: false,
-  
+
   /**
    * Path to the TLS private key file
    * Required if enableTLS is true
    * Path should be absolute or relative to the project root
-   * 
+   *
    * Example: './certs/server.key'
-   * 
+   *
    * Default: undefined
    */
   tlsKeyPath: undefined,
-  
+
   /**
    * Path to the TLS certificate file
    * Required if enableTLS is true
    * Path should be absolute or relative to the project root
-   * 
+   *
    * Example: './certs/server.crt'
-   * 
+   *
    * Default: undefined
    */
   tlsCertPath: undefined,
-  
+
   /**
    * TLS subject name
    * Used for certificate validation
    * If not specified, the system hostname will be used
-   * 
+   *
    * Example: 'example.com'
-   * 
+   *
    * Default: system hostname
    */
   tlsSubjectName: undefined,

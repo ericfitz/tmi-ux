@@ -26,7 +26,7 @@ export class LanguageService implements OnDestroy {
   private currentLanguageSubject = new BehaviorSubject<Language>(this.availableLanguages[0]);
   private directionSubject = new BehaviorSubject<'ltr' | 'rtl'>('ltr');
   private langChangeSub: Subscription | null = null;
-  
+
   // Public observables
   public currentLanguage$ = this.currentLanguageSubject.asObservable();
   public direction$ = this.directionSubject.asObservable();
@@ -109,7 +109,7 @@ export class LanguageService implements OnDestroy {
     const preferredLang = this.getPreferredLanguage();
     this.setLanguage(preferredLang);
   }
-  
+
   /**
    * Log translation error and fallback to English
    * @param langCode The language code that failed to load

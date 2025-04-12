@@ -12,19 +12,15 @@ describe('DiagramEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        DiagramEditorComponent,
-        RouterTestingModule,
-        TranslocoTestingModule
-      ],
+      imports: [DiagramEditorComponent, RouterTestingModule, TranslocoTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: {
-            paramMap: of(convertToParamMap({ id: 'test-diagram-1' }))
-          }
-        }
-      ]
+            paramMap: of(convertToParamMap({ id: 'test-diagram-1' })),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DiagramEditorComponent);

@@ -23,7 +23,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  
+
   .mat-icon {
     margin-right: 2px;
     vertical-align: middle;
@@ -31,7 +31,7 @@
     height: 18px;
     width: 18px;
   }
-  
+
   app-theme-selector {
     margin-left: 16px;
     display: flex;
@@ -43,12 +43,12 @@
     height: 30px !important;
     padding: 0 8px;
     font-size: 13px;
-    
+
     // Override Material Design Button styles
     ::ng-deep .mdc-button__label {
       font-size: 13px;
     }
-    
+
     ::ng-deep .mat-mdc-button-touch-target {
       height: 30px !important;
     }
@@ -70,7 +70,7 @@
   justify-content: center;
   align-items: center;
   position: relative; /* Needed for absolute positioning of loading overlay */
-  
+
   .loading-overlay {
     position: absolute;
     top: 0;
@@ -83,14 +83,14 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    
+
     .loading-text {
       margin-top: 16px;
       font-size: 16px;
       color: #1976d2;
       font-weight: 500;
     }
-    
+
     /* Add a subtle fade-in animation */
     animation: fade-in 0.3s ease-in-out;
   }
@@ -100,34 +100,34 @@
   width: 100%;
   height: 100%;
   background-color: #fff;
-  
+
   &.grid-enabled {
     background-image:
       linear-gradient(#f1f1f1 1px, transparent 1px),
       linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
     background-size: 20px 20px;
   }
-  
+
   &.edge-creation-mode {
     cursor: crosshair;
   }
-  
+
   &.drag-over {
-    border: 2px dashed #2196F3;
+    border: 2px dashed #2196f3;
     box-shadow: inset 0 0 20px rgb(33 150 243 / 20%);
     transition: all 0.2s ease-in-out;
   }
-  
+
   // Custom styling for the label editor to ensure it's visible across themes
   ::ng-deep .mxCellEditor {
-    border: 2px dashed #2196F3 !important;
+    border: 2px dashed #2196f3 !important;
     box-shadow: 0 0 6px rgba(33, 150, 243, 0.5) !important;
     padding: 4px !important;
     border-radius: 2px !important;
     background-color: rgba(255, 255, 255, 0.95) !important;
     z-index: 999 !important;
     opacity: 1 !important;
-    
+
     // Make the textarea fully visible
     textarea {
       margin: 0 !important;
@@ -162,7 +162,7 @@
   gap: 16px;
   margin-top: 8px;
   margin-bottom: 8px;
-  
+
   button {
     display: flex;
     justify-content: center;
@@ -170,7 +170,7 @@
     width: 48px;
     height: 48px;
     place-self: center center;
-    
+
     .material-symbols-outlined {
       font-size: 24px;
       line-height: 24px;
@@ -190,7 +190,7 @@
   gap: 16px;
   margin-top: 8px;
   margin-bottom: 8px;
-  
+
   button {
     display: flex;
     justify-content: center;
@@ -200,16 +200,16 @@
     place-self: center center;
     cursor: grab;
     transition: all 0.2s ease-in-out;
-    
+
     &:hover {
       transform: scale(1.1);
       box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
     }
-    
+
     &:active {
       cursor: grabbing;
     }
-    
+
     .material-symbols-outlined {
       font-size: 24px;
       line-height: 24px;

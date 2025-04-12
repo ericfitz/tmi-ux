@@ -56,9 +56,9 @@ export class LoggerService {
     this.logLevel = level;
     this.info(`Log level changed to: ${level}`);
   }
-  
+
   // Public logging methods
-  
+
   /**
    * Log a debug message
    */
@@ -94,7 +94,7 @@ export class LoggerService {
       console.error(this.formatMessage(LogLevel.ERROR, message), ...optionalParams);
     }
   }
-  
+
   /**
    * Log initialization of a variable
    * @param name Variable name
@@ -116,7 +116,7 @@ export class LoggerService {
   logUpdate<T>(name: string, value: T, source?: string): T {
     return this.logVar({ name, value, source }, 'updated');
   }
-  
+
   /**
    * Log variable initialization or value change
    * @param varInfo Object containing variable name, value, and optional source

@@ -1,10 +1,6 @@
 import { NgModule } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import {
-  TranslocoModule,
-  provideTransloco,
-  TranslocoLoader,
-} from '@jsverse/transloco';
+import { TranslocoModule, provideTransloco, TranslocoLoader } from '@jsverse/transloco';
 import { Observable, of } from 'rxjs';
 
 // Mock loader that implements the TranslocoLoader interface
@@ -30,11 +26,11 @@ class TestLoader implements TranslocoLoader {
         reRenderOnLangChange: true,
         prodMode: false,
         missingHandler: {
-          useFallbackTranslation: true
-        }
+          useFallbackTranslation: true,
+        },
       },
-      loader: TestLoader
-    })
-  ]
+      loader: TestLoader,
+    }),
+  ],
 })
 export class TranslocoTestingModule {}

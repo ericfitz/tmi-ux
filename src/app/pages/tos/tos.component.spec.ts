@@ -10,11 +10,7 @@ describe('TosComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        TosComponent,
-        RouterTestingModule,
-        TranslocoTestingModule
-      ],
+      imports: [TosComponent, RouterTestingModule, TranslocoTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TosComponent);

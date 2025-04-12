@@ -1,7 +1,9 @@
 <div class="diagram-editor-container">
   <div class="editor-header">
     <div class="editor-title">
-      <h2 [transloco]="'editor.diagramTitle'" [translocoParams]="{ title: diagramTitle }">{{ diagramTitle }}</h2>
+      <h2 [transloco]="'editor.diagramTitle'" [translocoParams]="{ title: diagramTitle }">
+        {{ diagramTitle }}
+      </h2>
     </div>
     <div class="editor-actions">
       <button mat-raised-button color="primary" (click)="saveDiagram()" class="compact-button">
@@ -12,7 +14,7 @@
         <mat-icon>close</mat-icon>
         <span [transloco]="'editor.closeButton'">Close</span>
       </button>
-      
+
       <!-- Theme selector -->
       <app-theme-selector></app-theme-selector>
     </div>
@@ -21,13 +23,15 @@
   <div class="editor-content">
     <div class="editor-canvas">
       <!-- maxGraph diagram editor container -->
-      <div #diagramCanvas 
-           class="canvas-container" 
-           [ngClass]="{'grid-enabled': gridEnabled, 'drag-over': isDragOver}"
-           (dragover)="onDragOver($event)"
-           (dragleave)="onDragLeave($event)"
-           (drop)="onDrop($event)"></div>
-      
+      <div
+        #diagramCanvas
+        class="canvas-container"
+        [ngClass]="{ 'grid-enabled': gridEnabled, 'drag-over': isDragOver }"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      ></div>
+
       <!-- Loading overlay with spinner -->
       <div class="loading-overlay" *ngIf="!_isRendererReady">
         <mat-spinner diameter="50"></mat-spinner>
@@ -44,19 +48,37 @@
         <mat-card-content>
           <div class="toolbar-grid">
             <!-- Delete button - disabled unless an element is selected -->
-            <button mat-mini-fab color="warn" [disabled]="!hasSelectedCell" (click)="deleteSelected()" 
-                    [matTooltip]="deleteTooltip" matTooltipPosition="above">
+            <button
+              mat-mini-fab
+              color="warn"
+              [disabled]="!hasSelectedCell"
+              (click)="deleteSelected()"
+              [matTooltip]="deleteTooltip"
+              matTooltipPosition="above"
+            >
               <span class="material-symbols-outlined">delete_forever</span>
             </button>
             <!-- Style button - for formatting selected elements -->
-            <button mat-mini-fab color="primary" [disabled]="!hasSelectedCell"
-                    [matTooltip]="styleTooltip" matTooltipPosition="above">
+            <button
+              mat-mini-fab
+              color="primary"
+              [disabled]="!hasSelectedCell"
+              [matTooltip]="styleTooltip"
+              matTooltipPosition="above"
+            >
               <span class="material-symbols-outlined">tune</span>
             </button>
             <!-- Grid toggle button -->
-            <button mat-mini-fab color="accent" (click)="toggleGridVisibility()"
-                    [matTooltip]="gridTooltip" matTooltipPosition="above">
-              <span class="material-symbols-outlined">{{ gridEnabled ? 'grid_on' : 'grid_off' }}</span>
+            <button
+              mat-mini-fab
+              color="accent"
+              (click)="toggleGridVisibility()"
+              [matTooltip]="gridTooltip"
+              matTooltipPosition="above"
+            >
+              <span class="material-symbols-outlined">{{
+                gridEnabled ? 'grid_on' : 'grid_off'
+              }}</span>
             </button>
           </div>
         </mat-card-content>
@@ -70,32 +92,44 @@
         <mat-card-content>
           <div class="palette-grid">
             <!-- Process vertex button -->
-            <button mat-mini-fab color="primary" 
-                   (click)="addVertex('process')"
-                   draggable="true"
-                   (dragstart)="onDragStart($event, 'process')"
-                   [matTooltip]="processTooltip" matTooltipPosition="above"
-                   class="palette-item">
+            <button
+              mat-mini-fab
+              color="primary"
+              (click)="addVertex('process')"
+              draggable="true"
+              (dragstart)="onDragStart($event, 'process')"
+              [matTooltip]="processTooltip"
+              matTooltipPosition="above"
+              class="palette-item"
+            >
               <span class="material-symbols-outlined">crop_square</span>
             </button>
 
             <!-- Store vertex button -->
-            <button mat-mini-fab color="primary" 
-                   (click)="addVertex('store')" 
-                   draggable="true"
-                   (dragstart)="onDragStart($event, 'store')"
-                   [matTooltip]="storeTooltip" matTooltipPosition="above"
-                   class="palette-item">
+            <button
+              mat-mini-fab
+              color="primary"
+              (click)="addVertex('store')"
+              draggable="true"
+              (dragstart)="onDragStart($event, 'store')"
+              [matTooltip]="storeTooltip"
+              matTooltipPosition="above"
+              class="palette-item"
+            >
               <span class="material-symbols-outlined">database</span>
             </button>
 
             <!-- Actor vertex button -->
-            <button mat-mini-fab color="primary" 
-                   (click)="addVertex('actor')" 
-                   draggable="true"
-                   (dragstart)="onDragStart($event, 'actor')"
-                   [matTooltip]="actorTooltip" matTooltipPosition="above"
-                   class="palette-item">
+            <button
+              mat-mini-fab
+              color="primary"
+              (click)="addVertex('actor')"
+              draggable="true"
+              (dragstart)="onDragStart($event, 'actor')"
+              [matTooltip]="actorTooltip"
+              matTooltipPosition="above"
+              class="palette-item"
+            >
               <span class="material-symbols-outlined">person</span>
             </button>
           </div>
@@ -109,7 +143,11 @@
         </mat-card-header>
         <mat-card-content>
           <div *ngIf="selectedCellProperties; else noSelection">
-            <textarea class="properties-textarea" readonly [value]="selectedCellProperties"></textarea>
+            <textarea
+              class="properties-textarea"
+              readonly
+              [value]="selectedCellProperties"
+            ></textarea>
           </div>
           <ng-template #noSelection>
             <p [transloco]="'editor.properties.help'">

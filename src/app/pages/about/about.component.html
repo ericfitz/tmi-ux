@@ -5,9 +5,9 @@
 
   <div class="content-row">
     <p class="page-content" [transloco]="'about.description1'">
-      TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and
-      sharing threat models. Our mission is to make security threat modeling accessible, efficient,
-      and integrated into the software development lifecycle.
+      TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing
+      threat models. Our mission is to make security threat modeling accessible, efficient, and
+      integrated into the software development lifecycle.
     </p>
 
     <p class="page-content" [transloco]="'about.description2'">
@@ -36,11 +36,23 @@
 
   <div class="contact-content-row">
     <p class="page-content">
-      {{ 'about.sourceCode' | transloco: { url: '' } }}<a href="{{ 'about.sourceCodeUrl' | transloco }}" target="_blank" rel="noopener noreferrer">{{ 'about.sourceCodeUrl' | transloco }}</a>
+      {{ 'about.sourceCode' | transloco: { url: '' }
+      }}<a
+        href="{{ 'about.sourceCodeUrl' | transloco }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'about.sourceCodeUrl' | transloco }}</a
+      >
     </p>
 
     <p class="page-content">
-      {{ 'about.bugReport' | transloco: { url: '' } }}<a href="{{ 'about.bugReportUrl' | transloco }}" target="_blank" rel="noopener noreferrer">{{ 'about.bugReportUrl' | transloco }}</a>
+      {{ 'about.bugReport' | transloco: { url: '' }
+      }}<a
+        href="{{ 'about.bugReportUrl' | transloco }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'about.bugReportUrl' | transloco }}</a
+      >
     </p>
   </div>
 
@@ -68,7 +80,9 @@
 
     <p class="page-content">
       {{ 'about.opensource.paragraph2-intro' | transloco }}
-      <a href="https://www.threatdragon.org/" target="_blank" rel="noopener noreferrer">OWASP Threat Dragon</a>
+      <a href="https://www.threatdragon.org/" target="_blank" rel="noopener noreferrer"
+        >OWASP Threat Dragon</a
+      >
       {{ 'about.opensource.paragraph2-outro' | transloco }}
     </p>
   </div>

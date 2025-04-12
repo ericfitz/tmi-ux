@@ -17,13 +17,14 @@
         <div class="diagram-info">
           <mat-icon class="diagram-icon">account_tree</mat-icon>
           <div class="diagram-details">
-            <h3 class="diagram-title">{{ 'diagrams.diagramTitle' | transloco: { name: diagram.name } }}</h3>
+            <h3 class="diagram-title">
+              {{ 'diagrams.diagramTitle' | transloco: { name: diagram.name } }}
+            </h3>
             <p
               class="diagram-date"
               [transloco]="'diagrams.lastModified'"
               [translocoParams]="{ date: diagram.modifiedAt | date: 'medium' }"
-            >
-            </p>
+            ></p>
           </div>
         </div>
         <button
