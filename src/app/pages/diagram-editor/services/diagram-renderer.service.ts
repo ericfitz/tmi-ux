@@ -487,6 +487,7 @@ export class DiagramRendererService {
    * 2. Adds clone method to global mxPoint if available
    * 3. Provides a safe Point factory function
    * 4. Adds a safe point comparison function
+   * 5. Directly patches EdgeSegmentHandler, SelectionCellsHandler and other handlers
    */
   private patchEqualPointsMethod(): void {
     try {
@@ -529,6 +530,8 @@ export class DiagramRendererService {
         return true;
       };
       
+      // The following patches ensure all points have clone methods
+      
       // 1. Patch the main Point prototype to ensure clone method exists
       if (mxgraph.Point && mxgraph.Point.prototype) {
         if (!mxgraph.Point.prototype.clone) {
@@ -570,6 +573,358 @@ export class DiagramRendererService {
       if (mxgraph.ConstraintHandler && mxgraph.ConstraintHandler.prototype) {
         // Make sure any point created in ConstraintHandler has the clone method
         this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.ConstraintHandler.prototype);
+      }
+      
+      // 5. DIRECTLY PATCH EDGE SEGMENT HANDLER - SOURCE OF THE CLONE ERRORS
+      if (mxgraph.EdgeSegmentHandler && mxgraph.EdgeSegmentHandler.prototype) {
+        this.logger.info('Applying direct patches to EdgeSegmentHandler');
+        
+        // A. Patch getCurrentPoints to ensure all returned points have clone method
+        if (mxgraph.EdgeSegmentHandler.prototype.getCurrentPoints) {
+          const originalGetCurrentPoints = mxgraph.EdgeSegmentHandler.prototype.getCurrentPoints;
+          
+          mxgraph.EdgeSegmentHandler.prototype.getCurrentPoints = function() {
+            try {
+              // Use original method with direct call (no spread)
+              const pts = originalGetCurrentPoints.call(this);
+              
+              // Ensure all points in the array have clone method
+              if (pts && Array.isArray(pts)) {
+                for (let i = 0; i < pts.length; i++) {
+                  const point = pts[i];
+                  if (point && typeof point === 'object' && 'x' in point && 'y' in point && !point.clone) {
+                    // Need to use a type assertion to satisfy TypeScript
+                    (point as any).clone = function() {
+                      return { x: this.x, y: this.y, clone: this.clone };
+                    };
+                  }
+                }
+              }
+              
+              return pts;
+            } catch (error) {
+              console.error('Error in patched getCurrentPoints:', error);
+              // Return empty array to avoid null reference errors
+              return [];
+            }
+          };
+        }
+        
+        // B. Patch getPreviewPoints - THE MAIN SOURCE OF ERRORS
+        if (mxgraph.EdgeSegmentHandler.prototype.getPreviewPoints) {
+          const originalGetPreviewPoints = mxgraph.EdgeSegmentHandler.prototype.getPreviewPoints;
+          
+          mxgraph.EdgeSegmentHandler.prototype.getPreviewPoints = function(point: any) {
+            try {
+              // Special case handling for source/target
+              if (this.isSource || this.isTarget) {
+                // Ensure point has clone method before calling original
+                if (point && !point.clone) {
+                  (point).clone = function() {
+                    return { x: this.x, y: this.y, clone: this.clone };
+                  };
+                }
+                return originalGetPreviewPoints.call(this, point);
+              }
+              
+              // Safely get current points and ensure they all have clone method
+              const pts = this.getCurrentPoints();
+              if (!pts || !Array.isArray(pts) || pts.length === 0) {
+                return [];
+              }
+              
+              // Make sure all points in pts have clone method
+              for (let i = 0; i < pts.length; i++) {
+                const pt = pts[i];
+                if (pt && !pt.clone) {
+                  (pt as any).clone = function() {
+                    return { x: this.x, y: this.y, clone: this.clone };
+                  };
+                }
+              }
+              
+              // Make sure the input point has clone method
+              if (point && !point.clone) {
+                (point).clone = function() {
+                  return { x: this.x, y: this.y, clone: this.clone };
+                };
+              }
+              
+              // Exit with safe fallback if pts array doesn't have expected elements
+              if (!pts[0]) {
+                return [];
+              }
+              
+              // Now, safely proceed with the regular implementation
+              let last = this.convertPoint((pts[0] as any).clone(), false);
+              point = this.convertPoint((point).clone(), false);
+              const resultArr: any[] = [];
+              
+              for (let i = 1; i < pts.length; i++) {
+                if (!pts[i]) continue;
+                const pt = this.convertPoint((pts[i] as any).clone(), false);
+                if (i === this.index) {
+                  if (Math.round(last.x - pt.x) === 0) {
+                    last.x = point.x;
+                    pt.x = point.x;
+                  }
+                  if (Math.round(last.y - pt.y) === 0) {
+                    last.y = point.y;
+                    pt.y = point.y;
+                  }
+                }
+                if (i < pts.length - 1) {
+                  resultArr.push(pt);
+                }
+                last = pt;
+              }
+              
+              // Special case for connecting to source/target (same as original code)
+              if (resultArr.length === 1) {
+                const source = this.state.getVisibleTerminalState(true);
+                const target = this.state.getVisibleTerminalState(false);
+                const scale = this.state.view.getScale();
+                const tr = this.state.view.getTranslate();
+                const x = resultArr[0].x * scale + tr.x;
+                const y = resultArr[0].y * scale + tr.y;
+                
+                const contains = (state: any, x: number, y: number): boolean => {
+                  return state && 
+                    x >= state.x && x <= state.x + state.width &&
+                    y >= state.y && y <= state.y + state.height;
+                };
+                
+                if ((source && contains(source, x, y)) ||
+                    (target && contains(target, x, y))) {
+                  return [point, point];
+                }
+              }
+              
+              return resultArr;
+            } catch (error) {
+              console.error('Error in patched getPreviewPoints:', error);
+              // Return an empty array as a safe fallback
+              return [];
+            }
+          };
+          
+          this.logger.info('Patched EdgeSegmentHandler.getPreviewPoints to ensure points have clone method');
+        }
+        
+        // C. Patch other methods in EdgeSegmentHandler that might use points
+        this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.EdgeSegmentHandler.prototype);
+      }
+      
+      // 6. ALSO PATCH OTHER RELATED HANDLERS
+      
+      // SelectionCellsHandler - important for drag operations
+      if (mxgraph.SelectionCellsHandler && mxgraph.SelectionCellsHandler.prototype) {
+        this.logger.info('Patching SelectionCellsHandler methods');
+        this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.SelectionCellsHandler.prototype);
+        
+        // Directly patch mouseMove method which is using EdgeSegmentHandler
+        if (mxgraph.SelectionCellsHandler.prototype.mouseMove) {
+          const originalMouseMove = mxgraph.SelectionCellsHandler.prototype.mouseMove;
+          
+          mxgraph.SelectionCellsHandler.prototype.mouseMove = function(sender: any, me: any) {
+            try {
+              // Ensure all handlers have proper points with clone methods
+              if (this.handlers) {
+                // Handle the fact that handlers is a specialized Dictionary from mxGraph
+                // Only use the visit method which is available in mxGraph's Dictionary
+                if (typeof this.handlers.visit === 'function') {
+                  // Process each handler using visit
+                  this.handlers.visit((key: any, handler: any) => {
+                    // Process each handler
+                    if (handler) {
+                      // Check if the handler has currentPoint and add clone if needed
+                      if (handler.currentPoint && !handler.currentPoint.clone) {
+                        (handler.currentPoint).clone = function() {
+                          return { x: this.x, y: this.y, clone: this.clone };
+                        };
+                      }
+                      
+                      // Check if handler has a points array and ensure each point has clone
+                      if (handler.points && Array.isArray(handler.points)) {
+                        for (let i = 0; i < handler.points.length; i++) {
+                          const point = handler.points[i];
+                          if (point && !point.clone) {
+                            (point).clone = function() {
+                              return { x: this.x, y: this.y, clone: this.clone };
+                            };
+                          }
+                        }
+                      }
+                    }
+                    return true; // continue visiting
+                  });
+                } else {
+                  // No visit method available, try to process using Object.values
+                  try {
+                    // Get all handlers as an array using Object.values
+                    // This is a fallback approach if the specialized Dictionary methods aren't available
+                    const handlersArray = Object.values(this.handlers);
+                    
+                    // Process each handler
+                    for (const handler of handlersArray) {
+                      if (handler) {
+                        // Check if the handler has currentPoint and add clone if needed
+                        if (handler.currentPoint && !handler.currentPoint.clone) {
+                          (handler.currentPoint).clone = function() {
+                            return { x: this.x, y: this.y, clone: this.clone };
+                          };
+                        }
+                        
+                        // Check if handler has a points array and ensure each point has clone
+                        if (handler.points && Array.isArray(handler.points)) {
+                          for (let i = 0; i < handler.points.length; i++) {
+                            const point = handler.points[i];
+                            if (point && !point.clone) {
+                              (point).clone = function() {
+                                return { x: this.x, y: this.y, clone: this.clone };
+                              };
+                            }
+                          }
+                        }
+                      }
+                    }
+                  } catch (err) {
+                    console.error('Error processing handlers', err);
+                  }
+                }
+              }
+              
+              // Ensure me.getCell() is safe
+              if (me && !me.getCell && typeof me.getEvent === 'function') {
+                me.getCell = function() { return null; };
+              }
+              
+              return originalMouseMove.call(this, sender, me);
+            } catch (error) {
+              console.error('Error in patched SelectionCellsHandler.mouseMove:', error);
+              // Continue without throwing
+              return;
+            }
+          };
+          
+          this.logger.info('Patched SelectionCellsHandler.mouseMove method');
+        }
+      }
+      
+      // EdgeHandler - base class for EdgeSegmentHandler
+      if (mxgraph.EdgeHandler && mxgraph.EdgeHandler.prototype) {
+        this.logger.info('Patching EdgeHandler methods');
+        this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.EdgeHandler.prototype);
+        
+        // Patch ConnectionHandler methods to prevent errors
+        if (mxgraph.ConnectionHandler && mxgraph.ConnectionHandler.prototype) {
+          // Patch ConnectionHandler.checkConstraints to prevent "c1.point.equals is not a function" error
+          if (mxgraph.ConnectionHandler.prototype.checkConstraints) {
+            const originalCheckConstraints = mxgraph.ConnectionHandler.prototype.checkConstraints;
+            
+            mxgraph.ConnectionHandler.prototype.checkConstraints = function(c1: any, c2: any) {
+              try {
+              // Add safety checks for constraint points
+              if (c1 && c1.point && !c1.point.equals) {
+                c1.point.equals = function(other: any) {
+                  if (!other || typeof other.x !== 'number' || typeof other.y !== 'number') {
+                    return false;
+                  }
+                  return this.x === other.x && this.y === other.y;
+                };
+              }
+              
+              if (c2 && c2.point && !c2.point.equals) {
+                c2.point.equals = function(other: any) {
+                  if (!other || typeof other.x !== 'number' || typeof other.y !== 'number') {
+                    return false;
+                  }
+                  return this.x === other.x && this.y === other.y;
+                };
+              }
+              
+              // Call original method with safely enhanced objects
+              return originalCheckConstraints.call(this, c1, c2);
+            } catch (error) {
+              console.error('Error in patched checkConstraints:', error);
+              // Return false as a safe default when an error occurs
+              return false;
+            }
+          };
+          
+          this.logger.info('Patched ConnectionHandler.checkConstraints method');
+          }
+          
+          // Patch ConnectionHandler.mouseUp to handle errors
+          if (mxgraph.ConnectionHandler.prototype.mouseUp) {
+            const originalMouseUp = mxgraph.ConnectionHandler.prototype.mouseUp;
+            
+            mxgraph.ConnectionHandler.prototype.mouseUp = function(sender: any, me: any) {
+              try {
+                // ConnectionHandler doesn't have direct target property but can check current state
+                // Just call the original method - we're already protected by setConnectableEdges(false)
+                return originalMouseUp.call(this, sender, me);
+              } catch (error) {
+                console.error('Error in patched mouseUp:', error);
+                // Safely reset the handler on error
+                this.reset();
+              }
+            };
+            
+            this.logger.info('Patched ConnectionHandler.mouseUp method');
+          }
+        }
+        
+        // Also patch mouseMove which is a known problem area
+        if (mxgraph.EdgeHandler.prototype.mouseMove) {
+          const originalMouseMove = mxgraph.EdgeHandler.prototype.mouseMove;
+          
+          mxgraph.EdgeHandler.prototype.mouseMove = function(sender: any, me: any) {
+            try {
+              // Add clone to constraintHandler.currentPoint if needed
+              if (this.constraintHandler && 
+                  this.constraintHandler.currentPoint && 
+                  !this.constraintHandler.currentPoint.clone) {
+                (this.constraintHandler.currentPoint as any).clone = function() {
+                  return { x: this.x, y: this.y, clone: this.clone };
+                };
+              }
+              
+              // Ensure current point has clone
+              if (this.currentPoint && !this.currentPoint.clone) {
+                (this.currentPoint as any).clone = function() {
+                  return { x: this.x, y: this.y, clone: this.clone };
+                };
+              }
+              
+              // Ensure all points in this.points have clone
+              if (this.points && Array.isArray(this.points)) {
+                for (let i = 0; i < this.points.length; i++) {
+                  const point = this.points[i];
+                  if (point && !point.clone) {
+                    (point as any).clone = function() {
+                      return { x: this.x, y: this.y, clone: this.clone };
+                    };
+                  }
+                }
+              }
+              
+              return originalMouseMove.call(this, sender, me);
+            } catch (error) {
+              console.error('Error in patched EdgeHandler.mouseMove:', error);
+              // Continue without throwing
+              return;
+            }
+          };
+          
+          this.logger.info('Patched EdgeHandler.mouseMove method');
+        }
+      }
+      
+      // ElbowEdgeHandler - also used for edge manipulation
+      if (mxgraph.ElbowEdgeHandler && mxgraph.ElbowEdgeHandler.prototype) {
+        this.logger.info('Patching ElbowEdgeHandler methods');
+        this.patchObjectMethodsToEnsurePointsHaveClone(mxgraph.ElbowEdgeHandler.prototype);
       }
       
       this.logger.info('Comprehensive Point-related patches applied successfully');
@@ -792,9 +1147,10 @@ export class DiagramRendererService {
     edgeCreationStyle['fillColor'] = '#e8f5e9';
     this.graph.getStylesheet().putCellStyle('edgeCreation', edgeCreationStyle);
     
-    // Enable connection points
+    // Enable connection points but prevent connecting to edges
     this.graph.setConnectable(true);
     this.graph.setAllowDanglingEdges(false);
+    this.graph.setConnectableEdges(false); // Prevent connecting edges to other edges
     
     // Set default edge style with better connection handling
     const defaultEdgeStyle = this.graph.getStylesheet().getDefaultEdgeStyle();
@@ -827,9 +1183,10 @@ export class DiagramRendererService {
     // Enable panning
     this.graph.setPanning(true);
     
-    // Enable connection points
+    // Enable connection points but prevent connecting to edges
     this.graph.setConnectable(true);
     this.graph.setAllowDanglingEdges(false);
+    this.graph.setConnectableEdges(false); // Prevent connecting edges to other edges
     
     // Initialize core maxGraph components that are needed 
     this.initializeMaxGraphComponents();
@@ -1232,10 +1589,24 @@ export class DiagramRendererService {
     try {
       const cellId = cell.id;
       
-      // Validate cellId exists
+      // Handle cells with no ID (likely control points or edge handles)
       if (!cellId) {
-        this.logger.warn('Cell has no ID, cannot process click');
-        return;
+        // For control points and handles, try to find the parent edge
+        if (cell.parent && cell.parent.id) {
+          this.logger.debug('Cell without ID has a parent, likely a control point or handle');
+          
+          // Check if the parent is an edge we can handle
+          const parentCell = cell.parent;
+          if (this.isEdge(parentCell)) {
+            this.logger.debug(`Using parent edge with ID ${parentCell.id} for click handling`);
+            // Process click on the parent edge instead
+            this.handleCellClick(parentCell);
+            return;
+          }
+        } else {
+          this.logger.warn('Cell has no ID and no valid parent, cannot process click');
+          return;
+        }
       }
       
       // Log cell properties for debugging - with safe property access
@@ -1260,7 +1631,7 @@ export class DiagramRendererService {
       const isEdge = this.isEdge(cell);
       
       if (!isVertex && !isEdge) {
-        this.logger.warn(`Cell ${cellId} is neither vertex nor edge, skipping click handling`);
+        this.logger.debug(`Cell ${cellId} is neither vertex nor edge, skipping click handling`);
         return;
       }
       
@@ -1309,7 +1680,7 @@ export class DiagramRendererService {
         });
         this.logger.info(`Emitted edge click event for cell ${cellId}`);
       } else {
-        this.logger.warn(`Cell type not recognized for ${cellId}, not emitting event`);
+        this.logger.debug(`Cell type not recognized for ${cellId}, not emitting event`);
       }
     } catch (error) {
       this.logger.error('Error handling cell click', error);

@@ -21,7 +21,12 @@
   <div class="editor-content">
     <div class="editor-canvas">
       <!-- maxGraph diagram editor container -->
-      <div #diagramCanvas class="canvas-container" [ngClass]="{'grid-enabled': gridEnabled}"></div>
+      <div #diagramCanvas 
+           class="canvas-container" 
+           [ngClass]="{'grid-enabled': gridEnabled, 'drag-over': isDragOver}"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)"></div>
     </div>
 
     <div class="editor-sidebar">
@@ -59,20 +64,32 @@
         <mat-card-content>
           <div class="palette-grid">
             <!-- Process vertex button -->
-            <button mat-mini-fab color="primary" (click)="addVertex('process')" 
-                    [matTooltip]="processTooltip" matTooltipPosition="above">
+            <button mat-mini-fab color="primary" 
+                   (click)="addVertex('process')"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 'process')"
+                   [matTooltip]="processTooltip" matTooltipPosition="above"
+                   class="palette-item">
               <span class="material-symbols-outlined">crop_square</span>
             </button>
 
             <!-- Store vertex button -->
-            <button mat-mini-fab color="primary" (click)="addVertex('store')" 
-                    [matTooltip]="storeTooltip" matTooltipPosition="above">
+            <button mat-mini-fab color="primary" 
+                   (click)="addVertex('store')" 
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 'store')"
+                   [matTooltip]="storeTooltip" matTooltipPosition="above"
+                   class="palette-item">
               <span class="material-symbols-outlined">database</span>
             </button>
 
             <!-- Actor vertex button -->
-            <button mat-mini-fab color="primary" (click)="addVertex('actor')" 
-                    [matTooltip]="actorTooltip" matTooltipPosition="above">
+            <button mat-mini-fab color="primary" 
+                   (click)="addVertex('actor')" 
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 'actor')"
+                   [matTooltip]="actorTooltip" matTooltipPosition="above"
+                   class="palette-item">
               <span class="material-symbols-outlined">person</span>
             </button>
           </div>

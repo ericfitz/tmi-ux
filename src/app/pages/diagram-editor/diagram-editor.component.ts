@@ -273,6 +273,10 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param type The type of vertex to create (process, store, actor)
    */
   async addVertex(type: 'process' | 'store' | 'actor'): Promise<void> {
+    // Generate random position within the visible canvas area
+    const x = Math.floor(Math.random() * 500);
+    const y = Math.floor(Math.random() * 300);
+    
     // For tracking
     const maxRetries = 5;
     let retryCount = 0;
@@ -307,39 +311,6 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           await new Promise(resolve => setTimeout(resolve, retryDelay));
           retryCount++;
           continue;
-        }
-        
-        // Add the vertex at a random position within the visible canvas area
-        const x = Math.floor(Math.random() * 500);
-        const y = Math.floor(Math.random() * 300);
-        
-        // Define vertex style and label based on type
-        let style = '';
-        let width = 100;
-        let height = 60;
-        let label = '';
-        
-        switch (type) {
-          case 'process':
-            style = 'rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;';
-            label = 'Process';
-            width = 120;
-            height = 60;
-            break;
-            
-          case 'store':
-            style = 'shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#dae8fc;strokeColor=#6c8ebf;';
-            label = 'Store';
-            width = 80; 
-            height = 80;
-            break;
-            
-          case 'actor':
-            style = 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;';
-            label = 'Actor';
-            width = 40;
-            height = 80;
-            break;
         }
         
         // Verify graph is available
@@ -387,22 +358,15 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           }
         }
         
-        const connectionHandlerAvailable = graph.connectionHandler !== undefined;
-        this.logger.debug(`Connection handler available: ${connectionHandlerAvailable}`);
+        // Create the vertex using our shared method
+        const result = await this.addVertexAtPosition(type, x, y);
         
-        // Create the vertex with the appropriate style
-        const result = this.diagramRenderer.createVertexWithIds(x, y, label, width, height, style);
-        
-        if (!result) {
-          throw new Error(`Failed to create ${type} vertex`);
+        // If the vertex was created successfully, update test vertex references
+        if (result) {
+          // Save a reference to the test vertex for potential edge creation
+          this._secondTestVertex = this._lastTestVertex;
+          this._lastTestVertex = result;
         }
-        
-        const { componentId, cellId } = result;
-        this.logger.info(`Added ${type} vertex at (${x}, ${y}) with ID: ${componentId} (cell: ${cellId})`);
-        
-        // Save a reference to the test vertex for potential edge creation
-        this._secondTestVertex = this._lastTestVertex;
-        this._lastTestVertex = { componentId, cellId };
         
         // Clean up retry tracking
         delete this._vertexCreationRetries[retryKey];
@@ -455,6 +419,10 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   
   // Grid state
   public gridEnabled = true;
+  
+  // Drag-and-drop state
+  public isDragOver = false;
+  private draggedVertexType: 'process' | 'store' | 'actor' | null = null;
   
   /**
    * Create a test edge between the last two vertices created
@@ -592,6 +560,190 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     this.logger.info('Toggling grid visibility');
     this.gridEnabled = !this.gridEnabled;
     this.logger.debug(`Grid visibility toggled to: ${this.gridEnabled}`);
+  }
+  
+  /**
+   * Handle dragstart event from palette buttons
+   * @param event The drag event
+   * @param vertexType The type of vertex being dragged
+   */
+  onDragStart(event: DragEvent, vertexType: 'process' | 'store' | 'actor'): void {
+    this.logger.info(`Drag started for ${vertexType} vertex`);
+    
+    // Store the vertex type so we know what to create on drop
+    this.draggedVertexType = vertexType;
+    
+    // Set the drag image and data
+    if (event.dataTransfer) {
+      // Set the drag data
+      event.dataTransfer.setData('application/tmi-vertex-type', vertexType);
+      
+      // Create a ghost drag image
+      const dragIcon = document.createElement('div');
+      dragIcon.style.width = '40px';
+      dragIcon.style.height = '40px';
+      dragIcon.style.borderRadius = '50%';
+      dragIcon.style.backgroundColor = '#3f51b5';
+      dragIcon.style.display = 'flex';
+      dragIcon.style.alignItems = 'center';
+      dragIcon.style.justifyContent = 'center';
+      
+      // Add an icon based on vertex type
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'material-symbols-outlined';
+      iconSpan.style.color = 'white';
+      iconSpan.style.fontSize = '24px';
+      
+      switch (vertexType) {
+        case 'process':
+          iconSpan.textContent = 'crop_square';
+          break;
+        case 'store':
+          iconSpan.textContent = 'database';
+          break;
+        case 'actor':
+          iconSpan.textContent = 'person';
+          break;
+      }
+      
+      dragIcon.appendChild(iconSpan);
+      document.body.appendChild(dragIcon);
+      
+      // Set it as the drag image and position it at the cursor
+      event.dataTransfer.setDragImage(dragIcon, 20, 20);
+      
+      // Set effectAllowed to copy to indicate we're creating a new element
+      event.dataTransfer.effectAllowed = 'copy';
+      
+      // Set a timeout to remove the ghost element after it's no longer needed
+      setTimeout(() => {
+        document.body.removeChild(dragIcon);
+      }, 0);
+    }
+  }
+  
+  /**
+   * Handle dragover event on the canvas
+   * @param event The drag event
+   */
+  onDragOver(event: DragEvent): void {
+    // Prevent default to allow drop
+    event.preventDefault();
+    
+    // Set the dropEffect to copy
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+    
+    // Add visual indicator that dropping is allowed
+    this.isDragOver = true;
+  }
+  
+  /**
+   * Handle dragleave event on the canvas
+   * @param _event The drag event (unused)
+   */
+  onDragLeave(_event: DragEvent): void {
+    // Remove visual indicator
+    this.isDragOver = false;
+  }
+  
+  /**
+   * Handle drop event on the canvas
+   * @param event The drop event
+   */
+  onDrop(event: DragEvent): void {
+    // Prevent the browser's default drop handling
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Remove visual indicator
+    this.isDragOver = false;
+    
+    // Get the vertex type from the data transfer
+    const vertexType = this.draggedVertexType || 
+                      (event.dataTransfer ? event.dataTransfer.getData('application/tmi-vertex-type') as 'process' | 'store' | 'actor' : null);
+    
+    if (!vertexType) {
+      this.logger.warn('No vertex type found in drop data');
+      return;
+    }
+    
+    // Calculate drop position relative to the canvas
+    const canvasRect = this.diagramCanvas.nativeElement.getBoundingClientRect();
+    const x = Math.max(0, event.clientX - canvasRect.left);
+    const y = Math.max(0, event.clientY - canvasRect.top);
+    
+    this.logger.info(`Dropped ${vertexType} vertex at (${x}, ${y})`);
+    
+    // Create the vertex at the drop position
+    void this.addVertexAtPosition(vertexType, x, y);
+    
+    // Reset the dragged vertex type
+    this.draggedVertexType = null;
+  }
+  
+  /**
+   * Add a vertex at a specific position
+   * @param type The type of vertex to create
+   * @param x The x coordinate
+   * @param y The y coordinate
+   */
+  private async addVertexAtPosition(type: 'process' | 'store' | 'actor', x: number, y: number): Promise<{ componentId: string, cellId: string } | null> {
+    try {
+      // Wait for renderer to be ready if it's not
+      if (!this.diagramRenderer.isInitialized() || !this._isRendererReady) {
+        this.logger.warn(`Cannot add ${type} vertex: Renderer not initialized. Please wait...`);
+        return null;
+      }
+      
+      // Add a brief delay to ensure UI is ready
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      // Define vertex style and label based on type
+      let style = '';
+      let width = 100;
+      let height = 60;
+      let label = '';
+      
+      switch (type) {
+        case 'process':
+          style = 'rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;';
+          label = 'Process';
+          width = 120;
+          height = 60;
+          break;
+          
+        case 'store':
+          style = 'shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#dae8fc;strokeColor=#6c8ebf;';
+          label = 'Store';
+          width = 80; 
+          height = 80;
+          break;
+          
+        case 'actor':
+          style = 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;';
+          label = 'Actor';
+          width = 40;
+          height = 80;
+          break;
+      }
+      
+      // Create the vertex with the appropriate style at the exact drop position
+      const result = this.diagramRenderer.createVertexWithIds(x, y, label, width, height, style);
+      
+      if (result) {
+        const { componentId, cellId } = result;
+        this.logger.info(`Added ${type} vertex at (${x}, ${y}) with ID: ${componentId} (cell: ${cellId})`);
+        return { componentId, cellId };
+      } else {
+        this.logger.error(`Failed to create ${type} vertex at (${x}, ${y})`);
+        return null;
+      }
+    } catch (error) {
+      this.logger.error(`Exception while creating ${type} vertex`, error);
+      return null;
+    }
   }
   
   /**
@@ -785,6 +937,13 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   private async updateSelectedCellProperties(cellId: string): Promise<void> {
     try {
+      // Safety check for null/empty ID
+      if (!cellId) {
+        this.logger.warn('Cannot update properties: Cell ID is null or empty');
+        this.selectedCellProperties = JSON.stringify({ error: 'No valid cell ID provided' }, null, 2);
+        return;
+      }
+      
       // Wait for renderer to be fully initialized if it's not already
       if (!this.diagramRenderer.isInitialized()) {
         this.logger.debug('Waiting for renderer initialization before getting properties');
@@ -795,6 +954,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       const graph = this.diagramRenderer.getGraph();
       if (!graph) {
         this.logger.error('Cannot get properties: Graph not initialized');
+        this.selectedCellProperties = JSON.stringify({ error: 'Graph not initialized' }, null, 2);
         return;
       }
       
@@ -802,6 +962,14 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       const cell = this.diagramRenderer.getCellById(cellId);
       if (!cell) {
         this.logger.error(`Cell not found with ID: ${cellId}`);
+        
+        // Clear the selection since we can't find the cell
+        this.hasSelectedCell = false;
+        this._selectedCellId = null;
+        this.selectedCellProperties = JSON.stringify({ 
+          error: `Cell not found with ID: ${cellId}`,
+          note: 'The cell may have been deleted or modified by another operation.' 
+        }, null, 2);
         return;
       }
       
