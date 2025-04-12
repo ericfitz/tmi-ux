@@ -2,6 +2,8 @@
 
 Angular-based user interface for the TMI application.
 
+> **Note:** Documentation about architecture, implementation plans, and development guidelines can be found in the [context](./context) directory.
+
 ## Development
 
 ### Prerequisites
