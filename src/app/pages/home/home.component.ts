@@ -1,22 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { Subscription } from '../../core/rxjs-imports';
 
-// Direct Material Imports
+// Import only the specific Material modules needed
+import { CoreMaterialModule } from '../../shared/material/core-material.module';
 
 // Services
 import { AuthService } from '../../auth/services/auth.service';
 
-// Transloco
-
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslocoModule],
+  imports: [CommonModule, CoreMaterialModule, TranslocoModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

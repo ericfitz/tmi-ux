@@ -1,36 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-// Direct Material Imports
+// Import only the specific Material modules needed
+import { CoreMaterialModule } from '../../../shared/material/core-material.module';
 
 // Services
 import { AuthService } from '../../../auth/services/auth.service';
 import { LanguageService, Language } from '../../../i18n/language.service';
-
-// Transloco
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    TranslocoModule,
-  ],
+  imports: [CommonModule, RouterModule, CoreMaterialModule, TranslocoModule],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;

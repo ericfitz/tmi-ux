@@ -1,10 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import {
-  TranslocoModule,
-  provideTransloco,
-  TranslocoService,
-} from '@jsverse/transloco';
+import { TranslocoModule, provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 
 import { TranslocoHttpLoader } from './transloco-loader';
@@ -46,7 +42,7 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
     // Get preferred language
     const langToLoad = getInitialLang();
 
-    // Set active language and load it
+    // Set active language
     transloco.setActiveLang(langToLoad);
 
     // Set document language
@@ -59,8 +55,16 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
       document.documentElement.dir = 'ltr';
     }
 
-    // Preload the default language and return Promise
-    return firstValueFrom(transloco.load(langToLoad));
+    // Always preload English as the fallback language
+    const loadPromises: Promise<unknown>[] = [firstValueFrom(transloco.load('en-US'))];
+
+    // Only load the preferred language if it's not English
+    if (langToLoad !== 'en-US') {
+      loadPromises.push(firstValueFrom(transloco.load(langToLoad)));
+    }
+
+    // Return a promise that resolves when all required languages are loaded
+    return Promise.all(loadPromises).then(() => null);
   };
 }
 
@@ -75,6 +79,7 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
         fallbackLang: 'en-US',
         reRenderOnLangChange: true,
         prodMode: environment.production,
+        // Lazy load translations on demand - only preload English
         missingHandler: {
           useFallbackTranslation: true,
         },

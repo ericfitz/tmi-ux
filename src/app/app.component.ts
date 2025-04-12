@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { FooterComponent } from './core/components/footer/footer.component';
+import { setInjector } from './core/utils/dynamic-material-loader';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { environment } from '../environments/environment';
 import { LoggerService } from './core/services/logger.service';
@@ -17,7 +18,13 @@ import { LoggerService } from './core/services/logger.service';
 export class AppComponent implements OnInit {
   title = 'TMI: Threat Modeling Improved';
 
-  constructor(private logger: LoggerService) {}
+  constructor(
+    private logger: LoggerService,
+    private injector: Injector,
+  ) {
+    // Set the injector for dynamic material loading
+    setInjector(injector);
+  }
 
   ngOnInit(): void {
     this.logger.info('Application initialized');
