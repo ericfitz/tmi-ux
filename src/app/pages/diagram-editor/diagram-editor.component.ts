@@ -937,25 +937,25 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       let height = 60;
       let label = '';
 
+      // Use the style name from the theme instead of hardcoding styles
+      // This ensures that theme changes are applied correctly
       switch (type) {
         case 'process':
-          style = 'rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;';
+          style = 'process';
           label = 'Process';
           width = 120;
           height = 60;
           break;
 
         case 'store':
-          style =
-            'shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#dae8fc;strokeColor=#6c8ebf;';
+          style = 'store';
           label = 'Store';
           width = 80;
           height = 80;
           break;
 
         case 'actor':
-          style =
-            'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;';
+          style = 'actor';
           label = 'Actor';
           width = 40;
           height = 80;

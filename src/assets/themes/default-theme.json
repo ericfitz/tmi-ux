@@ -2,13 +2,15 @@
   "defaultVertexStyle": {
     "fillColor": "#ffffff",
     "strokeColor": "#1565c0",
+    "strokeWidth": 2,
     "rounded": true,
-    "shadow": true
+    "shadow": false
   },
   "defaultEdgeStyle": {
     "strokeColor": "#78909c",
+    "strokeWidth": 2,
     "edgeStyle": "orthogonalEdgeStyle",
-    "shadow": true,
+    "shadow": false,
     "rounded": true,
     "jettySize": "auto",
     "orthogonalLoop": 1
@@ -19,20 +21,21 @@
       "strokeWidth": 3,
       "fillColor": "#ffffff",
       "rounded": true,
-      "shadow": true
+      "shadow": false
     },
     "edgeCreation": {
       "strokeColor": "#4caf50",
       "strokeWidth": 2,
       "fillColor": "#e8f5e9",
       "rounded": true,
-      "shadow": true
+      "shadow": false
     },
     "process": {
       "fillColor": "#f5f5f5",
       "strokeColor": "#666666",
+      "strokeWidth": 2,
       "rounded": true,
-      "shadow": true,
+      "shadow": false,
       "whiteSpace": "wrap",
       "html": 1
     },
@@ -43,8 +46,9 @@
       "boundedLbl": 1,
       "fillColor": "#dae8fc",
       "strokeColor": "#6c8ebf",
-      "rounded": true,
-      "shadow": true
+      "strokeWidth": 2,
+      "rounded": false,
+      "shadow": false
     },
     "actor": {
       "shape": "umlActor",
@@ -53,15 +57,16 @@
       "html": 1,
       "fillColor": "#d5e8d4",
       "strokeColor": "#82b366",
-      "rounded": true,
-      "shadow": true
+      "strokeWidth": 2,
+      "shadow": false
     },
     "flow": {
       "strokeColor": "#4D4D4D",
+      "strokeWidth": 2,
       "endArrow": "classic",
       "rounded": true,
       "edgeStyle": "orthogonalEdgeStyle",
-      "shadow": true,
+      "shadow": false,
       "jettySize": "auto",
       "orthogonalLoop": 1,
       "html": 1

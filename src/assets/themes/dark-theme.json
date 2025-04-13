@@ -2,14 +2,16 @@
   "defaultVertexStyle": {
     "fillColor": "#2a2a2a",
     "strokeColor": "#e0e0e0",
+    "strokeWidth": 2,
     "fontColor": "#ffffff",
     "rounded": true,
-    "shadow": true
+    "shadow": false
   },
   "defaultEdgeStyle": {
     "strokeColor": "#a0a0a0",
+    "strokeWidth": 2,
     "edgeStyle": "orthogonalEdgeStyle",
-    "shadow": true,
+    "shadow": false,
     "rounded": true,
     "jettySize": "auto",
     "orthogonalLoop": 1,
@@ -21,7 +23,7 @@
       "strokeWidth": 3,
       "fillColor": "#2a2a2a",
       "rounded": true,
-      "shadow": true,
+      "shadow": false,
       "fontColor": "#ffffff"
     },
     "edgeCreation": {
@@ -29,14 +31,15 @@
       "strokeWidth": 2,
       "fillColor": "#1b5e20",
       "rounded": true,
-      "shadow": true,
+      "shadow": false,
       "fontColor": "#ffffff"
     },
     "process": {
       "fillColor": "#424242",
       "strokeColor": "#e0e0e0",
+      "strokeWidth": 2,
       "rounded": true,
-      "shadow": true,
+      "shadow": false,
       "whiteSpace": "wrap",
       "html": 1,
       "fontColor": "#ffffff"
@@ -48,8 +51,9 @@
       "boundedLbl": 1,
       "fillColor": "#263238",
       "strokeColor": "#90caf9",
-      "rounded": true,
-      "shadow": true,
+      "strokeWidth": 2,
+      "rounded": false,
+      "shadow": false,
       "fontColor": "#ffffff"
     },
     "actor": {
@@ -59,16 +63,17 @@
       "html": 1,
       "fillColor": "#388e3c",
       "strokeColor": "#a5d6a7",
-      "rounded": true,
-      "shadow": true,
+      "strokeWidth": 2,
+      "shadow": false,
       "fontColor": "#ffffff"
     },
     "flow": {
       "strokeColor": "#e0e0e0",
+      "strokeWidth": 2,
       "endArrow": "classic",
       "rounded": true,
       "edgeStyle": "orthogonalEdgeStyle",
-      "shadow": true,
+      "shadow": false,
       "jettySize": "auto",
       "orthogonalLoop": 1,
       "fontColor": "#ffffff",

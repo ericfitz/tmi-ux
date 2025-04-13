@@ -179,7 +179,29 @@ export class DiagramThemeService {
 
       // Apply custom styles
       for (const [styleName, styleDefinition] of Object.entries(theme.styles)) {
-        stylesheet.putCellStyle(styleName, styleDefinition);
+        // Convert object-based style to string-based style
+        const styleString = this.convertStyleObjectToString(styleDefinition);
+        this.logger.debug(`Applying style for ${styleName}: ${styleString}`);
+
+        // Apply the style to the stylesheet
+        stylesheet.putCellStyle(styleName, styleString);
+
+        // Register shape with MaxGraph if the style has a shape property
+        if (styleDefinition['shape']) {
+          this.logger.debug(
+            `Registering shape for style ${styleName}: ${styleDefinition['shape']}`,
+          );
+
+          // Make sure the shape is registered with the cell renderer
+          // This is necessary for shapes like cylinder and umlActor
+          if (this.graph.cellRenderer && this.graph.cellRenderer.registerShape) {
+            // Only register if the shape is not already registered
+            this.graph.cellRenderer.registerShape(
+              styleDefinition['shape'],
+              styleDefinition['shape'],
+            );
+          }
+        }
       }
 
       // Apply other theme settings
@@ -207,5 +229,21 @@ export class DiagramThemeService {
       this.logger.error('Error applying theme', error);
       throw error;
     }
+  }
+
+  /**
+   * Convert a style object to a string format that MaxGraph expects
+   * @param styleObj The style object to convert
+   * @returns A string representation of the style
+   */
+  private convertStyleObjectToString(styleObj: any): string {
+    if (!styleObj) {
+      return '';
+    }
+
+    // Convert the object to a string of key=value pairs separated by semicolons
+    return Object.entries(styleObj)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(';');
   }
 }

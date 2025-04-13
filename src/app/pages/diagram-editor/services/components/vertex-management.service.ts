@@ -101,6 +101,12 @@ export class VertexManagementService {
       try {
         // Create vertex cell first
         const parent = this.graph.getDefaultParent();
+
+        // If style is a style name (e.g., 'process', 'store', 'actor'), use it directly
+        // This will use the style from the stylesheet that was applied by the theme
+        // No need to modify the style name, as the DiagramThemeService already registered it
+        this.logger.debug(`Using style name: ${style}`);
+
         const vertex = this.graph.insertVertex(parent, null, label, x, y, width, height, style);
         cellId = vertex.id;
 
