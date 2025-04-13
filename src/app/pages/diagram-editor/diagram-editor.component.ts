@@ -21,6 +21,9 @@ import { Diagram } from './models/diagram.model';
 import { DiagramService } from './services/diagram.service';
 import { DiagramRendererService } from './services/diagram-renderer.service';
 import { ThemeSelectorComponent } from './components/theme-selector.component';
+import { StateManagerService } from './services/state/state-manager.service';
+import { EditorState } from './services/state/editor-state.enum';
+import { DiagramElementRegistryService } from './services/registry/diagram-element-registry.service';
 
 @Component({
   selector: 'app-diagram-editor',
@@ -63,6 +66,8 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
     private assetLoader: AssetLoaderService,
+    private stateManager: StateManagerService,
+    private registry: DiagramElementRegistryService,
   ) {
     this.logger.info('DiagramEditorComponent constructed');
   }
@@ -73,9 +78,23 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     // Set initial loading message
     this.loadingMessage = 'Initializing renderer...';
 
-    // Make sure we're showing the loading spinner
-    this._isRendererReady = false;
-    this._isFullyStabilized = false;
+    // Subscribe to state changes
+    this.subscriptions.push(
+      this.stateManager.state$.subscribe((state: EditorState) => {
+        this.currentState = state;
+        this.updateStateClass(state);
+        this.updateLoadingMessage(state);
+
+        // Update isEditorReady based on state
+        this.isEditorReady = state === EditorState.READY;
+
+        // Force change detection
+        this.cdr.detectChanges();
+      }),
+    );
+
+    // Reset state to UNINITIALIZED
+    this.stateManager.reset();
 
     // Preload assets for better performance
     this.preloadAssets();
@@ -181,17 +200,21 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   ngAfterViewInit(): void {
     if (!this.diagramCanvas) {
       this.logger.error('Diagram canvas element not found');
+      this.stateManager.transitionTo(EditorState.ERROR);
       return;
     }
 
     try {
+      // Reset state to UNINITIALIZED first to ensure proper initialization sequence
+      this.stateManager.reset();
+
       // Initialize the renderer
       this.logger.debug('Initializing diagram renderer with canvas element');
       this.diagramRenderer.initialize(this.diagramCanvas.nativeElement);
 
+      // At this point, the state should be INITIALIZING (set by the renderer)
+
       // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-      // Explicitly set renderer as not ready and force change detection
-      this._isRendererReady = false;
       this.cdr.detectChanges();
 
       setTimeout(() => {
@@ -200,41 +223,57 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           .initializeRenderer()
           .then(() => {
             if (this.diagram) {
+              // Transition to LOADING state
+              this.stateManager.transitionTo(EditorState.LOADING);
+
               this.logger.debug('Renderer initialized, updating diagram');
-              this.loadingMessage = 'Loading diagram...';
               this.diagramRenderer.updateDiagram();
 
               // Set initial grid state
-              // this.gridEnabled = this.diagramRenderer.isGridEnabled(); - not using maxGraph grid anymore
               this.gridEnabled = true; // Default to show CSS grid
 
-              // Wait for full stabilization
-              this.loadingMessage = 'Stabilizing diagram...';
-              // Force change detection to update the loading message
+              // Transition to STABILIZING state
+              this.stateManager.transitionTo(EditorState.STABILIZING);
+
+              // Force change detection
               this.cdr.detectChanges();
+
+              // Wait for full stabilization
               return this.diagramRenderer.waitForStabilization();
             }
             return Promise.resolve();
           })
           .then(() => {
-            this._isRendererReady = true;
-            this.logger.info('Renderer fully ready for operations');
+            // Transition to READY state
+            this.stateManager.transitionTo(EditorState.READY);
+            this.logger.info('Diagram fully stabilized and ready for operations');
 
-            this._isFullyStabilized = true;
-            this.logger.info('Diagram fully stabilized and ready for all operations');
-
-            // Force change detection after setting ready state
+            // Force change detection
             this.cdr.detectChanges();
           })
           .catch(error => {
             this.logger.error('Error during renderer initialization chain', error);
-            // Also set ready to true on error to hide spinner
-            this._isRendererReady = true;
-            this.cdr.detectChanges();
+
+            // Only transition to ERROR state if we're not already in it
+            if (this.stateManager.getCurrentState() !== EditorState.ERROR) {
+              this.stateManager.transitionTo(EditorState.ERROR);
+            }
+            // After a short delay, transition to RECOVERING and then READY to hide spinner
+            setTimeout(() => {
+              // First transition to RECOVERING state
+              this.stateManager.transitionTo(EditorState.RECOVERING);
+
+              // Then after another short delay, transition to READY
+              setTimeout(() => {
+                this.stateManager.transitionTo(EditorState.READY);
+                this.cdr.detectChanges();
+              }, 1000);
+            }, 2000);
           });
       });
     } catch (error) {
       this.logger.error('Error during diagram renderer initialization', error);
+      this.stateManager.transitionTo(EditorState.ERROR);
     }
   }
 
@@ -243,8 +282,8 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     this.subscriptions.forEach(sub => sub.unsubscribe());
 
     // Reset flags
-    this._isRendererReady = false;
-    this._isFullyStabilized = false;
+    // Reset state
+    this.stateManager.reset();
 
     // Clean up any ongoing retry operations
     this._vertexCreationRetries = {};
@@ -266,10 +305,20 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   loadDiagram(id: string): void {
     this.logger.info(`Loading diagram: ${id}`);
 
+    // Transition to LOADING state if we're already initialized
+    if (this.stateManager.getCurrentState() === EditorState.READY) {
+      this.stateManager.transitionTo(EditorState.LOADING);
+    }
+
     // Create a new diagram if the ID is 'new' or starts with 'new-diagram-'
     if (id === 'new' || id.startsWith('new-diagram-')) {
       this.logger.info(`Creating new diagram with ID: ${id}`);
       this.createNewDiagram();
+
+      // Transition back to READY state if we were in LOADING
+      if (this.stateManager.getCurrentState() === EditorState.LOADING) {
+        this.stateManager.transitionTo(EditorState.READY);
+      }
       return;
     }
 
@@ -284,15 +333,30 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       } else {
         this.logger.info(`Diagram loaded successfully: ${diagram.name} (${diagram.id})`);
 
-        // Explicitly trigger graph render after diagram is loaded
-        // This is separate from the component subscription to avoid circular updates
+        // If we're already initialized, transition to STABILIZING
         if (this.diagramRenderer.isInitialized()) {
+          this.stateManager.transitionTo(EditorState.STABILIZING);
+
+          // Explicitly trigger graph render after diagram is loaded
           this.diagramRenderer.updateDiagram();
+
+          // Transition back to READY state
+          this.stateManager.transitionTo(EditorState.READY);
         }
       }
     } catch (error) {
       this.logger.error(`Error loading diagram: ${id}`, error);
-      this.createNewDiagram();
+
+      // Transition to ERROR state
+      this.stateManager.transitionTo(EditorState.ERROR);
+
+      // Create a new diagram after a short delay
+      setTimeout(() => {
+        this.createNewDiagram();
+
+        // Transition back to READY state
+        this.stateManager.transitionTo(EditorState.READY);
+      }, 1000);
     }
   }
 
@@ -313,8 +377,28 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   saveDiagram(): void {
     this.logger.info('Saving diagram');
 
-    // Save to local storage for now
-    this.diagramService.saveDiagramToLocalStorage();
+    // Transition to SAVING state
+    this.stateManager.transitionTo(EditorState.SAVING);
+
+    try {
+      // Save to local storage for now
+      this.diagramService.saveDiagramToLocalStorage();
+
+      // Transition back to READY state
+      this.stateManager.transitionTo(EditorState.READY);
+
+      // Show a success message (could use a snackbar or toast in a real app)
+      this.logger.info('Diagram saved successfully');
+    } catch (error) {
+      // Transition to ERROR state on failure
+      this.stateManager.transitionTo(EditorState.ERROR);
+      this.logger.error('Error saving diagram', error);
+
+      // After a short delay, transition back to READY
+      setTimeout(() => {
+        this.stateManager.transitionTo(EditorState.READY);
+      }, 3000);
+    }
 
     // TODO: In the future, this would call an API
   }
@@ -338,7 +422,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     while (retryCount <= maxRetries) {
       try {
         // Wait for renderer to be ready if it's not
-        if (!this.diagramRenderer.isInitialized() || !this._isRendererReady) {
+        if (!this.diagramRenderer.isInitialized() || !this.isEditorReady) {
           if (retryCount === 0) {
             this.logger.warn(`Cannot add ${type} vertex: Renderer not initialized. Please wait...`);
 
@@ -346,7 +430,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
             if (!this.diagramRenderer.isInitialized()) {
               this.logger.error('Renderer is not initialized yet');
             }
-            if (!this._isRendererReady) {
+            if (!this.isEditorReady) {
               this.logger.warn(
                 'Renderer is initialized but not fully ready - internal flag is false',
               );
@@ -355,7 +439,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
 
           // Force readiness if we're in a retry
           if (retryCount > 0 && this.diagramRenderer.isInitialized()) {
-            this._isRendererReady = true;
+            this.isEditorReady = true;
           }
 
           // Wait before retrying
@@ -459,13 +543,90 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   private _selectedCellId: string | null = null;
   // Properties of the selected cell as JSON string
   public selectedCellProperties: string | null = null;
-  // Track if the renderer is ready for operations - made public so template can access it
-  // Initialize to false to show the spinner during loading
-  public _isRendererReady = false;
-  // Track if the graph is fully stabilized
-  public _isFullyStabilized = false;
+
+  // State management properties
+  public isEditorReady = false;
+  public currentState = '';
+  public currentStateClass = '';
+  public localizedStateText = ''; // Localized state text for display
+  public showStateIndicator = true;
+
   // Loading message for the spinner
   public loadingMessage = 'Initializing diagram editor...';
+  /**
+   * Update the state class for styling the state indicator
+   * @param state The current editor state
+   */
+  private updateStateClass(state: EditorState): void {
+    // Update CSS class for styling
+    switch (state) {
+      case EditorState.UNINITIALIZED:
+      case EditorState.INITIALIZING:
+      case EditorState.LOADING:
+      case EditorState.STABILIZING:
+        this.currentStateClass = 'state-loading';
+        break;
+      case EditorState.READY:
+        this.currentStateClass = 'state-ready';
+        break;
+      case EditorState.EDITING_LABEL:
+      case EditorState.CREATING_EDGE:
+      case EditorState.DELETING:
+      case EditorState.SAVING:
+        this.currentStateClass = 'state-working';
+        break;
+      case EditorState.ERROR:
+        this.currentStateClass = 'state-error';
+        break;
+      case EditorState.RECOVERING:
+        this.currentStateClass = 'state-recovering';
+        break;
+      default:
+        this.currentStateClass = '';
+    }
+
+    // Update localized state text
+    this.updateLocalizedStateText(state);
+  }
+
+  /**
+   * Update the localized state text based on the current state
+   * @param state The current editor state
+   */
+  private updateLocalizedStateText(state: EditorState): void {
+    const translationKey = `editor.states.${state}`;
+    this.localizedStateText = this.translocoService.translate(translationKey);
+  }
+
+  /**
+   * Update the loading message based on the current state
+   * @param state The current editor state
+   */
+  private updateLoadingMessage(state: EditorState): void {
+    switch (state) {
+      case EditorState.UNINITIALIZED:
+        this.loadingMessage = 'Initializing diagram editor...';
+        break;
+      case EditorState.INITIALIZING:
+        this.loadingMessage = 'Initializing renderer...';
+        break;
+      case EditorState.LOADING:
+        this.loadingMessage = 'Loading diagram...';
+        break;
+      case EditorState.STABILIZING:
+        this.loadingMessage = 'Stabilizing diagram...';
+        break;
+      case EditorState.ERROR:
+        this.loadingMessage = 'Error occurred. Attempting to recover...';
+        break;
+      case EditorState.RECOVERING:
+        this.loadingMessage = 'Recovering from error...';
+        break;
+      default:
+        this.loadingMessage = 'Processing...';
+    }
+  }
+
   // Track vertex creation retries
   private _vertexCreationRetries: Record<string, number> = {};
 
@@ -762,7 +923,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
   ): Promise<{ componentId: string; cellId: string } | null> {
     try {
       // Wait for renderer to be ready if it's not
-      if (!this.diagramRenderer.isInitialized() || !this._isRendererReady) {
+      if (!this.diagramRenderer.isInitialized() || !this.isEditorReady) {
         this.logger.warn(`Cannot add ${type} vertex: Renderer not initialized. Please wait...`);
         return null;
       }
@@ -974,29 +1135,52 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       return;
     }
 
+    // Transition to DELETING state
+    this.stateManager.transitionTo(EditorState.DELETING);
+
     this.logger.info(`Deleting selected cell: ${this._selectedCellId}`);
 
     try {
-      // Find the component associated with this cell
-      const component = this.diagramService.findComponentByCellId(this._selectedCellId);
+      // First check if the cell exists in the registry
+      const componentId = this.registry.getComponentId(this._selectedCellId);
 
-      if (component) {
-        // Delete component (which will also delete the cell)
-        this.diagramRenderer.deleteComponent(component.id);
-        this.logger.info(`Deleted component: ${component.id}`);
+      if (componentId) {
+        // Delete component using the registry information
+        this.diagramRenderer.deleteComponent(componentId);
+        this.logger.info(`Deleted component: ${componentId} from registry`);
       } else {
-        // If no component was found, try to delete just the cell
-        this.logger.warn(
-          `No component found for cell ${this._selectedCellId}, attempting to delete cell only`,
-        );
-        this.diagramRenderer.deleteCellById(this._selectedCellId);
+        // Fall back to the old method if not in registry
+        const component = this.diagramService.findComponentByCellId(this._selectedCellId);
+
+        if (component) {
+          // Delete component (which will also delete the cell)
+          this.diagramRenderer.deleteComponent(component.id);
+          this.logger.info(`Deleted component: ${component.id}`);
+        } else {
+          // If no component was found, try to delete just the cell
+          this.logger.warn(
+            `No component found for cell ${this._selectedCellId}, attempting to delete cell only`,
+          );
+          this.diagramRenderer.deleteCellById(this._selectedCellId);
+        }
       }
 
       // Reset selection state
       this.hasSelectedCell = false;
       this._selectedCellId = null;
+
+      // Transition back to READY state
+      this.stateManager.transitionTo(EditorState.READY);
     } catch (error) {
       this.logger.error('Error deleting selected item', error);
+
+      // Transition to ERROR state
+      this.stateManager.transitionTo(EditorState.ERROR);
+
+      // After a short delay, transition back to READY
+      setTimeout(() => {
+        this.stateManager.transitionTo(EditorState.READY);
+      }, 2000);
     }
   }
 

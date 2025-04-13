@@ -1,3 +1,59 @@
+// State indicator styles
+.state-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 100;
+
+  .state-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+
+    &.state-loading {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    &.state-ready {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    &.state-working {
+      background-color: #ff9800;
+      color: white;
+    }
+
+    &.state-error {
+      background-color: #f44336;
+      color: white;
+      animation: pulse 1.5s infinite;
+    }
+
+    &.state-recovering {
+      background-color: #9c27b0;
+      color: white;
+      animation: pulse 3s infinite;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 .diagram-editor-container {
   height: calc(100vh - 144px); // Adjust based on navbar and footer height
   display: flex;

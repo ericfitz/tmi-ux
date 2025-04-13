@@ -64,9 +64,31 @@ export class GraphInitializationService {
     }
 
     if (!this.container) {
-      const error = new Error('Cannot initialize renderer: No container set');
-      this.logger.error(error.message);
-      return Promise.reject(error);
+      // Try to recover by creating a fallback container
+      this.logger.warn('No container set, attempting to create a fallback container');
+      try {
+        // Create a temporary container element
+        const fallbackContainer = document.createElement('div');
+        fallbackContainer.style.width = '100%';
+        fallbackContainer.style.height = '100%';
+        fallbackContainer.style.position = 'absolute';
+        fallbackContainer.style.top = '0';
+        fallbackContainer.style.left = '0';
+        fallbackContainer.id = 'fallback-graph-container';
+
+        // Append to body
+        document.body.appendChild(fallbackContainer);
+
+        // Set as container
+        this.container = fallbackContainer;
+        this.logger.info('Created fallback container for graph');
+      } catch (e) {
+        const error = new Error(
+          'Cannot initialize renderer: No container set and fallback creation failed',
+        );
+        this.logger.error(error.message);
+        return Promise.reject(error);
+      }
     }
 
     this._initializationPromise = new Promise<void>((resolve, reject) => {

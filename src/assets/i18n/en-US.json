@@ -151,6 +151,19 @@
         "user": "User",
         "connection": "Connection"
       }
+    },
+    "states": {
+      "uninitialized": "INIT",
+      "initializing": "INITIALIZING",
+      "loading": "LOADING",
+      "stabilizing": "STABILIZING",
+      "ready": "READY",
+      "editing_label": "EDITING",
+      "creating_edge": "CONNECTING",
+      "deleting": "DELETING",
+      "saving": "SAVING",
+      "error": "ERROR",
+      "recovering": "RECOVERING"
     }
   }
 }

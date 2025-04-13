@@ -33,9 +33,16 @@
       ></div>
 
       <!-- Loading overlay with spinner -->
-      <div class="loading-overlay" *ngIf="!_isRendererReady">
+      <div class="loading-overlay" *ngIf="!isEditorReady">
         <mat-spinner diameter="50"></mat-spinner>
         <p class="loading-text">{{ loadingMessage }}</p>
+      </div>
+
+      <!-- State indicator -->
+      <div class="state-indicator" *ngIf="showStateIndicator">
+        <div class="state-badge" [ngClass]="currentStateClass">
+          {{ localizedStateText }}
+        </div>
       </div>
     </div>
 

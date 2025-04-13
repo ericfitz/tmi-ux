@@ -24,6 +24,11 @@ import { EdgeManagementService } from './components/edge-management.service';
 import { AnchorPointService } from './components/anchor-point.service';
 import { DiagramComponentMapperService } from './components/diagram-component-mapper.service';
 
+// Import new services for state management and registry
+import { StateManagerService } from './state/state-manager.service';
+import { EditorState } from './state/editor-state.enum';
+import { DiagramElementRegistryService } from './registry/diagram-element-registry.service';
+
 /**
  * Service for rendering diagrams using mxGraph
  * This is a facade that delegates to specialized services
@@ -46,6 +51,9 @@ export class DiagramRendererService implements IDiagramRendererService {
     private edgeService: EdgeManagementService,
     private anchorService: AnchorPointService,
     private componentMapper: DiagramComponentMapperService,
+    // New services for state management and registry
+    private stateManager: StateManagerService,
+    private registry: DiagramElementRegistryService,
   ) {
     this.logger.info('DiagramRendererService initialized');
   }
@@ -54,6 +62,12 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Capture all information needed about a cell before deletion
    */
   private capturePreDeleteInfo(cellId: string): CellDeleteInfo | null {
+    // Check if the cell exists in the registry
+    if (!this.registry.hasCellId(cellId)) {
+      this.logger.warn(`Cannot capture pre-delete info: Cell not registered: ${cellId}`);
+      return null;
+    }
+
     if (!this.isInitialized() || !cellId) {
       return null;
     }
@@ -61,15 +75,29 @@ export class DiagramRendererService implements IDiagramRendererService {
     try {
       const cell = this.getCellById(cellId);
       if (!cell) {
-        this.logger.warn(`Cannot capture pre-delete info: Cell not found: ${cellId}`);
+        this.logger.warn(`Cannot capture pre-delete info: Cell not found in graph: ${cellId}`);
         return null;
       }
 
+      // Get component ID from registry
+      const componentId = this.registry.getComponentId(cellId);
+
+      // Store registry entry for reference
+      const registryEntry = componentId ? this.registry.getEntryByCellId(cellId) : null;
+
       // Determine cell type and use appropriate service
       if (this.graphUtils.isVertex(cell)) {
-        return this.vertexService.captureVertexDeleteInfo(cell);
+        const deleteInfo = this.vertexService.captureVertexDeleteInfo(cell);
+        if (deleteInfo && componentId) {
+          deleteInfo.componentId = componentId;
+        }
+        return deleteInfo;
       } else if (this.graphUtils.isEdge(cell)) {
-        return this.edgeService.captureEdgeDeleteInfo(cell);
+        const deleteInfo = this.edgeService.captureEdgeDeleteInfo(cell);
+        if (deleteInfo && componentId) {
+          deleteInfo.componentId = componentId;
+        }
+        return deleteInfo;
       } else {
         this.logger.warn(`Unknown cell type for pre-delete info: ${cellId}`);
         return null;
@@ -94,6 +122,28 @@ export class DiagramRendererService implements IDiagramRendererService {
    */
   initialize(container: HTMLElement): void {
     this.logger.info('Initializing renderer with container');
+
+    // Get current state
+    const currentState = this.stateManager.getCurrentState();
+
+    // If we're already in INITIALIZING or beyond, just update the container
+    if (currentState !== EditorState.UNINITIALIZED) {
+      this.logger.warn(`Already initialized (state: ${currentState}), updating container only`);
+
+      // Destroy existing graph if any
+      if (this.graphInitService.isInitialized()) {
+        this.graphInitService.destroy();
+      }
+
+      // Initialize with new container
+      this.graphInitService.initialize(container);
+      return;
+    }
+
+    // Transition to INITIALIZING state
+    this.stateManager.transitionTo(EditorState.INITIALIZING);
+
+    // Initialize the graph with the container
     this.graphInitService.initialize(container);
   }
 
@@ -103,12 +153,40 @@ export class DiagramRendererService implements IDiagramRendererService {
   async initializeRenderer(): Promise<void> {
     this.logger.info('Initializing renderer');
 
+    // Get current state
+    const currentState = this.stateManager.getCurrentState();
+
+    // If we're not in INITIALIZING state, try to transition to it
+    if (currentState !== EditorState.INITIALIZING) {
+      this.logger.warn(
+        `Not in INITIALIZING state (current: ${currentState}), attempting to transition`,
+      );
+
+      // If we're in ERROR or READY state, we can try to reinitialize
+      if (currentState === EditorState.ERROR || currentState === EditorState.READY) {
+        this.stateManager.transitionTo(EditorState.INITIALIZING);
+      } else if (currentState === EditorState.UNINITIALIZED) {
+        // If we're in UNINITIALIZED state, we need to initialize first
+        this.logger.warn('Cannot initialize renderer: Container not initialized');
+        return Promise.reject(new Error('Container not initialized'));
+      } else {
+        // For other states, we'll try to continue but log a warning
+        this.logger.warn(
+          `Unusual state for initialization: ${currentState}, proceeding with caution`,
+        );
+      }
+    }
+
     try {
       // Initialize graph
       await this.graphInitService.initializeRenderer();
 
       // Get graph instance
       const graph = this.graphInitService.getGraph();
+
+      if (!graph) {
+        throw new Error('Failed to get graph instance after initialization');
+      }
 
       // Initialize all services with the graph instance
       this.eventHandlingService.setGraph(graph);
@@ -127,8 +205,14 @@ export class DiagramRendererService implements IDiagramRendererService {
       // Initial diagram render
       this.updateDiagram();
 
+      // Transition to READY state
+      this.stateManager.transitionTo(EditorState.READY);
       this.logger.info('Renderer initialized successfully');
     } catch (error) {
+      // Transition to ERROR state on failure, but only if we're not already in ERROR state
+      if (this.stateManager.getCurrentState() !== EditorState.ERROR) {
+        this.stateManager.transitionTo(EditorState.ERROR);
+      }
       this.logger.error('Error initializing renderer', error);
       throw error;
     }
@@ -138,7 +222,8 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Check if renderer is initialized
    */
   isInitialized(): boolean {
-    return this.graphInitService.isInitialized();
+    // Check if we're in the READY state
+    return this.stateManager.getCurrentState() === EditorState.READY;
   }
 
   /**
@@ -154,55 +239,78 @@ export class DiagramRendererService implements IDiagramRendererService {
   destroy(): void {
     this.logger.info('Destroying renderer');
 
-    // Hide all anchor points
-    this.anchorService.hideAllAnchorPoints();
+    try {
+      // Hide all anchor points
+      this.anchorService.hideAllAnchorPoints();
 
-    // Destroy graph
-    this.graphInitService.destroy();
+      // Destroy graph
+      this.graphInitService.destroy();
+
+      // Reset state to UNINITIALIZED
+      this.stateManager.reset();
+
+      this.logger.info('Renderer destroyed successfully');
+    } catch (error) {
+      this.logger.error('Error destroying renderer', error);
+      // Still reset state even if there was an error
+      this.stateManager.reset();
+    }
   }
 
   /**
    * Update the diagram based on the current state
    */
   updateDiagram(): void {
-    if (!this.isInitialized()) {
-      this.logger.error('Cannot update diagram: Renderer not initialized');
-      return;
-    }
-
-    try {
-      const diagram = this.diagramService.getCurrentDiagram();
-      if (!diagram) {
-        this.logger.warn('No diagram to render');
-        return;
+    // Use executeIfAllowed to check if the operation is allowed in the current state
+    const result = this.stateManager.executeIfAllowed('updateDiagram', () => {
+      if (!this.graphInitService.isInitialized()) {
+        this.logger.error('Cannot update diagram: Graph not initialized');
+        return false;
       }
-
-      this.logger.debug(
-        `Rendering diagram: ${diagram.name} with ${diagram.components.length} components`,
-      );
-
-      // Get graph and model
-      const graph = this.graphInitService.getGraph();
-      const model = graph.model;
-
-      // Start batch update
-      model.beginUpdate();
 
       try {
-        // Clear existing elements
-        const parent = graph.getDefaultParent();
-        graph.removeCells(graph.getChildCells(parent));
+        const diagram = this.diagramService.getCurrentDiagram();
+        if (!diagram) {
+          this.logger.warn('No diagram to render');
+          return false;
+        }
 
-        // Render components
-        this.renderDiagramComponents(diagram.components);
-      } finally {
-        // End batch update
-        model.endUpdate();
+        this.logger.debug(
+          `Rendering diagram: ${diagram.name} with ${diagram.components.length} components`,
+        );
+
+        // Get graph and model
+        const graph = this.graphInitService.getGraph();
+        const model = graph.model;
+
+        // Start batch update
+        model.beginUpdate();
+
+        try {
+          // Clear existing elements
+          const parent = graph.getDefaultParent();
+          graph.removeCells(graph.getChildCells(parent));
+
+          // Clear registry before rendering new components
+          this.registry.clear();
+
+          // Render components
+          this.renderDiagramComponents(diagram.components);
+        } finally {
+          // End batch update
+          model.endUpdate();
+        }
+
+        this.logger.debug('Diagram updated successfully');
+        return true;
+      } catch (error) {
+        this.logger.error('Error updating diagram', error);
+        return false;
       }
+    });
 
-      this.logger.debug('Diagram updated successfully');
-    } catch (error) {
-      this.logger.error('Error updating diagram', error);
+    if (result === undefined) {
+      this.logger.warn('Cannot update diagram: Operation not allowed in current state');
     }
   }
 
@@ -234,6 +342,9 @@ export class DiagramRendererService implements IDiagramRendererService {
             position.height,
             style,
           );
+
+          // Register the cell-component pair in the registry
+          this.registry.register(cellId, vertex.id, 'vertex');
 
           // Store the cell ID in the component if it doesn't match
           if (vertex.cellId !== cellId) {
@@ -274,6 +385,9 @@ export class DiagramRendererService implements IDiagramRendererService {
             true,
             true,
           );
+
+          // Register the cell-component pair in the registry
+          this.registry.register(edgeId, edge.id, 'edge');
 
           // Store the cell ID in the component if it doesn't match
           if (edge.cellId !== edgeId) {
@@ -446,54 +560,90 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Delete a component
    */
   deleteComponent(componentId: string): void {
-    if (!this.isInitialized()) {
-      return;
-    }
-
-    try {
-      const component = this.componentMapper.findComponentById(componentId);
-      if (!component || !component.cellId) {
-        this.logger.warn(`Cannot delete: Component not found or has no cell ID: ${componentId}`);
-        // Still try to delete the component from the diagram model
-        this.componentMapper.deleteComponent(componentId);
-        return;
+    // Use executeIfAllowed to check if the operation is allowed in the current state
+    const result = this.stateManager.executeIfAllowed('deleteCell', () => {
+      if (!this.isInitialized()) {
+        this.logger.warn('Cannot delete: Renderer not initialized');
+        return false;
       }
 
-      const cellId = component.cellId;
-
-      // Capture all needed information BEFORE deletion
-      const deleteInfo = this.capturePreDeleteInfo(cellId);
-
-      // Clean up anchor points
-      this.anchorService.cleanupForDeletedCell(cellId);
-
-      // Delete component from model first
-      this.componentMapper.deleteComponent(componentId);
-
-      // Now delete the cell using the pre-delete info
-      if (deleteInfo) {
-        // Determine cell type and use appropriate service
-        if (deleteInfo.type === 'vertex') {
-          this.vertexService.deleteVertexWithInfo(deleteInfo);
-        } else if (deleteInfo.type === 'edge') {
-          this.edgeService.deleteEdgeWithInfo(deleteInfo);
+      try {
+        // Transition to DELETING state
+        if (!this.stateManager.transitionTo(EditorState.DELETING)) {
+          this.logger.warn('Cannot transition to DELETING state');
+          return false;
         }
 
-        this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
-      } else {
-        // Fall back to direct deletion if we couldn't get pre-delete info
-        this.logger.warn(`No pre-delete info available, using direct deletion for cell: ${cellId}`);
-        const cell = this.getCellById(cellId);
-        if (cell) {
-          if (this.graphUtils.isVertex(cell)) {
-            this.vertexService.deleteVertexByCellId(cellId);
-          } else if (this.graphUtils.isEdge(cell)) {
-            this.edgeService.deleteEdgeByCellId(cellId);
+        // First check if the component exists in the registry
+        const cellId = this.registry.getCellId(componentId);
+
+        // If not in registry, try the component mapper as fallback
+        const component = cellId
+          ? { id: componentId, cellId }
+          : this.componentMapper.findComponentById(componentId);
+
+        if (!component || !component.cellId) {
+          this.logger.warn(`Cannot delete: Component not found or has no cell ID: ${componentId}`);
+          // Still try to delete the component from the diagram model
+          this.componentMapper.deleteComponent(componentId);
+
+          // Transition back to READY state
+          this.stateManager.transitionTo(EditorState.READY);
+          return false;
+        }
+
+        const cellIdToDelete = component.cellId;
+
+        // Capture all needed information BEFORE deletion
+        const deleteInfo = this.capturePreDeleteInfo(cellIdToDelete);
+
+        // Clean up anchor points
+        this.anchorService.cleanupForDeletedCell(cellIdToDelete);
+
+        // Unregister from registry
+        this.registry.unregister(cellIdToDelete, componentId);
+
+        // Delete component from model
+        this.componentMapper.deleteComponent(componentId);
+
+        // Now delete the cell using the pre-delete info
+        if (deleteInfo) {
+          // Determine cell type and use appropriate service
+          if (deleteInfo.type === 'vertex') {
+            this.vertexService.deleteVertexWithInfo(deleteInfo);
+          } else if (deleteInfo.type === 'edge') {
+            this.edgeService.deleteEdgeWithInfo(deleteInfo);
+          }
+
+          this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
+        } else {
+          // Fall back to direct deletion if we couldn't get pre-delete info
+          this.logger.warn(
+            `No pre-delete info available, using direct deletion for cell: ${cellIdToDelete}`,
+          );
+          const cell = this.getCellById(cellIdToDelete);
+          if (cell) {
+            if (this.graphUtils.isVertex(cell)) {
+              this.vertexService.deleteVertexByCellId(cellIdToDelete);
+            } else if (this.graphUtils.isEdge(cell)) {
+              this.edgeService.deleteEdgeByCellId(cellIdToDelete);
+            }
           }
         }
+
+        // Transition back to READY state
+        this.stateManager.transitionTo(EditorState.READY);
+        return true;
+      } catch (error) {
+        this.logger.error(`Error deleting component: ${componentId}`, error);
+        // Transition to ERROR state on failure
+        this.stateManager.transitionTo(EditorState.ERROR);
+        return false;
       }
-    } catch (error) {
-      this.logger.error(`Error deleting component: ${componentId}`, error);
+    });
+
+    if (result === undefined) {
+      this.logger.warn('Cannot delete component: Operation not allowed in current state');
     }
   }
 
@@ -501,38 +651,71 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Delete a cell by ID
    */
   deleteCellById(cellId: string): void {
-    if (!this.isInitialized() || !cellId) {
-      return;
-    }
-
-    try {
-      // Capture all needed information BEFORE deletion
-      const deleteInfo = this.capturePreDeleteInfo(cellId);
-
-      if (!deleteInfo) {
-        this.logger.warn(`Cannot delete: Unable to get info for cell: ${cellId}`);
-        return;
+    // Use executeIfAllowed to check if the operation is allowed in the current state
+    const result = this.stateManager.executeIfAllowed('deleteCell', () => {
+      if (!this.isInitialized() || !cellId) {
+        this.logger.warn('Cannot delete: Renderer not initialized or no cell ID provided');
+        return false;
       }
 
-      // Clean up anchor points
-      this.anchorService.cleanupForDeletedCell(cellId);
+      try {
+        // Transition to DELETING state
+        if (!this.stateManager.transitionTo(EditorState.DELETING)) {
+          this.logger.warn('Cannot transition to DELETING state');
+          return false;
+        }
 
-      // Find and delete component first
-      const component = this.componentMapper.findComponentByCellId(cellId);
-      if (component) {
-        this.componentMapper.deleteComponent(component.id);
+        // Capture all needed information BEFORE deletion
+        const deleteInfo = this.capturePreDeleteInfo(cellId);
+
+        if (!deleteInfo) {
+          this.logger.warn(`Cannot delete: Unable to get info for cell: ${cellId}`);
+          // Transition back to READY state
+          this.stateManager.transitionTo(EditorState.READY);
+          return false;
+        }
+
+        // Clean up anchor points
+        this.anchorService.cleanupForDeletedCell(cellId);
+
+        // Find component ID from registry
+        const componentId = this.registry.getComponentId(cellId);
+
+        // If not in registry, try the component mapper as fallback
+        const component = componentId
+          ? { id: componentId, cellId }
+          : this.componentMapper.findComponentByCellId(cellId);
+
+        if (component) {
+          // Unregister from registry
+          this.registry.unregister(cellId, component.id);
+
+          // Delete component from model
+          this.componentMapper.deleteComponent(component.id);
+        }
+
+        // Delete the cell using the pre-delete info
+        if (deleteInfo.type === 'vertex') {
+          this.vertexService.deleteVertexWithInfo(deleteInfo);
+        } else if (deleteInfo.type === 'edge') {
+          this.edgeService.deleteEdgeWithInfo(deleteInfo);
+        }
+
+        this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
+
+        // Transition back to READY state
+        this.stateManager.transitionTo(EditorState.READY);
+        return true;
+      } catch (error) {
+        this.logger.error(`Error deleting cell: ${cellId}`, error);
+        // Transition to ERROR state on failure
+        this.stateManager.transitionTo(EditorState.ERROR);
+        return false;
       }
+    });
 
-      // Delete the cell using the pre-delete info
-      if (deleteInfo.type === 'vertex') {
-        this.vertexService.deleteVertexWithInfo(deleteInfo);
-      } else if (deleteInfo.type === 'edge') {
-        this.edgeService.deleteEdgeWithInfo(deleteInfo);
-      }
-
-      this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
-    } catch (error) {
-      this.logger.error(`Error deleting cell: ${cellId}`, error);
+    if (result === undefined) {
+      this.logger.warn('Cannot delete cell: Operation not allowed in current state');
     }
   }
 
