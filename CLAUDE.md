@@ -47,9 +47,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## User Preferences
 
-- When starting Claude, read all of the markdown files in the project root directory to ensure full context is present
+- When starting Claude, read all of the markdown files in the context folder in the root directory to ensure full context is present
 - When the user gives you a task, summarize your understanding of the task and ask for confirmation before proceeding
 - When making changes to the code:
   - Always run a build and fix any build errors
   - Ensure that the changes are consistent with the project's coding standards and best practices by running the linter and fixing any errors
 - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
+- Always use the official maxGraph "stories" examples at https://github.com/maxGraph/maxGraph/tree/main/packages/html/stories whenever implementing or refactoring features that use maxGraph
