@@ -30,7 +30,10 @@
                         "properties": {
                             "code": {
                                 "type": "string",
-                                "enum": ["OK", "ERROR"],
+                                "enum": [
+                                    "OK",
+                                    "ERROR"
+                                ],
                                 "description": "Status code indicating if the API is functioning correctly"
                             },
                             "time": {
@@ -39,7 +42,10 @@
                                 "description": "Current server time in UTC, formatted as RFC 3339"
                             }
                         },
-                        "required": ["code", "time"]
+                        "required": [
+                            "code",
+                            "time"
+                        ]
                     },
                     "service": {
                         "type": "object",
@@ -53,7 +59,10 @@
                                 "description": "Current build number"
                             }
                         },
-                        "required": ["name", "build"]
+                        "required": [
+                            "name",
+                            "build"
+                        ]
                     },
                     "api": {
                         "type": "object",
@@ -68,7 +77,10 @@
                                 "description": "URL to the API specification"
                             }
                         },
-                        "required": ["version", "specification"]
+                        "required": [
+                            "version",
+                            "specification"
+                        ]
                     },
                     "operator": {
                         "type": "object",
@@ -82,10 +94,17 @@
                                 "description": "Operator contact information from environment variables"
                             }
                         },
-                        "required": ["name", "contact"]
+                        "required": [
+                            "name",
+                            "contact"
+                        ]
                     }
                 },
-                "required": ["status", "service", "api"],
+                "required": [
+                    "status",
+                    "service",
+                    "api"
+                ],
                 "example": {
                     "status": {
                         "code": "OK",
@@ -132,17 +151,6 @@
                         "format": "date-time",
                         "description": "Last modification timestamp (ISO8601)"
                     },
-                    "owner": {
-                        "type": "string",
-                        "description": "Username or identifier of the current owner (may be email address or other format)"
-                    },
-                    "authorization": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Authorization"
-                        },
-                        "description": "List of users and their roles for this diagram"
-                    },
                     "metadata": {
                         "type": "array",
                         "items": {
@@ -150,12 +158,12 @@
                         },
                         "description": "Key-value pairs for additional diagram metadata"
                     },
-                    "components": {
+                    "graphData": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/DiagramComponent"
+                            "$ref": "#/components/schemas/Cell"
                         },
-                        "description": "List of diagram components (maxGraph cells)"
+                        "description": "List of maxGraph cells"
                     }
                 },
                 "required": [
@@ -172,13 +180,6 @@
                     "description": "A process workflow",
                     "created_at": "2025-04-06T12:00:00Z",
                     "modified_at": "2025-04-06T12:30:00Z",
-                    "owner": "user@example.com",
-                    "authorization": [
-                        {
-                            "subject": "user@example.com",
-                            "role": "owner"
-                        }
-                    ],
                     "metadata": [],
                     "components": [
                         {
@@ -194,36 +195,93 @@
                     ]
                 }
             },
-            "DiagramComponent": {
+            "Cell": {
                 "type": "object",
-                "description": "A component within a diagram, based on maxGraph cells",
+                "required": [
+                    "id",
+                    "vertex",
+                    "edge"
+                ],
                 "properties": {
                     "id": {
                         "type": "string",
-                        "format": "uuid",
-                        "description": "Unique identifier for the component"
+                        "description": "Unique identifier of the cell (vertex or edge).",
+                        "example": "v1"
                     },
-                    "type": {
+                    "value": {
                         "type": "string",
-                        "description": "Component type (e.g., vertex, edge)"
+                        "description": "The label or value associated with the cell (optional for edges).",
+                        "example": "Vertex 1",
+                        "nullable": true
                     },
-                    "data": {
+                    "geometry": {
                         "type": "object",
-                        "description": "Component properties (e.g., position, label)"
+                        "description": "The cell's geometry (position and size), typically for vertices; null for edges.",
+                        "nullable": true,
+                        "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                        ],
+                        "properties": {
+                            "x": {
+                                "type": "number",
+                                "description": "X-coordinate of the cell's top-left corner.",
+                                "example": 100
+                            },
+                            "y": {
+                                "type": "number",
+                                "description": "Y-coordinate of the cell's top-left corner.",
+                                "example": 100
+                            },
+                            "width": {
+                                "type": "number",
+                                "description": "Width of the cell.",
+                                "example": 80
+                            },
+                            "height": {
+                                "type": "number",
+                                "description": "Height of the cell.",
+                                "example": 40
+                            }
+                        }
                     },
-                    "metadata": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Metadata"
-                        },
-                        "description": "Key-value pairs for component metadata"
+                    "style": {
+                        "type": "string",
+                        "description": "The style string defining the cell's appearance (e.g., CSS-like properties).",
+                        "example": "rounded=1;fillColor=#ffffff;",
+                        "nullable": true
+                    },
+                    "vertex": {
+                        "type": "boolean",
+                        "description": "Indicates if the cell is a vertex (true) or not (false).",
+                        "example": true
+                    },
+                    "edge": {
+                        "type": "boolean",
+                        "description": "Indicates if the cell is an edge (true) or not (false).",
+                        "example": false
+                    },
+                    "parent": {
+                        "type": "string",
+                        "description": "ID of the parent cell (for grouping); null if no parent.",
+                        "nullable": true,
+                        "example": null
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "ID of the source vertex (for edges); null for vertices.",
+                        "nullable": true,
+                        "example": "v1"
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "ID of the target vertex (for edges); null for vertices.",
+                        "nullable": true,
+                        "example": "v2"
                     }
-                },
-                "required": [
-                    "id",
-                    "type",
-                    "data"
-                ]
+                }
             },
             "ThreatModel": {
                 "type": "object",
@@ -444,6 +502,11 @@
                         "type": "string",
                         "description": "Unique identifier for the session"
                     },
+                    "threat_model_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "UUID of the associated threat model"
+                    },
                     "diagram_id": {
                         "type": "string",
                         "format": "uuid",
@@ -475,12 +538,14 @@
                 },
                 "required": [
                     "session_id",
+                    "threat_model_id",
                     "diagram_id",
                     "participants",
                     "websocket_url"
                 ],
                 "example": {
                     "session_id": "abc123-session-uuid",
+                    "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
                     "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
                     "participants": [
                         {
@@ -488,7 +553,7 @@
                             "joined_at": "2025-04-06T12:02:00Z"
                         }
                     ],
-                    "websocket_url": "wss://api.example.com/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
+                    "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
                 }
             },
             "ListItem": {
@@ -674,610 +739,6 @@
                 }
             }
         },
-        "/diagrams": {
-            "get": {
-                "summary": "List diagrams",
-                "description": "Returns a list of diagrams accessible to the authenticated user as name-ID pairs",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "default": 20
-                        },
-                        "description": "Number of diagrams to return"
-                    },
-                    {
-                        "name": "offset",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "default": 0
-                        },
-                        "description": "Pagination offset"
-                    },
-                    {
-                        "name": "sort",
-                        "in": "query",
-                        "schema": {
-                            "type": "string",
-                            "default": "created_at:desc"
-                        },
-                        "description": "Sort order (e.g., created_at:desc, name:asc)"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of diagrams as name-ID pairs",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ListItem"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "GET /diagrams?limit=2&offset=0\nAuthorization: Bearer <JWT>",
-                    "response": {
-                        "status": 200,
-                        "body": [
-                            {
-                                "name": "Workflow Diagram",
-                                "id": "123e4567-e89b-12d3-a456-426614174000"
-                            },
-                            {
-                                "name": "System Overview",
-                                "id": "456e7890-e12f-34d5-a678-426614174001"
-                            }
-                        ]
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create a diagram",
-                "description": "Creates a new diagram with the authenticated user as owner",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Name of the diagram"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Description of the diagram"
-                                    }
-                                },
-                                "required": [
-                                    "name"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Diagram created successfully",
-                        "headers": {
-                            "Location": {
-                                "schema": {
-                                    "type": "string"
-                                },
-                                "description": "URL of the new diagram"
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Diagram"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "POST /diagrams\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"name\": \"New Diagram\", \"description\": \"A test diagram\"}",
-                    "response": {
-                        "status": 201,
-                        "headers": {
-                            "Location": "/diagrams/123e4567-e89b-12d3-a456-426614174000"
-                        },
-                        "body": {
-                            "id": "123e4567-e89b-12d3-a456-426614174000",
-                            "name": "New Diagram",
-                            "description": "A test diagram",
-                            "created_at": "2025-04-06T12:00:00Z",
-                            "modified_at": "2025-04-06T12:00:00Z",
-                            "owner": "user@example.com",
-                            "authorization": [
-                                {
-                                    "subject": "user@example.com",
-                                    "role": "owner"
-                                }
-                            ],
-                            "metadata": [],
-                            "components": []
-                        }
-                    }
-                }
-            }
-        },
-        "/diagrams/{id}": {
-            "get": {
-                "summary": "Retrieve a diagram",
-                "description": "Retrieves the full details of a specific diagram if the user has access",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram to retrieve"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Full diagram details",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Diagram"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "GET /diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>",
-                    "response": {
-                        "status": 200,
-                        "body": {
-                            "id": "123e4567-e89b-12d3-a456-426614174000",
-                            "name": "Workflow Diagram",
-                            "description": "A process workflow",
-                            "created_at": "2025-04-06T12:00:00Z",
-                            "modified_at": "2025-04-06T12:30:00Z",
-                            "owner": "user@example.com",
-                            "authorization": [
-                                {
-                                    "subject": "user@example.com",
-                                    "role": "owner"
-                                }
-                            ],
-                            "metadata": [],
-                            "components": []
-                        }
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update a diagram",
-                "description": "Fully updates a diagram; restricted to writer/owner roles",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram to update"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Diagram"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Diagram updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Diagram"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "PUT /diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"name\": \"Updated Diagram\", \"description\": \"Updated description\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"owner\": \"user@example.com\", \"authorization\": [{\"subject\": \"user@example.com\", \"role\": \"owner\"}], \"metadata\": [], \"components\": []}",
-                    "response": {
-                        "status": 200,
-                        "body": {
-                            "id": "123e4567-e89b-12d3-a456-426614174000",
-                            "name": "Updated Diagram",
-                            "description": "Updated description",
-                            "created_at": "2025-04-06T12:00:00Z",
-                            "modified_at": "2025-04-06T12:45:00Z",
-                            "owner": "user@example.com",
-                            "authorization": [
-                                {
-                                    "subject": "user@example.com",
-                                    "role": "owner"
-                                }
-                            ],
-                            "metadata": [],
-                            "components": []
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "summary": "Partially update a diagram",
-                "description": "Applies JSON Patch operations to a diagram; restricted to writer/owner roles",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram to update"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "op": {
-                                            "type": "string",
-                                            "enum": [
-                                                "add",
-                                                "replace",
-                                                "remove",
-                                                "move",
-                                                "copy",
-                                                "test"
-                                            ],
-                                            "description": "Patch operation type"
-                                        },
-                                        "path": {
-                                            "type": "string",
-                                            "description": "JSON path to target"
-                                        },
-                                        "value": {
-                                            "description": "Value to apply"
-                                        }
-                                    },
-                                    "required": [
-                                        "op",
-                                        "path"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Diagram updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Diagram"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "PATCH /diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Patched Diagram\"}]",
-                    "response": {
-                        "status": 200,
-                        "body": {
-                            "id": "123e4567-e89b-12d3-a456-426614174000",
-                            "name": "Patched Diagram",
-                            "description": "A process workflow",
-                            "created_at": "2025-04-06T12:00:00Z",
-                            "modified_at": "2025-04-06T12:45:00Z",
-                            "owner": "user@example.com",
-                            "authorization": [
-                                {
-                                    "subject": "user@example.com",
-                                    "role": "owner"
-                                }
-                            ],
-                            "metadata": [],
-                            "components": []
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete a diagram",
-                "description": "Deletes a diagram; restricted to owner role",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram to delete"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Diagram deleted successfully"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "DELETE /diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>",
-                    "response": {
-                        "status": 204
-                    }
-                }
-            }
-        },
-        "/diagrams/{id}/collaborate": {
-            "get": {
-                "summary": "Get collaboration session status",
-                "description": "Returns details of an active collaboration session for a diagram",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Session details",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollaborationSession"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "GET /diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
-                    "response": {
-                        "status": 200,
-                        "body": {
-                            "session_id": "abc123-session-uuid",
-                            "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
-                            "participants": [
-                                {
-                                    "user_id": "user@example.com",
-                                    "joined_at": "2025-04-06T12:02:00Z"
-                                }
-                            ],
-                            "websocket_url": "wss://api.example.com/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "summary": "Join or start collaboration session",
-                "description": "Joins an existing session or starts a new one; writers/owners can start, readers can only join",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Session joined or started successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollaborationSession"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "POST /diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
-                    "response": {
-                        "status": 200,
-                        "body": {
-                            "session_id": "abc123-session-uuid",
-                            "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
-                            "participants": [
-                                {
-                                    "user_id": "user@example.com",
-                                    "joined_at": "2025-04-06T12:02:00Z"
-                                }
-                            ],
-                            "websocket_url": "wss://api.example.com/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Leave collaboration session",
-                "description": "Removes the user from an active collaboration session",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        },
-                        "description": "UUID of the diagram"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Left session successfully"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Error"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/Error"
-                    }
-                },
-                "example": {
-                    "request": "DELETE /diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
-                    "response": {
-                        "status": 204
-                    }
-                }
-            }
-        },
         "/threat_models": {
             "get": {
                 "summary": "List threat models",
@@ -1431,7 +892,7 @@
                 }
             }
         },
-        "/threat_models/{id}": {
+        "/threat_models/{threat_model_id}": {
             "get": {
                 "summary": "Retrieve a threat model",
                 "description": "Retrieves the full details of a specific threat model if the user has access",
@@ -1442,7 +903,7 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "threat_model_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1478,7 +939,7 @@
                     "response": {
                         "status": 200,
                         "body": {
-                            "id": "550e8400-e29b-41d4-a716-446655440000",
+                            "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
                             "name": "System Threat Model",
                             "description": "Threats for system X",
                             "created_at": "2025-04-06T12:00:00Z",
@@ -1507,7 +968,7 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "threat_model_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1584,7 +1045,7 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "threat_model_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1676,8 +1137,8 @@
                             "diagrams": [],
                             "threats": [
                                 {
-                                    "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-                                    "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+                                    "threat_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+                                    "id": "550e8400-e29b-41d4-a716-446655440000",
                                     "name": "Data Breach",
                                     "description": "Unauthorized access",
                                     "created_at": "2025-04-06T12:01:00Z",
@@ -1699,7 +1160,7 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "threat_model_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1725,6 +1186,714 @@
                 },
                 "example": {
                     "request": "DELETE /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>",
+                    "response": {
+                        "status": 204
+                    }
+                }
+            }
+        },
+        "/threat_models/{threat_model_id}/diagrams": {
+            "get": {
+                "summary": "List diagrams for a threat model",
+                "description": "Returns a list of diagrams associated with the specified threat model",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        },
+                        "description": "Number of diagrams to return"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        },
+                        "description": "Pagination offset"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": "created_at:desc"
+                        },
+                        "description": "Sort order (e.g., created_at:desc, name:asc)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of diagrams as name-ID pairs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ListItem"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams?limit=2&offset=0\nAuthorization: Bearer <JWT>",
+                    "response": {
+                        "status": 200,
+                        "body": [
+                            {
+                                "name": "Workflow Diagram",
+                                "id": "123e4567-e89b-12d3-a456-426614174000"
+                            },
+                            {
+                                "name": "System Overview",
+                                "id": "456e7890-e12f-34d5-a678-426614174001"
+                            }
+                        ]
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a diagram for a threat model",
+                "description": "Creates a new diagram associated with the specified threat model",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of the diagram"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Description of the diagram"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Diagram created successfully",
+                        "headers": {
+                            "Location": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "description": "URL of the new diagram"
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Diagram"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "POST /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"name\": \"New Diagram\", \"description\": \"A test diagram\"}",
+                    "response": {
+                        "status": 201,
+                        "headers": {
+                            "Location": "/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        "body": {
+                            "id": "123e4567-e89b-12d3-a456-426614174000",
+                            "name": "New Diagram",
+                            "description": "A test diagram",
+                            "created_at": "2025-04-06T12:00:00Z",
+                            "modified_at": "2025-04-06T12:00:00Z",
+                            "owner": "user@example.com",
+                            "authorization": [
+                                {
+                                    "subject": "user@example.com",
+                                    "role": "owner"
+                                }
+                            ],
+                            "metadata": [],
+                            "components": []
+                        }
+                    }
+                }
+            }
+        },
+        "/threat_models/{threat_model_id}/diagrams/{diagram_id}": {
+            "get": {
+                "summary": "Retrieve a diagram",
+                "description": "Retrieves the full details of a specific diagram within a threat model",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram to retrieve"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Full diagram details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Diagram"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>",
+                    "response": {
+                        "status": 200,
+                        "body": {
+                            "id": "123e4567-e89b-12d3-a456-426614174000",
+                            "name": "Workflow Diagram",
+                            "description": "A process workflow",
+                            "created_at": "2025-04-06T12:00:00Z",
+                            "modified_at": "2025-04-06T12:30:00Z",
+                            "owner": "user@example.com",
+                            "authorization": [
+                                {
+                                    "subject": "user@example.com",
+                                    "role": "owner"
+                                }
+                            ],
+                            "metadata": [],
+                            "components": []
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a diagram",
+                "description": "Fully updates a diagram within a threat model; restricted to writer/owner roles",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram to update"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Diagram"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Diagram updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Diagram"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"name\": \"Updated Diagram\", \"description\": \"Updated description\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"owner\": \"user@example.com\", \"authorization\": [{\"subject\": \"user@example.com\", \"role\": \"owner\"}], \"metadata\": [], \"components\": []}",
+                    "response": {
+                        "status": 200,
+                        "body": {
+                            "id": "123e4567-e89b-12d3-a456-426614174000",
+                            "name": "Updated Diagram",
+                            "description": "Updated description",
+                            "created_at": "2025-04-06T12:00:00Z",
+                            "modified_at": "2025-04-06T12:45:00Z",
+                            "owner": "user@example.com",
+                            "authorization": [
+                                {
+                                    "subject": "user@example.com",
+                                    "role": "owner"
+                                }
+                            ],
+                            "metadata": [],
+                            "components": []
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Partially update a diagram",
+                "description": "Applies JSON Patch operations to a diagram within a threat model; restricted to writer/owner roles",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram to update"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "op": {
+                                            "type": "string",
+                                            "enum": [
+                                                "add",
+                                                "replace",
+                                                "remove",
+                                                "move",
+                                                "copy",
+                                                "test"
+                                            ],
+                                            "description": "Patch operation type"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "description": "JSON path to target"
+                                        },
+                                        "value": {
+                                            "description": "Value to apply"
+                                        }
+                                    },
+                                    "required": [
+                                        "op",
+                                        "path"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Diagram updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Diagram"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "PATCH /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Patched Diagram\"}]",
+                    "response": {
+                        "status": 200,
+                        "body": {
+                            "id": "123e4567-e89b-12d3-a456-426614174000",
+                            "name": "Patched Diagram",
+                            "description": "A process workflow",
+                            "created_at": "2025-04-06T12:00:00Z",
+                            "modified_at": "2025-04-06T12:45:00Z",
+                            "owner": "user@example.com",
+                            "authorization": [
+                                {
+                                    "subject": "user@example.com",
+                                    "role": "owner"
+                                }
+                            ],
+                            "metadata": [],
+                            "components": []
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a diagram",
+                "description": "Deletes a diagram within a threat model; restricted to owner role",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram to delete"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Diagram deleted successfully"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "DELETE /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>",
+                    "response": {
+                        "status": 204
+                    }
+                }
+            }
+        },
+        "/threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate": {
+            "get": {
+                "summary": "Get collaboration session status",
+                "description": "Returns details of an active collaboration session for a diagram within a threat model",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Session details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollaborationSession"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
+                    "response": {
+                        "status": 200,
+                        "body": {
+                            "session_id": "abc123-session-uuid",
+                            "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
+                            "participants": [
+                                {
+                                    "user_id": "user@example.com",
+                                    "joined_at": "2025-04-06T12:02:00Z"
+                                }
+                            ],
+                            "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Join or start collaboration session",
+                "description": "Joins an existing session or starts a new one for a diagram within a threat model; writers/owners can start, readers can only join",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Session joined or started successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollaborationSession"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "POST /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
+                    "response": {
+                        "status": 200,
+                        "body": {
+                            "session_id": "abc123-session-uuid",
+                            "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
+                            "participants": [
+                                {
+                                    "user_id": "user@example.com",
+                                    "joined_at": "2025-04-06T12:02:00Z"
+                                }
+                            ],
+                            "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Leave collaboration session",
+                "description": "Removes the user from an active collaboration session for a diagram within a threat model",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "threat_model_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the threat model"
+                    },
+                    {
+                        "name": "diagram_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "UUID of the diagram"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Left session successfully"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error"
+                    }
+                },
+                "example": {
+                    "request": "DELETE /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
                     "response": {
                         "status": 204
                     }
