@@ -132,7 +132,7 @@ export class DiagramErrorHandlingService {
 
     // Attempt recovery for non-critical errors
     if (diagramError.severity !== ErrorSeverity.CRITICAL) {
-      this.attemptRecovery(diagramError);
+      void this.attemptRecovery(diagramError);
     }
 
     return diagramError;

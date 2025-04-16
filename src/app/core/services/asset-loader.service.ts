@@ -16,7 +16,7 @@ export class AssetLoaderService {
 
   constructor() {
     // Check WebP support
-    this.checkWebPSupport();
+    void this.checkWebPSupport();
   }
 
   /**

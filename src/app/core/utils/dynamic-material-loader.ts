@@ -5,6 +5,7 @@
 
 import { ComponentType } from '@angular/cdk/portal';
 import { Injector } from '@angular/core';
+import { MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 
 // Store injector reference for dynamic component creation
 let globalInjector: Injector;
@@ -19,10 +20,10 @@ export function setInjector(injector: Injector): void {
  * @param config Optional dialog configuration
  * @returns Promise that resolves when the dialog is opened
  */
-export async function openDynamicDialog<T, D = any>(
+export async function openDynamicDialog<T>(
   componentType: ComponentType<T>,
-  config?: any,
-): Promise<any> {
+  config?: MatDialogConfig<T>,
+): Promise<MatDialogRef<T>> {
   if (!globalInjector) {
     throw new Error('Injector not set. Call setInjector first.');
   }
