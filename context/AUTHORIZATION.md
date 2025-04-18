@@ -25,6 +25,8 @@
 
 1. Authorization checking is primarily performed by middleware. The middleware allows creates for authorized users (rule 1 above), and for requests involving a specific object, the middleware retrieves the Owner and Authorization fields from the server, and implements rules 2, 3, 4 and 5 above.
 2. Rules 6, 7, and 8 above are implemented in the handler, since they require reading the entire request.
+3. Authorization is performed for threat model objects using the owner and authorization information in the threat model object itself.
+4. Authorization is performed for diagram objects using the owner and authorization information in the diagram's parent threat model object.
 
 # Authorization Testing
 
