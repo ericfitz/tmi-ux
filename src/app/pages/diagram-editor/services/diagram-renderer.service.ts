@@ -3,7 +3,6 @@ import { Observable } from '../../../core/rxjs-imports';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { DiagramService } from './diagram.service';
-import { DiagramTheme, ThemeInfo } from '../models/diagram-theme.model';
 import {
   IDiagramRendererService,
   CellClickData,
@@ -18,7 +17,6 @@ import { GraphInitializationService } from './graph/graph-initialization.service
 import { MxGraphPatchingService } from './graph/mx-graph-patching.service';
 import { GraphEventHandlingService } from './graph/graph-event-handling.service';
 import { GraphUtilsService } from './graph/graph-utils.service';
-import { DiagramThemeService } from './theming/diagram-theme.service';
 import { VertexManagementService } from './components/vertex-management.service';
 import { EdgeManagementService } from './components/edge-management.service';
 import { AnchorPointService } from './components/anchor-point.service';
@@ -46,7 +44,6 @@ export class DiagramRendererService implements IDiagramRendererService {
     private patchingService: MxGraphPatchingService,
     private eventHandlingService: GraphEventHandlingService,
     private graphUtils: GraphUtilsService,
-    private themeService: DiagramThemeService,
     private vertexService: VertexManagementService,
     private edgeService: EdgeManagementService,
     private anchorService: AnchorPointService,
@@ -191,16 +188,12 @@ export class DiagramRendererService implements IDiagramRendererService {
       // Initialize all services with the graph instance
       this.eventHandlingService.setGraph(graph);
       this.graphUtils.setGraph(graph);
-      this.themeService.setGraph(graph);
       this.vertexService.setGraph(graph);
       this.edgeService.setGraph(graph);
       this.anchorService.setGraph(graph);
 
-      // Load default theme
-      await this.themeService.switchTheme('default-theme');
-
-      // Configure grid based on theme
-      this.themeService.configureGrid();
+      // Configure grid
+      this.configureGrid(graph);
 
       // Initial diagram render
       this.updateDiagram();
@@ -276,7 +269,7 @@ export class DiagramRendererService implements IDiagramRendererService {
         }
 
         this.logger.debug(
-          `Rendering diagram: ${diagram.name} with ${diagram.components.length} components`,
+          `Rendering diagram: ${diagram.name} with ${diagram.graphData.length} cells`,
         );
 
         // Get graph and model
@@ -294,8 +287,8 @@ export class DiagramRendererService implements IDiagramRendererService {
           // Clear registry before rendering new components
           this.registry.clear();
 
-          // Render components
-          this.renderDiagramComponents(diagram.components);
+          // Render cells
+          this.renderDiagramCells(diagram.graphData);
         } finally {
           // End batch update
           model.endUpdate();
@@ -315,133 +308,116 @@ export class DiagramRendererService implements IDiagramRendererService {
   }
 
   /**
-   * Render diagram components
+   * Render diagram cells
    */
-  private renderDiagramComponents(components: any[]): void {
-    if (!components || components.length === 0) {
+  private renderDiagramCells(cells: any[]): void {
+    if (!cells || cells.length === 0) {
       return;
     }
 
     try {
       // Create all vertices first
-      const vertices = components.filter(c => c.type === 'vertex');
+      const vertices = cells.filter(c => c.vertex);
 
       for (const vertex of vertices) {
         try {
-          // Get position data
-          const position = vertex.data.position || { x: 0, y: 0, width: 100, height: 60 };
-          const label = vertex.data.label || '';
-          const style = vertex.data.style || '';
+          // Get geometry data
+          const geometry = vertex.geometry || { x: 0, y: 0, width: 100, height: 60 };
+          const label = vertex.value || '';
+          const style = vertex.style || '';
 
           // Create vertex
           const cellId = this.vertexService.createVertex(
-            position.x,
-            position.y,
+            geometry.x,
+            geometry.y,
             label,
-            position.width,
-            position.height,
+            geometry.width,
+            geometry.height,
             style,
           );
 
-          // Register the cell-component pair in the registry
+          // Register the cell in the registry
           this.registry.register(cellId, vertex.id, 'vertex');
-
-          // Store the cell ID in the component if it doesn't match
-          if (vertex.cellId !== cellId) {
-            this.componentMapper.updateComponentCellId(vertex.id, cellId);
-          }
         } catch (error) {
-          this.logger.error(`Error rendering vertex component: ${vertex.id}`, error);
+          this.logger.error(`Error rendering vertex cell: ${vertex.id}`, error);
         }
       }
 
       // Then create edges
-      const edges = components.filter(c => c.type === 'edge');
+      const edges = cells.filter(c => c.edge);
 
       for (const edge of edges) {
         try {
-          const sourceId = edge.data.source;
-          const targetId = edge.data.target;
-          const label = edge.data.label || '';
-          const style = edge.data.style || '';
+          const sourceId = edge.source;
+          const targetId = edge.target;
+          const label = edge.value || '';
+          const style = edge.style || '';
 
-          // Find source and target components
-          const sourceComponent = components.find(c => c.id === sourceId);
-          const targetComponent = components.find(c => c.id === targetId);
+          // Find source and target cells
+          const sourceCell = cells.find(c => c.id === sourceId);
+          const targetCell = cells.find(c => c.id === targetId);
 
-          if (!sourceComponent || !targetComponent) {
+          if (!sourceCell || !targetCell) {
             this.logger.warn(
-              `Cannot create edge: Source or target component not found: ${sourceId} -> ${targetId}`,
+              `Cannot create edge: Source or target cell not found: ${sourceId} -> ${targetId}`,
             );
             continue;
           }
 
           // Create edge between source and target cells
           const edgeId = this.edgeService.createSingleEdgeWithVertices(
-            sourceComponent.cellId,
-            targetComponent.cellId,
+            sourceCell.id,
+            targetCell.id,
             label,
             style,
             true,
             true,
           );
 
-          // Register the cell-component pair in the registry
+          // Register the cell in the registry
           this.registry.register(edgeId, edge.id, 'edge');
-
-          // Store the cell ID in the component if it doesn't match
-          if (edge.cellId !== edgeId) {
-            this.componentMapper.updateComponentCellId(edge.id, edgeId);
-          }
         } catch (error) {
-          this.logger.error(`Error rendering edge component: ${edge.id}`, error);
+          this.logger.error(`Error rendering edge cell: ${edge.id}`, error);
         }
       }
     } catch (error) {
-      this.logger.error('Error rendering diagram components', error);
+      this.logger.error('Error rendering diagram cells', error);
     }
   }
 
   /**
-   * Get available themes
+   * Configure grid settings
    */
-  getAvailableThemes(): Observable<ThemeInfo[]> {
-    return this.themeService.getAvailableThemes();
-  }
+  private configureGrid(graph: any): void {
+    if (!graph) {
+      return;
+    }
 
-  /**
-   * Get current theme ID
-   */
-  getCurrentThemeId(): string | null {
-    return this.themeService.getCurrentThemeId();
-  }
-
-  /**
-   * Load a theme by ID
-   */
-  loadTheme(themeId: string): Promise<DiagramTheme> {
-    return this.themeService.loadTheme(themeId);
-  }
-
-  /**
-   * Switch to a theme by ID
-   */
-  switchTheme(themeId: string): Promise<void> {
-    return this.themeService.switchTheme(themeId);
+    // Set default grid settings
+    graph.gridSize = 10;
+    graph.setGridEnabled(true);
   }
 
   /**
    * Check if grid is enabled
    */
   isGridEnabled(): boolean {
-    return this.themeService.isGridEnabled();
+    const graph = this.getGraph();
+    return graph ? graph.isGridEnabled() : false;
   }
 
   /**
    * Toggle grid visibility
    */
   toggleGridVisibility(): boolean {
-    return this.themeService.toggleGridVisibility();
+    const graph = this.getGraph();
+    if (!graph) {
+      return false;
+    }
+
+    const currentState = graph.isGridEnabled();
+    graph.setGridEnabled(!currentState);
+    return !currentState;
   }
 
   /**

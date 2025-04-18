@@ -13,8 +13,6 @@ import { MaterialModule } from '../../../shared/material/material.module';
   imports: [CommonModule, RouterModule, MaterialModule, TranslocoModule],
 })
 export class FooterComponent implements OnInit {
-  currentYear: number = new Date().getFullYear();
-
   constructor() {}
 
   ngOnInit(): void {}

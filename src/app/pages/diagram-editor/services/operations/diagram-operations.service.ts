@@ -107,7 +107,8 @@ export class DiagramOperationsService {
             style = 'rounded=1;fillColor=#2196F3;strokeColor=#0D47A1;fontColor=#ffffff';
             break;
           case 'store':
-            style = 'shape=cylinder;fillColor=#4CAF50;strokeColor=#1B5E20;fontColor=#ffffff';
+            // Use the predefined style from the theme instead of defining it inline
+            style = 'store';
             break;
           case 'actor':
             style = 'shape=actor;fillColor=#9C27B0;strokeColor=#4A148C;fontColor=#ffffff';

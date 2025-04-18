@@ -50,6 +50,26 @@ export interface DiagramComponent {
 }
 
 /**
+ * Cell model for maxGraph cells
+ */
+export interface Cell {
+  id: string;
+  value?: string;
+  geometry?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  style?: string;
+  vertex: boolean;
+  edge: boolean;
+  parent?: string;
+  source?: string;
+  target?: string;
+}
+
+/**
  * Main diagram model
  */
 export interface Diagram {
@@ -61,7 +81,7 @@ export interface Diagram {
   owner: string;
   authorization: DiagramAuthorization[];
   metadata?: DiagramMetadata[];
-  components: DiagramComponent[];
+  graphData: Cell[];
   version?: number; // For tracking diagram versions
 }
 
@@ -118,7 +138,7 @@ export interface DeleteComponentOperation extends DiagramOperation {
  */
 export interface UpdateDiagramPropertiesOperation extends DiagramOperation {
   type: DiagramOperationType.UPDATE_DIAGRAM_PROPERTIES;
-  changes: Partial<Omit<Diagram, 'components'>>;
+  changes: Partial<Omit<Diagram, 'graphData'>>;
 }
 
 /**

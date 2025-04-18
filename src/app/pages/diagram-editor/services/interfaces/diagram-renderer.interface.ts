@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { DiagramTheme, ThemeInfo } from '../../models/diagram-theme.model';
 
 /**
  * Interface for cell click event data
@@ -54,12 +53,6 @@ export interface IDiagramRendererService {
   // Graph Observation
   readonly cellClicked$: Observable<CellClickData | null>;
   readonly cellSelected$: Observable<CellSelectionData | null>;
-
-  // Theme
-  getAvailableThemes(): Observable<ThemeInfo[]>;
-  getCurrentThemeId(): string | null;
-  loadTheme(themeId: string): Promise<DiagramTheme>;
-  switchTheme(themeId: string): Promise<void>;
 
   // Grid
   isGridEnabled(): boolean;

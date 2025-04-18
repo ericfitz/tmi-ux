@@ -14,6 +14,7 @@ import {
   UpdateDiagramPropertiesOperation,
   BatchOperation,
   DiagramComponentType,
+  Cell,
 } from '../models/diagram.model';
 
 /**
@@ -60,7 +61,7 @@ export class DiagramService {
       modified_at: now,
       owner: this.userId,
       authorization: [{ subject: this.userId, role: 'owner' }],
-      components: [],
+      graphData: [],
       version: 1,
     };
 
@@ -165,38 +166,118 @@ export class DiagramService {
   }
 
   private executeAddComponent(diagram: Diagram, operation: AddComponentOperation): Diagram {
-    diagram.components.push(operation.component);
+    // Convert component to Cell and add to graphData
+    const cell = this.componentToCell(operation.component);
+    diagram.graphData.push(cell);
     return diagram;
   }
 
-  private executeUpdateComponent(diagram: Diagram, operation: UpdateComponentOperation): Diagram {
-    const componentIndex = diagram.components.findIndex(c => c.id === operation.componentId);
+  /**
+   * Convert a DiagramComponent to a Cell
+   */
+  private componentToCell(component: DiagramComponent): Cell {
+    // Extract data from component
+    const { data } = component;
 
-    if (componentIndex === -1) {
-      this.logger.error(`Component not found: ${operation.componentId}`);
-      throw new Error(`Component not found: ${operation.componentId}`);
+    // Create a Cell based on component type and data
+    const cell: Cell = {
+      id: component.cellId || component.id,
+      vertex: component.type === 'vertex',
+      edge: component.type === 'edge',
+    };
+
+    // Add properties based on component type
+    if (component.type === 'vertex') {
+      cell.value = data['label'] as string;
+      cell.geometry = {
+        x: data['position'] ? (data['position'] as any).x : 0,
+        y: data['position'] ? (data['position'] as any).y : 0,
+        width: data['position'] ? (data['position'] as any).width : 100,
+        height: data['position'] ? (data['position'] as any).height : 60,
+      };
+      cell.style = data['style'] as string;
+    } else if (component.type === 'edge') {
+      cell.value = data['label'] as string;
+      cell.source = data['source'] as string;
+      cell.target = data['target'] as string;
+      cell.style = data['style'] as string;
     }
 
-    // Apply changes to component
-    diagram.components[componentIndex] = {
-      ...diagram.components[componentIndex],
-      ...operation.changes,
-      // Keep component ID the same
+    return cell;
+  }
+
+  private executeUpdateComponent(diagram: Diagram, operation: UpdateComponentOperation): Diagram {
+    // Find the cell corresponding to the component
+    const cellIndex = diagram.graphData.findIndex(c => c.id === operation.componentId);
+
+    if (cellIndex === -1) {
+      this.logger.error(`Cell not found: ${operation.componentId}`);
+      throw new Error(`Cell not found: ${operation.componentId}`);
+    }
+
+    // Convert component changes to cell changes
+    const cellChanges = this.componentChangesToCellChanges(operation.changes);
+
+    // Apply changes to cell
+    diagram.graphData[cellIndex] = {
+      ...diagram.graphData[cellIndex],
+      ...cellChanges,
+      // Keep cell ID the same
       id: operation.componentId,
     };
 
     return diagram;
   }
 
-  private executeDeleteComponent(diagram: Diagram, operation: DeleteComponentOperation): Diagram {
-    const componentIndex = diagram.components.findIndex(c => c.id === operation.componentId);
+  /**
+   * Convert component changes to cell changes
+   */
+  private componentChangesToCellChanges(changes: Partial<DiagramComponent>): Partial<Cell> {
+    const cellChanges: Partial<Cell> = {};
 
-    if (componentIndex === -1) {
-      this.logger.error(`Component not found: ${operation.componentId}`);
-      throw new Error(`Component not found: ${operation.componentId}`);
+    // Handle data changes
+    if (changes.data) {
+      const data = changes.data;
+
+      if ('label' in data) {
+        cellChanges.value = data['label'] as string;
+      }
+
+      if ('style' in data) {
+        cellChanges.style = data['style'] as string;
+      }
+
+      if ('position' in data) {
+        const position = data['position'] as any;
+        cellChanges.geometry = {
+          x: position.x,
+          y: position.y,
+          width: position.width,
+          height: position.height,
+        };
+      }
+
+      if ('source' in data) {
+        cellChanges.source = data['source'] as string;
+      }
+
+      if ('target' in data) {
+        cellChanges.target = data['target'] as string;
+      }
     }
 
-    diagram.components.splice(componentIndex, 1);
+    return cellChanges;
+  }
+
+  private executeDeleteComponent(diagram: Diagram, operation: DeleteComponentOperation): Diagram {
+    const cellIndex = diagram.graphData.findIndex(c => c.id === operation.componentId);
+
+    if (cellIndex === -1) {
+      this.logger.error(`Cell not found: ${operation.componentId}`);
+      throw new Error(`Cell not found: ${operation.componentId}`);
+    }
+
+    diagram.graphData.splice(cellIndex, 1);
     return diagram;
   }
 
@@ -204,8 +285,8 @@ export class DiagramService {
     diagram: Diagram,
     operation: UpdateDiagramPropertiesOperation,
   ): Diagram {
-    // Apply changes to diagram properties (excluding components)
-    const { components, ...diagramProps } = diagram;
+    // Apply changes to diagram properties (excluding graphData)
+    const { graphData, ...diagramProps } = diagram;
 
     const updatedProps = {
       ...diagramProps,
@@ -214,7 +295,7 @@ export class DiagramService {
 
     return {
       ...updatedProps,
-      components,
+      graphData,
     } as Diagram;
   }
 
@@ -287,7 +368,41 @@ export class DiagramService {
     const diagram = this.getCurrentDiagram();
     if (!diagram) return undefined;
 
-    return diagram.components.find(component => component.cellId === cellId);
+    const cell = diagram.graphData.find(c => c.id === cellId);
+    if (!cell) return undefined;
+
+    // Convert cell to component
+    return this.cellToComponent(cell);
+  }
+
+  /**
+   * Convert a Cell to a DiagramComponent
+   */
+  cellToComponent(cell: Cell): DiagramComponent {
+    const component: DiagramComponent = {
+      id: cell.id,
+      type: cell.vertex ? 'vertex' : 'edge',
+      data: {},
+      cellId: cell.id,
+    };
+
+    // Add data based on cell type
+    if (cell.vertex) {
+      component.data = {
+        label: cell.value,
+        style: cell.style,
+        position: cell.geometry,
+      };
+    } else if (cell.edge) {
+      component.data = {
+        label: cell.value,
+        style: cell.style,
+        source: cell.source,
+        target: cell.target,
+      };
+    }
+
+    return component;
   }
 
   /**
@@ -296,7 +411,7 @@ export class DiagramService {
    * @param cellId The mxGraph cell ID to associate with the component
    */
   updateComponentCellId(componentId: string, cellId: string): void {
-    const component = this.getCurrentDiagram()?.components.find(c => c.id === componentId);
+    const component = this.findComponentById(componentId);
     if (!component) {
       this.logger.warn(`Component not found for updating cell ID: ${componentId}`);
       return;
@@ -307,6 +422,24 @@ export class DiagramService {
 
   /**
    * Batch update multiple components' cell IDs without triggering re-renders
+   * This method is used to avoid circular update loops between components and cells
+   * @param updates Array of operations with componentId and changes
+   */
+  /**
+   * Find a component by ID
+   */
+  findComponentById(componentId: string): DiagramComponent | undefined {
+    const diagram = this.getCurrentDiagram();
+    if (!diagram) return undefined;
+
+    const cell = diagram.graphData.find(c => c.id === componentId);
+    if (!cell) return undefined;
+
+    return this.cellToComponent(cell);
+  }
+
+  /**
+   * Bulk update multiple cells without triggering re-renders
    * This method is used to avoid circular update loops between components and cells
    * @param updates Array of operations with componentId and changes
    */
@@ -324,17 +457,20 @@ export class DiagramService {
 
     // Apply all updates directly to the diagram copy
     for (const update of updates) {
-      const componentIndex = updatedDiagram.components.findIndex(c => c.id === update.componentId);
-      if (componentIndex === -1) {
-        this.logger.warn(`Component not found for bulk update: ${update.componentId}`);
+      const cellIndex = updatedDiagram.graphData.findIndex(c => c.id === update.componentId);
+      if (cellIndex === -1) {
+        this.logger.warn(`Cell not found for bulk update: ${update.componentId}`);
         continue;
       }
 
+      // Convert component changes to cell changes
+      const cellChanges = this.componentChangesToCellChanges(update.changes);
+
       // Apply changes directly
-      updatedDiagram.components[componentIndex] = {
-        ...updatedDiagram.components[componentIndex],
-        ...update.changes,
-        // Ensure component ID doesn't change
+      updatedDiagram.graphData[cellIndex] = {
+        ...updatedDiagram.graphData[cellIndex],
+        ...cellChanges,
+        // Ensure cell ID doesn't change
         id: update.componentId,
       };
     }
@@ -345,7 +481,7 @@ export class DiagramService {
     // Replace the current diagram without creating operations that would trigger updates
     this._currentDiagram.next(updatedDiagram);
 
-    this.logger.info(`Bulk updated ${updates.length} components without triggering re-render`);
+    this.logger.info(`Bulk updated ${updates.length} cells without triggering re-render`);
   }
 
   /**
@@ -384,7 +520,7 @@ export class DiagramService {
   /**
    * Update diagram properties
    */
-  updateDiagramProperties(changes: Partial<Omit<Diagram, 'components'>>): void {
+  updateDiagramProperties(changes: Partial<Omit<Diagram, 'graphData'>>): void {
     const operation: UpdateDiagramPropertiesOperation = {
       id: uuidv4(),
       type: DiagramOperationType.UPDATE_DIAGRAM_PROPERTIES,

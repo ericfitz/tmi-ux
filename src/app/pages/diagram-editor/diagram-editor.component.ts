@@ -20,7 +20,6 @@ import { SharedModule } from '../../shared/shared.module';
 import { Diagram } from './models/diagram.model';
 import { DiagramService } from './services/diagram.service';
 import { DiagramRendererService } from './services/diagram-renderer.service';
-import { ThemeSelectorComponent } from './components/theme-selector.component';
 import { StateManagerService } from './services/state/state-manager.service';
 import { EditorState } from './services/state/editor-state.enum';
 import { DiagramElementRegistryService } from './services/registry/diagram-element-registry.service';
@@ -28,14 +27,7 @@ import { DiagramElementRegistryService } from './services/registry/diagram-eleme
 @Component({
   selector: 'app-diagram-editor',
   standalone: true,
-  imports: [
-    CommonModule,
-    SharedModule,
-    MaterialModule,
-    TranslocoModule,
-    RouterModule,
-    ThemeSelectorComponent,
-  ],
+  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule, RouterModule],
   templateUrl: './diagram-editor.component.html',
   styleUrl: './diagram-editor.component.scss',
 })
@@ -131,7 +123,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           // If renderer is initialized, update the diagram
           // Note: We only trigger rendering for specific operations that should update visualization
           // Component-only updates don't require re-rendering to avoid circular dependencies
-          if (this.diagramRenderer.isInitialized() && diagram.components.length === 0) {
+          if (this.diagramRenderer.isInitialized() && diagram.graphData.length === 0) {
             // Always render when diagram is first loaded or cleared
             this.diagramRenderer.updateDiagram();
           }
@@ -937,25 +929,24 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       let height = 60;
       let label = '';
 
-      // Use the style name from the theme instead of hardcoding styles
-      // This ensures that theme changes are applied correctly
+      // Use inline styles instead of theme-based styles
       switch (type) {
         case 'process':
-          style = 'process';
+          style = 'rounded=1;fillColor=#2196F3;strokeColor=#0D47A1;fontColor=#ffffff';
           label = 'Process';
           width = 120;
           height = 60;
           break;
 
         case 'store':
-          style = 'store';
+          style = 'shape=cylinder;fillColor=#4CAF50;strokeColor=#1B5E20;fontColor=#ffffff';
           label = 'Store';
           width = 80;
           height = 80;
           break;
 
         case 'actor':
-          style = 'actor';
+          style = 'shape=actor;fillColor=#9C27B0;strokeColor=#4A148C;fontColor=#ffffff';
           label = 'Actor';
           width = 40;
           height = 80;

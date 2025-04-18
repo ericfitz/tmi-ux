@@ -114,15 +114,17 @@ export class DiagramComponentMapperService {
    */
   getAllComponents(): DiagramComponent[] {
     const diagram = this.diagramService.getCurrentDiagram();
-    return diagram ? diagram.components : [];
+    if (!diagram || !diagram.graphData) return [];
+
+    // Convert cells to components
+    return diagram.graphData.map(cell => this.diagramService.cellToComponent(cell));
   }
 
   /**
    * Find a component by ID
    */
   findComponentById(componentId: string): DiagramComponent | undefined {
-    const diagram = this.diagramService.getCurrentDiagram();
-    return diagram?.components.find(c => c.id === componentId);
+    return this.diagramService.findComponentById(componentId);
   }
 
   /**
