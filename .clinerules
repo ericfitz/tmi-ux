@@ -1,6 +1,6 @@
-# CLAUDE.md
+# .clinerules
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Roo Code when working with code in this repository.
 
 ## API and Backend
 
@@ -48,7 +48,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## User Preferences
 
-- When starting Claude, read all of the markdown files in the context folder in the root directory to ensure full context is present
+- When starting, read all of the markdown files in the context folder in the root directory to ensure full context is present
 - When the user gives you a task, summarize your understanding of the task and ask for confirmation before proceeding
 - When making changes to the code:
   - Always run a build and fix any build errors
