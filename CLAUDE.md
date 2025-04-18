@@ -7,12 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Backend API specification is available in `tmi-openapi.json`
 - Local development server runs at http://localhost:8080
 - API URL is configured in environment files (e.g., environment.dev.ts)
-- Authentication and authorization details are documented in `AUTHORIZATION.md`
+- Authentication and authorization details are documented in `AUTHORIZATION.md` in the contexxt folder
 - The server uses a role-based access control model with Owner, Writer, and Reader roles
 - Authorization middleware enforces permissions for object access and modification
 
 ## Build/Test Commands
 
+- Run all npm commands from the project root directory
 - Development server: `ng serve` or `npm run dev`
 - Production build: `ng build --configuration=production` or `npm run build:prod`
 - Run all tests: `ng test` or `npm run test`
@@ -53,4 +54,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Always run a build and fix any build errors
   - Ensure that the changes are consistent with the project's coding standards and best practices by running the linter and fixing any errors
 - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
-- Always use the official maxGraph "stories" examples at https://github.com/maxGraph/maxGraph/tree/main/packages/html/stories whenever implementing or refactoring features that use maxGraph
+- Always use the official maxGraph "stories" examples at in the examples folder whenever implementing or refactoring features that use maxGraph
