@@ -1,6 +1,7 @@
 # Diagram Editor Implementation Plan
 
 ## Overview
+
 This document outlines the phased implementation plan for the diagram editor, designed to enable local editing first while building a foundation for collaborative editing in the future.
 
 ## Implementation Progress and Notes
@@ -8,16 +9,19 @@ This document outlines the phased implementation plan for the diagram editor, de
 ### Completed Items ✅
 
 - **Diagram Models and Types**
+
   - Created diagram models based on API schemas
   - Implemented operation-based architecture for diagram changes
   - Set up versioning support for future collaboration
 
 - **Diagram Service**
+
   - Implemented DiagramService with detailed logging
   - Created event-based notification system
   - Built command pattern for operation history
 
 - **MaxGraph Integration**
+
   - Successfully initialized maxGraph in the component
   - Created the basic canvas container
   - Added detailed logging for initialization and errors
@@ -31,23 +35,27 @@ This document outlines the phased implementation plan for the diagram editor, de
 ### Implementation Patterns and Choices 📝
 
 1. **Event-Based Architecture**
+
    - Using BehaviorSubjects to synchronize state between components
    - Components subscribe to service observables to receive updates
    - This will simplify future server integration
 
 2. **Operation-Based Editing**
+
    - All diagram edits are represented as operations (add, update, delete)
    - Operations are recorded in history for undo/redo support
    - Each operation has unique ID, timestamp, and user ID for future conflict resolution
 
 3. **Abstraction Layer**
+
    - Created an abstraction between graph manipulation and diagram state
    - MaxGraph specifics isolated in DiagramRendererService
    - DiagramService manages logical model independent of rendering
 
 4. **Reactive Programming**
+
    - Using RxJS for reactive state management
-   - Component updates automatically when diagram state changes
+   - Diagram object updates automatically when diagram state changes
    - Will enable real-time updates when collaborative features are added
 
 5. **Comprehensive Logging**
@@ -60,15 +68,18 @@ This document outlines the phased implementation plan for the diagram editor, de
 ### Phase 1: Complete Local Diagram Editing
 
 - **Diagram Interactions**
+
   - Implement selection mechanism ⏳
   - Add property editing panel with form controls ⏳
   - Create drag-and-drop from palette ⏳
 
 - **Edge Creation**
+
   - Implement visual edge creation between nodes ⏳
   - Add validation for connection rules ⏳
 
 - **Local Storage**
+
   - Complete save/load to browser localStorage ⏳
   - Add export/import functionality ⏳
 
@@ -80,16 +91,19 @@ This document outlines the phased implementation plan for the diagram editor, de
 ### Phase 2: Collaboration-Ready Architecture
 
 - **Enhance DiagramService**
+
   - Add operation queue for batching changes
   - Implement optimistic updates with rollback capability
   - Finalize versioning support
 
 - **WebSocket Integration**
+
   - Create WebSocketService for communication
   - Implement reconnection logic with exponential backoff
   - Add session management capability
 
 - **Operation Transformation**
+
   - Design operation transformation system
   - Implement conflict resolution for concurrent edits
   - Add capability to replay operations
