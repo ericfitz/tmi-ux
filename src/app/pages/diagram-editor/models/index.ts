@@ -5,4 +5,3 @@
 
 // Export all models
 export * from './diagram.model';
-export * from './diagram-theme.model';

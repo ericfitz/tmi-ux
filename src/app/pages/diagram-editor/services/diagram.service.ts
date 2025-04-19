@@ -58,8 +58,6 @@ export class DiagramService {
       description,
       created_at: now,
       modified_at: now,
-      owner: this.userId,
-      authorization: [{ subject: this.userId, role: 'owner' }],
       graphData: [],
       version: 1,
     };

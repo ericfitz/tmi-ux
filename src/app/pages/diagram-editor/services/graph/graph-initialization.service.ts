@@ -100,16 +100,16 @@ export class GraphInitializationService {
         // Run outside Angular zone for better performance
         this.ngZone.runOutsideAngular(() => {
           try {
-            // Basic configuration to avoid common errors
-            // In MaxGraph, use constants.EVENT_DISABLE_CONTEXTMENU
-            if (this.container) {
-              this.container.addEventListener('contextmenu', evt => evt.preventDefault());
-            }
-
             // Create graph instance
             this.graph = new Graph(this.container!);
             // MaxGraph exposes model directly as a property, not through a method
             this.model = this.graph.model;
+
+            // Basic configuration to avoid common errors
+            // Disable default browser context menu to allow for custom graph context menus
+            if (this.container) {
+              this.container.addEventListener('contextmenu', (evt: Event) => evt.preventDefault());
+            }
 
             // Apply patches
             this.patchingService.applyAllPatches(this.graph, this.model);
