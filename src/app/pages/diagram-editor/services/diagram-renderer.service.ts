@@ -22,12 +22,10 @@ import { GraphUtilsService } from './graph/graph-utils.service';
 import { VertexManagementService } from './components/vertex-management.service';
 import { EdgeManagementService } from './components/edge-management.service';
 import { AnchorPointService } from './components/anchor-point.service';
-import { DiagramComponentMapperService } from './components/diagram-component-mapper.service';
 
-// Import new services for state management and registry
+// Import new services for state management
 import { StateManagerService } from './state/state-manager.service';
 import { EditorState } from './state/editor-state.enum';
-import { DiagramElementRegistryService } from './registry/diagram-element-registry.service';
 
 /**
  * Service for rendering diagrams using mxGraph
@@ -52,10 +50,8 @@ export class DiagramRendererService implements IDiagramRendererService {
     private vertexService: VertexManagementService,
     private edgeService: EdgeManagementService,
     private anchorService: AnchorPointService,
-    private componentMapper: DiagramComponentMapperService,
-    // New services for state management and registry
+    // New services for state management
     private stateManager: StateManagerService,
-    private registry: DiagramElementRegistryService,
     // Theme service
     private themeService: DiagramThemeService,
   ) {
@@ -71,42 +67,25 @@ export class DiagramRendererService implements IDiagramRendererService {
     }
 
     try {
-      const cell = this.getCellById(cellId);
-      if (!cell) {
+      const graphCell = this.getCellById(cellId);
+      if (!graphCell) {
         this.logger.debug(`Cannot capture pre-delete info: Cell not found in graph: ${cellId}`);
         return null;
       }
 
-      // Get component ID from registry
-      const componentId = this.registry.getComponentId(cellId);
+      // Find cell by ID
+      const modelCell = this.diagramService.findCellById(cellId);
+      const componentId = modelCell?.id;
 
-      // If cell is not in registry, create a basic delete info with just the cell
-      if (!componentId) {
-        this.logger.debug(`Cell ${cellId} not registered, creating basic delete info`);
-
-        // Determine cell type and use appropriate service
-        if (this.graphUtils.isVertex(cell)) {
-          return this.vertexService.captureVertexDeleteInfo(cell);
-        } else if (this.graphUtils.isEdge(cell)) {
-          return this.edgeService.captureEdgeDeleteInfo(cell);
-        } else {
-          this.logger.debug(`Unknown cell type for pre-delete info: ${cellId}`);
-          return null;
-        }
-      }
-
-      // Store registry entry for reference
-      const registryEntry = this.registry.getEntryByCellId(cellId);
-
-      // Determine cell type and use appropriate service
-      if (this.graphUtils.isVertex(cell)) {
-        const deleteInfo = this.vertexService.captureVertexDeleteInfo(cell);
+      // Create basic delete info
+      if (this.graphUtils.isVertex(graphCell)) {
+        const deleteInfo = this.vertexService.captureVertexDeleteInfo(graphCell);
         if (deleteInfo && componentId) {
           deleteInfo.componentId = componentId;
         }
         return deleteInfo;
-      } else if (this.graphUtils.isEdge(cell)) {
-        const deleteInfo = this.edgeService.captureEdgeDeleteInfo(cell);
+      } else if (this.graphUtils.isEdge(graphCell)) {
+        const deleteInfo = this.edgeService.captureEdgeDeleteInfo(graphCell);
         if (deleteInfo && componentId) {
           deleteInfo.componentId = componentId;
         }
@@ -362,9 +341,6 @@ export class DiagramRendererService implements IDiagramRendererService {
           const parent = graph.getDefaultParent();
           graph.removeCells(graph.getChildCells(parent));
 
-          // Clear registry before rendering new components
-          this.registry.clear();
-
           // Render cells
           this.renderDiagramCells(diagram.graphData);
 
@@ -432,7 +408,7 @@ export class DiagramRendererService implements IDiagramRendererService {
             );
 
             // Create vertex with cylinder style
-            const cellId = this.vertexService.createVertex(
+            this.vertexService.createVertex(
               geometry.x,
               geometry.y,
               label,
@@ -440,9 +416,6 @@ export class DiagramRendererService implements IDiagramRendererService {
               geometry.height,
               style,
             );
-
-            // Register the cell in the registry
-            this.registry.register(cellId, vertex.id, 'vertex');
 
             // Skip the rest of the loop since we've already created the vertex
             continue;
@@ -460,7 +433,7 @@ export class DiagramRendererService implements IDiagramRendererService {
           const style = { baseStyleNames: [styleName] };
 
           // Create vertex
-          const cellId = this.vertexService.createVertex(
+          this.vertexService.createVertex(
             geometry.x,
             geometry.y,
             label,
@@ -468,9 +441,6 @@ export class DiagramRendererService implements IDiagramRendererService {
             geometry.height,
             style,
           );
-
-          // Register the cell in the registry
-          this.registry.register(cellId, vertex.id, 'vertex');
         } catch (error) {
           this.logger.error(`Error rendering vertex cell: ${vertex.id}`, error);
         }
@@ -515,7 +485,7 @@ export class DiagramRendererService implements IDiagramRendererService {
           }
 
           // Create edge between source and target cells
-          const edgeId = this.edgeService.createSingleEdgeWithVertices(
+          this.edgeService.createSingleEdgeWithVertices(
             sourceCell.id,
             targetCell.id,
             label,
@@ -523,9 +493,6 @@ export class DiagramRendererService implements IDiagramRendererService {
             true,
             true,
           );
-
-          // Register the cell in the registry
-          this.registry.register(edgeId, edge.id, 'edge');
         } catch (error) {
           this.logger.error(`Error rendering edge cell: ${edge.id}`, error);
         }
@@ -654,14 +621,14 @@ export class DiagramRendererService implements IDiagramRendererService {
 
       // If it's a component ID, look up the cell ID
       if (isComponentId) {
-        const component = this.componentMapper.findComponentById(cellOrComponentId);
-        if (!component || !component.cellId) {
-          this.logger.warn(
-            `Cannot highlight: Component not found or has no cell ID: ${cellOrComponentId}`,
-          );
+        // Find the cell in the diagram
+        const cell = this.diagramService.findCellById(cellOrComponentId);
+        if (!cell) {
+          this.logger.warn(`Cannot highlight: Cell not found: ${cellOrComponentId}`);
           return;
         }
-        cellId = component.cellId;
+        // Use the cell's ID
+        cellId = cell.id;
       }
 
       // Get the cell
@@ -685,7 +652,7 @@ export class DiagramRendererService implements IDiagramRendererService {
   /**
    * Delete a component
    */
-  deleteComponent(componentId: string): void {
+  deleteComponent(cellId: string): void {
     // Check if we're already in DELETING state
     const currentState = this.stateManager.getCurrentState();
     const isAlreadyDeleting = currentState === EditorState.DELETING;
@@ -708,62 +675,30 @@ export class DiagramRendererService implements IDiagramRendererService {
           return false;
         }
 
-        // First check if the component exists in the registry
-        const cellId = this.registry.getCellId(componentId);
+        // Capture all needed information BEFORE deletion
+        const deleteInfo = this.capturePreDeleteInfo(cellId);
 
-        // If not in registry, try the component mapper as fallback
-        const component = cellId
-          ? { id: componentId, cellId }
-          : this.componentMapper.findComponentById(componentId);
-
-        if (!component || !component.cellId) {
-          this.logger.warn(`Cannot delete: Component not found or has no cell ID: ${componentId}`);
-          // Still try to delete the component from the diagram model
-          this.componentMapper.deleteComponent(componentId);
-
+        if (!deleteInfo) {
+          this.logger.warn(`Cannot delete: Unable to get info for cell: ${cellId}`);
           // Transition back to READY state
           this.stateManager.transitionTo(EditorState.READY);
           return false;
         }
 
-        const cellIdToDelete = component.cellId;
-
-        // Capture all needed information BEFORE deletion
-        const deleteInfo = this.capturePreDeleteInfo(cellIdToDelete);
-
         // Clean up anchor points
-        this.anchorService.cleanupForDeletedCell(cellIdToDelete);
+        this.anchorService.cleanupForDeletedCell(cellId);
 
-        // Unregister from registry
-        this.registry.unregister(cellIdToDelete, componentId);
-
-        // Delete component from model
-        this.componentMapper.deleteComponent(componentId);
+        // Delete the cell from the diagram model
+        this.diagramService.deleteCell(cellId);
 
         // Now delete the cell using the pre-delete info
-        if (deleteInfo) {
-          // Determine cell type and use appropriate service
-          if (deleteInfo.type === 'vertex') {
-            this.vertexService.deleteVertexWithInfo(deleteInfo);
-          } else if (deleteInfo.type === 'edge') {
-            this.edgeService.deleteEdgeWithInfo(deleteInfo);
-          }
-
-          this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
-        } else {
-          // Fall back to direct deletion if we couldn't get pre-delete info
-          this.logger.warn(
-            `No pre-delete info available, using direct deletion for cell: ${cellIdToDelete}`,
-          );
-          const cell = this.getCellById(cellIdToDelete);
-          if (cell) {
-            if (this.graphUtils.isVertex(cell)) {
-              this.vertexService.deleteVertexByCellId(cellIdToDelete);
-            } else if (this.graphUtils.isEdge(cell)) {
-              this.edgeService.deleteEdgeByCellId(cellIdToDelete);
-            }
-          }
+        if (deleteInfo.type === 'vertex') {
+          this.vertexService.deleteVertexWithInfo(deleteInfo);
+        } else if (deleteInfo.type === 'edge') {
+          this.edgeService.deleteEdgeWithInfo(deleteInfo);
         }
+
+        this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
 
         // Only transition back to READY state if we initiated the DELETING state
         if (!isAlreadyDeleting) {
@@ -771,7 +706,7 @@ export class DiagramRendererService implements IDiagramRendererService {
         }
         return true;
       } catch (error) {
-        this.logger.error(`Error deleting component: ${componentId}`, error);
+        this.logger.error(`Error deleting cell: ${cellId}`, error);
         // Transition to ERROR state on failure
         this.stateManager.transitionTo(EditorState.ERROR);
         return false;
@@ -780,7 +715,7 @@ export class DiagramRendererService implements IDiagramRendererService {
 
     if (result === undefined) {
       this.logger.warn(
-        `Cannot delete component: Operation "${operationToUse}" not allowed in current state "${currentState}"`,
+        `Cannot delete cell: Operation "${operationToUse}" not allowed in current state "${currentState}"`,
       );
     }
   }
@@ -824,21 +759,8 @@ export class DiagramRendererService implements IDiagramRendererService {
         // Clean up anchor points
         this.anchorService.cleanupForDeletedCell(cellId);
 
-        // Find component ID from registry
-        const componentId = this.registry.getComponentId(cellId);
-
-        // If not in registry, try the component mapper as fallback
-        const component = componentId
-          ? { id: componentId, cellId }
-          : this.componentMapper.findComponentByCellId(cellId);
-
-        if (component) {
-          // Unregister from registry
-          this.registry.unregister(cellId, component.id);
-
-          // Delete component from model
-          this.componentMapper.deleteComponent(component.id);
-        }
+        // Delete the cell from the diagram model
+        this.diagramService.deleteCell(cellId);
 
         // Delete the cell using the pre-delete info
         if (deleteInfo.type === 'vertex') {

@@ -34,20 +34,9 @@ export interface AnchorPoint {
 }
 
 /**
- * Diagram component types
+ * Element types for diagram cells
  */
-export type DiagramComponentType = 'vertex' | 'edge';
-
-/**
- * Diagram component model (node, edge, etc.)
- */
-export interface DiagramComponent {
-  id: string;
-  type: DiagramComponentType;
-  data: Record<string, unknown>;
-  metadata?: DiagramMetadata[];
-  cellId?: string; // Reference to maxGraph cell ID
-}
+export type DiagramElementType = 'vertex' | 'edge';
 
 /**
  * Cell model for maxGraph cells
@@ -89,9 +78,9 @@ export interface Diagram {
  * Operation types for diagram changes
  */
 export enum DiagramOperationType {
-  ADD_COMPONENT = 'ADD_COMPONENT',
-  UPDATE_COMPONENT = 'UPDATE_COMPONENT',
-  DELETE_COMPONENT = 'DELETE_COMPONENT',
+  ADD_CELL = 'ADD_CELL',
+  UPDATE_CELL = 'UPDATE_CELL',
+  DELETE_CELL = 'DELETE_CELL',
   UPDATE_DIAGRAM_PROPERTIES = 'UPDATE_DIAGRAM_PROPERTIES',
   BATCH_OPERATION = 'BATCH_OPERATION',
 }
@@ -109,28 +98,28 @@ export interface DiagramOperation {
 }
 
 /**
- * Operation for adding a component
+ * Operation for adding a cell
  */
-export interface AddComponentOperation extends DiagramOperation {
-  type: DiagramOperationType.ADD_COMPONENT;
-  component: DiagramComponent;
+export interface AddCellOperation extends DiagramOperation {
+  type: DiagramOperationType.ADD_CELL;
+  cell: Cell;
 }
 
 /**
- * Operation for updating a component
+ * Operation for updating a cell
  */
-export interface UpdateComponentOperation extends DiagramOperation {
-  type: DiagramOperationType.UPDATE_COMPONENT;
-  componentId: string;
-  changes: Partial<DiagramComponent>;
+export interface UpdateCellOperation extends DiagramOperation {
+  type: DiagramOperationType.UPDATE_CELL;
+  cellId: string;
+  changes: Partial<Cell>;
 }
 
 /**
- * Operation for deleting a component
+ * Operation for deleting a cell
  */
-export interface DeleteComponentOperation extends DiagramOperation {
-  type: DiagramOperationType.DELETE_COMPONENT;
-  componentId: string;
+export interface DeleteCellOperation extends DiagramOperation {
+  type: DiagramOperationType.DELETE_CELL;
+  cellId: string;
 }
 
 /**
@@ -153,8 +142,8 @@ export interface BatchOperation extends DiagramOperation {
  * Union type for all diagram operations
  */
 export type DiagramOperationUnion =
-  | AddComponentOperation
-  | UpdateComponentOperation
-  | DeleteComponentOperation
+  | AddCellOperation
+  | UpdateCellOperation
+  | DeleteCellOperation
   | UpdateDiagramPropertiesOperation
   | BatchOperation;

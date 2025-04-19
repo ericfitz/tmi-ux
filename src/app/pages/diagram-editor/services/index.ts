@@ -33,7 +33,7 @@ export * from './graph/graph-event-handling.service';
 export * from './components/vertex-management.service';
 export * from './components/edge-management.service';
 export * from './components/anchor-point.service';
-export * from './components/diagram-component-mapper.service';
+export * from './components/diagram-cell-mapper.service';
 
 // Theming
 export * from './theming/diagram-theme.service';

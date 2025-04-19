@@ -22,7 +22,6 @@ import { DiagramService } from './services/diagram.service';
 import { DiagramRendererService } from './services/diagram-renderer.service';
 import { StateManagerService } from './services/state/state-manager.service';
 import { EditorState } from './services/state/editor-state.enum';
-import { DiagramElementRegistryService } from './services/registry/diagram-element-registry.service';
 import { ThemeSelectorComponent } from './components/theme-selector/theme-selector.component';
 
 @Component({
@@ -67,7 +66,6 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     private translocoService: TranslocoService,
     private assetLoader: AssetLoaderService,
     private stateManager: StateManagerService,
-    private registry: DiagramElementRegistryService,
   ) {
     this.logger.info('DiagramEditorComponent constructed');
   }
@@ -985,26 +983,24 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       return;
     }
 
-    // Find the component associated with this cell
-    const component = this.diagramService.findComponentByCellId(cellId);
-    if (!component) {
-      this.logger.error(`No component found for cell ${cellId}`);
+    // Find the cell by ID
+    const cell = this.diagramService.findCellById(cellId);
+    if (!cell) {
+      this.logger.error(`No cell found with ID ${cellId}`);
       return;
     }
 
-    // From now on, we'll track component IDs but maintain the cell IDs for highlighting
-    const componentId = component.id;
+    // From now on, we'll track cell IDs for both operations and highlighting
+    const cellId2 = cell.id;
 
-    this.logger.info(
-      `Processing vertex component ${componentId} (cell: ${cellId}) in edge creation mode`,
-    );
+    this.logger.info(`Processing vertex cell ${cellId2} in edge creation mode`);
 
     if (!this.sourceVertexId) {
       // First click - select source vertex
-      // Store both component ID and cell ID
-      this.sourceVertexId = componentId;
-      this._sourceCellId = cellId; // Store cell ID for highlighting
-      this.logger.info(`Source vertex selected: component=${componentId}, cell=${cellId}`);
+      // Store cell ID
+      this.sourceVertexId = cellId2;
+      this._sourceCellId = cellId; // Store original cell ID for highlighting
+      this.logger.info(`Source vertex selected: cell=${cellId2}`);
 
       try {
         this.diagramRenderer.highlightCell(cellId, true, false); // isComponentId=false since we're passing cellId
@@ -1012,7 +1008,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       } catch (error) {
         this.logger.error(`Failed to highlight source vertex cell ${cellId}`, error);
       }
-    } else if (this.sourceVertexId === componentId) {
+    } else if (this.sourceVertexId === cellId2) {
       // Clicked the same vertex again - cancel selection
       try {
         this.diagramRenderer.highlightCell(this._sourceCellId!, false, false); // Using cell ID for highlighting
@@ -1024,21 +1020,21 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     } else {
       // Second click - create the edge
-      this.logger.info(`Creating edge from component ${this.sourceVertexId} to ${componentId}`);
+      this.logger.info(`Creating edge from cell ${this.sourceVertexId} to ${cellId2}`);
 
       // Use a try-catch block to ensure errors are properly handled
       try {
-        // We now pass component IDs to createEdge for proper lookup
-        const edgeId = this.createEdge(this.sourceVertexId, componentId, 'Flow');
+        // We now pass cell IDs to createEdge
+        const edgeId = this.createEdge(this.sourceVertexId, cellId2, 'Flow');
 
         if (edgeId) {
           this.logger.info(`Edge created successfully with ID: ${edgeId}`);
         } else {
-          this.logger.error(`Failed to create edge from ${this.sourceVertexId} to ${componentId}`);
+          this.logger.error(`Failed to create edge from ${this.sourceVertexId} to ${cellId2}`);
         }
       } catch (error) {
         this.logger.error(
-          `Exception while creating edge from ${this.sourceVertexId} to ${componentId}`,
+          `Exception while creating edge from ${this.sourceVertexId} to ${cellId2}`,
           error,
         );
       } finally {
@@ -1068,39 +1064,33 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param label Optional label for the edge
    * @returns The ID of the created edge, or null if creation failed
    */
-  private createEdge(
-    sourceComponentId: string,
-    targetComponentId: string,
-    label = '',
-  ): string | null {
+  private createEdge(sourceCellId: string, targetCellId: string, label = ''): string | null {
     if (!this.diagramRenderer.isInitialized()) {
       this.logger.error('Cannot create edge: Renderer not initialized');
       return null;
     }
 
     try {
-      // Use createEdgeBetweenComponents which properly handles component IDs
+      // Use createEdgeBetweenComponents which now handles cell IDs
       // Use standard maxGraph style instead of inline CSS
       const result = this.diagramRenderer.createEdgeBetweenComponents(
-        sourceComponentId,
-        targetComponentId,
+        sourceCellId,
+        targetCellId,
         label,
         'flow', // Use standard maxGraph flow style
       );
       if (result) {
-        this.logger.info(
-          `Edge created between components ${sourceComponentId} and ${targetComponentId}`,
-        );
-        return result.componentId;
+        this.logger.info(`Edge created between cells ${sourceCellId} and ${targetCellId}`);
+        return result.cellId;
       } else {
         this.logger.error(
-          `Failed to create edge between components ${sourceComponentId} and ${targetComponentId}`,
+          `Failed to create edge between cells ${sourceCellId} and ${targetCellId}`,
         );
         return null;
       }
     } catch (error) {
       this.logger.error(
-        `Exception while creating edge between components ${sourceComponentId} and ${targetComponentId}`,
+        `Exception while creating edge between cells ${sourceCellId} and ${targetCellId}`,
         error,
       );
       return null;
@@ -1131,28 +1121,19 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
     this.logger.info(`Deleting selected cell: ${this._selectedCellId}`);
 
     try {
-      // First check if the cell exists in the registry
-      const componentId = this.registry.getComponentId(this._selectedCellId);
+      // Find the cell by ID
+      const cell = this.diagramService.findCellById(this._selectedCellId);
 
-      if (componentId) {
-        // Delete component using the registry information
-        this.diagramRenderer.deleteComponent(componentId);
-        this.logger.info(`Deleted component: ${componentId} from registry`);
+      if (cell) {
+        // Delete cell
+        this.diagramRenderer.deleteCellById(cell.id);
+        this.logger.info(`Deleted cell: ${cell.id}`);
       } else {
-        // Fall back to the old method if not in registry
-        const component = this.diagramService.findComponentByCellId(this._selectedCellId);
-
-        if (component) {
-          // Delete component (which will also delete the cell)
-          this.diagramRenderer.deleteComponent(component.id);
-          this.logger.info(`Deleted component: ${component.id}`);
-        } else {
-          // If no component was found, try to delete just the cell
-          this.logger.warn(
-            `No component found for cell ${this._selectedCellId}, attempting to delete cell only`,
-          );
-          this.diagramRenderer.deleteCellById(this._selectedCellId);
-        }
+        // If no component was found, try to delete just the cell
+        this.logger.warn(
+          `No component found for cell ${this._selectedCellId}, attempting to delete cell only`,
+        );
+        this.diagramRenderer.deleteCellById(this._selectedCellId);
       }
 
       // Reset selection state
@@ -1394,10 +1375,10 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
         return;
       }
 
-      // Find the component associated with this cell
-      const component = this.diagramService.findComponentByCellId(cellId);
+      // Find the cell in the model
+      const modelCell = this.diagramService.findCellById(cellId);
 
-      // Create a properties object with both cell and component data
+      // Create a properties object with cell data
       const properties: any = {
         // Cell properties
         id: cell.id,
@@ -1417,13 +1398,17 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
         target: cell.target ? cell.target.id : null,
       };
 
-      // Add component properties if available
-      if (component) {
-        properties.component = {
-          id: component.id,
-          type: component.type,
-          data: component.data,
-          metadata: component.metadata || [],
+      // Add model cell properties if available
+      if (modelCell) {
+        properties.modelCell = {
+          id: modelCell.id,
+          vertex: modelCell.vertex,
+          edge: modelCell.edge,
+          value: modelCell.value,
+          style: modelCell.style,
+          source: modelCell.source,
+          target: modelCell.target,
+          geometry: modelCell.geometry,
         };
       }
 

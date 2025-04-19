@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DiagramComponentMapperService } from './diagram-component-mapper.service';
+import { DiagramService } from '../diagram.service';
 import { EdgeCreationResult } from '../interfaces/diagram-renderer.interface';
 import { CellDeleteInfo } from '../utils/cell-delete-info.model';
 
@@ -22,7 +22,7 @@ export class EdgeManagementService {
 
   constructor(
     private logger: LoggerService,
-    private componentMapper: DiagramComponentMapperService,
+    private diagramService: DiagramService,
   ) {
     this.logger.info('EdgeManagementService initialized');
   }
@@ -69,23 +69,18 @@ export class EdgeManagementService {
         `Creating edge from component ${sourceComponentId} to ${targetComponentId} with label: ${label} and style: ${typeof style === 'string' ? style : JSON.stringify(style)}`,
       );
 
-      // Find source and target components
-      const sourceComponent = this.componentMapper.findComponentById(sourceComponentId);
-      const targetComponent = this.componentMapper.findComponentById(targetComponentId);
+      // Find source and target cells
+      const sourceCell = this.diagramService.findCellById(sourceComponentId);
+      const targetCell = this.diagramService.findCellById(targetComponentId);
 
-      if (!sourceComponent || !targetComponent) {
-        this.logger.error('Source or target component not found');
+      if (!sourceCell || !targetCell) {
+        this.logger.error('Source or target cell not found');
         return { cellId: '', componentId: '', success: false };
       }
 
-      // Get cell IDs from components
-      const sourceCellId = sourceComponent.cellId;
-      const targetCellId = targetComponent.cellId;
-
-      if (!sourceCellId || !targetCellId) {
-        this.logger.error('Source or target cell ID not found');
-        return { cellId: '', componentId: '', success: false };
-      }
+      // Use cell IDs
+      const sourceCellId = sourceCell.id;
+      const targetCellId = targetCell.id;
 
       // Create the edge
       const edgeId = this.createSingleEdgeWithVertices(
@@ -102,26 +97,25 @@ export class EdgeManagementService {
         return { cellId: '', componentId: '', success: false };
       }
 
-      // Generate component ID
-      const componentId = uuidv4();
+      // Generate cell ID
+      const cellId = uuidv4();
 
-      // Create the edge component
-      const edgeData = {
+      // Create the edge cell properties
+      const edgeProperties = {
+        value: label,
+        style: typeof style === 'string' ? style : '',
         source: sourceComponentId,
         target: targetComponentId,
-        label,
-        style,
-        cellId: edgeId,
       };
 
-      // Add to component store
-      this.componentMapper.addComponent('edge', edgeData, componentId);
+      // Add to cell store
+      this.diagramService.addCell('edge', edgeProperties, cellId);
 
-      this.logger.debug(`Edge created with cellId: ${edgeId}, componentId: ${componentId}`);
+      this.logger.debug(`Edge created with cellId: ${edgeId}, componentId: ${cellId}`);
 
       return {
         cellId: edgeId,
-        componentId,
+        componentId: cellId,
         success: true,
       };
     } catch (error) {
@@ -157,16 +151,18 @@ export class EdgeManagementService {
 
       // Try to find cells by component ID if needed
       if (!sourceCell && !sourceIsCell) {
-        const sourceComponent = this.componentMapper.findComponentById(sourceId);
-        if (sourceComponent && sourceComponent.cellId) {
-          sourceCell = this.model.getCell(sourceComponent.cellId);
+        const sourceCellObj = this.diagramService.findCellById(sourceId);
+        if (sourceCellObj) {
+          // Use cell ID
+          sourceCell = this.model.getCell(sourceCellObj.id);
         }
       }
 
       if (!targetCell && !targetIsCell) {
-        const targetComponent = this.componentMapper.findComponentById(targetId);
-        if (targetComponent && targetComponent.cellId) {
-          targetCell = this.model.getCell(targetComponent.cellId);
+        const targetCellObj = this.diagramService.findCellById(targetId);
+        if (targetCellObj) {
+          // Use cell ID
+          targetCell = this.model.getCell(targetCellObj.id);
         }
       }
 
@@ -313,9 +309,9 @@ export class EdgeManagementService {
       const targetId = edge.target?.id || '';
       const geometry = edge.geometry;
 
-      // Get associated component
-      const component = this.componentMapper.findComponentByCellId(cellId);
-      const componentId = component?.id;
+      // Get associated cell
+      const cell = this.diagramService.findCellById(cellId);
+      const componentId = cell?.id;
 
       // Create the delete info
       const info: CellDeleteInfo = {

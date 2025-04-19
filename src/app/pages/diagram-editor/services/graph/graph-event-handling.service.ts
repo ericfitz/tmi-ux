@@ -4,7 +4,7 @@ import { InternalEvent } from '@maxgraph/core';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { CellClickData, CellSelectionData } from '../interfaces/diagram-renderer.interface';
-import { DiagramComponentMapperService } from '../components/diagram-component-mapper.service';
+import { DiagramCellMapperService } from '../components/diagram-cell-mapper.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +28,7 @@ export class GraphEventHandlingService {
 
   constructor(
     private logger: LoggerService,
-    private componentMapper: DiagramComponentMapperService,
+    private cellMapper: DiagramCellMapperService,
   ) {
     this.logger.info('GraphEventHandlingService initialized');
   }
@@ -218,28 +218,20 @@ export class GraphEventHandlingService {
     try {
       this.logger.debug(`Label changed for cell ${cell.id} to "${newValue}"`);
 
-      // Find the associated component to update its label in storage
-      const component = this.componentMapper.findComponentByCellId(cell.id);
-      if (component) {
-        this.logger.debug(`Updating component ${component.id} label to "${newValue}"`);
+      // Find the associated cell to update its label in storage
+      const cellObj = this.cellMapper.findCellById(cell.id);
+      if (cellObj) {
+        this.logger.debug(`Updating cell ${cellObj.id} label to "${newValue}"`);
 
-        // Update the component data
-        if (component.type === 'vertex') {
-          // For vertices, update the label field
-          if (component.data) {
-            component.data['label'] = newValue;
-            this.componentMapper.updateComponent(component.id, component);
-          }
-        } else if (component.type === 'edge') {
-          // For edges, update the label field
-          if (component.data) {
-            component.data['label'] = newValue;
-            this.componentMapper.updateComponent(component.id, component);
-          }
-        }
+        // Update the cell value
+        const changes = {
+          value: newValue,
+        };
+
+        this.cellMapper.updateCell(cellObj.id, changes);
       } else {
         this.logger.warn(
-          `No component found for cell ${cell.id} - label change will only apply to visual cell`,
+          `No cell found for cell ${cell.id} - label change will only apply to visual cell`,
         );
       }
     } catch (error) {
@@ -297,10 +289,10 @@ export class GraphEventHandlingService {
 
         this.logger.debug(`Cell ${cell.id} was moved`);
 
-        // Find the associated component to update its position in storage
-        const component = this.componentMapper.findComponentByCellId(cell.id);
-        if (component) {
-          this.logger.debug(`Updating component ${component.id} position data`);
+        // Find the associated cell to update its position in storage
+        const cellObj = this.cellMapper.findCellById(cell.id);
+        if (cellObj) {
+          this.logger.debug(`Updating cell ${cellObj.id} position data`);
 
           // Get the current cell geometry - use the graph's method if model's is not working
           let geometry = null;
@@ -313,52 +305,46 @@ export class GraphEventHandlingService {
 
           if (!geometry) continue;
 
-          // Update the component position data based on cell type
-          if (component.type === 'vertex') {
-            // For vertices, update the position x, y, width, height
-            if (component.data) {
-              // Create or update position object
-              if (!component.data['position']) {
-                component.data['position'] = {};
-              }
+          // Update the cell geometry based on cell type
+          if (cellObj.vertex) {
+            // For vertices, update the geometry
+            const changes = {
+              geometry: {
+                x: geometry.x,
+                y: geometry.y,
+                width: geometry.width,
+                height: geometry.height,
+              },
+            };
 
-              const position = component.data['position'] as Record<string, number>;
-              position['x'] = geometry.x;
-              position['y'] = geometry.y;
-              position['width'] = geometry.width;
-              position['height'] = geometry.height;
-
-              // Update component
-              this.componentMapper.updateComponent(component.id, component);
-            }
-          } else if (component.type === 'edge') {
+            // Update cell
+            this.cellMapper.updateCell(cellObj.id, changes);
+          } else if (cellObj.edge) {
             // For edges, we might want to store points, label position, etc.
             // This depends on how detailed we want to be with edge positioning
 
             // We'll update the label position if it exists
-            if (component.data && geometry.offset) {
-              // Store label offset information
-              if (!component.data['labelOffset']) {
-                component.data['labelOffset'] = {};
-              }
-              const labelOffset = component.data['labelOffset'] as Record<string, number>;
-              labelOffset['x'] = geometry.offset.x;
-              labelOffset['y'] = geometry.offset.y;
+            if (geometry.offset) {
+              // Create changes object with geometry
+              const changes: any = {};
 
-              // Update component
-              this.componentMapper.updateComponent(component.id, component);
+              // If we need to store the offset, we can add it to the style
+              // or create a custom property for it
+
+              // Update cell
+              this.cellMapper.updateCell(cellObj.id, changes);
               this.logger.debug(
-                `Updated edge ${component.id} label position to (${geometry.offset.x}, ${geometry.offset.y})`,
+                `Updated edge ${cellObj.id} label position to (${geometry.offset.x}, ${geometry.offset.y})`,
               );
             } else {
               this.logger.debug(
-                `Edge component ${component.id} was moved, but no position data needs updating`,
+                `Edge cell ${cellObj.id} was moved, but no position data needs updating`,
               );
             }
           }
         } else {
           this.logger.warn(
-            `No component found for cell ${cell.id} - move will only apply to visual cell`,
+            `No cell found for cell ${cell.id} - move will only apply to visual cell`,
           );
         }
       }

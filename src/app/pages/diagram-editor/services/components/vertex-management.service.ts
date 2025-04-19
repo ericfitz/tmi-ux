@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DiagramComponentMapperService } from './diagram-component-mapper.service';
+import { DiagramCellMapperService } from './diagram-cell-mapper.service';
 import { VertexCreationResult } from '../interfaces/diagram-renderer.interface';
 import { CellDeleteInfo } from '../utils/cell-delete-info.model';
 
@@ -19,7 +19,7 @@ export class VertexManagementService {
 
   constructor(
     private logger: LoggerService,
-    private componentMapper: DiagramComponentMapperService,
+    private cellMapper: DiagramCellMapperService,
   ) {
     this.logger.info('VertexManagementService initialized');
   }
@@ -120,16 +120,15 @@ export class VertexManagementService {
           height,
         };
 
-        // Create component that references the cell
-        const componentData = {
-          label,
-          position,
-          style,
-          cellId,
+        // Create cell properties
+        const cellProperties = {
+          value: label,
+          geometry: position,
+          style: typeof style === 'string' ? style : '',
         };
 
-        // Add to component store
-        this.componentMapper.addComponent('vertex', componentData, componentId);
+        // Add to cell store
+        this.cellMapper.addCell('vertex', cellProperties, componentId);
 
         this.logger.debug(`Vertex created with cellId: ${cellId}, componentId: ${componentId}`);
 
@@ -261,12 +260,12 @@ export class VertexManagementService {
             // Remove the edges
             this.graph.removeCells(edgeCells);
 
-            // Delete components for these edges
+            // Delete cells for these edges
             for (const edge of edgeCells) {
               if (edge) {
-                const component = this.componentMapper.findComponentByCellId(edge.id);
-                if (component) {
-                  this.componentMapper.deleteComponent(component.id);
+                const cell = this.cellMapper.findCellById(edge.id);
+                if (cell) {
+                  this.cellMapper.deleteCell(cell.id);
                 }
               }
             }
@@ -312,9 +311,9 @@ export class VertexManagementService {
       const edges = this.graph.getEdges(vertex) || [];
       const connectedEdgeIds = edges.map((edge: any) => edge.id);
 
-      // Get associated component
-      const component = this.componentMapper.findComponentByCellId(cellId);
-      const componentId = component?.id;
+      // Get associated cell
+      const cell = this.cellMapper.findCellById(cellId);
+      const componentId = cell?.id;
 
       // Create the delete info
       const info: CellDeleteInfo = {
@@ -365,11 +364,11 @@ export class VertexManagementService {
       // Delete each edge
       this.graph.removeCells(edges);
 
-      // Find and delete components for these edges
+      // Find and delete cells for these edges
       for (const edge of edges) {
-        const component = this.componentMapper.findComponentByCellId(edge.id);
-        if (component) {
-          this.componentMapper.deleteComponent(component.id);
+        const cell = this.cellMapper.findCellById(edge.id);
+        if (cell) {
+          this.cellMapper.deleteCell(cell.id);
         }
       }
     } catch (error) {
