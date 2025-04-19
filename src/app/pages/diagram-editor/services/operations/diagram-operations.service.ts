@@ -100,21 +100,20 @@ export class DiagramOperationsService {
           (properties && 'label' in properties ? (properties['label'] as string) : null) ||
           type.charAt(0).toUpperCase() + type.slice(1);
 
-        // Create style based on type
+        // Create style based on type - use standard maxGraph styles
         let style = '';
         switch (type) {
           case 'process':
-            style = 'rounded=1;fillColor=#2196F3;strokeColor=#0D47A1;fontColor=#ffffff';
+            style = 'process';
             break;
           case 'store':
-            // Use the predefined style from the theme instead of defining it inline
-            style = 'store';
+            style = 'cylinder'; // Use standard maxGraph cylinder shape
             break;
           case 'actor':
-            style = 'shape=actor;fillColor=#9C27B0;strokeColor=#4A148C;fontColor=#ffffff';
+            style = 'actor';
             break;
           default:
-            style = 'fillColor=#90CAF9;strokeColor=#1565C0;fontColor=#000000';
+            style = 'rectangle';
         }
 
         // Create the vertex with component integration
@@ -228,20 +227,20 @@ export class DiagramOperationsService {
           return;
         }
 
-        // Create style based on type
+        // Create style based on type - use standard maxGraph styles
         let style = '';
         switch (type) {
           case 'flow':
-            style = 'endArrow=classic;strokeColor=#FF9800;strokeWidth=2;';
+            style = 'flow';
             break;
           case 'association':
-            style = 'endArrow=none;strokeColor=#2196F3;strokeWidth=1;dashed=1;';
+            style = 'association';
             break;
           case 'dependency':
-            style = 'endArrow=open;strokeColor=#F44336;strokeWidth=1;dashed=1;';
+            style = 'dependency';
             break;
           default:
-            style = 'endArrow=classic;strokeColor=#616161;strokeWidth=1;';
+            style = 'edge';
         }
 
         // Create the edge

@@ -23,11 +23,19 @@ import { DiagramRendererService } from './services/diagram-renderer.service';
 import { StateManagerService } from './services/state/state-manager.service';
 import { EditorState } from './services/state/editor-state.enum';
 import { DiagramElementRegistryService } from './services/registry/diagram-element-registry.service';
+import { ThemeSelectorComponent } from './components/theme-selector/theme-selector.component';
 
 @Component({
   selector: 'app-diagram-editor',
   standalone: true,
-  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule, RouterModule],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MaterialModule,
+    TranslocoModule,
+    RouterModule,
+    ThemeSelectorComponent,
+  ],
   templateUrl: './diagram-editor.component.html',
   styleUrl: './diagram-editor.component.scss',
 })
@@ -793,19 +801,11 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
 
       // Create a ghost drag image
       const dragIcon = document.createElement('div');
-      dragIcon.style.width = '40px';
-      dragIcon.style.height = '40px';
-      dragIcon.style.borderRadius = '50%';
-      dragIcon.style.backgroundColor = '#3f51b5';
-      dragIcon.style.display = 'flex';
-      dragIcon.style.alignItems = 'center';
-      dragIcon.style.justifyContent = 'center';
+      dragIcon.className = 'drag-icon'; // Use CSS class instead of inline styles
 
       // Add an icon based on vertex type
       const iconSpan = document.createElement('span');
-      iconSpan.className = 'material-symbols-outlined';
-      iconSpan.style.color = 'white';
-      iconSpan.style.fontSize = '24px';
+      iconSpan.className = 'material-symbols-outlined drag-icon-symbol';
 
       switch (vertexType) {
         case 'process':
@@ -929,24 +929,24 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
       let height = 60;
       let label = '';
 
-      // Use inline styles instead of theme-based styles
+      // Use standard maxGraph styles instead of inline CSS
       switch (type) {
         case 'process':
-          style = 'rounded=1;fillColor=#2196F3;strokeColor=#0D47A1;fontColor=#ffffff';
+          style = 'process';
           label = 'Process';
           width = 120;
           height = 60;
           break;
 
         case 'store':
-          style = 'shape=cylinder;fillColor=#4CAF50;strokeColor=#1B5E20;fontColor=#ffffff';
+          style = 'cylinder'; // Use standard maxGraph cylinder shape
           label = 'Store';
           width = 80;
           height = 80;
           break;
 
         case 'actor':
-          style = 'shape=actor;fillColor=#9C27B0;strokeColor=#4A148C;fontColor=#ffffff';
+          style = 'actor';
           label = 'Actor';
           width = 40;
           height = 80;
@@ -1080,13 +1080,12 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
 
     try {
       // Use createEdgeBetweenComponents which properly handles component IDs
-      const flowStyle =
-        'endArrow=classic;html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#4D4D4D;';
+      // Use standard maxGraph style instead of inline CSS
       const result = this.diagramRenderer.createEdgeBetweenComponents(
         sourceComponentId,
         targetComponentId,
         label,
-        flowStyle,
+        'flow', // Use standard maxGraph flow style
       );
       if (result) {
         this.logger.info(

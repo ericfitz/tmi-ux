@@ -57,7 +57,7 @@ export class EdgeManagementService {
     sourceComponentId: string,
     targetComponentId: string,
     label: string = '',
-    style: string = '',
+    style: string | Record<string, any> = '',
   ): EdgeCreationResult {
     if (!this.graph) {
       this.logger.error('Cannot create edge: Graph not initialized');
@@ -66,7 +66,7 @@ export class EdgeManagementService {
 
     try {
       this.logger.debug(
-        `Creating edge from component ${sourceComponentId} to ${targetComponentId} with label: ${label}`,
+        `Creating edge from component ${sourceComponentId} to ${targetComponentId} with label: ${label} and style: ${typeof style === 'string' ? style : JSON.stringify(style)}`,
       );
 
       // Find source and target components
@@ -137,7 +137,7 @@ export class EdgeManagementService {
     sourceId: string,
     targetId: string,
     label: string = '',
-    style: string = '',
+    style: string | Record<string, any> = '',
     sourceIsCell: boolean = true,
     targetIsCell: boolean = true,
   ): string {
@@ -147,7 +147,9 @@ export class EdgeManagementService {
     }
 
     try {
-      this.logger.debug(`Creating edge from ${sourceId} to ${targetId} with label: ${label}`);
+      this.logger.debug(
+        `Creating edge from ${sourceId} to ${targetId} with label: ${label} and style: ${typeof style === 'string' ? style : JSON.stringify(style)}`,
+      );
 
       // Get source and target cells
       let sourceCell = sourceIsCell ? this.model.getCell(sourceId) : null;

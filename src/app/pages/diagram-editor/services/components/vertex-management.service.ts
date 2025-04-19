@@ -41,7 +41,7 @@ export class VertexManagementService {
     label: string,
     width: number = 100,
     height: number = 60,
-    style: string = '',
+    style: string | Record<string, any> = '',
   ): string {
     if (!this.graph) {
       this.logger.error('Cannot create vertex: Graph not initialized');
@@ -79,7 +79,7 @@ export class VertexManagementService {
     label: string,
     width: number = 100,
     height: number = 60,
-    style: string = '',
+    style: string | Record<string, any> = '',
   ): VertexCreationResult {
     if (!this.graph) {
       this.logger.error('Cannot create vertex with IDs: Graph not initialized');
@@ -105,7 +105,9 @@ export class VertexManagementService {
         // If style is a style name (e.g., 'process', 'store', 'actor'), use it directly
         // This will use the style from the stylesheet that was applied by the theme
         // No need to modify the style name, as the DiagramThemeService already registered it
-        this.logger.debug(`Using style name: ${style}`);
+        this.logger.debug(
+          `Using style: ${typeof style === 'string' ? style : JSON.stringify(style)}`,
+        );
 
         const vertex = this.graph.insertVertex(parent, null, label, x, y, width, height, style);
         cellId = vertex.id;

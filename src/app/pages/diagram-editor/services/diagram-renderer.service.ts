@@ -1,8 +1,9 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Observable } from '../../../core/rxjs-imports';
+import { Observable, Subscription } from '../../../core/rxjs-imports';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { DiagramService } from './diagram.service';
+import { DiagramThemeService } from './theming/diagram-theme.service';
 import {
   IDiagramRendererService,
   CellClickData,
@@ -35,6 +36,9 @@ import { DiagramElementRegistryService } from './registry/diagram-element-regist
   providedIn: 'root',
 })
 export class DiagramRendererService implements IDiagramRendererService {
+  // Track theme change subscriptions
+  private themeSubscription: Subscription | null = null;
+
   constructor(
     private logger: LoggerService,
     private ngZone: NgZone,
@@ -51,6 +55,8 @@ export class DiagramRendererService implements IDiagramRendererService {
     // New services for state management and registry
     private stateManager: StateManagerService,
     private registry: DiagramElementRegistryService,
+    // Theme service
+    private themeService: DiagramThemeService,
   ) {
     this.logger.info('DiagramRendererService initialized');
   }
@@ -195,6 +201,12 @@ export class DiagramRendererService implements IDiagramRendererService {
       // Configure grid
       this.configureGrid(graph);
 
+      // Apply the current theme
+      this.applyCurrentTheme();
+
+      // Subscribe to theme changes
+      this.subscribeToThemeChanges();
+
       // Initial diagram render
       this.updateDiagram();
 
@@ -209,6 +221,44 @@ export class DiagramRendererService implements IDiagramRendererService {
       this.logger.error('Error initializing renderer', error);
       throw error;
     }
+  }
+
+  /**
+   * Apply the current theme to the graph
+   */
+  private applyCurrentTheme(): void {
+    const graph = this.getGraph();
+    if (!graph) {
+      this.logger.warn('Cannot apply theme: Graph not initialized');
+      return;
+    }
+
+    try {
+      // Apply the stylesheet to the graph
+      // This will automatically refresh all cells with the new styles
+      this.themeService.applyStylesheetToGraph(graph);
+
+      this.logger.debug('Applied current theme to graph');
+    } catch (error) {
+      this.logger.error('Error applying theme to graph', error);
+    }
+  }
+
+  /**
+   * Subscribe to theme changes
+   */
+  private subscribeToThemeChanges(): void {
+    // Clean up existing subscription if any
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+      this.themeSubscription = null;
+    }
+
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.themeChanged$.subscribe(themeName => {
+      this.logger.debug(`Theme changed to: ${themeName}, updating graph`);
+      this.applyCurrentTheme();
+    });
   }
 
   /**
@@ -233,6 +283,12 @@ export class DiagramRendererService implements IDiagramRendererService {
     this.logger.info('Destroying renderer');
 
     try {
+      // Clean up theme subscription
+      if (this.themeSubscription) {
+        this.themeSubscription.unsubscribe();
+        this.themeSubscription = null;
+      }
+
       // Hide all anchor points
       this.anchorService.hideAllAnchorPoints();
 
@@ -289,6 +345,9 @@ export class DiagramRendererService implements IDiagramRendererService {
 
           // Render cells
           this.renderDiagramCells(diagram.graphData);
+
+          // Apply the current theme to ensure all cells use the current theme
+          this.applyCurrentTheme();
         } finally {
           // End batch update
           model.endUpdate();
@@ -324,7 +383,28 @@ export class DiagramRendererService implements IDiagramRendererService {
           // Get geometry data
           const geometry = vertex.geometry || { x: 0, y: 0, width: 100, height: 60 };
           const label = vertex.value || '';
-          const style = vertex.style || '';
+
+          // Determine the style name based on vertex type
+          let styleName = 'process'; // Default to process style
+
+          // Convert style string to a style name if possible
+          const styleStr = vertex.style || '';
+
+          // If the style contains shape=cylinder, use the cylinder style
+          if (styleStr.includes('shape=cylinder')) {
+            styleName = 'cylinder';
+          }
+          // If the style contains shape=actor, use the actor style
+          else if (styleStr.includes('shape=actor')) {
+            styleName = 'actor';
+          }
+          // If it's a rounded rectangle, use the process style
+          else if (styleStr.includes('rounded=1') || styleStr.includes('rounded=true')) {
+            styleName = 'process';
+          }
+
+          // Create a style object with baseStyleNames
+          const style = { baseStyleNames: [styleName] };
 
           // Create vertex
           const cellId = this.vertexService.createVertex(
@@ -351,7 +431,24 @@ export class DiagramRendererService implements IDiagramRendererService {
           const sourceId = edge.source;
           const targetId = edge.target;
           const label = edge.value || '';
-          const style = edge.style || '';
+
+          // Determine the style name based on edge type
+          let styleName = 'flow'; // Default to flow style
+
+          // Convert style string to a style name if possible
+          const styleStr = edge.style || '';
+
+          // If the style contains specific edge styles, use the appropriate named style
+          if (styleStr.includes('dashed=1') || styleStr.includes('dashed=true')) {
+            if (styleStr.includes('endArrow=none')) {
+              styleName = 'association';
+            } else if (styleStr.includes('endArrow=open')) {
+              styleName = 'dependency';
+            }
+          }
+
+          // Create a style object with baseStyleNames
+          const style = { baseStyleNames: [styleName] };
 
           // Find source and target cells
           const sourceCell = cells.find(c => c.id === sourceId);
@@ -429,7 +526,7 @@ export class DiagramRendererService implements IDiagramRendererService {
     label: string,
     width?: number,
     height?: number,
-    style?: string,
+    style?: string | Record<string, any>,
   ): string {
     return this.vertexService.createVertex(x, y, label, width, height, style);
   }
@@ -443,7 +540,7 @@ export class DiagramRendererService implements IDiagramRendererService {
     label: string,
     width?: number,
     height?: number,
-    style?: string,
+    style?: string | Record<string, any>,
   ): VertexCreationResult {
     return this.vertexService.createVertexWithIds(x, y, label, width, height, style);
   }
@@ -455,7 +552,7 @@ export class DiagramRendererService implements IDiagramRendererService {
     sourceComponentId: string,
     targetComponentId: string,
     label?: string,
-    style?: string,
+    style?: string | Record<string, any>,
   ): EdgeCreationResult {
     return this.edgeService.createEdgeBetweenComponents(
       sourceComponentId,
@@ -472,7 +569,7 @@ export class DiagramRendererService implements IDiagramRendererService {
     sourceId: string,
     targetId: string,
     label?: string,
-    style?: string,
+    style?: string | Record<string, any>,
     sourceIsCell?: boolean,
     targetIsCell?: boolean,
   ): string {

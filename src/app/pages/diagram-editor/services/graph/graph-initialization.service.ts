@@ -3,6 +3,7 @@ import { Graph, constants } from '@maxgraph/core';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { MxGraphPatchingService } from './mx-graph-patching.service';
+import { DiagramThemeService } from '../theming/diagram-theme.service';
 
 // Define custom interfaces for extending HTML elements with custom properties
 interface ExtendedHTMLElement extends HTMLElement {
@@ -27,6 +28,7 @@ export class GraphInitializationService {
     private logger: LoggerService,
     private ngZone: NgZone,
     private patchingService: MxGraphPatchingService,
+    private themeService: DiagramThemeService,
   ) {
     this.logger.info('GraphInitializationService initialized');
   }
@@ -175,6 +177,9 @@ export class GraphInitializationService {
       // Configure the graph view
       const view = this.graph.getView();
       view.setScale(1.0);
+
+      // Apply the current theme stylesheet
+      this.themeService.applyStylesheetToGraph(this.graph);
 
       // Set default parent
       this.model.beginUpdate();
