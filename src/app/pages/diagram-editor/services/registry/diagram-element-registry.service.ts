@@ -120,14 +120,26 @@ export class DiagramElementRegistryService {
       return false;
     }
 
-    let success = false;
-
     // If only one ID is provided, look up the other
     if (cellId && !componentId) {
       componentId = this._cellToComponent.get(cellId) || '';
     } else if (!cellId && componentId) {
       cellId = this._componentToCell.get(componentId) || '';
     }
+
+    // Check if the cell or component exists in the registry
+    const cellExists = this._cellToComponent.has(cellId);
+    const componentExists = this._componentToCell.has(componentId);
+
+    // If neither exists, log a debug message and return true to avoid warnings
+    if (!cellExists && !componentExists) {
+      this.logger.debug(
+        `Nothing to unregister: cell=${cellId}, component=${componentId} (not in registry)`,
+      );
+      return true;
+    }
+
+    let success = false;
 
     // Remove from maps
     if (cellId) {
@@ -148,10 +160,12 @@ export class DiagramElementRegistryService {
 
       this.logger.debug(`Unregistered: cell=${cellId}, component=${componentId}`);
     } else {
-      this.logger.warn(`Failed to unregister: cell=${cellId}, component=${componentId}`);
+      this.logger.debug(
+        `Nothing to unregister: cell=${cellId}, component=${componentId} (not in registry)`,
+      );
     }
 
-    return success;
+    return true; // Always return true to avoid warnings in the deletion flow
   }
 
   /**

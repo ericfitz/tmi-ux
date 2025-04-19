@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { BehaviorSubject } from '../../../../core/rxjs-imports';
+import { constants } from '@maxgraph/core';
 
 /**
  * Service for managing diagram themes and stylesheets
@@ -73,9 +74,14 @@ export class DiagramThemeService {
       // Store shape style (using cylinder)
       cylinder: {
         shape: 'cylinder',
-        strokeColor: '#1B5E20',
-        fillColor: '#4CAF50',
-        fontColor: '#ffffff',
+        fillColor: '#ffffff',
+        strokeColor: '#000000',
+        strokeWidth: 2,
+        fontColor: '#000000',
+        gradientColor: '#aaaaaa',
+        gradientDirection: 'north',
+        cylinder3d: true,
+        shadow: true,
       },
 
       // Actor shape style
@@ -166,9 +172,14 @@ export class DiagramThemeService {
       // Store shape style (using cylinder)
       cylinder: {
         shape: 'cylinder',
-        strokeColor: '#2E7D32',
-        fillColor: '#1B5E20',
+        fillColor: '#333333',
+        strokeColor: '#666666',
+        strokeWidth: 2,
         fontColor: '#FFFFFF',
+        gradientColor: '#222222',
+        gradientDirection: 'north',
+        cylinder3d: true,
+        shadow: true,
       },
 
       // Actor shape style
@@ -259,9 +270,14 @@ export class DiagramThemeService {
       // Store shape style (using cylinder)
       cylinder: {
         shape: 'cylinder',
-        strokeColor: '#00897B',
-        fillColor: '#B2DFDB',
-        fontColor: '#004D40',
+        fillColor: '#E0F7FA',
+        strokeColor: '#00ACC1',
+        strokeWidth: 2,
+        fontColor: '#006064',
+        gradientColor: '#B2EBF2',
+        gradientDirection: 'north',
+        cylinder3d: true,
+        shadow: true,
       },
 
       // Actor shape style

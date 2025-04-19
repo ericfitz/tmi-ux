@@ -1,5 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Graph, Point, Geometry, constants, Client } from '@maxgraph/core';
+import {
+  Graph,
+  Point,
+  Geometry,
+  constants,
+  Client,
+  StencilShapeRegistry,
+  CylinderShape,
+  ActorShape,
+  RectangleShape,
+  CellRenderer,
+  CellState,
+} from '@maxgraph/core';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -29,6 +41,13 @@ export class MxGraphPatchingService {
       this.createSafeConstraintHandler(graph);
       this.setupEdgeConnectionSettings(graph);
       this.configureLabelHandleStyle(graph);
+      this.registerShapes(graph); // Register shapes
+
+      // Force a small delay before verification to ensure styles are applied
+      setTimeout(() => {
+        this.logger.debug('Verifying shapes after delay to ensure styles are applied');
+        this.verifyBuiltInShapes(graph); // Verify shapes after delay
+      }, 0);
 
       this.logger.info('All patches applied successfully');
     } catch (error) {
@@ -365,8 +384,6 @@ export class MxGraphPatchingService {
     this.logger.debug('Skipping constraint handler setup (not needed)');
   }
 
-  // Method removed since it's not needed
-
   /**
    * Configure edge connection settings in the graph
    */
@@ -382,14 +399,225 @@ export class MxGraphPatchingService {
       // Make sure edges are connectable
       graph.setConnectableEdges(true);
 
-      // Set styles for connections
-      const edgeStyle =
-        'edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;';
-      graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
+      // Set styles for connections using object notation
+      const edgeStyle = {
+        edgeStyle: 'orthogonalEdgeStyle',
+        rounded: true,
+        html: true,
+        jettySize: 'auto',
+        orthogonalLoop: true,
+      };
+
+      // Apply the edge style to the default edge style
+      const defaultEdgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
+      Object.assign(defaultEdgeStyle, edgeStyle);
 
       this.logger.debug('Edge connection settings configured successfully');
     } catch (error) {
       this.logger.error('Failed to set up edge connection settings', error);
+    }
+  }
+
+  /**
+   * Register shapes with the CellRenderer and StencilShapeRegistry
+   */
+  private registerShapes(graph: any): void {
+    try {
+      this.logger.debug('Registering shapes with graph');
+
+      // Debug: Log that we're registering shapes
+      this.logger.debug('Registering cylinder shape with graph');
+
+      // First, register the CylinderShape with both CellRenderer and StencilShapeRegistry
+      try {
+        // Register the CylinderShape constructor
+        if (typeof CylinderShape !== 'undefined') {
+          // Register the shape name with the CellRenderer using only the string 'cylinder'
+          // Use type assertion to bypass TypeScript error
+          CellRenderer.registerShape('cylinder', CylinderShape as any);
+          this.logger.debug(`Registered CylinderShape with CellRenderer using 'cylinder'`);
+
+          // Also register with graph's cellRenderer if available
+          if (graph.cellRenderer && graph.cellRenderer.registerShape) {
+            graph.cellRenderer.registerShape('cylinder', CylinderShape as any);
+            this.logger.debug(`Registered CylinderShape with graph.cellRenderer using 'cylinder'`);
+          }
+
+          // Register with StencilShapeRegistry
+          if (StencilShapeRegistry) {
+            // Create a stencil for the cylinder shape if it doesn't exist
+            // Register with only the string name
+            const cylinderStencil = {
+              w: 100,
+              h: 60,
+              aspect: 'fixed',
+              title: 'Cylinder',
+              allowCellsInserted: true,
+            } as any;
+
+            // Add with string key only
+            if (!StencilShapeRegistry.stencils['cylinder']) {
+              StencilShapeRegistry.stencils['cylinder'] = cylinderStencil;
+              this.logger.debug(
+                `Added cylinder shape to StencilShapeRegistry with string: 'cylinder'`,
+              );
+            }
+          }
+        } else {
+          this.logger.warn('CylinderShape is not defined');
+        }
+      } catch (shapeError) {
+        this.logger.error('Error registering CylinderShape', shapeError);
+      }
+
+      // Get the stylesheet from the graph
+      const stylesheet = graph.getStylesheet();
+
+      // Debug: Log the stylesheet structure
+      this.logger.debug(`Stylesheet object: ${typeof stylesheet}`);
+      this.logger.debug(
+        `Stylesheet has styles property: ${Object.prototype.hasOwnProperty.call(stylesheet, 'styles')}`,
+      );
+      if (stylesheet.styles) {
+        this.logger.debug(`Stylesheet.styles keys: ${Object.keys(stylesheet.styles).join(', ')}`);
+      }
+
+      // Define styles for different shapes using object notation
+      const cylinderStyle = {
+        shape: 'cylinder',
+        fillColor: '#ffffff',
+        strokeColor: '#000000',
+        strokeWidth: 2,
+        fontColor: '#000000',
+        gradientColor: '#aaaaaa',
+        gradientDirection: 'north',
+        cylinder3d: true,
+        shadow: true,
+      };
+
+      const actorStyle = {
+        shape: 'actor',
+        strokeColor: '#4A148C',
+        fillColor: '#9C27B0',
+        fontColor: '#ffffff',
+      };
+
+      // Register styles in the stylesheet
+      this.logger.debug(
+        `Before putCellStyle - Stylesheet.styles keys: ${Object.keys(stylesheet.styles || {}).join(', ')}`,
+      );
+
+      // Register the style with only the string name
+      stylesheet.putCellStyle('cylinder', cylinderStyle);
+      this.logger.debug(`Registered cylinder style with string ('cylinder')`);
+
+      // Also try direct assignment to styles object with string key only
+      if (stylesheet.styles) {
+        stylesheet.styles['cylinder'] = cylinderStyle;
+        this.logger.debug(`Directly added style to stylesheet.styles using string key`);
+      }
+
+      this.logger.debug(
+        `After cylinder putCellStyle - Stylesheet.styles keys: ${Object.keys(stylesheet.styles || {}).join(', ')}`,
+      );
+
+      stylesheet.putCellStyle('actor', actorStyle);
+      this.logger.debug(
+        `After actor putCellStyle - Stylesheet.styles keys: ${Object.keys(stylesheet.styles || {}).join(', ')}`,
+      );
+
+      // Force the graph to use the built-in cylinder shape
+      if (graph.getModel && graph.getModel()) {
+        // Enable dynamic style updates
+        graph.getView().updateStyle = true;
+
+        // Force a refresh of the graph to ensure styles are applied
+        try {
+          this.logger.debug('Forcing graph refresh to apply styles');
+
+          // Refresh the graph view
+          graph.refresh();
+
+          // Check if the stylesheet has the cylinder style after refresh
+          if (stylesheet.styles) {
+            this.logger.debug(
+              `After refresh - Stylesheet.styles keys: ${Object.keys(stylesheet.styles || {}).join(', ')}`,
+            );
+
+            const hasCylinderStyle = Object.prototype.hasOwnProperty.call(
+              stylesheet.styles,
+              'cylinder',
+            );
+
+            if (hasCylinderStyle) {
+              this.logger.debug(`After refresh - Cylinder style is available in stylesheet`);
+            } else {
+              this.logger.warn(
+                `After refresh - Cylinder style is still NOT available in stylesheet`,
+              );
+            }
+          }
+        } catch (refreshError) {
+          this.logger.error('Error refreshing graph', refreshError);
+        }
+      }
+
+      this.logger.debug('Shapes registered successfully');
+    } catch (error) {
+      this.logger.error('Error registering shapes', error);
+    }
+  }
+
+  /**
+   * Verify that built-in shapes are available in the stencil registry
+   */
+  private verifyBuiltInShapes(graph: any): void {
+    try {
+      this.logger.debug('Verifying built-in shapes');
+
+      // Log all registered stencils for debugging
+      if (StencilShapeRegistry && StencilShapeRegistry.stencils) {
+        const stencilNames = Object.keys(StencilShapeRegistry.stencils);
+        this.logger.debug(`Available stencils: ${stencilNames.join(', ')}`);
+
+        // Check specifically for cylinder shape with string only
+        const hasCylinderShape = stencilNames.includes('cylinder');
+
+        if (hasCylinderShape) {
+          this.logger.debug(`Cylinder shape is available in stencil registry`);
+        } else {
+          this.logger.warn(`Cylinder shape is NOT available in stencil registry`);
+        }
+      } else {
+        this.logger.warn('StencilShapeRegistry or stencils not available');
+      }
+
+      // Also check if the stylesheet has the cylinder style
+      const stylesheet = graph.getStylesheet();
+      this.logger.debug(`Stylesheet in verifyBuiltInShapes: ${typeof stylesheet}`);
+
+      if (stylesheet && stylesheet.styles) {
+        const styleNames = Object.keys(stylesheet.styles);
+        this.logger.debug(`Available styles in stylesheet: ${styleNames.join(', ')}`);
+        this.logger.debug(`Stylesheet.styles object: ${JSON.stringify(stylesheet.styles)}`);
+
+        // Check specifically for cylinder style with string only
+        const hasCylinderStyle = styleNames.includes('cylinder');
+
+        if (hasCylinderStyle) {
+          this.logger.debug(`Cylinder style is available in stylesheet`);
+
+          // Log the cylinder style for debugging
+          const cylinderStyle = stylesheet.styles['cylinder'];
+          this.logger.debug(`Cylinder style: ${JSON.stringify(cylinderStyle)}`);
+        } else {
+          this.logger.warn(`Cylinder style is NOT available in stylesheet`);
+        }
+      } else {
+        this.logger.warn('Stylesheet or styles not available');
+      }
+    } catch (error) {
+      this.logger.error('Error verifying built-in shapes', error);
     }
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Observable, Subscription } from '../../../core/rxjs-imports';
+import { constants } from '@maxgraph/core';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { DiagramService } from './diagram.service';
@@ -65,12 +66,6 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Capture all information needed about a cell before deletion
    */
   private capturePreDeleteInfo(cellId: string): CellDeleteInfo | null {
-    // Check if the cell exists in the registry
-    if (!this.registry.hasCellId(cellId)) {
-      this.logger.warn(`Cannot capture pre-delete info: Cell not registered: ${cellId}`);
-      return null;
-    }
-
     if (!this.isInitialized() || !cellId) {
       return null;
     }
@@ -78,15 +73,30 @@ export class DiagramRendererService implements IDiagramRendererService {
     try {
       const cell = this.getCellById(cellId);
       if (!cell) {
-        this.logger.warn(`Cannot capture pre-delete info: Cell not found in graph: ${cellId}`);
+        this.logger.debug(`Cannot capture pre-delete info: Cell not found in graph: ${cellId}`);
         return null;
       }
 
       // Get component ID from registry
       const componentId = this.registry.getComponentId(cellId);
 
+      // If cell is not in registry, create a basic delete info with just the cell
+      if (!componentId) {
+        this.logger.debug(`Cell ${cellId} not registered, creating basic delete info`);
+
+        // Determine cell type and use appropriate service
+        if (this.graphUtils.isVertex(cell)) {
+          return this.vertexService.captureVertexDeleteInfo(cell);
+        } else if (this.graphUtils.isEdge(cell)) {
+          return this.edgeService.captureEdgeDeleteInfo(cell);
+        } else {
+          this.logger.debug(`Unknown cell type for pre-delete info: ${cellId}`);
+          return null;
+        }
+      }
+
       // Store registry entry for reference
-      const registryEntry = componentId ? this.registry.getEntryByCellId(cellId) : null;
+      const registryEntry = this.registry.getEntryByCellId(cellId);
 
       // Determine cell type and use appropriate service
       if (this.graphUtils.isVertex(cell)) {
@@ -102,7 +112,7 @@ export class DiagramRendererService implements IDiagramRendererService {
         }
         return deleteInfo;
       } else {
-        this.logger.warn(`Unknown cell type for pre-delete info: ${cellId}`);
+        this.logger.debug(`Unknown cell type for pre-delete info: ${cellId}`);
         return null;
       }
     } catch (error) {
@@ -265,8 +275,20 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Check if renderer is initialized
    */
   isInitialized(): boolean {
-    // Check if we're in the READY state
-    return this.stateManager.getCurrentState() === EditorState.READY;
+    // Get current state
+    const currentState = this.stateManager.getCurrentState();
+
+    // Consider these states as "initialized" states
+    const initializedStates = [
+      EditorState.READY,
+      EditorState.DELETING,
+      EditorState.EDITING_LABEL,
+      EditorState.CREATING_EDGE,
+      EditorState.SAVING,
+    ];
+
+    // Check if current state is in the list of initialized states
+    return initializedStates.includes(currentState);
   }
 
   /**
@@ -390,9 +412,40 @@ export class DiagramRendererService implements IDiagramRendererService {
           // Convert style string to a style name if possible
           const styleStr = vertex.style || '';
 
-          // If the style contains shape=cylinder, use the cylinder style
+          // If the style contains shape=cylinder, use the cylinder style for store objects
           if (styleStr.includes('shape=cylinder')) {
-            styleName = 'cylinder';
+            // Create a style object with explicit cylinder properties
+            const style = {
+              shape: 'cylinder',
+              fillColor: '#ffffff',
+              strokeColor: '#000000',
+              strokeWidth: 2,
+              fontColor: '#000000',
+              gradientColor: '#aaaaaa',
+              gradientDirection: 'north',
+              cylinder3d: true,
+              shadow: true,
+            };
+
+            this.logger.debug(
+              `Creating store object with cylinder style: ${JSON.stringify(style)}`,
+            );
+
+            // Create vertex with cylinder style
+            const cellId = this.vertexService.createVertex(
+              geometry.x,
+              geometry.y,
+              label,
+              geometry.width,
+              geometry.height,
+              style,
+            );
+
+            // Register the cell in the registry
+            this.registry.register(cellId, vertex.id, 'vertex');
+
+            // Skip the rest of the loop since we've already created the vertex
+            continue;
           }
           // If the style contains shape=actor, use the actor style
           else if (styleStr.includes('shape=actor')) {
@@ -403,7 +456,7 @@ export class DiagramRendererService implements IDiagramRendererService {
             styleName = 'process';
           }
 
-          // Create a style object with baseStyleNames
+          // Create a style object with baseStyleNames for non-cylinder shapes
           const style = { baseStyleNames: [styleName] };
 
           // Create vertex
@@ -633,16 +686,24 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Delete a component
    */
   deleteComponent(componentId: string): void {
+    // Check if we're already in DELETING state
+    const currentState = this.stateManager.getCurrentState();
+    const isAlreadyDeleting = currentState === EditorState.DELETING;
+
+    // If we're already in DELETING state, use confirmDeletion operation
+    // Otherwise use deleteCell operation
+    const operationToUse = isAlreadyDeleting ? 'confirmDeletion' : 'deleteCell';
+
     // Use executeIfAllowed to check if the operation is allowed in the current state
-    const result = this.stateManager.executeIfAllowed('deleteCell', () => {
+    const result = this.stateManager.executeIfAllowed(operationToUse, () => {
       if (!this.isInitialized()) {
         this.logger.warn('Cannot delete: Renderer not initialized');
         return false;
       }
 
       try {
-        // Transition to DELETING state
-        if (!this.stateManager.transitionTo(EditorState.DELETING)) {
+        // Only transition to DELETING state if we're not already in it
+        if (!isAlreadyDeleting && !this.stateManager.transitionTo(EditorState.DELETING)) {
           this.logger.warn('Cannot transition to DELETING state');
           return false;
         }
@@ -704,8 +765,10 @@ export class DiagramRendererService implements IDiagramRendererService {
           }
         }
 
-        // Transition back to READY state
-        this.stateManager.transitionTo(EditorState.READY);
+        // Only transition back to READY state if we initiated the DELETING state
+        if (!isAlreadyDeleting) {
+          this.stateManager.transitionTo(EditorState.READY);
+        }
         return true;
       } catch (error) {
         this.logger.error(`Error deleting component: ${componentId}`, error);
@@ -716,7 +779,9 @@ export class DiagramRendererService implements IDiagramRendererService {
     });
 
     if (result === undefined) {
-      this.logger.warn('Cannot delete component: Operation not allowed in current state');
+      this.logger.warn(
+        `Cannot delete component: Operation "${operationToUse}" not allowed in current state "${currentState}"`,
+      );
     }
   }
 
@@ -724,16 +789,24 @@ export class DiagramRendererService implements IDiagramRendererService {
    * Delete a cell by ID
    */
   deleteCellById(cellId: string): void {
+    // Check if we're already in DELETING state
+    const currentState = this.stateManager.getCurrentState();
+    const isAlreadyDeleting = currentState === EditorState.DELETING;
+
+    // If we're already in DELETING state, use confirmDeletion operation
+    // Otherwise use deleteCell operation
+    const operationToUse = isAlreadyDeleting ? 'confirmDeletion' : 'deleteCell';
+
     // Use executeIfAllowed to check if the operation is allowed in the current state
-    const result = this.stateManager.executeIfAllowed('deleteCell', () => {
+    const result = this.stateManager.executeIfAllowed(operationToUse, () => {
       if (!this.isInitialized() || !cellId) {
         this.logger.warn('Cannot delete: Renderer not initialized or no cell ID provided');
         return false;
       }
 
       try {
-        // Transition to DELETING state
-        if (!this.stateManager.transitionTo(EditorState.DELETING)) {
+        // Only transition to DELETING state if we're not already in it
+        if (!isAlreadyDeleting && !this.stateManager.transitionTo(EditorState.DELETING)) {
           this.logger.warn('Cannot transition to DELETING state');
           return false;
         }
@@ -776,8 +849,10 @@ export class DiagramRendererService implements IDiagramRendererService {
 
         this.logger.debug(`Deleted ${deleteInfo.description || 'cell'}`);
 
-        // Transition back to READY state
-        this.stateManager.transitionTo(EditorState.READY);
+        // Only transition back to READY state if we initiated the DELETING state
+        if (!isAlreadyDeleting) {
+          this.stateManager.transitionTo(EditorState.READY);
+        }
         return true;
       } catch (error) {
         this.logger.error(`Error deleting cell: ${cellId}`, error);
@@ -788,7 +863,9 @@ export class DiagramRendererService implements IDiagramRendererService {
     });
 
     if (result === undefined) {
-      this.logger.warn('Cannot delete cell: Operation not allowed in current state');
+      this.logger.warn(
+        `Cannot delete cell: Operation "${operationToUse}" not allowed in current state "${currentState}"`,
+      );
     }
   }
 

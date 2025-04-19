@@ -157,7 +157,7 @@ export const ALLOWED_OPERATIONS: Record<EditorState, string[]> = {
     'cancelEdgeCreation',
   ],
 
-  [EditorState.DELETING]: ['confirmDeletion', 'cancelDeletion'],
+  [EditorState.DELETING]: ['confirmDeletion', 'cancelDeletion', 'deleteCell', 'updateDiagram'],
 
   [EditorState.SAVING]: ['updateLoadingMessage'],
 
