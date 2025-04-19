@@ -67,8 +67,6 @@ export interface Diagram {
   description?: string;
   created_at: string;
   modified_at: string;
-  owner: string;
-  authorization: DiagramAuthorization[];
   metadata?: DiagramMetadata[];
   graphData: Cell[];
   version?: number; // For tracking diagram versions
