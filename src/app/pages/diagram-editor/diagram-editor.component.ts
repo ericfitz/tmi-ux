@@ -163,7 +163,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           this.hasSelectedCell = true;
           this._selectedCellId = selectionData.cellId;
           this.logger.info(
-            `DELETE BUTTON SHOULD BE ENABLED: hasSelectedCell=${this.hasSelectedCell}`,
+            `DELETE button should be DISABLED: hasSelectedCell=${this.hasSelectedCell}`,
           );
 
           try {
@@ -181,7 +181,7 @@ export class DiagramEditorComponent implements OnInit, AfterViewInit, OnDestroy 
           this._selectedCellId = null;
           this.selectedCellProperties = null;
           this.logger.info(
-            `DELETE BUTTON SHOULD BE DISABLED: hasSelectedCell=${this.hasSelectedCell}`,
+            `DELETE button should be DISABLED: hasSelectedCell=${this.hasSelectedCell}`,
           );
         }
 
