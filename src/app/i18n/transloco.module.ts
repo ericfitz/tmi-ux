@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { TranslocoModule, provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
@@ -69,7 +68,6 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
 }
 
 @NgModule({
-  imports: [HttpClientModule],
   exports: [TranslocoModule],
   providers: [
     provideTransloco({
