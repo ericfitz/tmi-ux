@@ -116,10 +116,9 @@ export class StateManagerService {
 
   /**
    * Reset the state machine to its initial state
-   * This should only be used for testing or in extreme error cases
    */
   public reset(): void {
-    this.logger.warn('Resetting state machine to UNINITIALIZED state');
+    this.logger.info('Resetting state machine to UNINITIALIZED state');
     this._state$.next(EditorState.UNINITIALIZED);
     this._stateHistory = [{ state: EditorState.UNINITIALIZED, timestamp: Date.now() }];
   }
