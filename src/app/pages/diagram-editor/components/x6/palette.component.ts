@@ -3,6 +3,7 @@ import { Graph, Node } from '@antv/x6';
 import { Dnd } from '@antv/x6-plugin-dnd';
 import { NodeService } from '../../services/x6/node.service';
 import { X6GraphService } from '../../services/x6/x6-graph.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'app-x6-palette',
@@ -163,6 +164,7 @@ export class X6PaletteComponent implements OnInit {
   constructor(
     private graphService: X6GraphService,
     private nodeService: NodeService,
+    private logger: LoggerService,
   ) {}
 
   ngOnInit(): void {
@@ -235,86 +237,161 @@ export class X6PaletteComponent implements OnInit {
 
     if (processNode) {
       processNode.addEventListener('mousedown', e => {
-        // Create a process node for dragging
-        const node = this.graph!.createNode({
-          shape: 'process-node',
-          attrs: {
-            label: {
-              text: 'Process',
+        try {
+          // Create a process node for dragging
+          const node = this.graph!.createNode({
+            shape: 'rect',
+            width: 120,
+            height: 60,
+            attrs: {
+              body: {
+                fill: '#ffffff',
+                stroke: '#5F95FF',
+                strokeWidth: 1,
+                rx: 6,
+                ry: 6,
+              },
+              label: {
+                text: 'Process',
+                fill: '#333333',
+                fontSize: 14,
+                textAnchor: 'middle',
+                textVerticalAnchor: 'middle',
+                refX: '50%',
+                refY: '50%',
+              },
             },
-          },
-          data: {
-            type: 'process',
-            label: 'Process',
-            temp: true, // Mark as temporary node
-          },
-        });
+            data: {
+              type: 'process',
+              label: 'Process',
+              temp: true, // Mark as temporary node
+            },
+          });
 
-        this.dnd!.start(node, e);
+          this.dnd!.start(node, e);
+        } catch (error) {
+          this.logger.error('Error creating process node', error);
+        }
       });
     }
 
     if (storeNode) {
       storeNode.addEventListener('mousedown', e => {
-        // Create a store node for dragging
-        const node = this.graph!.createNode({
-          shape: 'store-node',
-          attrs: {
-            label: {
-              text: 'Store',
+        try {
+          // Create a store node for dragging
+          const node = this.graph!.createNode({
+            shape: 'rect',
+            width: 120,
+            height: 60,
+            attrs: {
+              body: {
+                fill: '#ffffff',
+                stroke: '#5F95FF',
+                strokeWidth: 1,
+                rx: 20,
+                ry: 20,
+              },
+              label: {
+                text: 'Store',
+                fill: '#333333',
+                fontSize: 14,
+                textAnchor: 'middle',
+                textVerticalAnchor: 'middle',
+                refX: '50%',
+                refY: '50%',
+              },
             },
-          },
-          data: {
-            type: 'store',
-            label: 'Store',
-            temp: true, // Mark as temporary node
-          },
-        });
+            data: {
+              type: 'store',
+              label: 'Store',
+              temp: true, // Mark as temporary node
+            },
+          });
 
-        this.dnd!.start(node, e);
+          this.dnd!.start(node, e);
+        } catch (error) {
+          this.logger.error('Error creating store node', error);
+        }
       });
     }
 
     if (actorNode) {
       actorNode.addEventListener('mousedown', e => {
-        // Create an actor node for dragging
-        const node = this.graph!.createNode({
-          shape: 'actor-node',
-          attrs: {
-            label: {
-              text: 'Actor',
+        try {
+          // Create an actor node for dragging
+          const node = this.graph!.createNode({
+            shape: 'circle',
+            width: 80,
+            height: 80,
+            attrs: {
+              body: {
+                fill: '#ffffff',
+                stroke: '#5F95FF',
+                strokeWidth: 1,
+              },
+              label: {
+                text: 'Actor',
+                fill: '#333333',
+                fontSize: 14,
+                textAnchor: 'middle',
+                textVerticalAnchor: 'middle',
+                refX: '50%',
+                refY: '50%',
+              },
             },
-          },
-          data: {
-            type: 'actor',
-            label: 'Actor',
-            temp: true, // Mark as temporary node
-          },
-        });
+            data: {
+              type: 'actor',
+              label: 'Actor',
+              temp: true, // Mark as temporary node
+            },
+          });
 
-        this.dnd!.start(node, e);
+          this.dnd!.start(node, e);
+        } catch (error) {
+          this.logger.error('Error creating actor node', error);
+        }
       });
     }
 
     if (boundaryNode) {
       boundaryNode.addEventListener('mousedown', e => {
-        // Create a boundary node for dragging
-        const node = this.graph!.createNode({
-          shape: 'boundary-node',
-          attrs: {
-            label: {
-              text: 'Boundary',
+        try {
+          // Create a boundary node for dragging
+          const node = this.graph!.createNode({
+            shape: 'rect',
+            width: 180,
+            height: 120,
+            attrs: {
+              body: {
+                fill: '#f8f8f8',
+                stroke: '#aaaaaa',
+                strokeWidth: 1,
+                strokeDasharray: '5,5',
+                rx: 10,
+                ry: 10,
+              },
+              label: {
+                text: 'Boundary',
+                fill: '#666666',
+                fontSize: 14,
+                textAnchor: 'middle',
+                textVerticalAnchor: 'middle',
+                refX: '50%',
+                refY: '50%',
+              },
             },
-          },
-          data: {
-            type: 'boundary',
-            label: 'Boundary',
-            temp: true, // Mark as temporary node
-          },
-          zIndex: -1, // Place below other shapes
-        });
+            data: {
+              type: 'boundary',
+              label: 'Boundary',
+              temp: true, // Mark as temporary node
+            },
+            zIndex: -1, // Place below other shapes
+          });
 
-        this.dnd!.start(node, e);
+          this.dnd!.start(node, e);
+        } catch (error) {
+          this.logger.error('Error creating boundary node', error);
+        }
       });
     }
   }
@@ -346,7 +423,7 @@ export class X6PaletteComponent implements OnInit {
           node.attr('body/stroke', '#ff0000');
           node.attr('body/strokeWidth', 2);
         } catch (e) {
-          console.warn('Could not highlight node', e);
+          this.logger.error('Could not highlight node', e);
         }
       } else {
         // Second click - create edge between source and target
@@ -374,7 +451,7 @@ export class X6PaletteComponent implements OnInit {
             },
           });
         } catch (e) {
-          console.error('Error creating edge', e);
+          this.logger.error('Error creating edge', e);
           alert('Failed to create edge');
         }
 
@@ -386,7 +463,7 @@ export class X6PaletteComponent implements OnInit {
             sourceNode.attr('body/strokeWidth', 1);
           }
         } catch (e) {
-          console.warn('Could not reset node highlight', e);
+          this.logger.error('Could not reset node highlight', e);
         }
 
         // Reset the source node and remove the listener

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { DiagramEditorRoutingModule } from './diagram-editor-routing.module';
 import { DiagramEditorComponent } from './diagram-editor.component';
@@ -23,6 +24,10 @@ import { ExportImportService } from './services/x6/export-import.service';
 import { NodeRegistryService } from './services/x6/node-registry.service';
 import { PassiveEventHandler } from './services/x6/passive-event-handler';
 
+// Theme Services
+import { ThemeService } from './services/theme/theme.service';
+import { ThemeLoaderService } from './services/theme/theme-loader.service';
+
 @NgModule({
   declarations: [
     DiagramEditorComponent,
@@ -33,7 +38,13 @@ import { PassiveEventHandler } from './services/x6/passive-event-handler';
     X6PaletteComponent,
     X6PropertiesPanelComponent,
   ],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DiagramEditorRoutingModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    DiagramEditorRoutingModule,
+  ],
   providers: [
     X6GraphService,
     NodeService,
@@ -43,6 +54,8 @@ import { PassiveEventHandler } from './services/x6/passive-event-handler';
     ExportImportService,
     NodeRegistryService,
     PassiveEventHandler,
+    ThemeService,
+    ThemeLoaderService,
   ],
 })
 export class DiagramEditorModule {}

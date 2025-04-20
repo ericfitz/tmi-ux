@@ -24,7 +24,7 @@ export class NodeService {
     this.logger.debug(`Creating process node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'process-node',
+      shape: 'rect',
       x,
       y,
       width: 120,
@@ -53,7 +53,7 @@ export class NodeService {
     this.logger.debug(`Creating store node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'store-node',
+      shape: 'ellipse',
       x,
       y,
       width: 120,
@@ -80,7 +80,7 @@ export class NodeService {
     this.logger.debug(`Creating actor node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'actor-node',
+      shape: 'circle',
       x,
       y,
       width: 80,
@@ -107,7 +107,7 @@ export class NodeService {
     this.logger.debug(`Creating boundary node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'boundary-node',
+      shape: 'rect',
       x,
       y,
       width: 180,

@@ -1,0 +1,267 @@
+{
+  "metadata": {
+    "id": "owasp",
+    "name": "OWASP Threat Dragon Theme",
+    "description": "Theme inspired by OWASP Threat Dragon",
+    "version": "1.0.0",
+    "author": "TMI"
+  },
+  "nodeShapes": {
+    "boundary-node": {
+      "type": "boundary-node",
+      "width": 180,
+      "height": 120,
+      "markup": [
+        {
+          "tagName": "rect",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "body": {
+          "fill": "#f0f7ff",
+          "stroke": "#8aa1b1",
+          "strokeWidth": 1.5,
+          "strokeDasharray": "5,5",
+          "rx": 12,
+          "ry": 12,
+          "refWidth": "100%",
+          "refHeight": "100%"
+        },
+        "label": {
+          "text": "Boundary",
+          "fill": "#2c3e50",
+          "fontSize": 14,
+          "fontWeight": "bold",
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "50%"
+        }
+      },
+      "zIndex": -1
+    },
+    "process-node": {
+      "type": "process-node",
+      "width": 120,
+      "height": 60,
+      "markup": [
+        {
+          "tagName": "rect",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "body": {
+          "fill": "#ffffff",
+          "stroke": "#e74c3c",
+          "strokeWidth": 2,
+          "rx": 8,
+          "ry": 8,
+          "refWidth": "100%",
+          "refHeight": "100%"
+        },
+        "label": {
+          "text": "Process",
+          "fill": "#2c3e50",
+          "fontSize": 14,
+          "fontWeight": "bold",
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "50%"
+        }
+      }
+    },
+    "store-node": {
+      "type": "store-node",
+      "width": 120,
+      "height": 60,
+      "markup": [
+        {
+          "tagName": "path",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "body": {
+          "refD": "M 0,10 L 120,10 L 120,50 L 0,50 L 10,30 L 0,10 Z",
+          "fill": "#ffffff",
+          "stroke": "#3498db",
+          "strokeWidth": 2
+        },
+        "label": {
+          "text": "Store",
+          "fill": "#2c3e50",
+          "fontSize": 14,
+          "fontWeight": "bold",
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "50%"
+        }
+      }
+    },
+    "actor-node": {
+      "type": "actor-node",
+      "width": 80,
+      "height": 100,
+      "markup": [
+        {
+          "tagName": "path",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "body": {
+          "refD": "M 40,20 C 40,31 31,40 20,40 C 9,40 0,31 0,20 C 0,9 9,0 20,0 C 31,0 40,9 40,20 Z M 20,40 L 20,60 M 0,50 L 40,50 M 10,80 L 20,60 L 30,80",
+          "fill": "none",
+          "stroke": "#27ae60",
+          "strokeWidth": 2,
+          "refX": "20%",
+          "refY": "10%"
+        },
+        "label": {
+          "text": "Actor",
+          "fill": "#2c3e50",
+          "fontSize": 14,
+          "fontWeight": "bold",
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "85%"
+        }
+      }
+    }
+  },
+  "edgeStyle": {
+    "router": "manhattan",
+    "connector": {
+      "name": "rounded",
+      "args": {
+        "radius": 10
+      }
+    },
+    "attrs": {
+      "line": {
+        "stroke": "#34495e",
+        "strokeWidth": 2,
+        "targetMarker": {
+          "name": "path",
+          "d": "M 10 -5 0 0 10 5 z",
+          "fill": "#34495e"
+        }
+      }
+    },
+    "zIndex": 0
+  },
+  "cssStyles": [
+    {
+      "selector": ".diagram-editor-canvas",
+      "properties": {
+        "background-color": "#ecf0f1",
+        "border": "1px solid #bdc3c7"
+      }
+    },
+    {
+      "selector": ".diagram-editor-palette",
+      "properties": {
+        "background-color": "#ffffff",
+        "border-right": "1px solid #bdc3c7"
+      }
+    },
+    {
+      "selector": ".diagram-editor-properties",
+      "properties": {
+        "background-color": "#ffffff",
+        "border-left": "1px solid #bdc3c7"
+      }
+    },
+    {
+      "selector": ".diagram-editor-header",
+      "properties": {
+        "background-color": "#34495e",
+        "color": "#ecf0f1",
+        "border-bottom": "1px solid #2c3e50"
+      }
+    },
+    {
+      "selector": ".diagram-editor-header h2",
+      "properties": {
+        "color": "#ecf0f1"
+      }
+    },
+    {
+      "selector": ".diagram-editor-actions button",
+      "properties": {
+        "background-color": "#3498db",
+        "color": "#ffffff",
+        "border": "none",
+        "border-radius": "4px"
+      }
+    },
+    {
+      "selector": ".diagram-editor-actions button:hover",
+      "properties": {
+        "background-color": "#2980b9"
+      }
+    },
+    {
+      "selector": ".diagram-editor-actions button:disabled",
+      "properties": {
+        "background-color": "#95a5a6",
+        "color": "#ecf0f1"
+      }
+    }
+  ],
+  "graphOptions": {
+    "grid": {
+      "visible": true,
+      "type": "doubleMesh",
+      "args": [
+        {
+          "color": "#ecf0f1",
+          "thickness": 1
+        },
+        {
+          "color": "#bdc3c7",
+          "thickness": 1,
+          "factor": 4
+        }
+      ]
+    },
+    "background": {
+      "color": "#ecf0f1"
+    },
+    "connecting": {
+      "anchor": "center",
+      "connectionPoint": "boundary",
+      "allowBlank": false,
+      "snap": {
+        "radius": 20
+      },
+      "createEdge": {
+        "router": "manhattan",
+        "connector": {
+          "name": "rounded"
+        }
+      }
+    }
+  }
+}

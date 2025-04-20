@@ -1,0 +1,117 @@
+/* TMI Theme CSS */
+
+/* Diagram Editor Canvas */
+.diagram-editor-canvas {
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+}
+
+/* Diagram Editor Palette */
+.diagram-editor-palette {
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+}
+
+/* Diagram Editor Properties Panel */
+.diagram-editor-properties {
+  background-color: #ffffff;
+  border-left: 1px solid #e0e0e0;
+}
+
+/* Diagram Editor Header */
+.diagram-editor-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Diagram Editor Actions */
+.diagram-editor-actions button {
+  background-color: #5f95ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.diagram-editor-actions button:hover {
+  background-color: #4a86f7;
+}
+
+.diagram-editor-actions button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Node Styles */
+.x6-node.process-node rect {
+  fill: #ffffff;
+  stroke: #5f95ff;
+  stroke-width: 1;
+  rx: 6;
+  ry: 6;
+}
+
+.x6-node.store-node ellipse,
+.x6-node.store-node rect {
+  fill: #ffffff;
+  stroke: #5f95ff;
+  stroke-width: 1;
+}
+
+.x6-node.actor-node circle,
+.x6-node.actor-node rect {
+  fill: #ffffff;
+  stroke: #5f95ff;
+  stroke-width: 1;
+}
+
+.x6-node.boundary-node rect {
+  fill: #f8f8f8;
+  stroke: #aaaaaa;
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+  rx: 10;
+  ry: 10;
+}
+
+/* Edge Styles */
+.x6-edge .x6-edge-path {
+  stroke: #5f95ff;
+  stroke-width: 1;
+}
+
+.x6-edge .x6-edge-path-target-marker {
+  fill: #5f95ff;
+}
+
+/* Selection Styles */
+.x6-node.selected rect,
+.x6-node.selected ellipse,
+.x6-node.selected circle,
+.x6-node.selected path {
+  stroke: #5f95ff;
+  stroke-width: 2;
+  stroke-dasharray: none;
+}
+
+.x6-edge.selected .x6-edge-path {
+  stroke: #5f95ff;
+  stroke-width: 2;
+}
+
+/* Grid Styles */
+.x6-grid {
+  stroke: #e0e0e0;
+}
+
+/* Tooltip Styles */
+.x6-tooltip {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  font-size: 12px;
+  color: #333333;
+}

@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeRegistryService } from './node-registry.service';
 import { PassiveEventHandler } from './passive-event-handler';
+import { ThemeService } from '../theme/theme.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,7 @@ export class X6GraphService {
     private ngZone: NgZone,
     private nodeRegistryService: NodeRegistryService,
     private passiveEventHandler: PassiveEventHandler,
+    private themeService: ThemeService,
   ) {
     this.logger.info('X6GraphService initialized');
     // Apply passive event listener patches
@@ -38,12 +40,17 @@ export class X6GraphService {
     this.logger.info('Initializing X6 graph with container');
     this.container = container;
 
-    // Register node shapes first
-    this.nodeRegistryService.registerNodeShapes();
+    // Skip node shape registration if theme is not loaded yet
+    // The theme service will register shapes when it's ready
 
     // Run outside Angular zone for better performance
     this.ngZone.runOutsideAngular(() => {
       try {
+        // Get graph options from theme
+        const themeGraphOptions = this.themeService.getGraphOptions() || {};
+        const edgeStyle = this.themeService.getEdgeStyle();
+
+        // Create graph with theme options
         this.graph = new Graph({
           container,
           grid: true,
@@ -59,8 +66,8 @@ export class X6GraphService {
           preventDefaultContextMenu: false,
           preventDefaultBlankAction: false,
           connecting: {
-            router: 'manhattan',
-            connector: {
+            router: edgeStyle?.router || 'manhattan',
+            connector: edgeStyle?.connector || {
               name: 'rounded',
               args: {
                 radius: 8,
@@ -72,10 +79,10 @@ export class X6GraphService {
             snap: {
               radius: 20,
             },
-            createEdge() {
-              return this.createEdge({
+            createEdge: () => {
+              return this.graph?.createEdge({
                 shape: 'edge',
-                attrs: {
+                attrs: edgeStyle?.attrs || {
                   line: {
                     stroke: '#5F95FF',
                     strokeWidth: 1,
@@ -85,10 +92,11 @@ export class X6GraphService {
                     },
                   },
                 },
-                zIndex: 0,
+                zIndex: edgeStyle?.zIndex || 0,
               });
             },
           },
+          ...themeGraphOptions,
         });
 
         this.setupEvents();

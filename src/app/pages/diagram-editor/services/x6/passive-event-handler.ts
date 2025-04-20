@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
  * A service to handle passive event listeners for AntV/X6
@@ -8,23 +9,34 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class PassiveEventHandler {
+  constructor(private logger: LoggerService) {}
   /**
    * Apply passive event listener patches to the window object
    * This will override the default addEventListener method to make touch and wheel events passive
+   *
+   * NOTE: Currently disabled due to recursive call issues
    */
   applyPatches(): void {
-    // Store the original addEventListener method and context
-    const originalContext = EventTarget.prototype;
+    // Disabled to prevent maximum call stack size exceeded error
+    // Just log a message instead
+    this.logger.info('Passive event handler patches disabled to prevent recursion issues');
 
-    // Create a wrapper using arrow function to avoid unbound method warning
-    const originalAddEventListener = (
-      ...args: Parameters<typeof EventTarget.prototype.addEventListener>
-    ) => {
-      return EventTarget.prototype.addEventListener.apply(originalContext, args);
-    };
-
+    // Original implementation caused infinite recursion
+    // Left commented out for reference
+    /*
+    // Only apply patches if not already applied
+    if ((window as any).__passiveEventsPatched) {
+      return;
+    }
+    
+    // Mark as patched to prevent multiple applications
+    (window as any).__passiveEventsPatched = true;
+    
+    // Store the original addEventListener method
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
+    
     // Override addEventListener to make touch and wheel events passive by default
-    EventTarget.prototype.addEventListener = function (
+    EventTarget.prototype.addEventListener = function(
       this: EventTarget,
       type: string,
       listener: EventListenerOrEventListenerObject,
@@ -32,11 +44,11 @@ export class PassiveEventHandler {
     ) {
       // Events that should be passive
       const passiveEvents = ['touchstart', 'touchmove', 'mousewheel', 'wheel'];
-
+      
       // If the event is in the list of passive events, make it passive
       if (passiveEvents.includes(type)) {
         let newOptions: AddEventListenerOptions;
-
+        
         if (typeof options === 'boolean') {
           newOptions = { capture: options, passive: true };
         } else if (options) {
@@ -44,13 +56,14 @@ export class PassiveEventHandler {
         } else {
           newOptions = { passive: true };
         }
-
+        
         // Call the original addEventListener with the new options
-        return originalAddEventListener(type, listener, newOptions);
+        return originalAddEventListener.call(this, type, listener, newOptions);
       }
-
+      
       // For other events, use the original behavior
-      return originalAddEventListener(type, listener, options);
+      return originalAddEventListener.call(this, type, listener, options);
     };
+    */
   }
 }

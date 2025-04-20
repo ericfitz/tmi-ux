@@ -5,6 +5,8 @@ import { EdgeService } from './services/x6/edge.service';
 import { HistoryService } from './services/x6/history.service';
 import { ExportImportService } from './services/x6/export-import.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { ThemeService } from './services/theme/theme.service';
+import { ThemeMetadata } from './services/theme/theme.interface';
 
 @Component({
   selector: 'app-diagram-editor',
@@ -33,6 +35,14 @@ import { LoggerService } from '../../core/services/logger.service';
             (change)="importDiagram($event)"
           />
           <button (click)="fileInput.click()">Import</button>
+          <div class="dropdown">
+            <button class="dropdown-toggle">Theme</button>
+            <div class="dropdown-menu">
+              <button *ngFor="let theme of availableThemes" (click)="switchTheme(theme.id)">
+                {{ theme.name }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="diagram-editor-content">
@@ -135,6 +145,7 @@ import { LoggerService } from '../../core/services/logger.service';
   standalone: false,
 })
 export class DiagramEditorComponent implements OnInit {
+  availableThemes: ThemeMetadata[] = [];
   constructor(
     public diagramService: DiagramService,
     private nodeService: NodeService,
@@ -142,11 +153,31 @@ export class DiagramEditorComponent implements OnInit {
     public historyService: HistoryService,
     private exportImportService: ExportImportService,
     private logger: LoggerService,
+    private themeService: ThemeService,
   ) {}
 
   ngOnInit(): void {
-    // Create a new diagram when the component is initialized
-    this.createNewDiagram();
+    // Initialize the theme service first
+    this.themeService.initialize().subscribe({
+      next: success => {
+        if (success) {
+          this.logger.info('Theme service initialized successfully');
+          // Get available themes
+          this.availableThemes = this.themeService.getAvailableThemes();
+
+          // Create a new diagram only after theme service is initialized
+          // Add a small delay to ensure all services are properly initialized
+          setTimeout(() => {
+            this.createNewDiagram();
+          }, 100);
+        } else {
+          this.logger.error('Failed to initialize theme service');
+        }
+      },
+      error: error => {
+        this.logger.error('Error initializing theme service', error);
+      },
+    });
   }
 
   createNewDiagram(): void {
@@ -200,5 +231,24 @@ export class DiagramEditorComponent implements OnInit {
         // Reset the file input
         input.value = '';
       });
+  }
+
+  /**
+   * Switch to a different theme
+   * @param themeId The ID of the theme to switch to
+   */
+  switchTheme(themeId: string): void {
+    this.themeService.loadTheme(themeId).subscribe({
+      next: success => {
+        if (success) {
+          this.logger.info(`Switched to theme: ${themeId}`);
+        } else {
+          this.logger.error(`Failed to switch to theme: ${themeId}`);
+        }
+      },
+      error: error => {
+        this.logger.error(`Error switching to theme: ${themeId}`, error);
+      },
+    });
   }
 }

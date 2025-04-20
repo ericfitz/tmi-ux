@@ -1,0 +1,257 @@
+{
+  "metadata": {
+    "id": "tmi",
+    "name": "TMI Theme",
+    "description": "Default theme for TMI diagram editor",
+    "version": "1.0.0",
+    "author": "TMI"
+  },
+  "nodeShapes": {
+    "boundary-node": {
+      "type": "boundary-node",
+      "width": 180,
+      "height": 120,
+      "markup": [
+        {
+          "tagName": "rect",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "body": {
+          "fill": "#f8f8f8",
+          "stroke": "#aaaaaa",
+          "strokeWidth": 1,
+          "strokeDasharray": "5,5",
+          "rx": 10,
+          "ry": 10,
+          "refWidth": "100%",
+          "refHeight": "100%"
+        },
+        "label": {
+          "text": "Boundary",
+          "fill": "#666666",
+          "fontSize": 14,
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "50%"
+        }
+      },
+      "zIndex": -1
+    },
+    "process-node": {
+      "type": "process-node",
+      "width": 120,
+      "height": 60,
+      "markup": [
+        {
+          "tagName": "rect",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "body": {
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 1,
+          "rx": 6,
+          "ry": 6,
+          "refWidth": "100%",
+          "refHeight": "100%"
+        },
+        "label": {
+          "text": "Process",
+          "fill": "#333333",
+          "fontSize": 14,
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "50%"
+        }
+      }
+    },
+    "store-node": {
+      "type": "store-node",
+      "width": 120,
+      "height": 60,
+      "markup": [
+        {
+          "tagName": "ellipse",
+          "selector": "top"
+        },
+        {
+          "tagName": "rect",
+          "selector": "body"
+        },
+        {
+          "tagName": "ellipse",
+          "selector": "bottom"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "top": {
+          "refWidth": "100%",
+          "refHeight": "30%",
+          "refY": "0%",
+          "fillOpacity": 1,
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 1,
+          "refCx": "50%",
+          "refRx": "50%",
+          "refCy": "10%",
+          "refRy": "10%"
+        },
+        "body": {
+          "refWidth": "100%",
+          "refHeight": "70%",
+          "refY": "15%",
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 1
+        },
+        "bottom": {
+          "refWidth": "100%",
+          "refHeight": "30%",
+          "refY": "70%",
+          "fillOpacity": 1,
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 1,
+          "refCx": "50%",
+          "refRx": "50%",
+          "refCy": "90%",
+          "refRy": "10%"
+        },
+        "label": {
+          "text": "Store",
+          "fill": "#333333",
+          "fontSize": 14,
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "50%"
+        }
+      }
+    },
+    "actor-node": {
+      "type": "actor-node",
+      "width": 80,
+      "height": 100,
+      "markup": [
+        {
+          "tagName": "circle",
+          "selector": "head"
+        },
+        {
+          "tagName": "rect",
+          "selector": "body"
+        },
+        {
+          "tagName": "text",
+          "selector": "label"
+        }
+      ],
+      "attrs": {
+        "head": {
+          "r": 15,
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 1,
+          "refX": "50%",
+          "refY": "20%"
+        },
+        "body": {
+          "refWidth": "50%",
+          "refHeight": "40%",
+          "refX": "25%",
+          "refY": "40%",
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 1,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "text": "Actor",
+          "fill": "#333333",
+          "fontSize": 14,
+          "textAnchor": "middle",
+          "textVerticalAnchor": "middle",
+          "refX": "50%",
+          "refY": "85%"
+        }
+      }
+    }
+  },
+  "edgeStyle": {
+    "router": "manhattan",
+    "connector": {
+      "name": "rounded",
+      "args": {
+        "radius": 8
+      }
+    },
+    "attrs": {
+      "line": {
+        "stroke": "#5F95FF",
+        "strokeWidth": 1,
+        "targetMarker": {
+          "name": "classic",
+          "size": 8
+        }
+      }
+    },
+    "zIndex": 0
+  },
+  "cssStyles": [
+    {
+      "selector": ".diagram-editor-canvas",
+      "properties": {
+        "background-color": "#f5f5f5",
+        "border": "1px solid #e0e0e0"
+      }
+    },
+    {
+      "selector": ".diagram-editor-palette",
+      "properties": {
+        "background-color": "#ffffff",
+        "border-right": "1px solid #e0e0e0"
+      }
+    },
+    {
+      "selector": ".diagram-editor-properties",
+      "properties": {
+        "background-color": "#ffffff",
+        "border-left": "1px solid #e0e0e0"
+      }
+    }
+  ],
+  "graphOptions": {
+    "grid": true,
+    "background": {
+      "color": "#f5f5f5"
+    },
+    "connecting": {
+      "anchor": "center",
+      "connectionPoint": "boundary",
+      "allowBlank": false,
+      "snap": {
+        "radius": 20
+      }
+    }
+  }
+}
