@@ -2,9 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { TranslocoModule } from '@jsverse/transloco';
 
 import { DiagramEditorRoutingModule } from './diagram-editor-routing.module';
 import { DiagramEditorComponent } from './diagram-editor.component';
+import { MaterialModule } from '../../shared/material/material.module';
 
 // X6 Components
 import { X6DiagramCanvasComponent } from './components/x6/diagram-canvas.component';
@@ -44,6 +46,8 @@ import { ThemeLoaderService } from './services/theme/theme-loader.service';
     ReactiveFormsModule,
     HttpClientModule,
     DiagramEditorRoutingModule,
+    TranslocoModule,
+    MaterialModule,
   ],
   providers: [
     X6GraphService,

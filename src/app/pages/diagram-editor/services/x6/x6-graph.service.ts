@@ -79,6 +79,14 @@ export class X6GraphService {
             snap: {
               radius: 20,
             },
+            // Enable edge creation by dragging from node ports/body
+            validateConnection: ({ sourceView, targetView, sourceMagnet, targetMagnet }) => {
+              // Prevent connecting to self
+              if (sourceView === targetView) {
+                return false;
+              }
+              return true;
+            },
             createEdge: () => {
               return this.graph?.createEdge({
                 shape: 'edge',
@@ -96,6 +104,21 @@ export class X6GraphService {
               });
             },
           },
+          // Enable edge creation by dragging from node
+          highlighting: {
+            magnetAvailable: {
+              name: 'stroke',
+              args: {
+                padding: 4,
+                attrs: {
+                  strokeWidth: 2,
+                  stroke: '#5F95FF',
+                },
+              },
+            },
+          },
+          // Enable entire node body as a magnet for connections
+          magnetThreshold: 'onleave',
           ...themeGraphOptions,
         });
 

@@ -7,6 +7,7 @@ import { ExportImportService } from './services/x6/export-import.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { ThemeService } from './services/theme/theme.service';
 import { ThemeMetadata } from './services/theme/theme.interface';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-diagram-editor',
@@ -15,18 +16,50 @@ import { ThemeMetadata } from './services/theme/theme.interface';
       <div class="diagram-editor-header">
         <h2>{{ (diagramService.currentDiagram$ | async)?.name || 'Untitled Diagram' }}</h2>
         <div class="diagram-editor-actions">
-          <button (click)="createNewDiagram()">New Diagram</button>
-          <button (click)="saveDiagram()">Save</button>
-          <button [disabled]="!(historyService.canUndo$ | async)" (click)="undo()">Undo</button>
-          <button [disabled]="!(historyService.canRedo$ | async)" (click)="redo()">Redo</button>
-          <div class="dropdown">
-            <button class="dropdown-toggle">Export</button>
-            <div class="dropdown-menu">
-              <button (click)="exportAsJson()">Export as JSON</button>
-              <button (click)="exportAsPng()">Export as PNG</button>
-              <button (click)="exportAsSvg()">Export as SVG</button>
-            </div>
-          </div>
+          <button mat-raised-button color="primary" (click)="createNewDiagram()">
+            <mat-icon>add</mat-icon>
+            {{ translocoService.translate('editor.header.newDiagram') }}
+          </button>
+          <button mat-raised-button color="primary" (click)="saveDiagram()">
+            <mat-icon>save</mat-icon>
+            {{ translocoService.translate('editor.header.save') }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!(historyService.canUndo$ | async)"
+            (click)="undo()"
+          >
+            <mat-icon>undo</mat-icon>
+            {{ translocoService.translate('editor.header.undo') }}
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!(historyService.canRedo$ | async)"
+            (click)="redo()"
+          >
+            <mat-icon>redo</mat-icon>
+            {{ translocoService.translate('editor.header.redo') }}
+          </button>
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu">
+            <mat-icon>file_download</mat-icon>
+            {{ translocoService.translate('editor.header.export') }}
+          </button>
+          <mat-menu #exportMenu="matMenu">
+            <button mat-menu-item (click)="exportAsJson()">
+              <mat-icon>code</mat-icon>
+              {{ translocoService.translate('editor.header.exportJson') }}
+            </button>
+            <button mat-menu-item (click)="exportAsPng()">
+              <mat-icon>image</mat-icon>
+              {{ translocoService.translate('editor.header.exportPng') }}
+            </button>
+            <button mat-menu-item (click)="exportAsSvg()">
+              <mat-icon>image</mat-icon>
+              {{ translocoService.translate('editor.header.exportSvg') }}
+            </button>
+          </mat-menu>
           <input
             type="file"
             #fileInput
@@ -34,15 +67,23 @@ import { ThemeMetadata } from './services/theme/theme.interface';
             accept=".json"
             (change)="importDiagram($event)"
           />
-          <button (click)="fileInput.click()">Import</button>
-          <div class="dropdown">
-            <button class="dropdown-toggle">Theme</button>
-            <div class="dropdown-menu">
-              <button *ngFor="let theme of availableThemes" (click)="switchTheme(theme.id)">
-                {{ theme.name }}
-              </button>
-            </div>
-          </div>
+          <button mat-raised-button color="primary" (click)="fileInput.click()">
+            <mat-icon>file_upload</mat-icon>
+            {{ translocoService.translate('editor.header.import') }}
+          </button>
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="themeMenu">
+            <mat-icon>palette</mat-icon>
+            {{ translocoService.translate('editor.header.theme') }}
+          </button>
+          <mat-menu #themeMenu="matMenu">
+            <button
+              mat-menu-item
+              *ngFor="let theme of availableThemes"
+              (click)="switchTheme(theme.id)"
+            >
+              {{ theme.name }}
+            </button>
+          </mat-menu>
         </div>
       </div>
       <div class="diagram-editor-content">
@@ -75,6 +116,7 @@ import { ThemeMetadata } from './services/theme/theme.interface';
       .diagram-editor-actions {
         display: flex;
         gap: 10px;
+        align-items: center;
       }
       .diagram-editor-content {
         display: flex;
@@ -95,51 +137,6 @@ import { ThemeMetadata } from './services/theme/theme.interface';
         border-left: 1px solid #e0e0e0;
         padding: 10px;
       }
-      button {
-        padding: 8px 12px;
-        background-color: #5f95ff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      button:disabled {
-        background-color: #cccccc;
-        cursor: not-allowed;
-      }
-      .dropdown {
-        position: relative;
-        display: inline-block;
-      }
-      .dropdown-toggle {
-        padding: 8px 12px;
-        background-color: #5f95ff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .dropdown-menu {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-      }
-      .dropdown-menu button {
-        width: 100%;
-        text-align: left;
-        background-color: transparent;
-        color: black;
-        padding: 8px 12px;
-      }
-      .dropdown-menu button:hover {
-        background-color: #f1f1f1;
-      }
-      .dropdown:hover .dropdown-menu {
-        display: block;
-      }
     `,
   ],
   standalone: false,
@@ -154,6 +151,7 @@ export class DiagramEditorComponent implements OnInit {
     private exportImportService: ExportImportService,
     private logger: LoggerService,
     private themeService: ThemeService,
+    public translocoService: TranslocoService,
   ) {}
 
   ngOnInit(): void {

@@ -402,77 +402,29 @@ export class X6PaletteComponent implements OnInit {
   enableEdgeCreation(): void {
     if (!this.graph) return;
 
-    // Show a message to the user
-    alert(
-      'Edge creation mode enabled. Click on a source node and then a target node to create an edge.',
+    this.logger.info(
+      'Edge creation mode is now enabled by default. Simply drag from one node to another to create an edge.',
     );
 
-    // Add a one-time listener for node clicks
-    let sourceNodeId: string | null = null;
+    // Display a temporary tooltip or notification
+    const notification = document.createElement('div');
+    notification.textContent = 'Drag from one node to another to create an edge';
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.backgroundColor = '#5F95FF';
+    notification.style.color = 'white';
+    notification.style.padding = '10px 20px';
+    notification.style.borderRadius = '4px';
+    notification.style.zIndex = '1000';
+    notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
 
-    const clickHandler = (args: any) => {
-      const node = args.node;
-      if (!node) return;
+    document.body.appendChild(notification);
 
-      if (!sourceNodeId) {
-        // First click - set source node
-        sourceNodeId = node.id;
-
-        // Highlight the source node
-        try {
-          node.attr('body/stroke', '#ff0000');
-          node.attr('body/strokeWidth', 2);
-        } catch (e) {
-          this.logger.error('Could not highlight node', e);
-        }
-      } else {
-        // Second click - create edge between source and target
-        const targetNodeId = node.id;
-
-        if (sourceNodeId === targetNodeId) {
-          alert('Cannot create an edge to the same node');
-          return;
-        }
-
-        // Create the edge
-        try {
-          this.graph!.addEdge({
-            source: { cell: sourceNodeId },
-            target: { cell: targetNodeId },
-            attrs: {
-              line: {
-                stroke: '#5F95FF',
-                strokeWidth: 2,
-                targetMarker: {
-                  name: 'classic',
-                  size: 8,
-                },
-              },
-            },
-          });
-        } catch (e) {
-          this.logger.error('Error creating edge', e);
-          alert('Failed to create edge');
-        }
-
-        // Reset the source node highlight
-        try {
-          const sourceNode = this.graph!.getCellById(sourceNodeId);
-          if (sourceNode) {
-            sourceNode.attr('body/stroke', '#5F95FF');
-            sourceNode.attr('body/strokeWidth', 1);
-          }
-        } catch (e) {
-          this.logger.error('Could not reset node highlight', e);
-        }
-
-        // Reset the source node and remove the listener
-        sourceNodeId = null;
-        this.graph!.off('node:click', clickHandler);
-      }
-    };
-
-    // Add the click handler
-    this.graph.on('node:click', clickHandler);
+    // Remove the notification after 3 seconds
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 3000);
   }
 }

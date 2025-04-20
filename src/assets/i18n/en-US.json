@@ -124,6 +124,18 @@
     "closeButton": "Close",
     "placeholder": "Diagram editor placeholder (ID: {{id}})",
     "diagramTitle": "{{title}}",
+    "header": {
+      "newDiagram": "New Diagram",
+      "save": "Save",
+      "undo": "Undo",
+      "redo": "Redo",
+      "export": "Export",
+      "exportJson": "Export as JSON",
+      "exportPng": "Export as PNG",
+      "exportSvg": "Export as SVG",
+      "import": "Import",
+      "theme": "Theme"
+    },
     "properties": {
       "title": "Properties",
       "help": "Element properties will appear here when an element is selected."
