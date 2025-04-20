@@ -119,7 +119,6 @@
     "backButton": "Zurück zu Diagrammen",
     "closeButton": "Schließen",
     "placeholder": "Diagramm-Editor-Platzhalter (ID: {{id}})",
-    "integrationNote": "MaxGraph wird hier integriert",
     "properties": {
       "title": "Eigenschaften",
       "help": "Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist."

@@ -54,4 +54,3 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Always run a build and fix any build errors
   - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
 - Never complete a task if there are any remaining build errors
-- Always use the official maxGraph "stories" examples in the examples folder in the root directory, as canonical examples of how to use maxGraph, whenever implementing or refactoring features that use maxGraph

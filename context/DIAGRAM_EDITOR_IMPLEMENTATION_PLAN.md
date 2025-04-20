@@ -27,6 +27,8 @@ This document outlines the phased implementation plan for the diagram editor, de
   - Added detailed logging for initialization and errors
   - Implemented node and edge creation
   - Integrated Angular components with `@antv/x6-angular-shape`
+  - Implemented NodeRegistryService for proper node shape registration
+  - Added PassiveEventHandler for improved performance and browser compatibility
 
 - **Navigation and Structure**
 
@@ -64,6 +66,7 @@ This document outlines the phased implementation plan for the diagram editor, de
    - Created an abstraction between graph manipulation and diagram state
    - AntV/X6 specifics isolated in X6GraphService
    - DiagramService manages high-level operations independent of rendering
+   - NodeRegistryService provides a clean registration mechanism for node shapes
 
 4. **Reactive Programming**
 
@@ -72,9 +75,15 @@ This document outlines the phased implementation plan for the diagram editor, de
    - Will enable real-time updates when collaborative features are added
 
 5. **Comprehensive Logging**
+
    - Detailed, categorized logs for all operations
    - Initialization and error states carefully tracked
    - Will aid in debugging complex interactions
+
+6. **Performance Optimizations**
+   - PassiveEventHandler for improved touch and wheel event performance
+   - Proper attribute references for node shapes (refWidth, refHeight)
+   - Clean initialization sequence to avoid race conditions
 
 ## Remaining Tasks 📋
 
@@ -85,11 +94,14 @@ This document outlines the phased implementation plan for the diagram editor, de
   - Implement selection mechanism ✅
   - Add property editing panel with form controls ✅
   - Create drag-and-drop from palette ✅
+  - Fix node shape rendering issues ✅
+  - Implement proper node registration ✅
 
 - **Edge Creation**
 
   - Implement visual edge creation between nodes ✅
   - Add validation for connection rules ⏳
+  - Add edge palette item ✅
 
 - **Local Storage**
 
@@ -100,6 +112,8 @@ This document outlines the phased implementation plan for the diagram editor, de
   - Add keyboard shortcuts ✅
   - Improve visual feedback during interactions ✅
   - Add animations for smoother experience ⏳
+  - Fix passive event listener warnings ✅
+  - Optimize performance for touch devices ✅
 
 ### Phase 2: Collaboration-Ready Architecture
 
@@ -283,9 +297,11 @@ For immediate implementation, focus on:
 2. Add more node types and customization options
 3. Implement smart guides and snap-to-grid
 4. Add contextual toolbars for quick actions
-5. Improve mobile and touch support
+5. Further improve mobile and touch support
 6. Add collaboration features
 7. Implement performance optimizations for large diagrams
 8. Enhance theming and customization options
+9. Add more comprehensive error handling for edge cases
+10. Implement automated testing for diagram editor components
 
 This plan ensures we can deliver a functional diagram editor quickly while building a strong foundation for future collaborative features and enhancements.

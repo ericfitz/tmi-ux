@@ -51,7 +51,7 @@ export class ExportImportService {
       const blob = new Blob([jsonString], { type: 'application/json' });
       const fileName = `${currentDiagram.name.replace(/\s+/g, '_')}.json`;
 
-      this.saveFileWithNativeAPI(blob, fileName, 'application/json');
+      void this.saveFileWithNativeAPI(blob, fileName, 'application/json');
     } catch (error) {
       this.logger.error('Error exporting diagram as JSON', error);
     }
@@ -108,7 +108,7 @@ export class ExportImportService {
         const blob = new Blob([bytes.buffer], { type: 'image/png' });
         const fileName = `${currentDiagram.name.replace(/\s+/g, '_')}.png`;
 
-        this.saveFileWithNativeAPI(blob, fileName, 'image/png');
+        void this.saveFileWithNativeAPI(blob, fileName, 'image/png');
         URL.revokeObjectURL(url);
       };
 
@@ -149,7 +149,7 @@ export class ExportImportService {
       const blob = new Blob([svgString], { type: 'image/svg+xml' });
       const fileName = `${currentDiagram.name.replace(/\s+/g, '_')}.svg`;
 
-      this.saveFileWithNativeAPI(blob, fileName, 'image/svg+xml');
+      void this.saveFileWithNativeAPI(blob, fileName, 'image/svg+xml');
     } catch (error) {
       this.logger.error('Error exporting diagram as SVG', error);
     }
@@ -271,7 +271,13 @@ export class ExportImportService {
   ): Promise<void> {
     try {
       // Define the file type options based on the mime type
-      const fileTypeOptions: any = {};
+      const fileTypeOptions: {
+        description: string;
+        accept: Record<string, string[]>;
+      } = {
+        description: '',
+        accept: {},
+      };
 
       if (mimeType === 'application/json') {
         fileTypeOptions.description = 'JSON File';

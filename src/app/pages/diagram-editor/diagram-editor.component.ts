@@ -4,6 +4,7 @@ import { NodeService } from './services/x6/node.service';
 import { EdgeService } from './services/x6/edge.service';
 import { HistoryService } from './services/x6/history.service';
 import { ExportImportService } from './services/x6/export-import.service';
+import { LoggerService } from '../../core/services/logger.service';
 
 @Component({
   selector: 'app-diagram-editor',
@@ -140,6 +141,7 @@ export class DiagramEditorComponent implements OnInit {
     private edgeService: EdgeService,
     public historyService: HistoryService,
     private exportImportService: ExportImportService,
+    private logger: LoggerService,
   ) {}
 
   ngOnInit(): void {
@@ -155,7 +157,7 @@ export class DiagramEditorComponent implements OnInit {
     const savedDiagram = this.diagramService.saveDiagram();
     if (savedDiagram) {
       // In a real application, you would save the diagram to a server or local storage
-      console.log('Diagram saved:', savedDiagram);
+      this.logger.info('Diagram saved successfully');
     }
   }
 
@@ -189,12 +191,12 @@ export class DiagramEditorComponent implements OnInit {
     this.exportImportService
       .importFromJson(file)
       .then(() => {
-        console.log('Diagram imported successfully');
+        this.logger.info('Diagram imported successfully');
         // Reset the file input
         input.value = '';
       })
       .catch(error => {
-        console.error('Error importing diagram', error);
+        this.logger.error('Error importing diagram', error);
         // Reset the file input
         input.value = '';
       });

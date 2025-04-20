@@ -1,8 +1,10 @@
 interface FileSystemWritableFileStream extends WritableStream {
-  write(data: any): Promise<void>;
+  write(data: FileSystemWriteChunkType): Promise<void>;
   seek(position: number): Promise<void>;
   truncate(size: number): Promise<void>;
 }
+
+type FileSystemWriteChunkType = BufferSource | Blob | string;
 
 interface FileSystemFileHandle {
   kind: 'file';

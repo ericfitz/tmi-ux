@@ -119,7 +119,6 @@
     "backButton": "العودة إلى المخططات",
     "closeButton": "إغلاق",
     "placeholder": "مكان محرر المخطط (المعرف: {{id}})",
-    "integrationNote": "سيتم دمج MaxGraph هنا",
     "properties": {
       "title": "الخصائص",
       "help": "ستظهر خصائص العنصر هنا عند تحديد عنصر."

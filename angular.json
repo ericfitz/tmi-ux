@@ -53,11 +53,6 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
-              },
-              {
-                "glob": "**/*",
-                "input": "node_modules/@maxgraph/core/images",
-                "output": "assets/images"
               }
             ],
             "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "src/styles.scss"],
@@ -151,11 +146,6 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
-              },
-              {
-                "glob": "**/*",
-                "input": "node_modules/@maxgraph/core/images",
-                "output": "assets/images"
               }
             ],
             "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "src/styles.scss"],

@@ -50,23 +50,6 @@ export default [
     },
   },
 
-  // mxGraph external library integration
-  {
-    files: ['**/diagram-renderer.service.ts', '**/diagram.service.ts'],
-    rules: {
-      // Disable 'any' type warnings for mxGraph integration
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      // Disable member ordering warnings
-      '@typescript-eslint/member-ordering': 'off',
-    },
-  },
-
   // Diagram Editor page and related components/services
   {
     files: ['**/pages/diagram-editor/**/*.ts'],

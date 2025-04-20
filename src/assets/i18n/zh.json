@@ -119,7 +119,6 @@
     "backButton": "返回图表",
     "closeButton": "关闭",
     "placeholder": "图表编辑器占位符 (ID: {{id}})",
-    "integrationNote": "MaxGraph 将在此集成",
     "properties": {
       "title": "属性",
       "help": "选择元素后，元素属性将显示在此处。"

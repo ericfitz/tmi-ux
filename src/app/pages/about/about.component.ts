@@ -18,16 +18,16 @@ export class AboutComponent implements OnInit {
   operatorName = '';
   operatorContact = '';
   openSourceProjects = [
+    { name: 'TypeScript', url: 'https://www.typescriptlang.org/' },
     { name: 'Angular', url: 'https://angular.io/' },
-    { name: 'Angular Material', url: 'https://material.angular.io/' },
+    { name: 'AntV/X6', url: 'https://x6.antv.vision/en' },
     { name: 'Transloco', url: 'https://github.com/jsverse/transloco' },
     { name: 'RxJS', url: 'https://rxjs.dev/' },
     { name: 'UUID', url: 'https://github.com/uuidjs/uuid' },
-    { name: 'TypeScript', url: 'https://www.typescriptlang.org/' },
+    { name: 'Angular Material', url: 'https://material.angular.io/' },
     { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
     { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
     { name: 'Material Icons Outlined', url: 'https://fonts.google.com/icons' },
-    { name: 'maxGraph', url: 'https://github.com/maxGraph/maxGraph' },
   ];
 
   constructor(private operatorService: OperatorService) {}

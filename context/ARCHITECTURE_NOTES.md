@@ -8,7 +8,7 @@ AntV/X6 is used for graph visualization and interaction in the diagram editor. T
 
 ### Previous Approach
 
-Initially, we used maxGraph (a TypeScript version of mxGraph) for diagram visualization and interaction. This approach had several issues:
+Initially, we used maxGraph for diagram visualization and interaction. This approach had several issues:
 
 1. **Compatibility Issues**: maxGraph had compatibility issues that required extensive patching.
 

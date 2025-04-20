@@ -64,6 +64,18 @@ export interface PaletteItemEvent {
           <mat-icon class="flow-icon">arrow_forward</mat-icon>
           <span class="item-label">{{ 'editor.palette.items.flow' | transloco }}</span>
         </div>
+
+        <!-- Boundary -->
+        <div
+          class="palette-item"
+          draggable="true"
+          [matTooltip]="'editor.palette.items.boundary' | transloco"
+          (dragstart)="onDragStart($event, 'boundary')"
+          (click)="onClick($event, 'boundary')"
+        >
+          <mat-icon class="boundary-icon">crop_square</mat-icon>
+          <span class="item-label">{{ 'editor.palette.items.boundary' | transloco }}</span>
+        </div>
       </div>
     </div>
   `,
@@ -123,6 +135,10 @@ export interface PaletteItemEvent {
         color: #ff9800;
       }
 
+      .boundary-icon {
+        color: #9e9e9e;
+      }
+
       .item-label {
         font-size: 14px;
       }
@@ -163,6 +179,9 @@ export class PaletteComponent {
           break;
         case 'actor':
           iconSpan.textContent = 'person';
+          break;
+        case 'boundary':
+          iconSpan.textContent = 'crop_square';
           break;
       }
 

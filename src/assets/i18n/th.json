@@ -123,7 +123,6 @@
     "backButton": "กลับไปที่แผนภาพ",
     "closeButton": "ปิด",
     "placeholder": "ช่องว่างสำหรับตัวแก้ไขแผนภาพ (ID: {{id}})",
-    "integrationNote": "MaxGraph จะถูกรวมที่นี่",
     "diagramTitle": "{{title}}",
     "properties": {
       "title": "คุณสมบัติ",

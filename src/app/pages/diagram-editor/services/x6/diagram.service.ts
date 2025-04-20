@@ -28,24 +28,36 @@ export class DiagramService {
    * Create a new diagram
    */
   createNewDiagram(name: string = 'Untitled Diagram'): void {
-    const graph = this.graphService.getGraph();
-    if (!graph) {
-      this.logger.error('Cannot create new diagram: Graph not initialized');
-      return;
-    }
-
-    // Clear the graph
-    graph.clearCells();
-
-    // Create a new diagram
+    // Create a new diagram data object regardless of graph initialization
     const newDiagram: DiagramData = {
       id: this.generateId(),
       name,
       cells: [],
     };
 
+    // Update the current diagram subject
     this.currentDiagramSubject.next(newDiagram);
     this.logger.info(`New diagram created: ${name}`);
+
+    // Try to clear the graph if it's initialized
+    const graph = this.graphService.getGraph();
+    if (graph) {
+      // Clear the graph
+      graph.clearCells();
+    } else {
+      // Set up a retry mechanism to clear the graph once it's initialized
+      const checkInterval = setInterval(() => {
+        const graph = this.graphService.getGraph();
+        if (graph) {
+          clearInterval(checkInterval);
+          graph.clearCells();
+          this.logger.info('Graph cleared after initialization');
+        }
+      }, 100);
+
+      // Stop checking after 5 seconds to prevent infinite loop
+      setTimeout(() => clearInterval(checkInterval), 5000);
+    }
   }
 
   /**

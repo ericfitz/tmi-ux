@@ -144,7 +144,7 @@
             "items": {
               "$ref": "#/components/schemas/Cell"
             },
-            "description": "List of maxGraph cells"
+            "description": "List of graph cells"
           },
           "version": {
             "type": "number",

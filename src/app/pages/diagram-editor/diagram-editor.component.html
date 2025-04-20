@@ -6,7 +6,6 @@
       </h2>
     </div>
     <div class="editor-actions">
-      <app-theme-selector></app-theme-selector>
       <button mat-raised-button color="primary" (click)="saveDiagram()" class="compact-button">
         <mat-icon>save</mat-icon>
         <span [transloco]="'editor.saveButton'">Save</span>
@@ -20,7 +19,7 @@
 
   <div class="editor-content">
     <div class="editor-canvas">
-      <!-- maxGraph diagram editor container -->
+      <!-- diagram editor container -->
       <div
         #diagramCanvas
         class="canvas-container"

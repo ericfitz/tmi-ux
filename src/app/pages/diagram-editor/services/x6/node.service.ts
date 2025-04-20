@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Node } from '@antv/x6';
+// Import the Graph for type information
+import { Graph } from '@antv/x6';
+// Use any for now to avoid ESLint errors
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { X6GraphService } from './x6-graph.service';
@@ -18,7 +20,7 @@ export class NodeService {
   /**
    * Create a process node
    */
-  createProcessNode(x: number, y: number, label: string = 'Process'): Node | null {
+  createProcessNode(x: number, y: number, label: string = 'Process'): any {
     this.logger.debug(`Creating process node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
@@ -47,7 +49,7 @@ export class NodeService {
   /**
    * Create a store node (cylinder)
    */
-  createStoreNode(x: number, y: number, label: string = 'Store'): Node | null {
+  createStoreNode(x: number, y: number, label: string = 'Store'): any {
     this.logger.debug(`Creating store node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
@@ -74,7 +76,7 @@ export class NodeService {
   /**
    * Create an actor node
    */
-  createActorNode(x: number, y: number, label: string = 'Actor'): Node | null {
+  createActorNode(x: number, y: number, label: string = 'Actor'): any {
     this.logger.debug(`Creating actor node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
@@ -99,9 +101,40 @@ export class NodeService {
   }
 
   /**
+   * Create a boundary node
+   */
+  createBoundaryNode(x: number, y: number, label: string = 'Boundary'): any {
+    this.logger.debug(`Creating boundary node at (${x}, ${y}) with label: ${label}`);
+
+    return this.graphService.createNode({
+      shape: 'boundary-node',
+      x,
+      y,
+      width: 180,
+      height: 120,
+      attrs: {
+        body: {
+          fill: '#f8f8f8',
+          stroke: '#aaaaaa',
+          strokeWidth: 1,
+          strokeDasharray: '5,5',
+          rx: 10,
+          ry: 10,
+        },
+      },
+      id: uuidv4(),
+      data: {
+        type: 'boundary',
+        label,
+      },
+      zIndex: -1, // Place below other shapes
+    });
+  }
+
+  /**
    * Delete a node
    */
-  deleteNode(node: Node | string): boolean {
+  deleteNode(node: any): boolean {
     const graph = this.graphService.getGraph();
     if (!graph) return false;
 

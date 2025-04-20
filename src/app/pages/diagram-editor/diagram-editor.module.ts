@@ -20,6 +20,8 @@ import { EdgeService } from './services/x6/edge.service';
 import { DiagramService } from './services/x6/diagram.service';
 import { HistoryService } from './services/x6/history.service';
 import { ExportImportService } from './services/x6/export-import.service';
+import { NodeRegistryService } from './services/x6/node-registry.service';
+import { PassiveEventHandler } from './services/x6/passive-event-handler';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,8 @@ import { ExportImportService } from './services/x6/export-import.service';
     DiagramService,
     HistoryService,
     ExportImportService,
+    NodeRegistryService,
+    PassiveEventHandler,
   ],
 })
 export class DiagramEditorModule {}

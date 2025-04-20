@@ -20,6 +20,8 @@ The diagram editor is built using Angular and integrates with AntV/X6 for diagra
 - `EdgeService`: Manages edge creation and manipulation
 - `HistoryService`: Manages undo/redo operations
 - `ExportImportService`: Handles diagram export and import
+- `NodeRegistryService`: Registers node shapes with AntV/X6
+- `PassiveEventHandler`: Handles passive event listeners for touch and wheel events
 
 ### Data Flow Architecture
 
@@ -78,6 +80,8 @@ The diagram editor has successfully implemented:
 - Export/import functionality (JSON, PNG, SVG)
 - Undo/redo functionality
 - Properties panel for editing node and edge attributes
+- Custom node shapes with proper rendering (process, store, actor)
+- Passive event handling for improved performance
 
 In progress or planned features:
 
@@ -109,6 +113,8 @@ In progress or planned features:
 - Seamless integration with Angular using `@antv/x6-angular-shape`
 - Proper event handling and state management
 - Efficient rendering and interaction
+- Custom node shapes with proper markup and attributes
+- Passive event handling for improved performance and browser compatibility
 
 ## Future Plans
 

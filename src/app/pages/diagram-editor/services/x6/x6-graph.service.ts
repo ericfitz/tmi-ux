@@ -2,6 +2,8 @@ import { Injectable, NgZone } from '@angular/core';
 import { Graph, Node, Edge } from '@antv/x6';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { NodeRegistryService } from './node-registry.service';
+import { PassiveEventHandler } from './passive-event-handler';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +23,12 @@ export class X6GraphService {
   constructor(
     private logger: LoggerService,
     private ngZone: NgZone,
+    private nodeRegistryService: NodeRegistryService,
+    private passiveEventHandler: PassiveEventHandler,
   ) {
     this.logger.info('X6GraphService initialized');
+    // Apply passive event listener patches
+    this.passiveEventHandler.applyPatches();
   }
 
   /**
@@ -31,6 +37,9 @@ export class X6GraphService {
   initialize(container: HTMLElement): void {
     this.logger.info('Initializing X6 graph with container');
     this.container = container;
+
+    // Register node shapes first
+    this.nodeRegistryService.registerNodeShapes();
 
     // Run outside Angular zone for better performance
     this.ngZone.runOutsideAngular(() => {
@@ -44,7 +53,11 @@ export class X6GraphService {
             modifiers: 'ctrl',
             minScale: 0.5,
             maxScale: 3,
+            global: false, // Disable global mousewheel events
           },
+          // Fix passive event listener warnings
+          preventDefaultContextMenu: false,
+          preventDefaultBlankAction: false,
           connecting: {
             router: 'manhattan',
             connector: {

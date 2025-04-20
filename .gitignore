@@ -36,7 +36,6 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-/maxgraph-examples
 
 # System files
 .DS_Store
