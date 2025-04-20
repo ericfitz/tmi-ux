@@ -15,8 +15,8 @@ This document outlines the plan for implementing collaborative diagram editing i
 
 ### Client-Side
 
-- Local diagram editing powered by maxGraph
-- When a change is made to a cell in the graph (including create/delete), a partial copy of the updated cell is made in the diagram object
+- Local diagram editing powered by AntV/X6
+- When a change is made to a node or edge in the graph (including create/delete), a partial copy of the updated element is made in the diagram object
 - Diagram changes are then sent to the server via WebSocket
 - Client receives updates from server for changes made by other users
 - Client applies updates to local diagram model
@@ -36,7 +36,7 @@ This document outlines the plan for implementing collaborative diagram editing i
    - List is filtered based on user's permissions (owner, writer, reader)
 2. User selects a diagram to collaborate on
 3. Server sends complete diagram state to the joining user
-4. Client initializes diagram editor and sends each cell from the diagram to the graph
+4. Client initializes diagram editor and sends each node and edge from the diagram to the graph
 5. Client and server sync states before enabling editing capabilities
 
 ### Editing During Collaboration
@@ -73,3 +73,31 @@ This document outlines the plan for implementing collaborative diagram editing i
 - Implement reconnection logic for temporary disconnections
 - Consider operation-based conflict resolution
 - Design for eventual consistency
+- Leverage X6's built-in history manager for local undo/redo operations
+- Use X6's event system to track changes for collaboration
+
+## X6-Specific Implementation Details
+
+### Change Tracking
+
+- Listen to X6 graph events (node:added, node:removed, edge:added, edge:removed, etc.)
+- Serialize changes into operations that can be sent to the server
+- Apply incoming operations from other users to the local graph
+
+### User Presence
+
+- Implement user cursors and selections using X6's overlay system
+- Show which user is editing which node or edge
+- Display user information (name, avatar) near their cursor
+
+### Conflict Resolution
+
+- Use operational transformation for concurrent edits
+- Implement optimistic updates with rollback capability
+- Leverage X6's history manager for local undo/redo of conflicting changes
+
+### Performance Considerations
+
+- Batch updates to reduce network traffic
+- Use delta updates instead of full state synchronization when possible
+- Implement throttling for high-frequency operations (like dragging)

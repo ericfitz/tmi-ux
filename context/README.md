@@ -9,5 +9,6 @@ This directory contains documentation and contextual information about the TMI U
 - **COLLABORATIVE_EDITING.md** - Plan for implementing collaborative diagram editing features
 - **DIAGRAM_EDITOR_IMPLEMENTATION_PLAN.md** - Phased implementation plan and improvement suggestions for the diagram editor
 - **DIAGRAM_EDITOR_OVERVIEW.md** - Comprehensive overview of the diagram editor implementation and architecture
+- **FILE_SYSTEM_ACCESS_API.md** - Documentation of the File System Access API implementation for diagram export/import
 
 These documents provide important context for developers working on the application, explaining design decisions, architectural patterns, and future development plans.
