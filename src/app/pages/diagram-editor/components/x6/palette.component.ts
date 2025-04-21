@@ -1,50 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { Dnd } from '@antv/x6-plugin-dnd';
 import { NodeService } from '../../services/x6/node.service';
 import { X6GraphService } from '../../services/x6/x6-graph.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { ThemeService } from '../../services/theme/theme.service';
+import { NodeRegistryService } from '../../services/x6/node-registry.service';
 
 @Component({
   selector: 'app-x6-palette',
   template: `
     <div class="palette">
       <h3>Shapes</h3>
-      <div class="palette-items">
-        <div class="palette-item process-node" #processNode>
-          <div class="palette-item-preview">
-            <div class="process-preview"></div>
-          </div>
-          <div class="palette-item-label">Process</div>
-        </div>
-        <div class="palette-item store-node" #storeNode>
-          <div class="palette-item-preview">
-            <div class="store-preview"></div>
-          </div>
-          <div class="palette-item-label">Store</div>
-        </div>
-        <div class="palette-item actor-node" #actorNode>
-          <div class="palette-item-preview">
-            <div class="actor-preview"></div>
-          </div>
-          <div class="palette-item-label">Actor</div>
-        </div>
-        <div class="palette-item edge-item" (click)="enableEdgeCreation()">
-          <div class="palette-item-preview">
-            <div class="edge-preview">
-              <div class="edge-line"></div>
-              <div class="edge-arrow"></div>
-            </div>
-          </div>
-          <div class="palette-item-label">Edge</div>
-        </div>
-        <div class="palette-item boundary-node" #boundaryNode>
-          <div class="palette-item-preview">
-            <div class="boundary-preview"></div>
-          </div>
-          <div class="palette-item-label">Boundary</div>
-        </div>
-      </div>
+      <div #paletteContainer class="palette-graph-container"></div>
     </div>
   `,
   styles: [
@@ -58,118 +26,45 @@ import { LoggerService } from '../../../../core/services/logger.service';
         font-size: 16px;
         font-weight: 500;
       }
-      .palette-items {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .palette-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 10px;
+      .palette-graph-container {
+        width: 100%;
+        height: 400px;
         border: 1px solid #e0e0e0;
         border-radius: 4px;
-        cursor: grab;
-        transition: all 0.2s;
-      }
-      .palette-item:hover {
-        background-color: #f5f5f5;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .palette-item-preview {
-        width: 100%;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .palette-item-label {
-        margin-top: 5px;
-        font-size: 12px;
-      }
-      .process-preview {
-        width: 80px;
-        height: 40px;
-        border: 2px solid #5f95ff;
-        border-radius: 6px;
         background-color: #ffffff;
-      }
-      .store-preview {
-        width: 80px;
-        height: 40px;
-        background-color: #ffffff;
-        border: 2px solid #5f95ff;
-        border-radius: 50% / 20%;
-        position: relative;
-        overflow: hidden;
-      }
-      .store-preview::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 50% / 20%;
-        border-top: 2px solid #5f95ff;
-        border-bottom: 2px solid #5f95ff;
-        box-sizing: border-box;
-      }
-      .actor-preview {
-        width: 40px;
-        height: 40px;
-        border: 2px solid #5f95ff;
-        border-radius: 50%;
-        background-color: #ffffff;
-      }
-      .edge-preview {
-        width: 80px;
-        height: 40px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .edge-line {
-        width: 70px;
-        height: 2px;
-        background-color: #5f95ff;
-        position: relative;
-      }
-      .edge-arrow {
-        position: absolute;
-        right: 5px;
-        width: 0;
-        height: 0;
-        border-top: 6px solid transparent;
-        border-bottom: 6px solid transparent;
-        border-left: 10px solid #5f95ff;
-      }
-      .boundary-preview {
-        width: 80px;
-        height: 40px;
-        border: 2px dashed #aaaaaa;
-        border-radius: 10px;
-        background-color: #f8f8f8;
       }
     `,
   ],
   standalone: false,
 })
-export class X6PaletteComponent implements OnInit {
+export class X6PaletteComponent implements OnInit, OnDestroy {
+  @ViewChild('paletteContainer', { static: true }) paletteContainer!: ElementRef;
+
   private dnd: Dnd | null = null;
   private graph: Graph | null = null;
+  private paletteGraph: Graph | null = null;
+
+  // Node definitions
+  private readonly nodeDefinitions = [
+    { type: 'process', shape: 'process-node', label: 'Process' },
+    { type: 'store', shape: 'store-node', label: 'Store' },
+    { type: 'actor', shape: 'actor-node', label: 'Actor' },
+    { type: 'boundary', shape: 'boundary-node', label: 'Boundary' },
+  ];
 
   constructor(
     private graphService: X6GraphService,
     private nodeService: NodeService,
     private logger: LoggerService,
+    private themeService: ThemeService,
+    private nodeRegistryService: NodeRegistryService,
   ) {}
 
   ngOnInit(): void {
-    // We need to wait for the graph to be initialized
-    // Set up an interval to check for graph initialization
+    // Ensure node shapes are registered
+    this.nodeRegistryService.registerNodeShapes();
+
+    // We need to wait for the main graph to be initialized
     const initInterval = setInterval(() => {
       this.graph = this.graphService.getGraph();
 
@@ -180,220 +75,280 @@ export class X6PaletteComponent implements OnInit {
     }, 100);
   }
 
+  ngOnDestroy(): void {
+    if (this.paletteGraph) {
+      this.paletteGraph.dispose();
+      this.paletteGraph = null;
+    }
+
+    if (this.dnd) {
+      this.dnd = null;
+    }
+  }
+
   /**
    * Initialize the palette once the graph is available
    */
   private initializePalette(): void {
-    // Initialize the DND addon with options to fix passive event listener warnings
-    this.dnd = new Dnd({
-      target: this.graph!,
-      scaled: false,
-      getDragNode: node => node.clone(), // Return a copy of the node
-      validateNode: () => true, // Always validate nodes
-    });
+    try {
+      // Create the palette graph
+      this.paletteGraph = new Graph({
+        container: this.paletteContainer.nativeElement,
+        width: this.paletteContainer.nativeElement.clientWidth,
+        height: 400,
+        grid: false,
+        interacting: {
+          nodeMovable: false,
+          edgeMovable: false,
+          edgeLabelMovable: false,
+          arrowheadMovable: false,
+          vertexMovable: false,
+          vertexAddable: false,
+          vertexDeletable: false,
+        },
+        background: {
+          color: '#ffffff',
+        },
+      });
 
-    // Add a listener for when a node is added to the graph
-    this.graph!.on('node:added', ({ node }) => {
-      // Check if this is a temporary node from DND
-      if (node.data && node.data.temp) {
-        // Get the position and type
-        const x = node.getPosition().x;
-        const y = node.getPosition().y;
-        const nodeType = node.data.type;
+      // Initialize the DND addon
+      this.dnd = new Dnd({
+        target: this.graph!,
+        scaled: false,
+        validateNode: () => true,
+      });
 
-        // Remove the temporary node
-        node.remove();
+      // Add a listener for when a node is added to the graph
+      this.graph!.on('node:added', ({ node }) => {
+        try {
+          // Check if this is a temporary node from DND
+          if (node.data && node.data.type) {
+            // Get the position and type
+            const position = node.getPosition();
+            const nodeType = node.data.type;
 
-        // Create a permanent node based on the type
-        switch (nodeType) {
-          case 'process':
-            this.nodeService.createProcessNode(x, y, 'Process');
-            break;
-          case 'store':
-            this.nodeService.createStoreNode(x, y, 'Store');
-            break;
-          case 'actor':
-            this.nodeService.createActorNode(x, y, 'Actor');
-            break;
-          case 'boundary':
-            this.nodeService.createBoundaryNode(x, y, 'Boundary');
-            break;
+            this.logger.info(`Node added: ${nodeType} at position ${position.x}, ${position.y}`);
+
+            // Remove the temporary node
+            node.remove();
+
+            // Create a permanent node based on the type
+            switch (nodeType) {
+              case 'process':
+                this.nodeService.createProcessNode(position.x, position.y, 'Process');
+                break;
+              case 'store':
+                this.nodeService.createStoreNode(position.x, position.y, 'Store');
+                break;
+              case 'actor':
+                this.nodeService.createActorNode(position.x, position.y, 'Actor');
+                break;
+              case 'boundary':
+                this.nodeService.createBoundaryNode(position.x, position.y, 'Boundary');
+                break;
+              default:
+                this.logger.warn(`Unknown node type: ${nodeType}`);
+            }
+          }
+        } catch (error) {
+          this.logger.error('Error processing added node', error);
         }
+      });
+
+      // Add nodes to the palette
+      this.addNodesToPalette();
+
+      this.logger.info('Palette initialized successfully');
+    } catch (error) {
+      this.logger.error('Error initializing palette', error);
+    }
+  }
+
+  /**
+   * Add nodes to the palette
+   */
+  private addNodesToPalette(): void {
+    if (!this.paletteGraph) return;
+
+    const containerWidth = this.paletteContainer.nativeElement.clientWidth;
+    // Use 40% of container width for each column, with 10% padding on each side
+    const columnWidth = containerWidth * 0.4;
+    const xPositions = [containerWidth * 0.2, containerWidth * 0.8];
+
+    let yPosition = 20;
+    let column = 0;
+
+    // Add each node type to the palette
+    this.nodeDefinitions.forEach((nodeDef, index) => {
+      try {
+        // Calculate position - 2 nodes per row
+        const xPosition = xPositions[column];
+
+        // Determine node size - scale to make them similar heights
+        let width, height;
+
+        switch (nodeDef.shape) {
+          case 'actor-node':
+            width = 40;
+            height = 50;
+            break;
+          case 'store-node':
+            width = 50;
+            height = 50;
+            break;
+          case 'process-node':
+            width = 60;
+            height = 35;
+            break;
+          case 'boundary-node':
+            width = 70;
+            height = 45;
+            break;
+          default:
+            width = 50;
+            height = 35;
+        }
+
+        // Create a node based on the shape
+        const node = this.paletteGraph!.createNode({
+          shape: nodeDef.shape,
+          x: xPosition,
+          y: yPosition,
+          width,
+          height,
+          attrs: {
+            label: {
+              text: nodeDef.label,
+            },
+          },
+          data: {
+            type: nodeDef.type,
+          },
+        });
+
+        // Add the node to the graph
+        this.paletteGraph!.addNode(node);
+
+        // Set up drag and drop for this node
+        this.setupNodeDragAndDrop(node, nodeDef.type);
+
+        // Move to next column or row
+        column = (column + 1) % 2;
+        if (column === 0) {
+          yPosition += 80; // Move to next row
+        }
+      } catch (error) {
+        this.logger.error(`Error adding ${nodeDef.type} node to palette`, error);
       }
     });
 
-    // Set up the drag and drop for each node type
-    this.setupDragAndDrop();
+    // Add an edge example
+    yPosition += 20;
+    const centerX = this.paletteContainer.nativeElement.clientWidth / 2;
+    const edgeLabel = this.paletteGraph.addNode({
+      x: centerX,
+      y: yPosition,
+      width: 100,
+      height: 30,
+      attrs: {
+        body: {
+          fill: 'transparent',
+          stroke: 'transparent',
+        },
+        label: {
+          text: 'Edge',
+          fill: '#333333',
+          fontSize: 14,
+          textAnchor: 'middle',
+          textVerticalAnchor: 'middle',
+        },
+      },
+    });
+
+    // Add a visual edge example
+    const sourceNode = this.paletteGraph.addNode({
+      x: centerX - 50,
+      y: yPosition + 40,
+      width: 20,
+      height: 20,
+      attrs: {
+        body: {
+          fill: '#ffffff',
+          stroke: '#5F95FF',
+          strokeWidth: 1,
+          rx: 4,
+          ry: 4,
+        },
+      },
+      visible: true,
+    });
+
+    const targetNode = this.paletteGraph.addNode({
+      x: centerX + 50,
+      y: yPosition + 40,
+      width: 20,
+      height: 20,
+      attrs: {
+        body: {
+          fill: '#ffffff',
+          stroke: '#5F95FF',
+          strokeWidth: 1,
+          rx: 4,
+          ry: 4,
+        },
+      },
+      visible: true,
+    });
+
+    this.paletteGraph.addEdge({
+      source: sourceNode,
+      target: targetNode,
+      attrs: {
+        line: {
+          stroke: '#5F95FF',
+          strokeWidth: 2,
+          targetMarker: {
+            name: 'classic',
+            size: 8,
+          },
+        },
+      },
+    });
+
+    // Add click handler for edge creation
+    edgeLabel.on('click', () => {
+      this.enableEdgeCreation();
+    });
   }
 
-  private setupDragAndDrop(): void {
-    if (!this.dnd || !this.graph) return;
+  /**
+   * Set up drag and drop for a node
+   */
+  private setupNodeDragAndDrop(node: Node, type: string): void {
+    if (!this.dnd || !this.paletteGraph) return;
 
-    // Get the DOM elements - use more specific selectors to avoid conflicts
-    const processNode = document.querySelector('.palette-item.process-node') as HTMLElement;
-    const storeNode = document.querySelector('.palette-item.store-node') as HTMLElement;
-    const actorNode = document.querySelector('.palette-item.actor-node') as HTMLElement;
-    const boundaryNode = document.querySelector('.palette-item.boundary-node') as HTMLElement;
+    // Make the node draggable
+    node.on('mousedown', (event: any) => {
+      try {
+        this.logger.info(`Mouse down on ${type} node`);
 
-    if (processNode) {
-      processNode.addEventListener('mousedown', e => {
-        try {
-          // Create a process node for dragging
-          const node = this.graph!.createNode({
-            shape: 'rect',
-            width: 120,
-            height: 60,
-            attrs: {
-              body: {
-                fill: '#ffffff',
-                stroke: '#5F95FF',
-                strokeWidth: 1,
-                rx: 6,
-                ry: 6,
-              },
-              label: {
-                text: 'Process',
-                fill: '#333333',
-                fontSize: 14,
-                textAnchor: 'middle',
-                textVerticalAnchor: 'middle',
-                refX: '50%',
-                refY: '50%',
-              },
-            },
-            data: {
-              type: 'process',
-              label: 'Process',
-              temp: true, // Mark as temporary node
-            },
-          });
+        // Create a clone of the node for dragging
+        const dragNode = node.clone();
 
-          this.dnd!.start(node, e);
-        } catch (error) {
-          this.logger.error('Error creating process node', error);
+        // Set the data type for the node
+        dragNode.setData({ type });
+
+        // Start the drag operation
+        if (event.originalEvent) {
+          this.logger.info(`Starting drag operation for ${type} node`);
+          this.dnd!.start(dragNode, event.originalEvent as MouseEvent);
+        } else {
+          this.logger.warn('No original event found for drag operation');
         }
-      });
-    }
-
-    if (storeNode) {
-      storeNode.addEventListener('mousedown', e => {
-        try {
-          // Create a store node for dragging
-          const node = this.graph!.createNode({
-            shape: 'rect',
-            width: 120,
-            height: 60,
-            attrs: {
-              body: {
-                fill: '#ffffff',
-                stroke: '#5F95FF',
-                strokeWidth: 1,
-                rx: 20,
-                ry: 20,
-              },
-              label: {
-                text: 'Store',
-                fill: '#333333',
-                fontSize: 14,
-                textAnchor: 'middle',
-                textVerticalAnchor: 'middle',
-                refX: '50%',
-                refY: '50%',
-              },
-            },
-            data: {
-              type: 'store',
-              label: 'Store',
-              temp: true, // Mark as temporary node
-            },
-          });
-
-          this.dnd!.start(node, e);
-        } catch (error) {
-          this.logger.error('Error creating store node', error);
-        }
-      });
-    }
-
-    if (actorNode) {
-      actorNode.addEventListener('mousedown', e => {
-        try {
-          // Create an actor node for dragging
-          const node = this.graph!.createNode({
-            shape: 'circle',
-            width: 80,
-            height: 80,
-            attrs: {
-              body: {
-                fill: '#ffffff',
-                stroke: '#5F95FF',
-                strokeWidth: 1,
-              },
-              label: {
-                text: 'Actor',
-                fill: '#333333',
-                fontSize: 14,
-                textAnchor: 'middle',
-                textVerticalAnchor: 'middle',
-                refX: '50%',
-                refY: '50%',
-              },
-            },
-            data: {
-              type: 'actor',
-              label: 'Actor',
-              temp: true, // Mark as temporary node
-            },
-          });
-
-          this.dnd!.start(node, e);
-        } catch (error) {
-          this.logger.error('Error creating actor node', error);
-        }
-      });
-    }
-
-    if (boundaryNode) {
-      boundaryNode.addEventListener('mousedown', e => {
-        try {
-          // Create a boundary node for dragging
-          const node = this.graph!.createNode({
-            shape: 'rect',
-            width: 180,
-            height: 120,
-            attrs: {
-              body: {
-                fill: '#f8f8f8',
-                stroke: '#aaaaaa',
-                strokeWidth: 1,
-                strokeDasharray: '5,5',
-                rx: 10,
-                ry: 10,
-              },
-              label: {
-                text: 'Boundary',
-                fill: '#666666',
-                fontSize: 14,
-                textAnchor: 'middle',
-                textVerticalAnchor: 'middle',
-                refX: '50%',
-                refY: '50%',
-              },
-            },
-            data: {
-              type: 'boundary',
-              label: 'Boundary',
-              temp: true, // Mark as temporary node
-            },
-            zIndex: -1, // Place below other shapes
-          });
-
-          this.dnd!.start(node, e);
-        } catch (error) {
-          this.logger.error('Error creating boundary node', error);
-        }
-      });
-    }
+      } catch (error) {
+        this.logger.error('Error starting drag operation', error);
+      }
+    });
   }
 
   /**

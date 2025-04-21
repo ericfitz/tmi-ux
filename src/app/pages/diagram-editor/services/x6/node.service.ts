@@ -24,27 +24,14 @@ export class NodeService {
     this.logger.debug(`Creating process node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'rect',
+      shape: 'process-node',
       x,
       y,
       width: 120,
       height: 60,
       attrs: {
-        body: {
-          fill: '#ffffff',
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-          rx: 6,
-          ry: 6,
-        },
         label: {
           text: label,
-          fill: '#333333',
-          fontSize: 14,
-          textAnchor: 'middle',
-          textVerticalAnchor: 'middle',
-          refX: '50%',
-          refY: '50%',
         },
       },
       id: uuidv4(),
@@ -62,25 +49,14 @@ export class NodeService {
     this.logger.debug(`Creating store node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'ellipse',
+      shape: 'store-node',
       x,
       y,
       width: 120,
       height: 60,
       attrs: {
-        body: {
-          fill: '#ffffff',
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-        },
         label: {
           text: label,
-          fill: '#333333',
-          fontSize: 14,
-          textAnchor: 'middle',
-          textVerticalAnchor: 'middle',
-          refX: '50%',
-          refY: '50%',
         },
       },
       id: uuidv4(),
@@ -98,25 +74,14 @@ export class NodeService {
     this.logger.debug(`Creating actor node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'circle',
+      shape: 'actor-node',
       x,
       y,
       width: 80,
       height: 100,
       attrs: {
-        body: {
-          fill: '#ffffff',
-          stroke: '#5F95FF',
-          strokeWidth: 1,
-        },
         label: {
           text: label,
-          fill: '#333333',
-          fontSize: 14,
-          textAnchor: 'middle',
-          textVerticalAnchor: 'middle',
-          refX: '50%',
-          refY: '50%',
         },
       },
       id: uuidv4(),
@@ -134,28 +99,14 @@ export class NodeService {
     this.logger.debug(`Creating boundary node at (${x}, ${y}) with label: ${label}`);
 
     return this.graphService.createNode({
-      shape: 'rect',
+      shape: 'boundary-node',
       x,
       y,
       width: 180,
       height: 120,
       attrs: {
-        body: {
-          fill: '#f8f8f8',
-          stroke: '#aaaaaa',
-          strokeWidth: 1,
-          strokeDasharray: '5,5',
-          rx: 10,
-          ry: 10,
-        },
         label: {
           text: label,
-          fill: '#666666',
-          fontSize: 14,
-          textAnchor: 'middle',
-          textVerticalAnchor: 'middle',
-          refX: '50%',
-          refY: '50%',
         },
       },
       id: uuidv4(),

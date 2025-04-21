@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" id="person-filled">
+  <circle cx="64" cy="25.5" r="13" fill="black"/>
+  <path d="M76 41.5H52a8 8 0 0 0-8 8v32l8 8v28a4 4 0 0 0 4 4h16a4 4 0 0 0 4-4v-28l8-8v-32a8 8 0 0 0-8-8z" fill="black"/>
+</svg>

@@ -82,19 +82,35 @@
     "store-node": {
       "type": "store-node",
       "width": 120,
-      "height": 60,
+      "height": 80,
       "markup": [
         {
-          "tagName": "ellipse",
-          "selector": "top"
+          "tagName": "path",
+          "selector": "cylinder1"
         },
         {
-          "tagName": "rect",
-          "selector": "body"
+          "tagName": "path",
+          "selector": "cylinder2"
         },
         {
-          "tagName": "ellipse",
-          "selector": "bottom"
+          "tagName": "path",
+          "selector": "cylinder3"
+        },
+        {
+          "tagName": "path",
+          "selector": "cylinder4"
+        },
+        {
+          "tagName": "circle",
+          "selector": "dot1"
+        },
+        {
+          "tagName": "circle",
+          "selector": "dot2"
+        },
+        {
+          "tagName": "circle",
+          "selector": "dot3"
         },
         {
           "tagName": "text",
@@ -102,39 +118,59 @@
         }
       ],
       "attrs": {
-        "top": {
-          "refWidth": "100%",
-          "refHeight": "30%",
-          "refY": "0%",
-          "fillOpacity": 1,
+        "cylinder1": {
+          "d": "M151.501,0c66.75,0,123.194,27.559,125.104,60.549c-1.91,32.987-58.354,60.553-125.104,60.553c-66.752,0-123.191-27.56-125.104-60.553C28.31,27.559,84.749,0,151.501,0z",
+          "transform": "scale(0.2, 0.16)",
           "fill": "#ffffff",
           "stroke": "#5F95FF",
-          "strokeWidth": 1,
-          "refCx": "50%",
-          "refRx": "50%",
-          "refCy": "10%",
-          "refRy": "10%"
+          "strokeWidth": 3,
+          "refX": "50%",
+          "refY": "10%"
         },
-        "body": {
-          "refWidth": "100%",
-          "refHeight": "70%",
-          "refY": "15%",
+        "cylinder2": {
+          "d": "M276.785,240.744c0,33.747-57.369,62.258-125.284,62.258S26.217,274.491,26.217,240.744v-29.771c21.449,25.754,68.887,43.27,125.284,43.27s103.834-17.521,125.284-43.27V240.744z",
+          "transform": "scale(0.2, 0.16) translate(0, 19.5)",
           "fill": "#ffffff",
           "stroke": "#5F95FF",
-          "strokeWidth": 1
+          "strokeWidth": 3,
+          "refX": "50%",
+          "refY": "30%"
         },
-        "bottom": {
-          "refWidth": "100%",
-          "refHeight": "30%",
-          "refY": "70%",
-          "fillOpacity": 1,
+        "cylinder3": {
+          "d": "M276.785,179.688c0,33.746-57.369,62.258-125.284,62.258S26.217,213.434,26.217,179.688v-31.009c21.449,25.748,68.887,43.259,125.284,43.259s103.834-17.522,125.284-43.259V179.688z",
+          "transform": "scale(0.2, 0.16) translate(0, 13)",
           "fill": "#ffffff",
           "stroke": "#5F95FF",
-          "strokeWidth": 1,
-          "refCx": "50%",
-          "refRx": "50%",
-          "refCy": "90%",
-          "refRy": "10%"
+          "strokeWidth": 3,
+          "refX": "50%",
+          "refY": "50%"
+        },
+        "cylinder4": {
+          "d": "M276.785,117.381c0,33.748-57.369,62.257-125.284,62.257s-125.284-28.51-125.284-62.257V90.135c21.449,25.754,68.887,43.258,125.284,43.258s103.834-17.51,125.284-43.258V117.381z",
+          "transform": "scale(0.2, 0.16) translate(0, 6.5)",
+          "fill": "#ffffff",
+          "stroke": "#5F95FF",
+          "strokeWidth": 3,
+          "refX": "50%",
+          "refY": "70%"
+        },
+        "dot1": {
+          "r": 2,
+          "fill": "#5F95FF",
+          "refX": "35%",
+          "refY": "85%"
+        },
+        "dot2": {
+          "r": 2,
+          "fill": "#5F95FF",
+          "refX": "35%",
+          "refY": "65%"
+        },
+        "dot3": {
+          "r": 2,
+          "fill": "#5F95FF",
+          "refX": "35%",
+          "refY": "45%"
         },
         "label": {
           "text": "Store",
@@ -143,21 +179,25 @@
           "textAnchor": "middle",
           "textVerticalAnchor": "middle",
           "refX": "50%",
-          "refY": "50%"
+          "refY": "110%"
         }
       }
     },
     "actor-node": {
       "type": "actor-node",
-      "width": 80,
-      "height": 100,
+      "width": 100,
+      "height": 120,
       "markup": [
         {
-          "tagName": "circle",
+          "tagName": "path",
+          "selector": "background"
+        },
+        {
+          "tagName": "path",
           "selector": "head"
         },
         {
-          "tagName": "rect",
+          "tagName": "path",
           "selector": "body"
         },
         {
@@ -166,24 +206,30 @@
         }
       ],
       "attrs": {
+        "background": {
+          "d": "M0 0h24v24H0V0z",
+          "fill": "none",
+          "refX": "38%",
+          "refY": "10%",
+          "transform": "scale(1.5)"
+        },
         "head": {
-          "r": 15,
+          "d": "M12 11.25c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z",
           "fill": "#ffffff",
           "stroke": "#5F95FF",
-          "strokeWidth": 1,
-          "refX": "50%",
-          "refY": "20%"
+          "strokeWidth": 1.5,
+          "refX": "38%",
+          "refY": "25%",
+          "transform": "scale(1.5)"
         },
         "body": {
-          "refWidth": "50%",
-          "refHeight": "40%",
-          "refX": "25%",
-          "refY": "40%",
+          "d": "M4 17c0-2.66 5.33-4 8-4s8 1.34 8 4v1c0 .55-.45 1-1 1H5c-.55 0-1-.45-1-1v-1z",
           "fill": "#ffffff",
           "stroke": "#5F95FF",
-          "strokeWidth": 1,
-          "rx": 5,
-          "ry": 5
+          "strokeWidth": 1.5,
+          "refX": "38%",
+          "refY": "30%",
+          "transform": "scale(1.5)"
         },
         "label": {
           "text": "Actor",
@@ -192,7 +238,7 @@
           "textAnchor": "middle",
           "textVerticalAnchor": "middle",
           "refX": "50%",
-          "refY": "85%"
+          "refY": "95%"
         }
       }
     }

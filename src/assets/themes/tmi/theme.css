@@ -60,10 +60,11 @@
 }
 
 .x6-node.actor-node circle,
-.x6-node.actor-node rect {
+.x6-node.actor-node rect,
+.x6-node.actor-node path {
   fill: #ffffff;
   stroke: #5f95ff;
-  stroke-width: 1;
+  stroke-width: 1.5;
 }
 
 .x6-node.boundary-node rect {
