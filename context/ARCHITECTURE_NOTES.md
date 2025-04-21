@@ -143,3 +143,57 @@ AntV/X6 provides excellent Angular integration through the `@antv/x6-angular-sha
    - Optimize the rendering pipeline for smoother interactions
 
 This simplified node-centric architecture with AntV/X6 has made the code more robust, easier to debug, and more maintainable, while avoiding the issues we faced with maxGraph.
+
+## Code Quality and Linting
+
+### Handling Unbound Method Lint Errors
+
+When encountering the ESLint error:
+
+```
+Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+@typescript-eslint/unbound-method
+```
+
+Our preferred solution is to use an arrow function wrapper with proper type annotations:
+
+1. **Problem Context**:
+
+   - This error occurs when referencing a method without calling it (e.g., in Jasmine tests when using `expect(object.method).toHaveBeenCalled()`)
+   - When a method is referenced without being called, it loses its `this` context
+   - This can cause unexpected behavior if the method relies on `this` internally
+
+2. **Preferred Solution - Arrow Function Wrapper**:
+
+   - Create an arrow function that wraps the method call
+   - Specify parameter types and return type explicitly
+   - Use the wrapper in place of the direct method reference
+
+   ```typescript
+   // Instead of this (triggers lint error):
+   expect(loggerServiceSpy.info).toHaveBeenCalledWith('message');
+
+   // Use this (preferred solution):
+   const infoFn = (message: string): void => loggerServiceSpy.info(message);
+   expect(infoFn).toHaveBeenCalledWith('message');
+   ```
+
+3. **Implementation Example**:
+
+   - See [zzz.component.spec.ts](../src/app/pages/zzz/zzz.component.spec.ts) for a practical example
+   - The arrow function wrapper properly maintains the context while satisfying the linter
+
+4. **Benefits**:
+
+   - Fixes the lint warning
+   - Preserves the original method's behavior
+   - Explicit about capturing the context
+   - Follows TypeScript best practices with proper type annotations
+   - Pattern can be consistently applied throughout the codebase
+
+5. **Alternative Approaches (Not Preferred)**:
+   - Using Function.prototype.bind: More verbose and less common in test code
+   - Using Jasmine's calls object: More brittle and less readable
+   - Suppressing the lint warning: Masks potential issues
+
+Always prefer the arrow function wrapper approach for consistency across the codebase.

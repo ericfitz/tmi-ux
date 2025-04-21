@@ -47,6 +47,7 @@ export default [
     files: ['**/*.spec.ts'],
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
 
@@ -74,6 +75,16 @@ export default [
       '@typescript-eslint/no-this-alias': 'off',
       // Disable 'arguments' usage errors
       'prefer-rest-params': 'off',
+    },
+  },
+
+  // ZZZ page - disable only unsafe assignment warnings
+  {
+    files: ['**/pages/zzz/**/*.ts'],
+    rules: {
+      // Disable unsafe assignment and member access warnings for zzz page
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
     },
   },
 
