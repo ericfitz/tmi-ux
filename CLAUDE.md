@@ -13,19 +13,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build/Test Commands
 
-- Run all npm commands from the project root directory
-- Development server: `ng serve` or `npm run dev`
-- Production build: `ng build --configuration=production` or `npm run build:prod`
+- Run all pnpm commands from the project root directory
+- Development server: `ng serve` or `pnpm run dev`
+- Production build: `ng build --configuration=production` or `pnpm run build:prod`
 - Run all tests: `ng test` or `npm run test`
 - Run single test: `ng test --include=**/path/to/file.spec.ts`
 - Run tests for specific component: `ng test --include=**/component-name/*.spec.ts`
 - Focus tests in code: Use `fdescribe()` and `fit()` in spec files
-- Lint TypeScript/HTML: `npm run lint`
-- Lint SCSS: `npm run lint:scss`
-- Lint all files: `npm run lint:all`
-- Format code: `npm run format`
-- Check formatting: `npm run format:check`
-- Check all (lint+format): `npm run check`
+- Lint TypeScript/HTML: `pnpm run lint`
+- Lint SCSS: `pnpm run lint:scss`
+- Lint all files: `pnpm run lint:all`
+- Format code: `pnpm run format`
+- Check formatting: `pnpm run format:check`
+- Check all (lint+format): `pnpm run check`
 - Pre-commit hooks: Uses husky and lint-staged to verify code quality before commits (temporarily disabled)
 
 ## Code Style

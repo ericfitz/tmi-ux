@@ -15,10 +15,10 @@ Angular-based user interface for the TMI application.
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start development server
-npm run dev
+pnpm run dev
 ```
 
 ### Environment Configuration
@@ -26,18 +26,21 @@ npm run dev
 The application supports multiple environment configurations:
 
 1. **Default Configuration**
+
    ```bash
-   npm run dev  # Uses environment.ts file
+   pnpm run dev  # Uses environment.ts file
    ```
 
 2. **Environment-specific Configurations**
+
    ```bash
-   npm run dev:staging  # Uses environment.staging.ts file
-   npm run dev:test     # Uses environment.test.ts file
-   npm run dev:prod     # Uses environment.prod.ts file
+   pnpm run dev:staging  # Uses environment.staging.ts file
+   pnpm run dev:test     # Uses environment.test.ts file
+   pnpm run dev:prod     # Uses environment.prod.ts file
    ```
 
 3. **Custom Configuration with Environment Variables**
+
    ```bash
    # Set environment variables first
    export TMI_INTERFACE=0.0.0.0    # Listen on all interfaces
@@ -45,9 +48,9 @@ The application supports multiple environment configurations:
    export TMI_SSL=true             # Enable HTTPS
    export TMI_SSL_KEY=./certs/key.pem    # Path to SSL key
    export TMI_SSL_CERT=./certs/cert.pem  # Path to SSL certificate
-   
+
    # Run with custom configuration
-   npm run dev:custom
+   pnpm run dev:custom
    ```
 
 ### Environment Files
@@ -62,67 +65,68 @@ Environment files are located in `src/environments/`. The application uses:
 - `environment.example.ts` - Example with documentation
 
 To create a custom environment:
+
 1. Copy `environment.example.ts` to a new file (e.g., `environment.custom.ts`)
 2. Configure values as needed
 3. Update `angular.json` with a new configuration if needed
 
 ### Available Environment Settings
 
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `production` | Enable production mode | `false` |
-| `logLevel` | Logging verbosity ('DEBUG', 'INFO', 'WARNING', 'ERROR') | `'ERROR'` |
-| `apiUrl` | API server URL | `'https://api.example.com/v1'` |
-| `authTokenExpiryMinutes` | Authentication token validity | `60` |
-| `operatorName` | Name of service operator | `'TMI Operator'` |
-| `operatorContact` | Contact information | `'contact@example.com'` |
-| `serverPort` | Server listening port | `4200` |
-| `serverInterface` | Server listening interface | `'0.0.0.0'` |
-| `enableTLS` | Enable HTTPS | `false` |
-| `tlsKeyPath` | Path to TLS private key | `undefined` |
-| `tlsCertPath` | Path to TLS certificate | `undefined` |
-| `tlsSubjectName` | TLS subject name | System hostname |
+| Setting                  | Description                                             | Default                        |
+| ------------------------ | ------------------------------------------------------- | ------------------------------ |
+| `production`             | Enable production mode                                  | `false`                        |
+| `logLevel`               | Logging verbosity ('DEBUG', 'INFO', 'WARNING', 'ERROR') | `'ERROR'`                      |
+| `apiUrl`                 | API server URL                                          | `'https://api.example.com/v1'` |
+| `authTokenExpiryMinutes` | Authentication token validity                           | `60`                           |
+| `operatorName`           | Name of service operator                                | `'TMI Operator'`               |
+| `operatorContact`        | Contact information                                     | `'contact@example.com'`        |
+| `serverPort`             | Server listening port                                   | `4200`                         |
+| `serverInterface`        | Server listening interface                              | `'0.0.0.0'`                    |
+| `enableTLS`              | Enable HTTPS                                            | `false`                        |
+| `tlsKeyPath`             | Path to TLS private key                                 | `undefined`                    |
+| `tlsCertPath`            | Path to TLS certificate                                 | `undefined`                    |
+| `tlsSubjectName`         | TLS subject name                                        | System hostname                |
 
 ## Building
 
 ```bash
 # Production build
-npm run build:prod
+pnpm run build:prod
 
 # Staging build
-npm run build:staging
+pnpm run build:staging
 
 # Test build
-npm run build:test
+pnpm run build:test
 ```
 
 ## Code Quality
 
 ```bash
 # Run linting
-npm run lint
+pnpm run lint
 
 # Run SCSS linting
-npm run lint:scss
+pnpm run lint:scss
 
 # Run all linting
-npm run lint:all
+pnpm run lint:all
 
 # Format code
-npm run format
+pnpm run format
 
 # Check formatting
-npm run format:check
+pnpm run format:check
 
 # Run all checks
-npm run check
+pnpm run check
 ```
 
 ## Testing
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run specific test file
 ng test --include=**/path/to/file.spec.ts
