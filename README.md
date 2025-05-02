@@ -9,7 +9,7 @@ Angular-based user interface for the TMI application.
 ### Prerequisites
 
 - Node.js (see `.nvmrc` for version)
-- npm or pnpm
+- pnpm
 
 ### Setup
 
