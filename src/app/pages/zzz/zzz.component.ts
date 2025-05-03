@@ -331,8 +331,34 @@ export class ZzzComponent implements OnInit, OnDestroy {
 
     this._graph = new Graph({
       container: this.graphContainer.nativeElement,
+      background: {
+        color: '#F2F7FA',
+      },
+      grid: {
+        visible: true,
+        type: 'doubleMesh',
+        args: [
+          {
+            color: '#eee',
+            thickness: 1,
+          },
+          {
+            color: '#ddd',
+            thickness: 1,
+            factor: 4,
+          },
+        ],
+      },
       width: containerWidth,
       height: containerHeight,
+      autoResize: false,
+      panning: true,
+      mousewheel: {
+        enabled: true,
+        modifiers: ['ctrl', 'meta'],
+        minScale: 0.5,
+        maxScale: 2,
+      },
       highlighting: {
         magnetAvailable: magnetAvailabilityHighlighter,
         magnetAdsorbed: {
@@ -348,12 +374,12 @@ export class ZzzComponent implements OnInit, OnDestroy {
       connecting: {
         snap: true,
         allowBlank: false,
-        allowLoop: false,
+        allowLoop: true,
         highlight: true,
-        connector: 'rounded',
+        connector: 'smooth',
         connectionPoint: 'boundary',
         router: {
-          name: 'er',
+          name: 'metro',
           args: {
             direction: 'V',
           },
