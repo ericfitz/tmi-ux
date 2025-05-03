@@ -28,6 +28,16 @@ interface HighlighterConfig {
   };
 }
 
+/**
+ * Interface for node data
+ */
+interface NodeData {
+  parent?: boolean;
+  embedded?: boolean;
+  parentId?: string;
+  [key: string]: unknown;
+}
+
 // Define SecurityBoundaryShape class outside of the component
 class SecurityBoundaryShape extends Shape.Rect {
   // Get ports by direction
@@ -696,7 +706,7 @@ export class DfdComponent implements OnInit, OnDestroy {
 
     try {
       // Get graph dimensions from the container
-      const container = this.graphContainer.nativeElement;
+      const container = this.graphContainer.nativeElement as HTMLElement;
       const graphWidth = container.clientWidth;
       const graphHeight = container.clientHeight;
 
@@ -736,7 +746,7 @@ export class DfdComponent implements OnInit, OnDestroy {
           node.setZIndex(-1);
 
           // Mark this node as a potential parent for embedding
-          node.setData({ parent: true });
+          node.setData({ parent: true } as NodeData);
           break;
         case 'actor':
         default:
@@ -800,22 +810,22 @@ export class DfdComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const container = this.graphContainer.nativeElement;
+    const container = this.graphContainer.nativeElement as HTMLElement;
 
     // Get all the elements that might have event listeners
-    const canvasElements = container.querySelectorAll('canvas');
-    const svgElements = container.querySelectorAll('svg');
+    const canvasElements = container.querySelectorAll('canvas') as NodeListOf<Element>;
+    const svgElements = container.querySelectorAll('svg') as NodeListOf<Element>;
 
     // Add passive event listeners to all relevant elements
     const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'mousewheel'];
 
     // Function to safely add passive event listener
-    const addPassiveListener = (element: Element) => {
+    const addPassiveListener = (element: Element): void => {
       passiveEvents.forEach(eventType => {
         // Create a passive event listener that captures events before X6 processes them
         element.addEventListener(
           eventType,
-          e => {
+          (_e: Event) => {
             // Empty handler with passive: true to prevent browser warnings
             // The event will still propagate to X6's handlers
           },
@@ -831,19 +841,20 @@ export class DfdComponent implements OnInit, OnDestroy {
     svgElements.forEach(addPassiveListener);
 
     // Add listeners to the container itself
-    addPassiveListener(container);
+    addPassiveListener(container as Element);
 
     // Add a mutation observer to handle dynamically added elements
     this._observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach(node => {
+          mutation.addedNodes.forEach((node: Node) => {
             if (node instanceof Element) {
               // Add passive listeners to newly added elements
               addPassiveListener(node);
 
               // Also add to any canvas or svg children
-              node.querySelectorAll('canvas, svg').forEach(addPassiveListener);
+              const elements = node.querySelectorAll('canvas, svg');
+              elements.forEach(element => addPassiveListener(element));
             }
           });
         }
@@ -1071,7 +1082,7 @@ export class DfdComponent implements OnInit, OnDestroy {
           findParent: ({ node }) => {
             // Don't allow parent nodes to be embedded in other nodes
             const nodeData = node.getData();
-            if (nodeData && nodeData.parent) {
+            if (nodeData?.parent) {
               return [];
             }
 
@@ -1082,7 +1093,7 @@ export class DfdComponent implements OnInit, OnDestroy {
                 if (parent.id === node.id) return false;
 
                 const data = parent.getData();
-                if (data && data.parent) {
+                if (data?.parent) {
                   const parentBBox = parent.getBBox();
                   // Check if the node's center is inside the parent
                   const nodeCenter = bbox.getCenter();
@@ -1434,11 +1445,12 @@ export class DfdComponent implements OnInit, OnDestroy {
           node.attr('body/fill', '#e6f7ff');
 
           // Add a data attribute to mark it as embedded
+          const existingData = node.getData();
           node.setData({
-            ...node.getData(),
+            ...(existingData || {}),
             embedded: true,
             parentId: current,
-          });
+          } as NodeData);
         }
       } else if (!current && previous) {
         // Node was un-embedded
@@ -1455,9 +1467,10 @@ export class DfdComponent implements OnInit, OnDestroy {
 
           // Update data to remove embedded flag
           const data = node.getData() || {};
-          delete data['embedded'];
-          delete data['parentId'];
-          node.setData(data);
+          const updatedData: NodeData = { ...data };
+          delete updatedData.embedded;
+          delete updatedData.parentId;
+          node.setData(updatedData);
         }
       }
 
@@ -1574,7 +1587,7 @@ export class DfdComponent implements OnInit, OnDestroy {
      * Handle node hover
      * Highlights the node and shows its ports
      */
-    this._graph.on('node:mouseenter', ({ cell, view }) => {
+    this._graph.on('node:mouseenter', ({ view }) => {
       // Highlight the node using the view
       view.highlight(null, {
         highlighter: nodeHighlighter,
@@ -1952,7 +1965,7 @@ export class DfdComponent implements OnInit, OnDestroy {
     securityBoundary.setZIndex(-1);
 
     // Mark this node as a potential parent for embedding
-    securityBoundary.setData({ parent: true });
+    securityBoundary.setData({ parent: true } as NodeData);
     this._graph.addNode(securityBoundary);
 
     this._graph.addNode(
