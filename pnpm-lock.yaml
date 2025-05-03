@@ -50,6 +50,9 @@ importers:
       '@antv/x6-plugin-dnd':
         specifier: ^2.1.1
         version: 2.1.1(@antv/x6@2.18.1)
+      '@antv/x6-plugin-snapline':
+        specifier: ^2.1.7
+        version: 2.1.7(@antv/x6@2.18.1)
       '@antv/x6-plugin-transform':
         specifier: ^2.1.8
         version: 2.1.8(@antv/x6@2.18.1)
@@ -429,6 +432,11 @@ packages:
 
   '@antv/x6-plugin-dnd@2.1.1':
     resolution: {integrity: sha512-v0szzik1RkadPDn4Qi5mOSaB2AeI78D40/YuCYbPVzplG+HydGsHwO3MLTgJPQ+R5n0eM0W5F850p1VfTOHR7g==}
+    peerDependencies:
+      '@antv/x6': ^2.x
+
+  '@antv/x6-plugin-snapline@2.1.7':
+    resolution: {integrity: sha512-AsysoCb9vES0U2USNhEpYuO/W8I0aYfkhlbee5Kt4NYiMfQfZKQyqW/YjDVaS2pm38C1NKu1LdPVk/BBr4CasA==}
     peerDependencies:
       '@antv/x6': ^2.x
 
@@ -5736,6 +5744,10 @@ snapshots:
   '@antv/x6-geometry@2.0.5': {}
 
   '@antv/x6-plugin-dnd@2.1.1(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.18.1)':
     dependencies:
       '@antv/x6': 2.18.1
 

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Graph, Shape, NodeView } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
+import { Snapline } from '@antv/x6-plugin-snapline';
 import { PortManager } from '@antv/x6/lib/model/port';
 import { LoggerService } from '../../core/services/logger.service';
 import { PassiveEventHandler } from '../diagram-editor/services/x6/passive-event-handler';
@@ -1082,7 +1083,13 @@ export class DfdComponent implements OnInit, OnDestroy {
           findParent: ({ node }) => {
             // Don't allow parent nodes to be embedded in other nodes
             const nodeData = node.getData();
-            if (nodeData?.parent) {
+            // Use type guard to check if nodeData is a valid object with parent property
+            if (
+              nodeData &&
+              typeof nodeData === 'object' &&
+              'parent' in nodeData &&
+              nodeData.parent
+            ) {
               return [];
             }
 
@@ -1093,7 +1100,8 @@ export class DfdComponent implements OnInit, OnDestroy {
                 if (parent.id === node.id) return false;
 
                 const data = parent.getData();
-                if (data?.parent) {
+                // Use type guard to check if data is a valid object with parent property
+                if (data && typeof data === 'object' && 'parent' in data && data.parent) {
                   const parentBBox = parent.getBBox();
                   // Check if the node's center is inside the parent
                   const nodeCenter = bbox.getCenter();
@@ -1262,6 +1270,29 @@ export class DfdComponent implements OnInit, OnDestroy {
             rotating: false, // Disable rotation
           }),
         );
+
+        // Register the Snapline plugin for alignment guides
+        this._graph.use(
+          new Snapline({
+            enabled: true,
+            tolerance: 10, // Alignment precision (distance in pixels to trigger snapline)
+            sharp: true, // Show sharp snaplines
+            resizing: true, // Enable snaplines during resizing
+            clean: 800, // Hide snaplines after 800ms
+            className: 'x6-snapline', // CSS class for styling
+          }),
+        );
+
+        // Add custom CSS for snaplines
+        const snaplineStyle = document.createElement('style');
+        snaplineStyle.textContent = `
+          .x6-snapline {
+            stroke: #1890ff;
+            stroke-width: 1;
+            stroke-dasharray: 5, 5;
+          }
+        `;
+        document.head.appendChild(snaplineStyle);
 
         // Configure resize handles to be square-shaped
         const transformPlugin = this._graph.getPlugin<Transform>('transform');
@@ -1446,8 +1477,10 @@ export class DfdComponent implements OnInit, OnDestroy {
 
           // Add a data attribute to mark it as embedded
           const existingData = node.getData();
+          // Create a safe object to spread using type guard
+          const safeData = existingData && typeof existingData === 'object' ? existingData : {};
           node.setData({
-            ...(existingData || {}),
+            ...safeData,
             embedded: true,
             parentId: current,
           } as NodeData);
@@ -1466,8 +1499,10 @@ export class DfdComponent implements OnInit, OnDestroy {
           node.attr('body/fill', '#FFFFFF');
 
           // Update data to remove embedded flag
-          const data = node.getData() || {};
-          const updatedData: NodeData = { ...data };
+          const data = node.getData();
+          // Create a safe object to spread using type guard
+          const safeData = data && typeof data === 'object' ? data : {};
+          const updatedData: NodeData = { ...safeData };
           delete updatedData.embedded;
           delete updatedData.parentId;
           node.setData(updatedData);
