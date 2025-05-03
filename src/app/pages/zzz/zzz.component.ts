@@ -93,14 +93,21 @@ class ActorShape extends Shape.Rect {
 
 // Configure ActorShape
 ActorShape.config({
+  markup: [
+    {
+      tagName: 'rect',
+      selector: 'body',
+    },
+  ],
   attrs: {
     root: {
       magnet: false,
     },
     body: {
-      fill: '#EFF4FF',
-      stroke: '#5F95FF',
-      strokeWidth: 1,
+      fill: '#FFFFFF',
+      stroke: '#333333',
+      strokeWidth: 2,
+      opacity: 1,
     },
   },
   ports: {
@@ -247,9 +254,9 @@ ProcessShape.config({
       magnet: false,
     },
     body: {
-      fill: '#EFF4FF',
-      stroke: '#5F95FF',
-      strokeWidth: 1,
+      fill: '#FFFFFF',
+      stroke: '#333333',
+      strokeWidth: 2,
     },
   },
   ports: {
@@ -391,15 +398,39 @@ class StoreShape extends Shape.Rect {
 
 // Configure StoreShape
 StoreShape.config({
+  markup: [
+    {
+      tagName: 'rect',
+      selector: 'body',
+    },
+    {
+      tagName: 'path',
+      selector: 'topLine',
+    },
+    {
+      tagName: 'path',
+      selector: 'bottomLine',
+    },
+  ],
   attrs: {
     root: {
       magnet: false,
     },
     body: {
-      fill: '#EFF4FF',
-      stroke: '#5F95FF',
-      strokeWidth: 1,
-      strokeDasharray: '5 5', // Use a dashed stroke pattern instead of a complex path
+      fill: '#FFFFFF',
+      stroke: 'transparent',
+      opacity: 1,
+    },
+    topLine: {
+      stroke: '#333333',
+      strokeWidth: 2,
+      refD: 'M 0 0 l 200 0',
+    },
+    bottomLine: {
+      stroke: '#333333',
+      strokeWidth: 2,
+      refY: '100%', // Position at the bottom of the shape
+      refD: 'M 0 0 l 200 0',
     },
   },
   ports: {
