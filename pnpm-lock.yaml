@@ -50,6 +50,9 @@ importers:
       '@antv/x6-plugin-dnd':
         specifier: ^2.1.1
         version: 2.1.1(@antv/x6@2.18.1)
+      '@antv/x6-plugin-transform':
+        specifier: ^2.1.8
+        version: 2.1.8(@antv/x6@2.18.1)
       '@jsverse/transloco':
         specifier: ^7.6.1
         version: 7.6.1(@angular/core@19.2.8(rxjs@7.8.2)(zone.js@0.15.0))(typescript@5.8.3)
@@ -426,6 +429,11 @@ packages:
 
   '@antv/x6-plugin-dnd@2.1.1':
     resolution: {integrity: sha512-v0szzik1RkadPDn4Qi5mOSaB2AeI78D40/YuCYbPVzplG+HydGsHwO3MLTgJPQ+R5n0eM0W5F850p1VfTOHR7g==}
+    peerDependencies:
+      '@antv/x6': ^2.x
+
+  '@antv/x6-plugin-transform@2.1.8':
+    resolution: {integrity: sha512-GvJuiJ4BKp0H7+qx3R1I+Vzbw5gXp9+oByXo/WyVxE3urOC7LC5sqnaDfIjyYMN6ROLPYPZraLSeSyYBgMgcDw==}
     peerDependencies:
       '@antv/x6': ^2.x
 
@@ -5728,6 +5736,10 @@ snapshots:
   '@antv/x6-geometry@2.0.5': {}
 
   '@antv/x6-plugin-dnd@2.1.1(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-transform@2.1.8(@antv/x6@2.18.1)':
     dependencies:
       '@antv/x6': 2.18.1
 

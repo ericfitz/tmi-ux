@@ -523,6 +523,12 @@ export class ZzzComponent implements OnInit, OnDestroy {
   private _graph: Graph | null = null;
   private _observer: MutationObserver | null = null;
 
+  /**
+   * Tracks the currently selected node for resizing
+   * When a node is selected, it keeps its tools visible even when the mouse leaves
+   */
+  private _selectedNode: ActorShape | ProcessShape | StoreShape | null = null;
+
   // Method to add a node at a random position
   addRandomNode(shapeType: 'actor' | 'process' | 'store' = 'actor'): void {
     this.logger.info(`addRandomNode called with shapeType: ${shapeType}`);
@@ -682,6 +688,9 @@ export class ZzzComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Clear selected node reference
+    this._selectedNode = null;
+
     // Disconnect the mutation observer
     if (this._observer) {
       this._observer.disconnect();
@@ -1188,22 +1197,66 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Add node hover highlighting, show ports, and add remove button
+    /**
+     * Handle node resizing event
+     * Updates ports and node-specific elements after a node is resized
+     */
+    this._graph.on('node:resized', ({ node }: { node: ActorShape | ProcessShape | StoreShape }) => {
+      this.logger.info('Node resized:', node.id);
+
+      // Update ports after resize
+      if (
+        this._graph &&
+        (node instanceof ActorShape || node instanceof ProcessShape || node instanceof StoreShape)
+      ) {
+        node.updatePorts(this._graph);
+      }
+
+      // For StoreShape, update the top and bottom lines
+      if (node instanceof StoreShape) {
+        const { width } = node.size();
+        node.attr('topLine/refD', `M 0 0 l ${width} 0`);
+        node.attr('bottomLine/refD', `M 0 0 l ${width} 0`);
+      }
+
+      // Force change detection
+      this.cdr.detectChanges();
+    });
+
+    /**
+     * Handle node hover
+     * Highlights the node and shows its ports
+     */
     this._graph.on('node:mouseenter', ({ cell, view }) => {
       // Highlight the node using the view
       view.highlight(null, {
         highlighter: nodeHighlighter,
       });
 
-      // Add button-remove tool to the node
-      cell.addTools({
-        name: 'button-remove',
-        args: {
-          x: '100%',
-          y: 0,
-          offset: { x: -10, y: 10 },
-        },
-      });
+      // Show ports when hovering over the node
+      if (
+        view.cell instanceof ActorShape ||
+        view.cell instanceof ProcessShape ||
+        view.cell instanceof StoreShape
+      ) {
+        const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+          'top',
+          'right',
+          'bottom',
+          'left',
+        ];
+
+        directions.forEach(direction => {
+          (view.cell as ActorShape | ProcessShape | StoreShape)
+            .getPortsByDirection(direction)
+            .forEach((port: PortManager.Port) => {
+              const portNode = view.findPortElem(port.id, 'portBody');
+              if (portNode) {
+                portNode.setAttribute('visibility', 'visible');
+              }
+            });
+        });
+      }
 
       // Show ports when hovering over the node
       if (
@@ -1231,14 +1284,78 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
     });
 
+    /**
+     * Handle node selection on click
+     * Selects a node and adds resize handles using the boundary tool
+     * The boundary tool provides a resizable border around the node
+     */
+    this._graph.on('node:click', ({ cell, e }) => {
+      // Prevent event propagation to avoid deselection
+      e.stopPropagation();
+
+      // If there's a previously selected node, deselect it
+      if (this._selectedNode && this._selectedNode !== cell) {
+        // Remove tools from the previously selected node
+        this._selectedNode.removeTools();
+      }
+
+      // Select the clicked node
+      this._selectedNode = cell as ActorShape | ProcessShape | StoreShape;
+
+      // Add tools to the selected node (remove button and resizing)
+      const tools = [
+        {
+          name: 'button-remove',
+          args: {
+            x: '100%',
+            y: 0,
+            offset: { x: -10, y: 10 },
+          },
+        },
+        {
+          name: 'boundary',
+          args: {
+            padding: 10,
+            attrs: {
+              fill: '#47C769',
+              stroke: '#333333',
+              'stroke-width': 2,
+              'fill-opacity': 0.2,
+            },
+            // The following options enable resizing
+            resizable: true,
+            minWidth: 60,
+            minHeight: 30,
+            preserveAspectRatio: cell instanceof ProcessShape,
+          },
+        },
+      ];
+
+      cell.addTools(tools);
+    });
+
+    /**
+     * Handle background click
+     * Deselects the currently selected node and removes its tools
+     */
+    this._graph.on('blank:click', () => {
+      if (this._selectedNode) {
+        // Remove all tools from the selected node
+        this._selectedNode.removeTools();
+        this._selectedNode = null;
+      }
+    });
+
     this._graph.on('node:mouseleave', ({ cell, view }) => {
       // Remove the highlight using the view
       view.unhighlight(null, {
         highlighter: nodeHighlighter,
       });
 
-      // Remove tools from the node
-      cell.removeTools();
+      // Only remove tools if the node is not selected
+      if (cell !== this._selectedNode) {
+        cell.removeTools();
+      }
 
       // Hide ports when not hovering, except for ports that are in use
       if (
