@@ -8,7 +8,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { TranslocoModule } from '@jsverse/transloco';
 import { Graph, Shape, NodeView } from '@antv/x6';
 import { PortManager } from '@antv/x6/lib/model/port';
 import { LoggerService } from '../../core/services/logger.service';
@@ -482,7 +481,7 @@ import { CoreMaterialModule } from '../../shared/material/core-material.module';
 @Component({
   selector: 'app-zzz',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule, TranslocoModule],
+  imports: [CommonModule, CoreMaterialModule],
   templateUrl: './zzz.component.html',
   styleUrls: ['./zzz.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
