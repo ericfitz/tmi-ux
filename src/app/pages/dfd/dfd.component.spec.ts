@@ -1,24 +1,24 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
-import { ZzzComponent } from './zzz.component';
+import { DfdComponent } from './dfd.component';
 import { LoggerService } from '../../core/services/logger.service';
 import { TranslocoTestingModule } from '../../i18n/testing.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('ZzzComponent', () => {
-  let component: ZzzComponent;
-  let fixture: ComponentFixture<ZzzComponent>;
+describe('DfdComponent', () => {
+  let component: DfdComponent;
+  let fixture: ComponentFixture<DfdComponent>;
   let loggerServiceSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(async () => {
     loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['info', 'error']);
 
     await TestBed.configureTestingModule({
-      imports: [ZzzComponent, TranslocoTestingModule, NoopAnimationsModule],
+      imports: [DfdComponent, TranslocoTestingModule, NoopAnimationsModule],
       providers: [{ provide: LoggerService, useValue: loggerServiceSpy }],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ZzzComponent);
+    fixture = TestBed.createComponent(DfdComponent);
     component = fixture.componentInstance;
 
     // Mock the graph container to have a valid height

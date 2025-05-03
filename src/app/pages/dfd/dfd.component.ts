@@ -510,14 +510,14 @@ StoreShape.config({
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 
 @Component({
-  selector: 'app-zzz',
+  selector: 'app-dfd',
   standalone: true,
   imports: [CommonModule, CoreMaterialModule],
-  templateUrl: './zzz.component.html',
-  styleUrls: ['./zzz.component.scss'],
+  templateUrl: './dfd.component.html',
+  styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZzzComponent implements OnInit, OnDestroy {
+export class DfdComponent implements OnInit, OnDestroy {
   @ViewChild('graphContainer', { static: true }) graphContainer!: ElementRef;
 
   private _graph: Graph | null = null;
@@ -595,11 +595,11 @@ export class ZzzComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private passiveEventHandler: PassiveEventHandler,
   ) {
-    this.logger.info('ZzzComponent constructor called');
+    this.logger.info('DfdComponent constructor called');
   }
 
   ngOnInit(): void {
-    this.logger.info('ZzzComponent ngOnInit called');
+    this.logger.info('DfdComponent ngOnInit called');
 
     // Apply passive event handler patches
     this.passiveEventHandler.applyPatches();
@@ -708,7 +708,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
    * Initialize the X6 graph
    */
   private initializeGraph(): void {
-    this.logger.info('ZzzComponent initializeGraph called');
+    this.logger.info('DfdComponent initializeGraph called');
 
     try {
       // Prepare the container
@@ -1187,7 +1187,19 @@ export class ZzzComponent implements OnInit, OnDestroy {
         return;
       }
 
+      // Get both source and target cells
+      const source = edge.getSourceCell();
       const target = edge.getTargetCell();
+
+      // Update ports on source and target cells
+      if (
+        source instanceof ActorShape ||
+        source instanceof ProcessShape ||
+        source instanceof StoreShape
+      ) {
+        source.updatePorts(this._graph);
+      }
+
       if (
         target instanceof ActorShape ||
         target instanceof ProcessShape ||
@@ -1195,6 +1207,9 @@ export class ZzzComponent implements OnInit, OnDestroy {
       ) {
         target.updatePorts(this._graph);
       }
+
+      // Hide all unused ports on all nodes
+      this.hideUnusedPortsOnAllNodes();
     });
 
     /**

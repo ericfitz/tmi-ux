@@ -46,9 +46,9 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'zzz',
+    path: 'dfd',
     loadComponent: () =>
-      import(/* webpackChunkName: "zzz" */ './pages/zzz/zzz.component').then(c => c.ZzzComponent),
+      import(/* webpackChunkName: "dfd" */ './pages/dfd/dfd.component').then(c => c.DfdComponent),
   },
   {
     path: '**',
