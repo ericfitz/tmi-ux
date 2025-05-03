@@ -190,11 +190,11 @@ import { CoreMaterialModule } from '../../shared/material/core-material.module';
 export class ZzzComponent implements OnInit, OnDestroy {
   @ViewChild('graphContainer', { static: true }) graphContainer!: ElementRef;
 
-  private _graph: Graph | null = null;
+  private graph: Graph | null = null;
 
   // Method to add a node at a random position
   addRandomNode(): void {
-    if (!this._graph) {
+    if (!this.graph) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
     }
@@ -212,8 +212,8 @@ export class ZzzComponent implements OnInit, OnDestroy {
     const randomY = Math.floor(Math.random() * (graphHeight - nodeHeight)) + nodeHeight / 2;
 
     // Add the node
-    this._graph.addNode(
-      new MyShape().resize(120, 40).position(randomX, randomY).updatePorts(this._graph),
+    this.graph.addNode(
+      new MyShape().resize(120, 40).position(randomX, randomY).updatePorts(this.graph),
     );
 
     this.logger.info(`Added new node at position (${randomX}, ${randomY})`);
@@ -239,9 +239,9 @@ export class ZzzComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this._graph) {
-      this._graph.dispose();
-      this._graph = null;
+    if (this.graph) {
+      this.graph.dispose();
+      this.graph = null;
     }
   }
 
@@ -378,7 +378,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
     const containerWidth = containerElement.clientWidth;
     const containerHeight = containerElement.clientHeight;
 
-    this._graph = new Graph({
+    this.graph = new Graph({
       container: this.graphContainer.nativeElement,
       background: {
         color: '#F2F7FA',
@@ -471,7 +471,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
     });
 
     // Show ports when creating a new edge
-    this._graph.on('edge:connected', ({ edge }) => {
+    this.graph.on('edge:connected', ({ edge }) => {
       // Make the connected ports visible
       const sourceId = edge.getSourcePortId();
       const targetId = edge.getTargetPortId();
@@ -479,7 +479,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
       const targetCell = edge.getTargetCell();
 
       if (sourceCell && sourceId) {
-        const sourceView = this._graph?.findViewByCell(sourceCell);
+        const sourceView = this.graph?.findViewByCell(sourceCell);
         if (sourceView && sourceView instanceof NodeView) {
           const portElem = sourceView.findPortElem(sourceId, 'portBody');
           if (portElem) {
@@ -489,7 +489,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
 
       if (targetCell && targetId) {
-        const targetView = this._graph?.findViewByCell(targetCell);
+        const targetView = this.graph?.findViewByCell(targetCell);
         if (targetView && targetView instanceof NodeView) {
           const portElem = targetView.findPortElem(targetId, 'portBody');
           if (portElem) {
@@ -503,12 +503,12 @@ export class ZzzComponent implements OnInit, OnDestroy {
     });
 
     // Show all ports when starting to create an edge
-    this._graph.on('edge:mousedown', ({ cell: _cell, view: _view }) => {
+    this.graph.on('edge:mousedown', ({ cell: _cell, view: _view }) => {
       // Show all ports on all nodes when starting to create an edge
-      const nodes = this._graph?.getNodes() || [];
+      const nodes = this.graph?.getNodes() || [];
       nodes.forEach(node => {
         if (node instanceof MyShape) {
-          const nodeView = this._graph?.findViewByCell(node);
+          const nodeView = this.graph?.findViewByCell(node);
           if (nodeView && nodeView instanceof NodeView) {
             const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
               'top',
@@ -536,7 +536,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
    * @param magnetAvailabilityHighlighter The highlighter configuration
    */
   private setupEventHandlers(magnetAvailabilityHighlighter: HighlighterConfig): void {
-    if (!this._graph) {
+    if (!this.graph) {
       return;
     }
 
@@ -546,7 +546,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
 
     const update = (view: NodeView): void => {
       const cell = view.cell;
-      if (cell instanceof MyShape && this._graph) {
+      if (cell instanceof MyShape && this.graph) {
         // Unhighlight all ports
         const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
           'top',
@@ -566,11 +566,11 @@ export class ZzzComponent implements OnInit, OnDestroy {
         });
 
         // Update all ports
-        cell.updatePorts(this._graph);
+        cell.updatePorts(this.graph);
       }
     };
 
-    this._graph.on('edge:connected', ({ previousView, currentView }) => {
+    this.graph.on('edge:connected', ({ previousView, currentView }) => {
       if (previousView) {
         update(previousView as NodeView);
       }
@@ -579,19 +579,19 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
     });
 
-    this._graph.on('edge:removed', ({ edge, options }) => {
-      if (!options['ui'] || !this._graph) {
+    this.graph.on('edge:removed', ({ edge, options }) => {
+      if (!options['ui'] || !this.graph) {
         return;
       }
 
       const target = edge.getTargetCell();
       if (target instanceof MyShape) {
-        target.updatePorts(this._graph);
+        target.updatePorts(this.graph);
       }
     });
 
     // Add node hover highlighting and show/hide ports
-    this._graph.on('node:mouseenter', ({ cell: _cell, view }) => {
+    this.graph.on('node:mouseenter', ({ cell: _cell, view }) => {
       // Highlight the node using the view
       view.highlight(null, {
         highlighter: nodeHighlighter,
@@ -619,7 +619,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
     });
 
-    this._graph.on('node:mouseleave', ({ cell: _cell, view }) => {
+    this.graph.on('node:mouseleave', ({ cell: _cell, view }) => {
       // Remove the highlight using the view
       view.unhighlight(null, {
         highlighter: nodeHighlighter,
@@ -641,7 +641,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
               const portNode = view.findPortElem(port.id, 'portBody');
               if (portNode) {
                 // Check if this port has any connected edges
-                const connectedEdges = this._graph?.getConnectedEdges(view.cell, {
+                const connectedEdges = this.graph?.getConnectedEdges(view.cell, {
                   outgoing: true,
                   incoming: true,
                 });
@@ -663,7 +663,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
     });
 
     // Enhance existing edge hover events
-    this._graph.on('edge:mouseenter', ({ edge, view }) => {
+    this.graph.on('edge:mouseenter', ({ edge, view }) => {
       // Highlight the edge using the view
       view.highlight(null, {
         highlighter: edgeHighlighter,
@@ -681,7 +681,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
       ]);
     });
 
-    this._graph.on('edge:mouseleave', ({ edge, view }) => {
+    this.graph.on('edge:mouseleave', ({ edge, view }) => {
       // Remove the highlight using the view
       view.unhighlight(null, {
         highlighter: edgeHighlighter,
@@ -697,17 +697,17 @@ export class ZzzComponent implements OnInit, OnDestroy {
    * Used after edge creation to clean up visible ports
    */
   private hideUnusedPortsOnAllNodes(): void {
-    if (!this._graph) {
+    if (!this.graph) {
       return;
     }
 
     // Get all nodes in the graph
-    const nodes = this._graph.getNodes();
+    const nodes = this.graph.getNodes();
 
     // For each node, hide all ports that aren't connected to an edge
     nodes.forEach(node => {
       if (node instanceof MyShape) {
-        const nodeView = this._graph?.findViewByCell(node);
+        const nodeView = this.graph?.findViewByCell(node);
         if (nodeView && nodeView instanceof NodeView) {
           const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
             'top',
@@ -721,7 +721,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
               const portNode = nodeView.findPortElem(port.id, 'portBody');
               if (portNode) {
                 // Check if this port has any connected edges
-                const connectedEdges = this._graph?.getConnectedEdges(node, {
+                const connectedEdges = this.graph?.getConnectedEdges(node, {
                   outgoing: true,
                   incoming: true,
                 });
@@ -748,14 +748,14 @@ export class ZzzComponent implements OnInit, OnDestroy {
    * Adds initial nodes to the graph
    */
   private addInitialNodes(): void {
-    if (!this._graph) {
+    if (!this.graph) {
       return;
     }
 
-    this._graph.addNode(new MyShape().resize(120, 40).position(200, 50).updatePorts(this._graph));
+    this.graph.addNode(new MyShape().resize(120, 40).position(200, 50).updatePorts(this.graph));
 
-    this._graph.addNode(new MyShape().resize(120, 40).position(400, 50).updatePorts(this._graph));
+    this.graph.addNode(new MyShape().resize(120, 40).position(400, 50).updatePorts(this.graph));
 
-    this._graph.addNode(new MyShape().resize(120, 40).position(300, 250).updatePorts(this._graph));
+    this.graph.addNode(new MyShape().resize(120, 40).position(300, 250).updatePorts(this.graph));
   }
 }
