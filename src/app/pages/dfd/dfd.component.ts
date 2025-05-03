@@ -28,6 +28,165 @@ interface HighlighterConfig {
   };
 }
 
+// Define SecurityBoundaryShape class outside of the component
+class SecurityBoundaryShape extends Shape.Rect {
+  // Get ports by direction
+  getPortsByDirection(direction: 'top' | 'right' | 'bottom' | 'left'): PortManager.Port[] {
+    const ports = this.getPortsByGroup(direction);
+    return ports.map(port => ({
+      ...port,
+      id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+      position: { name: direction },
+    })) as PortManager.Port[];
+  }
+
+  // Get all ports from all directions
+  getAllPorts(): PortManager.Port[] {
+    return [
+      ...this.getPortsByDirection('top'),
+      ...this.getPortsByDirection('right'),
+      ...this.getPortsByDirection('bottom'),
+      ...this.getPortsByDirection('left'),
+    ];
+  }
+
+  // Update ports for all directions
+  updatePorts(_graph: Graph): SecurityBoundaryShape {
+    const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ];
+    const portsPerDirection = 1;
+
+    let allPorts: PortManager.Port[] = [];
+
+    directions.forEach(direction => {
+      // Get existing ports or create initial ports if none exist
+      const existingPorts = this.getPortsByDirection(direction);
+
+      if (existingPorts.length === 0) {
+        // Only create new ports if there are no existing ones
+        // Create new ports inline
+        const newPorts = Array.from({ length: portsPerDirection }, (_, index) => {
+          return {
+            id: `new-${direction}-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 11)}`,
+            group: direction,
+            position: { name: direction },
+          } as PortManager.Port;
+        });
+        allPorts = [...allPorts, ...newPorts];
+      } else {
+        // Keep existing ports
+        allPorts = [...allPorts, ...existingPorts];
+      }
+    });
+
+    // Update all ports at once
+    this.prop(['ports', 'items'], allPorts, {
+      rewrite: true,
+    });
+
+    return this;
+  }
+}
+
+// Configure SecurityBoundaryShape
+SecurityBoundaryShape.config({
+  markup: [
+    {
+      tagName: 'rect',
+      selector: 'body',
+    },
+  ],
+  attrs: {
+    root: {
+      magnet: false,
+    },
+    body: {
+      fill: '#FFFFFF',
+      stroke: '#333333',
+      strokeWidth: 2,
+      strokeDasharray: '5,5', // Dashed border
+      rx: 10, // Rounded corners
+      ry: 10, // Rounded corners
+      opacity: 1,
+    },
+  },
+  ports: {
+    items: [{ group: 'top' }, { group: 'right' }, { group: 'bottom' }, { group: 'left' }],
+    groups: {
+      top: {
+        position: {
+          name: 'top',
+        },
+        attrs: {
+          portBody: {
+            magnet: 'active', // Change to 'active' to enable edge creation when dragging from port
+            r: 5,
+            stroke: '#5F95FF',
+            fill: '#fff',
+            strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
+          },
+        },
+      },
+      right: {
+        position: {
+          name: 'right',
+        },
+        attrs: {
+          portBody: {
+            magnet: 'active', // Change to 'active' to enable edge creation when dragging from port
+            r: 5,
+            fill: '#fff',
+            stroke: '#5F95FF',
+            strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
+          },
+        },
+      },
+      bottom: {
+        position: {
+          name: 'bottom',
+        },
+        attrs: {
+          portBody: {
+            magnet: 'active', // Change to 'active' to enable edge creation when dragging from port
+            r: 5,
+            fill: '#fff',
+            stroke: '#5F95FF',
+            strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
+          },
+        },
+      },
+      left: {
+        position: {
+          name: 'left',
+        },
+        attrs: {
+          portBody: {
+            magnet: 'active', // Change to 'active' to enable edge creation when dragging from port
+            r: 5,
+            stroke: '#5F95FF',
+            fill: '#fff',
+            strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
+          },
+        },
+      },
+    },
+  },
+  portMarkup: [
+    {
+      tagName: 'circle',
+      selector: 'portBody',
+    },
+  ],
+});
+
 // Define ActorShape class outside of the component
 class ActorShape extends Shape.Rect {
   // Get ports by direction
@@ -523,15 +682,11 @@ export class DfdComponent implements OnInit, OnDestroy {
 
   private _graph: Graph | null = null;
   private _observer: MutationObserver | null = null;
-
-  /**
-   * Tracks the currently selected node for resizing
-   * When a node is selected, it keeps its tools visible even when the mouse leaves
-   */
-  private _selectedNode: ActorShape | ProcessShape | StoreShape | null = null;
+  private _selectedNode: ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape | null =
+    null;
 
   // Method to add a node at a random position
-  addRandomNode(shapeType: 'actor' | 'process' | 'store' = 'actor'): void {
+  addRandomNode(shapeType: 'actor' | 'process' | 'store' | 'securityBoundary' = 'actor'): void {
     this.logger.info(`addRandomNode called with shapeType: ${shapeType}`);
 
     if (!this._graph) {
@@ -548,7 +703,7 @@ export class DfdComponent implements OnInit, OnDestroy {
       this.logger.info(`Graph dimensions: ${graphWidth}x${graphHeight}`);
 
       // Calculate random position (ensuring the node is fully inside the graph)
-      const nodeWidth = 120;
+      const nodeWidth = shapeType === 'securityBoundary' ? 180 : 120; // Wider for security boundary
       const nodeHeight = shapeType === 'process' ? 120 : 40; // Circle for process, rectangle for others
       const randomX = Math.floor(Math.random() * (graphWidth - nodeWidth)) + nodeWidth / 2;
       const randomY = Math.floor(Math.random() * (graphHeight - nodeHeight)) + nodeHeight / 2;
@@ -569,6 +724,16 @@ export class DfdComponent implements OnInit, OnDestroy {
             .resize(120, 40)
             .position(randomX, randomY)
             .updatePorts(this._graph);
+          break;
+        case 'securityBoundary':
+          this.logger.info('Creating SecurityBoundaryShape');
+          node = new SecurityBoundaryShape()
+            .resize(180, 40)
+            .position(randomX, randomY)
+            .updatePorts(this._graph);
+
+          // Set a lower z-index to make security boundary appear below other shapes
+          node.setZIndex(-1);
           break;
         case 'actor':
         default:
@@ -971,12 +1136,14 @@ export class DfdComponent implements OnInit, OnDestroy {
             const isValidSourceNode =
               sourceCell instanceof ActorShape ||
               sourceCell instanceof ProcessShape ||
-              sourceCell instanceof StoreShape;
+              sourceCell instanceof StoreShape ||
+              sourceCell instanceof SecurityBoundaryShape;
 
             const isValidTargetNode =
               targetCell instanceof ActorShape ||
               targetCell instanceof ProcessShape ||
-              targetCell instanceof StoreShape;
+              targetCell instanceof StoreShape ||
+              targetCell instanceof SecurityBoundaryShape;
 
             // Allow connections between any valid node types
             return isValidSourceNode && isValidTargetNode;
@@ -1134,7 +1301,8 @@ export class DfdComponent implements OnInit, OnDestroy {
           if (
             node instanceof ActorShape ||
             node instanceof ProcessShape ||
-            node instanceof StoreShape
+            node instanceof StoreShape ||
+            node instanceof SecurityBoundaryShape
           ) {
             const nodeView = this._graph?.findViewByCell(node);
             if (nodeView && nodeView instanceof NodeView) {
@@ -1166,7 +1334,8 @@ export class DfdComponent implements OnInit, OnDestroy {
           if (
             node instanceof ActorShape ||
             node instanceof ProcessShape ||
-            node instanceof StoreShape
+            node instanceof StoreShape ||
+            node instanceof SecurityBoundaryShape
           ) {
             const nodeView = this._graph?.findViewByCell(node);
             if (nodeView && nodeView instanceof NodeView) {
@@ -1212,7 +1381,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         (cell instanceof ActorShape ||
           cell instanceof ProcessShape ||
-          cell instanceof StoreShape) &&
+          cell instanceof StoreShape ||
+          cell instanceof SecurityBoundaryShape) &&
         this._graph
       ) {
         // Unhighlight all ports
@@ -1260,7 +1430,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         source instanceof ActorShape ||
         source instanceof ProcessShape ||
-        source instanceof StoreShape
+        source instanceof StoreShape ||
+        source instanceof SecurityBoundaryShape
       ) {
         source.updatePorts(this._graph);
       }
@@ -1268,7 +1439,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         target instanceof ActorShape ||
         target instanceof ProcessShape ||
-        target instanceof StoreShape
+        target instanceof StoreShape ||
+        target instanceof SecurityBoundaryShape
       ) {
         target.updatePorts(this._graph);
       }
@@ -1281,27 +1453,33 @@ export class DfdComponent implements OnInit, OnDestroy {
      * Handle node resizing event
      * Updates ports and node-specific elements after a node is resized
      */
-    this._graph.on('node:resized', ({ node }: { node: ActorShape | ProcessShape | StoreShape }) => {
-      this.logger.info('Node resized:', node.id);
+    this._graph.on(
+      'node:resized',
+      ({ node }: { node: ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape }) => {
+        this.logger.info('Node resized:', node.id);
 
-      // Update ports after resize
-      if (
-        this._graph &&
-        (node instanceof ActorShape || node instanceof ProcessShape || node instanceof StoreShape)
-      ) {
-        node.updatePorts(this._graph);
-      }
+        // Update ports after resize
+        if (
+          this._graph &&
+          (node instanceof ActorShape ||
+            node instanceof ProcessShape ||
+            node instanceof StoreShape ||
+            node instanceof SecurityBoundaryShape)
+        ) {
+          node.updatePorts(this._graph);
+        }
 
-      // For StoreShape, update the top and bottom lines
-      if (node instanceof StoreShape) {
-        const { width } = node.size();
-        node.attr('topLine/refD', `M 0 0 l ${width} 0`);
-        node.attr('bottomLine/refD', `M 0 0 l ${width} 0`);
-      }
+        // For StoreShape, update the top and bottom lines
+        if (node instanceof StoreShape) {
+          const { width } = node.size();
+          node.attr('topLine/refD', `M 0 0 l ${width} 0`);
+          node.attr('bottomLine/refD', `M 0 0 l ${width} 0`);
+        }
 
-      // Force change detection
-      this.cdr.detectChanges();
-    });
+        // Force change detection
+        this.cdr.detectChanges();
+      },
+    );
 
     /**
      * Handle node hover
@@ -1317,7 +1495,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         view.cell instanceof ActorShape ||
         view.cell instanceof ProcessShape ||
-        view.cell instanceof StoreShape
+        view.cell instanceof StoreShape ||
+        view.cell instanceof SecurityBoundaryShape
       ) {
         const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
           'top',
@@ -1327,7 +1506,7 @@ export class DfdComponent implements OnInit, OnDestroy {
         ];
 
         directions.forEach(direction => {
-          (view.cell as ActorShape | ProcessShape | StoreShape)
+          (view.cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape)
             .getPortsByDirection(direction)
             .forEach((port: PortManager.Port) => {
               const portNode = view.findPortElem(port.id, 'portBody');
@@ -1342,7 +1521,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         view.cell instanceof ActorShape ||
         view.cell instanceof ProcessShape ||
-        view.cell instanceof StoreShape
+        view.cell instanceof StoreShape ||
+        view.cell instanceof SecurityBoundaryShape
       ) {
         const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
           'top',
@@ -1352,7 +1532,7 @@ export class DfdComponent implements OnInit, OnDestroy {
         ];
 
         directions.forEach(direction => {
-          (view.cell as ActorShape | ProcessShape | StoreShape)
+          (view.cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape)
             .getPortsByDirection(direction)
             .forEach((port: PortManager.Port) => {
               const portNode = view.findPortElem(port.id, 'portBody');
@@ -1385,7 +1565,7 @@ export class DfdComponent implements OnInit, OnDestroy {
       }
 
       // Select the clicked node
-      this._selectedNode = cell as ActorShape | ProcessShape | StoreShape;
+      this._selectedNode = cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
 
       // Add tools to the selected node (remove button and boundary)
       const tools = [
@@ -1530,7 +1710,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         view.cell instanceof ActorShape ||
         view.cell instanceof ProcessShape ||
-        view.cell instanceof StoreShape
+        view.cell instanceof StoreShape ||
+        view.cell instanceof SecurityBoundaryShape
       ) {
         const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
           'top',
@@ -1540,7 +1721,7 @@ export class DfdComponent implements OnInit, OnDestroy {
         ];
 
         directions.forEach(direction => {
-          (view.cell as ActorShape | ProcessShape | StoreShape)
+          (view.cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape)
             .getPortsByDirection(direction)
             .forEach((port: PortManager.Port) => {
               const portNode = view.findPortElem(port.id, 'portBody');
@@ -1624,7 +1805,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (
         node instanceof ActorShape ||
         node instanceof ProcessShape ||
-        node instanceof StoreShape
+        node instanceof StoreShape ||
+        node instanceof SecurityBoundaryShape
       ) {
         const nodeView = this._graph?.findViewByCell(node);
         if (nodeView && nodeView instanceof NodeView) {
@@ -1670,6 +1852,16 @@ export class DfdComponent implements OnInit, OnDestroy {
     if (!this._graph) {
       return;
     }
+
+    // Add a security boundary first (so it's at the bottom of the z-order)
+    const securityBoundary = new SecurityBoundaryShape()
+      .resize(250, 150)
+      .position(300, 150)
+      .updatePorts(this._graph);
+
+    // Set a lower z-index to make security boundary appear below other shapes
+    securityBoundary.setZIndex(-1);
+    this._graph.addNode(securityBoundary);
 
     this._graph.addNode(
       new ActorShape().resize(120, 40).position(200, 50).updatePorts(this._graph),
