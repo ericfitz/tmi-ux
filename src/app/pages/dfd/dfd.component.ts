@@ -9,6 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Graph, Shape, NodeView } from '@antv/x6';
+import { Transform } from '@antv/x6-plugin-transform';
 import { PortManager } from '@antv/x6/lib/model/port';
 import { LoggerService } from '../../core/services/logger.service';
 import { PassiveEventHandler } from '../diagram-editor/services/x6/passive-event-handler';
@@ -846,7 +847,7 @@ export class DfdComponent implements OnInit, OnDestroy {
       args: {
         attrs: {
           stroke: '#47C769', // Green stroke matching port highlighter
-          strokeWidth: 2, // Make the stroke wider for emphasis
+          strokeWidth: 3, // Make the stroke wider for emphasis (increased to stand out from the thicker default)
         },
       },
     };
@@ -984,8 +985,8 @@ export class DfdComponent implements OnInit, OnDestroy {
             return new Shape.Edge({
               attrs: {
                 line: {
-                  stroke: '#A2B1C3',
-                  strokeWidth: 1,
+                  stroke: '#333333', // Match node stroke color
+                  strokeWidth: 2, // Match node stroke width
                   targetMarker: {
                     name: 'classic',
                     size: 7,
@@ -1027,6 +1028,70 @@ export class DfdComponent implements OnInit, OnDestroy {
             }
           },
         );
+
+        // Register the Transform plugin for node resizing
+        this._graph.use(
+          new Transform({
+            resizing: {
+              enabled: true,
+              minWidth: 60,
+              minHeight: 30,
+              // Preserve aspect ratio for ProcessShape (circle)
+              preserveAspectRatio: false,
+              orthogonal: false,
+            },
+            rotating: false, // Disable rotation
+          }),
+        );
+
+        // Configure resize handles to be square-shaped
+        const transformPlugin = this._graph.getPlugin<Transform>('transform');
+        if (transformPlugin) {
+          // Apply custom styles to resize handles
+          // Note: We're using CSS to style the handles as squares
+          const style = document.createElement('style');
+          style.textContent = `
+            /* Base style for all resize handles */
+            .x6-node-selected .x6-widget-transform-resize {
+              width: 8px !important;
+              height: 8px !important;
+              border-radius: 0 !important;
+              background-color: #000000 !important;
+              border: none !important;
+              outline: none !important;
+              margin: 2px !important;
+            }
+            
+            /* Top handles - move up */
+            .x6-widget-transform-resize-nw,
+            .x6-widget-transform-resize-n,
+            .x6-widget-transform-resize-ne {
+              margin-top: 4px !important;
+            }
+            
+            /* Bottom handles - move down */
+            .x6-widget-transform-resize-sw,
+            .x6-widget-transform-resize-s,
+            .x6-widget-transform-resize-se {
+              margin-bottom: 4px !important;
+            }
+            
+            /* Left handles - move left */
+            .x6-widget-transform-resize-nw,
+            .x6-widget-transform-resize-w,
+            .x6-widget-transform-resize-sw {
+              margin-left: 4px !important;
+            }
+            
+            /* Right handles - move right */
+            .x6-widget-transform-resize-ne,
+            .x6-widget-transform-resize-e,
+            .x6-widget-transform-resize-se {
+              margin-right: 4px !important;
+            }
+          `;
+          document.head.appendChild(style);
+        }
       }
 
       // Show ports when creating a new edge
@@ -1312,12 +1377,17 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (this._selectedNode && this._selectedNode !== cell) {
         // Remove tools from the previously selected node
         this._selectedNode.removeTools();
+        // Disable transform on the previously selected node
+        if (this._selectedNode) {
+          // Just removing the selection is enough to disable transform
+          this._selectedNode.removeTools();
+        }
       }
 
       // Select the clicked node
       this._selectedNode = cell as ActorShape | ProcessShape | StoreShape;
 
-      // Add tools to the selected node (remove button and resizing)
+      // Add tools to the selected node (remove button and boundary)
       const tools = [
         {
           name: 'button-remove',
@@ -1333,20 +1403,98 @@ export class DfdComponent implements OnInit, OnDestroy {
             padding: 10,
             attrs: {
               fill: '#47C769',
-              stroke: '#333333',
-              'stroke-width': 2,
+              stroke: 'none',
               'fill-opacity': 0.2,
             },
-            // The following options enable resizing
-            resizable: true,
-            minWidth: 60,
-            minHeight: 30,
-            preserveAspectRatio: cell instanceof ProcessShape,
           },
         },
       ];
 
       cell.addTools(tools);
+
+      // Enable the transform handles on the selected node
+      // For ProcessShape (circle), we need to preserve aspect ratio
+      // Instead of trying to modify the Transform plugin options directly,
+      // we'll use a different approach with CSS to style the handles
+
+      // Add a custom attribute to the node to indicate its type
+      if (cell instanceof ProcessShape) {
+        cell.attr('data-shape-type', 'process');
+      } else {
+        cell.attr('data-shape-type', 'rect');
+      }
+
+      // Add a style element to the document if it doesn't exist yet
+      if (!document.getElementById('resize-handles-style')) {
+        const style = document.createElement('style');
+        style.id = 'resize-handles-style';
+        style.textContent = `
+          /* Style the resize handles as smaller, solid black squares */
+          .x6-widget-transform {
+            border: none !important;
+          }
+          /* Base style for all resize handles */
+          .x6-widget-transform-resize {
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 0 !important;
+            background-color: #000000 !important;
+            border: none !important;
+            outline: none !important;
+            position: absolute !important;
+          }
+          
+          /* Position the handles using nth-child selectors */
+          /* Top-left handle */
+          .x6-widget-transform-resize:nth-child(1) {
+            top: -4px !important;
+            left: -4px !important;
+          }
+          
+          /* Top-middle handle */
+          .x6-widget-transform-resize:nth-child(2) {
+            top: -4px !important;
+          }
+          
+          /* Top-right handle */
+          .x6-widget-transform-resize:nth-child(3) {
+            top: -4px !important;
+            right: -6px !important;
+          }
+          
+          /* Middle-right handle */
+          .x6-widget-transform-resize:nth-child(4) {
+            right: -6px !important;
+          }
+          
+          /* Bottom-right handle */
+          .x6-widget-transform-resize:nth-child(5) {
+            bottom: -6px !important;
+            right: -6px !important;
+          }
+          
+          /* Bottom-middle handle */
+          .x6-widget-transform-resize:nth-child(6) {
+            bottom: -6px !important;
+          }
+          
+          /* Bottom-left handle */
+          .x6-widget-transform-resize:nth-child(7) {
+            bottom: -6px !important;
+            left: -4px !important;
+          }
+          
+          /* Middle-left handle */
+          .x6-widget-transform-resize:nth-child(8) {
+            left: -4px !important;
+          }
+          /* Ensure circular nodes maintain aspect ratio during resize */
+          [data-shape-type="process"] {
+            aspect-ratio: 1 / 1;
+          }
+        `;
+        document.head.appendChild(style);
+      }
     });
 
     /**
@@ -1357,6 +1505,10 @@ export class DfdComponent implements OnInit, OnDestroy {
       if (this._selectedNode) {
         // Remove all tools from the selected node
         this._selectedNode.removeTools();
+
+        // Disable transform on the deselected node
+        // No need to do anything special here, removeTools is sufficient
+
         this._selectedNode = null;
       }
     });
@@ -1370,6 +1522,8 @@ export class DfdComponent implements OnInit, OnDestroy {
       // Only remove tools if the node is not selected
       if (cell !== this._selectedNode) {
         cell.removeTools();
+        // Disable transform for non-selected nodes
+        // No need to do anything special here, removeTools is sufficient
       }
 
       // Hide ports when not hovering, except for ports that are in use
