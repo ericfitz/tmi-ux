@@ -339,8 +339,8 @@ export class ZzzComponent implements OnInit, OnDestroy {
       name: 'stroke',
       args: {
         attrs: {
-          fill: '#f5f5f5', // Light gray fill
-          stroke: '#1890ff', // Blue stroke
+          // No fill - transparent
+          stroke: '#47C769', // Green stroke matching port highlighter
         },
       },
     };
@@ -355,7 +355,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
       name: 'stroke',
       args: {
         attrs: {
-          stroke: '#1890ff', // Blue stroke
+          stroke: '#47C769', // Green stroke matching port highlighter
           strokeWidth: 2, // Make the stroke wider for emphasis
         },
       },
@@ -527,14 +527,14 @@ export class ZzzComponent implements OnInit, OnDestroy {
     });
 
     // Add node hover highlighting
-    this._graph.on('node:mouseenter', ({ cell, view }) => {
+    this._graph.on('node:mouseenter', ({ cell: _cell, view }) => {
       // Highlight the node using the view
       view.highlight(null, {
         highlighter: nodeHighlighter,
       });
     });
 
-    this._graph.on('node:mouseleave', ({ cell, view }) => {
+    this._graph.on('node:mouseleave', ({ cell: _cell, view }) => {
       // Remove the highlight using the view
       view.unhighlight(null, {
         highlighter: nodeHighlighter,
