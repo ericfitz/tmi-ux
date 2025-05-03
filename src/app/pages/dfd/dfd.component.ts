@@ -1082,7 +1082,7 @@ export class DfdComponent implements OnInit, OnDestroy {
           enabled: true,
           findParent: ({ node }) => {
             // Don't allow parent nodes to be embedded in other nodes
-            const nodeData = node.getData();
+            const nodeData: NodeData = node.getData();
             // Use type guard to check if nodeData is a valid object with parent property
             if (
               nodeData &&
@@ -1099,7 +1099,7 @@ export class DfdComponent implements OnInit, OnDestroy {
                 // Skip if the parent is the same as the node
                 if (parent.id === node.id) return false;
 
-                const data = parent.getData();
+                const data: NodeData = parent.getData();
                 // Use type guard to check if data is a valid object with parent property
                 if (data && typeof data === 'object' && 'parent' in data && data.parent) {
                   const parentBBox = parent.getBBox();
@@ -1476,9 +1476,10 @@ export class DfdComponent implements OnInit, OnDestroy {
           node.attr('body/fill', '#e6f7ff');
 
           // Add a data attribute to mark it as embedded
-          const existingData = node.getData();
+          const existingData: NodeData = node.getData();
           // Create a safe object to spread using type guard
-          const safeData = existingData && typeof existingData === 'object' ? existingData : {};
+          const safeData: NodeData =
+            existingData && typeof existingData === 'object' ? existingData : {};
           node.setData({
             ...safeData,
             embedded: true,
@@ -1499,9 +1500,9 @@ export class DfdComponent implements OnInit, OnDestroy {
           node.attr('body/fill', '#FFFFFF');
 
           // Update data to remove embedded flag
-          const data = node.getData();
+          const data: NodeData = node.getData();
           // Create a safe object to spread using type guard
-          const safeData = data && typeof data === 'object' ? data : {};
+          const safeData: NodeData = data && typeof data === 'object' ? data : {};
           const updatedData: NodeData = { ...safeData };
           delete updatedData.embedded;
           delete updatedData.parentId;
