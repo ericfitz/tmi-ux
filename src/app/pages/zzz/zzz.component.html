@@ -4,7 +4,9 @@
   </div>
 
   <div class="graph-toolbar">
-    <button mat-raised-button color="primary" (click)="addRandomNode()">Add Node</button>
+    <button mat-raised-button color="primary" (click)="addRandomNode('actor')">Add Actor</button>
+    <button mat-raised-button color="accent" (click)="addRandomNode('process')">Add Process</button>
+    <button mat-raised-button color="warn" (click)="addRandomNode('store')">Add Store</button>
   </div>
 
   <div class="graph-container">
