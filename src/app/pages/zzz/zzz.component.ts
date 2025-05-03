@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Graph, Edge, Shape, NodeView } from '@antv/x6';
+import { Graph, Shape, NodeView } from '@antv/x6';
 import { PortManager } from '@antv/x6/lib/model/port';
 import { LoggerService } from '../../core/services/logger.service';
 
@@ -117,6 +117,7 @@ MyShape.config({
             stroke: '#5F95FF',
             fill: '#fff',
             strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
           },
         },
       },
@@ -131,6 +132,7 @@ MyShape.config({
             fill: '#fff',
             stroke: '#5F95FF',
             strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
           },
         },
       },
@@ -145,6 +147,7 @@ MyShape.config({
             fill: '#fff',
             stroke: '#5F95FF',
             strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
           },
         },
       },
@@ -159,6 +162,7 @@ MyShape.config({
             stroke: '#5F95FF',
             fill: '#fff',
             strokeWidth: 1,
+            visibility: 'hidden', // Hide ports by default
           },
         },
       },
@@ -465,6 +469,66 @@ export class ZzzComponent implements OnInit, OnDestroy {
         },
       },
     });
+
+    // Show ports when creating a new edge
+    this._graph.on('edge:connected', ({ edge }) => {
+      // Make the connected ports visible
+      const sourceId = edge.getSourcePortId();
+      const targetId = edge.getTargetPortId();
+      const sourceCell = edge.getSourceCell();
+      const targetCell = edge.getTargetCell();
+
+      if (sourceCell && sourceId) {
+        const sourceView = this._graph?.findViewByCell(sourceCell);
+        if (sourceView && sourceView instanceof NodeView) {
+          const portElem = sourceView.findPortElem(sourceId, 'portBody');
+          if (portElem) {
+            portElem.setAttribute('visibility', 'visible');
+          }
+        }
+      }
+
+      if (targetCell && targetId) {
+        const targetView = this._graph?.findViewByCell(targetCell);
+        if (targetView && targetView instanceof NodeView) {
+          const portElem = targetView.findPortElem(targetId, 'portBody');
+          if (portElem) {
+            portElem.setAttribute('visibility', 'visible');
+          }
+        }
+      }
+
+      // Hide ports on all other nodes that aren't in use
+      this.hideUnusedPortsOnAllNodes();
+    });
+
+    // Show all ports when starting to create an edge
+    this._graph.on('edge:mousedown', ({ cell: _cell, view: _view }) => {
+      // Show all ports on all nodes when starting to create an edge
+      const nodes = this._graph?.getNodes() || [];
+      nodes.forEach(node => {
+        if (node instanceof MyShape) {
+          const nodeView = this._graph?.findViewByCell(node);
+          if (nodeView && nodeView instanceof NodeView) {
+            const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+              'top',
+              'right',
+              'bottom',
+              'left',
+            ];
+
+            directions.forEach(direction => {
+              node.getPortsByDirection(direction).forEach((port: PortManager.Port) => {
+                const portNode = nodeView.findPortElem(port.id, 'portBody');
+                if (portNode) {
+                  portNode.setAttribute('visibility', 'visible');
+                }
+              });
+            });
+          }
+        }
+      });
+    });
   }
 
   /**
@@ -526,12 +590,33 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Add node hover highlighting
+    // Add node hover highlighting and show/hide ports
     this._graph.on('node:mouseenter', ({ cell: _cell, view }) => {
       // Highlight the node using the view
       view.highlight(null, {
         highlighter: nodeHighlighter,
       });
+
+      // Show ports when hovering over the node
+      if (view.cell instanceof MyShape) {
+        const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+          'top',
+          'right',
+          'bottom',
+          'left',
+        ];
+
+        directions.forEach(direction => {
+          (view.cell as MyShape)
+            .getPortsByDirection(direction)
+            .forEach((port: PortManager.Port) => {
+              const portNode = view.findPortElem(port.id, 'portBody');
+              if (portNode) {
+                portNode.setAttribute('visibility', 'visible');
+              }
+            });
+        });
+      }
     });
 
     this._graph.on('node:mouseleave', ({ cell: _cell, view }) => {
@@ -539,6 +624,42 @@ export class ZzzComponent implements OnInit, OnDestroy {
       view.unhighlight(null, {
         highlighter: nodeHighlighter,
       });
+
+      // Hide ports when not hovering, except for ports that are in use
+      if (view.cell instanceof MyShape) {
+        const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+          'top',
+          'right',
+          'bottom',
+          'left',
+        ];
+
+        directions.forEach(direction => {
+          (view.cell as MyShape)
+            .getPortsByDirection(direction)
+            .forEach((port: PortManager.Port) => {
+              const portNode = view.findPortElem(port.id, 'portBody');
+              if (portNode) {
+                // Check if this port has any connected edges
+                const connectedEdges = this._graph?.getConnectedEdges(view.cell, {
+                  outgoing: true,
+                  incoming: true,
+                });
+
+                const isPortInUse = connectedEdges?.some(edge => {
+                  const sourcePort = edge.getSourcePortId();
+                  const targetPort = edge.getTargetPortId();
+                  return sourcePort === port.id || targetPort === port.id;
+                });
+
+                // Only hide ports that are not in use
+                if (!isPortInUse) {
+                  portNode.setAttribute('visibility', 'hidden');
+                }
+              }
+            });
+        });
+      }
     });
 
     // Enhance existing edge hover events
@@ -548,9 +669,8 @@ export class ZzzComponent implements OnInit, OnDestroy {
         highlighter: edgeHighlighter,
       });
 
-      // Add tools (existing functionality)
+      // Add tools (only target arrowhead and remove button)
       edge.addTools([
-        'source-arrowhead',
         'target-arrowhead',
         {
           name: 'button-remove',
@@ -569,6 +689,58 @@ export class ZzzComponent implements OnInit, OnDestroy {
 
       // Remove tools (existing functionality)
       edge.removeTools();
+    });
+  }
+
+  /**
+   * Hides all unused ports on all nodes in the graph
+   * Used after edge creation to clean up visible ports
+   */
+  private hideUnusedPortsOnAllNodes(): void {
+    if (!this._graph) {
+      return;
+    }
+
+    // Get all nodes in the graph
+    const nodes = this._graph.getNodes();
+
+    // For each node, hide all ports that aren't connected to an edge
+    nodes.forEach(node => {
+      if (node instanceof MyShape) {
+        const nodeView = this._graph?.findViewByCell(node);
+        if (nodeView && nodeView instanceof NodeView) {
+          const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+            'top',
+            'right',
+            'bottom',
+            'left',
+          ];
+
+          directions.forEach(direction => {
+            node.getPortsByDirection(direction).forEach((port: PortManager.Port) => {
+              const portNode = nodeView.findPortElem(port.id, 'portBody');
+              if (portNode) {
+                // Check if this port has any connected edges
+                const connectedEdges = this._graph?.getConnectedEdges(node, {
+                  outgoing: true,
+                  incoming: true,
+                });
+
+                const isPortInUse = connectedEdges?.some(edge => {
+                  const sourcePort = edge.getSourcePortId();
+                  const targetPort = edge.getTargetPortId();
+                  return sourcePort === port.id || targetPort === port.id;
+                });
+
+                // Only hide ports that are not in use
+                if (!isPortInUse) {
+                  portNode.setAttribute('visibility', 'hidden');
+                }
+              }
+            });
+          });
+        }
+      }
     });
   }
 
