@@ -20,8 +20,9 @@ interface HighlighterConfig {
   name: string;
   args: {
     attrs: {
-      fill: string;
-      stroke: string;
+      fill?: string;
+      stroke?: string;
+      strokeWidth?: number;
     };
   };
 }
@@ -330,6 +331,38 @@ export class ZzzComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Creates the node highlighter configuration for hover effects
+   * @returns The highlighter configuration object
+   */
+  private createNodeHighlighter(): HighlighterConfig {
+    return {
+      name: 'stroke',
+      args: {
+        attrs: {
+          fill: '#f5f5f5', // Light gray fill
+          stroke: '#1890ff', // Blue stroke
+        },
+      },
+    };
+  }
+
+  /**
+   * Creates the edge highlighter configuration for hover effects
+   * @returns The highlighter configuration object
+   */
+  private createEdgeHighlighter(): HighlighterConfig {
+    return {
+      name: 'stroke',
+      args: {
+        attrs: {
+          stroke: '#1890ff', // Blue stroke
+          strokeWidth: 2, // Make the stroke wider for emphasis
+        },
+      },
+    };
+  }
+
+  /**
    * Creates and configures the X6 graph
    * @param containerElement The container element
    * @param magnetAvailabilityHighlighter The highlighter configuration
@@ -443,6 +476,10 @@ export class ZzzComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Create highlighters for nodes and edges
+    const nodeHighlighter = this.createNodeHighlighter();
+    const edgeHighlighter = this.createEdgeHighlighter();
+
     const update = (view: NodeView): void => {
       const cell = view.cell;
       if (cell instanceof MyShape && this._graph) {
@@ -489,7 +526,29 @@ export class ZzzComponent implements OnInit, OnDestroy {
       }
     });
 
-    this._graph.on('edge:mouseenter', ({ edge }) => {
+    // Add node hover highlighting
+    this._graph.on('node:mouseenter', ({ cell, view }) => {
+      // Highlight the node using the view
+      view.highlight(null, {
+        highlighter: nodeHighlighter,
+      });
+    });
+
+    this._graph.on('node:mouseleave', ({ cell, view }) => {
+      // Remove the highlight using the view
+      view.unhighlight(null, {
+        highlighter: nodeHighlighter,
+      });
+    });
+
+    // Enhance existing edge hover events
+    this._graph.on('edge:mouseenter', ({ edge, view }) => {
+      // Highlight the edge using the view
+      view.highlight(null, {
+        highlighter: edgeHighlighter,
+      });
+
+      // Add tools (existing functionality)
       edge.addTools([
         'source-arrowhead',
         'target-arrowhead',
@@ -502,7 +561,13 @@ export class ZzzComponent implements OnInit, OnDestroy {
       ]);
     });
 
-    this._graph.on('edge:mouseleave', ({ edge }) => {
+    this._graph.on('edge:mouseleave', ({ edge, view }) => {
+      // Remove the highlight using the view
+      view.unhighlight(null, {
+        highlighter: edgeHighlighter,
+      });
+
+      // Remove tools (existing functionality)
       edge.removeTools();
     });
   }
