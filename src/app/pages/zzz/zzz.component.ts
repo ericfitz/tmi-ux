@@ -28,75 +28,63 @@ interface HighlighterConfig {
 
 // Define MyShape class outside of the component
 class MyShape extends Shape.Rect {
-  getInPorts(): PortManager.Port[] {
-    const ports = this.getPortsByGroup('in');
+  // Get ports by direction
+  getPortsByDirection(direction: 'top' | 'right' | 'bottom' | 'left'): PortManager.Port[] {
+    const ports = this.getPortsByGroup(direction);
     return ports.map(port => ({
       ...port,
-      id: port.id || `in-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      position: { name: 'top' },
+      id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+      position: { name: direction },
     })) as PortManager.Port[];
   }
 
-  getOutPorts(): PortManager.Port[] {
-    const ports = this.getPortsByGroup('out');
-    return ports.map(port => ({
-      ...port,
-      id: port.id || `out-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      position: { name: 'bottom' },
-    })) as PortManager.Port[];
+  // Get all ports from all directions
+  getAllPorts(): PortManager.Port[] {
+    return [
+      ...this.getPortsByDirection('top'),
+      ...this.getPortsByDirection('right'),
+      ...this.getPortsByDirection('bottom'),
+      ...this.getPortsByDirection('left'),
+    ];
   }
 
-  getUsedInPorts(graph: Graph): PortManager.Port[] {
-    const incomingEdges = graph.getIncomingEdges(this) || [];
-    return incomingEdges.map((edge: Edge) => {
-      const portId = edge.getTargetPortId();
-      const port = this.getPort(portId!);
-      if (port) {
-        return {
-          ...port,
-          id: port.id || `used-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-          position: { name: 'top' },
-        } as PortManager.Port;
+  // Update ports for all directions
+  updatePorts(_graph: Graph): MyShape {
+    const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ];
+    const portsPerDirection = 1;
+
+    let allPorts: PortManager.Port[] = [];
+
+    directions.forEach(direction => {
+      // Get existing ports or create initial ports if none exist
+      const existingPorts = this.getPortsByDirection(direction);
+
+      if (existingPorts.length === 0) {
+        // Only create new ports if there are no existing ones
+        // Create new ports inline
+        const newPorts = Array.from({ length: portsPerDirection }, (_, index) => {
+          return {
+            id: `new-${direction}-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 11)}`,
+            group: direction,
+            position: { name: direction },
+          } as PortManager.Port;
+        });
+        allPorts = [...allPorts, ...newPorts];
+      } else {
+        // Keep existing ports
+        allPorts = [...allPorts, ...existingPorts];
       }
-      // This should never happen, but we need to handle it for TypeScript
-      return {
-        id: `fallback-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-        group: 'in',
-        position: { name: 'top' },
-      } as PortManager.Port;
     });
-  }
 
-  getNewInPorts(length: number): PortManager.Port[] {
-    return Array.from(
-      {
-        length,
-      },
-      (_, index) => {
-        return {
-          id: `new-in-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 11)}`,
-          group: 'in',
-          position: { name: 'top' },
-        } as PortManager.Port;
-      },
-    );
-  }
-
-  updateInPorts(graph: Graph): MyShape {
-    const minNumberOfPorts = 2;
-    const ports = this.getInPorts();
-    const usedPorts = this.getUsedInPorts(graph);
-    const newPorts = this.getNewInPorts(Math.max(minNumberOfPorts - usedPorts.length, 1));
-
-    if (ports.length === minNumberOfPorts && ports.length - usedPorts.length > 0) {
-      // noop
-    } else if (ports.length === usedPorts.length) {
-      this.addPorts(newPorts);
-    } else if (ports.length + 1 > usedPorts.length) {
-      this.prop(['ports', 'items'], this.getOutPorts().concat(usedPorts).concat(newPorts), {
-        rewrite: true,
-      });
-    }
+    // Update all ports at once
+    this.prop(['ports', 'items'], allPorts, {
+      rewrite: true,
+    });
 
     return this;
   }
@@ -115,36 +103,60 @@ MyShape.config({
     },
   },
   ports: {
-    items: [
-      {
-        group: 'out',
-      },
-    ],
+    items: [{ group: 'top' }, { group: 'right' }, { group: 'bottom' }, { group: 'left' }],
     groups: {
-      in: {
+      top: {
         position: {
           name: 'top',
         },
         attrs: {
           portBody: {
-            magnet: 'passive',
-            r: 6,
+            magnet: true,
+            r: 5,
             stroke: '#5F95FF',
             fill: '#fff',
             strokeWidth: 1,
           },
         },
       },
-      out: {
+      right: {
+        position: {
+          name: 'right',
+        },
+        attrs: {
+          portBody: {
+            magnet: true,
+            r: 5,
+            fill: '#fff',
+            stroke: '#5F95FF',
+            strokeWidth: 1,
+          },
+        },
+      },
+      bottom: {
         position: {
           name: 'bottom',
         },
         attrs: {
           portBody: {
             magnet: true,
-            r: 6,
+            r: 5,
             fill: '#fff',
             stroke: '#5F95FF',
+            strokeWidth: 1,
+          },
+        },
+      },
+      left: {
+        position: {
+          name: 'left',
+        },
+        attrs: {
+          portBody: {
+            magnet: true,
+            r: 5,
+            stroke: '#5F95FF',
+            fill: '#fff',
             strokeWidth: 1,
           },
         },
@@ -196,7 +208,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
 
     // Add the node
     this._graph.addNode(
-      new MyShape().resize(120, 40).position(randomX, randomY).updateInPorts(this._graph),
+      new MyShape().resize(120, 40).position(randomX, randomY).updatePorts(this._graph),
     );
 
     this.logger.info(`Added new node at position (${randomX}, ${randomY})`);
@@ -376,7 +388,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
         allowBlank: false,
         allowLoop: true,
         highlight: true,
-        connector: 'smooth',
+        connector: 'rounded',
         connectionPoint: 'boundary',
         router: {
           name: 'metro',
@@ -398,26 +410,24 @@ export class ZzzComponent implements OnInit, OnDestroy {
             },
           });
         },
-        validateConnection: ({ targetView, targetMagnet }) => {
+        validateConnection: ({ targetView: _targetView, targetMagnet }) => {
           if (!targetMagnet) {
             return false;
           }
 
-          if (targetMagnet.getAttribute('port-group') !== 'in') {
+          // Allow connections to any port
+          const portGroup = targetMagnet.getAttribute('port-group') as
+            | 'top'
+            | 'right'
+            | 'bottom'
+            | 'left'
+            | null;
+          if (!portGroup) {
             return false;
           }
 
-          if (targetView && this._graph) {
-            const node = targetView.cell;
-            if (node instanceof MyShape) {
-              const portId = targetMagnet.getAttribute('port');
-              const usedInPorts = node.getUsedInPorts(this._graph);
-              if (usedInPorts.find(port => port && port.id === portId)) {
-                return false;
-              }
-            }
-          }
-
+          // No additional validation - allow connections to any port
+          // regardless of direction or existing connections
           return true;
         },
       },
@@ -436,13 +446,26 @@ export class ZzzComponent implements OnInit, OnDestroy {
     const update = (view: NodeView): void => {
       const cell = view.cell;
       if (cell instanceof MyShape && this._graph) {
-        cell.getInPorts().forEach(port => {
-          const portNode = view.findPortElem(port.id, 'portBody');
-          view.unhighlight(portNode, {
-            highlighter: magnetAvailabilityHighlighter,
+        // Unhighlight all ports
+        const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+          'top',
+          'right',
+          'bottom',
+          'left',
+        ];
+        directions.forEach(direction => {
+          cell.getPortsByDirection(direction).forEach(port => {
+            const portNode = view.findPortElem(port.id, 'portBody');
+            if (portNode) {
+              view.unhighlight(portNode, {
+                highlighter: magnetAvailabilityHighlighter,
+              });
+            }
           });
         });
-        cell.updateInPorts(this._graph);
+
+        // Update all ports
+        cell.updatePorts(this._graph);
       }
     };
 
@@ -462,7 +485,7 @@ export class ZzzComponent implements OnInit, OnDestroy {
 
       const target = edge.getTargetCell();
       if (target instanceof MyShape) {
-        target.updateInPorts(this._graph);
+        target.updatePorts(this._graph);
       }
     });
 
@@ -492,12 +515,10 @@ export class ZzzComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._graph.addNode(new MyShape().resize(120, 40).position(200, 50).updateInPorts(this._graph));
+    this._graph.addNode(new MyShape().resize(120, 40).position(200, 50).updatePorts(this._graph));
 
-    this._graph.addNode(new MyShape().resize(120, 40).position(400, 50).updateInPorts(this._graph));
+    this._graph.addNode(new MyShape().resize(120, 40).position(400, 50).updatePorts(this._graph));
 
-    this._graph.addNode(
-      new MyShape().resize(120, 40).position(300, 250).updateInPorts(this._graph),
-    );
+    this._graph.addNode(new MyShape().resize(120, 40).position(300, 250).updatePorts(this._graph));
   }
 }
