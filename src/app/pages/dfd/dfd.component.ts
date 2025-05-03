@@ -734,6 +734,9 @@ export class DfdComponent implements OnInit, OnDestroy {
 
           // Set a lower z-index to make security boundary appear below other shapes
           node.setZIndex(-1);
+
+          // Mark this node as a potential parent for embedding
+          node.setData({ parent: true });
           break;
         case 'actor':
         default:
@@ -1062,6 +1065,34 @@ export class DfdComponent implements OnInit, OnDestroy {
           minScale: 0.5,
           maxScale: 2,
         },
+        // Enable node embedding
+        embedding: {
+          enabled: true,
+          findParent: ({ node }) => {
+            // Don't allow parent nodes to be embedded in other nodes
+            const nodeData = node.getData();
+            if (nodeData && nodeData.parent) {
+              return [];
+            }
+
+            const bbox = node.getBBox();
+            return (
+              this._graph?.getNodes().filter(parent => {
+                // Skip if the parent is the same as the node
+                if (parent.id === node.id) return false;
+
+                const data = parent.getData();
+                if (data && data.parent) {
+                  const parentBBox = parent.getBBox();
+                  // Check if the node's center is inside the parent
+                  const nodeCenter = bbox.getCenter();
+                  return parentBBox.containsPoint(nodeCenter.x, nodeCenter.y);
+                }
+                return false;
+              }) || []
+            );
+          },
+        },
         highlighting: {
           magnetAvailable: magnetAvailabilityHighlighter,
           magnetAdsorbed: {
@@ -1070,6 +1101,16 @@ export class DfdComponent implements OnInit, OnDestroy {
               attrs: {
                 fill: '#fff',
                 stroke: '#31d0c6',
+              },
+            },
+          },
+          // Add highlighting for embedding
+          embedding: {
+            name: 'stroke',
+            args: {
+              padding: -1,
+              attrs: {
+                stroke: '#73d13d',
               },
             },
           },
@@ -1375,6 +1416,54 @@ export class DfdComponent implements OnInit, OnDestroy {
     // Create highlighters for nodes and edges
     const nodeHighlighter = this.createNodeHighlighter();
     const edgeHighlighter = this.createEdgeHighlighter();
+
+    // Handle node:change:parent event to update nodes when they're embedded or un-embedded
+    this._graph.on('node:change:parent', ({ node, current, previous }) => {
+      if (current && !previous) {
+        // Node was embedded
+        this.logger.info('Node embedded:', node.id);
+
+        // Add a visual indicator for embedded nodes
+        if (
+          node instanceof ActorShape ||
+          node instanceof ProcessShape ||
+          node instanceof StoreShape ||
+          node instanceof SecurityBoundaryShape
+        ) {
+          // Change the fill color to indicate it's embedded
+          node.attr('body/fill', '#e6f7ff');
+
+          // Add a data attribute to mark it as embedded
+          node.setData({
+            ...node.getData(),
+            embedded: true,
+            parentId: current,
+          });
+        }
+      } else if (!current && previous) {
+        // Node was un-embedded
+        this.logger.info('Node un-embedded:', node.id);
+
+        if (
+          node instanceof ActorShape ||
+          node instanceof ProcessShape ||
+          node instanceof StoreShape ||
+          node instanceof SecurityBoundaryShape
+        ) {
+          // Restore original fill color
+          node.attr('body/fill', '#FFFFFF');
+
+          // Update data to remove embedded flag
+          const data = node.getData() || {};
+          delete data['embedded'];
+          delete data['parentId'];
+          node.setData(data);
+        }
+      }
+
+      // Force change detection
+      this.cdr.detectChanges();
+    });
 
     const update = (view: NodeView): void => {
       const cell = view.cell;
@@ -1861,6 +1950,9 @@ export class DfdComponent implements OnInit, OnDestroy {
 
     // Set a lower z-index to make security boundary appear below other shapes
     securityBoundary.setZIndex(-1);
+
+    // Mark this node as a potential parent for embedding
+    securityBoundary.setData({ parent: true });
     this._graph.addNode(securityBoundary);
 
     this._graph.addNode(
