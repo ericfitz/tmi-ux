@@ -49,6 +49,21 @@ export const routes: Routes = [
       import(/* webpackChunkName: "dfd" */ './pages/dfd/dfd.component').then(c => c.DfdComponent),
   },
   {
+    path: 'dfd-angular/:id',
+    loadComponent: () =>
+      import(/* webpackChunkName: "dfd-angular" */ './pages/dfd/dfd-angular.component').then(
+        c => c.DfdAngularComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'dfd-angular',
+    loadComponent: () =>
+      import(/* webpackChunkName: "dfd-angular" */ './pages/dfd/dfd-angular.component').then(
+        c => c.DfdAngularComponent,
+      ),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

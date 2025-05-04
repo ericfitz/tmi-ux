@@ -7,27 +7,52 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Injector,
 } from '@angular/core';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { DfdGraphService } from './services/dfd-graph.service';
-import { DfdNodeService } from './services/dfd-node.service';
 import { DfdPortService } from './services/dfd-port.service';
-import { DfdEventService } from './services/dfd-event.service';
 import { DfdHighlighterService } from './services/dfd-highlighter.service';
 import { DfdLabelEditorService } from './services/dfd-label-editor.service';
+import { DfdAngularShapeService } from './services/dfd-angular-shape.service';
+import { DfdNodeAngularService } from './services/dfd-node-angular.service';
+import { DfdEventAngularService } from './services/dfd-event-angular.service';
 import { ShapeType } from './services/dfd-node.service';
 
 @Component({
-  selector: 'app-dfd',
+  selector: 'app-dfd-angular',
   standalone: true,
   imports: [CommonModule, CoreMaterialModule],
-  templateUrl: './dfd.component.html',
+  template: `
+    <div class="dfd-container">
+      <div class="title-row">
+        <h1 class="page-title">DFD Page (Angular Components)</h1>
+      </div>
+
+      <div class="graph-toolbar">
+        <button mat-raised-button color="primary" (click)="addRandomNode('actor')">
+          Add Actor
+        </button>
+        <button mat-raised-button color="accent" (click)="addRandomNode('process')">
+          Add Process
+        </button>
+        <button mat-raised-button color="warn" (click)="addRandomNode('store')">Add Store</button>
+        <button mat-raised-button color="basic" (click)="addRandomNode('securityBoundary')">
+          Add Security Boundary
+        </button>
+      </div>
+
+      <div class="graph-container">
+        <div #graphContainer class="x6-graph"></div>
+      </div>
+    </div>
+  `,
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DfdComponent implements OnInit, OnDestroy {
+export class DfdAngularComponent implements OnInit, OnDestroy {
   @ViewChild('graphContainer', { static: true }) graphContainer!: ElementRef;
 
   private _graph: Graph | null = null;
@@ -36,14 +61,16 @@ export class DfdComponent implements OnInit, OnDestroy {
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
+    private injector: Injector,
     private graphService: DfdGraphService,
-    private nodeService: DfdNodeService,
+    private nodeService: DfdNodeAngularService,
     private portService: DfdPortService,
-    private eventService: DfdEventService,
+    private eventService: DfdEventAngularService,
     private highlighterService: DfdHighlighterService,
     private labelEditorService: DfdLabelEditorService,
+    private angularShapeService: DfdAngularShapeService,
   ) {
-    this.logger.info('DfdComponent constructor called');
+    this.logger.info('DfdAngularComponent constructor called');
   }
 
   /**
@@ -69,10 +96,13 @@ export class DfdComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.logger.info('DfdComponent ngOnInit called');
+    this.logger.info('DfdAngularComponent ngOnInit called');
 
     // Add passive event listeners for touch and wheel events BEFORE graph initialization
     this.addPassiveEventListeners();
+
+    // Register Angular shapes
+    this.angularShapeService.registerShapes();
 
     // Delay initialization slightly to ensure the container is fully rendered
     setTimeout(() => {
@@ -191,7 +221,7 @@ export class DfdComponent implements OnInit, OnDestroy {
    * Initialize the X6 graph
    */
   private initializeGraph(): void {
-    this.logger.info('DfdComponent initializeGraph called');
+    this.logger.info('DfdAngularComponent initializeGraph called');
 
     try {
       // Prepare the container

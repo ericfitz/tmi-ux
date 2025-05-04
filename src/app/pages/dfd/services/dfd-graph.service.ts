@@ -27,6 +27,12 @@ export class DfdGraphService {
    * @param magnetAvailabilityHighlighter The highlighter configuration
    * @returns The configured graph instance
    */
+  /**
+   * Creates and configures the X6 graph with passive event listeners
+   * @param containerElement The container element
+   * @param magnetAvailabilityHighlighter The highlighter configuration
+   * @returns The configured graph instance
+   */
   createGraph(
     containerElement: HTMLElement,
     magnetAvailabilityHighlighter: HighlighterConfig,
@@ -36,6 +42,9 @@ export class DfdGraphService {
       const containerHeight = containerElement.clientHeight || 600;
 
       this.logger.info(`Creating graph with dimensions: ${containerWidth}x${containerHeight}`);
+
+      // Add passive event listeners to the container before creating the graph
+      this.addPassiveEventListenersToContainer(containerElement);
 
       const graph: Graph = new Graph({
         container: containerElement,
@@ -59,7 +68,10 @@ export class DfdGraphService {
         },
         width: containerWidth,
         height: containerHeight,
-        panning: true,
+        panning: {
+          enabled: true,
+          modifiers: 'ctrl',
+        },
         mousewheel: {
           enabled: true,
           modifiers: ['ctrl', 'meta'],
@@ -267,6 +279,49 @@ export class DfdGraphService {
       this.logger.error('Error creating graph:', error);
       return null;
     }
+  }
+
+  /**
+   * Add passive event listeners to the container element
+   * This helps prevent browser warnings about non-passive event listeners
+   * @param containerElement The container element to add listeners to
+   */
+  private addPassiveEventListenersToContainer(containerElement: HTMLElement): void {
+    if (!containerElement) {
+      return;
+    }
+
+    // Add passive event listeners for touch and wheel events
+    const passiveEvents = ['touchstart', 'touchmove', 'touchend', 'wheel', 'mousewheel'];
+
+    // Add passive event listeners to the container
+    passiveEvents.forEach((eventType: string): void => {
+      // Create a passive event listener that captures events
+      containerElement.addEventListener(
+        eventType,
+        (_e: Event): void => {
+          // Empty handler with passive: true to prevent browser warnings
+          // This will run before X6 adds its own listeners
+        },
+        { passive: true, capture: true },
+      );
+
+      // Also add to document and window for good measure
+      document.addEventListener(eventType, (_e: Event): void => {}, {
+        passive: true,
+        capture: true,
+      });
+    });
+
+    // Add a style element to override any X6 event listeners
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Make sure touch events don't block scrolling */
+      .x6-graph {
+        touch-action: pan-x pan-y;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   /**
