@@ -127,16 +127,13 @@ export class DfdGraphService {
           allowBlank: false,
           allowLoop: false, // Prevent self-loops
           highlight: true,
-          connector: 'rounded',
+          connector: 'smooth',
           connectionPoint: 'boundary',
           anchor: 'center', // Ensure proper anchor point
           sourceAnchor: 'center', // Source anchor
           targetAnchor: 'center', // Target anchor
           router: {
-            name: 'metro',
-            args: {
-              direction: 'V',
-            },
+            name: 'normal',
           },
           // Enable edge creation from ports
           validateMagnet({ magnet }) {
