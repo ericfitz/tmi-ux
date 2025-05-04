@@ -50,6 +50,9 @@ importers:
       '@antv/x6-plugin-dnd':
         specifier: ^2.1.1
         version: 2.1.1(@antv/x6@2.18.1)
+      '@antv/x6-plugin-keyboard':
+        specifier: ^2.2.3
+        version: 2.2.3(@antv/x6@2.18.1)
       '@antv/x6-plugin-snapline':
         specifier: ^2.1.7
         version: 2.1.7(@antv/x6@2.18.1)
@@ -432,6 +435,11 @@ packages:
 
   '@antv/x6-plugin-dnd@2.1.1':
     resolution: {integrity: sha512-v0szzik1RkadPDn4Qi5mOSaB2AeI78D40/YuCYbPVzplG+HydGsHwO3MLTgJPQ+R5n0eM0W5F850p1VfTOHR7g==}
+    peerDependencies:
+      '@antv/x6': ^2.x
+
+  '@antv/x6-plugin-keyboard@2.2.3':
+    resolution: {integrity: sha512-pnCIC+mDyKKfkcDyLePfGxKVIqXBcldTgannITkHC1kc0IafRS1GMvzpvuDGrM5haRYd6Nwz8kjkJyHkJE4GPA==}
     peerDependencies:
       '@antv/x6': ^2.x
 
@@ -3950,6 +3958,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mousetrap@1.6.5:
+    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
+
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
     engines: {node: '>=10'}
@@ -5746,6 +5757,11 @@ snapshots:
   '@antv/x6-plugin-dnd@2.1.1(@antv/x6@2.18.1)':
     dependencies:
       '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-keyboard@2.2.3(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+      mousetrap: 1.6.5
 
   '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.18.1)':
     dependencies:
@@ -9566,6 +9582,8 @@ snapshots:
   mkdirp@1.0.4: {}
 
   mkdirp@3.0.1: {}
+
+  mousetrap@1.6.5: {}
 
   mrmime@2.0.1: {}
 
