@@ -86,6 +86,10 @@ ActorShape.config({
       tagName: 'rect',
       selector: 'body',
     },
+    {
+      tagName: 'text',
+      selector: 'label',
+    },
   ],
   attrs: {
     root: {
@@ -96,6 +100,17 @@ ActorShape.config({
       stroke: '#333333',
       strokeWidth: 2,
       opacity: 1,
+    },
+    label: {
+      text: 'Actor',
+      fill: '#333333',
+      fontSize: 12,
+      fontFamily: 'Arial, sans-serif',
+      textAnchor: 'middle',
+      textVerticalAnchor: 'middle',
+      pointerEvents: 'none',
+      refX: '50%',
+      refY: '50%',
     },
   },
   ports: {

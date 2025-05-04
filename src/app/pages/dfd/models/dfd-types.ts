@@ -62,6 +62,15 @@ export interface ShapeConfig {
       rx?: number;
       ry?: number;
     };
+    label?: {
+      text?: string;
+      fill?: string;
+      fontSize?: number;
+      fontFamily?: string;
+      textAnchor?: string;
+      textVerticalAnchor?: string;
+      pointerEvents?: string;
+    };
   };
   ports: {
     items: Array<{ group: string }>;

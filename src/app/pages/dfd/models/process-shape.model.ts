@@ -81,6 +81,16 @@ export class ProcessShape extends Shape.Circle {
 
 // Configure ProcessShape
 ProcessShape.config({
+  markup: [
+    {
+      tagName: 'circle',
+      selector: 'body',
+    },
+    {
+      tagName: 'text',
+      selector: 'label',
+    },
+  ],
   attrs: {
     root: {
       magnet: false,
@@ -89,6 +99,17 @@ ProcessShape.config({
       fill: '#FFFFFF',
       stroke: '#333333',
       strokeWidth: 2,
+    },
+    label: {
+      text: 'Process',
+      fill: '#333333',
+      fontSize: 12,
+      fontFamily: 'Arial, sans-serif',
+      textAnchor: 'middle',
+      textVerticalAnchor: 'middle',
+      pointerEvents: 'none',
+      refX: '50%',
+      refY: '50%',
     },
   },
   ports: {

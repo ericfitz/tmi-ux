@@ -17,6 +17,7 @@ import { DfdNodeService } from './services/dfd-node.service';
 import { DfdPortService } from './services/dfd-port.service';
 import { DfdEventService } from './services/dfd-event.service';
 import { DfdHighlighterService } from './services/dfd-highlighter.service';
+import { DfdLabelEditorService } from './services/dfd-label-editor.service';
 import { ShapeType } from './services/dfd-node.service';
 
 @Component({
@@ -42,6 +43,7 @@ export class DfdComponent implements OnInit, OnDestroy {
     private portService: DfdPortService,
     private eventService: DfdEventService,
     private highlighterService: DfdHighlighterService,
+    private labelEditorService: DfdLabelEditorService,
   ) {
     this.logger.info('DfdComponent constructor called');
   }
@@ -200,6 +202,9 @@ export class DfdComponent implements OnInit, OnDestroy {
 
       // Set up event handlers
       this.eventService.setupEventHandlers(this._graph);
+
+      // Set up label editing handlers
+      this.labelEditorService.setupLabelEditingHandlers(this._graph);
 
       // Add initial nodes
       this.nodeService.createInitialNodes(this._graph);

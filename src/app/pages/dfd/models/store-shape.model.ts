@@ -94,6 +94,10 @@ StoreShape.config({
       tagName: 'path',
       selector: 'bottomLine',
     },
+    {
+      tagName: 'text',
+      selector: 'label',
+    },
   ],
   attrs: {
     root: {
@@ -114,6 +118,17 @@ StoreShape.config({
       strokeWidth: 2,
       refY: '100%', // Position at the bottom of the shape
       refD: 'M 0 0 l 200 0',
+    },
+    label: {
+      text: 'Store',
+      fill: '#333333',
+      fontSize: 12,
+      fontFamily: 'Arial, sans-serif',
+      textAnchor: 'middle',
+      textVerticalAnchor: 'middle',
+      pointerEvents: 'none',
+      refX: '50%',
+      refY: '50%',
     },
   },
   ports: {

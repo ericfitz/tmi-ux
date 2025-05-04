@@ -86,6 +86,10 @@ SecurityBoundaryShape.config({
       tagName: 'rect',
       selector: 'body',
     },
+    {
+      tagName: 'text',
+      selector: 'label',
+    },
   ],
   attrs: {
     root: {
@@ -99,6 +103,17 @@ SecurityBoundaryShape.config({
       rx: 10, // Rounded corners
       ry: 10, // Rounded corners
       opacity: 1,
+    },
+    label: {
+      text: 'Security Boundary',
+      fill: '#333333',
+      fontSize: 12,
+      fontFamily: 'Arial, sans-serif',
+      textAnchor: 'middle',
+      textVerticalAnchor: 'middle',
+      pointerEvents: 'none',
+      refX: '50%',
+      refY: '50%',
     },
   },
   ports: {

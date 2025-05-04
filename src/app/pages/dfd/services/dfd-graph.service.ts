@@ -194,10 +194,30 @@ export class DfdGraphService {
                     size: 7,
                   },
                 },
+                label: {
+                  text: 'Flow',
+                  fill: '#333333',
+                  fontSize: 12,
+                  fontFamily: 'Arial, sans-serif',
+                  textAnchor: 'middle',
+                  textVerticalAnchor: 'middle',
+                  pointerEvents: 'none',
+                },
               },
               // Add default vertices for better routing
               vertices: [
                 // Default vertices will be adjusted by the router
+              ],
+              // Add label position
+              labels: [
+                {
+                  position: 0.5,
+                  attrs: {
+                    text: {
+                      text: 'Flow',
+                    },
+                  },
+                },
               ],
             });
           },
