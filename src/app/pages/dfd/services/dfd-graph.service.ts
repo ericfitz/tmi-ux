@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Graph, Shape } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
+import { Export } from '@antv/x6-plugin-export';
+import { saveAs } from 'file-saver';
 import { LoggerService } from '../../../core/services/logger.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 // Import NodeData interface for type checking - used in type assertions
@@ -268,6 +270,9 @@ export class DfdGraphService {
         }),
       );
 
+      // Register the Export plugin for exporting the graph
+      graph.use(new Export());
+
       // Add custom CSS for snaplines
       this.addSnaplineStyles();
 
@@ -455,5 +460,55 @@ export class DfdGraphService {
     containerElement.style.height = `${containerHeight}px`;
 
     return containerElement;
+  }
+
+  /**
+   * Exports the graph to the specified format
+   * @param graph The X6 graph instance
+   * @param format The export format (png, jpeg, svg)
+   * @param filename The filename to save as (without extension)
+   */
+  exportGraph(graph: Graph | null, format: string, filename = 'dfd-diagram'): void {
+    if (!graph) {
+      this.logger.error('Cannot export: Graph is not initialized');
+      return;
+    }
+
+    try {
+      this.logger.info(`Exporting graph as ${format}`);
+
+      // Get the export plugin instance
+      const exportPlugin = graph.getPlugin<Export>('export');
+
+      if (!exportPlugin) {
+        this.logger.error('Export plugin is not registered');
+        return;
+      }
+
+      // Set the filename with the appropriate extension
+      const fullFilename = `${filename}.${format}`;
+
+      // Export based on the format
+      if (format === 'png') {
+        exportPlugin.exportPNG(fullFilename);
+      } else if (format === 'jpeg') {
+        exportPlugin.exportJPEG(fullFilename);
+      } else if (format === 'svg') {
+        // For SVG, we need to get the SVG string and create a blob
+        const svgString = exportPlugin.exportSVG();
+        if (typeof svgString === 'string') {
+          const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+          saveAs(blob, fullFilename);
+        } else {
+          this.logger.error('Failed to export SVG: Invalid SVG string');
+        }
+      } else {
+        this.logger.error('Unsupported export format: ' + format);
+      }
+
+      this.logger.info(`Graph exported successfully as ${fullFilename}`);
+    } catch (error) {
+      this.logger.error('Error exporting graph:', error);
+    }
   }
 }

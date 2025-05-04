@@ -8,6 +8,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
+import { MatMenuModule } from '@angular/material/menu';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
@@ -22,7 +23,7 @@ import { ShapeType } from './services/dfd-node.service';
 @Component({
   selector: 'app-dfd',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule],
+  imports: [CommonModule, CoreMaterialModule, MatMenuModule],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +67,19 @@ export class DfdComponent implements OnInit, OnDestroy {
       // Force change detection
       this.cdr.detectChanges();
     }
+  }
+
+  /**
+   * Export the graph to the specified format
+   * @param format The export format (png, jpeg, svg)
+   */
+  exportGraph(format: 'png' | 'jpeg' | 'svg'): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot export graph: Graph is not initialized');
+      return;
+    }
+
+    this.graphService.exportGraph(this._graph, format);
   }
 
   ngOnInit(): void {

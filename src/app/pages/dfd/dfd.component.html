@@ -10,6 +10,22 @@
     <button mat-raised-button color="basic" (click)="addRandomNode('securityBoundary')">
       Add Security Boundary
     </button>
+
+    <div class="toolbar-spacer"></div>
+
+    <!-- Export button with dropdown menu -->
+    <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu">Export...</button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportGraph('png')">
+        <span>PNG Image</span>
+      </button>
+      <button mat-menu-item (click)="exportGraph('jpeg')">
+        <span>JPEG Image</span>
+      </button>
+      <button mat-menu-item (click)="exportGraph('svg')">
+        <span>SVG Vector</span>
+      </button>
+    </mat-menu>
   </div>
 
   <div class="graph-container">
