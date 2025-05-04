@@ -2,8 +2,8 @@
  * Interface for node data
  */
 export interface NodeData {
+  [key: string]: unknown;
   parent?: boolean;
   embedded?: boolean;
   parentId?: string;
-  [key: string]: unknown;
 }

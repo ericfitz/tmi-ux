@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Graph, Shape, Node, Cell } from '@antv/x6';
+import { Graph, Shape } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { LoggerService } from '../../../core/services/logger.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
+// Import NodeData interface for type checking - used in type assertions
 import { NodeData } from '../models/node-data.interface';
+
+// Type guard function to check if an object is a NodeData
+function isNodeData(data: unknown): data is NodeData {
+  return data !== null && typeof data === 'object' && data !== undefined;
+}
 
 /**
  * Service for managing the X6 graph in the DFD component
@@ -65,14 +71,11 @@ export class DfdGraphService {
           enabled: true,
           findParent({ node }) {
             // Don't allow parent nodes to be embedded in other nodes
-            const nodeData = node.getData();
-            // Use type guard to check if nodeData is a valid object with parent property
-            if (
-              nodeData &&
-              typeof nodeData === 'object' &&
-              'parent' in nodeData &&
-              nodeData.parent
-            ) {
+            // Use proper type assertion to avoid unsafe assignment
+            // Get the node data and explicitly type it
+            const rawNodeData = node.getData();
+            // Use type guard to check if nodeData is a valid NodeData object
+            if (isNodeData(rawNodeData) && rawNodeData.parent === true) {
               return [];
             }
 
@@ -82,9 +85,11 @@ export class DfdGraphService {
                 // Skip if the parent is the same as the node
                 if (parent.id === node.id) return false;
 
-                const data = parent.getData();
-                // Use type guard to check if data is a valid object with parent property
-                if (data && typeof data === 'object' && 'parent' in data && data.parent) {
+                // Use proper type assertion to avoid unsafe assignment
+                // Get the parent data and explicitly type it
+                const rawData = parent.getData();
+                // Use type guard to check if data is a valid NodeData object
+                if (isNodeData(rawData) && rawData.parent === true) {
                   const parentBBox = parent.getBBox();
                   // Check if the node's center is inside the parent
                   const nodeCenter = bbox.getCenter();

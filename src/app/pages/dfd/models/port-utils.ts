@@ -41,7 +41,7 @@ export class PortUtils {
    * @param graph The X6 graph instance
    * @returns The node instance for chaining
    */
-  static updatePorts(node: Node, graph: Graph): Node {
+  static updatePorts(node: Node, _graph: Graph): Node {
     const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
     const portsPerDirection = 1;
 

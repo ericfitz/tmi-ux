@@ -1,4 +1,4 @@
-import { Graph, Node } from '@antv/x6';
+import { Graph, Node, Cell } from '@antv/x6';
 import { PortManager } from '@antv/x6/lib/model/port';
 import { BaseShapeMethods, PortDirection } from './dfd-types';
 
@@ -40,7 +40,7 @@ export abstract class BaseShape implements BaseShapeMethods {
    * @param graph The X6 graph instance
    * @returns The shape instance for chaining
    */
-  updatePorts(graph: Graph): Node {
+  updatePorts(_graph: Graph): Cell {
     const node = this as unknown as Node;
     const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
     const portsPerDirection = 1;

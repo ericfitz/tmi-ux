@@ -49,6 +49,7 @@ export interface ShapeConfig {
     selector: string;
   }>;
   attrs: {
+    [key: string]: unknown;
     root: {
       magnet: boolean;
     };
@@ -61,7 +62,6 @@ export interface ShapeConfig {
       rx?: number;
       ry?: number;
     };
-    [key: string]: unknown;
   };
   ports: {
     items: Array<{ group: string }>;

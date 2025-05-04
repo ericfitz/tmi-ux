@@ -5,13 +5,18 @@ import { LoggerService } from '../../core/services/logger.service';
 import { TranslocoTestingModule } from '../../i18n/testing.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+// Interface for accessing private methods in tests
+interface DfdComponentPrivate {
+  initializeGraph: () => void;
+}
+
 describe('DfdComponent', () => {
   let component: DfdComponent;
   let fixture: ComponentFixture<DfdComponent>;
   let loggerServiceSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(async () => {
-    loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['info', 'error']);
+    loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'error']);
 
     await TestBed.configureTestingModule({
       imports: [DfdComponent, TranslocoTestingModule, NoopAnimationsModule],
@@ -43,9 +48,8 @@ describe('DfdComponent', () => {
   });
 
   it('should call initializeGraph method', fakeAsync(() => {
-    // Spy on the component's initializeGraph method using type assertion
-    // We use unknown as an intermediate step to avoid TypeScript's private property checks
-    const componentInstance = component as unknown as { initializeGraph: () => void };
+    // Spy on the component's initializeGraph method using our interface
+    const componentInstance = component as unknown as DfdComponentPrivate;
     spyOn(componentInstance, 'initializeGraph').and.callThrough();
 
     // Manually call ngOnInit to trigger the initialization

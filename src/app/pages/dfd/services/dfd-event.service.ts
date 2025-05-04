@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Graph, Node, NodeView } from '@antv/x6';
+import { Graph } from '@antv/x6';
+import { HighlighterConfig } from '../models/highlighter-config.interface';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdHighlighterService } from './dfd-highlighter.service';
 import { DfdPortService } from './dfd-port.service';
@@ -9,6 +10,11 @@ import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
 import { NodeData } from '../models/node-data.interface';
+
+// Type guard function to check if an object is a NodeData
+function isNodeData(data: unknown): data is NodeData {
+  return data !== null && typeof data === 'object' && data !== undefined;
+}
 
 /**
  * Service for managing events in the DFD component
@@ -40,8 +46,8 @@ export class DfdEventService {
     // Create highlighters for nodes and edges
     const nodeHighlighter = this.highlighterService.createNodeHighlighter();
     const edgeHighlighter = this.highlighterService.createEdgeHighlighter();
-    const magnetAvailabilityHighlighter =
-      this.highlighterService.createMagnetAvailabilityHighlighter();
+    // Magnet availability highlighter is created but not used in this service
+    this.highlighterService.createMagnetAvailabilityHighlighter();
 
     // Handle node:change:parent event to update nodes when they're embedded or un-embedded
     this.setupEmbeddingEvents(graph);
@@ -76,14 +82,15 @@ export class DfdEventService {
 
           // Add a data attribute to mark it as embedded
           const existingData = node.getData();
-          // Create a safe object to spread using type guard
-          const safeData: NodeData =
-            existingData && typeof existingData === 'object' ? existingData : {};
-          node.setData({
+          // Use type guard to check if existingData is a valid NodeData object
+          const safeData: NodeData = isNodeData(existingData) ? existingData : {};
+          // Create a new NodeData object with the embedded flag
+          const newData: NodeData = {
             ...safeData,
             embedded: true,
             parentId: current,
-          } as NodeData);
+          };
+          node.setData(newData);
         }
       } else if (!current && previous) {
         // Node was un-embedded
@@ -95,11 +102,13 @@ export class DfdEventService {
 
           // Update data to remove embedded flag
           const data = node.getData();
-          // Create a safe object to spread using type guard
-          const safeData: NodeData = data && typeof data === 'object' ? data : {};
+          // Use type guard to check if data is a valid NodeData object
+          const safeData: NodeData = isNodeData(data) ? data : {};
+          // Create a new NodeData object without the embedded flag
           const updatedData: NodeData = { ...safeData };
           delete updatedData.embedded;
           delete updatedData.parentId;
+          // Set the data with the properly typed object
           node.setData(updatedData);
         }
       }
@@ -111,7 +120,7 @@ export class DfdEventService {
    * @param graph The X6 graph instance
    * @param nodeHighlighter The node highlighter configuration
    */
-  private setupNodeHoverEvents(graph: Graph, nodeHighlighter: any): void {
+  private setupNodeHoverEvents(graph: Graph, nodeHighlighter: HighlighterConfig): void {
     // Handle node hover
     graph.on('node:mouseenter', ({ view }) => {
       // Highlight the node using the view
@@ -232,7 +241,7 @@ export class DfdEventService {
    * @param graph The X6 graph instance
    * @param edgeHighlighter The edge highlighter configuration
    */
-  private setupEdgeEvents(graph: Graph, edgeHighlighter: any): void {
+  private setupEdgeEvents(graph: Graph, edgeHighlighter: HighlighterConfig): void {
     // Handle edge hover
     graph.on('edge:mouseenter', ({ edge, view }) => {
       // Highlight the edge using the view
