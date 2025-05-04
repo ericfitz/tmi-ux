@@ -116,20 +116,20 @@ export class DfdNodeService {
 
     // Add actor node
     const actor = new ActorShape().resize(120, 40).position(200, 50).updatePorts(graph);
-    actor.attr('label/text', 'User');
-    actor.setData({ label: 'User' } as NodeData);
+    actor.attr('label/text', 'Actor');
+    actor.setData({ label: 'Actor' } as NodeData);
     graph.addNode(actor);
 
     // Add process node
     const process = new ProcessShape().resize(80, 80).position(400, 50).updatePorts(graph);
-    process.attr('label/text', 'Process Data');
-    process.setData({ label: 'Process Data' } as NodeData);
+    process.attr('label/text', 'Process');
+    process.setData({ label: 'Process' } as NodeData);
     graph.addNode(process);
 
     // Add store node
     const store = new StoreShape().resize(120, 40).position(300, 250).updatePorts(graph);
-    store.attr('label/text', 'Database');
-    store.setData({ label: 'Database' } as NodeData);
+    store.attr('label/text', 'Store');
+    store.setData({ label: 'Store' } as NodeData);
     graph.addNode(store);
   }
 
