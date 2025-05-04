@@ -37,11 +37,11 @@ export class DiagramManagementComponent implements OnInit {
   createDiagram(): void {
     // Would create diagram via API, then redirect with real ID
     const newId = 'new-diagram-' + Date.now();
-    void this.router.navigate(['/diagram-editor', newId]);
+    void this.router.navigate(['/dfd', newId]);
   }
 
   openDiagram(id: string): void {
-    void this.router.navigate(['/diagram-editor', id]);
+    void this.router.navigate(['/dfd', id]);
   }
 
   deleteDiagram(id: string, event: MouseEvent): void {

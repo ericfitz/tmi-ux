@@ -51,32 +51,6 @@ export default [
     },
   },
 
-  // Diagram Editor page and related components/services
-  {
-    files: ['**/pages/diagram-editor/**/*.ts'],
-    rules: {
-      // Disable 'any' type warnings for diagram editor
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      // Disable member ordering warnings
-      '@typescript-eslint/member-ordering': 'off',
-      // Disable unused variables warnings
-      '@typescript-eslint/no-unused-vars': 'off',
-      // Disable missing return type warnings
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      // Disable promise rejection errors
-      '@typescript-eslint/prefer-promise-reject-errors': 'off',
-      // Disable 'this' aliasing errors
-      '@typescript-eslint/no-this-alias': 'off',
-      // Disable 'arguments' usage errors
-      'prefer-rest-params': 'off',
-    },
-  },
 
   // ZZZ page - disable only unsafe assignment warnings
   {

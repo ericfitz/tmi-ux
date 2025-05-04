@@ -38,11 +38,9 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'diagram-editor/:id',
-    loadChildren: () =>
-      import(
-        /* webpackChunkName: "diagram-editor" */ './pages/diagram-editor/diagram-editor.module'
-      ).then(m => m.DiagramEditorModule),
+    path: 'dfd/:id',
+    loadComponent: () =>
+      import(/* webpackChunkName: "dfd" */ './pages/dfd/dfd.component').then(c => c.DfdComponent),
     canActivate: [authGuard],
   },
   {

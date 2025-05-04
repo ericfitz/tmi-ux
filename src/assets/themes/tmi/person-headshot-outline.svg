@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24" id="person-headshot-outline">
-  <path fill="none" d="M0 0h24v24H0V0z"></path>
-  <path d="M12 11.25c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" fill="none" stroke="black" stroke-width="1.5"/>
-  <path d="M4 17c0-2.66 5.33-4 8-4s8 1.34 8 4v1c0 .55-.45 1-1 1H5c-.55 0-1-.45-1-1v-1z" fill="none" stroke="black" stroke-width="1.5"/>
-</svg>

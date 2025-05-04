@@ -6,18 +6,6 @@ AntV/X6 is used for graph visualization and interaction in the diagram editor. T
 
 ## Node and Edge Management
 
-### Previous Approach
-
-Initially, we used maxGraph for diagram visualization and interaction. This approach had several issues:
-
-1. **Compatibility Issues**: maxGraph had compatibility issues that required extensive patching.
-
-2. **Complex Operation Chaining**: Creating an edge required multiple steps and mappings, which was error-prone.
-
-3. **Bidirectional Dependency**: Code constantly looked up cells by different IDs, creating a complex web of dependencies.
-
-4. **Circular Dependencies**: Updates to properties triggered cascading updates, causing infinite recursion.
-
 ### Current Implemented Approach
 
 We've successfully migrated to AntV/X6 with a cleaner architecture that:

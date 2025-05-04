@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
-import { PassiveEventHandler } from '../diagram-editor/services/x6/passive-event-handler';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { DfdGraphService } from './services/dfd-graph.service';
 import { DfdNodeService } from './services/dfd-node.service';
@@ -37,7 +36,6 @@ export class DfdComponent implements OnInit, OnDestroy {
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
-    private passiveEventHandler: PassiveEventHandler,
     private graphService: DfdGraphService,
     private nodeService: DfdNodeService,
     private portService: DfdPortService,
@@ -72,9 +70,6 @@ export class DfdComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.info('DfdComponent ngOnInit called');
-
-    // Apply passive event handler patches
-    this.passiveEventHandler.applyPatches();
 
     // Delay initialization slightly to ensure the container is fully rendered
     setTimeout(() => {
