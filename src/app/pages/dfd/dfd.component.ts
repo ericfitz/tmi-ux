@@ -1275,10 +1275,10 @@ export class DfdComponent implements OnInit, OnDestroy {
         this._graph.use(
           new Snapline({
             enabled: true,
-            tolerance: 10, // Alignment precision (distance in pixels to trigger snapline)
+            tolerance: 15, // Increased tolerance for easier snapping
             sharp: true, // Show sharp snaplines
             resizing: true, // Enable snaplines during resizing
-            clean: 800, // Hide snaplines after 800ms
+            clean: 1500, // Increased time to keep snaplines visible
             className: 'x6-snapline', // CSS class for styling
           }),
         );
@@ -1287,9 +1287,12 @@ export class DfdComponent implements OnInit, OnDestroy {
         const snaplineStyle = document.createElement('style');
         snaplineStyle.textContent = `
           .x6-snapline {
-            stroke: #1890ff;
-            stroke-width: 1;
+            stroke: #ff3366;
+            stroke-width: 2;
             stroke-dasharray: 5, 5;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 1 !important;
           }
         `;
         document.head.appendChild(snaplineStyle);
@@ -1344,13 +1347,34 @@ export class DfdComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Show ports when creating a new edge
-      this._graph.on('edge:connected', ({ edge }) => {
-        // Make the connected ports visible
+      // Add event handler for edge addition to the graph
+      this._graph.on('edge:added', ({ edge }) => {
         const sourceId = edge.getSourcePortId();
         const targetId = edge.getTargetPortId();
         const sourceCell = edge.getSourceCell();
         const targetCell = edge.getTargetCell();
+
+        this.logger.info(`Edge added to graph: ${edge.id}`, {
+          edgeId: edge.id,
+          sourceId: sourceId,
+          targetId: targetId,
+          sourceNodeId: sourceCell?.id,
+          targetNodeId: targetCell?.id,
+        });
+      });
+
+      // Show ports when creating a new edge
+      this._graph.on('edge:connected', ({ edge }) => {
+        // Log edge connection
+        const sourceId = edge.getSourcePortId();
+        const targetId = edge.getTargetPortId();
+        const sourceCell = edge.getSourceCell();
+        const targetCell = edge.getTargetCell();
+
+        this.logger.info(
+          `Edge connected: from ${sourceCell?.id}:${sourceId} to ${targetCell?.id}:${targetId}`,
+          { edgeId: edge.id },
+        );
 
         if (sourceCell && sourceId) {
           const sourceView = this._graph?.findViewByCell(sourceCell);
@@ -1410,7 +1434,13 @@ export class DfdComponent implements OnInit, OnDestroy {
       });
 
       // Show all ports when starting to create an edge from a port
-      this._graph.on('node:port:mousedown', () => {
+      this._graph.on('node:port:mousedown', ({ node, port }) => {
+        // Log when user starts creating an edge from a port
+        // Use a simple string representation of port to avoid type issues
+        this.logger.info(`Starting edge creation from node port`, {
+          nodeId: node?.id,
+          portId: String(port),
+        });
         // Show all ports on all nodes when starting to create an edge
         const nodes = this._graph?.getNodes() || [];
         nodes.forEach(node => {
@@ -1563,6 +1593,14 @@ export class DfdComponent implements OnInit, OnDestroy {
       // Get both source and target cells
       const source = edge.getSourceCell();
       const target = edge.getTargetCell();
+
+      // Log edge deletion
+      const sourceId = edge.getSourcePortId();
+      const targetId = edge.getTargetPortId();
+      this.logger.info(
+        `Edge deleted: from ${source?.id}:${sourceId} to ${target?.id}:${targetId}`,
+        { edgeId: edge.id },
+      );
 
       // Update ports on source and target cells
       if (
@@ -1923,6 +1961,32 @@ export class DfdComponent implements OnInit, OnDestroy {
 
       // Remove tools (existing functionality)
       edge.removeTools();
+    });
+
+    // Add event handler for edge changes (vertices changed)
+    this._graph.on('edge:change:vertices', ({ edge, current, previous }) => {
+      if (JSON.stringify(current) !== JSON.stringify(previous)) {
+        this.logger.info(`Edge vertices changed: ${edge.id}`, {
+          edgeId: edge.id,
+          sourceId: edge.getSourcePortId(),
+          targetId: edge.getTargetPortId(),
+          previousVertices: previous,
+          currentVertices: current,
+        });
+      }
+    });
+
+    // Add event handler for edge label changes
+    this._graph.on('edge:change:labels', ({ edge, current, previous }) => {
+      if (JSON.stringify(current) !== JSON.stringify(previous)) {
+        this.logger.info(`Edge labels changed: ${edge.id}`, {
+          edgeId: edge.id,
+          sourceId: edge.getSourcePortId(),
+          targetId: edge.getTargetPortId(),
+          previousLabels: previous,
+          currentLabels: current,
+        });
+      }
     });
   }
 

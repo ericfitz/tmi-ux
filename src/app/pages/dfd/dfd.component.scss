@@ -41,3 +41,16 @@
   background-color: #f8f9fa;
   border: 2px dashed #ccc; // Add a visible border for debugging
 }
+
+// Additional styles for X6 snaplines
+:host ::ng-deep {
+  // Ensure snaplines are visible above all other elements
+  .x6-snapline {
+    stroke: #f36 !important;
+    stroke-width: 2 !important;
+    stroke-dasharray: 5, 5 !important;
+    z-index: 9999 !important;
+    pointer-events: none !important;
+    opacity: 1 !important;
+  }
+}
