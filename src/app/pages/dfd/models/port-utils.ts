@@ -14,11 +14,12 @@ export class PortUtils {
    */
   static getPortsByDirection(node: Node, direction: PortDirection): PortManager.Port[] {
     const ports = node.getPortsByGroup(direction);
+    // Use type assertion to avoid TypeScript errors
     return ports.map(port => ({
       ...port,
       id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
       position: { name: direction },
-    }));
+    })) as unknown as PortManager.Port[];
   }
 
   /**
@@ -96,6 +97,17 @@ export class PortUtils {
               strokeWidth: 1,
               visibility: 'hidden',
             },
+            // Add text attribute but make it invisible
+            text: {
+              text: '', // Default empty text
+              fill: '#333333',
+              fontSize: 12, // Match font size with other objects
+              fontFamily: '"Roboto Condensed", Arial, sans-serif',
+              textAnchor: 'middle',
+              textVerticalAnchor: 'middle',
+              pointerEvents: 'none',
+              visibility: 'hidden', // Hide the text by default
+            },
           },
         },
         right: {
@@ -110,6 +122,17 @@ export class PortUtils {
               stroke: '#5F95FF',
               strokeWidth: 1,
               visibility: 'hidden',
+            },
+            // Add text attribute but make it invisible
+            text: {
+              text: '', // Default empty text
+              fill: '#333333',
+              fontSize: 12, // Match font size with other objects
+              fontFamily: '"Roboto Condensed", Arial, sans-serif',
+              textAnchor: 'middle',
+              textVerticalAnchor: 'middle',
+              pointerEvents: 'none',
+              visibility: 'hidden', // Hide the text by default
             },
           },
         },
@@ -126,6 +149,17 @@ export class PortUtils {
               strokeWidth: 1,
               visibility: 'hidden',
             },
+            // Add text attribute but make it invisible
+            text: {
+              text: '', // Default empty text
+              fill: '#333333',
+              fontSize: 12, // Match font size with other objects
+              fontFamily: '"Roboto Condensed", Arial, sans-serif',
+              textAnchor: 'middle',
+              textVerticalAnchor: 'middle',
+              pointerEvents: 'none',
+              visibility: 'hidden', // Hide the text by default
+            },
           },
         },
         left: {
@@ -140,6 +174,17 @@ export class PortUtils {
               fill: '#fff',
               strokeWidth: 1,
               visibility: 'hidden',
+            },
+            // Add text attribute but make it invisible
+            text: {
+              text: '', // Default empty text
+              fill: '#333333',
+              fontSize: 12, // Match font size with other objects
+              fontFamily: '"Roboto Condensed", Arial, sans-serif',
+              textAnchor: 'middle',
+              textVerticalAnchor: 'middle',
+              pointerEvents: 'none',
+              visibility: 'hidden', // Hide the text by default
             },
           },
         },
@@ -157,6 +202,10 @@ export class PortUtils {
       {
         tagName: 'circle',
         selector: 'portBody',
+      },
+      {
+        tagName: 'text',
+        selector: 'text',
       },
     ];
   }

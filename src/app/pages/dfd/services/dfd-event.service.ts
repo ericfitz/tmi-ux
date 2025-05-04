@@ -81,8 +81,10 @@ export class DfdEventService {
           node.attr('body/fill', '#e6f7ff');
 
           // Add a data attribute to mark it as embedded
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const existingData = node.getData();
           // Use type guard to check if existingData is a valid NodeData object
+
           const safeData: NodeData = isNodeData(existingData) ? existingData : {};
           // Create a new NodeData object with the embedded flag
           const newData: NodeData = {
@@ -101,8 +103,10 @@ export class DfdEventService {
           node.attr('body/fill', '#FFFFFF');
 
           // Update data to remove embedded flag
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const data = node.getData();
           // Use type guard to check if data is a valid NodeData object
+
           const safeData: NodeData = isNodeData(data) ? data : {};
           // Create a new NodeData object without the embedded flag
           const updatedData: NodeData = { ...safeData };

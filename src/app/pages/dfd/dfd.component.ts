@@ -131,7 +131,7 @@ export class DfdComponent implements OnInit, OnDestroy {
     this._observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node: Node) => {
+          mutation.addedNodes.forEach((node: globalThis.Node) => {
             if (node instanceof Element) {
               // Add passive listeners to newly added elements
               addPassiveListener(node);
@@ -201,6 +201,9 @@ export class DfdComponent implements OnInit, OnDestroy {
       // Set up label editing handlers
       this.labelEditorService.setupLabelEditingHandlers(this._graph);
 
+      // Set up port tooltips
+      this.setupPortTooltips();
+
       // Add initial nodes
       this.nodeService.createInitialNodes(this._graph);
 
@@ -211,5 +214,73 @@ export class DfdComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.logger.error('Error initializing X6 graph', error);
     }
+  }
+
+  /**
+   * Set up tooltips for ports
+   */
+  private setupPortTooltips(): void {
+    if (!this._graph) {
+      return;
+    }
+
+    // Create tooltip element
+    const tooltipEl = document.createElement('div');
+    tooltipEl.className = 'port-tooltip';
+    tooltipEl.style.display = 'none';
+    tooltipEl.style.fontFamily = '"Roboto Condensed", Arial, sans-serif';
+    tooltipEl.style.fontSize = '12px';
+    tooltipEl.style.fontWeight = 'normal';
+    tooltipEl.style.color = '#333333';
+    this._graph.container.appendChild(tooltipEl);
+
+    // Handle port mouseenter
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this._graph.on('node:port:mouseenter', ({ node, port, e }: any) => {
+      if (!port || !node) {
+        return;
+      }
+
+      // Get the port label
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const portObj = node.getPort(String(port.id));
+      if (!portObj) {
+        return;
+      }
+
+      // Get the port label text
+      let labelText = '';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (portObj.attrs && portObj.attrs['text']) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        const textAttr = portObj.attrs['text'];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        labelText = typeof textAttr['text'] === 'string' ? textAttr['text'] : '';
+      }
+
+      // If no label, use the port ID as fallback
+      if (!labelText) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        labelText = String(port.id);
+      }
+
+      // Set tooltip content and position
+      tooltipEl.textContent = labelText;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      tooltipEl.style.left = `${e.clientX + 10}px`;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      tooltipEl.style.top = `${e.clientY - 30}px`;
+      tooltipEl.style.display = 'block';
+    });
+
+    // Handle port mouseleave
+    this._graph.on('node:port:mouseleave', () => {
+      tooltipEl.style.display = 'none';
+    });
+
+    // Hide tooltip on other events
+    this._graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
+      tooltipEl.style.display = 'none';
+    });
   }
 }

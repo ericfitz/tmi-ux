@@ -73,6 +73,7 @@ export class DfdGraphService {
             // Don't allow parent nodes to be embedded in other nodes
             // Use proper type assertion to avoid unsafe assignment
             // Get the node data and explicitly type it
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const rawNodeData = node.getData();
             // Use type guard to check if nodeData is a valid NodeData object
             if (isNodeData(rawNodeData) && rawNodeData.parent === true) {
@@ -87,6 +88,7 @@ export class DfdGraphService {
 
                 // Use proper type assertion to avoid unsafe assignment
                 // Get the parent data and explicitly type it
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 const rawData = parent.getData();
                 // Use type guard to check if data is a valid NodeData object
                 if (isNodeData(rawData) && rawData.parent === true) {
@@ -195,7 +197,7 @@ export class DfdGraphService {
                   text: 'Flow',
                   fill: '#333333',
                   fontSize: 12,
-                  fontFamily: 'Arial, sans-serif',
+                  fontFamily: '"Roboto Condensed", Arial, sans-serif',
                   textAnchor: 'middle',
                   textVerticalAnchor: 'middle',
                   pointerEvents: 'none',
@@ -212,6 +214,12 @@ export class DfdGraphService {
                   attrs: {
                     text: {
                       text: 'Flow',
+                      fill: '#333333',
+                      fontSize: 12,
+                      fontFamily: '"Roboto Condensed", Arial, sans-serif',
+                      textAnchor: 'middle',
+                      textVerticalAnchor: 'middle',
+                      pointerEvents: 'none',
                     },
                   },
                 },

@@ -90,6 +90,7 @@ export class DfdLabelEditorService {
     let labelText = '';
     if (cell.isNode()) {
       // For nodes, get the label from the node data or attrs
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const rawNodeData = cell.getData();
       const nodeData: NodeData | undefined =
         typeof rawNodeData === 'object' && rawNodeData !== null
@@ -164,7 +165,7 @@ export class DfdLabelEditorService {
     this._renderer.setStyle(input, 'left', `${cellBBox.x}px`);
     this._renderer.setStyle(input, 'top', `${cellBBox.y + cellBBox.height / 2 - 15}px`); // Center vertically
     this._renderer.setStyle(input, 'font-size', '12px');
-    this._renderer.setStyle(input, 'font-family', 'Arial, sans-serif');
+    this._renderer.setStyle(input, 'font-family', '"Roboto Condensed", Arial, sans-serif');
     this._renderer.setStyle(input, 'text-align', 'center');
     this._renderer.setStyle(input, 'padding', '2px');
     this._renderer.setStyle(input, 'border', '1px solid #1890ff');
@@ -244,8 +245,8 @@ export class DfdLabelEditorService {
     this._renderer.setStyle(input, 'height', '24px'); // Fixed height for better usability
     this._renderer.setStyle(input, 'left', `${portBBox.x - 40 + portBBox.width / 2}px`); // Center horizontally
     this._renderer.setStyle(input, 'top', `${portBBox.y - 12 + portBBox.height / 2}px`); // Center vertically
-    this._renderer.setStyle(input, 'font-size', '10px');
-    this._renderer.setStyle(input, 'font-family', 'Arial, sans-serif');
+    this._renderer.setStyle(input, 'font-size', '12px'); // Match font size with other objects
+    this._renderer.setStyle(input, 'font-family', '"Roboto Condensed", Arial, sans-serif');
     this._renderer.setStyle(input, 'text-align', 'center');
     this._renderer.setStyle(input, 'padding', '2px');
     this._renderer.setStyle(input, 'border', '1px solid #1890ff');
@@ -353,6 +354,7 @@ export class DfdLabelEditorService {
           node.attr('label/text', newText);
 
           // Also update the label in the node data
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const rawNodeData = node.getData();
           const nodeData: NodeData | undefined =
             typeof rawNodeData === 'object' && rawNodeData !== null
@@ -372,8 +374,25 @@ export class DfdLabelEditorService {
       } else if (this._editingCell.isEdge()) {
         const edge = this._editingCell;
 
-        // Update edge label
+        // Update edge label in both attr and labels array
         edge.attr('label/text', newText);
+
+        // Update the label in the labels array
+        const labels = edge.getLabels();
+        if (labels && labels.length > 0) {
+          edge.setLabels(
+            labels.map(label => ({
+              ...label,
+              attrs: {
+                ...label.attrs,
+                text: {
+                  ...label.attrs?.['text'],
+                  text: newText,
+                },
+              },
+            })),
+          );
+        }
 
         this.logger.info(`Updated edge label for edge ${edge.id}`, {
           edgeId: edge.id,

@@ -53,4 +53,52 @@
     pointer-events: none !important;
     opacity: 1 !important;
   }
+
+  // Make ports easier to click while preserving highlighting
+  .x6-port-body {
+    r: 5 !important; // Keep the original radius
+    cursor: pointer !important; // Show pointer cursor on hover
+  }
+
+  // Ensure ports are above edges for better clickability
+  .x6-port {
+    z-index: 10 !important;
+  }
+
+  // Preserve the highlighting styles
+  .x6-port-body[magnet='active'] {
+    fill: #fff !important;
+    stroke: #5f95ff !important;
+    stroke-width: 1 !important;
+  }
+
+  // Highlight style for available magnets
+  .x6-highlight-magnetAvailable {
+    stroke: #73d13d !important;
+    stroke-width: 2 !important;
+    fill: transparent !important;
+  }
+
+  // Override default font for tspan elements
+  tspan.v-line {
+    font-family: 'Roboto Condensed', Arial, sans-serif !important;
+    font-size: 12px !important;
+  }
+}
+
+// Port tooltip styles
+.port-tooltip {
+  position: absolute;
+  background-color: rgb(255 255 255 / 90%);
+  color: #333;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-weight: normal;
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }

@@ -104,7 +104,7 @@ ProcessShape.config({
       text: 'Process',
       fill: '#333333',
       fontSize: 12,
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"Roboto Condensed", Arial, sans-serif',
       textAnchor: 'middle',
       textVerticalAnchor: 'middle',
       pointerEvents: 'none',
