@@ -4,12 +4,40 @@
   </div>
 
   <div class="graph-toolbar">
-    <button mat-raised-button color="primary" (click)="addRandomNode('actor')">Add Actor</button>
-    <button mat-raised-button color="accent" (click)="addRandomNode('process')">Add Process</button>
-    <button mat-raised-button color="warn" (click)="addRandomNode('store')">Add Store</button>
-    <button mat-raised-button color="basic" (click)="addRandomNode('securityBoundary')">
-      Add Security Boundary
-    </button>
+    <div class="toolbar-group">
+      <button mat-raised-button color="primary" (click)="addRandomNode('actor')">Add Actor</button>
+      <button mat-raised-button color="accent" (click)="addRandomNode('process')">
+        Add Process
+      </button>
+      <button mat-raised-button color="warn" (click)="addRandomNode('store')">Add Store</button>
+      <button mat-raised-button color="basic" (click)="addRandomNode('securityBoundary')">
+        Add Security Boundary
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <button mat-icon-button (click)="undo()" [disabled]="!canUndo" matTooltip="Undo">
+        <mat-icon>undo</mat-icon>
+      </button>
+      <button mat-icon-button (click)="redo()" [disabled]="!canRedo" matTooltip="Redo">
+        <mat-icon>redo</mat-icon>
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="exportMenu" matTooltip="Export...">
+        <mat-icon>save_alt</mat-icon>
+      </button>
+      <mat-menu #exportMenu="matMenu">
+        <button mat-menu-item (click)="exportDiagram('svg')">
+          <span>Export as SVG</span>
+        </button>
+        <button mat-menu-item (click)="exportDiagram('png')">
+          <span>Export as PNG</span>
+        </button>
+        <button mat-menu-item (click)="exportDiagram('jpeg')">
+          <span>Export as JPEG</span>
+        </button>
+      </mat-menu>
+    </div>
   </div>
 
   <div class="graph-container">

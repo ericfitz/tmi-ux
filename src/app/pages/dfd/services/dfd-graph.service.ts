@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Graph, Shape } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
+import { History } from '@antv/x6-plugin-history';
+import { Export } from '@antv/x6-plugin-export';
 import { LoggerService } from '../../../core/services/logger.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 // Import NodeData interface for type checking - used in type assertions
@@ -255,6 +257,20 @@ export class DfdGraphService {
           className: 'x6-snapline', // CSS class for styling
         }),
       );
+
+      // Register the History plugin for undo/redo functionality
+      graph.use(
+        new History({
+          enabled: true,
+          beforeAddCommand: (event, args) => {
+            this.logger.debug('History: before add command', event, args);
+            return true;
+          },
+        }),
+      );
+
+      // Register the Export plugin for exporting diagrams
+      graph.use(new Export());
 
       // Add custom CSS for snaplines
       this.addSnaplineStyles();

@@ -51,21 +51,12 @@ importers:
       '@antv/x6-angular-shape':
         specifier: ^2.0.2
         version: 2.0.2(@angular/core@19.2.8(rxjs@7.8.2)(zone.js@0.15.0))(@antv/x6@2.18.1)
-      '@antv/x6-plugin-dnd':
-        specifier: ^2.1.1
-        version: 2.1.1(@antv/x6@2.18.1)
       '@antv/x6-plugin-export':
         specifier: ^2.1.6
         version: 2.1.6(@antv/x6@2.18.1)
       '@antv/x6-plugin-history':
         specifier: ^2.2.4
         version: 2.2.4(@antv/x6@2.18.1)
-      '@antv/x6-plugin-keyboard':
-        specifier: ^2.2.3
-        version: 2.2.3(@antv/x6@2.18.1)
-      '@antv/x6-plugin-selection':
-        specifier: ^2.2.2
-        version: 2.2.2(@antv/x6@2.18.1)
       '@antv/x6-plugin-snapline':
         specifier: ^2.1.7
         version: 2.1.7(@antv/x6@2.18.1)
@@ -78,7 +69,7 @@ importers:
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
-      file-saver:
+      file-saver-es:
         specifier: ^2.0.5
         version: 2.0.5
       rxjs:
@@ -446,11 +437,6 @@ packages:
   '@antv/x6-geometry@2.0.5':
     resolution: {integrity: sha512-MId6riEQkxphBpVeTcL4ZNXL4lScyvDEPLyIafvWMcWNTGK0jgkK7N20XSzqt8ltJb0mGUso5s56mrk8ysHu2A==}
 
-  '@antv/x6-plugin-dnd@2.1.1':
-    resolution: {integrity: sha512-v0szzik1RkadPDn4Qi5mOSaB2AeI78D40/YuCYbPVzplG+HydGsHwO3MLTgJPQ+R5n0eM0W5F850p1VfTOHR7g==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
   '@antv/x6-plugin-export@2.1.6':
     resolution: {integrity: sha512-m0ukMmZhrFE5n7uCR43DVQBdiUfpjGN+vm1mc+6RTZdHK8pa6Mxr0RZztaxPy34YA4tli+bGY3ePslsNPfh6PQ==}
     peerDependencies:
@@ -458,16 +444,6 @@ packages:
 
   '@antv/x6-plugin-history@2.2.4':
     resolution: {integrity: sha512-9gHHvEW4Fla+1hxUV49zNgJyIMoV9CjVM52MrFgAJcvyRn1Kvxz4MfxiKlG+DEZUs+/zvfjl9pS6gJOd8laRkg==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-keyboard@2.2.3':
-    resolution: {integrity: sha512-pnCIC+mDyKKfkcDyLePfGxKVIqXBcldTgannITkHC1kc0IafRS1GMvzpvuDGrM5haRYd6Nwz8kjkJyHkJE4GPA==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-selection@2.2.2':
-    resolution: {integrity: sha512-s2gtR9Onlhr7HOHqyqg0d+4sG76JCcQEbvrZZ64XmSChlvieIPlC3YtH4dg1KMNhYIuBmBmpSum6S0eVTEiPQw==}
     peerDependencies:
       '@antv/x6': ^2.x
 
@@ -3102,8 +3078,8 @@ packages:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
 
-  file-saver@2.0.5:
-    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
+  file-saver-es@2.0.5:
+    resolution: {integrity: sha512-Kg0lt+is9nOyi/VDms9miScNGot25jVFbjFccXuCL/shd2Q+rt70MALxHVkXllsX83JEBLiHQNjDPGd/6FIOoQ==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -4075,9 +4051,6 @@ packages:
     resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
     engines: {node: '>=10'}
     hasBin: true
-
-  mousetrap@1.6.5:
-    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -5867,24 +5840,11 @@ snapshots:
 
   '@antv/x6-geometry@2.0.5': {}
 
-  '@antv/x6-plugin-dnd@2.1.1(@antv/x6@2.18.1)':
-    dependencies:
-      '@antv/x6': 2.18.1
-
   '@antv/x6-plugin-export@2.1.6(@antv/x6@2.18.1)':
     dependencies:
       '@antv/x6': 2.18.1
 
   '@antv/x6-plugin-history@2.2.4(@antv/x6@2.18.1)':
-    dependencies:
-      '@antv/x6': 2.18.1
-
-  '@antv/x6-plugin-keyboard@2.2.3(@antv/x6@2.18.1)':
-    dependencies:
-      '@antv/x6': 2.18.1
-      mousetrap: 1.6.5
-
-  '@antv/x6-plugin-selection@2.2.2(@antv/x6@2.18.1)':
     dependencies:
       '@antv/x6': 2.18.1
 
@@ -8729,7 +8689,7 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
-  file-saver@2.0.5: {}
+  file-saver-es@2.0.5: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -9751,8 +9711,6 @@ snapshots:
   mkdirp@1.0.4: {}
 
   mkdirp@3.0.1: {}
-
-  mousetrap@1.6.5: {}
 
   mrmime@2.0.1: {}
 

@@ -8,7 +8,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
+import { MatMenuModule } from '@angular/material/menu';
 import { Graph } from '@antv/x6';
+import { History } from '@antv/x6-plugin-history';
+import { saveAs } from 'file-saver-es';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { DfdGraphService } from './services/dfd-graph.service';
@@ -22,7 +25,7 @@ import { ShapeType } from './services/dfd-node.service';
 @Component({
   selector: 'app-dfd',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule],
+  imports: [CommonModule, CoreMaterialModule, MatMenuModule],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +35,10 @@ export class DfdComponent implements OnInit, OnDestroy {
 
   private _graph: Graph | null = null;
   private _observer: MutationObserver | null = null;
+
+  // History state
+  canUndo = false;
+  canRedo = false;
 
   constructor(
     private logger: LoggerService,
@@ -207,6 +214,9 @@ export class DfdComponent implements OnInit, OnDestroy {
       // Add initial nodes
       this.nodeService.createInitialNodes(this._graph);
 
+      // Set up history state change listener
+      this.setupHistoryStateListener();
+
       this.logger.info('X6 graph initialized successfully');
 
       // Force change detection
@@ -282,5 +292,146 @@ export class DfdComponent implements OnInit, OnDestroy {
     this._graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
       tooltipEl.style.display = 'none';
     });
+  }
+
+  /**
+   * Set up history state change listener
+   */
+  private setupHistoryStateListener(): void {
+    if (!this._graph) {
+      return;
+    }
+
+    const history = this._graph.getPlugin<History>('history');
+    if (!history) {
+      this.logger.warn('History plugin not found');
+      return;
+    }
+
+    // Update history state whenever it changes
+    history.on('change', () => {
+      this.canUndo = history.canUndo();
+      this.canRedo = history.canRedo();
+      this.logger.debug(`History state changed: canUndo=${this.canUndo}, canRedo=${this.canRedo}`);
+      this.cdr.detectChanges();
+    });
+  }
+
+  /**
+   * Undo the last action
+   */
+  undo(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot undo: Graph is not initialized');
+      return;
+    }
+
+    const history = this._graph.getPlugin<History>('history');
+    if (!history) {
+      this.logger.warn('History plugin not found');
+      return;
+    }
+
+    if (history.canUndo()) {
+      history.undo();
+      this.logger.info('Undo action performed');
+    } else {
+      this.logger.info('Cannot undo: No more actions to undo');
+    }
+  }
+
+  /**
+   * Redo the last undone action
+   */
+  redo(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot redo: Graph is not initialized');
+      return;
+    }
+
+    const history = this._graph.getPlugin<History>('history');
+    if (!history) {
+      this.logger.warn('History plugin not found');
+      return;
+    }
+
+    if (history.canRedo()) {
+      history.redo();
+      this.logger.info('Redo action performed');
+    } else {
+      this.logger.info('Cannot redo: No more actions to redo');
+    }
+  }
+
+  /**
+   * Export the diagram to the specified format
+   * @param format The format to export to (png, jpeg, svg)
+   */
+  exportDiagram(format: 'png' | 'jpeg' | 'svg'): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot export: Graph is not initialized');
+      return;
+    }
+
+    try {
+      this.logger.info(`Exporting diagram as ${format}`);
+
+      // Generate a filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `dfd-diagram-${timestamp}.${format}`;
+
+      if (format === 'svg') {
+        // For SVG export
+        this._graph.toSVG((svgString: string) => {
+          const blob = new Blob([svgString], { type: 'image/svg+xml' });
+          saveAs(blob, filename);
+          this.logger.info(`Diagram exported as SVG: ${filename}`);
+        });
+      } else if (format === 'png') {
+        // For PNG export
+        this._graph.toPNG(
+          (dataUri: string) => {
+            // Convert data URI to Blob
+            const byteString = atob(dataUri.split(',')[1]);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+            }
+            const blob = new Blob([ab], { type: 'image/png' });
+            saveAs(blob, filename);
+            this.logger.info(`Diagram exported as PNG: ${filename}`);
+          },
+          {
+            backgroundColor: 'white',
+            padding: 20,
+            quality: 1,
+          },
+        );
+      } else {
+        // For JPEG export
+        this._graph.toJPEG(
+          (dataUri: string) => {
+            // Convert data URI to Blob
+            const byteString = atob(dataUri.split(',')[1]);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+            }
+            const blob = new Blob([ab], { type: 'image/jpeg' });
+            saveAs(blob, filename);
+            this.logger.info(`Diagram exported as JPEG: ${filename}`);
+          },
+          {
+            backgroundColor: 'white',
+            padding: 20,
+            quality: 0.8,
+          },
+        );
+      }
+    } catch (error: unknown) {
+      this.logger.error(`Error exporting diagram as ${format}`, error);
+    }
   }
 }
