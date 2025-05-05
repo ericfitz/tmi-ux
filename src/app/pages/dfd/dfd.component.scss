@@ -148,3 +148,14 @@
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
+
+// Label drag handle styles
+.label-drag-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #000000;
+  cursor: move;
+  z-index: 1000;
+  border: 1px solid #ffffff;
+}

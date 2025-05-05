@@ -7,4 +7,8 @@ export interface NodeData {
   embedded?: boolean;
   parentId?: string;
   label?: string;
+  labelPosition?: {
+    x: number;
+    y: number;
+  };
 }

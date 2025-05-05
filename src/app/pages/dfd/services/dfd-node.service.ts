@@ -7,6 +7,7 @@ import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
 import { TextboxShape } from '../models/textbox-shape.model';
+import { DfdLabelPositionService } from './dfd-label-position.service';
 
 /**
  * Type for shape types
@@ -20,7 +21,10 @@ export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary' | 'te
   providedIn: 'root',
 })
 export class DfdNodeService {
-  constructor(private logger: LoggerService) {}
+  constructor(
+    private logger: LoggerService,
+    private labelPositionService: DfdLabelPositionService,
+  ) {}
 
   /**
    * Creates a node at a random position
@@ -103,6 +107,12 @@ export class DfdNodeService {
 
       // Add the node to the graph
       graph.addNode(node);
+
+      // Apply any saved label position
+      if (shapeType !== 'textbox') {
+        this.labelPositionService.applyLabelPosition(node);
+      }
+
       return node;
     } catch (error) {
       this.logger.error('Error adding node:', error);
@@ -144,6 +154,12 @@ export class DfdNodeService {
     store.attr('label/text', 'Store');
     store.setData({ parent: true, label: 'Store' } as NodeData);
     graph.addNode(store);
+
+    // Apply any saved label positions
+    this.labelPositionService.applyLabelPosition(securityBoundary);
+    this.labelPositionService.applyLabelPosition(actor);
+    this.labelPositionService.applyLabelPosition(process);
+    this.labelPositionService.applyLabelPosition(store);
   }
 
   /**
