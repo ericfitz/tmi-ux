@@ -22,11 +22,13 @@ function isNodeData(data: unknown): data is NodeData {
 export class DfdLabelPositionService {
   private _renderer: Renderer2;
   private _dragHandleElement: HTMLElement | null = null;
+  private _placeholderRect: HTMLDivElement | null = null; // Placeholder rectangle for dragging
   private _isDragging = false;
   private _dragStartX = 0;
   private _dragStartY = 0;
   private _currentNode: Node | null = null;
   private _dragListeners: Array<() => void> = [];
+  private _initialLabelPosition = { x: 0, y: 0 }; // Store initial position for calculating final position
 
   constructor(
     private logger: LoggerService,
@@ -180,6 +182,18 @@ export class DfdLabelPositionService {
       this._dragHandleElement = null;
     }
 
+    // Remove the placeholder rectangle if it exists
+    this.removePlaceholderRect();
+
+    // If we have a current node and it's being dragged, restore its label opacity
+    if (this._currentNode && this._isDragging) {
+      this._currentNode.attr({
+        label: {
+          opacity: 1,
+        },
+      });
+    }
+
     this._currentNode = null;
     this._isDragging = false;
   }
@@ -190,10 +204,15 @@ export class DfdLabelPositionService {
    * @param graph The X6 graph instance
    * @param labelElement The label SVG element
    */
-  private setupDragEvents(node: Node, graph: Graph, _labelElement: SVGElement): void {
+  private setupDragEvents(node: Node, graph: Graph, labelElement: SVGElement): void {
     if (!this._dragHandleElement) {
       return;
     }
+
+    this.logger.debug('[LabelPosition] Setting up drag events for node', {
+      nodeId: node.id,
+      nodeType: node.constructor.name,
+    });
 
     // Mouse down event
     const mousedownListener = this._renderer.listen(
@@ -203,19 +222,46 @@ export class DfdLabelPositionService {
         event.preventDefault();
         event.stopPropagation();
 
+        this.logger.info('[LabelPosition] Mouse down on drag handle', {
+          clientX: event.clientX,
+          clientY: event.clientY,
+          nodeId: node.id,
+        });
+
         this._isDragging = true;
         this._dragStartX = event.clientX;
         this._dragStartY = event.clientY;
 
-        // We don't need to get the initial position here since we'll get the latest in mousemove
-        // Just initialize the drag start coordinates
+        // Get the current label position from node data
+        const nodeData = node.getData<Record<string, unknown>>();
+        const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+        this._initialLabelPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
+
+        this.logger.debug('[LabelPosition] Starting drag from position', {
+          initialPosition: this._initialLabelPosition,
+          nodeId: node.id,
+        });
+
+        // Create placeholder rectangle for dragging
+        const labelRect = labelElement.getBoundingClientRect();
+        this.createPlaceholderRect(labelRect);
+
+        // Hide the actual label during dragging by setting its opacity to 0
+        node.attr({
+          label: {
+            opacity: 0,
+          },
+        });
+        this.logger.debug('[LabelPosition] Label hidden during drag (opacity set to 0)', {
+          nodeId: node.id,
+        });
 
         // Add mousemove and mouseup listeners to document
         const mousemoveListener = this._renderer.listen(
           document,
           'mousemove',
           (moveEvent: MouseEvent) => {
-            if (!this._isDragging) return;
+            if (!this._isDragging || !this._placeholderRect) return;
 
             moveEvent.preventDefault();
             moveEvent.stopPropagation();
@@ -224,39 +270,40 @@ export class DfdLabelPositionService {
             const dx = moveEvent.clientX - this._dragStartX;
             const dy = moveEvent.clientY - this._dragStartY;
 
-            // Get the current label position (to ensure we're always using the latest)
-            const latestNodeData = node.getData<Record<string, unknown>>();
-            const latestSafeNodeData: NodeData = isNodeData(latestNodeData) ? latestNodeData : {};
-            const latestPosition = latestSafeNodeData.labelPosition || { x: 0, y: 0 };
+            this.logger.debug('[LabelPosition] Mouse move during drag', {
+              clientX: moveEvent.clientX,
+              clientY: moveEvent.clientY,
+              dx,
+              dy,
+              nodeId: node.id,
+            });
 
-            const newX = latestPosition.x + dx;
-            const newY = latestPosition.y + dy;
+            // Update the placeholder rectangle position
+            if (this._placeholderRect) {
+              const left = parseInt(this._placeholderRect.style.left, 10) + dx;
+              const top = parseInt(this._placeholderRect.style.top, 10) + dy;
 
-            // Update the label position in the node data
-            this.updateLabelPosition(node, newX, newY);
+              this._renderer.setStyle(this._placeholderRect, 'left', `${left}px`);
+              this._renderer.setStyle(this._placeholderRect, 'top', `${top}px`);
+
+              this.logger.debug('[LabelPosition] Updated placeholder position', {
+                left,
+                top,
+              });
+            }
 
             // Update the drag handle position
             if (this._dragHandleElement) {
-              // Check if we're moving from the center position (first move) or from an already moved position
-              const isFirstMove = latestPosition.x === 0 && latestPosition.y === 0;
+              const left = parseInt(this._dragHandleElement.style.left, 10) + dx;
+              const top = parseInt(this._dragHandleElement.style.top, 10) + dy;
 
-              if (isFirstMove) {
-                // If this is the first move from center, we need to update the position of the drag handle
-                // to be at the top left of the label text
-                const labelRect = _labelElement.getBoundingClientRect();
-                const left = labelRect.left - 4; // 4px offset
-                const top = labelRect.top - 4; // 4px offset
+              this._renderer.setStyle(this._dragHandleElement, 'left', `${left}px`);
+              this._renderer.setStyle(this._dragHandleElement, 'top', `${top}px`);
 
-                this._renderer.setStyle(this._dragHandleElement, 'left', `${left}px`);
-                this._renderer.setStyle(this._dragHandleElement, 'top', `${top}px`);
-              } else {
-                // If the label has already been moved, update the position based on the drag delta
-                const left = parseInt(this._dragHandleElement.style.left, 10) + dx;
-                const top = parseInt(this._dragHandleElement.style.top, 10) + dy;
-
-                this._renderer.setStyle(this._dragHandleElement, 'left', `${left}px`);
-                this._renderer.setStyle(this._dragHandleElement, 'top', `${top}px`);
-              }
+              this.logger.debug('[LabelPosition] Updated drag handle position', {
+                left,
+                top,
+              });
             }
 
             // Update drag start position
@@ -265,21 +312,134 @@ export class DfdLabelPositionService {
           },
         );
 
-        const mouseupListener = this._renderer.listen(document, 'mouseup', () => {
-          this._isDragging = false;
+        const mouseupListener = this._renderer.listen(
+          document,
+          'mouseup',
+          (upEvent: MouseEvent) => {
+            if (!this._isDragging) {
+              this._isDragging = false;
+              return;
+            }
 
-          // Remove the document listeners
-          mousemoveListener();
-          mouseupListener();
-        });
+            this.logger.info('[LabelPosition] Mouse up, ending drag', {
+              clientX: upEvent.clientX,
+              clientY: upEvent.clientY,
+              nodeId: node.id,
+            });
+
+            // Calculate the total delta from the initial position
+            const totalDx = upEvent.clientX - event.clientX;
+            const totalDy = upEvent.clientY - event.clientY;
+
+            this.logger.debug('[LabelPosition] Calculated total position delta', {
+              totalDx,
+              totalDy,
+              nodeId: node.id,
+            });
+
+            // Calculate the new position
+            const newX = this._initialLabelPosition.x + totalDx;
+            const newY = this._initialLabelPosition.y + totalDy;
+
+            this.logger.debug('[LabelPosition] Calculated new label position', {
+              newX,
+              newY,
+              nodeId: node.id,
+            });
+
+            // Show the label again
+            node.attr({
+              label: {
+                opacity: 1,
+              },
+            });
+            this.logger.debug('[LabelPosition] Label made visible again (opacity set to 1)', {
+              nodeId: node.id,
+            });
+
+            // Update the label position in the node data ONLY NOW at the end of dragging
+            this.logger.info('[LabelPosition] Updating actual label position at end of drag', {
+              nodeId: node.id,
+              newX,
+              newY,
+              service: 'LabelPosition',
+            });
+            this.updateLabelPosition(node, newX, newY);
+
+            // Remove the placeholder rectangle
+            this.removePlaceholderRect();
+
+            this._isDragging = false;
+
+            // Remove the document listeners
+            mousemoveListener();
+            mouseupListener();
+            this.logger.debug('[LabelPosition] Drag event listeners removed');
+          },
+        );
 
         // Add the listeners to the array for cleanup
         this._dragListeners.push(mousemoveListener, mouseupListener);
+        this.logger.debug('[LabelPosition] Drag event listeners added');
       },
     );
 
     // Add the mousedown listener to the array for cleanup
     this._dragListeners.push(mousedownListener);
+    this.logger.debug('[LabelPosition] Mouse down listener added to drag handle', {
+      nodeId: node.id,
+    });
+  }
+
+  /**
+   * Creates a placeholder rectangle for dragging
+   * @param rect The bounding rectangle of the label element
+   */
+  private createPlaceholderRect(rect: DOMRect): void {
+    // Remove any existing placeholder
+    this.removePlaceholderRect();
+
+    this.logger.debug('[LabelPosition] Creating placeholder rectangle', {
+      width: rect.width,
+      height: rect.height,
+      left: rect.left,
+      top: rect.top,
+      nodeId: this._currentNode?.id,
+    });
+
+    // Create the placeholder rectangle - append to document.body for maximum visibility
+    const placeholder = this._renderer.createElement('div') as HTMLDivElement;
+    this._renderer.setStyle(placeholder, 'position', 'fixed'); // Use fixed positioning to ensure visibility
+    this._renderer.setStyle(placeholder, 'z-index', '9999'); // Very high z-index to ensure visibility
+    this._renderer.setStyle(placeholder, 'width', `${rect.width}px`);
+    this._renderer.setStyle(placeholder, 'height', `${rect.height}px`);
+    this._renderer.setStyle(placeholder, 'left', `${rect.left}px`);
+    this._renderer.setStyle(placeholder, 'top', `${rect.top}px`);
+    this._renderer.setStyle(placeholder, 'border', '2px dashed #ff3366'); // More visible border
+    this._renderer.setStyle(placeholder, 'background-color', 'rgba(255, 51, 102, 0.2)'); // More visible background
+    this._renderer.setStyle(placeholder, 'pointer-events', 'none'); // Allow events to pass through
+
+    // Add the placeholder to the document body for maximum visibility
+    this._renderer.appendChild(document.body, placeholder);
+    this._placeholderRect = placeholder;
+
+    this.logger.info('[LabelPosition] Created placeholder rectangle for label dragging', {
+      nodeId: this._currentNode?.id,
+    });
+  }
+
+  /**
+   * Removes the placeholder rectangle
+   */
+  private removePlaceholderRect(): void {
+    if (this._placeholderRect && this._placeholderRect.parentNode) {
+      this._renderer.removeChild(this._placeholderRect.parentNode, this._placeholderRect);
+      this._placeholderRect = null;
+
+      this.logger.debug('[LabelPosition] Removed placeholder rectangle', {
+        nodeId: this._currentNode?.id,
+      });
+    }
   }
 
   /**
@@ -293,14 +453,27 @@ export class DfdLabelPositionService {
     const nodeData = node.getData<Record<string, unknown>>();
     const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
 
+    this.logger.debug('[LabelPosition] Current label position before update', {
+      nodeId: node.id,
+      currentPosition: safeNodeData.labelPosition,
+    });
+
     // Update the label position
     const updatedData: NodeData = {
       ...safeNodeData,
       labelPosition: { x, y },
     };
 
+    this.logger.debug('[LabelPosition] New label position calculated', {
+      nodeId: node.id,
+      newPosition: { x, y },
+    });
+
     // Set the updated data
     node.setData(updatedData);
+    this.logger.debug('[LabelPosition] Updated node data with new label position', {
+      nodeId: node.id,
+    });
 
     // Apply the position to the label using refX and refY
     // This is the correct way to position labels in AntV/X6
@@ -311,9 +484,10 @@ export class DfdLabelPositionService {
       },
     });
 
-    this.logger.debug(`Updated label position for node ${node.id}`, {
+    this.logger.info('[LabelPosition] Updated label position for node', {
       nodeId: node.id,
-      labelPosition: { x, y },
+      position: { x, y },
+      service: 'LabelPosition',
     });
   }
 
@@ -324,8 +498,16 @@ export class DfdLabelPositionService {
   applyLabelPosition(node: Node): void {
     // Don't apply to TextboxShape
     if (node instanceof TextboxShape) {
+      this.logger.debug('[LabelPosition] Skipping label position for TextboxShape', {
+        nodeId: node.id,
+      });
       return;
     }
+
+    this.logger.debug('[LabelPosition] Applying saved label position to node', {
+      nodeId: node.id,
+      nodeType: node.constructor.name,
+    });
 
     // Get the node data
     const nodeData = node.getData<Record<string, unknown>>();
@@ -340,6 +522,11 @@ export class DfdLabelPositionService {
     if (safeNodeData.labelPosition) {
       const { x, y } = safeNodeData.labelPosition;
 
+      this.logger.debug('[LabelPosition] Using saved label position', {
+        nodeId: node.id,
+        position: { x, y },
+      });
+
       // Apply the position to the label using refX and refY
       node.attr({
         label: {
@@ -347,13 +534,30 @@ export class DfdLabelPositionService {
           refY: y,
         },
       });
+
+      this.logger.info('[LabelPosition] Applied saved label position to node', {
+        nodeId: node.id,
+        position: { x, y },
+        service: 'LabelPosition',
+      });
     } else {
       // If no saved position, use the center of the object
+      this.logger.debug('[LabelPosition] No saved position, using center position', {
+        nodeId: node.id,
+        center: { x: centerX, y: centerY },
+      });
+
       node.attr({
         label: {
           refX: centerX,
           refY: centerY,
         },
+      });
+
+      this.logger.info('[LabelPosition] Applied center position to node label', {
+        nodeId: node.id,
+        position: { x: centerX, y: centerY },
+        service: 'LabelPosition',
       });
     }
   }

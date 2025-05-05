@@ -14,8 +14,15 @@ export class DfdLabelEditorService {
   private _renderer: Renderer2;
   private _editingCell: Cell | null = null;
   private _inputElement: HTMLInputElement | null = null;
+  private _placeholderRect: HTMLDivElement | null = null; // Placeholder rectangle for dragging
   private _clickOutsideListener: (() => void) | null = null;
   private _keydownListener: ((event: KeyboardEvent) => void) | null = null;
+  private _mouseMoveListener: ((event: MouseEvent) => void) | null = null;
+  private _mouseUpListener: ((event: MouseEvent) => void) | null = null;
+  private _isDragging = false;
+  private _dragOffsetX = 0;
+  private _dragOffsetY = 0;
+  private _initialInputPosition = { x: 0, y: 0 }; // Store initial position for calculating final position
 
   constructor(
     private logger: LoggerService,
@@ -71,6 +78,70 @@ export class DfdLabelEditorService {
       if (this._editingCell && this._editingCell !== edge) {
         this.stopEditing(true);
       }
+    });
+
+    // Handle node unselection to cancel editing
+    graph.on('node:unselected', ({ node }: { node: Node }) => {
+      if (this._editingCell === node) {
+        this.stopEditing(true);
+      }
+    });
+
+    // Handle edge unselection to cancel editing
+    graph.on('edge:unselected', ({ edge }: { edge: Cell }) => {
+      if (this._editingCell === edge) {
+        this.stopEditing(true);
+      }
+    });
+
+    // Handle cell removal to cancel editing
+    graph.on('cell:removed', ({ cell }: { cell: Cell }) => {
+      // Always stop editing when any cell is removed, even if it's not the one being edited
+      // This ensures the drag handle is removed when a shape is deleted while its label is being edited
+      this.stopEditing(false);
+
+      // Log the removal for debugging
+      this.logger.info(`Cell removed, cleaning up any editing state`, {
+        cellId: cell.id,
+        editingCellId: this._editingCell?.id,
+      });
+    });
+
+    // Add a handler for the delete tool click
+    graph.on('node:delete', () => {
+      this.cleanupEditing();
+    });
+
+    // Add a handler for the edge delete tool click
+    graph.on('edge:delete', () => {
+      this.cleanupEditing();
+    });
+
+    // Handle tools hiding events
+    graph.on('node:tools:hide', () => {
+      this.cleanupEditing();
+      this.logger.info('Node tools hidden, cleaning up any editing state');
+    });
+
+    graph.on('edge:tools:hide', () => {
+      this.cleanupEditing();
+      this.logger.info('Edge tools hidden, cleaning up any editing state');
+    });
+
+    // Handle general tools events
+    graph.on('tools:hide', () => {
+      this.cleanupEditing();
+      this.logger.info('Tools hidden, cleaning up any editing state');
+    });
+
+    graph.on('tools:hidden', () => {
+      this.cleanupEditing();
+      this.logger.info('Tools hidden event, cleaning up any editing state');
+    });
+
+    // Handle blank mousedown which might hide tools
+    graph.on('blank:mousedown', () => {
+      this.cleanupEditing();
     });
   }
 
@@ -162,18 +233,29 @@ export class DfdLabelEditorService {
     this._renderer.setStyle(input, 'position', 'absolute');
     this._renderer.setStyle(input, 'z-index', '1000');
     this._renderer.setStyle(input, 'width', `${cellBBox.width}px`);
-    this._renderer.setStyle(input, 'height', `${30}px`); // Fixed height for better usability
     this._renderer.setStyle(input, 'left', `${cellBBox.x}px`);
-    this._renderer.setStyle(input, 'top', `${cellBBox.y + cellBBox.height / 2 - 15}px`); // Center vertically
     this._renderer.setStyle(input, 'font-size', '12px');
     this._renderer.setStyle(input, 'font-family', '"Roboto Condensed", Arial, sans-serif');
-    this._renderer.setStyle(input, 'text-align', 'center');
     this._renderer.setStyle(input, 'padding', '2px');
     this._renderer.setStyle(input, 'border', '1px solid #1890ff');
     this._renderer.setStyle(input, 'border-radius', '2px');
     this._renderer.setStyle(input, 'outline', 'none');
     this._renderer.setStyle(input, 'background', 'white');
     this._renderer.setAttribute(input, 'value', initialText);
+
+    // Check if the cell is a TextboxShape
+    if (cell instanceof TextboxShape) {
+      // For textbox nodes, use full height and align text to top-left
+      this._renderer.setStyle(input, 'height', `${cellBBox.height}px`);
+      this._renderer.setStyle(input, 'top', `${cellBBox.y}px`);
+      this._renderer.setStyle(input, 'text-align', 'left');
+      this._renderer.setStyle(input, 'vertical-align', 'top');
+    } else {
+      // For other nodes, use fixed height and center alignment
+      this._renderer.setStyle(input, 'height', `${30}px`); // Fixed height for better usability
+      this._renderer.setStyle(input, 'top', `${cellBBox.y + cellBBox.height / 2 - 15}px`); // Center vertically
+      this._renderer.setStyle(input, 'text-align', 'center');
+    }
 
     // Add the input to the graph container
     this._renderer.appendChild(graphContainer, input);
@@ -304,6 +386,147 @@ export class DfdLabelEditorService {
     this._inputElement.addEventListener('click', event => {
       event.stopPropagation();
     });
+
+    // Add mousedown event listener for dragging the label handle
+    this._inputElement.addEventListener('mousedown', (event: MouseEvent) => {
+      // Only handle left mouse button
+      if (event.button !== 0) return;
+
+      // Prevent default to avoid text selection during drag
+      event.preventDefault();
+
+      // Stop propagation to prevent other handlers from interfering
+      event.stopPropagation();
+
+      this.logger.info('[LabelEditor] Mouse down on label editor input', {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        cellId: this._editingCell?.id,
+      });
+
+      // Set dragging flag
+      this._isDragging = true;
+
+      // Get the current position and dimensions of the input element
+      if (!this._inputElement) return;
+
+      const rect = this._inputElement.getBoundingClientRect();
+
+      // Store initial position for calculating the final position
+      this._initialInputPosition = {
+        x: rect.left,
+        y: rect.top,
+      };
+
+      this.logger.debug('[LabelEditor] Starting drag from position', {
+        initialPosition: this._initialInputPosition,
+        cellId: this._editingCell?.id,
+      });
+
+      // Hide the input element during dragging
+      this._renderer.setStyle(this._inputElement, 'visibility', 'hidden');
+      this.logger.debug('[LabelEditor] Input element hidden during drag');
+
+      // Create placeholder rectangle for dragging
+      this.createPlaceholderRect(rect);
+
+      // Calculate the offset between mouse position and input element position
+      // This ensures the drag handle doesn't jump when clicked
+      this._dragOffsetX = event.clientX - rect.left;
+      this._dragOffsetY = event.clientY - rect.top;
+
+      // Add mousemove and mouseup listeners to document
+      this._mouseMoveListener = (moveEvent: MouseEvent) => {
+        if (!this._isDragging || !this._placeholderRect) return;
+
+        // Update placeholder rectangle position to follow mouse cursor with the original offset
+        const x = moveEvent.clientX - this._dragOffsetX;
+        const y = moveEvent.clientY - this._dragOffsetY;
+
+        this._renderer.setStyle(this._placeholderRect, 'left', `${x}px`);
+        this._renderer.setStyle(this._placeholderRect, 'top', `${y}px`);
+
+        this.logger.debug('[LabelEditor] Mouse move during drag', {
+          clientX: moveEvent.clientX,
+          clientY: moveEvent.clientY,
+          placeholderPosition: { x, y },
+        });
+      };
+
+      this._mouseUpListener = (upEvent: MouseEvent) => {
+        if (!this._isDragging) {
+          this._isDragging = false;
+          return;
+        }
+
+        this.logger.info('[LabelEditor] Mouse up, ending drag', {
+          clientX: upEvent.clientX,
+          clientY: upEvent.clientY,
+          cellId: this._editingCell?.id,
+        });
+
+        // Calculate the final position
+        const finalX = upEvent.clientX - this._dragOffsetX;
+        const finalY = upEvent.clientY - this._dragOffsetY;
+
+        // Calculate the delta from the initial position
+        const deltaX = finalX - this._initialInputPosition.x;
+        const deltaY = finalY - this._initialInputPosition.y;
+
+        this.logger.debug('[LabelEditor] Calculated position delta', {
+          deltaX,
+          deltaY,
+          cellId: this._editingCell?.id,
+        });
+
+        // Make the input element visible again
+        if (this._inputElement) {
+          this._renderer.setStyle(this._inputElement, 'visibility', 'visible');
+          this.logger.debug('[LabelEditor] Input element made visible again');
+
+          // Update the input element position to match the placeholder's final position
+          this._renderer.setStyle(this._inputElement, 'left', `${finalX}px`);
+          this._renderer.setStyle(this._inputElement, 'top', `${finalY}px`);
+          this.logger.debug('[LabelEditor] Input element position updated', {
+            finalX,
+            finalY,
+          });
+        }
+
+        // If we have a cell being edited, update its label position ONLY NOW at the end of dragging
+        if (this._editingCell && this._editingCell.isNode()) {
+          this.logger.info('[LabelEditor] Updating actual label position at end of drag', {
+            cellId: this._editingCell.id,
+            deltaX,
+            deltaY,
+          });
+          this.updateLabelPosition(deltaX, deltaY);
+        }
+
+        // Remove the placeholder rectangle
+        this.removePlaceholderRect();
+
+        // Reset dragging state
+        this._isDragging = false;
+
+        // Remove mousemove and mouseup listeners
+        if (this._mouseMoveListener) {
+          document.removeEventListener('mousemove', this._mouseMoveListener);
+          this._mouseMoveListener = null;
+        }
+
+        if (this._mouseUpListener) {
+          document.removeEventListener('mouseup', this._mouseUpListener);
+          this._mouseUpListener = null;
+        }
+
+        this.logger.debug('[LabelEditor] Drag event listeners removed');
+      };
+
+      document.addEventListener('mousemove', this._mouseMoveListener);
+      document.addEventListener('mouseup', this._mouseUpListener);
+      this.logger.debug('[LabelEditor] Drag event listeners added');
+    });
   }
 
   /**
@@ -430,6 +653,135 @@ export class DfdLabelEditorService {
   }
 
   /**
+   * Creates a placeholder rectangle for dragging
+   * @param rect The bounding rectangle of the input element
+   */
+  private createPlaceholderRect(rect: DOMRect): void {
+    // Remove any existing placeholder
+    this.removePlaceholderRect();
+
+    this.logger.debug('[LabelEditor] Creating placeholder rectangle', {
+      width: rect.width,
+      height: rect.height,
+      left: rect.left,
+      top: rect.top,
+      cellId: this._editingCell?.id,
+    });
+
+    // Create the placeholder rectangle - append to document.body for maximum visibility
+    const placeholder = this._renderer.createElement('div') as HTMLDivElement;
+    this._renderer.setStyle(placeholder, 'position', 'fixed'); // Use fixed positioning to ensure visibility
+    this._renderer.setStyle(placeholder, 'z-index', '9999'); // Very high z-index to ensure visibility
+    this._renderer.setStyle(placeholder, 'width', `${rect.width}px`);
+    this._renderer.setStyle(placeholder, 'height', `${rect.height}px`);
+    this._renderer.setStyle(placeholder, 'left', `${rect.left}px`);
+    this._renderer.setStyle(placeholder, 'top', `${rect.top}px`);
+    this._renderer.setStyle(placeholder, 'border', '2px dashed #ff3366'); // More visible border
+    this._renderer.setStyle(placeholder, 'background-color', 'rgba(255, 51, 102, 0.2)'); // More visible background
+    this._renderer.setStyle(placeholder, 'pointer-events', 'none'); // Allow events to pass through
+
+    // Add the placeholder to the document body for maximum visibility
+    this._renderer.appendChild(document.body, placeholder);
+    this._placeholderRect = placeholder;
+
+    this.logger.info('[LabelEditor] Created placeholder rectangle for label dragging', {
+      cellId: this._editingCell?.id,
+    });
+  }
+
+  /**
+   * Updates the label position on the cell
+   * @param deltaX The change in X position
+   * @param deltaY The change in Y position
+   */
+  private updateLabelPosition(deltaX: number, deltaY: number): void {
+    if (!this._editingCell || !this._editingCell.isNode()) return;
+
+    const node = this._editingCell;
+
+    try {
+      // Check if we're editing a port
+      const portId = this._inputElement?.getAttribute('data-port-id');
+      if (portId) {
+        // For ports, we would need to implement port label positioning
+        // This is more complex and might require additional work
+        this.logger.info('[LabelEditor] Port label positioning not yet implemented', {
+          nodeId: node.id,
+          portId,
+        });
+      } else {
+        // For regular node labels, update the position
+        // Get the current node data
+        const nodeData = node.getData<Record<string, unknown>>();
+        const safeNodeData: NodeData =
+          typeof nodeData === 'object' && nodeData !== null ? (nodeData as NodeData) : {};
+
+        // Get current label position from node data
+        const currentPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
+
+        this.logger.debug('[LabelEditor] Current label position before update', {
+          nodeId: node.id,
+          currentPosition,
+        });
+
+        // Calculate new position
+        const newPosition = {
+          x: currentPosition.x + deltaX,
+          y: currentPosition.y + deltaY,
+        };
+
+        this.logger.debug('[LabelEditor] New label position calculated', {
+          nodeId: node.id,
+          newPosition,
+          deltaX,
+          deltaY,
+        });
+
+        // Update the label position in node data
+        const updatedData: NodeData = {
+          ...safeNodeData,
+          labelPosition: newPosition,
+        };
+
+        // Set the updated data
+        node.setData(updatedData);
+        this.logger.debug('[LabelEditor] Updated node data with new label position', {
+          nodeId: node.id,
+        });
+
+        // Apply the position to the label using refX and refY
+        node.attr({
+          label: {
+            refX: newPosition.x,
+            refY: newPosition.y,
+          },
+        });
+
+        this.logger.info('[LabelEditor] Updated label position for node', {
+          nodeId: node.id,
+          position: newPosition,
+          service: 'LabelEditor',
+        });
+      }
+    } catch (error) {
+      this.logger.error('[LabelEditor] Error updating label position:', error);
+    }
+  }
+
+  /**
+   * Removes the placeholder rectangle
+   */
+  private removePlaceholderRect(): void {
+    if (this._placeholderRect && this._placeholderRect.parentNode) {
+      this._renderer.removeChild(this._placeholderRect.parentNode, this._placeholderRect);
+      this._placeholderRect = null;
+
+      this.logger.debug('[LabelEditor] Removed placeholder rectangle', {
+        cellId: this._editingCell?.id,
+      });
+    }
+  }
+  /**
    * Cleans up the editing session
    */
   private cleanupEditing(): void {
@@ -443,6 +795,23 @@ export class DfdLabelEditorService {
       document.removeEventListener('click', this._clickOutsideListener);
       this._clickOutsideListener = null;
     }
+
+    // Remove mouse event listeners for dragging
+    if (this._mouseMoveListener) {
+      document.removeEventListener('mousemove', this._mouseMoveListener);
+      this._mouseMoveListener = null;
+    }
+
+    if (this._mouseUpListener) {
+      document.removeEventListener('mouseup', this._mouseUpListener);
+      this._mouseUpListener = null;
+    }
+
+    // Reset dragging state
+    this._isDragging = false;
+
+    // Remove the placeholder rectangle
+    this.removePlaceholderRect();
 
     // Remove the input element
     if (this._inputElement && this._inputElement.parentNode) {

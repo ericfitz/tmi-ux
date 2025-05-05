@@ -254,12 +254,85 @@ export class DfdGraphService {
         }),
       );
 
+      // Track if we're currently in a drag operation
+      let isDragging = false;
+      let lastLabelUpdateTime = 0;
+      const labelUpdateThreshold = 500; // ms
+
       // Register the History plugin for undo/redo functionality
       graph.use(
         new History({
           enabled: true,
-          beforeAddCommand: (event, args) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          beforeAddCommand: (event, args: any) => {
             this.logger.debug('History: before add command', event, args);
+
+            // Convert event to string for comparison
+            const eventName = String(event);
+
+            // Filter out selection/deselection events
+            if (
+              eventName === 'node:selected' ||
+              eventName === 'node:unselected' ||
+              eventName === 'selection:changed'
+            ) {
+              return false;
+            }
+
+            // For node movement, only record the final position after dragging
+            if (eventName === 'node:moved') {
+              // Check if this is an intermediate drag event
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              if (args && args.options && args.options.dragging === true) {
+                isDragging = true;
+                return false; // Skip intermediate drag events
+              }
+              // Only record the final position (when dragging is complete)
+              isDragging = false;
+              return true;
+            }
+
+            // For edge movement, only record the final position
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            if (eventName === 'edge:moved' && args && args.options && args.options.dragging) {
+              isDragging = true;
+              return false;
+            }
+
+            // Filter out cell:change:* events during dragging or rapid label updates
+            if (eventName.startsWith('cell:change:')) {
+              // If we're in a dragging operation, don't record these changes
+              if (isDragging) {
+                return false;
+              }
+
+              // Check if this is a label position update
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              if (args && (args.key === 'attrs' || args.key === 'data')) {
+                const now = Date.now();
+                // If this is a rapid update (less than threshold ms since last update), skip it
+                if (now - lastLabelUpdateTime < labelUpdateThreshold) {
+                  return false;
+                }
+                lastLabelUpdateTime = now;
+              }
+            }
+
+            // Filter out other events that shouldn't be in history
+            const eventsToIgnore = [
+              'node:mouseenter',
+              'node:mouseleave',
+              'edge:mouseenter',
+              'edge:mouseleave',
+              'node:port:mouseenter',
+              'node:port:mouseleave',
+            ];
+
+            if (eventsToIgnore.includes(eventName)) {
+              return false;
+            }
+
+            // Add all other events to history
             return true;
           },
         }),
