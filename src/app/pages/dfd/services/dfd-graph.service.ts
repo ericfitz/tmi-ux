@@ -8,6 +8,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 // Import NodeData interface for type checking - used in type assertions
 import { NodeData } from '../models/node-data.interface';
+import { TextboxShape } from '../models/textbox-shape.model';
 
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
@@ -72,21 +73,16 @@ export class DfdGraphService {
         embedding: {
           enabled: true,
           findParent({ node }) {
-            // Don't allow parent nodes to be embedded in other nodes
-            // Use proper type assertion to avoid unsafe assignment
-            // Get the node data and explicitly type it
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const rawNodeData = node.getData();
-            // Use type guard to check if nodeData is a valid NodeData object
-            if (isNodeData(rawNodeData) && rawNodeData.parent === true) {
-              return [];
-            }
-
             const bbox = node.getBBox();
             return (
               graph.getNodes().filter(parent => {
                 // Skip if the parent is the same as the node
                 if (parent.id === node.id) return false;
+
+                // Skip textbox shapes as potential parents
+                if (parent instanceof TextboxShape) {
+                  return false;
+                }
 
                 // Use proper type assertion to avoid unsafe assignment
                 // Get the parent data and explicitly type it

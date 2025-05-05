@@ -9,6 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Graph } from '@antv/x6';
 import { History } from '@antv/x6-plugin-history';
 import { saveAs } from 'file-saver-es';
@@ -25,7 +26,7 @@ import { ShapeType } from './services/dfd-node.service';
 @Component({
   selector: 'app-dfd',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule, MatMenuModule],
+  imports: [CommonModule, CoreMaterialModule, MatMenuModule, MatTooltipModule],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

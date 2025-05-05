@@ -9,7 +9,7 @@ export type PortDirection = 'top' | 'right' | 'bottom' | 'left';
 /**
  * Type for shape types
  */
-export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary';
+export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary' | 'textbox';
 
 /**
  * Type for port configuration

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph } from '@antv/x6';
+import { Graph, Node } from '@antv/x6';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdHighlighterService } from './dfd-highlighter.service';
@@ -93,6 +93,9 @@ export class DfdEventService {
             parentId: current,
           };
           node.setData(newData);
+
+          // Manage z-index for parent and child
+          this.manageZIndexForEmbedding(graph, node, current);
         }
       } else if (!current && previous) {
         // Node was un-embedded
@@ -114,8 +117,136 @@ export class DfdEventService {
           delete updatedData.parentId;
           // Set the data with the properly typed object
           node.setData(updatedData);
+
+          // Reset z-index to default and adjust all children
+          this.resetNodeZIndices(graph, node);
         }
       }
+    });
+  }
+
+  /**
+   * Manages z-index for parent and child nodes during embedding
+   * @param graph The X6 graph instance
+   * @param childNode The child node being embedded
+   * @param parentId The ID of the parent node
+   */
+  private manageZIndexForEmbedding(
+    graph: Graph,
+    childNode: Node<Node.Properties>,
+    parentId: string,
+  ): void {
+    const parentNode = graph.getCellById(parentId);
+    if (!parentNode || !(parentNode instanceof Node)) return;
+
+    // Get current z-indices
+    const childZIndex = childNode.getZIndex() || 0;
+    const parentZIndex = parentNode.getZIndex() || 0;
+
+    this.logger.debug('Z-index before adjustment:', {
+      childId: childNode.id,
+      childZIndex,
+      parentId,
+      parentZIndex,
+    });
+
+    // Set parent below child
+    let newParentZIndex = childZIndex - 1;
+    let newChildZIndex = childZIndex;
+
+    // If parent would go below z=0, adjust both to keep them near z=0
+    if (newParentZIndex < 0) {
+      // Move child up to keep the relative positioning
+      newChildZIndex = 1;
+      newParentZIndex = 0;
+    }
+
+    // Apply the new z-indices
+    parentNode.setZIndex(newParentZIndex);
+    childNode.setZIndex(newChildZIndex);
+
+    // Recursively adjust z-indices for all children of the child node
+    this.adjustChildrenZIndices(graph, childNode, newChildZIndex);
+
+    this.logger.debug('Z-index after adjustment:', {
+      childId: childNode.id,
+      childZIndex: newChildZIndex,
+      parentId,
+      parentZIndex: newParentZIndex,
+    });
+  }
+
+  /**
+   * Resets the z-index of a node and recursively adjusts its children
+   * @param graph The X6 graph instance
+   * @param node The node to reset
+   */
+  private resetNodeZIndices(graph: Graph, node: Node<Node.Properties>): void {
+    // Reset this node's z-index to 0
+    node.setZIndex(0);
+
+    this.logger.debug(`Reset z-index of ${node.id} to 0`);
+
+    // Find all children of this node
+    const children = graph.getNodes().filter(childNode => {
+      return childNode.getParent()?.id === node.id;
+    });
+
+    if (children.length === 0) return;
+
+    this.logger.debug(`Resetting z-indices for ${children.length} children of ${node.id}`);
+
+    // Start with 1 for the first child
+    let nextZIndex = 1;
+
+    // Adjust z-index for each child
+    children.forEach(childNode => {
+      childNode.setZIndex(nextZIndex);
+
+      this.logger.debug(`Set z-index of ${childNode.id} to ${nextZIndex}`);
+
+      // Recursively adjust this child's children
+      this.adjustChildrenZIndices(graph, childNode, nextZIndex);
+
+      // Increment for next sibling
+      nextZIndex++;
+    });
+  }
+
+  /**
+   * Recursively adjusts z-indices for all children of a node
+   * @param graph The X6 graph instance
+   * @param parentNode The parent node
+   * @param parentZIndex The parent's z-index
+   */
+  private adjustChildrenZIndices(
+    graph: Graph,
+    parentNode: Node<Node.Properties>,
+    parentZIndex: number,
+  ): void {
+    // Find all children of this node
+    const children = graph.getNodes().filter(node => {
+      return node.getParent()?.id === parentNode.id;
+    });
+
+    if (children.length === 0) return;
+
+    this.logger.debug(`Adjusting z-indices for ${children.length} children of ${parentNode.id}`);
+
+    // Start with parent z-index + 1 for the first child
+    let nextZIndex = parentZIndex + 1;
+
+    // Adjust z-index for each child
+    children.forEach(childNode => {
+      childNode.setZIndex(nextZIndex);
+
+      this.logger.debug(`Set z-index of ${childNode.id} to ${nextZIndex}`);
+
+      // Recursively adjust this child's children
+      this.adjustChildrenZIndices(graph, childNode, nextZIndex);
+
+      // Increment for next sibling
+      nextZIndex++;
     });
   }
 

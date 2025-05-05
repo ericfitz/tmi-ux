@@ -6,11 +6,12 @@ import { ActorShape } from '../models/actor-shape.model';
 import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
+import { TextboxShape } from '../models/textbox-shape.model';
 
 /**
  * Type for shape types
  */
-export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary';
+export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary' | 'textbox';
 
 /**
  * Service for managing nodes in the DFD component
@@ -73,6 +74,15 @@ export class DfdNodeService {
           node.setZIndex(-1);
           node.setData({ parent: true, label: defaultLabel } as NodeData);
           break;
+        case 'textbox':
+          defaultLabel = 'Text';
+          node = new TextboxShape().resize(150, 60).position(randomX, randomY);
+          // No ports to update for textbox
+          // Set parent: false to prevent embedding
+          node.setData({ parent: false, label: defaultLabel } as NodeData);
+          // Update the HTML content with the default label
+          node.updateHtml(defaultLabel);
+          break;
         case 'actor':
         default:
           defaultLabel = 'Actor';
@@ -80,12 +90,15 @@ export class DfdNodeService {
           break;
       }
 
-      // Set the label text
-      node.attr('label/text', defaultLabel);
+      // Set the label text (except for textbox which uses updateHtml)
+      if (shapeType !== 'textbox') {
+        node.attr('label/text', defaultLabel);
+      }
 
-      // Store the label in node data (except for security boundary which is already set)
-      if (shapeType !== 'securityBoundary') {
-        node.setData({ label: defaultLabel } as NodeData);
+      // Store the label in node data (except for security boundary and textbox which are already set)
+      // Set parent: true for all node types except textbox to allow embedding
+      if (shapeType !== 'securityBoundary' && shapeType !== 'textbox') {
+        node.setData({ parent: true, label: defaultLabel } as NodeData);
       }
 
       // Add the node to the graph
@@ -107,7 +120,7 @@ export class DfdNodeService {
     // Add a security boundary
     const securityBoundary = new SecurityBoundaryShape()
       .resize(250, 150)
-      .position(300, 150)
+      .position(500, 150)
       .updatePorts(graph);
     securityBoundary.setZIndex(-1);
     securityBoundary.attr('label/text', 'Security Boundary');
@@ -117,19 +130,19 @@ export class DfdNodeService {
     // Add actor node
     const actor = new ActorShape().resize(120, 40).position(200, 50).updatePorts(graph);
     actor.attr('label/text', 'Actor');
-    actor.setData({ label: 'Actor' } as NodeData);
+    actor.setData({ parent: true, label: 'Actor' } as NodeData);
     graph.addNode(actor);
 
     // Add process node
     const process = new ProcessShape().resize(80, 80).position(400, 50).updatePorts(graph);
     process.attr('label/text', 'Process');
-    process.setData({ label: 'Process' } as NodeData);
+    process.setData({ parent: true, label: 'Process' } as NodeData);
     graph.addNode(process);
 
     // Add store node
     const store = new StoreShape().resize(120, 40).position(300, 250).updatePorts(graph);
     store.attr('label/text', 'Store');
-    store.setData({ label: 'Store' } as NodeData);
+    store.setData({ parent: true, label: 'Store' } as NodeData);
     graph.addNode(store);
   }
 
@@ -143,7 +156,8 @@ export class DfdNodeService {
       node instanceof ActorShape ||
       node instanceof ProcessShape ||
       node instanceof StoreShape ||
-      node instanceof SecurityBoundaryShape
+      node instanceof SecurityBoundaryShape ||
+      node instanceof TextboxShape
     );
   }
 }

@@ -5,13 +5,60 @@
 
   <div class="graph-toolbar">
     <div class="toolbar-group">
-      <button mat-raised-button color="primary" (click)="addRandomNode('actor')">Add Actor</button>
-      <button mat-raised-button color="accent" (click)="addRandomNode('process')">
-        Add Process
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="addRandomNode('actor')"
+        matTooltip="Add Actor"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >person</mat-icon
+        >
       </button>
-      <button mat-raised-button color="warn" (click)="addRandomNode('store')">Add Store</button>
-      <button mat-raised-button color="basic" (click)="addRandomNode('securityBoundary')">
-        Add Security Boundary
+      <button
+        mat-icon-button
+        color="accent"
+        (click)="addRandomNode('process')"
+        matTooltip="Add Process"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >circle</mat-icon
+        >
+      </button>
+      <button mat-icon-button color="warn" (click)="addRandomNode('store')" matTooltip="Add Store">
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >database</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="addRandomNode('securityBoundary')"
+        matTooltip="Add Security Boundary"
+      >
+        <mat-icon fontSet="material-symbols-outlined">select</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="addRandomNode('textbox')"
+        matTooltip="Add Textbox"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >text_fields</mat-icon
+        >
       </button>
     </div>
 

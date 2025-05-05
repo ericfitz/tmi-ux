@@ -2,6 +2,7 @@ import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Graph, Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { NodeData } from '../models/node-data.interface';
+import { TextboxShape } from '../models/textbox-shape.model';
 
 /**
  * Service for handling label editing in the DFD component
@@ -350,26 +351,50 @@ export class DfdLabelEditorService {
             newText,
           });
         } else {
-          // Update node label
-          node.attr('label/text', newText);
+          // Check if the node is a TextboxShape
+          if (node instanceof TextboxShape) {
+            // Update the HTML content for TextboxShape
+            node.updateHtml(newText);
 
-          // Also update the label in the node data
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const rawNodeData = node.getData();
-          const nodeData: NodeData | undefined =
-            typeof rawNodeData === 'object' && rawNodeData !== null
-              ? (rawNodeData as NodeData)
-              : undefined;
+            // Also update the label in the node data
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const rawNodeData = node.getData();
+            const nodeData: NodeData | undefined =
+              typeof rawNodeData === 'object' && rawNodeData !== null
+                ? (rawNodeData as NodeData)
+                : undefined;
 
-          if (nodeData) {
-            const updatedData: NodeData = { ...nodeData, label: newText };
-            node.setData(updatedData);
+            if (nodeData) {
+              const updatedData: NodeData = { ...nodeData, label: newText };
+              node.setData(updatedData);
+            }
+
+            this.logger.info(`Updated textbox content for node ${node.id}`, {
+              nodeId: node.id,
+              newText,
+            });
+          } else {
+            // Update node label for other shape types
+            node.attr('label/text', newText);
+
+            // Also update the label in the node data
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const rawNodeData = node.getData();
+            const nodeData: NodeData | undefined =
+              typeof rawNodeData === 'object' && rawNodeData !== null
+                ? (rawNodeData as NodeData)
+                : undefined;
+
+            if (nodeData) {
+              const updatedData: NodeData = { ...nodeData, label: newText };
+              node.setData(updatedData);
+            }
+
+            this.logger.info(`Updated node label for node ${node.id}`, {
+              nodeId: node.id,
+              newText,
+            });
           }
-
-          this.logger.info(`Updated node label for node ${node.id}`, {
-            nodeId: node.id,
-            newText,
-          });
         }
       } else if (this._editingCell.isEdge()) {
         const edge = this._editingCell;
