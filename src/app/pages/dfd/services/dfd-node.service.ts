@@ -7,7 +7,7 @@ import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
 import { TextboxShape } from '../models/textbox-shape.model';
-import { DfdLabelPositionService } from './dfd-label-position.service';
+import { DfdLabelEditorService } from './dfd-label-editor.service';
 
 /**
  * Type for shape types
@@ -23,7 +23,7 @@ export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary' | 'te
 export class DfdNodeService {
   constructor(
     private logger: LoggerService,
-    private labelPositionService: DfdLabelPositionService,
+    private labelEditorService: DfdLabelEditorService,
   ) {}
 
   /**
@@ -110,7 +110,7 @@ export class DfdNodeService {
 
       // Apply any saved label position
       if (shapeType !== 'textbox') {
-        this.labelPositionService.applyLabelPosition(node);
+        this.labelEditorService.applyLabelPosition(node);
       }
 
       return node;
@@ -156,10 +156,10 @@ export class DfdNodeService {
     graph.addNode(store);
 
     // Apply any saved label positions
-    this.labelPositionService.applyLabelPosition(securityBoundary);
-    this.labelPositionService.applyLabelPosition(actor);
-    this.labelPositionService.applyLabelPosition(process);
-    this.labelPositionService.applyLabelPosition(store);
+    this.labelEditorService.applyLabelPosition(securityBoundary);
+    this.labelEditorService.applyLabelPosition(actor);
+    this.labelEditorService.applyLabelPosition(process);
+    this.labelEditorService.applyLabelPosition(store);
   }
 
   /**

@@ -5,7 +5,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { DfdHighlighterService } from './dfd-highlighter.service';
 import { DfdPortService } from './dfd-port.service';
 import { DfdNodeService } from './dfd-node.service';
-import { DfdLabelPositionService } from './dfd-label-position.service';
+import { DfdLabelEditorService } from './dfd-label-editor.service';
 import { ActorShape } from '../models/actor-shape.model';
 import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
@@ -33,7 +33,7 @@ export class DfdEventService {
     private highlighterService: DfdHighlighterService,
     private portService: DfdPortService,
     private nodeService: DfdNodeService,
-    private labelPositionService: DfdLabelPositionService,
+    private labelEditorService: DfdLabelEditorService,
   ) {}
 
   /**
@@ -324,7 +324,7 @@ export class DfdEventService {
         this._selectedNode.removeTools();
 
         // Remove label drag handle
-        this.labelPositionService.removeLabelDragHandle();
+        this.labelEditorService.removeLabelDragHandle();
       }
 
       // Select the clicked node
@@ -366,7 +366,7 @@ export class DfdEventService {
       this.addResizeHandleStyles();
 
       // Show label drag handle for the selected node
-      this.labelPositionService.showLabelDragHandle(cell, graph);
+      this.labelEditorService.showLabelDragHandle(cell, graph);
     });
 
     // Handle background click to deselect nodes
@@ -376,7 +376,7 @@ export class DfdEventService {
         this._selectedNode.removeTools();
 
         // Remove label drag handle
-        this.labelPositionService.removeLabelDragHandle();
+        this.labelEditorService.removeLabelDragHandle();
 
         this._selectedNode = null;
       }
