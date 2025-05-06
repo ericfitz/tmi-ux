@@ -48,8 +48,6 @@ export class DfdEventService {
     // Create highlighters for nodes and edges
     const nodeHighlighter = this.highlighterService.createNodeHighlighter();
     const edgeHighlighter = this.highlighterService.createEdgeHighlighter();
-    // Magnet availability highlighter is created but not used in this service
-    this.highlighterService.createMagnetAvailabilityHighlighter();
 
     // Handle node:change:parent event to update nodes when they're embedded or un-embedded
     this.setupEmbeddingEvents(graph);
@@ -268,25 +266,22 @@ export class DfdEventService {
       // Show ports when hovering over the node
       if (this.nodeService.isDfdNode(view.cell)) {
         const node = view.cell;
-        const nodeView = view;
-        if (nodeView) {
-          const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
-            'top',
-            'right',
-            'bottom',
-            'left',
-          ];
+        const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+          'top',
+          'right',
+          'bottom',
+          'left',
+        ];
 
-          directions.forEach(direction => {
-            const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
-            dfdNode.getPortsByDirection(direction).forEach(port => {
-              const portNode = nodeView.findPortElem(port.id, 'portBody');
-              if (portNode) {
-                portNode.setAttribute('visibility', 'visible');
-              }
-            });
+        directions.forEach(direction => {
+          const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+          dfdNode.getPortsByDirection(direction).forEach(port => {
+            const portNode = view.findPortElem(port.id, 'portBody');
+            if (portNode) {
+              portNode.setAttribute('visibility', 'visible');
+            }
           });
-        }
+        });
       }
     });
 
@@ -318,55 +313,67 @@ export class DfdEventService {
       // Prevent event propagation to avoid deselection
       e.stopPropagation();
 
+      // Check if the clicked node is already selected
+      const isAlreadySelected = this._selectedNode === cell;
+
       // If there's a previously selected node, deselect it
       if (this._selectedNode && this._selectedNode !== cell) {
         // Remove tools from the previously selected node
         this._selectedNode.removeTools();
 
+        // Remove selection styling
+        this._selectedNode.attr('selected', false);
+
         // Remove label drag handle
         this.labelEditorService.removeLabelDragHandle();
       }
 
-      // Select the clicked node
-      this._selectedNode = cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+      // If the node is already selected, do nothing (keep it selected)
+      if (!isAlreadySelected) {
+        // Select the clicked node
+        this._selectedNode = cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
 
-      // Add tools to the selected node (remove button and boundary)
-      const tools = [
-        {
-          name: 'button-remove',
-          args: {
-            x: '100%',
-            y: 0,
-            offset: { x: -10, y: 10 },
-          },
-        },
-        {
-          name: 'boundary',
-          args: {
-            padding: 10,
-            attrs: {
-              fill: '#47C769',
-              stroke: 'none',
-              'fill-opacity': 0.2,
+        // Add selection styling
+        cell.attr('selected', true);
+
+        // Add tools to the selected node (remove button and boundary)
+        const tools = [
+          {
+            name: 'button-remove',
+            args: {
+              x: '100%',
+              y: 0,
+              offset: { x: -10, y: 10 },
             },
           },
-        },
-      ];
+          {
+            name: 'boundary',
+            args: {
+              padding: 10,
+              attrs: {
+                fill: '#47C769',
+                stroke: 'none',
+                'fill-opacity': 0.2,
+              },
+            },
+          },
+        ];
 
-      cell.addTools(tools);
+        cell.addTools(tools);
 
-      // Add a custom attribute to the node to indicate its type
-      if (cell instanceof ProcessShape) {
-        cell.attr('data-shape-type', 'process');
-      } else {
-        cell.attr('data-shape-type', 'rect');
+        // Add a custom attribute to the node to indicate its type
+        if (cell instanceof ProcessShape) {
+          cell.attr('data-shape-type', 'process');
+        } else {
+          cell.attr('data-shape-type', 'rect');
+        }
+
+        // Add resize handle styles if they don't exist yet
+        this.addResizeHandleStyles();
+
+        // Show label drag handle for the selected node
+        this.labelEditorService.showLabelDragHandle(cell, graph);
       }
-
-      // Add resize handle styles if they don't exist yet
-      this.addResizeHandleStyles();
-
-      // Show label drag handle for the selected node
-      this.labelEditorService.showLabelDragHandle(cell, graph);
     });
 
     // Handle background click to deselect nodes
@@ -374,6 +381,9 @@ export class DfdEventService {
       if (this._selectedNode) {
         // Remove all tools from the selected node
         this._selectedNode.removeTools();
+
+        // Remove selection styling
+        this._selectedNode.attr('selected', false);
 
         // Remove label drag handle
         this.labelEditorService.removeLabelDragHandle();

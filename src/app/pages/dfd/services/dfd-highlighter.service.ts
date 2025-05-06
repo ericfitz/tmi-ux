@@ -55,4 +55,20 @@ export class DfdHighlighterService {
       },
     };
   }
+
+  /**
+   * Creates the node selection highlighter configuration
+   * @returns The highlighter configuration object
+   */
+  createSelectionHighlighter(): HighlighterConfig {
+    return {
+      name: 'stroke',
+      args: {
+        attrs: {
+          stroke: '#47C769',
+          strokeWidth: 2,
+        },
+      },
+    };
+  }
 }

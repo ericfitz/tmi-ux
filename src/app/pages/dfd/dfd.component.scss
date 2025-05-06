@@ -132,6 +132,19 @@
   }
 }
 
+// Selection styles
+[selected='true'] {
+  &.x6-graph-svg {
+    filter: none !important;
+  }
+
+  .x6-cell-tool-boundary {
+    fill: #47c769 !important;
+    stroke: none !important;
+    fill-opacity: 0.2 !important;
+  }
+}
+
 // Port tooltip styles
 .port-tooltip {
   position: absolute;
