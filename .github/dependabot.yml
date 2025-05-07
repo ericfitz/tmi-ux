@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pnpm" # pnpm uses npm ecosystem in Dependabot
+  - package-ecosystem: "npm" # pnpm uses npm ecosystem in Dependabot
     directory: "/"
     schedule:
       interval: "cron"
@@ -19,7 +19,7 @@ updates:
     allow:
       - dependency-type: "production" # Only update production dependencies
 
-  - package-ecosystem: "pnpm"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
