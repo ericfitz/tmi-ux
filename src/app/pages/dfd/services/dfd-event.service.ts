@@ -139,41 +139,13 @@ export class DfdEventService {
     const parentNode = graph.getCellById(parentId);
     if (!parentNode || !(parentNode instanceof Node)) return;
 
-    // Get current z-indices
-    const childZIndex = childNode.getZIndex() || 0;
-    const parentZIndex = parentNode.getZIndex() || 0;
-
-    this.logger.debug('Z-index before adjustment:', {
+    this.logger.debug('Starting z-index recalculation after embedding', {
       childId: childNode.id,
-      childZIndex,
       parentId,
-      parentZIndex,
     });
 
-    // Set parent below child
-    let newParentZIndex = childZIndex - 1;
-    let newChildZIndex = childZIndex;
-
-    // If parent would go below z=0, adjust both to keep them near z=0
-    if (newParentZIndex < 0) {
-      // Move child up to keep the relative positioning
-      newChildZIndex = 1;
-      newParentZIndex = 0;
-    }
-
-    // Apply the new z-indices
-    parentNode.setZIndex(newParentZIndex);
-    childNode.setZIndex(newChildZIndex);
-
-    // Recursively adjust z-indices for all children of the child node
-    this.adjustChildrenZIndices(graph, childNode, newChildZIndex);
-
-    this.logger.debug('Z-index after adjustment:', {
-      childId: childNode.id,
-      childZIndex: newChildZIndex,
-      parentId,
-      parentZIndex: newParentZIndex,
-    });
+    // Recalculate z-indices for all shapes in the graph
+    this.recalculateAllZIndices(graph);
   }
 
   /**
@@ -182,35 +154,43 @@ export class DfdEventService {
    * @param node The node to reset
    */
   private resetNodeZIndices(graph: Graph, node: Node<Node.Properties>): void {
-    // Reset this node's z-index to 0
-    node.setZIndex(0);
+    this.logger.debug(`Resetting z-indices after un-embedding node ${node.id}`);
 
-    this.logger.debug(`Reset z-index of ${node.id} to 0`);
+    // Set the un-embedded node's z-index to 0 (unless it's a security boundary)
+    if (!(node instanceof SecurityBoundaryShape)) {
+      node.setZIndex(0);
+      this.logger.debug(`Reset z-index of un-embedded node ${node.id} to 0`);
+    } else {
+      node.setZIndex(-1);
+      this.logger.debug(`Reset z-index of security boundary ${node.id} to -1`);
+    }
 
     // Find all children of this node
     const children = graph.getNodes().filter(childNode => {
       return childNode.getParent()?.id === node.id;
     });
 
-    if (children.length === 0) return;
+    if (children.length > 0) {
+      this.logger.debug(`Adjusting z-indices for ${children.length} children of ${node.id}`);
 
-    this.logger.debug(`Resetting z-indices for ${children.length} children of ${node.id}`);
+      // Start with z-index 1 for the first child
+      let nextZIndex = 1;
 
-    // Start with 1 for the first child
-    let nextZIndex = 1;
+      // Adjust z-index for each child
+      children.forEach(childNode => {
+        childNode.setZIndex(nextZIndex);
+        this.logger.debug(`Set z-index of child ${childNode.id} to ${nextZIndex}`);
 
-    // Adjust z-index for each child
-    children.forEach(childNode => {
-      childNode.setZIndex(nextZIndex);
+        // Recursively adjust this child's children
+        this.adjustChildrenZIndices(graph, childNode, nextZIndex);
 
-      this.logger.debug(`Set z-index of ${childNode.id} to ${nextZIndex}`);
-
-      // Recursively adjust this child's children
-      this.adjustChildrenZIndices(graph, childNode, nextZIndex);
-
-      // Increment for next sibling
-      nextZIndex++;
-    });
+        // Increment for next sibling
+        nextZIndex++;
+      });
+    } else {
+      // If no children, no need for further adjustments
+      this.logger.debug(`Node ${node.id} has no children, no further z-index adjustments needed`);
+    }
   }
 
   /**
@@ -248,6 +228,115 @@ export class DfdEventService {
       // Increment for next sibling
       nextZIndex++;
     });
+  }
+
+  /**
+   * Recalculates z-indices for all shapes in the graph
+   * Ensures security boundaries are below everything else,
+   * and child shapes are above their parent
+   * @param graph The X6 graph instance
+   */
+  private recalculateAllZIndices(graph: Graph): void {
+    if (!graph) return;
+
+    this.logger.debug('Recalculating all z-indices');
+
+    // Step 1: Collect all nodes and identify security boundaries
+    const allNodes = graph.getNodes();
+    const securityBoundaries: Node<Node.Properties>[] = [];
+    const regularNodes: Node<Node.Properties>[] = [];
+
+    allNodes.forEach(node => {
+      if (node instanceof SecurityBoundaryShape) {
+        securityBoundaries.push(node);
+      } else {
+        regularNodes.push(node);
+      }
+    });
+
+    // Step 2: Set security boundaries to z-index -1
+    securityBoundaries.forEach(node => {
+      node.setZIndex(-1);
+      this.logger.debug(`Set security boundary ${node.id} z-index to -1`);
+    });
+
+    // Step 3: Build a hierarchy map of parent-child relationships
+    const hierarchyMap = new Map<string, Node<Node.Properties>[]>();
+    const rootNodes: Node<Node.Properties>[] = [];
+
+    regularNodes.forEach(node => {
+      const parent = node.getParent();
+      if (parent) {
+        const parentId = parent.id;
+        if (!hierarchyMap.has(parentId)) {
+          hierarchyMap.set(parentId, []);
+        }
+        hierarchyMap.get(parentId)?.push(node);
+      } else {
+        rootNodes.push(node);
+      }
+    });
+
+    // Step 4: Set all root nodes (nodes without parents) to z-index 0
+    rootNodes.forEach(node => {
+      node.setZIndex(0);
+      this.logger.debug(`Set root node ${node.id} z-index to 0`);
+    });
+
+    // Step 5: Process children of each root node
+    rootNodes.forEach(node => {
+      // Process children recursively starting from z-index 1
+      this.setChildrenZIndices(node, 1, hierarchyMap);
+    });
+
+    this.logger.debug('Z-index recalculation complete');
+  }
+
+  /**
+   * Sets z-indices for children of a node recursively
+   * @param parentNode The parent node
+   * @param startZIndex The starting z-index for children
+   * @param hierarchyMap Map of parent-child relationships
+   * @returns The next available z-index
+   */
+  private setChildrenZIndices(
+    parentNode: Node<Node.Properties>,
+    startZIndex: number,
+    hierarchyMap: Map<string, Node<Node.Properties>[]>,
+  ): number {
+    let currentZIndex = startZIndex;
+    const children = hierarchyMap.get(parentNode.id) || [];
+
+    children.forEach(child => {
+      child.setZIndex(currentZIndex);
+      this.logger.debug(`Set child node ${child.id} z-index to ${currentZIndex}`);
+      currentZIndex++;
+
+      // Process this child's children
+      currentZIndex = this.setChildrenZIndices(child, currentZIndex, hierarchyMap);
+    });
+
+    return currentZIndex;
+  }
+
+  /**
+   * Counts the total number of descendants for a node
+   * @param nodeId The node ID
+   * @param hierarchyMap Map of parent-child relationships
+   * @returns The number of descendants
+   */
+  private countDescendants(
+    nodeId: string,
+    hierarchyMap: Map<string, Node<Node.Properties>[]>,
+  ): number {
+    const children = hierarchyMap.get(nodeId) || [];
+    let count = children.length;
+
+    children.forEach(child => {
+      count += this.countDescendants(child.id, hierarchyMap);
+    });
+
+    return count;
   }
 
   /**
