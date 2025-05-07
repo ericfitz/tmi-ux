@@ -23,6 +23,7 @@ export class DfdLabelEditorService {
   private _renderer: Renderer2;
   // Label editing properties
   private _editingCell: Cell | null = null;
+  private _editingGraph: Graph | null = null; // Store the graph for recreating bounding boxes
   private _inputElement: HTMLInputElement | null = null;
   private _placeholderRect: HTMLDivElement | null = null; // Placeholder rectangle for dragging
   private _clickOutsideListener: (() => void) | null = null;
@@ -34,13 +35,10 @@ export class DfdLabelEditorService {
   private _dragOffsetY = 0;
   private _initialInputPosition = { x: 0, y: 0 }; // Store initial position for calculating final position
 
-  // Label positioning properties
-  private _dragHandleElement: HTMLElement | null = null;
-  private _currentNode: Node | null = null;
-  private _dragListeners: Array<() => void> = [];
-  private _dragStartX = 0;
-  private _dragStartY = 0;
-  private _initialLabelPosition = { x: 0, y: 0 }; // Store initial position for calculating final position
+  // Label selection properties
+  private _selectedLabel: SVGTextElement | null = null;
+  private _labelBoundingBox: HTMLDivElement | null = null;
+  private _initialPosition = { x: 0, y: 0 }; // Store initial position for calculating final position
 
   constructor(
     private logger: LoggerService,
@@ -82,19 +80,38 @@ export class DfdLabelEditorService {
     // Handle blank click to cancel editing if clicking outside
     graph.on('blank:click', () => {
       this.stopEditing(true);
+      this.deselectLabel();
     });
 
     // Handle node click to cancel editing if clicking on another node
-    graph.on('node:click', ({ node }) => {
+    graph.on('node:click', ({ node, e }) => {
       if (this._editingCell && this._editingCell !== node) {
         this.stopEditing(true);
+      }
+
+      // Check if the click was on a label
+      const target = e.target as Element;
+      if (target.tagName === 'text' || target.tagName === 'tspan') {
+        e.stopPropagation();
+        this.selectLabel(node, target as SVGTextElement, graph);
+      } else {
+        this.deselectLabel();
       }
     });
 
     // Handle edge click to cancel editing if clicking on another edge
-    graph.on('edge:click', ({ edge }) => {
+    graph.on('edge:click', ({ edge, e }) => {
       if (this._editingCell && this._editingCell !== edge) {
         this.stopEditing(true);
+      }
+
+      // Check if the click was on a label
+      const target = e.target as Element;
+      if (target.tagName === 'text' || target.tagName === 'tspan') {
+        e.stopPropagation();
+        this.selectLabel(edge, target as SVGTextElement, graph);
+      } else {
+        this.deselectLabel();
       }
     });
 
@@ -114,9 +131,9 @@ export class DfdLabelEditorService {
 
     // Handle cell removal to cancel editing
     graph.on('cell:removed', ({ cell }: { cell: Cell }) => {
-      // Always stop editing when any cell is removed, even if it's not the one being edited
-      // This ensures the drag handle is removed when a shape is deleted while its label is being edited
+      // Always stop editing when any cell is removed
       this.stopEditing(false);
+      this.deselectLabel();
 
       // Log the removal for debugging
       this.logger.info(`Cell removed, cleaning up any editing state`, {
@@ -125,41 +142,10 @@ export class DfdLabelEditorService {
       });
     });
 
-    // Add a handler for the delete tool click
-    graph.on('node:delete', () => {
-      this.cleanupEditing();
-    });
-
-    // Add a handler for the edge delete tool click
-    graph.on('edge:delete', () => {
-      this.cleanupEditing();
-    });
-
-    // Handle tools hiding events
-    graph.on('node:tools:hide', () => {
-      this.cleanupEditing();
-      this.logger.info('Node tools hidden, cleaning up any editing state');
-    });
-
-    graph.on('edge:tools:hide', () => {
-      this.cleanupEditing();
-      this.logger.info('Edge tools hidden, cleaning up any editing state');
-    });
-
-    // Handle general tools events
-    graph.on('tools:hide', () => {
-      this.cleanupEditing();
-      this.logger.info('Tools hidden, cleaning up any editing state');
-    });
-
-    graph.on('tools:hidden', () => {
-      this.cleanupEditing();
-      this.logger.info('Tools hidden event, cleaning up any editing state');
-    });
-
     // Handle blank mousedown which might hide tools
     graph.on('blank:mousedown', () => {
       this.cleanupEditing();
+      this.deselectLabel();
     });
   }
 
@@ -175,6 +161,7 @@ export class DfdLabelEditorService {
     }
 
     this._editingCell = cell;
+    this._editingGraph = graph; // Store the graph for later use
 
     // Get the current label text
     let labelText = '';
@@ -217,6 +204,7 @@ export class DfdLabelEditorService {
     }
 
     this._editingCell = node;
+    this._editingGraph = graph; // Store the graph for later use
 
     // Get the current port label
     const port = node.getPort(portId);
@@ -243,15 +231,41 @@ export class DfdLabelEditorService {
       return;
     }
 
-    const cellBBox = cellView.getBBox();
+    // If we have a selected label with a bounding box, use that for positioning
+    let position = { x: 0, y: 0, width: 0, height: 0 };
+
+    if (this._labelBoundingBox) {
+      const rect = this._labelBoundingBox.getBoundingClientRect();
+      position = {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
+
+      // Hide the bounding box during editing
+      this._renderer.setStyle(this._labelBoundingBox, 'visibility', 'hidden');
+    } else {
+      // Otherwise, use the cell's bounding box
+      const cellBBox = cellView.getBBox();
+      position = {
+        x: cellBBox.x,
+        y: cellBBox.y + cellBBox.height / 2 - 15, // Center vertically
+        width: cellBBox.width,
+        height: 30, // Fixed height for better usability
+      };
+    }
+
     const graphContainer = graph.container;
 
     // Create the input element
     const input = this._renderer.createElement('input') as HTMLInputElement;
     this._renderer.setStyle(input, 'position', 'absolute');
     this._renderer.setStyle(input, 'z-index', '1000');
-    this._renderer.setStyle(input, 'width', `${cellBBox.width}px`);
-    this._renderer.setStyle(input, 'left', `${cellBBox.x}px`);
+    this._renderer.setStyle(input, 'width', `${position.width}px`);
+    this._renderer.setStyle(input, 'height', `${position.height}px`);
+    this._renderer.setStyle(input, 'left', `${position.x}px`);
+    this._renderer.setStyle(input, 'top', `${position.y}px`);
     this._renderer.setStyle(input, 'font-size', '12px');
     this._renderer.setStyle(input, 'font-family', '"Roboto Condensed", Arial, sans-serif');
     this._renderer.setStyle(input, 'padding', '2px');
@@ -263,15 +277,11 @@ export class DfdLabelEditorService {
 
     // Check if the cell is a TextboxShape
     if (cell instanceof TextboxShape) {
-      // For textbox nodes, use full height and align text to top-left
-      this._renderer.setStyle(input, 'height', `${cellBBox.height}px`);
-      this._renderer.setStyle(input, 'top', `${cellBBox.y}px`);
+      // For textbox nodes, align text to top-left
       this._renderer.setStyle(input, 'text-align', 'left');
       this._renderer.setStyle(input, 'vertical-align', 'top');
     } else {
-      // For other nodes, use fixed height and center alignment
-      this._renderer.setStyle(input, 'height', `${30}px`); // Fixed height for better usability
-      this._renderer.setStyle(input, 'top', `${cellBBox.y + cellBBox.height / 2 - 15}px`); // Center vertically
+      // For other nodes, use center alignment
       this._renderer.setStyle(input, 'text-align', 'center');
     }
 
@@ -285,6 +295,29 @@ export class DfdLabelEditorService {
 
     // Add event listeners
     this.setupEventListeners();
+
+    // Make the input auto-resize as the user types
+    input.addEventListener('input', () => {
+      // Create a temporary span to measure the text width
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.position = 'absolute';
+      tempSpan.style.whiteSpace = 'nowrap';
+      tempSpan.style.fontSize = '12px';
+      tempSpan.style.fontFamily = '"Roboto Condensed", Arial, sans-serif';
+      tempSpan.textContent = input.value;
+      document.body.appendChild(tempSpan);
+
+      // Get the width of the text plus some padding
+      const textWidth = tempSpan.offsetWidth + 20;
+
+      // Remove the temporary span
+      document.body.removeChild(tempSpan);
+
+      // Update the input width, but don't make it smaller than the original width
+      const newWidth = Math.max(textWidth, position.width);
+      this._renderer.setStyle(input, 'width', `${newWidth}px`);
+    });
   }
 
   /**
@@ -367,6 +400,32 @@ export class DfdLabelEditorService {
 
     // Add event listeners
     this.setupEventListeners();
+
+    // Make the input auto-resize as the user types
+    input.addEventListener('input', () => {
+      // Create a temporary span to measure the text width
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.position = 'absolute';
+      tempSpan.style.whiteSpace = 'nowrap';
+      tempSpan.style.fontSize = '12px';
+      tempSpan.style.fontFamily = '"Roboto Condensed", Arial, sans-serif';
+      tempSpan.textContent = input.value;
+      document.body.appendChild(tempSpan);
+
+      // Get the width of the text plus some padding
+      const textWidth = tempSpan.offsetWidth + 20;
+
+      // Remove the temporary span
+      document.body.removeChild(tempSpan);
+
+      // Update the input width, but don't make it smaller than 80px
+      const newWidth = Math.max(textWidth, 80);
+      this._renderer.setStyle(input, 'width', `${newWidth}px`);
+
+      // Recenter the input
+      this._renderer.setStyle(input, 'left', `${portBBox.x - newWidth / 2 + portBBox.width / 2}px`);
+    });
   }
 
   /**
@@ -564,8 +623,32 @@ export class DfdLabelEditorService {
       this.saveLabel(newText);
     }
 
+    // Store the cell and graph for later use
+    const cell = this._editingCell;
+    const graph = this._editingGraph;
+
     // Clean up
     this.cleanupEditing();
+
+    // If we have a cell and graph, recreate the bounding box
+    if (cell && graph) {
+      // Get the node view
+      const nodeView = graph.findViewByCell(cell);
+      if (nodeView) {
+        // Find the label element
+        let labelElement = nodeView.findOne('text.joint-cell-label') as SVGTextElement;
+
+        // If not found with the first selector, try a more general one
+        if (!labelElement) {
+          labelElement = nodeView.findOne('text') as SVGTextElement;
+        }
+
+        // If found, create a bounding box
+        if (labelElement) {
+          this.selectLabel(cell, labelElement, graph);
+        }
+      }
+    }
   }
 
   /**
@@ -626,7 +709,44 @@ export class DfdLabelEditorService {
                 ? (rawNodeData as NodeData)
                 : undefined;
 
-            if (nodeData) {
+            // Check if the label already has a position
+            const hasPosition =
+              nodeData?.labelPosition &&
+              (nodeData.labelPosition.x !== 0 || nodeData.labelPosition.y !== 0);
+
+            // If the label doesn't have a position, center it in the shape
+            if (!hasPosition && this._selectedLabel) {
+              // Get the node size
+              const nodeSize = node.getSize();
+              const centerX = nodeSize.width / 2;
+              const centerY = nodeSize.height / 2;
+
+              // Calculate the centered position
+              // We don't need to adjust for the label's width/height here because
+              // the refX/refY coordinates are relative to the node's center
+              const updatedData: NodeData = {
+                ...nodeData,
+                label: newText,
+                labelPosition: { x: centerX, y: centerY },
+              };
+
+              // Set the data and update the label position
+              node.setData(updatedData);
+
+              // Apply the position to the label
+              node.attr({
+                label: {
+                  refX: centerX,
+                  refY: centerY,
+                },
+              });
+
+              this.logger.info(`Centered label for node ${node.id}`, {
+                nodeId: node.id,
+                position: { x: centerX, y: centerY },
+              });
+            } else if (nodeData) {
+              // Just update the text without changing position
               const updatedData: NodeData = { ...nodeData, label: newText };
               node.setData(updatedData);
             }
@@ -800,362 +920,257 @@ export class DfdLabelEditorService {
       this._inputElement = null;
     }
 
-    // Clear the editing cell reference
+    // Clear the editing cell and graph references
     this._editingCell = null;
+    this._editingGraph = null;
+
+    // Also deselect any selected label
+    this.deselectLabel();
   }
 
   /**
-   * Shows a drag handle for the label of the selected node
-   * @param node The selected node
+   * Selects a label for potential dragging or editing
+   * @param cell The cell containing the label
+   * @param labelElement The SVG text element of the label
    * @param graph The X6 graph instance
    */
-  showLabelDragHandle(node: Node, graph: Graph): void {
-    // Don't show drag handle for TextboxShape
-    if (node instanceof TextboxShape) {
-      return;
-    }
+  private selectLabel(cell: Cell, labelElement: SVGTextElement, graph: Graph): void {
+    // Deselect any previously selected label
+    this.deselectLabel();
 
-    // Remove any existing drag handle
-    this.removeLabelDragHandle();
+    this._selectedLabel = labelElement;
 
-    this._currentNode = node;
+    // Create a bounding box around the label
+    this.createLabelBoundingBox(cell, labelElement, graph);
 
-    // Get the node view and label element
-    const nodeView = graph.findViewByCell(node);
-    if (!nodeView) {
-      return;
-    }
-
-    // Find the label element - try different selectors
-    let labelElement = nodeView.findOne('text.joint-cell-label') as SVGTextElement;
-
-    // If not found with the first selector, try a more general one
-    if (!labelElement) {
-      labelElement = nodeView.findOne('text') as SVGTextElement;
-    }
-
-    // If still not found, log and return
-    if (!labelElement) {
-      this.logger.debug(`Label element not found for node ${node.id}`, {
-        nodeId: node.id,
-        nodeType: node.constructor.name,
-      });
-      return;
-    }
-
-    this.logger.debug(`Label element found for node ${node.id}`, {
-      nodeId: node.id,
-      nodeType: node.constructor.name,
-    });
-
-    // Get the bounding box of the label
-    const labelBBox = labelElement.getBBox();
-
-    // Get the current label position from node data or use default (centered)
-    const nodeData = node.getData<Record<string, unknown>>();
-    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
-    const labelPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
-
-    // Create the drag handle element - match the resize handle style exactly
-    const dragHandle = this._renderer.createElement('div') as HTMLElement;
-    this._renderer.setAttribute(dragHandle, 'class', 'label-drag-handle');
-    this._renderer.setStyle(dragHandle, 'position', 'absolute');
-    this._renderer.setStyle(dragHandle, 'width', '8px');
-    this._renderer.setStyle(dragHandle, 'height', '8px');
-    this._renderer.setStyle(dragHandle, 'border-radius', '0');
-    this._renderer.setStyle(dragHandle, 'background-color', '#000000');
-    this._renderer.setStyle(dragHandle, 'border', 'none');
-    this._renderer.setStyle(dragHandle, 'outline', 'none');
-    this._renderer.setStyle(dragHandle, 'cursor', 'move');
-    this._renderer.setStyle(dragHandle, 'z-index', '1000');
-
-    // Position the drag handle at the top-left corner of the label
-    // Get the node's position and size
-    const nodePosition = node.getPosition();
-    const nodeSize = node.getSize();
-
-    // Get the current refX and refY values from the node's attributes
-    // If refX and refY don't exist yet, use the center of the object
-    const centerX = nodeSize.width / 2;
-    const centerY = nodeSize.height / 2;
-
-    // Use the saved position if available, otherwise use the center
-    const refX = labelPosition.x !== undefined ? labelPosition.x : centerX;
-    const refY = labelPosition.y !== undefined ? labelPosition.y : centerY;
-
-    // Calculate the absolute position of the drag handle in the document
-    const graphRect = graph.container.getBoundingClientRect();
-
-    // Check if the label has been moved yet
-    const isLabelMoved =
-      labelPosition.x !== undefined &&
-      labelPosition.x !== 0 &&
-      labelPosition.y !== undefined &&
-      labelPosition.y !== 0;
-
-    let x, y;
-
-    if (isLabelMoved) {
-      // If the label has been moved, position the drag handle at the top left of the label text
-      // Use the bounding box of the label element to get its position
-      const labelRect = labelElement.getBoundingClientRect();
-      x = labelRect.left - 4; // 4px offset to position handle outside the label
-      y = labelRect.top - 4; // 4px offset to position handle outside the label
-    } else {
-      // If the label has not been moved yet, position the drag handle at the center of the shape
-      x = graphRect.left + nodePosition.x + centerX;
-      y = graphRect.top + nodePosition.y + centerY;
-    }
-
-    this._renderer.setStyle(dragHandle, 'left', `${x}px`);
-    this._renderer.setStyle(dragHandle, 'top', `${y}px`);
-
-    // Log the position for debugging
-    this.logger.debug(`Label drag handle positioned at (${x}, ${y})`, {
-      nodeId: node.id,
-      nodePosition,
-      nodeSize,
-      labelBBox: {
-        x: labelBBox.x,
-        y: labelBBox.y,
-        width: labelBBox.width,
-        height: labelBBox.height,
-      },
-      labelPosition: {
-        refX,
-        refY,
-      },
-    });
-
-    // Add the drag handle to the document body
-    this._renderer.appendChild(document.body, dragHandle);
-    this._dragHandleElement = dragHandle;
-
-    // Set up drag events
-    this.setupDragEvents(node, graph, labelElement);
+    this.logger.info(`Label selected for cell ${cell.id}`);
   }
 
   /**
-   * Removes the label drag handle
+   * Creates a bounding box around the selected label
+   * @param cell The cell containing the label
+   * @param labelElement The SVG text element of the label
+   * @param graph The X6 graph instance
    */
-  removeLabelDragHandle(): void {
-    // Remove drag event listeners
-    this._dragListeners.forEach(removeListener => removeListener());
-    this._dragListeners = [];
+  private createLabelBoundingBox(cell: Cell, labelElement: SVGTextElement, graph: Graph): void {
+    // Check if the label needs to be centered (only for nodes, not edges)
+    if (cell.isNode()) {
+      const node = cell;
 
-    // Remove the drag handle element
-    if (this._dragHandleElement) {
-      this._renderer.removeChild(this._dragHandleElement.parentNode, this._dragHandleElement);
-      this._dragHandleElement = null;
+      // Get the node data to check if the label has a position
+      const rawNodeData = node.getData<Record<string, unknown>>();
+      const nodeData: NodeData | undefined =
+        typeof rawNodeData === 'object' && rawNodeData !== null
+          ? (rawNodeData as NodeData)
+          : undefined;
+
+      // Check if the label already has a position
+      const hasPosition =
+        nodeData?.labelPosition &&
+        (nodeData.labelPosition.x !== 0 || nodeData.labelPosition.y !== 0);
+
+      // If the label doesn't have a position, center it in the shape
+      if (!hasPosition) {
+        // Get the node size
+        const nodeSize = node.getSize();
+        const centerX = nodeSize.width / 2;
+        const centerY = nodeSize.height / 2;
+
+        // Apply the centered position to the label
+        node.attr({
+          label: {
+            refX: centerX,
+            refY: centerY,
+          },
+        });
+
+        // Update the node data
+        if (nodeData) {
+          const updatedData: NodeData = {
+            ...nodeData,
+            labelPosition: { x: centerX, y: centerY },
+          };
+          node.setData(updatedData);
+        }
+
+        this.logger.info(`Centered label for node ${node.id}`, {
+          nodeId: node.id,
+          position: { x: centerX, y: centerY },
+        });
+      }
     }
 
-    // Remove the placeholder rectangle if it exists
-    this.removePlaceholderRect();
+    // Get the bounding rectangle of the label
+    const labelRect = labelElement.getBoundingClientRect();
 
-    // If we have a current node and it's being dragged, restore its label opacity
-    if (this._currentNode && this._isDragging) {
-      this._currentNode.attr({
-        label: {
-          opacity: 1,
-        },
-      });
+    // Create the bounding box element
+    const boundingBox = this._renderer.createElement('div') as HTMLDivElement;
+    this._renderer.setStyle(boundingBox, 'position', 'absolute');
+    this._renderer.setStyle(boundingBox, 'z-index', '1000');
+    this._renderer.setStyle(boundingBox, 'width', `${labelRect.width + 10}px`); // Add padding
+    this._renderer.setStyle(boundingBox, 'height', `${labelRect.height + 6}px`); // Add padding
+    this._renderer.setStyle(boundingBox, 'left', `${labelRect.left - 5}px`); // Center horizontally
+    this._renderer.setStyle(boundingBox, 'top', `${labelRect.top - 3}px`); // Center vertically
+    this._renderer.setStyle(boundingBox, 'border', '2px dashed #ff0000');
+    this._renderer.setStyle(boundingBox, 'background-color', 'rgba(255, 0, 0, 0.1)');
+    this._renderer.setStyle(boundingBox, 'cursor', 'move');
+
+    // Add the bounding box to the document body
+    this._renderer.appendChild(document.body, boundingBox);
+    this._labelBoundingBox = boundingBox;
+
+    // Set up event listeners for dragging
+    this.setupLabelDragEvents(cell, labelElement, graph);
+
+    // Set up double-click to edit
+    boundingBox.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      this.startEditing(cell, graph);
+    });
+  }
+
+  /**
+   * Sets up drag events for the label bounding box
+   * @param cell The cell containing the label
+   * @param labelElement The SVG text element of the label
+   * @param graph The X6 graph instance
+   */
+  private setupLabelDragEvents(cell: Cell, labelElement: SVGTextElement, _graph: Graph): void {
+    if (!this._labelBoundingBox) return;
+
+    // Mouse down event for starting drag
+    this._labelBoundingBox.addEventListener('mousedown', e => {
+      // Only handle left mouse button
+      if (e.button !== 0) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      this._isDragging = true;
+
+      // Calculate the offset between mouse position and bounding box position
+      const rect = this._labelBoundingBox!.getBoundingClientRect();
+      this._dragOffsetX = e.clientX - rect.left;
+      this._dragOffsetY = e.clientY - rect.top;
+
+      // Store initial position for calculating the final position
+      this._initialPosition = { x: e.clientX, y: e.clientY };
+
+      // Get current label position from node data
+      if (cell.isNode()) {
+        const nodeData = cell.getData<Record<string, unknown>>();
+        const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+        const currentPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
+        this._initialPosition = { ...currentPosition };
+      }
+
+      // Add mousemove and mouseup listeners to document
+      this._mouseMoveListener = (moveEvent: MouseEvent) => {
+        if (!this._isDragging || !this._labelBoundingBox) return;
+
+        // Update bounding box position to follow mouse cursor with the original offset
+        const x = moveEvent.clientX - this._dragOffsetX;
+        const y = moveEvent.clientY - this._dragOffsetY;
+
+        this._renderer.setStyle(this._labelBoundingBox, 'left', `${x}px`);
+        this._renderer.setStyle(this._labelBoundingBox, 'top', `${y}px`);
+      };
+
+      this._mouseUpListener = (upEvent: MouseEvent) => {
+        if (!this._isDragging) return;
+
+        this._isDragging = false;
+
+        // Calculate the delta from the initial position
+        const deltaX = upEvent.clientX - this._initialPosition.x;
+        const deltaY = upEvent.clientY - this._initialPosition.y;
+
+        // Update the label position
+        if (cell.isNode()) {
+          const node = cell;
+          this.updateNodeLabelPosition(node, deltaX, deltaY);
+        } else if (cell.isEdge()) {
+          // For edges, we would need to implement edge label positioning
+          this.logger.info('Edge label positioning not yet implemented');
+        }
+
+        // Remove mousemove and mouseup listeners
+        document.removeEventListener('mousemove', this._mouseMoveListener!);
+        document.removeEventListener('mouseup', this._mouseUpListener!);
+        this._mouseMoveListener = null;
+        this._mouseUpListener = null;
+
+        // Update the bounding box position to match the new label position
+        this.updateBoundingBoxPosition(cell, labelElement);
+      };
+
+      document.addEventListener('mousemove', this._mouseMoveListener);
+      document.addEventListener('mouseup', this._mouseUpListener);
+    });
+  }
+
+  /**
+   * Updates the position of the bounding box to match the label
+   * @param cell The cell containing the label
+   * @param labelElement The SVG text element of the label
+   */
+  private updateBoundingBoxPosition(cell: Cell, labelElement: SVGTextElement): void {
+    if (!this._labelBoundingBox) return;
+
+    // Get the updated position of the label
+    const labelRect = labelElement.getBoundingClientRect();
+
+    // Update the bounding box position
+    this._renderer.setStyle(this._labelBoundingBox, 'left', `${labelRect.left - 5}px`);
+    this._renderer.setStyle(this._labelBoundingBox, 'top', `${labelRect.top - 3}px`);
+  }
+
+  /**
+   * Deselects the currently selected label
+   */
+  private deselectLabel(): void {
+    // Remove the bounding box
+    if (this._labelBoundingBox && this._labelBoundingBox.parentNode) {
+      this._renderer.removeChild(this._labelBoundingBox.parentNode, this._labelBoundingBox);
+      this._labelBoundingBox = null;
     }
 
-    this._currentNode = null;
+    this._selectedLabel = null;
+
+    // Remove event listeners
+    if (this._mouseMoveListener) {
+      document.removeEventListener('mousemove', this._mouseMoveListener);
+      this._mouseMoveListener = null;
+    }
+
+    if (this._mouseUpListener) {
+      document.removeEventListener('mouseup', this._mouseUpListener);
+      this._mouseUpListener = null;
+    }
+
     this._isDragging = false;
   }
 
   /**
-   * Sets up drag events for the label drag handle
-   * @param node The node being edited
-   * @param graph The X6 graph instance
-   * @param labelElement The label SVG element
+   * Updates the node label position by delta values
+   * @param node The node to update
+   * @param deltaX The change in X position
+   * @param deltaY The change in Y position
    */
-  private setupDragEvents(node: Node, graph: Graph, labelElement: SVGElement): void {
-    if (!this._dragHandleElement) {
-      return;
-    }
+  private updateNodeLabelPosition(node: Node, deltaX: number, deltaY: number): void {
+    // Get the current node data
+    const nodeData = node.getData<Record<string, unknown>>();
+    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
 
-    this.logger.debug('[LabelEditor] Setting up drag events for node', {
-      nodeId: node.id,
-      nodeType: node.constructor.name,
-    });
+    // Get current label position from node data
+    const currentPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
 
-    // Mouse down event
-    const mousedownListener = this._renderer.listen(
-      this._dragHandleElement,
-      'mousedown',
-      (event: MouseEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
+    // Calculate new position
+    const newX = currentPosition.x + deltaX;
+    const newY = currentPosition.y + deltaY;
 
-        this.logger.info('[LabelEditor] Mouse down on drag handle', {
-          clientX: event.clientX,
-          clientY: event.clientY,
-          nodeId: node.id,
-        });
-
-        this._isDragging = true;
-        this._dragStartX = event.clientX;
-        this._dragStartY = event.clientY;
-
-        // Get the current label position from node data
-        const nodeData = node.getData<Record<string, unknown>>();
-        const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
-        this._initialLabelPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
-
-        this.logger.debug('[LabelEditor] Starting drag from position', {
-          initialPosition: this._initialLabelPosition,
-          nodeId: node.id,
-        });
-
-        // Create placeholder rectangle for dragging
-        const labelRect = labelElement.getBoundingClientRect();
-        this.createPlaceholderRect(labelRect);
-
-        // Hide the actual label during dragging by setting its opacity to 0
-        node.attr({
-          label: {
-            opacity: 0,
-          },
-        });
-        this.logger.debug('[LabelEditor] Label hidden during drag (opacity set to 0)', {
-          nodeId: node.id,
-        });
-
-        // Add mousemove and mouseup listeners to document
-        const mousemoveListener = this._renderer.listen(
-          document,
-          'mousemove',
-          (moveEvent: MouseEvent) => {
-            if (!this._isDragging || !this._placeholderRect) return;
-
-            moveEvent.preventDefault();
-            moveEvent.stopPropagation();
-
-            // Calculate the new position
-            const dx = moveEvent.clientX - this._dragStartX;
-            const dy = moveEvent.clientY - this._dragStartY;
-
-            this.logger.debug('[LabelEditor] Mouse move during drag', {
-              clientX: moveEvent.clientX,
-              clientY: moveEvent.clientY,
-              dx,
-              dy,
-              nodeId: node.id,
-            });
-
-            // Update the placeholder rectangle position
-            if (this._placeholderRect) {
-              const left = parseInt(this._placeholderRect.style.left, 10) + dx;
-              const top = parseInt(this._placeholderRect.style.top, 10) + dy;
-
-              this._renderer.setStyle(this._placeholderRect, 'left', `${left}px`);
-              this._renderer.setStyle(this._placeholderRect, 'top', `${top}px`);
-
-              this.logger.debug('[LabelEditor] Updated placeholder position', {
-                left,
-                top,
-              });
-            }
-
-            // Update the drag handle position
-            if (this._dragHandleElement) {
-              const left = parseInt(this._dragHandleElement.style.left, 10) + dx;
-              const top = parseInt(this._dragHandleElement.style.top, 10) + dy;
-
-              this._renderer.setStyle(this._dragHandleElement, 'left', `${left}px`);
-              this._renderer.setStyle(this._dragHandleElement, 'top', `${top}px`);
-
-              this.logger.debug('[LabelEditor] Updated drag handle position', {
-                left,
-                top,
-              });
-            }
-
-            // Update drag start position
-            this._dragStartX = moveEvent.clientX;
-            this._dragStartY = moveEvent.clientY;
-          },
-        );
-
-        const mouseupListener = this._renderer.listen(
-          document,
-          'mouseup',
-          (upEvent: MouseEvent) => {
-            if (!this._isDragging) {
-              this._isDragging = false;
-              return;
-            }
-
-            this.logger.info('[LabelEditor] Mouse up, ending drag', {
-              clientX: upEvent.clientX,
-              clientY: upEvent.clientY,
-              nodeId: node.id,
-            });
-
-            // Calculate the total delta from the initial position
-            const totalDx = upEvent.clientX - event.clientX;
-            const totalDy = upEvent.clientY - event.clientY;
-
-            this.logger.debug('[LabelEditor] Calculated total position delta', {
-              totalDx,
-              totalDy,
-              nodeId: node.id,
-            });
-
-            // Calculate the new position
-            const newX = this._initialLabelPosition.x + totalDx;
-            const newY = this._initialLabelPosition.y + totalDy;
-
-            this.logger.debug('[LabelEditor] Calculated new label position', {
-              newX,
-              newY,
-              nodeId: node.id,
-            });
-
-            // Show the label again
-            node.attr({
-              label: {
-                opacity: 1,
-              },
-            });
-            this.logger.debug('[LabelEditor] Label made visible again (opacity set to 1)', {
-              nodeId: node.id,
-            });
-
-            // Update the label position in the node data ONLY NOW at the end of dragging
-            this.logger.info('[LabelEditor] Updating actual label position at end of drag', {
-              nodeId: node.id,
-              newX,
-              newY,
-              service: 'LabelEditor',
-            });
-            this.updateLabelPosition(node, newX, newY);
-
-            // Remove the placeholder rectangle
-            this.removePlaceholderRect();
-
-            this._isDragging = false;
-
-            // Remove the document listeners
-            mousemoveListener();
-            mouseupListener();
-            this.logger.debug('[LabelEditor] Drag event listeners removed');
-          },
-        );
-
-        // Add the listeners to the array for cleanup
-        this._dragListeners.push(mousemoveListener, mouseupListener);
-        this.logger.debug('[LabelEditor] Drag event listeners added');
-      },
-    );
-
-    // Add the mousedown listener to the array for cleanup
-    this._dragListeners.push(mousedownListener);
-    this.logger.debug('[LabelEditor] Mouse down listener added to drag handle', {
-      nodeId: node.id,
-    });
+    // Update the label position
+    this.updateLabelPosition(node, newX, newY);
   }
 
   /**
@@ -1208,10 +1223,11 @@ export class DfdLabelEditorService {
   }
 
   /**
-   * Applies the saved label position to a node
+   * Applies the saved label position to a node and creates a bounding box
    * @param node The node to apply the position to
+   * @param graph The X6 graph instance
    */
-  applyLabelPosition(node: Node): void {
+  applyLabelPosition(node: Node, graph?: Graph): void {
     // Don't apply to TextboxShape
     if (node instanceof TextboxShape) {
       this.logger.debug('[LabelEditor] Skipping label position for TextboxShape', {
@@ -1276,5 +1292,48 @@ export class DfdLabelEditorService {
         service: 'LabelEditor',
       });
     }
+
+    // Create a bounding box for the label if graph is provided
+    if (graph) {
+      this.createLabelBoundingBoxForNode(node, graph);
+    }
+  }
+
+  /**
+   * Creates a bounding box for the label of a node
+   * @param node The node to create a bounding box for
+   * @param graph The X6 graph instance
+   */
+  createLabelBoundingBoxForNode(node: Node, graph: Graph): void {
+    // Don't apply to TextboxShape
+    if (node instanceof TextboxShape) {
+      return;
+    }
+
+    // Get the node view
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView) {
+      return;
+    }
+
+    // Find the label element
+    let labelElement = nodeView.findOne('text.joint-cell-label') as SVGTextElement;
+
+    // If not found with the first selector, try a more general one
+    if (!labelElement) {
+      labelElement = nodeView.findOne('text') as SVGTextElement;
+    }
+
+    // If still not found, return
+    if (!labelElement) {
+      this.logger.debug(`Label element not found for node ${node.id}`, {
+        nodeId: node.id,
+        nodeType: node.constructor.name,
+      });
+      return;
+    }
+
+    // Select the label to create a bounding box
+    this.selectLabel(node, labelElement, graph);
   }
 }

@@ -324,8 +324,7 @@ export class DfdEventService {
         // Remove selection styling
         this._selectedNode.attr('selected', false);
 
-        // Remove label drag handle
-        this.labelEditorService.removeLabelDragHandle();
+        // No need to remove label drag handle anymore
       }
 
       // If the node is already selected, do nothing (keep it selected)
@@ -371,8 +370,7 @@ export class DfdEventService {
         // Add resize handle styles if they don't exist yet
         this.addResizeHandleStyles();
 
-        // Show label drag handle for the selected node
-        this.labelEditorService.showLabelDragHandle(cell, graph);
+        // No need to show label drag handle anymore
       }
     });
 
@@ -385,8 +383,7 @@ export class DfdEventService {
         // Remove selection styling
         this._selectedNode.attr('selected', false);
 
-        // Remove label drag handle
-        this.labelEditorService.removeLabelDragHandle();
+        // No need to remove label drag handle anymore
 
         this._selectedNode = null;
       }

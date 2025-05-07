@@ -108,9 +108,9 @@ export class DfdNodeService {
       // Add the node to the graph
       graph.addNode(node);
 
-      // Apply any saved label position
+      // Apply any saved label position and create bounding box
       if (shapeType !== 'textbox') {
-        this.labelEditorService.applyLabelPosition(node);
+        this.labelEditorService.applyLabelPosition(node, graph);
       }
 
       return node;
@@ -155,11 +155,11 @@ export class DfdNodeService {
     store.setData({ parent: true, label: 'Store' } as NodeData);
     graph.addNode(store);
 
-    // Apply any saved label positions
-    this.labelEditorService.applyLabelPosition(securityBoundary);
-    this.labelEditorService.applyLabelPosition(actor);
-    this.labelEditorService.applyLabelPosition(process);
-    this.labelEditorService.applyLabelPosition(store);
+    // Apply any saved label positions and create bounding boxes
+    this.labelEditorService.applyLabelPosition(securityBoundary, graph);
+    this.labelEditorService.applyLabelPosition(actor, graph);
+    this.labelEditorService.applyLabelPosition(process, graph);
+    this.labelEditorService.applyLabelPosition(store, graph);
   }
 
   /**

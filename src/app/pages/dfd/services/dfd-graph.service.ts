@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Graph, Shape } from '@antv/x6';
+import { Graph, Shape, Cell } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { History } from '@antv/x6-plugin-history';
 import { Export } from '@antv/x6-plugin-export';
+import { Keyboard } from '@antv/x6-plugin-keyboard';
 import { LoggerService } from '../../../core/services/logger.service';
+import { DfdEventService } from './dfd-event.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 // Import NodeData interface for type checking - used in type assertions
 import { NodeData } from '../models/node-data.interface';
@@ -22,7 +24,10 @@ function isNodeData(data: unknown): data is NodeData {
   providedIn: 'root',
 })
 export class DfdGraphService {
-  constructor(private logger: LoggerService) {}
+  constructor(
+    private logger: LoggerService,
+    private dfdEventService: DfdEventService,
+  ) {}
 
   /**
    * Creates and configures the X6 graph
@@ -341,6 +346,16 @@ export class DfdGraphService {
       // Register the Export plugin for exporting diagrams
       graph.use(new Export());
 
+      // Register the Keyboard plugin for keyboard shortcuts
+      graph.use(
+        new Keyboard({
+          enabled: true,
+          global: true,
+        }),
+      );
+
+      // Selection is now handled by the custom selection mechanism in dfd-event.service.ts
+
       // Add custom CSS for snaplines
       this.addSnaplineStyles();
 
@@ -355,11 +370,12 @@ export class DfdGraphService {
   }
 
   /**
-   * Adds custom CSS for snaplines
+   * Adds custom CSS for snaplines and selection boxes
    */
   private addSnaplineStyles(): void {
-    const snaplineStyle = document.createElement('style');
-    snaplineStyle.textContent = `
+    const customStyle = document.createElement('style');
+    customStyle.textContent = `
+      /* Snapline styles */
       .x6-snapline {
         stroke: #ff3366;
         stroke-width: 2;
@@ -368,8 +384,12 @@ export class DfdGraphService {
         pointer-events: none;
         opacity: 1 !important;
       }
+      
+      /* Selection styles removed - now using custom selection mechanism */
+      
+      /* No label bounding box styles */
     `;
-    document.head.appendChild(snaplineStyle);
+    document.head.appendChild(customStyle);
   }
 
   /**
@@ -383,8 +403,8 @@ export class DfdGraphService {
       // Note: We're using CSS to style the handles as squares
       const style = document.createElement('style');
       style.textContent = `
-        /* Base style for all resize handles */
-        .x6-node-selected .x6-widget-transform-resize {
+        /* Base style for all resize handles - using custom selection mechanism */
+        [selected='true'] .x6-widget-transform-resize {
           width: 8px !important;
           height: 8px !important;
           border-radius: 0 !important;
@@ -485,5 +505,148 @@ export class DfdGraphService {
     containerElement.style.height = `${containerHeight}px`;
 
     return containerElement;
+  }
+
+  /**
+   * Sets up label editing functionality using the keyboard plugin
+   * @param graph The X6 graph instance
+   */
+  setupLabelEditing(graph: Graph): void {
+    if (!graph) {
+      return;
+    }
+
+    // Get the keyboard plugin
+    const keyboard = graph.getPlugin<Keyboard>('keyboard');
+    if (!keyboard) {
+      this.logger.warn('Keyboard plugin not found, label editing shortcuts will not work');
+      return;
+    }
+
+    // Set up keyboard shortcuts for editing labels
+    keyboard.bindKey(['f2', 'enter'], () => {
+      // Use the custom selection mechanism instead of the Selection plugin
+      const selectedNode = this.dfdEventService.getSelectedNode();
+      if (selectedNode) {
+        this.editCellLabel(selectedNode, graph);
+      }
+    });
+
+    // Double-click on node or edge to edit label
+    graph.on('node:dblclick', ({ node, e }) => {
+      e.stopPropagation();
+      this.editCellLabel(node, graph);
+    });
+
+    graph.on('edge:dblclick', ({ edge, e }) => {
+      e.stopPropagation();
+      this.editCellLabel(edge, graph);
+    });
+  }
+
+  /**
+   * Edits the label of a cell (node or edge)
+   * @param cell The cell to edit
+   * @param graph The X6 graph instance
+   */
+  private editCellLabel(cell: Cell, _graph: Graph): void {
+    // Get the current label text
+    let labelText = '';
+    if (cell.isNode()) {
+      // For nodes, get the label from the node data or attrs
+      const nodeData = cell.getData<Record<string, unknown>>();
+      const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
+
+      if (safeNodeData && typeof safeNodeData['label'] === 'string') {
+        labelText = safeNodeData['label'];
+      } else {
+        // If no label in data, get it from the attrs
+        const attrLabel = cell.attr('label/text');
+        labelText = typeof attrLabel === 'string' ? attrLabel : '';
+      }
+    } else if (cell.isEdge()) {
+      // For edges, get the label from the edge attrs
+      const attrLabel = cell.attr('label/text');
+      labelText = typeof attrLabel === 'string' ? attrLabel : '';
+    }
+
+    // Create a prompt to edit the label
+    const newText = window.prompt('Edit label:', labelText);
+    if (newText !== null) {
+      this.saveCellLabel(cell, newText);
+    }
+  }
+
+  /**
+   * Saves the label text to the cell
+   * @param cell The cell to save the label to
+   * @param newText The new label text
+   */
+  private saveCellLabel(cell: Cell, newText: string): void {
+    try {
+      if (cell.isNode()) {
+        const node = cell;
+
+        // Check if the node is a TextboxShape
+        if (node.constructor.name === 'TextboxShape') {
+          // Update the HTML content for TextboxShape
+          // Cast to TextboxShape to access the updateHtml method
+          (node as unknown as TextboxShape).updateHtml(newText);
+
+          // Also update the label in the node data
+          const nodeData = node.getData<Record<string, unknown>>();
+          const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
+
+          const updatedData = { ...safeNodeData, ['label']: newText };
+          node.setData(updatedData);
+        } else {
+          // Update node label for other shape types
+          node.attr('label/text', newText);
+
+          // Also update the label in the node data
+          const nodeData = node.getData<Record<string, unknown>>();
+          const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
+
+          const updatedData = { ...safeNodeData, ['label']: newText };
+          node.setData(updatedData);
+        }
+      } else if (cell.isEdge()) {
+        const edge = cell;
+
+        // Update edge label in both attr and labels array
+        edge.attr('label/text', newText);
+
+        // Update the label in the labels array
+        const labels = edge.getLabels();
+        if (labels && labels.length > 0) {
+          // Define a proper type for the edge label
+          interface EdgeLabel {
+            attrs?: {
+              text?: {
+                text?: string;
+                [key: string]: unknown;
+              };
+              [key: string]: unknown;
+            };
+            [key: string]: unknown;
+          }
+
+          edge.setLabels(
+            labels.map((label: EdgeLabel) => ({
+              ...label,
+              attrs: {
+                ...label.attrs,
+                text: {
+                  ...(label.attrs?.text || {}),
+                  text: newText,
+                },
+              },
+            })),
+          );
+        }
+      }
+    } catch (error) {
+      this.logger.error('Error saving label:', error);
+    }
   }
 }
