@@ -1,0 +1,35 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "pnpm" # pnpm uses npm ecosystem in Dependabot
+    directory: "/"
+    schedule:
+      interval: "cron"
+      cronjob: "0 13 * * *" # 1pm UTC is 9am EDT
+    target-branch: "main" # Adjust if your default branch is different
+    labels:
+      - "dependencies"
+      - "production"
+    ignore:
+      - dependency-name: "*" # Ignore all initially
+    allow:
+      - dependency-type: "production" # Only update production dependencies
+
+  - package-ecosystem: "pnpm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "02:00" # Optional: Set time for weekly updates (UTC)
+      day: "monday" # Optional: Specify day for weekly updates
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "development"
+    ignore:
+      - dependency-name: "*" # Ignore all initially
+    allow:
+      - dependency-type: "dev"
