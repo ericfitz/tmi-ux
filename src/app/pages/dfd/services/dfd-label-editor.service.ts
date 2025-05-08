@@ -260,19 +260,11 @@ export class DfdLabelEditorService {
 
     // Create the input element
     const input = this._renderer.createElement('input') as HTMLInputElement;
-    this._renderer.setStyle(input, 'position', 'absolute');
-    this._renderer.setStyle(input, 'z-index', '1000');
+    this._renderer.addClass(input, 'dfd-label-editor');
     this._renderer.setStyle(input, 'width', `${position.width}px`);
     this._renderer.setStyle(input, 'height', `${position.height}px`);
     this._renderer.setStyle(input, 'left', `${position.x}px`);
     this._renderer.setStyle(input, 'top', `${position.y}px`);
-    this._renderer.setStyle(input, 'font-size', '12px');
-    this._renderer.setStyle(input, 'font-family', '"Roboto Condensed", Arial, sans-serif');
-    this._renderer.setStyle(input, 'padding', '2px');
-    this._renderer.setStyle(input, 'border', '1px solid #1890ff');
-    this._renderer.setStyle(input, 'border-radius', '2px');
-    this._renderer.setStyle(input, 'outline', 'none');
-    this._renderer.setStyle(input, 'background', 'white');
     this._renderer.setAttribute(input, 'value', initialText);
 
     // Check if the cell is a TextboxShape
@@ -373,20 +365,12 @@ export class DfdLabelEditorService {
 
     // Create the input element
     const input = this._renderer.createElement('input') as HTMLInputElement;
-    this._renderer.setStyle(input, 'position', 'absolute');
-    this._renderer.setStyle(input, 'z-index', '1000');
+    this._renderer.addClass(input, 'dfd-label-editor');
     this._renderer.setStyle(input, 'width', '80px'); // Fixed width for port labels
     this._renderer.setStyle(input, 'height', '24px'); // Fixed height for better usability
     this._renderer.setStyle(input, 'left', `${portBBox.x - 40 + portBBox.width / 2}px`); // Center horizontally
     this._renderer.setStyle(input, 'top', `${portBBox.y - 12 + portBBox.height / 2}px`); // Center vertically
-    this._renderer.setStyle(input, 'font-size', '12px'); // Match font size with other objects
-    this._renderer.setStyle(input, 'font-family', '"Roboto Condensed", Arial, sans-serif');
     this._renderer.setStyle(input, 'text-align', 'center');
-    this._renderer.setStyle(input, 'padding', '2px');
-    this._renderer.setStyle(input, 'border', '1px solid #1890ff');
-    this._renderer.setStyle(input, 'border-radius', '2px');
-    this._renderer.setStyle(input, 'outline', 'none');
-    this._renderer.setStyle(input, 'background', 'white');
     this._renderer.setAttribute(input, 'value', initialText);
     this._renderer.setAttribute(input, 'data-port-id', portId);
 
@@ -808,15 +792,11 @@ export class DfdLabelEditorService {
 
     // Create the placeholder rectangle - append to document.body for maximum visibility
     const placeholder = this._renderer.createElement('div') as HTMLDivElement;
-    this._renderer.setStyle(placeholder, 'position', 'fixed'); // Use fixed positioning to ensure visibility
-    this._renderer.setStyle(placeholder, 'z-index', '9999'); // Very high z-index to ensure visibility
+    this._renderer.addClass(placeholder, 'dfd-label-placeholder');
     this._renderer.setStyle(placeholder, 'width', `${rect.width}px`);
     this._renderer.setStyle(placeholder, 'height', `${rect.height}px`);
     this._renderer.setStyle(placeholder, 'left', `${rect.left}px`);
     this._renderer.setStyle(placeholder, 'top', `${rect.top}px`);
-    this._renderer.setStyle(placeholder, 'border', '2px dashed #ff3366'); // More visible border
-    this._renderer.setStyle(placeholder, 'background-color', 'rgba(255, 51, 102, 0.2)'); // More visible background
-    this._renderer.setStyle(placeholder, 'pointer-events', 'none'); // Allow events to pass through
 
     // Add the placeholder to the document body for maximum visibility
     this._renderer.appendChild(document.body, placeholder);
@@ -1005,15 +985,11 @@ export class DfdLabelEditorService {
 
     // Create the bounding box element
     const boundingBox = this._renderer.createElement('div') as HTMLDivElement;
-    this._renderer.setStyle(boundingBox, 'position', 'absolute');
-    this._renderer.setStyle(boundingBox, 'z-index', '1000');
+    this._renderer.addClass(boundingBox, 'dfd-label-bounding-box');
     this._renderer.setStyle(boundingBox, 'width', `${labelRect.width + 10}px`); // Add padding
     this._renderer.setStyle(boundingBox, 'height', `${labelRect.height + 6}px`); // Add padding
     this._renderer.setStyle(boundingBox, 'left', `${labelRect.left - 5}px`); // Center horizontally
     this._renderer.setStyle(boundingBox, 'top', `${labelRect.top - 3}px`); // Center vertically
-    this._renderer.setStyle(boundingBox, 'border', '2px dashed #ff0000');
-    this._renderer.setStyle(boundingBox, 'background-color', 'rgba(255, 0, 0, 0.1)');
-    this._renderer.setStyle(boundingBox, 'cursor', 'move');
 
     // Add the bounding box to the document body
     this._renderer.appendChild(document.body, boundingBox);

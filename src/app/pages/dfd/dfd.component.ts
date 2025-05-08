@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Graph } from '@antv/x6';
+import { Graph, Node } from '@antv/x6';
 import { History } from '@antv/x6-plugin-history';
 import { saveAs } from 'file-saver-es';
 import { LoggerService } from '../../core/services/logger.service';
@@ -210,6 +210,9 @@ export class DfdComponent implements OnInit, OnDestroy {
       // Set up port tooltips
       this.setupPortTooltips();
 
+      // Set up drag handling
+      this.setupDragHandling();
+
       // Add initial nodes
       this.nodeService.createInitialNodes(this._graph);
 
@@ -235,12 +238,8 @@ export class DfdComponent implements OnInit, OnDestroy {
 
     // Create tooltip element
     const tooltipEl = document.createElement('div');
-    tooltipEl.className = 'port-tooltip';
+    tooltipEl.className = 'dfd-port-tooltip';
     tooltipEl.style.display = 'none';
-    tooltipEl.style.fontFamily = '"Roboto Condensed", Arial, sans-serif';
-    tooltipEl.style.fontSize = '12px';
-    tooltipEl.style.fontWeight = 'normal';
-    tooltipEl.style.color = '#333333';
     this._graph.container.appendChild(tooltipEl);
 
     // Handle port mouseenter
@@ -290,6 +289,74 @@ export class DfdComponent implements OnInit, OnDestroy {
     // Hide tooltip on other events
     this._graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
       tooltipEl.style.display = 'none';
+    });
+  }
+
+  /**
+   * Set up drag handling to improve performance during drag operations
+   */
+  private setupDragHandling(): void {
+    if (!this._graph) {
+      return;
+    }
+
+    // Track if we're currently in a drag operation
+    let isDragging = false;
+
+    // Add event listeners for drag operations
+    this._graph.on('node:mousedown', () => {
+      isDragging = false;
+    });
+
+    this._graph.on('node:mousemove', () => {
+      isDragging = true;
+    });
+
+    this._graph.on('node:mouseup', () => {
+      if (isDragging) {
+        // After drag is complete, ensure labels are properly displayed
+        if (this._graph) {
+          const cells = this._graph.getCells();
+          cells.forEach(cell => {
+            if (cell.isNode()) {
+              // Force a redraw of the node
+              const view = this._graph?.findViewByCell(cell);
+              if (view) {
+                view.confirmUpdate(1); // Use flag 1 to force update
+              }
+            }
+          });
+        }
+        isDragging = false;
+      }
+    });
+
+    // Similar handling for edges
+    this._graph.on('edge:mousedown', () => {
+      isDragging = false;
+    });
+
+    this._graph.on('edge:mousemove', () => {
+      isDragging = true;
+    });
+
+    this._graph.on('edge:mouseup', () => {
+      if (isDragging) {
+        // After drag is complete, ensure labels are properly displayed
+        if (this._graph) {
+          const cells = this._graph.getCells();
+          cells.forEach(cell => {
+            if (cell.isEdge()) {
+              // Force a redraw of the edge
+              const view = this._graph?.findViewByCell(cell);
+              if (view) {
+                view.confirmUpdate(1); // Use flag 1 to force update
+              }
+            }
+          });
+        }
+        isDragging = false;
+      }
     });
   }
 

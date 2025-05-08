@@ -7,6 +7,7 @@ import { Export } from '@antv/x6-plugin-export';
 import { Keyboard } from '@antv/x6-plugin-keyboard';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdEventService } from './dfd-event.service';
+import { DfdLabelEditorService } from './dfd-label-editor.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 // Import NodeData interface for type checking - used in type assertions
 import { NodeData } from '../models/node-data.interface';
@@ -27,6 +28,7 @@ export class DfdGraphService {
   constructor(
     private logger: LoggerService,
     private dfdEventService: DfdEventService,
+    private labelEditorService: DfdLabelEditorService,
   ) {}
 
   /**
@@ -198,9 +200,8 @@ export class DfdGraphService {
                 },
                 label: {
                   text: 'Flow',
+                  class: 'dfd-label',
                   fill: '#333333',
-                  fontSize: 12,
-                  fontFamily: '"Roboto Condensed", Arial, sans-serif',
                   textAnchor: 'middle',
                   textVerticalAnchor: 'middle',
                   pointerEvents: 'none',
@@ -217,9 +218,8 @@ export class DfdGraphService {
                   attrs: {
                     text: {
                       text: 'Flow',
+                      class: 'dfd-label',
                       fill: '#333333',
-                      fontSize: 12,
-                      fontFamily: '"Roboto Condensed", Arial, sans-serif',
                       textAnchor: 'middle',
                       textVerticalAnchor: 'middle',
                       pointerEvents: 'none',
@@ -270,8 +270,6 @@ export class DfdGraphService {
           enabled: true,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           beforeAddCommand: (event, args: any) => {
-            this.logger.debug('History: before add command', event, args);
-
             // Convert event to string for comparison
             const eventName = String(event);
 
@@ -304,14 +302,14 @@ export class DfdGraphService {
               return false;
             }
 
-            // Filter out cell:change:* events during dragging or rapid label updates
+            // Filter out cell:change:* events during dragging
             if (eventName.startsWith('cell:change:')) {
               // If we're in a dragging operation, don't record these changes
               if (isDragging) {
                 return false;
               }
 
-              // Check if this is a label position update
+              // For label position updates, only record significant changes
               // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               if (args && (args.key === 'attrs' || args.key === 'data')) {
                 const now = Date.now();
@@ -323,7 +321,7 @@ export class DfdGraphService {
               }
             }
 
-            // Filter out other events that shouldn't be in history
+            // Filter out mouse events that shouldn't be in history
             const eventsToIgnore = [
               'node:mouseenter',
               'node:mouseleave',
@@ -331,6 +329,11 @@ export class DfdGraphService {
               'edge:mouseleave',
               'node:port:mouseenter',
               'node:port:mouseleave',
+              'node:mousemove',
+              'edge:mousemove',
+              'blank:mousemove',
+              'blank:mousedown',
+              'blank:mouseup',
             ];
 
             if (eventsToIgnore.includes(eventName)) {
@@ -373,23 +376,9 @@ export class DfdGraphService {
    * Adds custom CSS for snaplines and selection boxes
    */
   private addSnaplineStyles(): void {
-    const customStyle = document.createElement('style');
-    customStyle.textContent = `
-      /* Snapline styles */
-      .x6-snapline {
-        stroke: #ff3366;
-        stroke-width: 2;
-        stroke-dasharray: 5, 5;
-        z-index: 9999;
-        pointer-events: none;
-        opacity: 1 !important;
-      }
-      
-      /* Selection styles removed - now using custom selection mechanism */
-      
-      /* No label bounding box styles */
-    `;
-    document.head.appendChild(customStyle);
+    // No longer needed - styles are now in _graph-styles.scss
+    // This method is kept for backward compatibility
+    this.logger.debug('Using external CSS for snapline styles');
   }
 
   /**
@@ -399,50 +388,8 @@ export class DfdGraphService {
   private configureResizeHandles(graph: Graph): void {
     const transformPlugin = graph.getPlugin<Transform>('transform');
     if (transformPlugin) {
-      // Apply custom styles to resize handles
-      // Note: We're using CSS to style the handles as squares
-      const style = document.createElement('style');
-      style.textContent = `
-        /* Base style for all resize handles - using custom selection mechanism */
-        [selected='true'] .x6-widget-transform-resize {
-          width: 8px !important;
-          height: 8px !important;
-          border-radius: 0 !important;
-          background-color: #000000 !important;
-          border: none !important;
-          outline: none !important;
-          margin: 2px !important;
-        }
-        
-        /* Top handles - move up */
-        .x6-widget-transform-resize-nw,
-        .x6-widget-transform-resize-n,
-        .x6-widget-transform-resize-ne {
-          margin-top: 4px !important;
-        }
-        
-        /* Bottom handles - move down */
-        .x6-widget-transform-resize-sw,
-        .x6-widget-transform-resize-s,
-        .x6-widget-transform-resize-se {
-          margin-bottom: 4px !important;
-        }
-        
-        /* Left handles - move left */
-        .x6-widget-transform-resize-nw,
-        .x6-widget-transform-resize-w,
-        .x6-widget-transform-resize-sw {
-          margin-left: 4px !important;
-        }
-        
-        /* Right handles - move right */
-        .x6-widget-transform-resize-ne,
-        .x6-widget-transform-resize-e,
-        .x6-widget-transform-resize-se {
-          margin-right: 4px !important;
-        }
-      `;
-      document.head.appendChild(style);
+      // No longer needed to add inline styles - styles are now in _graph-styles.scss
+      this.logger.debug('Using external CSS for resize handle styles');
     }
   }
 
@@ -603,6 +550,9 @@ export class DfdGraphService {
           // Update node label for other shape types
           node.attr('label/text', newText);
 
+          // Add the dfd-label class to ensure proper styling
+          node.attr('label/class', 'dfd-label');
+
           // Also update the label in the node data
           const nodeData = node.getData<Record<string, unknown>>();
           const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
@@ -615,6 +565,7 @@ export class DfdGraphService {
 
         // Update edge label in both attr and labels array
         edge.attr('label/text', newText);
+        edge.attr('label/class', 'dfd-label');
 
         // Update the label in the labels array
         const labels = edge.getLabels();
@@ -639,6 +590,7 @@ export class DfdGraphService {
                 text: {
                   ...(label.attrs?.text || {}),
                   text: newText,
+                  class: 'dfd-label',
                 },
               },
             })),
@@ -647,6 +599,80 @@ export class DfdGraphService {
       }
     } catch (error) {
       this.logger.error('Error saving label:', error);
+    }
+  }
+
+  /**
+   * Sets up the label for a node that has been restored via redo operation
+   * @param node The node that was restored
+   * @param graph The X6 graph instance
+   */
+  setupLabelForRestoredNode(node: any, graph: Graph): void {
+    try {
+      // Skip if node is not valid
+      if (!node || !node.isNode || !node.isNode()) {
+        return;
+      }
+
+      const nodeId = node.id;
+      const nodeType = node.constructor ? node.constructor.name : 'Unknown';
+
+      this.logger.debug('Setting up label for restored node', {
+        nodeId,
+        nodeType,
+        hasGetData: typeof node.getData === 'function',
+        hasAttr: typeof node.attr === 'function',
+      });
+
+      // Get the node data to retrieve the label
+      const nodeData = node.getData();
+      if (!nodeData) {
+        this.logger.debug('No node data found for restored node', { nodeId });
+        return;
+      }
+
+      // Get the label from node data
+      const label = nodeData.label;
+      this.logger.debug('Node data retrieved', {
+        nodeId,
+        hasLabel: typeof label === 'string',
+        label: typeof label === 'string' ? label : 'undefined',
+        nodeData: JSON.stringify(nodeData),
+      });
+
+      if (typeof label === 'string') {
+        // Set the label text in the node attributes
+        node.attr('label/text', label);
+
+        // Add the dfd-label class to ensure proper styling
+        node.attr('label/class', 'dfd-label');
+
+        // Force the label to be visible
+        node.attr('label/display', 'block');
+        node.attr('label/opacity', 1);
+
+        this.logger.debug('Restored label text for node', { nodeId, label });
+
+        // Apply the label position using the injected labelEditorService
+        if (this.labelEditorService) {
+          // Apply the label position
+          this.labelEditorService.applyLabelPosition(node, graph);
+          this.logger.info('Applied label position for restored node', { nodeId, nodeType });
+
+          // Force a redraw of the node
+          const view = graph.findViewByCell(node);
+          if (view) {
+            view.confirmUpdate(1); // Use flag 1 to force update
+            this.logger.debug('Forced view update for node', { nodeId });
+          }
+        } else {
+          this.logger.warn('Label editor service not available for restored node', { nodeId });
+        }
+      } else {
+        this.logger.debug('No label found in node data for restored node', { nodeId });
+      }
+    } catch (error) {
+      this.logger.error('Error setting up label for restored node:', error);
     }
   }
 }

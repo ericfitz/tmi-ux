@@ -1,0 +1,160 @@
+// X6 Graph Styles
+// This file contains all styles related to the X6 graph components
+
+// Base graph container styles
+.x6-graph {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background-color: #f8f9fa;
+  border: 2px dashed #ccc;
+}
+
+// Snapline styles
+.x6-snapline {
+  stroke: #ff3366;
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+}
+
+// Port styles
+.x6-port-body {
+  r: 5; // Port radius
+  cursor: pointer;
+}
+
+.x6-port {
+  z-index: 10; // Ensure ports are above edges for better clickability
+}
+
+.x6-port-body[magnet='active'] {
+  fill: #fff;
+  stroke: #5f95ff;
+  stroke-width: 1;
+}
+
+// Highlight styles
+.x6-highlight-magnetAvailable {
+  stroke: #73d13d;
+  stroke-width: 2;
+  fill: transparent;
+}
+
+// Selection styles
+[selected='true'] {
+  &.x6-graph-svg {
+    filter: none;
+  }
+
+  .x6-cell-tool-boundary {
+    fill: #47c769;
+    stroke: none;
+    fill-opacity: 0.2;
+  }
+}
+
+// Resize handle styles
+[selected='true'] .x6-widget-transform-resize {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  background-color: #000000;
+  border: none;
+  outline: none;
+  margin: 2px;
+}
+
+// Top handles - move up
+.x6-widget-transform-resize-nw,
+.x6-widget-transform-resize-n,
+.x6-widget-transform-resize-ne {
+  margin-top: 4px;
+}
+
+// Bottom handles - move down
+.x6-widget-transform-resize-sw,
+.x6-widget-transform-resize-s,
+.x6-widget-transform-resize-se {
+  margin-bottom: 4px;
+}
+
+// Left handles - move left
+.x6-widget-transform-resize-nw,
+.x6-widget-transform-resize-w,
+.x6-widget-transform-resize-sw {
+  margin-left: 4px;
+}
+
+// Right handles - move right
+.x6-widget-transform-resize-ne,
+.x6-widget-transform-resize-e,
+.x6-widget-transform-resize-se {
+  margin-right: 4px;
+}
+
+// Font styles for graph elements
+tspan.v-line {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 12px;
+}
+
+// Label styles
+.dfd-label {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 12px;
+  fill: #333333;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: all;
+}
+
+// Label editing styles
+.dfd-label-editor {
+  position: absolute;
+  z-index: 1000;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  padding: 2px;
+  border: 1px solid #1890ff;
+  border-radius: 2px;
+  outline: none;
+  background: white;
+  text-align: center;
+}
+
+// Label bounding box styles
+.dfd-label-bounding-box {
+  position: absolute;
+  z-index: 1000;
+  border: 2px dashed #ff0000;
+  background-color: rgba(255, 0, 0, 0.1);
+  cursor: move;
+}
+
+// Label drag placeholder styles
+.dfd-label-placeholder {
+  position: fixed;
+  z-index: 9999;
+  border: 2px dashed #ff3366;
+  background-color: rgba(255, 51, 102, 0.2);
+  pointer-events: none;
+}
+
+// Port tooltip styles
+.dfd-port-tooltip {
+  position: absolute;
+  background-color: rgb(255 255 255 / 90%);
+  color: #333;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-weight: normal;
+  pointer-events: none;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}

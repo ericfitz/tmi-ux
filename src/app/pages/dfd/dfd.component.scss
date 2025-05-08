@@ -1,3 +1,5 @@
+@import './styles/graph-styles';
+
 .dfd-container {
   width: 100%;
   height: 100%;
@@ -63,90 +65,28 @@
   display: flex; // Add flex display to ensure child elements take up space
 }
 
-.x6-graph {
-  width: 100%;
-  height: 100%;
-  min-height: 400px; // Ensure minimum height
-  background-color: #f8f9fa;
-  border: 2px dashed #ccc; // Add a visible border for debugging
-}
-
-// Additional styles for X6 snaplines and Angular Material components
+// Additional styles for Angular Material components
 :host ::ng-deep {
   // Set Roboto font for Material tooltips
   .mat-tooltip {
-    font-family: Roboto, Arial, sans-serif !important;
-    font-size: 12px !important;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 12px;
   }
 
   // Set Roboto font for Material menu items
   .mat-menu-item {
-    font-family: Roboto, Arial, sans-serif !important;
-    font-size: 14px !important;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 14px;
   }
 
   // Set Roboto font for Material menu panel
   .mat-menu-panel {
-    font-family: Roboto, Arial, sans-serif !important;
-  }
-
-  // Ensure snaplines are visible above all other elements
-  .x6-snapline {
-    stroke: #f36 !important;
-    stroke-width: 2 !important;
-    stroke-dasharray: 5, 5 !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-    opacity: 1 !important;
-  }
-
-  // Make ports easier to click while preserving highlighting
-  .x6-port-body {
-    r: 5 !important; // Keep the original radius
-    cursor: pointer !important; // Show pointer cursor on hover
-  }
-
-  // Ensure ports are above edges for better clickability
-  .x6-port {
-    z-index: 10 !important;
-  }
-
-  // Preserve the highlighting styles
-  .x6-port-body[magnet='active'] {
-    fill: #fff !important;
-    stroke: #5f95ff !important;
-    stroke-width: 1 !important;
-  }
-
-  // Highlight style for available magnets
-  .x6-highlight-magnetAvailable {
-    stroke: #73d13d !important;
-    stroke-width: 2 !important;
-    fill: transparent !important;
-  }
-
-  // Override default font for tspan elements
-  tspan.v-line {
-    font-family: 'Roboto Condensed', Arial, sans-serif !important;
-    font-size: 12px !important;
+    font-family: Roboto, Arial, sans-serif;
   }
 }
 
-// Selection styles
-[selected='true'] {
-  &.x6-graph-svg {
-    filter: none !important;
-  }
-
-  .x6-cell-tool-boundary {
-    fill: #47c769 !important;
-    stroke: none !important;
-    fill-opacity: 0.2 !important;
-  }
-}
-
-// Port tooltip styles
-.port-tooltip {
+// Port tooltip styles - renamed to match BEM methodology
+.dfd-port-tooltip {
   position: absolute;
   background-color: rgb(255 255 255 / 90%);
   color: #333;
@@ -163,7 +103,7 @@
 }
 
 // Label drag handle styles
-.label-drag-handle {
+.dfd-label-drag-handle {
   position: absolute;
   width: 8px;
   height: 8px;
