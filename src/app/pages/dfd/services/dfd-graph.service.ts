@@ -277,7 +277,13 @@ export class DfdGraphService {
             if (
               eventName === 'node:selected' ||
               eventName === 'node:unselected' ||
-              eventName === 'selection:changed'
+              eventName === 'selection:changed' ||
+              eventName === 'cell:selected' ||
+              eventName === 'cell:unselected' ||
+              eventName === 'cell:highlight' ||
+              eventName === 'cell:unhighlight' ||
+              eventName.includes('select') ||
+              eventName.includes('highlight')
             ) {
               return false;
             }
@@ -309,6 +315,33 @@ export class DfdGraphService {
                 return false;
               }
 
+              // Filter out tools-related changes
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              if (args && args.key === 'tools') {
+                this.logger.debug('Filtering out tools-related change from history', {
+                  event: eventName,
+                  key: args.key,
+                });
+                return false;
+              }
+
+              // Filter out selection-related attribute changes
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              if (
+                args &&
+                args.key === 'attrs' &&
+                ((args.current && 'selected' in args.current) ||
+                  (args.previous && 'selected' in args.previous))
+              ) {
+                this.logger.debug('Filtering out selection-related attribute change from history', {
+                  event: eventName,
+                  key: args.key,
+                  current: args.current,
+                  previous: args.previous,
+                });
+                return false;
+              }
+
               // For label position updates, only record significant changes
               // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               if (args && (args.key === 'attrs' || args.key === 'data')) {
@@ -323,22 +356,54 @@ export class DfdGraphService {
 
             // Filter out mouse events that shouldn't be in history
             const eventsToIgnore = [
+              // Mouse enter/leave events
               'node:mouseenter',
               'node:mouseleave',
               'edge:mouseenter',
               'edge:mouseleave',
               'node:port:mouseenter',
               'node:port:mouseleave',
+
+              // Mouse move events
               'node:mousemove',
               'edge:mousemove',
               'blank:mousemove',
+
+              // Mouse down/up events on blank areas
               'blank:mousedown',
               'blank:mouseup',
+
+              // Additional events to ignore
+              'cell:mousedown',
+              'cell:mousemove',
+              'cell:mouseup',
+              'cell:click',
+              'cell:dblclick',
+              'cell:contextmenu',
+              'cell:mouseover',
+              'cell:mouseout',
+              'blank:click',
+              'blank:dblclick',
+              'tool:remove',
+              'scale',
+              'resize',
+              'rotate',
+              'viewport:change',
             ];
 
             if (eventsToIgnore.includes(eventName)) {
               return false;
             }
+
+            // Log the event that's being added to history with detailed information
+            this.logger.info(`Adding event to history: ${eventName}`, {
+              event: eventName,
+              key: args?.key,
+              cell: args?.cell?.constructor?.name || 'Unknown',
+              // Include the current and previous values if it's a cell:change event
+              currentValue: eventName.startsWith('cell:change:') ? args?.current : undefined,
+              previousValue: eventName.startsWith('cell:change:') ? args?.previous : undefined,
+            });
 
             // Add all other events to history
             return true;
