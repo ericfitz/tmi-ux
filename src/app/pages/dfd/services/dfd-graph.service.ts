@@ -326,7 +326,7 @@ export class DfdGraphService {
               }
 
               // Filter out selection-related attribute changes
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+               
               if (
                 args &&
                 args.key === 'attrs' &&

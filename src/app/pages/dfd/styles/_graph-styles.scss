@@ -12,7 +12,7 @@
 
 // Snapline styles
 .x6-snapline {
-  stroke: #ff3366;
+  stroke: #f36;
   stroke-width: 2;
   stroke-dasharray: 5, 5;
   z-index: 9999;
@@ -61,7 +61,7 @@
   width: 8px;
   height: 8px;
   border-radius: 0;
-  background-color: #000000;
+  background-color: #000;
   border: none;
   outline: none;
   margin: 2px;
@@ -105,7 +105,7 @@ tspan.v-line {
 .dfd-label {
   font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
-  fill: #333333;
+  fill: #333;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: all;
@@ -129,8 +129,8 @@ tspan.v-line {
 .dfd-label-bounding-box {
   position: absolute;
   z-index: 1000;
-  border: 2px dashed #ff0000;
-  background-color: rgba(255, 0, 0, 0.1);
+  border: 2px dashed #f00;
+  background-color: rgb(255 0 0 / 10%);
   cursor: move;
 }
 
@@ -138,8 +138,8 @@ tspan.v-line {
 .dfd-label-placeholder {
   position: fixed;
   z-index: 9999;
-  border: 2px dashed #ff3366;
-  background-color: rgba(255, 51, 102, 0.2);
+  border: 2px dashed #f36;
+  background-color: rgb(255 51 102 / 20%);
   pointer-events: none;
 }
 
