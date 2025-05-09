@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Graph, Node } from '@antv/x6';
+import { Graph } from '@antv/x6';
 import { History } from '@antv/x6-plugin-history';
 import { saveAs } from 'file-saver-es';
 import { LoggerService } from '../../core/services/logger.service';
