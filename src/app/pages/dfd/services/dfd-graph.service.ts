@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Shape, Cell } from '@antv/x6';
+import { Graph, Shape, Cell, Node } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { History } from '@antv/x6-plugin-history';
@@ -16,6 +16,17 @@ import { TextboxShape } from '../models/textbox-shape.model';
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
   return data !== null && typeof data === 'object' && data !== undefined;
+}
+
+/**
+ * X6 History plugin event arguments type
+ */
+interface HistoryEventArgs {
+  key?: string;
+  cell?: Cell;
+  options?: { dragging?: boolean };
+  current?: Record<string, unknown>;
+  previous?: Record<string, unknown>;
 }
 
 /**
@@ -268,8 +279,7 @@ export class DfdGraphService {
       graph.use(
         new History({
           enabled: true,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          beforeAddCommand: (event, args: any) => {
+          beforeAddCommand: (event, args: HistoryEventArgs) => {
             // Convert event to string for comparison
             const eventName = String(event);
 
@@ -291,8 +301,7 @@ export class DfdGraphService {
             // For node movement, only record the final position after dragging
             if (eventName === 'node:moved') {
               // Check if this is an intermediate drag event
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-              if (args && args.options && args.options.dragging === true) {
+              if (args?.options?.dragging === true) {
                 isDragging = true;
                 return false; // Skip intermediate drag events
               }
@@ -302,8 +311,7 @@ export class DfdGraphService {
             }
 
             // For edge movement, only record the final position
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            if (eventName === 'edge:moved' && args && args.options && args.options.dragging) {
+            if (eventName === 'edge:moved' && args?.options?.dragging) {
               isDragging = true;
               return false;
             }
@@ -316,8 +324,7 @@ export class DfdGraphService {
               }
 
               // Filter out tools-related changes
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-              if (args && args.key === 'tools') {
+              if (args?.key === 'tools') {
                 this.logger.debug('Filtering out tools-related change from history', {
                   event: eventName,
                   key: args.key,
@@ -326,10 +333,8 @@ export class DfdGraphService {
               }
 
               // Filter out selection-related attribute changes
-               
               if (
-                args &&
-                args.key === 'attrs' &&
+                args?.key === 'attrs' &&
                 ((args.current && 'selected' in args.current) ||
                   (args.previous && 'selected' in args.previous))
               ) {
@@ -343,8 +348,7 @@ export class DfdGraphService {
               }
 
               // For label position updates, only record significant changes
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-              if (args && (args.key === 'attrs' || args.key === 'data')) {
+              if (args?.key === 'attrs' || args?.key === 'data') {
                 const now = Date.now();
                 // If this is a rapid update (less than threshold ms since last update), skip it
                 if (now - lastLabelUpdateTime < labelUpdateThreshold) {
@@ -672,7 +676,7 @@ export class DfdGraphService {
    * @param node The node that was restored
    * @param graph The X6 graph instance
    */
-  setupLabelForRestoredNode(node: any, graph: Graph): void {
+  setupLabelForRestoredNode(node: Node, graph: Graph): void {
     try {
       // Skip if node is not valid
       if (!node || !node.isNode || !node.isNode()) {
@@ -690,7 +694,7 @@ export class DfdGraphService {
       });
 
       // Get the node data to retrieve the label
-      const nodeData = node.getData();
+      const nodeData = node.getData<NodeData>();
       if (!nodeData) {
         this.logger.debug('No node data found for restored node', { nodeId });
         return;
