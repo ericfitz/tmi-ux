@@ -4,23 +4,19 @@ import {
   ElementRef,
   OnDestroy,
   OnInit,
+  AfterViewInit,
   ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Graph } from '@antv/x6';
-import { History } from '@antv/x6-plugin-history';
-import { saveAs } from 'file-saver-es';
+import { Subscription } from 'rxjs';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
-import { DfdGraphService } from './services/dfd-graph.service';
-import { DfdNodeService } from './services/dfd-node.service';
-import { DfdPortService } from './services/dfd-port.service';
-import { DfdEventService } from './services/dfd-event.service';
-import { DfdHighlighterService } from './services/dfd-highlighter.service';
+import { DfdService, ExportFormat } from './services/dfd.service';
 import { ShapeType } from './services/dfd-node.service';
+import { DfdEventBusService, DfdEventType, NodeDeletedEvent } from './services/dfd-event-bus.service';
 
 @Component({
   selector: 'app-dfd',
@@ -30,26 +26,70 @@ import { ShapeType } from './services/dfd-node.service';
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DfdComponent implements OnInit, OnDestroy {
+export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('graphContainer', { static: true }) graphContainer!: ElementRef;
 
-  private _graph: Graph | null = null;
   private _observer: MutationObserver | null = null;
-
-  // History state
+  private _subscriptions = new Subscription();
+  
+  // State properties - exposed as public properties for template binding
   canUndo = false;
   canRedo = false;
+  hasSelectedCells = false;
 
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
-    private graphService: DfdGraphService,
-    private nodeService: DfdNodeService,
-    private portService: DfdPortService,
-    private eventService: DfdEventService,
-    private highlighterService: DfdHighlighterService,
+    private dfdService: DfdService,
+    private eventBus: DfdEventBusService,
   ) {
     this.logger.info('DfdComponent constructor called');
+  }
+
+  ngOnInit(): void {
+    this.logger.info('DfdComponent ngOnInit called');
+    
+    // Subscribe to history state changes
+    this._subscriptions.add(
+      this.dfdService.canUndo$.subscribe(canUndo => {
+        this.canUndo = canUndo;
+        this.cdr.markForCheck();
+      })
+    );
+    
+    this._subscriptions.add(
+      this.dfdService.canRedo$.subscribe(canRedo => {
+        this.canRedo = canRedo;
+        this.cdr.markForCheck();
+      })
+    );
+    
+    // Subscribe to selection state changes
+    this._subscriptions.add(
+      this.dfdService.selectedNode$.subscribe(selectedNode => {
+        this.hasSelectedCells = !!selectedNode;
+        this.cdr.markForCheck();
+      })
+    );
+  }
+  
+  ngAfterViewInit(): void {
+    // Initialize the graph after the view is fully initialized
+    this.initializeGraph();
+  }
+
+  ngOnDestroy(): void {
+    // Disconnect the mutation observer
+    if (this._observer) {
+      this._observer.disconnect();
+      this._observer = null;
+    }
+    
+    // Unsubscribe from all subscriptions
+    this._subscriptions.unsubscribe();
+    
+    // Dispose the DFD service
+    this.dfdService.dispose();
   }
 
   /**
@@ -57,82 +97,82 @@ export class DfdComponent implements OnInit, OnDestroy {
    * @param shapeType The type of shape to create
    */
   addRandomNode(shapeType: ShapeType = 'actor'): void {
-    if (!this._graph) {
+    if (!this.dfdService.isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
     }
 
-    const node = this.nodeService.createRandomNode(
-      this._graph,
-      shapeType,
-      this.graphContainer.nativeElement as HTMLElement,
+    const node = this.dfdService.createNode(
+      shapeType, 
+      this.graphContainer.nativeElement as HTMLElement
     );
-
+    
     if (node) {
       // Force change detection
       this.cdr.detectChanges();
     }
   }
 
-  ngOnInit(): void {
-    this.logger.info('DfdComponent ngOnInit called');
+  /**
+   * Initialize the X6 graph
+   */
+  private initializeGraph(): void {
+    this.logger.info('DfdComponent initializeGraph called');
 
-    // Delay initialization slightly to ensure the container is fully rendered
-    setTimeout(() => {
-      this.initializeGraph();
+    try {
+      // Initialize the graph
+      const success = this.dfdService.initialize(
+        this.graphContainer.nativeElement as HTMLElement
+      );
 
+      if (success) {
+        // Set up observation for DOM changes to add passive event listeners
+        this.setupDomObservation();
+        
+        // Add passive event listeners for touch and wheel events
+        this.dfdService.addPassiveEventListeners(
+          this.graphContainer.nativeElement as HTMLElement
+        );
+        
+        // Set up port tooltips
+        this.setupPortTooltips();
+        
+        this.logger.info('Graph initialization complete');
+      } else {
+        this.logger.error('Failed to initialize graph');
+      }
+      
       // Force change detection after initialization
       this.cdr.detectChanges();
-
-      // Add passive event listeners for touch and wheel events
-      this.addPassiveEventListeners();
-
-      this.logger.info('Graph initialization complete, change detection triggered');
-    }, 100); // Increase timeout to ensure DOM is fully rendered
+    } catch (error) {
+      this.logger.error('Error initializing graph', error);
+    }
   }
-
+  
   /**
-   * Add passive event listeners to the graph container and its child elements
-   * This is a workaround for the browser warnings about non-passive event listeners
+   * Sets up observation of DOM changes to add passive event listeners to new elements
    */
-  private addPassiveEventListeners(): void {
-    if (!this.graphContainer || !this.graphContainer.nativeElement || !this._graph) {
+  private setupDomObservation(): void {
+    if (!this.graphContainer || !this.graphContainer.nativeElement) {
       return;
     }
-
+    
     const container = this.graphContainer.nativeElement as HTMLElement;
-
-    // Get all the elements that might have event listeners
-    const canvasElements = container.querySelectorAll('canvas') as NodeListOf<Element>;
-    const svgElements = container.querySelectorAll('svg') as NodeListOf<Element>;
-
-    // Add passive event listeners to all relevant elements
-    const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'mousewheel'];
-
+    
     // Function to safely add passive event listener
     const addPassiveListener = (element: Element): void => {
+      const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'mousewheel'];
       passiveEvents.forEach(eventType => {
-        // Create a passive event listener that captures events before X6 processes them
         element.addEventListener(
           eventType,
           (_e: Event) => {
             // Empty handler with passive: true to prevent browser warnings
-            // The event will still propagate to X6's handlers
           },
           { passive: true, capture: false },
         );
       });
     };
-
-    // Add listeners to canvas elements (X6 rendering surface)
-    canvasElements.forEach(addPassiveListener);
-
-    // Add listeners to SVG elements (X6 also uses SVG)
-    svgElements.forEach(addPassiveListener);
-
-    // Add listeners to the container itself
-    addPassiveListener(container as Element);
-
+    
     // Add a mutation observer to handle dynamically added elements
     this._observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
@@ -153,86 +193,15 @@ export class DfdComponent implements OnInit, OnDestroy {
 
     // Start observing the container for added nodes
     this._observer.observe(container, { childList: true, subtree: true });
-
-    this.logger.info('Added passive event listeners to graph elements');
-  }
-
-  ngOnDestroy(): void {
-    // Disconnect the mutation observer
-    if (this._observer) {
-      this._observer.disconnect();
-      this._observer = null;
-    }
-
-    // Dispose the graph
-    if (this._graph) {
-      this._graph.dispose();
-      this._graph = null;
-    }
-  }
-
-  /**
-   * Initialize the X6 graph
-   */
-  private initializeGraph(): void {
-    this.logger.info('DfdComponent initializeGraph called');
-
-    try {
-      // Prepare the container
-      const containerElement = this.graphService.validateAndSetupContainer(
-        this.graphContainer.nativeElement as HTMLElement,
-        this.logger,
-      );
-
-      if (!containerElement) {
-        this.logger.error('Failed to get valid container element');
-        return;
-      }
-
-      // Configure highlighters
-      const magnetAvailabilityHighlighter =
-        this.highlighterService.createMagnetAvailabilityHighlighter();
-
-      // Create and configure the graph
-      this._graph = this.graphService.createGraph(containerElement, magnetAvailabilityHighlighter);
-
-      if (!this._graph) {
-        this.logger.error('Failed to create graph');
-        return;
-      }
-
-      // Set up event handlers
-      this.eventService.setupEventHandlers(this._graph);
-
-      // Set up label editing handlers using the new graph service implementation
-      this.graphService.setupLabelEditing(this._graph);
-
-      // Set up port tooltips
-      this.setupPortTooltips();
-
-      // Set up drag handling
-      this.setupDragHandling();
-
-      // Add initial nodes
-      this.nodeService.createInitialNodes(this._graph);
-
-      // Set up history state change listener
-      this.setupHistoryStateListener();
-
-      this.logger.info('X6 graph initialized successfully');
-
-      // Force change detection
-      this.cdr.detectChanges();
-    } catch (error) {
-      this.logger.error('Error initializing X6 graph', error);
-    }
+    this.logger.info('DOM observation set up for passive event listeners');
   }
 
   /**
    * Set up tooltips for ports
    */
   private setupPortTooltips(): void {
-    if (!this._graph) {
+    const graph = this.dfdService.graph;
+    if (!graph) {
       return;
     }
 
@@ -240,146 +209,54 @@ export class DfdComponent implements OnInit, OnDestroy {
     const tooltipEl = document.createElement('div');
     tooltipEl.className = 'dfd-port-tooltip';
     tooltipEl.style.display = 'none';
-    this._graph.container.appendChild(tooltipEl);
+    graph.container.appendChild(tooltipEl);
 
     // Handle port mouseenter
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this._graph.on('node:port:mouseenter', ({ node, port, e }: any) => {
+    graph.on('node:port:mouseenter', ({ node, port, e }: { node: Node; port: { id: string }; e: MouseEvent }) => {
       if (!port || !node) {
         return;
       }
 
       // Get the port label
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      const portObj = node.getPort(String(port.id));
+      // Get port details from the node - define a structured port object type
+      type PortObject = {
+        id?: string;
+        attrs?: Record<string, { text?: string }>;
+      };
+      // Cast node to any and then to PortObject to avoid TypeScript errors with the X6 library
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
       if (!portObj) {
         return;
       }
 
       // Get the port label text
       let labelText = '';
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (portObj.attrs && portObj.attrs['text']) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      if (portObj?.attrs && 'text' in portObj.attrs) {
         const textAttr = portObj.attrs['text'];
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         labelText = typeof textAttr['text'] === 'string' ? textAttr['text'] : '';
       }
 
       // If no label, use the port ID as fallback
       if (!labelText) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         labelText = String(port.id);
       }
 
       // Set tooltip content and position
       tooltipEl.textContent = labelText;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       tooltipEl.style.left = `${e.clientX + 10}px`;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       tooltipEl.style.top = `${e.clientY - 30}px`;
       tooltipEl.style.display = 'block';
     });
 
     // Handle port mouseleave
-    this._graph.on('node:port:mouseleave', () => {
+    graph.on('node:port:mouseleave', () => {
       tooltipEl.style.display = 'none';
     });
 
     // Hide tooltip on other events
-    this._graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
+    graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
       tooltipEl.style.display = 'none';
-    });
-  }
-
-  /**
-   * Set up drag handling to improve performance during drag operations
-   */
-  private setupDragHandling(): void {
-    if (!this._graph) {
-      return;
-    }
-
-    // Track if we're currently in a drag operation
-    let isDragging = false;
-
-    // Add event listeners for drag operations
-    this._graph.on('node:mousedown', () => {
-      isDragging = false;
-    });
-
-    this._graph.on('node:mousemove', () => {
-      isDragging = true;
-    });
-
-    this._graph.on('node:mouseup', () => {
-      if (isDragging) {
-        // After drag is complete, ensure labels are properly displayed
-        if (this._graph) {
-          const cells = this._graph.getCells();
-          cells.forEach(cell => {
-            if (cell.isNode()) {
-              // Force a redraw of the node
-              const view = this._graph?.findViewByCell(cell);
-              if (view) {
-                view.confirmUpdate(1); // Use flag 1 to force update
-              }
-            }
-          });
-        }
-        isDragging = false;
-      }
-    });
-
-    // Similar handling for edges
-    this._graph.on('edge:mousedown', () => {
-      isDragging = false;
-    });
-
-    this._graph.on('edge:mousemove', () => {
-      isDragging = true;
-    });
-
-    this._graph.on('edge:mouseup', () => {
-      if (isDragging) {
-        // After drag is complete, ensure labels are properly displayed
-        if (this._graph) {
-          const cells = this._graph.getCells();
-          cells.forEach(cell => {
-            if (cell.isEdge()) {
-              // Force a redraw of the edge
-              const view = this._graph?.findViewByCell(cell);
-              if (view) {
-                view.confirmUpdate(1); // Use flag 1 to force update
-              }
-            }
-          });
-        }
-        isDragging = false;
-      }
-    });
-  }
-
-  /**
-   * Set up history state change listener
-   */
-  private setupHistoryStateListener(): void {
-    if (!this._graph) {
-      return;
-    }
-
-    const history = this._graph.getPlugin<History>('history');
-    if (!history) {
-      this.logger.warn('History plugin not found');
-      return;
-    }
-
-    // Update history state whenever it changes
-    history.on('change', () => {
-      this.canUndo = history.canUndo();
-      this.canRedo = history.canRedo();
-      this.logger.debug(`History state changed: canUndo=${this.canUndo}, canRedo=${this.canRedo}`);
-      this.cdr.detectChanges();
     });
   }
 
@@ -387,117 +264,55 @@ export class DfdComponent implements OnInit, OnDestroy {
    * Undo the last action
    */
   undo(): void {
-    if (!this._graph) {
-      this.logger.warn('Cannot undo: Graph is not initialized');
-      return;
-    }
-
-    const history = this._graph.getPlugin<History>('history');
-    if (!history) {
-      this.logger.warn('History plugin not found');
-      return;
-    }
-
-    if (history.canUndo()) {
-      history.undo();
-      this.logger.info('Undo action performed');
-    } else {
-      this.logger.info('Cannot undo: No more actions to undo');
-    }
+    this.dfdService.undo();
   }
 
   /**
    * Redo the last undone action
    */
   redo(): void {
-    if (!this._graph) {
-      this.logger.warn('Cannot redo: Graph is not initialized');
-      return;
-    }
-
-    const history = this._graph.getPlugin<History>('history');
-    if (!history) {
-      this.logger.warn('History plugin not found');
-      return;
-    }
-
-    if (history.canRedo()) {
-      history.redo();
-      this.logger.info('Redo action performed');
-    } else {
-      this.logger.info('Cannot redo: No more actions to redo');
-    }
+    this.dfdService.redo();
   }
 
   /**
    * Export the diagram to the specified format
    * @param format The format to export to (png, jpeg, svg)
    */
-  exportDiagram(format: 'png' | 'jpeg' | 'svg'): void {
-    if (!this._graph) {
-      this.logger.warn('Cannot export: Graph is not initialized');
+  exportDiagram(format: ExportFormat): void {
+    this.dfdService.exportDiagram(format);
+  }
+  
+  /**
+   * Deletes the currently selected cell(s)
+   */
+  deleteSelected(): void {
+    if (!this.dfdService.isInitialized) {
+      this.logger.warn('Cannot delete: Graph is not initialized');
       return;
     }
-
-    try {
-      this.logger.info(`Exporting diagram as ${format}`);
-
-      // Generate a filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `dfd-diagram-${timestamp}.${format}`;
-
-      if (format === 'svg') {
-        // For SVG export
-        this._graph.toSVG((svgString: string) => {
-          const blob = new Blob([svgString], { type: 'image/svg+xml' });
-          saveAs(blob, filename);
-          this.logger.info(`Diagram exported as SVG: ${filename}`);
-        });
-      } else if (format === 'png') {
-        // For PNG export
-        this._graph.toPNG(
-          (dataUri: string) => {
-            // Convert data URI to Blob
-            const byteString = atob(dataUri.split(',')[1]);
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-              ia[i] = byteString.charCodeAt(i);
-            }
-            const blob = new Blob([ab], { type: 'image/png' });
-            saveAs(blob, filename);
-            this.logger.info(`Diagram exported as PNG: ${filename}`);
-          },
-          {
-            backgroundColor: 'white',
-            padding: 20,
-            quality: 1,
-          },
-        );
-      } else {
-        // For JPEG export
-        this._graph.toJPEG(
-          (dataUri: string) => {
-            // Convert data URI to Blob
-            const byteString = atob(dataUri.split(',')[1]);
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-              ia[i] = byteString.charCodeAt(i);
-            }
-            const blob = new Blob([ab], { type: 'image/jpeg' });
-            saveAs(blob, filename);
-            this.logger.info(`Diagram exported as JPEG: ${filename}`);
-          },
-          {
-            backgroundColor: 'white',
-            padding: 20,
-            quality: 0.8,
-          },
-        );
-      }
-    } catch (error: unknown) {
-      this.logger.error(`Error exporting diagram as ${format}`, error);
+    
+    const graph = this.dfdService.graph;
+    if (!graph) {
+      return;
+    }
+    
+    const selectedNode = this.dfdService.selectedNode;
+    if (selectedNode) {
+      this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
+      
+      // Remove the node from the graph
+      graph.removeNode(selectedNode.id);
+      
+      // Publish event that a node was deleted
+      this.eventBus.publish({
+        type: DfdEventType.NodeDeleted,
+        timestamp: Date.now(),
+        nodeId: selectedNode.id
+      } as NodeDeletedEvent);
+      
+      // Force change detection
+      this.hasSelectedCells = false;
+      this.cdr.markForCheck();
     }
   }
 }

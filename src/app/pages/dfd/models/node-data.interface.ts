@@ -7,6 +7,7 @@ export interface NodeData {
   embedded?: boolean;
   parentId?: string;
   label?: string;
+  type?: string; // The shape type (actor, process, store, etc.)
   labelPosition?: {
     x: number;
     y: number;

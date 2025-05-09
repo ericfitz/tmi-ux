@@ -22,6 +22,20 @@
   justify-content: center;
 }
 
+.login-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (width <= 768px) {
+  .login-buttons {
+    flex-direction: column;
+  }
+}
+
 // RTL support
 :host-context([dir='rtl']) {
   .action-row button mat-icon {

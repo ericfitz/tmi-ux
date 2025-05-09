@@ -1,0 +1,190 @@
+// Styles for X6 Graph Components
+// This file contains all the custom styles for graph components such as
+// resize handles, tooltips, selection boxes, and other interactive elements
+
+// Base transform widget styles
+.x6-widget-transform {
+  border: none !important;
+}
+
+// Resize handle styles
+.x6-widget-transform-resize {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 0 !important;
+  background-color: #000 !important;
+  border: none !important;
+  outline: none !important;
+  position: absolute !important;
+}
+
+// Position the handles - these override default positions
+// Top-left handle
+.x6-widget-transform-resize-nw {
+  top: -4px !important;
+  left: -4px !important;
+}
+
+// Top-middle handle
+.x6-widget-transform-resize-n {
+  top: -4px !important;
+}
+
+// Top-right handle
+.x6-widget-transform-resize-ne {
+  top: -4px !important;
+  right: -6px !important;
+}
+
+// Middle-right handle
+.x6-widget-transform-resize-e {
+  right: -6px !important;
+}
+
+// Bottom-right handle
+.x6-widget-transform-resize-se {
+  bottom: -6px !important;
+  right: -6px !important;
+}
+
+// Bottom-middle handle
+.x6-widget-transform-resize-s {
+  bottom: -6px !important;
+}
+
+// Bottom-left handle
+.x6-widget-transform-resize-sw {
+  bottom: -6px !important;
+  left: -4px !important;
+}
+
+// Middle-left handle
+.x6-widget-transform-resize-w {
+  left: -4px !important;
+}
+
+// Port tooltip styles
+.dfd-port-tooltip {
+  position: absolute;
+  background-color: rgb(255 255 255 / 90%);
+  color: #333;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-weight: normal;
+  pointer-events: none;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  display: none;
+}
+
+// Selection box styles
+.x6-cell-tool-boundary {
+  fill: #47c769;
+  stroke: none;
+  fill-opacity: 0.2;
+}
+
+// Selected cell styles
+[selected='true'] {
+  .x6-graph-svg {
+    filter: none;
+  }
+}
+
+// Shape-specific styling based on data-shape-type attribute
+// This ensures that restored nodes get the correct styling via CSS
+
+// Process shapes should be circular
+[data-shape-type="process"] {
+  aspect-ratio: 1 / 1;
+}
+
+// Store shapes - exactly matching the StoreShape definition
+[data-shape-type="store"] {
+  .x6-cell-body {
+    // Body styles
+    rect.body {
+      fill: #FFF;
+      stroke: transparent;
+      opacity: 1;
+    }
+    
+    // Top line
+    path.topLine {
+      stroke: #333;
+      stroke-width: 2;
+    }
+    
+    // Bottom line
+    path.bottomLine {
+      stroke: #333;
+      stroke-width: 2;
+    }
+    
+    // Label styles
+    text.label {
+      fill: #333;
+      font-size: 12px;
+      font-family: "Roboto Condensed", Arial, sans-serif;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+  }
+}
+
+// Label drag handle styles
+.dfd-label-drag-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #000;
+  cursor: move;
+  z-index: 1000;
+  border: 1px solid #fff;
+}
+
+// Label bounding box styles
+.dfd-label-bounding-box {
+  position: absolute;
+  z-index: 1000;
+  border: 2px dashed #f00;
+  background-color: rgb(255 0 0 / 10%);
+  cursor: move;
+}
+
+// Label drag placeholder styles
+.dfd-label-placeholder {
+  position: fixed;
+  z-index: 9999;
+  border: 2px dashed #f36;
+  background-color: rgb(255 51 102 / 20%);
+  pointer-events: none;
+}
+
+// Label editing styles
+.dfd-label-editor {
+  position: absolute;
+  z-index: 1000;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  padding: 2px;
+  border: 1px solid #1890ff;
+  border-radius: 2px;
+  outline: none;
+  background: white;
+  text-align: center;
+}
+
+// Label text styles
+.dfd-label {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 12px;
+  fill: #333;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: all;
+}

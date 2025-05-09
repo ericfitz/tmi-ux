@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
+import { History } from '@antv/x6-plugin-history';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdHighlighterService } from './dfd-highlighter.service';
@@ -10,7 +11,9 @@ import { ActorShape } from '../models/actor-shape.model';
 import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
+import { TextboxShape } from '../models/textbox-shape.model';
 import { NodeData } from '../models/node-data.interface';
+import { DfdEventBusService } from './dfd-event-bus.service';
 
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
@@ -34,6 +37,7 @@ export class DfdEventService {
     private portService: DfdPortService,
     private nodeService: DfdNodeService,
     private labelEditorService: DfdLabelEditorService,
+    private eventBus: DfdEventBusService,
   ) {}
 
   /**
@@ -364,8 +368,16 @@ export class DfdEventService {
 
         directions.forEach(direction => {
           const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
-          dfdNode.getPortsByDirection(direction).forEach(port => {
-            const portNode = view.findPortElem(port.id, 'portBody');
+          const ports = dfdNode instanceof ActorShape || 
+                     dfdNode instanceof ProcessShape || 
+                     dfdNode instanceof StoreShape || 
+                     dfdNode instanceof SecurityBoundaryShape 
+                     ? dfdNode.getPortsByGroup(direction)
+                     : [];
+                    
+          ports.forEach(port => {
+            const portId = typeof port.id === 'string' ? port.id : String(port.id);
+            const portNode = view.findPortElem(portId, 'portBody');
             if (portNode) {
               portNode.setAttribute('visibility', 'visible');
             }
@@ -449,17 +461,14 @@ export class DfdEventService {
 
         cell.addTools(tools);
 
-        // Add a custom attribute to the node to indicate its type
-        if (cell instanceof ProcessShape) {
-          cell.attr('data-shape-type', 'process');
-        } else {
-          cell.attr('data-shape-type', 'rect');
-        }
-
-        // Add resize handle styles if they don't exist yet
-        this.addResizeHandleStyles();
+        // Add data attributes for shape types to enable CSS targeting
+        this.addShapeTypeAttributes(cell);
 
         // No need to show label drag handle anymore
+        
+        // Publish event that a node was selected
+        this.eventBus.publishNodeSelected(cell);
+        this.logger.debug('Node selected', { nodeId: cell.id });
       }
     });
 
@@ -473,6 +482,10 @@ export class DfdEventService {
         this._selectedNode.attr('selected', false);
 
         // No need to remove label drag handle anymore
+        
+        // Publish event that a node was deselected
+        this.eventBus.publishNodeDeselected();
+        this.logger.debug('Node deselected');
 
         this._selectedNode = null;
       }
@@ -589,80 +602,123 @@ export class DfdEventService {
   }
 
   /**
-   * Adds resize handle styles to the document
+   * Adds data attributes for shape types to enable CSS targeting
+   * @param node The node to add attributes to
    */
-  private addResizeHandleStyles(): void {
-    // Add a style element to the document if it doesn't exist yet
-    if (!document.getElementById('resize-handles-style')) {
-      const style = document.createElement('style');
-      style.id = 'resize-handles-style';
-      style.textContent = `
-        /* Style the resize handles as smaller, solid black squares */
-        .x6-widget-transform {
-          border: none !important;
-        }
-        /* Base style for all resize handles */
-        .x6-widget-transform-resize {
-          width: 8px !important;
-          height: 8px !important;
-          border-radius: 0 !important;
-          background-color: #000000 !important;
-          border: none !important;
-          outline: none !important;
-          position: absolute !important;
-        }
-        
-        /* Position the handles using nth-child selectors */
-        /* Top-left handle */
-        .x6-widget-transform-resize:nth-child(1) {
-          top: -4px !important;
-          left: -4px !important;
-        }
-        
-        /* Top-middle handle */
-        .x6-widget-transform-resize:nth-child(2) {
-          top: -4px !important;
-        }
-        
-        /* Top-right handle */
-        .x6-widget-transform-resize:nth-child(3) {
-          top: -4px !important;
-          right: -6px !important;
-        }
-        
-        /* Middle-right handle */
-        .x6-widget-transform-resize:nth-child(4) {
-          right: -6px !important;
-        }
-        
-        /* Bottom-right handle */
-        .x6-widget-transform-resize:nth-child(5) {
-          bottom: -6px !important;
-          right: -6px !important;
-        }
-        
-        /* Bottom-middle handle */
-        .x6-widget-transform-resize:nth-child(6) {
-          bottom: -6px !important;
-        }
-        
-        /* Bottom-left handle */
-        .x6-widget-transform-resize:nth-child(7) {
-          bottom: -6px !important;
-          left: -4px !important;
-        }
-        
-        /* Middle-left handle */
-        .x6-widget-transform-resize:nth-child(8) {
-          left: -4px !important;
-        }
-        /* Ensure circular nodes maintain aspect ratio during resize */
-        [data-shape-type="process"] {
-          aspect-ratio: 1 / 1;
-        }
-      `;
-      document.head.appendChild(style);
+  private addShapeTypeAttributes(node: Node): void {
+    if (node instanceof ProcessShape) {
+      node.attr('data-shape-type', 'process');
+    } else if (node instanceof ActorShape) {
+      node.attr('data-shape-type', 'actor');
+    } else if (node instanceof StoreShape) {
+      node.attr('data-shape-type', 'store');
+    } else if (node instanceof SecurityBoundaryShape) {
+      node.attr('data-shape-type', 'securityBoundary');
+    } else if (node instanceof TextboxShape) {
+      node.attr('data-shape-type', 'textbox');
     }
+  }
+
+  /**
+   * Deselects all nodes in the graph
+   * @param graph The X6 graph instance
+   */
+  deselectAll(graph: Graph): void {
+    if (this._selectedNode) {
+      // Remove tools from the selected node
+      this._selectedNode.removeTools();
+      
+      // Remove selection styling
+      this._selectedNode.attr('selected', false);
+      
+      // Clear selection
+      this._selectedNode = null;
+      
+      // Publish event that nodes were deselected
+      this.eventBus.publishNodeDeselected();
+    }
+    
+    // Make sure no other nodes have selection styling
+    graph.getNodes().forEach(node => {
+      node.attr('selected', false);
+      node.removeTools();
+    });
+    
+    this.logger.debug('Deselected all nodes');
+  }
+  
+  /**
+   * Selects a specific node
+   * @param node The node to select
+   */
+  selectNode(node: Node): void {
+    if (!node) return;
+    
+    // Cast to proper type
+    const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+    
+    // Get node data to determine its real type
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const nodeData = node.getData();
+    if (nodeData && typeof nodeData === 'object' && 'label' in nodeData) {
+      // Looks like a DFD node based on data, even if its constructor doesn't match
+      // This happens with nodes restored via undo/redo which can lose their specific shape type
+      this.logger.debug('Node appears to be a DFD node based on data structure', { 
+        nodeId: node.id, 
+        nodeType: node.constructor.name,
+        hasLabelProperty: 'label' in nodeData
+      });
+    } 
+    // Only warn if node doesn't appear to be a DFD node at all
+    else if (!this.nodeService.isDfdNode(node)) {
+      this.logger.warn('Attempted to select a non-DFD node', {
+        nodeId: node.id,
+        nodeType: node.constructor.name
+      });
+      return;
+    }
+    
+    // Set as selected node
+    this._selectedNode = dfdNode;
+    
+    // Add selection styling
+    node.attr('selected', true);
+    
+    // Add tools to the selected node (remove button and boundary)
+    const tools = [
+      {
+        name: 'button-remove',
+        args: {
+          x: '100%',
+          y: 0,
+          offset: { x: -10, y: 10 },
+        },
+      },
+      {
+        name: 'boundary',
+        args: {
+          padding: 10,
+          attrs: {
+            fill: '#47C769',
+            stroke: 'none',
+            'fill-opacity': 0.2,
+          },
+        },
+      },
+    ];
+    
+    node.addTools(tools);
+    
+    // Add data attributes for shape types to enable CSS targeting
+    this.addShapeTypeAttributes(node);
+    
+    // Publish event that a node was selected
+    this.eventBus.publishNodeSelected(node);
+    
+    this.logger.debug('Selected node', {
+      nodeId: node.id,
+      nodeType: node.constructor.name
+    });
   }
 
   /**
@@ -681,5 +737,24 @@ export class DfdEventService {
     node: ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape | null,
   ): void {
     this._selectedNode = node;
+  }
+  
+  /**
+   * Notifies the event bus of history state changes
+   * @param history The history plugin instance
+   */
+  notifyHistoryChange(history: History): void {
+    if (!history) {
+      return;
+    }
+    
+    const canUndo = history.canUndo();
+    const canRedo = history.canRedo();
+    
+    this.logger.debug(`Notifying history state change: canUndo=${canUndo}, canRedo=${canRedo}`);
+    
+    // Publish state change to event bus (but don't add it to history)
+    // Use silent option to prevent recursive history entries
+    this.eventBus.publishHistoryChange(canUndo, canRedo);
   }
 }

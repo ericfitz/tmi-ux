@@ -77,9 +77,9 @@ export class AuthService {
     void this.router.navigate(['/diagram-management']);
   }
 
-  // Shortcut login for demo purposes
-  demoLogin(): void {
-    this.login('demo.user@example.com', 'password');
+  // Shortcut login for demo purposes with specified username
+  demoLogin(email: string = 'demo.user@example.com'): void {
+    this.login(email, 'password');
   }
 
   // Logout

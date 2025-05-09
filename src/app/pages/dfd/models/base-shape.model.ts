@@ -1,12 +1,12 @@
 import { Graph, Node, Cell } from '@antv/x6';
 import { PortManager } from '@antv/x6/lib/model/port';
-import { BaseShapeMethods, PortDirection } from './dfd-types';
+import { PortDirection } from './dfd-types';
 
 /**
  * Abstract base class for all DFD shapes
  * Contains common methods for port management
  */
-export abstract class BaseShape implements BaseShapeMethods {
+export abstract class BaseShape {
   /**
    * Get ports by direction
    * @param direction The port direction ('top', 'right', 'bottom', 'left')
@@ -15,11 +15,15 @@ export abstract class BaseShape implements BaseShapeMethods {
   getPortsByDirection(direction: PortDirection): PortManager.Port[] {
     const node = this as unknown as Node;
     const ports = node.getPortsByGroup(direction);
-    return ports.map((port: PortManager.Port) => ({
-      ...port,
-      id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      position: { name: direction },
-    })) as PortManager.Port[];
+    return ports.map(port => {
+      return {
+        ...port,
+        id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+        position: { name: direction },
+        // Ensure label is defined to satisfy the type
+        label: port.label || { position: { distance: 0.5 } }
+      } as PortManager.Port;
+    });
   }
 
   /**
@@ -74,5 +78,13 @@ export abstract class BaseShape implements BaseShapeMethods {
     });
 
     return node;
+  }
+  
+  /**
+   * Generate a unique ID 
+   * @returns A unique string ID
+   */
+  protected generateUniqueId(): string {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   }
 }

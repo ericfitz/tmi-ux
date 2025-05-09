@@ -673,8 +673,15 @@ export class DfdLabelEditorService {
                 : undefined;
 
             if (nodeData) {
+              // Create a history point for the label change
               const updatedData: NodeData = { ...nodeData, label: newText };
               node.setData(updatedData);
+              
+              this.logger.info('Label edit completed', {
+                nodeId: node.id,
+                newLabel: newText,
+                previousLabel: nodeData.label || ''
+              });
             }
 
             this.logger.info(`Updated textbox content for node ${node.id}`, {

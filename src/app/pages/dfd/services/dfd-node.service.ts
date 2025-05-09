@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
-import { NodeData } from '../models/node-data.interface';
 import { ActorShape } from '../models/actor-shape.model';
 import { ProcessShape } from '../models/process-shape.model';
 import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
 import { TextboxShape } from '../models/textbox-shape.model';
 import { DfdLabelEditorService } from './dfd-label-editor.service';
+import { DfdShapeFactoryService, ShapeOptions } from './dfd-shape-factory.service';
 
 /**
  * Type for shape types
@@ -24,6 +24,7 @@ export class DfdNodeService {
   constructor(
     private logger: LoggerService,
     private labelEditorService: DfdLabelEditorService,
+    private shapeFactory: DfdShapeFactoryService
   ) {}
 
   /**
@@ -50,60 +51,29 @@ export class DfdNodeService {
       const graphWidth = containerElement.clientWidth;
       const graphHeight = containerElement.clientHeight;
 
+      // Get default dimensions for this shape type
+      const defaultWidth = this.shapeFactory.getDefaultWidth(shapeType);
+      const defaultHeight = this.shapeFactory.getDefaultHeight(shapeType);
+      
       // Calculate random position
-      const nodeWidth = shapeType === 'securityBoundary' ? 180 : 120;
-      const nodeHeight = shapeType === 'process' ? 120 : 40;
-      const randomX = Math.floor(Math.random() * (graphWidth - nodeWidth)) + nodeWidth / 2;
-      const randomY = Math.floor(Math.random() * (graphHeight - nodeHeight)) + nodeHeight / 2;
+      const randomX = Math.floor(Math.random() * (graphWidth - defaultWidth)) + defaultWidth / 2;
+      const randomY = Math.floor(Math.random() * (graphHeight - defaultHeight)) + defaultHeight / 2;
 
-      // Create the appropriate shape based on type
-      let node;
-      let defaultLabel = '';
+      // Define options for the shape
+      const options: ShapeOptions = {
+        x: randomX,
+        y: randomY,
+        label: this.shapeFactory.getDefaultLabel(shapeType),
+        width: defaultWidth,
+        height: defaultHeight,
+        // For security boundary, set zIndex to -1
+        ...(shapeType === 'securityBoundary' ? { zIndex: -1 } : {}),
+        // For textbox, set parent to false to prevent embedding
+        parent: shapeType !== 'textbox'
+      };
 
-      switch (shapeType) {
-        case 'process':
-          defaultLabel = 'Process';
-          node = new ProcessShape().resize(80, 80).position(randomX, randomY).updatePorts(graph);
-          break;
-        case 'store':
-          defaultLabel = 'Store';
-          node = new StoreShape().resize(120, 40).position(randomX, randomY).updatePorts(graph);
-          break;
-        case 'securityBoundary':
-          defaultLabel = 'Security Boundary';
-          node = new SecurityBoundaryShape()
-            .resize(180, 40)
-            .position(randomX, randomY)
-            .updatePorts(graph);
-          node.setZIndex(-1);
-          node.setData({ parent: true, label: defaultLabel } as NodeData);
-          break;
-        case 'textbox':
-          defaultLabel = 'Text';
-          node = new TextboxShape().resize(150, 60).position(randomX, randomY);
-          // No ports to update for textbox
-          // Set parent: false to prevent embedding
-          node.setData({ parent: false, label: defaultLabel } as NodeData);
-          // Update the HTML content with the default label
-          node.updateHtml(defaultLabel);
-          break;
-        case 'actor':
-        default:
-          defaultLabel = 'Actor';
-          node = new ActorShape().resize(120, 40).position(randomX, randomY).updatePorts(graph);
-          break;
-      }
-
-      // Set the label text (except for textbox which uses updateHtml)
-      if (shapeType !== 'textbox') {
-        node.attr('label/text', defaultLabel);
-      }
-
-      // Store the label in node data (except for security boundary and textbox which are already set)
-      // Set parent: true for all node types except textbox to allow embedding
-      if (shapeType !== 'securityBoundary' && shapeType !== 'textbox') {
-        node.setData({ parent: true, label: defaultLabel } as NodeData);
-      }
+      // Create the node using the factory
+      const node = this.shapeFactory.createShape(shapeType, options, graph);
 
       // Add the node to the graph
       graph.addNode(node);
@@ -127,39 +97,78 @@ export class DfdNodeService {
   createInitialNodes(graph: Graph): void {
     if (!graph) return;
 
-    // Add a security boundary
-    const securityBoundary = new SecurityBoundaryShape()
-      .resize(250, 150)
-      .position(500, 150)
-      .updatePorts(graph);
-    securityBoundary.setZIndex(-1);
-    securityBoundary.attr('label/text', 'Security Boundary');
-    securityBoundary.setData({ parent: true, label: 'Security Boundary' } as NodeData);
-    graph.addNode(securityBoundary);
+    // Use batch operation to avoid history entries for initial setup
+    graph.batchUpdate(() => {
+      // Create a security boundary
+      const securityBoundary = this.shapeFactory.createShape(
+        'securityBoundary',
+        {
+          x: 500,
+          y: 150,
+          width: 250,
+          height: 150,
+          label: 'Security Boundary',
+          zIndex: -1,
+          parent: true
+        },
+        graph
+      );
+      graph.addNode(securityBoundary);
 
-    // Add actor node
-    const actor = new ActorShape().resize(120, 40).position(200, 50).updatePorts(graph);
-    actor.attr('label/text', 'Actor');
-    actor.setData({ parent: true, label: 'Actor' } as NodeData);
-    graph.addNode(actor);
+      // Create actor node
+      const actor = this.shapeFactory.createShape(
+        'actor',
+        {
+          x: 200,
+          y: 50,
+          width: 120,
+          height: 40,
+          label: 'Actor',
+          parent: true
+        },
+        graph
+      );
+      graph.addNode(actor);
 
-    // Add process node
-    const process = new ProcessShape().resize(80, 80).position(400, 50).updatePorts(graph);
-    process.attr('label/text', 'Process');
-    process.setData({ parent: true, label: 'Process' } as NodeData);
-    graph.addNode(process);
+      // Create process node
+      const process = this.shapeFactory.createShape(
+        'process',
+        {
+          x: 400,
+          y: 50,
+          width: 80,
+          height: 80,
+          label: 'Process',
+          parent: true
+        },
+        graph
+      );
+      graph.addNode(process);
 
-    // Add store node
-    const store = new StoreShape().resize(120, 40).position(300, 250).updatePorts(graph);
-    store.attr('label/text', 'Store');
-    store.setData({ parent: true, label: 'Store' } as NodeData);
-    graph.addNode(store);
+      // Create store node
+      const store = this.shapeFactory.createShape(
+        'store',
+        {
+          x: 300,
+          y: 250,
+          width: 120,
+          height: 40,
+          label: 'Store',
+          parent: true
+        },
+        graph
+      );
+      graph.addNode(store);
 
-    // Apply any saved label positions and create bounding boxes
-    this.labelEditorService.applyLabelPosition(securityBoundary, graph);
-    this.labelEditorService.applyLabelPosition(actor, graph);
-    this.labelEditorService.applyLabelPosition(process, graph);
-    this.labelEditorService.applyLabelPosition(store, graph);
+      // Apply any saved label positions and create bounding boxes
+      this.labelEditorService.applyLabelPosition(securityBoundary, graph);
+      this.labelEditorService.applyLabelPosition(actor, graph);
+      this.labelEditorService.applyLabelPosition(process, graph);
+      this.labelEditorService.applyLabelPosition(store, graph);
+    }, { historyDisabled: true }); // Disable history for this batch operation
+    
+    // Log completion of initial setup
+    this.logger.info('Initial nodes created without history entries');
   }
 
   /**
@@ -168,12 +177,53 @@ export class DfdNodeService {
    * @returns True if the node is a DFD shape
    */
   isDfdNode(node: Node): boolean {
-    return (
+    // Check by instance first
+    if (
       node instanceof ActorShape ||
       node instanceof ProcessShape ||
       node instanceof StoreShape ||
       node instanceof SecurityBoundaryShape ||
       node instanceof TextboxShape
-    );
+    ) {
+      return true;
+    }
+    
+    // If not a direct instance (eg. for restored nodes from history),
+    // check if node has DFD data attributes
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const nodeData = node.getData();
+      if (nodeData && typeof nodeData === 'object') {
+        // Check if the node has a type property that matches a DFD shape type
+        if ('type' in nodeData) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          const typeValue = String(nodeData['type']);
+          if (
+            typeValue === 'actor' || 
+            typeValue === 'process' || 
+            typeValue === 'store' || 
+            typeValue === 'securityBoundary' || 
+            typeValue === 'textbox'
+          ) {
+            return true;
+          }
+        }
+        
+        // Also check if the node has a label property (all DFD nodes should have this)
+        if ('label' in nodeData) {
+          return true;
+        }
+      }
+      
+      // Check for data-shape-type attribute
+      const shapeType = node.attr('data-shape-type');
+      if (typeof shapeType === 'string' && shapeType.length > 0) {
+        return true;
+      }
+    } catch (error) {
+      this.logger.debug('Error checking node data in isDfdNode', { nodeId: node.id, error });
+    }
+    
+    return false;
   }
 }

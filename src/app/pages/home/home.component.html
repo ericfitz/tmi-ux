@@ -14,9 +14,21 @@
   </div>
 
   <div class="action-row" *ngIf="!isAuthenticated">
-    <button mat-raised-button color="primary" (click)="login()">
-      <mat-icon>login</mat-icon>
-      <span [transloco]="'loginButton'">Login to Start</span>
-    </button>
+    <div class="login-buttons">
+      <button mat-raised-button color="primary" (click)="loginUser1()">
+        <mat-icon>login</mat-icon>
+        <span>Login as User 1</span>
+      </button>
+      
+      <button mat-raised-button color="primary" (click)="loginUser2()">
+        <mat-icon>login</mat-icon>
+        <span>Login as User 2</span>
+      </button>
+      
+      <button mat-raised-button color="primary" (click)="loginUser3()">
+        <mat-icon>login</mat-icon>
+        <span>Login as User 3</span>
+      </button>
+    </div>
   </div>
 </div>

@@ -40,8 +40,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  login(): void {
-    // Use auth service for login
-    this.authService.demoLogin();
+  loginUser1(): void {
+    // Use auth service for login with user1
+    this.authService.demoLogin('user1@example.com');
+  }
+
+  loginUser2(): void {
+    // Use auth service for login with user2
+    this.authService.demoLogin('user2@example.com');
+  }
+
+  loginUser3(): void {
+    // Use auth service for login with user3
+    this.authService.demoLogin('user3@example.com');
   }
 }

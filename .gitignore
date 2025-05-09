@@ -41,4 +41,5 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Claude local files
 **/CLAUDE.local.md

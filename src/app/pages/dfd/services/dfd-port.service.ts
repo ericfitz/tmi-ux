@@ -54,8 +54,16 @@ export class DfdPortService {
 
     directions.forEach(direction => {
       const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
-      dfdNode.getPortsByDirection(direction).forEach(port => {
-        const portNode = nodeView.findPortElem(port.id, 'portBody');
+      const ports = dfdNode instanceof ActorShape || 
+                 dfdNode instanceof ProcessShape || 
+                 dfdNode instanceof StoreShape || 
+                 dfdNode instanceof SecurityBoundaryShape 
+                 ? dfdNode.getPortsByGroup(direction)
+                 : [];
+                
+      ports.forEach(port => {
+        const portId = typeof port.id === 'string' ? port.id : String(port.id);
+        const portNode = nodeView.findPortElem(portId, 'portBody');
         if (portNode) {
           // Check if this port has any connected edges
           const connectedEdges = graph.getConnectedEdges(node, {
@@ -66,7 +74,7 @@ export class DfdPortService {
           const isPortInUse = connectedEdges.some(edge => {
             const sourcePort = edge.getSourcePortId();
             const targetPort = edge.getTargetPortId();
-            return sourcePort === port.id || targetPort === port.id;
+            return sourcePort === portId || targetPort === portId;
           });
 
           // Only hide ports that are not in use
@@ -108,8 +116,16 @@ export class DfdPortService {
 
     directions.forEach(direction => {
       const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
-      dfdNode.getPortsByDirection(direction).forEach(port => {
-        const portNode = nodeView.findPortElem(port.id, 'portBody');
+      const ports = dfdNode instanceof ActorShape || 
+                 dfdNode instanceof ProcessShape || 
+                 dfdNode instanceof StoreShape || 
+                 dfdNode instanceof SecurityBoundaryShape 
+                 ? dfdNode.getPortsByGroup(direction)
+                 : [];
+                
+      ports.forEach(port => {
+        const portId = typeof port.id === 'string' ? port.id : String(port.id);
+        const portNode = nodeView.findPortElem(portId, 'portBody');
         if (portNode) {
           portNode.setAttribute('visibility', 'visible');
         }

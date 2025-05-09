@@ -46,6 +46,9 @@ export class DfdGraphService {
       const containerHeight = containerElement.clientHeight || 600;
 
       this.logger.info(`Creating graph with dimensions: ${containerWidth}x${containerHeight}`);
+      
+      // Add a debug entry to ensure history events are getting recorded
+      this.logger.debug('DFD-DEBUG: Setting up graph history listener');
 
       const graph: Graph = new Graph({
         container: containerElement,
@@ -76,6 +79,7 @@ export class DfdGraphService {
           minScale: 0.5,
           maxScale: 2,
         },
+        // Note: onCellAdded/onCellRemoved are not available in this version of X6
         // Enable node embedding
         embedding: {
           enabled: true,
@@ -135,19 +139,31 @@ export class DfdGraphService {
           allowLoop: false, // Prevent self-loops
           highlight: true,
           connector: 'smooth',
+          // Use anchor instead of connectionPoint for compatibility
           connectionPoint: 'boundary',
-          anchor: 'center', // Ensure proper anchor point
+          anchor: {
+            name: 'center', // Center anchor for all connections
+            args: {
+              offset: 0 // No offset
+            }
+          },
           sourceAnchor: 'center', // Source anchor
           targetAnchor: 'center', // Target anchor
           router: {
             name: 'normal',
           },
           // Enable edge creation from ports
-          validateMagnet({ magnet }) {
+          validateMagnet(args) {
+             
+            const magnet = args.magnet;
+            if (!magnet) return false;
+             
             return magnet.getAttribute('magnet') === 'active';
           },
           // Prevent edge creation until mouse is released on a valid target
-          validateConnection({ sourceView, targetView, sourceMagnet, targetMagnet }) {
+          validateConnection(args) {
+             
+            const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
             // Prevent creating an edge if source and target are the same
             if (sourceView === targetView && sourceMagnet === targetMagnet) {
               return false;
@@ -231,6 +247,23 @@ export class DfdGraphService {
           },
         },
       });
+      
+      // Set up event listeners for cell addition/removal
+      graph.on('cell:added', ({ cell }) => {
+        const cellType = cell.isNode() ? 'Node' : 'Edge';
+        this.logger.info(`${cellType} added to graph`, {
+          cellId: cell.id,
+          type: cell.constructor.name
+        });
+      });
+      
+      graph.on('cell:removed', ({ cell }) => {
+        const cellType = cell.isNode() ? 'Node' : 'Edge';
+        this.logger.info(`${cellType} removed from graph`, {
+          cellId: cell.id,
+          type: cell.constructor.name
+        });
+      });
 
       // Register the Transform plugin for node resizing
       graph.use(
@@ -264,15 +297,84 @@ export class DfdGraphService {
       let lastLabelUpdateTime = 0;
       const labelUpdateThreshold = 500; // ms
 
+      // Set up mouse events to track dragging state globally
+      graph.on('node:mousedown', () => {
+        this.logger.debug('Node mousedown - potential drag starting');
+        isDragging = true;
+      });
+      
+      graph.on('node:mouseup', ({node}) => {
+        this.logger.debug('Node mouseup - drag ended', {nodeId: node.id});
+        
+        // Reset dragging state after a short delay to catch trailing events
+        setTimeout(() => {
+          // Store current position for logging
+          const currentPosition = node.getPosition();
+          
+          // Force a history entry by making a small movement and then restoring position
+          const originalPosition = { ...currentPosition };
+          
+          // Log what we're doing
+          this.logger.info('Creating history entry for final node position', {
+            nodeId: node.id,
+            position: originalPosition
+          });
+          
+          // Create a "snapshot" by explicitly setting position (creates history entry)
+          // Use silent: false to ensure history entry is created
+          node.setPosition(originalPosition.x, originalPosition.y, { silent: false });
+          
+          // Reset dragging flag now that we've recorded the position
+          isDragging = false;
+          this.logger.debug('Drag flag reset after forcing position snapshot');
+        }, 50);
+      });
+      
+      // Same for edges
+      graph.on('edge:mousedown', () => {
+        this.logger.debug('Edge mousedown - potential drag starting');
+        isDragging = true;
+      });
+      
+      graph.on('edge:mouseup', ({edge}) => {
+        this.logger.debug('Edge mouseup - drag ended', {edgeId: edge.id});
+        
+        // Reset dragging state after a short delay to catch trailing events
+        setTimeout(() => {
+          // Get current vertices for logging
+          const vertices = edge.getVertices();
+          
+          // Clone the vertices array to create a new reference
+          // Use Array.from to safely spread vertices with proper typing
+          const originalVertices = Array.from(vertices);
+          
+          // Log what we're doing
+          this.logger.info('Creating history entry for final edge position', {
+            edgeId: edge.id,
+            vertices: originalVertices
+          });
+          
+          // Force a history entry by explicitly setting vertices
+          // This will trigger a history entry with the final edge position
+          edge.setVertices(originalVertices, { silent: false });
+          
+          // Reset dragging flag now that we've recorded the position
+          isDragging = false;
+          this.logger.debug('Drag flag reset after forcing edge position snapshot');
+        }, 50);
+      });
+
       // Register the History plugin for undo/redo functionality
       graph.use(
         new History({
           enabled: true,
+          // Note: batchDelayTimer is not available in this version of the X6 history plugin 
           beforeAddCommand: <T extends History.ModelEvents>(event: T, args: Model.EventArgs[T]) => {
+            this.logger.debug(`DFD-DEBUG: History considering event: ${String(event)}`);
             // Convert event to string for comparison
             const eventName = String(event);
 
-            // Filter out selection/deselection events
+            // Filter out selection/deselection events, history state events, and event bus events
             if (
               eventName === 'node:selected' ||
               eventName === 'node:unselected' ||
@@ -282,7 +384,10 @@ export class DfdGraphService {
               eventName === 'cell:highlight' ||
               eventName === 'cell:unhighlight' ||
               eventName.includes('select') ||
-              eventName.includes('highlight')
+              eventName.includes('highlight') ||
+              eventName === 'canUndoChanged' ||
+              eventName === 'canRedoChanged' ||
+              eventName.includes('Event')
             ) {
               return false;
             }
@@ -292,9 +397,11 @@ export class DfdGraphService {
               // Check if this is an intermediate drag event
               if (args && 'options' in args && args.options && args.options['dragging'] === true) {
                 isDragging = true;
+                this.logger.debug('Skipping intermediate drag event', { event: eventName });
                 return false; // Skip intermediate drag events
               }
               // Only record the final position (when dragging is complete)
+              this.logger.debug('Drag completed, recording final position', { event: eventName });
               isDragging = false;
               return true;
             }
@@ -302,13 +409,35 @@ export class DfdGraphService {
             // For edge movement, only record the final position
             if (eventName === 'edge:moved' && args && 'options' in args && args.options && args.options['dragging']) {
               isDragging = true;
+              this.logger.debug('Skipping intermediate edge drag event', { event: eventName });
               return false;
+            }
+            
+            // Explicitly filter out position changes during dragging (these should only be recorded at the end of a drag)
+            if (eventName === 'cell:change:position' || (eventName.startsWith('cell:change:') && args && 'key' in args && args.key === 'position')) {
+              if (isDragging) {
+                this.logger.debug('Skipping position change during drag', { event: eventName });
+                return false;
+              }
+              this.logger.debug('Recording position change (not during drag)', { event: eventName });
+            }
+            
+            // For label changes, always record them to history
+            if (eventName === 'cell:change:attrs' && args && 'current' in args && 
+                args.current && typeof args.current === 'object' && 
+                'label' in args.current) {
+              this.logger.info('Adding label change to history', {
+                event: eventName, 
+                cellId: args && 'cell' in args ? args.cell.id : 'unknown'
+              });
+              return true;
             }
 
             // Filter out cell:change:* events during dragging
             if (eventName.startsWith('cell:change:')) {
               // If we're in a dragging operation, don't record these changes
               if (isDragging) {
+                this.logger.debug('Skipping change event during drag', { event: eventName, key: args && 'key' in args ? args.key : 'unknown' });
                 return false;
               }
 
@@ -397,6 +526,16 @@ export class DfdGraphService {
               currentValue: eventName.startsWith('cell:change:') && args && 'current' in args ? (args.current as Record<string, unknown>) : undefined,
               previousValue: eventName.startsWith('cell:change:') && args && 'previous' in args ? (args.previous as Record<string, unknown>) : undefined,
             });
+
+            // Immediately notify of history status change
+            const history = graph.getPlugin<History>('history');
+            if (history) {
+              setTimeout(() => {
+                if (this.dfdEventService) {
+                  this.dfdEventService.notifyHistoryChange(history);
+                }
+              }, 50);
+            }
 
             // Add all other events to history
             return true;
@@ -699,17 +838,183 @@ export class DfdGraphService {
       });
 
       if (typeof label === 'string') {
-        // Set the label text in the node attributes
-        node.attr('label/text', label);
+        // Apply consistent label styling from our stylesheet
+        node.attr({
+          label: {
+            text: label,
+            class: 'dfd-label',
+            display: 'block',
+            opacity: 1,
+            fontFamily: 'Roboto Condensed, Arial, sans-serif',
+            fontSize: 12,
+            fill: '#333',
+            textAnchor: 'middle',
+            dominantBaseline: 'middle',
+            pointerEvents: 'all'
+          }
+        });
+        
+        // Try to recreate the original node type - this is helpful to fix undo/redo
+        // Determine real node type from its data
+        if (nodeData) {
+          // Try to determine the original shape type
+          let shapeType: string | undefined;
+          
+          // Check if type is explicitly stored in the data
+          if ('type' in nodeData) {
+            shapeType = String(nodeData['type']);
+          } 
+          // Otherwise, try to infer from the label
+          else if (typeof label === 'string') {
+            // Look for clues in the label first
+            const labelLower = label.toLowerCase();
+            if (labelLower === 'actor' || labelLower.includes('actor')) {
+              shapeType = 'actor';
+            } else if (labelLower === 'process' || labelLower.includes('process')) {
+              shapeType = 'process';
+            } else if (labelLower === 'store' || labelLower.includes('store')) {
+              shapeType = 'store';
+            } else if (labelLower.includes('security') || labelLower.includes('boundary')) {
+              shapeType = 'securityBoundary';
+            } else if (labelLower.includes('text') || labelLower === 'text') {
+              shapeType = 'textbox';
+            }
+          }
+          
+          // Apply data attributes for CSS styling based on the detected shape type
+          if (nodeType === 'Rect' || nodeType === 'Circle' || (shapeType && nodeType !== shapeType)) {
+            this.logger.debug('Node restored with generic type, applying appropriate data attributes', {
+              nodeId,
+              currentType: nodeType,
+              detectedType: shapeType,
+              label
+            });
+            
+            // Set a data attribute to help identify the node type
+            if (shapeType) {
+              // Set the data-shape-type attribute for CSS targeting
+              node.attr('data-shape-type', shapeType);
+              
+              // Store specific setup (with two horizontal lines and no overall border)
+              if (shapeType === 'store') {
+                // For store shapes, we need to make sure the node has the correct structure
+                // and attributes to match the original StoreShape definition
+                
+                // Update the markup to include the correct elements
+                // This is critical because the restored node might not have the right markup elements
+                const storeMarkup = [
+                  {
+                    tagName: 'rect',
+                    selector: 'body',
+                  },
+                  {
+                    tagName: 'path',
+                    selector: 'topLine',
+                  },
+                  {
+                    tagName: 'path',
+                    selector: 'bottomLine',
+                  },
+                  {
+                    tagName: 'text',
+                    selector: 'label',
+                  },
+                ];
+                
+                try {
+                  // First apply the store markup
+                  node.setMarkup(storeMarkup);
+                  
+                  // Then apply the attributes exactly as they are in the StoreShape definition
+                  node.attr({
+                    root: {
+                      magnet: false,
+                    },
+                    body: {
+                      fill: '#FFFFFF',
+                      stroke: 'transparent',
+                      opacity: 1,
+                    },
+                    topLine: {
+                      stroke: '#333333',
+                      strokeWidth: 2,
+                      refD: 'M 0 0 l 200 0',
+                    },
+                    bottomLine: {
+                      stroke: '#333333',
+                      strokeWidth: 2,
+                      refY: '100%',
+                      refD: 'M 0 0 l 200 0',
+                    }
+                  });
+                  
+                  // Force an update to ensure markup changes take effect
+                  const view = graph.findViewByCell(node);
+                  if (view) {
+                    view.confirmUpdate(511);
+                  }
+                } catch (error) {
+                  this.logger.warn('Could not fully restore store shape markup and attributes', {
+                    nodeId,
+                    error
+                  });
+                }
+                
+                // Ensure dimensions match the store shape (wider than tall)
+                const { width, height } = node.size();
+                if (height > width || height > 50) {
+                  node.resize(Math.max(width, 120), 40);
+                }
+              } else if (shapeType === 'process') {
+                // For process shapes, ensure square aspect ratio
+                const { width, height } = node.size();
+                if (Math.abs(width - height) > 10) {
+                  const size = Math.max(width, height, 80);
+                  node.resize(size, size);
+                }
+                
+                // Set appropriate attributes for process circles
+                node.attr({
+                  body: {
+                    fill: '#FFFFFF',
+                    stroke: '#333333',
+                    strokeWidth: 2,
+                  }
+                });
+              } else if (shapeType === 'securityBoundary') {
+                // Security boundaries should be behind other elements
+                node.setZIndex(-1);
+                
+                // Ensure proper sizing for security boundaries
+                const { width, height } = node.size();
+                if (width < 180 || height < 100) {
+                  node.resize(Math.max(width, 180), Math.max(height, 100));
+                }
+                
+                // Set the parent flag to true to allow embedding
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const existingData = node.getData() || {};
+                node.setData({
+                  ...existingData,
+                  parent: true
+                });
+                
+                // Add appropriate styling from original SecurityBoundaryShape
+                node.attr({
+                  body: {
+                    fill: '#F5F5F5',
+                    fillOpacity: 0.5,
+                    stroke: '#666666',
+                    strokeWidth: 1.5,
+                    strokeDasharray: '5,2'
+                  }
+                });
+              }
+            }
+          }
+        }
 
-        // Add the dfd-label class to ensure proper styling
-        node.attr('label/class', 'dfd-label');
-
-        // Force the label to be visible
-        node.attr('label/display', 'block');
-        node.attr('label/opacity', 1);
-
-        this.logger.debug('Restored label text for node', { nodeId, label });
+        this.logger.debug('Restored label text and style for node', { nodeId, label });
 
         // Apply the label position using the injected labelEditorService
         if (this.labelEditorService) {
@@ -720,8 +1025,8 @@ export class DfdGraphService {
           // Force a redraw of the node
           const view = graph.findViewByCell(node);
           if (view) {
-            view.confirmUpdate(1); // Use flag 1 to force update
-            this.logger.debug('Forced view update for node', { nodeId });
+            view.confirmUpdate(31); // Use flag 31 (11111 in binary) to force full update
+            this.logger.debug('Forced full view update for node', { nodeId });
           }
         } else {
           this.logger.warn('Label editor service not available for restored node', { nodeId });

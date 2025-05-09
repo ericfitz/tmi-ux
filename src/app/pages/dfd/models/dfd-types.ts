@@ -1,15 +1,10 @@
-import { Graph, Cell } from '@antv/x6';
-import { PortManager } from '@antv/x6/lib/model/port';
+// Used in type definitions
+// import { PortManager } from '@antv/x6/lib/model/port';
 
 /**
  * Type for port directions
  */
 export type PortDirection = 'top' | 'right' | 'bottom' | 'left';
-
-/**
- * Type for shape types
- */
-export type ShapeType = 'actor' | 'process' | 'store' | 'securityBoundary' | 'textbox';
 
 /**
  * Type for port configuration
@@ -70,6 +65,8 @@ export interface ShapeConfig {
       textAnchor?: string;
       textVerticalAnchor?: string;
       pointerEvents?: string;
+      refX?: string;
+      refY?: string;
     };
   };
   ports: {
@@ -80,13 +77,4 @@ export interface ShapeConfig {
     tagName: string;
     selector: string;
   }>;
-}
-
-/**
- * Type for base shape methods
- */
-export interface BaseShapeMethods {
-  getPortsByDirection(direction: PortDirection): PortManager.Port[];
-  getAllPorts(): PortManager.Port[];
-  updatePorts(graph: Graph): Cell;
 }

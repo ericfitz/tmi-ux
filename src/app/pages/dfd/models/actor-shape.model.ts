@@ -1,5 +1,8 @@
 import { Graph, Shape } from '@antv/x6';
 import { PortManager } from '@antv/x6/lib/model/port';
+// BaseShape contains shared methods that are duplicated in ActorShape
+// import { BaseShape } from './base-shape.model';
+import { PortDirection } from './dfd-types';
 
 /**
  * ActorShape class for DFD diagrams
@@ -11,13 +14,17 @@ export class ActorShape extends Shape.Rect {
    * @param direction The port direction ('top', 'right', 'bottom', 'left')
    * @returns Array of ports for the specified direction
    */
-  getPortsByDirection(direction: 'top' | 'right' | 'bottom' | 'left'): PortManager.Port[] {
+  getPortsByDirection(direction: PortDirection): PortManager.Port[] {
     const ports = this.getPortsByGroup(direction);
-    return ports.map(port => ({
-      ...port,
-      id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      position: { name: direction },
-    })) as PortManager.Port[];
+    return ports.map(port => {
+      return {
+        ...port,
+        id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+        position: { name: direction },
+        // Ensure label is defined to satisfy the type
+        label: port.label || { position: { distance: 0.5 } }
+      } as PortManager.Port;
+    });
   }
 
   /**
@@ -35,16 +42,11 @@ export class ActorShape extends Shape.Rect {
 
   /**
    * Update ports for all directions
-   * @param _graph The X6 graph instance
+   * @param graph The X6 graph instance
    * @returns The shape instance for chaining
    */
   updatePorts(_graph: Graph): ActorShape {
-    const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
-      'top',
-      'right',
-      'bottom',
-      'left',
-    ];
+    const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
     const portsPerDirection = 1;
 
     let allPorts: PortManager.Port[] = [];
@@ -55,7 +57,6 @@ export class ActorShape extends Shape.Rect {
 
       if (existingPorts.length === 0) {
         // Only create new ports if there are no existing ones
-        // Create new ports inline
         const newPorts = Array.from({ length: portsPerDirection }, (_, index) => {
           return {
             id: `new-${direction}-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 11)}`,
@@ -128,6 +129,8 @@ ActorShape.config({
             fill: '#fff',
             strokeWidth: 1,
             visibility: 'hidden', // Hide ports by default
+            // Ensure port connects at its center
+            'port-anchor': 'center',
           },
         },
       },
@@ -143,6 +146,8 @@ ActorShape.config({
             stroke: '#5F95FF',
             strokeWidth: 1,
             visibility: 'hidden', // Hide ports by default
+            // Ensure port connects at its center
+            'port-anchor': 'center',
           },
         },
       },
@@ -158,6 +163,8 @@ ActorShape.config({
             stroke: '#5F95FF',
             strokeWidth: 1,
             visibility: 'hidden', // Hide ports by default
+            // Ensure port connects at its center
+            'port-anchor': 'center',
           },
         },
       },
@@ -173,6 +180,8 @@ ActorShape.config({
             fill: '#fff',
             strokeWidth: 1,
             visibility: 'hidden', // Hide ports by default
+            // Ensure port connects at its center
+            'port-anchor': 'center',
           },
         },
       },
