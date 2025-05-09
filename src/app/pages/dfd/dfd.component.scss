@@ -1,4 +1,4 @@
-@import './styles/graph-styles';
+@use './styles/graph-styles' as graph;
 
 .dfd-container {
   width: 100%;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Shape, Cell, Node } from '@antv/x6';
+import { Graph, Shape, Cell, Node, Model } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { History } from '@antv/x6-plugin-history';
@@ -16,17 +16,6 @@ import { TextboxShape } from '../models/textbox-shape.model';
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
   return data !== null && typeof data === 'object' && data !== undefined;
-}
-
-/**
- * X6 History plugin event arguments type
- */
-interface HistoryEventArgs {
-  key?: string;
-  cell?: Cell;
-  options?: { dragging?: boolean };
-  current?: Record<string, unknown>;
-  previous?: Record<string, unknown>;
 }
 
 /**
@@ -279,7 +268,7 @@ export class DfdGraphService {
       graph.use(
         new History({
           enabled: true,
-          beforeAddCommand: (event, args: HistoryEventArgs) => {
+          beforeAddCommand: <T extends History.ModelEvents>(event: T, args: Model.EventArgs[T]) => {
             // Convert event to string for comparison
             const eventName = String(event);
 
@@ -301,7 +290,7 @@ export class DfdGraphService {
             // For node movement, only record the final position after dragging
             if (eventName === 'node:moved') {
               // Check if this is an intermediate drag event
-              if (args?.options?.dragging === true) {
+              if (args && 'options' in args && args.options && args.options['dragging'] === true) {
                 isDragging = true;
                 return false; // Skip intermediate drag events
               }
@@ -311,7 +300,7 @@ export class DfdGraphService {
             }
 
             // For edge movement, only record the final position
-            if (eventName === 'edge:moved' && args?.options?.dragging) {
+            if (eventName === 'edge:moved' && args && 'options' in args && args.options && args.options['dragging']) {
               isDragging = true;
               return false;
             }
@@ -324,7 +313,7 @@ export class DfdGraphService {
               }
 
               // Filter out tools-related changes
-              if (args?.key === 'tools') {
+              if (args && 'key' in args && args.key === 'tools') {
                 this.logger.debug('Filtering out tools-related change from history', {
                   event: eventName,
                   key: args.key,
@@ -334,21 +323,21 @@ export class DfdGraphService {
 
               // Filter out selection-related attribute changes
               if (
-                args?.key === 'attrs' &&
-                ((args.current && 'selected' in args.current) ||
-                  (args.previous && 'selected' in args.previous))
+                args && 'key' in args && args.key === 'attrs' &&
+                (('current' in args && args.current && typeof args.current === 'object' && 'selected' in args.current) ||
+                 ('previous' in args && args.previous && typeof args.previous === 'object' && 'selected' in args.previous))
               ) {
                 this.logger.debug('Filtering out selection-related attribute change from history', {
                   event: eventName,
                   key: args.key,
-                  current: args.current,
-                  previous: args.previous,
+                  current: 'current' in args ? (args.current as Record<string, unknown>) : undefined,
+                  previous: 'previous' in args ? (args.previous as Record<string, unknown>) : undefined,
                 });
                 return false;
               }
 
               // For label position updates, only record significant changes
-              if (args?.key === 'attrs' || args?.key === 'data') {
+              if (args && 'key' in args && (args.key === 'attrs' || args.key === 'data')) {
                 const now = Date.now();
                 // If this is a rapid update (less than threshold ms since last update), skip it
                 if (now - lastLabelUpdateTime < labelUpdateThreshold) {
@@ -402,11 +391,11 @@ export class DfdGraphService {
             // Log the event that's being added to history with detailed information
             this.logger.info(`Adding event to history: ${eventName}`, {
               event: eventName,
-              key: args?.key,
-              cell: args?.cell?.constructor?.name || 'Unknown',
+              key: args && 'key' in args ? args.key : undefined,
+              cell: args && 'cell' in args && args.cell ? args.cell.constructor.name : 'Unknown',
               // Include the current and previous values if it's a cell:change event
-              currentValue: eventName.startsWith('cell:change:') ? args?.current : undefined,
-              previousValue: eventName.startsWith('cell:change:') ? args?.previous : undefined,
+              currentValue: eventName.startsWith('cell:change:') && args && 'current' in args ? (args.current as Record<string, unknown>) : undefined,
+              previousValue: eventName.startsWith('cell:change:') && args && 'previous' in args ? (args.previous as Record<string, unknown>) : undefined,
             });
 
             // Add all other events to history

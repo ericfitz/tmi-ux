@@ -44,6 +44,9 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "namedChunks": true,
+            "allowedCommonJsDependencies": [
+              "mousetrap"
+            ],
             "assets": [
               {
                 "glob": "**/*",
