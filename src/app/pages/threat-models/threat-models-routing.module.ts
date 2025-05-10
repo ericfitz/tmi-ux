@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { DiagramManagementComponent } from './diagram-management.component';
+import { ThreatModelsComponent } from './threat-models.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: DiagramManagementComponent,
+    component: ThreatModelsComponent,
   },
 ];
 
@@ -14,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class DiagramManagementRoutingModule {}
+export class ThreatModelsRoutingModule {}

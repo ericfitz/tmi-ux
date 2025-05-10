@@ -1,4 +1,4 @@
-.diagram-management-container {
+.threat-models-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 24px;
@@ -9,6 +9,24 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+
+  button[mat-icon-button] {
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    &:disabled {
+      color: #ccc;
+    }
+  }
 }
 
 .diagrams-list {

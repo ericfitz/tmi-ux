@@ -7,14 +7,14 @@ import { MaterialModule } from '../../shared/material/material.module';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
-  selector: 'app-diagram-management',
+  selector: 'app-threat-models',
   standalone: true,
   imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule],
-  templateUrl: './diagram-management.component.html',
-  styleUrl: './diagram-management.component.scss',
+  templateUrl: './threat-models.component.html',
+  styleUrl: './threat-models.component.scss',
 })
-export class DiagramManagementComponent implements OnInit {
-  // Placeholder for diagrams list
+export class ThreatModelsComponent implements OnInit {
+  // Placeholder for threat models list
   diagrams: Array<{ id: string; name: string; modifiedAt: Date }> = [
     {
       id: '123e4567-e89b-12d3-a456-426614174000',
@@ -31,7 +31,7 @@ export class DiagramManagementComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Would fetch diagrams from API in a real implementation
+    // Would fetch threat models from API in a real implementation
   }
 
   createDiagram(): void {

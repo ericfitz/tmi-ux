@@ -30,11 +30,11 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'diagram-management',
+    path: 'threat-models',
     loadComponent: () =>
       import(
-        /* webpackChunkName: "diagram-management" */ './pages/diagram-management/diagram-management.component'
-      ).then(c => c.DiagramManagementComponent),
+        /* webpackChunkName: "threat-models" */ './pages/threat-models/threat-models.component'
+      ).then(c => c.ThreatModelsComponent),
     canActivate: [authGuard],
   },
   {

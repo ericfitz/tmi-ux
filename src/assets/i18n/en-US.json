@@ -111,11 +111,11 @@
     }
   },
   "diagrams": {
-    "pageTitle": "My Diagrams",
-    "newButton": "New Diagram",
+    "pageTitle": "Threat Models",
+    "newButton": "Create",
     "lastModified": "Last modified: {{date}}",
-    "noItemsMessage": "You don't have any diagrams yet.",
-    "createFirstButton": "Create your first diagram",
+    "noItemsMessage": "You don't have any threat models yet.",
+    "createFirstButton": "Create your first threat model",
     "diagramTitle": "{{name}}"
   },
   "editor": {

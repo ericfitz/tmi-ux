@@ -74,7 +74,7 @@ export class AuthService {
     this.usernameSubject.next(username);
 
     this.logger.info(`User ${username} successfully logged in`);
-    void this.router.navigate(['/diagram-management']);
+    void this.router.navigate(['/threat-models']);
   }
 
   // Shortcut login for demo purposes with specified username
