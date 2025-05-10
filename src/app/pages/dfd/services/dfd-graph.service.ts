@@ -220,6 +220,13 @@ export class DfdGraphService {
                 label: {
                   text: 'Flow',
                   class: 'dfd-label', // Use CSS class for styling
+                  fontFamily: 'Roboto Condensed, Arial, sans-serif',
+                  fontSize: 12,
+                  fill: '#333',
+                  textAnchor: 'middle',
+                  dominantBaseline: 'middle',
+                  pointerEvents: 'all',
+                  userSelect: 'none',
                 },
               },
               // Add default vertices for better routing
@@ -234,6 +241,13 @@ export class DfdGraphService {
                     text: {
                       text: 'Flow',
                       class: 'dfd-label', // Use CSS class for styling
+                      fontFamily: 'Roboto Condensed, Arial, sans-serif',
+                      fontSize: 12,
+                      fill: '#333',
+                      textAnchor: 'middle',
+                      dominantBaseline: 'middle',
+                      pointerEvents: 'all',
+                      userSelect: 'none',
                     },
                   },
                 },
@@ -577,21 +591,50 @@ export class DfdGraphService {
                   : undefined,
             });
 
-            // Immediately notify of history status change
-            const history = graph.getPlugin<History>('history');
-            if (history) {
-              setTimeout(() => {
-                if (this.dfdEventService) {
-                  this.dfdEventService.notifyHistoryChange(history);
-                }
-              }, 50);
-            }
+            // We'll notify of history status change after the command is added
+            // This will be handled by the 'add' event listener below
 
             // Add all other events to history
             return true;
           },
         }),
       );
+
+      // Add a listener for the History plugin's 'add' event to notify of history changes
+      // This ensures we update the undo/redo state AFTER a command is added to history
+      const history = graph.getPlugin<History>('history');
+      if (history) {
+        // Listen for all history events to update the undo/redo state
+        history.on('add', () => {
+          this.logger.debug('History add event detected, updating undo/redo state');
+          this.dfdEventService.notifyHistoryChange(history);
+        });
+
+        history.on('undo', () => {
+          this.logger.debug('History undo event detected, updating undo/redo state');
+          this.dfdEventService.notifyHistoryChange(history);
+        });
+
+        history.on('redo', () => {
+          this.logger.debug('History redo event detected, updating undo/redo state');
+          this.dfdEventService.notifyHistoryChange(history);
+        });
+
+        // Add listener for the 'change' event which is used in dfd.service.ts
+        history.on('change', () => {
+          this.logger.debug('History change event detected, updating undo/redo state');
+          this.dfdEventService.notifyHistoryChange(history);
+        });
+
+        // Add a catch-all listener for any other history events
+        history.on('*', (eventName: string) => {
+          // Only handle events we haven't explicitly handled above
+          if (!['add', 'undo', 'redo', 'change'].includes(eventName)) {
+            this.logger.debug(`History ${eventName} event detected, updating undo/redo state`);
+            this.dfdEventService.notifyHistoryChange(history);
+          }
+        });
+      }
 
       // Register the Export plugin for exporting diagrams
       graph.use(new Export());

@@ -109,16 +109,16 @@ tspan.v-line {
   }
 
   // Edge label styling
-  .label,
-  .label text,
-  .label tspan {
-    font-family: 'Roboto Condensed', Arial, sans-serif !important;
-    font-size: 12px !important;
-    fill: #333;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    pointer-events: all;
-    user-select: none;
+  .label {
+    text {
+      font-family: 'Roboto Condensed', Arial, sans-serif;
+      font-size: 12px;
+      fill: #333;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: all;
+      user-select: none;
+    }
   }
 
   &:hover {
