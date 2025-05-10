@@ -24,7 +24,7 @@ export class DfdNodeService {
   constructor(
     private logger: LoggerService,
     private labelEditorService: DfdLabelEditorService,
-    private shapeFactory: DfdShapeFactoryService
+    private shapeFactory: DfdShapeFactoryService,
   ) {}
 
   /**
@@ -54,7 +54,7 @@ export class DfdNodeService {
       // Get default dimensions for this shape type
       const defaultWidth = this.shapeFactory.getDefaultWidth(shapeType);
       const defaultHeight = this.shapeFactory.getDefaultHeight(shapeType);
-      
+
       // Calculate random position
       const randomX = Math.floor(Math.random() * (graphWidth - defaultWidth)) + defaultWidth / 2;
       const randomY = Math.floor(Math.random() * (graphHeight - defaultHeight)) + defaultHeight / 2;
@@ -69,7 +69,7 @@ export class DfdNodeService {
         // For security boundary, set zIndex to -1
         ...(shapeType === 'securityBoundary' ? { zIndex: -1 } : {}),
         // For textbox, set parent to false to prevent embedding
-        parent: shapeType !== 'textbox'
+        parent: shapeType !== 'textbox',
       };
 
       // Create the node using the factory
@@ -98,75 +98,78 @@ export class DfdNodeService {
     if (!graph) return;
 
     // Use batch operation to avoid history entries for initial setup
-    graph.batchUpdate(() => {
-      // Create a security boundary
-      const securityBoundary = this.shapeFactory.createShape(
-        'securityBoundary',
-        {
-          x: 500,
-          y: 150,
-          width: 250,
-          height: 150,
-          label: 'Security Boundary',
-          zIndex: -1,
-          parent: true
-        },
-        graph
-      );
-      graph.addNode(securityBoundary);
+    graph.batchUpdate(
+      () => {
+        // Create a security boundary
+        const securityBoundary = this.shapeFactory.createShape(
+          'securityBoundary',
+          {
+            x: 500,
+            y: 150,
+            width: 250,
+            height: 150,
+            label: 'Security Boundary',
+            zIndex: -1,
+            parent: true,
+          },
+          graph,
+        );
+        graph.addNode(securityBoundary);
 
-      // Create actor node
-      const actor = this.shapeFactory.createShape(
-        'actor',
-        {
-          x: 200,
-          y: 50,
-          width: 120,
-          height: 40,
-          label: 'Actor',
-          parent: true
-        },
-        graph
-      );
-      graph.addNode(actor);
+        // Create actor node
+        const actor = this.shapeFactory.createShape(
+          'actor',
+          {
+            x: 200,
+            y: 50,
+            width: 120,
+            height: 40,
+            label: 'Actor',
+            parent: true,
+          },
+          graph,
+        );
+        graph.addNode(actor);
 
-      // Create process node
-      const process = this.shapeFactory.createShape(
-        'process',
-        {
-          x: 400,
-          y: 50,
-          width: 80,
-          height: 80,
-          label: 'Process',
-          parent: true
-        },
-        graph
-      );
-      graph.addNode(process);
+        // Create process node
+        const process = this.shapeFactory.createShape(
+          'process',
+          {
+            x: 400,
+            y: 50,
+            width: 80,
+            height: 80,
+            label: 'Process',
+            parent: true,
+          },
+          graph,
+        );
+        graph.addNode(process);
 
-      // Create store node
-      const store = this.shapeFactory.createShape(
-        'store',
-        {
-          x: 300,
-          y: 250,
-          width: 120,
-          height: 40,
-          label: 'Store',
-          parent: true
-        },
-        graph
-      );
-      graph.addNode(store);
+        // Create store node
+        const store = this.shapeFactory.createShape(
+          'store',
+          {
+            x: 300,
+            y: 250,
+            width: 120,
+            height: 40,
+            label: 'Store',
+            parent: true,
+          },
+          graph,
+        );
+        graph.addNode(store);
 
-      // Apply any saved label positions and create bounding boxes
-      this.labelEditorService.applyLabelPosition(securityBoundary, graph);
-      this.labelEditorService.applyLabelPosition(actor, graph);
-      this.labelEditorService.applyLabelPosition(process, graph);
-      this.labelEditorService.applyLabelPosition(store, graph);
-    }, { historyDisabled: true }); // Disable history for this batch operation
-    
+        // Apply any saved label positions and create bounding boxes
+        this.labelEditorService.applyLabelPosition(securityBoundary, graph);
+        this.labelEditorService.applyLabelPosition(actor, graph);
+        this.labelEditorService.applyLabelPosition(process, graph);
+        this.labelEditorService.applyLabelPosition(store, graph);
+      },
+      { historyDisabled: true },
+    ); // Disable history for this batch operation
+
     // Log completion of initial setup
     this.logger.info('Initial nodes created without history entries');
   }
@@ -187,7 +190,7 @@ export class DfdNodeService {
     ) {
       return true;
     }
-    
+
     // If not a direct instance (eg. for restored nodes from history),
     // check if node has DFD data attributes
     try {
@@ -199,22 +202,22 @@ export class DfdNodeService {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           const typeValue = String(nodeData['type']);
           if (
-            typeValue === 'actor' || 
-            typeValue === 'process' || 
-            typeValue === 'store' || 
-            typeValue === 'securityBoundary' || 
+            typeValue === 'actor' ||
+            typeValue === 'process' ||
+            typeValue === 'store' ||
+            typeValue === 'securityBoundary' ||
             typeValue === 'textbox'
           ) {
             return true;
           }
         }
-        
+
         // Also check if the node has a label property (all DFD nodes should have this)
         if ('label' in nodeData) {
           return true;
         }
       }
-      
+
       // Check for data-shape-type attribute
       const shapeType = node.attr('data-shape-type');
       if (typeof shapeType === 'string' && shapeType.length > 0) {
@@ -223,7 +226,7 @@ export class DfdNodeService {
     } catch (error) {
       this.logger.debug('Error checking node data in isDfdNode', { nodeId: node.id, error });
     }
-    
+
     return false;
   }
 }

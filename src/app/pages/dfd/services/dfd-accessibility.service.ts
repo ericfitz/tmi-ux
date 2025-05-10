@@ -39,10 +39,10 @@ export enum KeyboardAction {
 export class DfdAccessibilityService {
   // The graph instance
   private _graph: Graph | null = null;
-  
+
   // Current focused node index for keyboard navigation
   private _focusedNodeIndex = -1;
-  
+
   // Movement increment for keyboard navigation (in pixels)
   private readonly MOVEMENT_INCREMENT = 10;
 
@@ -67,15 +67,18 @@ export class DfdAccessibilityService {
    */
   private setupAriaAttributes(): void {
     if (!this._graph) return;
-    
+
     const container = this._graph.container;
-    
+
     // Add ARIA attributes to the container
     container.setAttribute('role', 'application');
     container.setAttribute('aria-label', 'Data Flow Diagram Editor');
-    container.setAttribute('aria-description', 'Interactive diagram editor for creating data flow diagrams');
+    container.setAttribute(
+      'aria-description',
+      'Interactive diagram editor for creating data flow diagrams',
+    );
     container.setAttribute('tabindex', '0');
-    
+
     // Make the container focusable and add keyboard event listener
     container.addEventListener('keydown', this.handleKeyDown.bind(this));
   }
@@ -86,14 +89,14 @@ export class DfdAccessibilityService {
    */
   private handleKeyDown(event: KeyboardEvent): void {
     if (!this._graph) return;
-    
+
     // Get the action from the key
     const action = this.getActionFromKey(event);
     if (!action) return;
-    
+
     // Prevent default behavior for handled keys
     event.preventDefault();
-    
+
     // Execute the action
     this.executeAction(action);
   }
@@ -108,22 +111,22 @@ export class DfdAccessibilityService {
     if (event.key === 'Tab') {
       return event.shiftKey ? KeyboardAction.SelectPrevious : KeyboardAction.SelectNext;
     }
-    
+
     // Arrow keys for movement
     if (event.key === 'ArrowUp') return KeyboardAction.MoveUp;
     if (event.key === 'ArrowDown') return KeyboardAction.MoveDown;
     if (event.key === 'ArrowLeft') return KeyboardAction.MoveLeft;
     if (event.key === 'ArrowRight') return KeyboardAction.MoveRight;
-    
+
     // Delete key
     if (event.key === 'Delete' || event.key === 'Backspace') return KeyboardAction.Delete;
-    
+
     // Edit label
     if (event.key === 'Enter' || event.key === 'F2') return KeyboardAction.EditLabel;
-    
+
     // Escape
     if (event.key === 'Escape') return KeyboardAction.Escape;
-    
+
     // Undo/Redo
     if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
       return event.shiftKey ? KeyboardAction.Redo : KeyboardAction.Undo;
@@ -131,7 +134,7 @@ export class DfdAccessibilityService {
     if (event.key === 'y' && (event.ctrlKey || event.metaKey)) {
       return KeyboardAction.Redo;
     }
-    
+
     return null;
   }
 
@@ -141,80 +144,82 @@ export class DfdAccessibilityService {
    */
   private executeAction(action: KeyboardAction): void {
     if (!this._graph) return;
-    
+
     const nodes = this._graph.getNodes();
     if (nodes.length === 0) return;
-    
+
     // Get the currently selected node
     const selectedNode = this.eventBus.selectedNode;
-    
+
     switch (action) {
       case KeyboardAction.SelectNext:
         this.selectNextNode();
         break;
-        
+
       case KeyboardAction.SelectPrevious:
         this.selectPreviousNode();
         break;
-        
+
       case KeyboardAction.Delete:
         if (selectedNode) {
           this._graph.removeNode(selectedNode);
         }
         break;
-        
+
       case KeyboardAction.MoveUp:
         if (selectedNode) {
           this.moveNode(selectedNode, 0, -this.MOVEMENT_INCREMENT);
         }
         break;
-        
+
       case KeyboardAction.MoveDown:
         if (selectedNode) {
           this.moveNode(selectedNode, 0, this.MOVEMENT_INCREMENT);
         }
         break;
-        
+
       case KeyboardAction.MoveLeft:
         if (selectedNode) {
           this.moveNode(selectedNode, -this.MOVEMENT_INCREMENT, 0);
         }
         break;
-        
+
       case KeyboardAction.MoveRight:
         if (selectedNode) {
           this.moveNode(selectedNode, this.MOVEMENT_INCREMENT, 0);
         }
         break;
-        
+
       case KeyboardAction.EditLabel:
         if (selectedNode) {
           this.editNodeLabel(selectedNode);
         }
         break;
-        
+
       case KeyboardAction.Escape:
         // Deselect the current node
         if (selectedNode) {
           this.eventBus.publishNodeDeselected();
         }
         break;
-        
-      case KeyboardAction.Undo: {
-        // Let the event bus handle undo/redo
-        const history = this._graph.getPlugin<History>('history');
-        if (history && history.canUndo()) {
-          history.undo();
+
+      case KeyboardAction.Undo:
+        {
+          // Let the event bus handle undo/redo
+          const history = this._graph.getPlugin<History>('history');
+          if (history && history.canUndo()) {
+            history.undo();
+          }
         }
-      }
         break;
-        
-      case KeyboardAction.Redo: {
-        const historyPlugin = this._graph.getPlugin<History>('history');
-        if (historyPlugin && historyPlugin.canRedo()) {
-          historyPlugin.redo();
+
+      case KeyboardAction.Redo:
+        {
+          const historyPlugin = this._graph.getPlugin<History>('history');
+          if (historyPlugin && historyPlugin.canRedo()) {
+            historyPlugin.redo();
+          }
         }
-      }
         break;
     }
   }
@@ -224,10 +229,10 @@ export class DfdAccessibilityService {
    */
   private selectNextNode(): void {
     if (!this._graph) return;
-    
+
     const nodes = this._graph.getNodes();
     if (nodes.length === 0) return;
-    
+
     this._focusedNodeIndex = (this._focusedNodeIndex + 1) % nodes.length;
     this.selectNode(nodes[this._focusedNodeIndex]);
   }
@@ -237,10 +242,10 @@ export class DfdAccessibilityService {
    */
   private selectPreviousNode(): void {
     if (!this._graph) return;
-    
+
     const nodes = this._graph.getNodes();
     if (nodes.length === 0) return;
-    
+
     this._focusedNodeIndex = (this._focusedNodeIndex - 1 + nodes.length) % nodes.length;
     this.selectNode(nodes[this._focusedNodeIndex]);
   }
@@ -251,13 +256,13 @@ export class DfdAccessibilityService {
    */
   private selectNode(node: Node): void {
     if (!this._graph) return;
-    
+
     // Update ARIA attributes
     this.updateNodeAriaAttributes(node);
-    
+
     // Publish node selected event
     this.eventBus.publishNodeSelected(node);
-    
+
     // Announce to screen readers
     this.announceNode(node);
   }
@@ -270,17 +275,13 @@ export class DfdAccessibilityService {
    */
   private moveNode(node: Node, dx: number, dy: number): void {
     if (!this._graph) return;
-    
+
     const position = node.getPosition();
     node.setPosition(position.x + dx, position.y + dy);
-    
+
     // Announce the movement to screen readers
-    const direction = 
-      dy < 0 ? 'up' :
-      dy > 0 ? 'down' :
-      dx < 0 ? 'left' :
-      'right';
-      
+    const direction = dy < 0 ? 'up' : dy > 0 ? 'down' : dx < 0 ? 'left' : 'right';
+
     this.announce(`Moved ${this.getNodeName(node)} ${direction}`);
   }
 
@@ -290,7 +291,7 @@ export class DfdAccessibilityService {
    */
   private editNodeLabel(node: Node): void {
     if (!this._graph) return;
-    
+
     // Get the current label
     let labelText = '';
     if (node instanceof TextboxShape) {
@@ -302,17 +303,17 @@ export class DfdAccessibilityService {
       // For other shapes, get label from attributes
       labelText = node.attr('label/text') || '';
     }
-    
+
     // Show a prompt for editing
     const newText = window.prompt('Edit label:', labelText);
     if (newText !== null && newText !== labelText) {
       // Update the label
       if (node instanceof TextboxShape) {
-        (node).updateHtml(newText);
+        node.updateHtml(newText);
       } else {
         node.attr('label/text', newText);
       }
-      
+
       // Get the node data
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const nodeData = node.getData();
@@ -323,7 +324,7 @@ export class DfdAccessibilityService {
           label: newText,
         });
       }
-      
+
       // Announce the change
       this.announce(`Changed label to ${newText}`);
     }
@@ -335,10 +336,10 @@ export class DfdAccessibilityService {
    */
   private updateNodeAriaAttributes(node: Node): void {
     if (!this._graph) return;
-    
+
     // Set aria-activedescendant on the container
     this._graph.container.setAttribute('aria-activedescendant', node.id);
-    
+
     // Find the node's SVG element
     const nodeEl = this._graph.findViewByCell(node)?.container;
     if (nodeEl) {
@@ -358,11 +359,11 @@ export class DfdAccessibilityService {
   private getNodeName(node: Node): string {
     // Get the label
     // Get label with default value for type safety
-    const label = (typeof node.attr('label/text') === 'string') ? node.attr('label/text') : 'Unnamed';
-    
+    const label = typeof node.attr('label/text') === 'string' ? node.attr('label/text') : 'Unnamed';
+
     // Get the shape type
     const shapeType = getShapeType(node);
-    
+
     return `${shapeType || 'Unknown'} ${String(label)}`;
   }
 
@@ -385,7 +386,7 @@ export class DfdAccessibilityService {
       liveRegion.style.clip = 'rect(0 0 0 0)';
       document.body.appendChild(liveRegion);
     }
-    
+
     // Update the live region
     liveRegion.textContent = message;
   }
@@ -397,10 +398,12 @@ export class DfdAccessibilityService {
   private announceNode(node: Node): void {
     const name = this.getNodeName(node);
     const position = node.getPosition();
-    
-    this.announce(`Selected ${name} at position ${Math.round(position.x)}, ${Math.round(position.y)}`);
+
+    this.announce(
+      `Selected ${name} at position ${Math.round(position.x)}, ${Math.round(position.y)}`,
+    );
   }
-  
+
   /**
    * Dispose of the accessibility service
    */

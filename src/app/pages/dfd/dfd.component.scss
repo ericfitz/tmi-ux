@@ -1,6 +1,7 @@
 @use './styles/graph-styles' as graph;
 @use './styles/graph-components' as components;
 
+// Only keep layout and structure styles
 .dfd-container {
   width: 100%;
   height: 100%;
@@ -12,6 +13,7 @@
   margin-bottom: 16px;
 }
 
+// Optimize toolbar styles
 .graph-toolbar {
   display: flex;
   align-items: center;
@@ -32,14 +34,14 @@
         margin-right: 0;
       }
     }
-    
+
     .button-spacer {
       width: 16px;
       display: inline-block;
     }
   }
 
-  // Style for icon buttons
+  // Simplified icon button styles
   button[mat-icon-button] {
     color: #555;
     display: flex;
@@ -59,62 +61,32 @@
   }
 }
 
+// Simplified container styles
 .graph-container {
   flex: 1;
   width: 100%;
-  height: calc(100vh - 200px); // Adjust height to account for header and footer
+  height: calc(100vh - 200px);
   min-height: 400px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
   position: relative;
-  display: flex; // Add flex display to ensure child elements take up space
+  display: flex;
 }
 
-// Additional styles for Angular Material components
+// Consolidated Material styles
 :host ::ng-deep {
-  // Set Roboto font for Material tooltips
-  .mat-tooltip {
-    font-family: Roboto, Arial, sans-serif;
-    font-size: 12px;
-  }
-
-  // Set Roboto font for Material menu items
-  .mat-menu-item {
-    font-family: Roboto, Arial, sans-serif;
-    font-size: 14px;
-  }
-
-  // Set Roboto font for Material menu panel
+  .mat-tooltip,
+  .mat-menu-item,
   .mat-menu-panel {
     font-family: Roboto, Arial, sans-serif;
   }
-}
 
-// Port tooltip styles - renamed to match BEM methodology
-.dfd-port-tooltip {
-  position: absolute;
-  background-color: rgb(255 255 255 / 90%);
-  color: #333;
-  padding: 5px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  font-weight: normal;
-  pointer-events: none;
-  z-index: 1000;
-  display: none;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-}
+  .mat-tooltip {
+    font-size: 12px;
+  }
 
-// Label drag handle styles
-.dfd-label-drag-handle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: #000;
-  cursor: move;
-  z-index: 1000;
-  border: 1px solid #fff;
+  .mat-menu-item {
+    font-size: 14px;
+  }
 }

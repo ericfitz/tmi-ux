@@ -21,7 +21,7 @@ export abstract class BaseShape {
         id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
         position: { name: direction },
         // Ensure label is defined to satisfy the type
-        label: port.label || { position: { distance: 0.5 } }
+        label: port.label || { position: { distance: 0.5 } },
       } as PortManager.Port;
     });
   }
@@ -79,9 +79,9 @@ export abstract class BaseShape {
 
     return node;
   }
-  
+
   /**
-   * Generate a unique ID 
+   * Generate a unique ID
    * @returns A unique string ID
    */
   protected generateUniqueId(): string {

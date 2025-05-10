@@ -49,24 +49,16 @@ export class DfdShapeFactoryService {
     // Create the shape based on type
     switch (shapeType) {
       case 'actor':
-        node = new ActorShape()
-          .resize(width, height)
-          .position(options.x, options.y);
+        node = new ActorShape().resize(width, height).position(options.x, options.y);
         break;
       case 'process':
-        node = new ProcessShape()
-          .resize(width, height)
-          .position(options.x, options.y);
+        node = new ProcessShape().resize(width, height).position(options.x, options.y);
         break;
       case 'store':
-        node = new StoreShape()
-          .resize(width, height)
-          .position(options.x, options.y);
+        node = new StoreShape().resize(width, height).position(options.x, options.y);
         break;
       case 'securityBoundary':
-        node = new SecurityBoundaryShape()
-          .resize(width, height)
-          .position(options.x, options.y);
+        node = new SecurityBoundaryShape().resize(width, height).position(options.x, options.y);
         if (options.zIndex !== undefined) {
           node.setZIndex(options.zIndex);
         } else {
@@ -74,9 +66,7 @@ export class DfdShapeFactoryService {
         }
         break;
       case 'textbox':
-        node = new TextboxShape()
-          .resize(width, height)
-          .position(options.x, options.y);
+        node = new TextboxShape().resize(width, height).position(options.x, options.y);
         // TextboxShape uses HTML for content
         (node as TextboxShape).updateHtml(label);
         break;
@@ -87,14 +77,14 @@ export class DfdShapeFactoryService {
 
     // Set node data
     const isParent = options.parent === undefined ? true : options.parent;
-    
+
     // For textbox, parent should always be false to prevent embedding
     const parent = shapeType === 'textbox' ? false : isParent;
-    
+
     node.setData({
       parent,
       label,
-      type: shapeType // Store the original shape type
+      type: shapeType, // Store the original shape type
     } as NodeData);
 
     // Set label text (except for textbox which uses updateHtml)
@@ -104,17 +94,18 @@ export class DfdShapeFactoryService {
 
     // Update ports if graph is provided
     if (graph && shapeType !== 'textbox') {
-      if (node instanceof ActorShape || 
-          node instanceof ProcessShape || 
-          node instanceof StoreShape || 
-          node instanceof SecurityBoundaryShape) {
+      if (
+        node instanceof ActorShape ||
+        node instanceof ProcessShape ||
+        node instanceof StoreShape ||
+        node instanceof SecurityBoundaryShape
+      ) {
         node.updatePorts(graph);
       }
     }
-    
+
     return node;
   }
-
 
   /**
    * Gets the default width for a shape type

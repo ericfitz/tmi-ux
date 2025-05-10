@@ -1,6 +1,4 @@
-// X6 Graph Styles
-// This file contains all styles related to the X6 graph components
-
+// Consolidate all graph element styles here
 // Base graph container styles
 .x6-graph {
   width: 100%;
@@ -22,12 +20,12 @@
 
 // Port styles
 .x6-port-body {
-  r: 5; // Port radius
+  r: 5;
   cursor: pointer;
 }
 
 .x6-port {
-  z-index: 10; // Ensure ports are above edges for better clickability
+  z-index: 10;
 }
 
 .x6-port-body[magnet='active'] {
@@ -67,41 +65,84 @@
   margin: 2px;
 }
 
-// Top handles - move up
-.x6-widget-transform-resize-nw,
-.x6-widget-transform-resize-n,
-.x6-widget-transform-resize-ne {
-  margin-top: 4px;
-}
-
-// Bottom handles - move down
-.x6-widget-transform-resize-sw,
-.x6-widget-transform-resize-s,
-.x6-widget-transform-resize-se {
-  margin-bottom: 4px;
-}
-
-// Left handles - move left
-.x6-widget-transform-resize-nw,
-.x6-widget-transform-resize-w,
-.x6-widget-transform-resize-sw {
-  margin-left: 4px;
-}
-
-// Right handles - move right
-.x6-widget-transform-resize-ne,
-.x6-widget-transform-resize-e,
-.x6-widget-transform-resize-se {
-  margin-right: 4px;
-}
-
 // Font styles for graph elements
 tspan.v-line {
   font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
 }
 
-// Label styles
+// Edge styles - consolidated
+.x6-edge {
+  .connection {
+    stroke: #333;
+    stroke-width: 2px;
+    fill: none;
+  }
+
+  .connection-wrap {
+    stroke: transparent;
+    stroke-width: 10px;
+    cursor: pointer;
+  }
+
+  .marker-source,
+  .marker-target,
+  .marker-arrowhead {
+    fill: #333;
+    stroke: #333;
+  }
+
+  .marker-vertex {
+    fill: #fff;
+    stroke: #333;
+    stroke-width: 1.5px;
+    r: 5px;
+
+    &:hover {
+      fill: #f36;
+      stroke: #f36;
+    }
+  }
+
+  .marker-vertex-remove {
+    fill: #f36;
+  }
+
+  &:hover {
+    .connection {
+      stroke: #1890ff;
+      stroke-width: 3px;
+    }
+
+    .marker-vertex {
+      display: block;
+    }
+
+    .marker-arrowhead {
+      fill: #1890ff;
+      stroke: #1890ff;
+    }
+  }
+
+  &[selected='true'] {
+    .connection {
+      stroke: #1890ff;
+      stroke-width: 3px;
+    }
+
+    .marker-vertex {
+      display: block;
+      fill: #1890ff;
+    }
+
+    .marker-arrowhead {
+      fill: #1890ff;
+      stroke: #1890ff;
+    }
+  }
+}
+
+// All label styles consolidated here
 .dfd-label {
   font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
@@ -109,6 +150,12 @@ tspan.v-line {
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: all;
+  user-select: none;
+
+  &:hover {
+    fill: #1890ff;
+    cursor: text;
+  }
 }
 
 // Label editing styles
@@ -143,18 +190,32 @@ tspan.v-line {
   pointer-events: none;
 }
 
-// Port tooltip styles
-.dfd-port-tooltip {
-  position: absolute;
-  background-color: rgb(255 255 255 / 90%);
-  color: #333;
-  padding: 5px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  font-weight: normal;
-  pointer-events: none;
-  z-index: 1000;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+// Shape-specific styling
+[data-shape-type='process'] {
+  aspect-ratio: 1 / 1;
+}
+
+[data-shape-type='store'] {
+  .x6-cell-body {
+    rect.body {
+      fill: #fff;
+      stroke: transparent;
+      opacity: 1;
+    }
+
+    path.topLine,
+    path.bottomLine {
+      stroke: #333;
+      stroke-width: 2;
+    }
+
+    text.label {
+      fill: #333;
+      font-size: 12px;
+      font-family: 'Roboto Condensed', Arial, sans-serif;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+  }
 }

@@ -35,7 +35,7 @@ export interface ErrorInfo {
 export class DfdErrorService {
   // Current errors
   private _errors = new BehaviorSubject<ErrorInfo[]>([]);
-  
+
   // Has fatal error flag
   private _hasFatalError = new BehaviorSubject<boolean>(false);
 
@@ -66,7 +66,7 @@ export class DfdErrorService {
     const errorObj = typeof error === 'string' ? new Error(error) : error;
     const timestamp = Date.now();
     const id = `error-${timestamp}-${Math.random().toString(36).substring(2, 9)}`;
-    
+
     const errorInfo: ErrorInfo = {
       message,
       details: errorObj.message,
@@ -76,11 +76,11 @@ export class DfdErrorService {
       context,
       id,
     };
-    
+
     // Add to errors list
     const currentErrors = this._errors.getValue();
     this._errors.next([...currentErrors, errorInfo]);
-    
+
     // Log the error
     switch (severity) {
       case ErrorSeverity.Info:
@@ -97,7 +97,7 @@ export class DfdErrorService {
         this._hasFatalError.next(true);
         break;
     }
-    
+
     return id;
   }
 

@@ -57,11 +57,11 @@ export function dataUriToBlob(dataUri: string, mimeType: string): Blob {
   const byteString = atob(dataUri.split(',')[1]);
   const ab = new ArrayBuffer(byteString.length);
   const ia = new Uint8Array(ab);
-  
+
   for (let i = 0; i < byteString.length; i++) {
     ia[i] = byteString.charCodeAt(i);
   }
-  
+
   return new Blob([ab], { type: mimeType });
 }
 
@@ -97,13 +97,13 @@ export function getDescendants(graph: Graph, node: Node): Node[] {
   const children = graph.getNodes().filter(childNode => {
     return childNode.getParent()?.id === node.id;
   });
-  
+
   let descendants = [...children];
-  
+
   children.forEach(child => {
     descendants = [...descendants, ...getDescendants(graph, child)];
   });
-  
+
   return descendants;
 }
 
@@ -116,22 +116,22 @@ export function getDescendants(graph: Graph, node: Node): Node[] {
  */
 export function getConnectedEdges(
   graph: Graph,
-  node: Node, 
-  options?: { incoming?: boolean; outgoing?: boolean }
+  node: Node,
+  options?: { incoming?: boolean; outgoing?: boolean },
 ): Edge[] {
   const defaultOptions = { incoming: true, outgoing: true };
   const mergedOptions = { ...defaultOptions, ...options };
-  
+
   const edges: Edge[] = [];
-  
+
   if (mergedOptions.incoming) {
-    edges.push(...graph.getIncomingEdges(node) || []);
+    edges.push(...(graph.getIncomingEdges(node) || []));
   }
-  
+
   if (mergedOptions.outgoing) {
-    edges.push(...graph.getOutgoingEdges(node) || []);
+    edges.push(...(graph.getOutgoingEdges(node) || []));
   }
-  
+
   return edges;
 }
 
@@ -141,21 +141,21 @@ export function getConnectedEdges(
  */
 export function updateZIndices(graph: Graph): void {
   if (!graph) return;
-  
+
   // Get all nodes
   const nodes = graph.getNodes();
-  
+
   // First pass: security boundaries to z-index -1
   nodes.forEach(node => {
     if (node instanceof SecurityBoundaryShape) {
       node.setZIndex(-1);
     }
   });
-  
+
   // Second pass: build hierarchy
   const hierarchy = new Map<string, Node[]>();
   const rootNodes: Node[] = [];
-  
+
   nodes
     .filter(node => !(node instanceof SecurityBoundaryShape))
     .forEach(node => {
@@ -170,29 +170,29 @@ export function updateZIndices(graph: Graph): void {
         rootNodes.push(node);
       }
     });
-  
+
   // Third pass: set z-indices
   // Root nodes at z-index 0
   rootNodes.forEach(node => {
     node.setZIndex(0);
   });
-  
+
   // Process hierarchy
   const processChildren = (parentNode: Node, startZ: number): number => {
     let nextZ = startZ;
     const children = hierarchy.get(parentNode.id) || [];
-    
+
     children.forEach(child => {
       child.setZIndex(nextZ);
       nextZ++;
-      
+
       // Process this child's children
       nextZ = processChildren(child, nextZ);
     });
-    
+
     return nextZ;
   };
-  
+
   rootNodes.forEach(node => {
     processChildren(node, 1);
   });

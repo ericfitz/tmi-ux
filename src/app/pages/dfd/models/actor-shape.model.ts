@@ -22,7 +22,7 @@ export class ActorShape extends Shape.Rect {
         id: port.id || `${direction}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
         position: { name: direction },
         // Ensure label is defined to satisfy the type
-        label: port.label || { position: { distance: 0.5 } }
+        label: port.label || { position: { distance: 0.5 } },
       } as PortManager.Port;
     });
   }

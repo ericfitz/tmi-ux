@@ -368,13 +368,14 @@ export class DfdEventService {
 
         directions.forEach(direction => {
           const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
-          const ports = dfdNode instanceof ActorShape || 
-                     dfdNode instanceof ProcessShape || 
-                     dfdNode instanceof StoreShape || 
-                     dfdNode instanceof SecurityBoundaryShape 
-                     ? dfdNode.getPortsByGroup(direction)
-                     : [];
-                    
+          const ports =
+            dfdNode instanceof ActorShape ||
+            dfdNode instanceof ProcessShape ||
+            dfdNode instanceof StoreShape ||
+            dfdNode instanceof SecurityBoundaryShape
+              ? dfdNode.getPortsByGroup(direction)
+              : [];
+
           ports.forEach(port => {
             const portId = typeof port.id === 'string' ? port.id : String(port.id);
             const portNode = view.findPortElem(portId, 'portBody');
@@ -465,7 +466,7 @@ export class DfdEventService {
         this.addShapeTypeAttributes(cell);
 
         // No need to show label drag handle anymore
-        
+
         // Publish event that a node was selected
         this.eventBus.publishNodeSelected(cell);
         this.logger.debug('Node selected', { nodeId: cell.id });
@@ -482,12 +483,15 @@ export class DfdEventService {
         this._selectedNode.attr('selected', false);
 
         // No need to remove label drag handle anymore
-        
+
         // Publish event that a node was deselected
         this.eventBus.publishNodeDeselected();
         this.logger.debug('Node deselected');
 
         this._selectedNode = null;
+
+        // Ensure linked ports remain visible after deselection
+        this.portService.hideUnusedPortsOnAllNodes(graph);
       }
     });
   }
@@ -627,63 +631,66 @@ export class DfdEventService {
     if (this._selectedNode) {
       // Remove tools from the selected node
       this._selectedNode.removeTools();
-      
+
       // Remove selection styling
       this._selectedNode.attr('selected', false);
-      
+
       // Clear selection
       this._selectedNode = null;
-      
+
       // Publish event that nodes were deselected
       this.eventBus.publishNodeDeselected();
     }
-    
+
     // Make sure no other nodes have selection styling
     graph.getNodes().forEach(node => {
       node.attr('selected', false);
       node.removeTools();
     });
-    
+
+    // Ensure linked ports remain visible after deselection
+    this.portService.hideUnusedPortsOnAllNodes(graph);
+
     this.logger.debug('Deselected all nodes');
   }
-  
+
   /**
    * Selects a specific node
    * @param node The node to select
    */
   selectNode(node: Node): void {
     if (!node) return;
-    
+
     // Cast to proper type
     const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
-    
+
     // Get node data to determine its real type
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const nodeData = node.getData();
     if (nodeData && typeof nodeData === 'object' && 'label' in nodeData) {
       // Looks like a DFD node based on data, even if its constructor doesn't match
       // This happens with nodes restored via undo/redo which can lose their specific shape type
-      this.logger.debug('Node appears to be a DFD node based on data structure', { 
-        nodeId: node.id, 
+      this.logger.debug('Node appears to be a DFD node based on data structure', {
+        nodeId: node.id,
         nodeType: node.constructor.name,
-        hasLabelProperty: 'label' in nodeData
+        hasLabelProperty: 'label' in nodeData,
       });
-    } 
+    }
     // Only warn if node doesn't appear to be a DFD node at all
     else if (!this.nodeService.isDfdNode(node)) {
       this.logger.warn('Attempted to select a non-DFD node', {
         nodeId: node.id,
-        nodeType: node.constructor.name
+        nodeType: node.constructor.name,
       });
       return;
     }
-    
+
     // Set as selected node
     this._selectedNode = dfdNode;
-    
+
     // Add selection styling
     node.attr('selected', true);
-    
+
     // Add tools to the selected node (remove button and boundary)
     const tools = [
       {
@@ -706,18 +713,18 @@ export class DfdEventService {
         },
       },
     ];
-    
+
     node.addTools(tools);
-    
+
     // Add data attributes for shape types to enable CSS targeting
     this.addShapeTypeAttributes(node);
-    
+
     // Publish event that a node was selected
     this.eventBus.publishNodeSelected(node);
-    
+
     this.logger.debug('Selected node', {
       nodeId: node.id,
-      nodeType: node.constructor.name
+      nodeType: node.constructor.name,
     });
   }
 
@@ -738,7 +745,7 @@ export class DfdEventService {
   ): void {
     this._selectedNode = node;
   }
-  
+
   /**
    * Notifies the event bus of history state changes
    * @param history The history plugin instance
@@ -747,12 +754,12 @@ export class DfdEventService {
     if (!history) {
       return;
     }
-    
+
     const canUndo = history.canUndo();
     const canRedo = history.canRedo();
-    
+
     this.logger.debug(`Notifying history state change: canUndo=${canUndo}, canRedo=${canRedo}`);
-    
+
     // Publish state change to event bus (but don't add it to history)
     // Use silent option to prevent recursive history entries
     this.eventBus.publishHistoryChange(canUndo, canRedo);

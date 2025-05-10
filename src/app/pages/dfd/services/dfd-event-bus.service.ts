@@ -90,9 +90,9 @@ export interface NodeDeletedEvent extends DfdEvent {
 /**
  * Union type for all possible events
  */
-export type DfdEventPayload = 
-  | NodeEvent 
-  | EdgeEvent 
+export type DfdEventPayload =
+  | NodeEvent
+  | EdgeEvent
   | ErrorEvent
   | HistoryEvent
   | PortVisibilityEvent
@@ -109,31 +109,31 @@ export type DfdEventPayload =
 export class DfdEventBusService {
   // Subject for all events
   private _events = new Subject<DfdEventPayload>();
-  
+
   // Selected node state
   private _selectedNode = new BehaviorSubject<Node | null>(null);
-  
+
   // History state
   private _canUndo = new BehaviorSubject<boolean>(false);
   private _canRedo = new BehaviorSubject<boolean>(false);
-  
+
   // Graph state
   private _isGraphReady = new BehaviorSubject<boolean>(false);
 
   constructor(private logger: LoggerService) {
     this.logger.info('DfdEventBusService initialized');
-    
+
     // Log all events for debugging
     this._events.subscribe(event => {
       this.logger.debug(`Event: ${event.type}`, event);
-      
+
       // Update selected node state
       if (event.type === DfdEventType.NodeSelected && 'node' in event) {
         this._selectedNode.next(event.node);
       } else if (event.type === DfdEventType.NodeDeselected) {
         this._selectedNode.next(null);
       }
-      
+
       // Update history state
       if (event.type === DfdEventType.CanUndoChanged && 'canUndo' in event) {
         this._canUndo.next(event.canUndo);
@@ -187,12 +187,12 @@ export class DfdEventBusService {
     // Update internal state directly without going through the event system
     this._canUndo.next(canUndo);
     this._canRedo.next(canRedo);
-    
+
     // Only log this at debug level
     this.logger.debug('History state changed', {
       canUndo,
       canRedo,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -232,7 +232,7 @@ export class DfdEventBusService {
           observer.next(event as T);
         }
       });
-      
+
       return () => subscription.unsubscribe();
     });
   }

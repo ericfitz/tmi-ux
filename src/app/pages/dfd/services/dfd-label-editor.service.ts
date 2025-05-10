@@ -1,8 +1,11 @@
-import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core'; // Removed Optional
 import { Graph, Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
+import { DfdCommandService } from './dfd-command.service';
+import { CommandResult } from '../commands/command.interface';
 import { NodeData } from '../models/node-data.interface';
 import { TextboxShape } from '../models/textbox-shape.model';
+// Removed unused take from rxjs/operators
 
 /**
  * Type guard function to check if an object is a NodeData
@@ -40,11 +43,24 @@ export class DfdLabelEditorService {
   private _labelBoundingBox: HTMLDivElement | null = null;
   private _initialPosition = { x: 0, y: 0 }; // Store initial position for calculating final position
 
+  // Command service reference - to be injected from outside
+  private _commandService: DfdCommandService | null = null; // Typed DfdCommandService
+
   constructor(
     private logger: LoggerService,
     rendererFactory: RendererFactory2,
   ) {
     this._renderer = rendererFactory.createRenderer(null, null);
+  }
+
+  /**
+   * Sets the command service (called from outside)
+   * This avoids circular dependencies
+   * @param commandService The command service instance
+   */
+  setCommandService(commandService: DfdCommandService): void {
+    this._commandService = commandService;
+    this.logger.info('CommandService set in DfdLabelEditorService');
   }
 
   /**
@@ -604,7 +620,23 @@ export class DfdLabelEditorService {
 
     // Save the changes if requested
     if (save) {
-      this.saveLabel(newText);
+      // Try to use the command pattern if the command service is available
+      if (this._commandService) {
+        // If command service available, use it for a proper command pattern implementation
+        const usedCommand = this.handleLabelEditingWithCommand(
+          this._editingCell,
+          newText,
+          this._commandService,
+        );
+
+        if (!usedCommand) {
+          // Fall back to direct saving if command pattern failed
+          this.saveLabel(newText);
+        }
+      } else {
+        // If no command service, use the legacy direct method
+        this.saveLabel(newText);
+      }
     }
 
     // Store the cell and graph for later use
@@ -676,11 +708,11 @@ export class DfdLabelEditorService {
               // Create a history point for the label change
               const updatedData: NodeData = { ...nodeData, label: newText };
               node.setData(updatedData);
-              
+
               this.logger.info('Label edit completed', {
                 nodeId: node.id,
                 newLabel: newText,
-                previousLabel: nodeData.label || ''
+                previousLabel: nodeData.label || '',
               });
             }
 
@@ -779,6 +811,72 @@ export class DfdLabelEditorService {
     } catch (error) {
       this.logger.error('Error saving label:', error);
     }
+  }
+
+  /**
+   * Handles label editing using the command pattern
+   * This method is called from outside this service to use the command pattern
+   * @param cell The cell (node or edge) to edit
+   * @param newText The new label text
+   * @param commandService The command service to use
+   * @returns True if the label was edited, false otherwise
+   */
+  handleLabelEditingWithCommand(
+    cell: Cell,
+    newText: string,
+    commandService: DfdCommandService, // Typed DfdCommandService
+  ): boolean {
+    if (!cell) {
+      return false;
+    }
+
+    try {
+      if (cell.isNode()) {
+        const node = cell;
+
+        // Apply the label edit using the command service
+        if (commandService && 'editNodeLabel' in commandService) {
+          // Call through the command service
+          commandService.editNodeLabel(node.id, newText).subscribe({
+            next: (result: CommandResult<string>) => {
+              this.logger.info('Node label edited with command pattern', {
+                nodeId: node.id,
+                success: result.success,
+                newLabel: newText,
+              });
+            },
+            error: (error: Error) => {
+              this.logger.error('Error editing node label with command pattern', error);
+            },
+          });
+          return true;
+        }
+      } else if (cell.isEdge()) {
+        const edge = cell;
+
+        // Apply the label edit using the command service
+        if (commandService && 'editEdgeLabel' in commandService) {
+          // Call through the command service
+          commandService.editEdgeLabel(edge.id, newText).subscribe({
+            next: (result: CommandResult<string>) => {
+              this.logger.info('Edge label edited with command pattern', {
+                edgeId: edge.id,
+                success: result.success,
+                newLabel: newText,
+              });
+            },
+            error: (error: Error) => {
+              this.logger.error('Error editing edge label with command pattern', error);
+            },
+          });
+          return true;
+        }
+      }
+    } catch (error) {
+      this.logger.error('Error in handleLabelEditingWithCommand:', error);
+    }
+
+    return false;
   }
 
   /**

@@ -12,11 +12,15 @@ import {
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Node } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { DfdService, ExportFormat } from './services/dfd.service';
 import { ShapeType } from './services/dfd-node.service';
-import { DfdEventBusService, DfdEventType, NodeDeletedEvent } from './services/dfd-event-bus.service';
+import { DfdEventBusService } from './services/dfd-event-bus.service';
+import { DfdStateStore } from './state/dfd.state';
+import { DfdCommandService } from './services/dfd-command.service';
 
 @Component({
   selector: 'app-dfd',
@@ -31,7 +35,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _observer: MutationObserver | null = null;
   private _subscriptions = new Subscription();
-  
+
   // State properties - exposed as public properties for template binding
   canUndo = false;
   canRedo = false;
@@ -42,37 +46,39 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private dfdService: DfdService,
     private eventBus: DfdEventBusService,
+    private stateStore: DfdStateStore,
+    private commandService: DfdCommandService,
   ) {
     this.logger.info('DfdComponent constructor called');
   }
 
   ngOnInit(): void {
     this.logger.info('DfdComponent ngOnInit called');
-    
-    // Subscribe to history state changes
+
+    // Subscribe to state changes
     this._subscriptions.add(
-      this.dfdService.canUndo$.subscribe(canUndo => {
+      this.stateStore.canUndo$.subscribe(canUndo => {
         this.canUndo = canUndo;
         this.cdr.markForCheck();
-      })
+      }),
     );
-    
+
     this._subscriptions.add(
-      this.dfdService.canRedo$.subscribe(canRedo => {
+      this.stateStore.canRedo$.subscribe(canRedo => {
         this.canRedo = canRedo;
         this.cdr.markForCheck();
-      })
+      }),
     );
-    
+
     // Subscribe to selection state changes
     this._subscriptions.add(
-      this.dfdService.selectedNode$.subscribe(selectedNode => {
+      this.stateStore.selectedNode$.subscribe(selectedNode => {
         this.hasSelectedCells = !!selectedNode;
         this.cdr.markForCheck();
-      })
+      }),
     );
   }
-  
+
   ngAfterViewInit(): void {
     // Initialize the graph after the view is fully initialized
     this.initializeGraph();
@@ -84,12 +90,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this._observer.disconnect();
       this._observer = null;
     }
-    
+
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
-    
+
     // Dispose the DFD service
     this.dfdService.dispose();
+
+    // Reset the state store
+    this.stateStore.resetState();
   }
 
   /**
@@ -97,20 +106,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param shapeType The type of shape to create
    */
   addRandomNode(shapeType: ShapeType = 'actor'): void {
-    if (!this.dfdService.isInitialized) {
+    if (!this.stateStore.isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
     }
 
-    const node = this.dfdService.createNode(
-      shapeType, 
-      this.graphContainer.nativeElement as HTMLElement
-    );
-    
-    if (node) {
-      // Force change detection
-      this.cdr.detectChanges();
-    }
+    // Use command service to create node with command pattern
+    this.commandService
+      .createRandomNode(shapeType, this.graphContainer.nativeElement as HTMLElement)
+      .pipe(take(1))
+      .subscribe(result => {
+        if (result.success) {
+          this.logger.info('Node created successfully', {
+            nodeId: result.data?.id,
+            shapeType,
+          });
+          // Force change detection
+          this.cdr.detectChanges();
+        } else {
+          this.logger.error('Failed to create node', result.error);
+        }
+      });
   }
 
   /**
@@ -121,34 +137,39 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       // Initialize the graph
-      const success = this.dfdService.initialize(
-        this.graphContainer.nativeElement as HTMLElement
-      );
+      const success = this.dfdService.initialize(this.graphContainer.nativeElement as HTMLElement);
 
       if (success) {
         // Set up observation for DOM changes to add passive event listeners
         this.setupDomObservation();
-        
+
         // Add passive event listeners for touch and wheel events
-        this.dfdService.addPassiveEventListeners(
-          this.graphContainer.nativeElement as HTMLElement
-        );
-        
+        this.dfdService.addPassiveEventListeners(this.graphContainer.nativeElement as HTMLElement);
+
         // Set up port tooltips
         this.setupPortTooltips();
-        
+
+        // Update the state store with the initialized graph
+        this.stateStore.updateState(
+          {
+            isInitialized: true,
+            graph: this.dfdService.graph,
+          },
+          'DfdComponent.initializeGraph',
+        );
+
         this.logger.info('Graph initialization complete');
       } else {
         this.logger.error('Failed to initialize graph');
       }
-      
+
       // Force change detection after initialization
       this.cdr.detectChanges();
     } catch (error) {
       this.logger.error('Error initializing graph', error);
     }
   }
-  
+
   /**
    * Sets up observation of DOM changes to add passive event listeners to new elements
    */
@@ -156,9 +177,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.graphContainer || !this.graphContainer.nativeElement) {
       return;
     }
-    
+
     const container = this.graphContainer.nativeElement as HTMLElement;
-    
+
     // Function to safely add passive event listener
     const addPassiveListener = (element: Element): void => {
       const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'mousewheel'];
@@ -172,7 +193,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         );
       });
     };
-    
+
     // Add a mutation observer to handle dynamically added elements
     this._observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
@@ -212,42 +233,45 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     graph.container.appendChild(tooltipEl);
 
     // Handle port mouseenter
-    graph.on('node:port:mouseenter', ({ node, port, e }: { node: Node; port: { id: string }; e: MouseEvent }) => {
-      if (!port || !node) {
-        return;
-      }
+    graph.on(
+      'node:port:mouseenter',
+      ({ node, port, e }: { node: Node; port: { id: string }; e: MouseEvent }) => {
+        if (!port || !node) {
+          return;
+        }
 
-      // Get the port label
-      // Get port details from the node - define a structured port object type
-      type PortObject = {
-        id?: string;
-        attrs?: Record<string, { text?: string }>;
-      };
-      // Cast node to any and then to PortObject to avoid TypeScript errors with the X6 library
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
-      if (!portObj) {
-        return;
-      }
+        // Get the port label
+        // Get port details from the node - define a structured port object type
+        type PortObject = {
+          id?: string;
+          attrs?: Record<string, { text?: string }>;
+        };
+        // Cast node to any and then to PortObject to avoid TypeScript errors with the X6 library
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
+        if (!portObj) {
+          return;
+        }
 
-      // Get the port label text
-      let labelText = '';
-      if (portObj?.attrs && 'text' in portObj.attrs) {
-        const textAttr = portObj.attrs['text'];
-        labelText = typeof textAttr['text'] === 'string' ? textAttr['text'] : '';
-      }
+        // Get the port label text
+        let labelText = '';
+        if (portObj?.attrs && 'text' in portObj.attrs) {
+          const textAttr = portObj.attrs['text'];
+          labelText = typeof textAttr['text'] === 'string' ? textAttr['text'] : '';
+        }
 
-      // If no label, use the port ID as fallback
-      if (!labelText) {
-        labelText = String(port.id);
-      }
+        // If no label, use the port ID as fallback
+        if (!labelText) {
+          labelText = String(port.id);
+        }
 
-      // Set tooltip content and position
-      tooltipEl.textContent = labelText;
-      tooltipEl.style.left = `${e.clientX + 10}px`;
-      tooltipEl.style.top = `${e.clientY - 30}px`;
-      tooltipEl.style.display = 'block';
-    });
+        // Set tooltip content and position
+        tooltipEl.textContent = labelText;
+        tooltipEl.style.left = `${e.clientX + 10}px`;
+        tooltipEl.style.top = `${e.clientY - 30}px`;
+        tooltipEl.style.display = 'block';
+      },
+    );
 
     // Handle port mouseleave
     graph.on('node:port:mouseleave', () => {
@@ -264,14 +288,32 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Undo the last action
    */
   undo(): void {
-    this.dfdService.undo();
+    this.commandService
+      .undo()
+      .pipe(take(1))
+      .subscribe(result => {
+        if (result.success) {
+          this.logger.info('Undo successful');
+        } else {
+          this.logger.warn('Undo failed', result.error);
+        }
+      });
   }
 
   /**
    * Redo the last undone action
    */
   redo(): void {
-    this.dfdService.redo();
+    this.commandService
+      .redo()
+      .pipe(take(1))
+      .subscribe(result => {
+        if (result.success) {
+          this.logger.info('Redo successful');
+        } else {
+          this.logger.warn('Redo failed', result.error);
+        }
+      });
   }
 
   /**
@@ -281,38 +323,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   exportDiagram(format: ExportFormat): void {
     this.dfdService.exportDiagram(format);
   }
-  
+
   /**
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    if (!this.dfdService.isInitialized) {
+    if (!this.stateStore.isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;
     }
-    
-    const graph = this.dfdService.graph;
-    if (!graph) {
-      return;
-    }
-    
-    const selectedNode = this.dfdService.selectedNode;
+
+    const selectedNode = this.stateStore.selectedNode;
     if (selectedNode) {
       this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
-      
-      // Remove the node from the graph
-      graph.removeNode(selectedNode.id);
-      
-      // Publish event that a node was deleted
-      this.eventBus.publish({
-        type: DfdEventType.NodeDeleted,
-        timestamp: Date.now(),
-        nodeId: selectedNode.id
-      } as NodeDeletedEvent);
-      
-      // Force change detection
-      this.hasSelectedCells = false;
-      this.cdr.markForCheck();
+
+      // Use command service to delete node with command pattern
+      this.commandService
+        .deleteNode(selectedNode.id)
+        .pipe(take(1))
+        .subscribe(result => {
+          if (result.success) {
+            this.logger.info('Node deleted successfully', { nodeId: selectedNode.id });
+
+            // Selection is updated in the command service already
+            this.cdr.markForCheck();
+          } else {
+            this.logger.error('Failed to delete node', result.error);
+          }
+        });
     }
   }
 }
