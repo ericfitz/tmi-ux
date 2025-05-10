@@ -5,7 +5,7 @@ This file provides guidance to Roo Code when working with code in this repositor
 ## API and Backend
 
 - Backend API specification is available in `tmi-openapi.json`
-- Local development server runs at http://localhost:8080
+- Local development server runs at http://localhost:4200
 - API URL is configured in environment files (e.g., environment.dev.ts)
 - Authentication and authorization details are documented in `AUTHORIZATION.md` in the contexxt folder
 - The server uses a role-based access control model with Owner, Writer, and Reader roles
