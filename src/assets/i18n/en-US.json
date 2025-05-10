@@ -2,20 +2,17 @@
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "logoutButton": "Logout",
-    "diagramsButton": "Diagrams",
     "currentLanguage": "{{language}}",
     "username": "{{username}}",
     "languageName": "{{language}}"
   },
   "footer": {
-    "copyright": "© {{currentYear}} Eric Fitzgerald",
     "about": "About",
     "privacy": "Privacy Policy",
     "tos": "Terms of Service"
   },
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
-  "loginButton": "Login to Start",
   "tos": {
     "title": "Terms of Service",
     "lastUpdatedDate": "2025-04-06",
@@ -112,69 +109,36 @@
   },
   "diagrams": {
     "pageTitle": "Threat Models",
-    "newButton": "Create",
     "lastModified": "Last modified: {{date}}",
     "noItemsMessage": "You don't have any threat models yet.",
     "createFirstButton": "Create your first threat model",
-    "diagramTitle": "{{name}}"
+    "diagramTitle": "{{name}}",
+    "tooltips": {
+      "create": "Create",
+      "delete": "Delete"
+    }
   },
   "editor": {
-    "saveButton": "Save",
-    "backButton": "Back to Diagrams",
-    "closeButton": "Close",
-    "placeholder": "Diagram editor placeholder (ID: {{id}})",
-    "diagramTitle": "{{title}}",
-    "header": {
-      "newDiagram": "New Diagram",
-      "save": "Save",
-      "undo": "Undo",
-      "redo": "Redo",
-      "export": "Export",
-      "exportJson": "Export as JSON",
-      "exportPng": "Export as PNG",
-      "exportSvg": "Export as SVG",
-      "import": "Import",
-      "theme": "Theme"
-    },
     "properties": {
       "title": "Properties",
       "help": "Element properties will appear here when an element is selected."
     },
     "toolbar": {
-      "title": "Toolbar",
-      "items": {
-        "delete": "Delete",
-        "style": "Style",
-        "grid": "Toggle Grid"
+      "tooltips": {
+        "addActor": "Add Actor",
+        "addProcess": "Add Process",
+        "addStore": "Add Store",
+        "addSecurityBoundary": "Add Security Boundary",
+        "addTextbox": "Add Textbox",
+        "deleteSelected": "Delete Selected",
+        "undo": "Undo",
+        "redo": "Redo",
+        "threats": "Threats",
+        "share": "Share",
+        "save": "Save",
+        "export": "Export...",
+        "close": "Close"
       }
-    },
-    "palette": {
-      "title": "Palette",
-      "items": {
-        "process": "Process",
-        "store": "Store",
-        "actor": "Actor",
-        "flow": "Flow",
-        "flowCancel": "Cancel Flow",
-        "delete": "Delete",
-        "server": "Server",
-        "database": "Database",
-        "user": "User",
-        "connection": "Connection"
-      }
-    },
-    "states": {
-      "uninitialized": "INIT",
-      "initializing": "INITIALIZING",
-      "loading": "LOADING",
-      "stabilizing": "STABILIZING",
-      "ready": "READY",
-      "editing_label": "EDITING",
-      "creating_edge": "CONNECTING",
-      "deleting": "DELETING",
-      "saving": "SAVING",
-      "error": "ERROR",
-      "recovering": "RECOVERING"
     }
   }
 }

@@ -9,7 +9,7 @@
         mat-icon-button
         color="primary"
         (click)="addRandomNode('actor')"
-        matTooltip="Add Actor"
+        [matTooltip]="'editor.toolbar.tooltips.addActor' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"
@@ -22,7 +22,7 @@
         mat-icon-button
         color="accent"
         (click)="addRandomNode('process')"
-        matTooltip="Add Process"
+        [matTooltip]="'editor.toolbar.tooltips.addProcess' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"
@@ -31,7 +31,12 @@
           >circle</mat-icon
         >
       </button>
-      <button mat-icon-button color="warn" (click)="addRandomNode('store')" matTooltip="Add Store">
+      <button
+        mat-icon-button
+        color="warn"
+        (click)="addRandomNode('store')"
+        [matTooltip]="'editor.toolbar.tooltips.addStore' | transloco"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -43,7 +48,7 @@
         mat-icon-button
         color="basic"
         (click)="addRandomNode('securityBoundary')"
-        matTooltip="Add Security Boundary"
+        [matTooltip]="'editor.toolbar.tooltips.addSecurityBoundary' | transloco"
       >
         <mat-icon fontSet="material-symbols-outlined">select</mat-icon>
       </button>
@@ -51,7 +56,7 @@
         mat-icon-button
         color="basic"
         (click)="addRandomNode('textbox')"
-        matTooltip="Add Textbox"
+        [matTooltip]="'editor.toolbar.tooltips.addTextbox' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"
@@ -68,7 +73,7 @@
         color="basic"
         (click)="deleteSelected()"
         [disabled]="!hasSelectedCells"
-        matTooltip="Delete Selected"
+        [matTooltip]="'editor.toolbar.tooltips.deleteSelected' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"
@@ -80,14 +85,28 @@
     </div>
 
     <div class="toolbar-group">
-      <button mat-icon-button (click)="undo()" [disabled]="!canUndo" matTooltip="Undo">
+      <button
+        mat-icon-button
+        (click)="undo()"
+        [disabled]="!canUndo"
+        [matTooltip]="'editor.toolbar.tooltips.undo' | transloco"
+      >
         <mat-icon>undo</mat-icon>
       </button>
-      <button mat-icon-button (click)="redo()" [disabled]="!canRedo" matTooltip="Redo">
+      <button
+        mat-icon-button
+        (click)="redo()"
+        [disabled]="!canRedo"
+        [matTooltip]="'editor.toolbar.tooltips.redo' | transloco"
+      >
         <mat-icon>redo</mat-icon>
       </button>
 
-      <button mat-icon-button [disabled]="true" matTooltip="Threats">
+      <button
+        mat-icon-button
+        [disabled]="true"
+        [matTooltip]="'editor.toolbar.tooltips.threats' | transloco"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -96,7 +115,11 @@
         >
       </button>
 
-      <button mat-icon-button [disabled]="true" matTooltip="Share">
+      <button
+        mat-icon-button
+        [disabled]="true"
+        [matTooltip]="'editor.toolbar.tooltips.share' | transloco"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -105,7 +128,11 @@
         >
       </button>
 
-      <button mat-icon-button [disabled]="true" matTooltip="Save">
+      <button
+        mat-icon-button
+        [disabled]="true"
+        [matTooltip]="'editor.toolbar.tooltips.save' | transloco"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -114,7 +141,11 @@
         >
       </button>
 
-      <button mat-icon-button [matMenuTriggerFor]="exportMenu" matTooltip="Export...">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="exportMenu"
+        [matTooltip]="'editor.toolbar.tooltips.export' | transloco"
+      >
         <mat-icon>save_alt</mat-icon>
       </button>
       <mat-menu #exportMenu="matMenu">
@@ -129,7 +160,11 @@
         </button>
       </mat-menu>
 
-      <button mat-icon-button [disabled]="true" matTooltip="Close">
+      <button
+        mat-icon-button
+        [disabled]="true"
+        [matTooltip]="'editor.toolbar.tooltips.close' | transloco"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"

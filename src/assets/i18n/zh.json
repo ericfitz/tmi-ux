@@ -2,17 +2,17 @@
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
     "logoutButton": "退出登录",
-    "diagramsButton": "图表"
+    "currentLanguage": "{{language}}",
+    "username": "{{username}}",
+    "languageName": "{{language}}"
   },
   "footer": {
-    "copyright": "© {{currentYear}} TMI: 威胁建模改进",
     "about": "关于",
     "privacy": "隐私政策",
     "tos": "服务条款"
   },
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "homeDescription": "一种协作威胁建模工具，旨在帮助团队识别、分析和记录其系统中的安全威胁。创建、共享和协作编辑威胁模型和图表，以提高应用程序安全性。",
-  "loginButton": "登录以开始",
   "tos": {
     "title": "服务条款",
     "lastUpdatedDate": "2025-04-06",
@@ -109,41 +109,35 @@
   },
   "diagrams": {
     "pageTitle": "我的图表",
-    "newButton": "新建图表",
     "lastModified": "最后修改: {{date}}",
     "noItemsMessage": "您还没有任何图表。",
-    "createFirstButton": "创建您的第一个图表"
+    "createFirstButton": "创建您的第一个图表",
+    "diagramTitle": "{{name}}",
+    "tooltips": {
+      "create": "创建",
+      "delete": "删除"
+    }
   },
   "editor": {
-    "saveButton": "保存",
-    "backButton": "返回图表",
-    "closeButton": "关闭",
-    "placeholder": "图表编辑器占位符 (ID: {{id}})",
     "properties": {
       "title": "属性",
       "help": "选择元素后，元素属性将显示在此处。"
     },
     "toolbar": {
-      "title": "工具栏",
-      "items": {
-        "delete": "删除",
-        "style": "样式",
-        "grid": "切换网格"
-      }
-    },
-    "palette": {
-      "title": "调色板",
-      "items": {
-        "process": "处理",
-        "store": "存储",
-        "actor": "角色",
-        "flow": "流程",
-        "flowCancel": "取消流程",
-        "delete": "删除",
-        "server": "服务器",
-        "database": "数据库",
-        "user": "用户",
-        "connection": "连接"
+      "tooltips": {
+        "addActor": "添加角色",
+        "addProcess": "添加处理",
+        "addStore": "添加存储",
+        "addSecurityBoundary": "添加安全边界",
+        "addTextbox": "添加文本框",
+        "deleteSelected": "删除所选",
+        "undo": "撤销",
+        "redo": "重做",
+        "threats": "威胁",
+        "share": "分享",
+        "save": "保存",
+        "export": "导出...",
+        "close": "关闭"
       }
     }
   }

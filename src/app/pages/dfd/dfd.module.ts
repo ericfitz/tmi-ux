@@ -1,6 +1,7 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
+import { TranslocoModule } from '@jsverse/transloco';
 import { DfdComponent } from './dfd.component';
 import { DfdGraphService } from './services/dfd-graph.service';
 import { DfdNodeService } from './services/dfd-node.service';
@@ -23,7 +24,7 @@ import { DfdCommandService } from './services/dfd-command.service';
  */
 @NgModule({
   declarations: [],
-  imports: [CommonModule, CoreMaterialModule, DfdComponent],
+  imports: [CommonModule, CoreMaterialModule, TranslocoModule, DfdComponent],
   exports: [],
   providers: [
     // Core services

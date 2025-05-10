@@ -1,7 +1,12 @@
 <div class="threat-models-container">
   <div class="header-row">
     <h1 class="page-title" [transloco]="'diagrams.pageTitle'">Threat Models</h1>
-    <button mat-icon-button color="primary" (click)="createDiagram()" matTooltip="Create">
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="createDiagram()"
+      [matTooltip]="'diagrams.tooltips.create' | transloco"
+    >
       <mat-icon>add</mat-icon>
     </button>
   </div>
@@ -31,6 +36,7 @@
           color="warn"
           class="delete-button"
           (click)="deleteDiagram(diagram.id, $event)"
+          [matTooltip]="'diagrams.tooltips.delete' | transloco"
         >
           <mat-icon>delete</mat-icon>
         </button>

@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Node } from '@antv/x6';
@@ -25,7 +26,7 @@ import { DfdCommandService } from './services/dfd-command.service';
 @Component({
   selector: 'app-dfd',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule, MatMenuModule, MatTooltipModule],
+  imports: [CommonModule, CoreMaterialModule, MatMenuModule, MatTooltipModule, TranslocoModule],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

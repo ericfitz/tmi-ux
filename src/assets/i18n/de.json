@@ -2,17 +2,17 @@
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "logoutButton": "Abmelden",
-    "diagramsButton": "Diagramme"
+    "currentLanguage": "{{language}}",
+    "username": "{{username}}",
+    "languageName": "{{language}}"
   },
   "footer": {
-    "copyright": "© {{currentYear}} TMI: Verbesserte Bedrohungsmodellierung",
     "about": "Über",
     "privacy": "Datenschutzrichtlinie",
     "tos": "Nutzungsbedingungen"
   },
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
-  "loginButton": "Anmelden zum Starten",
   "tos": {
     "title": "Nutzungsbedingungen",
     "lastUpdatedDate": "2025-04-06",
@@ -109,41 +109,35 @@
   },
   "diagrams": {
     "pageTitle": "Meine Diagramme",
-    "newButton": "Neues Diagramm",
     "lastModified": "Zuletzt geändert: {{date}}",
     "noItemsMessage": "Sie haben noch keine Diagramme.",
-    "createFirstButton": "Erstellen Sie Ihr erstes Diagramm"
+    "createFirstButton": "Erstellen Sie Ihr erstes Diagramm",
+    "diagramTitle": "{{name}}",
+    "tooltips": {
+      "create": "Erstellen",
+      "delete": "Löschen"
+    }
   },
   "editor": {
-    "saveButton": "Speichern",
-    "backButton": "Zurück zu Diagrammen",
-    "closeButton": "Schließen",
-    "placeholder": "Diagramm-Editor-Platzhalter (ID: {{id}})",
     "properties": {
       "title": "Eigenschaften",
       "help": "Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist."
     },
     "toolbar": {
-      "title": "Werkzeugleiste",
-      "items": {
-        "delete": "Löschen",
-        "style": "Stil",
-        "grid": "Raster umschalten"
-      }
-    },
-    "palette": {
-      "title": "Palette",
-      "items": {
-        "process": "Prozess",
-        "store": "Speicher",
-        "actor": "Akteur",
-        "flow": "Fluss",
-        "flowCancel": "Fluss abbrechen",
-        "delete": "Löschen",
-        "server": "Server",
-        "database": "Datenbank",
-        "user": "Benutzer",
-        "connection": "Verbindung"
+      "tooltips": {
+        "addActor": "Akteur hinzufügen",
+        "addProcess": "Prozess hinzufügen",
+        "addStore": "Speicher hinzufügen",
+        "addSecurityBoundary": "Sicherheitsgrenze hinzufügen",
+        "addTextbox": "Textfeld hinzufügen",
+        "deleteSelected": "Ausgewählte löschen",
+        "undo": "Rückgängig",
+        "redo": "Wiederholen",
+        "threats": "Bedrohungen",
+        "share": "Teilen",
+        "save": "Speichern",
+        "export": "Exportieren...",
+        "close": "Schließen"
       }
     }
   }

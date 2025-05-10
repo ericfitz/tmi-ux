@@ -112,43 +112,35 @@
   },
   "diagrams": {
     "pageTitle": "แผนภาพของฉัน",
-    "newButton": "แผนภาพใหม่",
     "lastModified": "แก้ไขล่าสุด: {{date}}",
     "noItemsMessage": "คุณยังไม่มีแผนภาพใด ๆ",
     "createFirstButton": "สร้างแผนภาพแรกของคุณ",
-    "diagramTitle": "{{name}}"
+    "diagramTitle": "{{name}}",
+    "tooltips": {
+      "create": "สร้าง",
+      "delete": "ลบ"
+    }
   },
   "editor": {
-    "saveButton": "บันทึก",
-    "backButton": "กลับไปที่แผนภาพ",
-    "closeButton": "ปิด",
-    "placeholder": "ช่องว่างสำหรับตัวแก้ไขแผนภาพ (ID: {{id}})",
-    "diagramTitle": "{{title}}",
     "properties": {
       "title": "คุณสมบัติ",
       "help": "คุณสมบัติของสิ่งประกอบจะปรากฏที่นี่เมื่อเลือกสิ่งประกอบ"
     },
     "toolbar": {
-      "title": "แถบเครื่องมือ",
-      "items": {
-        "delete": "ลบ",
-        "style": "รูปแบบ",
-        "grid": "สลับตาราง"
-      }
-    },
-    "palette": {
-      "title": "จานสี",
-      "items": {
-        "process": "กระบวนการ",
-        "store": "ที่เก็บข้อมูล",
-        "actor": "ผู้กระทำ",
-        "flow": "การไหล",
-        "flowCancel": "ยกเลิกการไหล",
-        "delete": "ลบ",
-        "server": "เซิร์ฟเวอร์",
-        "database": "ฐานข้อมูล",
-        "user": "ผู้ใช้",
-        "connection": "การเชื่อมต่อ"
+      "tooltips": {
+        "addActor": "เพิ่มผู้กระทำ",
+        "addProcess": "เพิ่มกระบวนการ",
+        "addStore": "เพิ่มที่เก็บข้อมูล",
+        "addSecurityBoundary": "เพิ่มขอบเขตความปลอดภัย",
+        "addTextbox": "เพิ่มกล่องข้อความ",
+        "deleteSelected": "ลบที่เลือก",
+        "undo": "เลิกทำ",
+        "redo": "ทำซ้ำ",
+        "threats": "ภัยคุกคาม",
+        "share": "แชร์",
+        "save": "บันทึก",
+        "export": "ส่งออก...",
+        "close": "ปิด"
       }
     }
   }
