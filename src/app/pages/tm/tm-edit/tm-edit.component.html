@@ -68,7 +68,12 @@
     <mat-card class="threats-card">
       <mat-card-header>
         <mat-card-title [transloco]="'threatModels.threats'">Threats</mat-card-title>
-        <button mat-icon-button color="primary" (click)="addThreat()" matTooltip="Add Threat">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addThreat()"
+          [matTooltip]="'threatModels.tooltips.addThreat' | transloco"
+        >
           <mat-icon>add</mat-icon>
         </button>
       </mat-card-header>
@@ -89,7 +94,12 @@
     <mat-card class="diagrams-card">
       <mat-card-header>
         <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
-        <button mat-icon-button color="primary" (click)="addDiagram()" matTooltip="Add Diagram">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addDiagram()"
+          [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+        >
           <mat-icon>add</mat-icon>
         </button>
       </mat-card-header>

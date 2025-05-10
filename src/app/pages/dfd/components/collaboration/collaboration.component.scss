@@ -48,7 +48,7 @@
   .invite-section,
   .users-section {
     padding: 8px 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: 1px solid rgb(0 0 0 / 12%);
   }
 
   .invite-header,
@@ -59,7 +59,7 @@
       margin: 0;
       font-size: 14px;
       font-weight: 500;
-      color: rgba(0, 0, 0, 0.6);
+      color: rgb(0 0 0 / 60%);
     }
   }
 
@@ -86,7 +86,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      border-bottom: 1px solid rgb(0 0 0 / 6%);
 
       &:last-child {
         border-bottom: none;
@@ -103,8 +103,8 @@
 
         .user-role {
           font-size: 12px;
-          color: rgba(0, 0, 0, 0.6);
-          background-color: rgba(0, 0, 0, 0.05);
+          color: rgb(0 0 0 / 60%);
+          background-color: rgb(0 0 0 / 5%);
           padding: 2px 6px;
           border-radius: 12px;
         }
@@ -128,7 +128,7 @@
 }
 
 // Responsive adjustments
-@media (max-width: 600px) {
+@media (width <= 600px) {
   ::ng-deep .collaboration-menu {
     min-width: 250px;
   }

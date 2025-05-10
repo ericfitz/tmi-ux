@@ -27,27 +27,27 @@ describe('TmComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to DFD editor when creating a new diagram', () => {
-    component.createDiagram();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/dfd', jasmine.any(String)]);
+  it('should navigate to threat model editor when creating a new threat model', () => {
+    component.createThreatModel();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/tm', jasmine.any(String)]);
   });
 
-  it('should navigate to DFD editor when opening a diagram', () => {
+  it('should navigate to threat model editor when opening a threat model', () => {
     const testId = '123';
-    component.openDiagram(testId);
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/dfd', testId]);
+    component.openThreatModel(testId);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/tm', testId]);
   });
 
-  it('should remove diagram from list when deleted', () => {
-    const initialLength = component.diagrams.length;
-    const idToDelete = component.diagrams[0].id;
+  it('should remove threat model from list when deleted', () => {
+    const initialLength = component.threatModels.length;
+    const idToDelete = component.threatModels[0].id;
     const event = new MouseEvent('click');
 
     spyOn(event, 'stopPropagation');
-    component.deleteDiagram(idToDelete, event);
+    component.deleteThreatModel(idToDelete, event);
 
     expect(event.stopPropagation).toHaveBeenCalled();
-    expect(component.diagrams.length).toBe(initialLength - 1);
-    expect(component.diagrams.find(d => d.id === idToDelete)).toBeUndefined();
+    expect(component.threatModels.length).toBe(initialLength - 1);
+    expect(component.threatModels.find(tm => tm.id === idToDelete)).toBeUndefined();
   });
 });

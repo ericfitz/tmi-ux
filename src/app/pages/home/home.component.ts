@@ -30,6 +30,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Subscribe to auth state changes
     this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
+
+      // Redirect to threat models page if authenticated
+      if (isAuthenticated) {
+        void this.router.navigate(['/tm']);
+      }
     });
   }
 

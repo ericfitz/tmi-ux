@@ -76,7 +76,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   updateHomeLink(): void {
-    this.homeLink = this.isAuthenticated ? '/threat-models' : '/';
+    this.homeLink = this.isAuthenticated ? '/tm' : '/';
   }
 
   logout(): void {

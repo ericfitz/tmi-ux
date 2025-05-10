@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "logoutButton": "Abmelden",
@@ -118,6 +122,32 @@
       "delete": "Löschen"
     }
   },
+  "threatModels": {
+    "pageTitle": "Bedrohungsmodelle",
+    "lastModified": "Zuletzt geändert: {{date}}",
+    "noItemsMessage": "Sie haben noch keine Bedrohungsmodelle.",
+    "createFirstButton": "Erstellen Sie Ihr erstes Bedrohungsmodell",
+    "newThreatModel": "Neues Bedrohungsmodell",
+    "details": "Bedrohungsmodell-Details",
+    "name": "Name",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
+    "metadata": "Metadaten",
+    "noMetadata": "Keine Metadaten verfügbar",
+    "threats": "Bedrohungen",
+    "noThreats": "Noch keine Bedrohungen definiert",
+    "diagrams": "Diagramme",
+    "noDiagrams": "Noch keine Diagramme hinzugefügt",
+    "diagramsCount": "Diagramme",
+    "threatsCount": "Bedrohungen",
+    "idLabel": "ID:",
+    "tooltips": {
+      "create": "Erstellen",
+      "delete": "Löschen",
+      "addThreat": "Bedrohung hinzufügen",
+      "addDiagram": "Diagramm hinzufügen"
+    }
+  },
   "editor": {
     "properties": {
       "title": "Eigenschaften",
@@ -135,7 +165,6 @@
         "redo": "Wiederholen",
         "threats": "Bedrohungen",
         "share": "Teilen",
-        "save": "Speichern",
         "export": "Exportieren...",
         "close": "Schließen"
       }

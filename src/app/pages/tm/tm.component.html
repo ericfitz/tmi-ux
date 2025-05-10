@@ -22,24 +22,27 @@
           <mat-icon class="threat-model-icon">security</mat-icon>
           <div class="threat-model-details">
             <h3 class="threat-model-title">
-              {{ 'threatModels.title' | transloco: { name: threatModel.name } }}
+              {{ threatModel.name }}
             </h3>
-            <p
-              class="threat-model-date"
-              [transloco]="'threatModels.lastModified'"
-              [translocoParams]="{ date: threatModel.modified_at | date: 'medium' }"
-            ></p>
+            <p class="threat-model-date">
+              {{ 'diagrams.lastModified' | transloco: { date: threatModel.modified_at | date } }}
+            </p>
             <p class="threat-model-description" *ngIf="threatModel.description">
               {{ threatModel.description }}
             </p>
             <div class="threat-model-stats">
               <span class="stat">
                 <mat-icon>account_tree</mat-icon>
-                {{ threatModel.diagrams?.length || 0 }} diagrams
+                {{ threatModel.diagrams?.length || 0 }}
+                {{ 'threatModels.diagramsCount' | transloco }}
               </span>
               <span class="stat">
                 <mat-icon>warning</mat-icon>
-                {{ threatModel.threats?.length || 0 }} threats
+                {{ threatModel.threats?.length || 0 }} {{ 'threatModels.threatsCount' | transloco }}
+              </span>
+              <span class="stat">
+                <mat-icon>fingerprint</mat-icon>
+                {{ 'threatModels.idLabel' | transloco }} {{ threatModel.id.split('-')[0] }}
               </span>
             </div>
           </div>

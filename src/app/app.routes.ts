@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './auth/guards/auth.guard';
+import { homeGuard } from './auth/guards/home.guard';
 
 export const routes: Routes = [
   {
@@ -9,6 +10,7 @@ export const routes: Routes = [
       import(/* webpackChunkName: "home" */ './pages/home/home.component').then(
         c => c.HomeComponent,
       ),
+    canActivate: [homeGuard],
   },
   {
     path: 'about',

@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก"
+  },
   "navbar": {
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
     "logoutButton": "ออกจากระบบ",
@@ -121,6 +125,32 @@
       "delete": "ลบ"
     }
   },
+  "threatModels": {
+    "pageTitle": "แบบจำลองภัยคุกคาม",
+    "lastModified": "แก้ไขล่าสุด: {{date}}",
+    "noItemsMessage": "คุณยังไม่มีแบบจำลองภัยคุกคามใด ๆ",
+    "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
+    "newThreatModel": "แบบจำลองภัยคุกคามใหม่",
+    "details": "รายละเอียดแบบจำลองภัยคุกคาม",
+    "name": "ชื่อ",
+    "description": "คำอธิบาย",
+    "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
+    "metadata": "ข้อมูลเมตา",
+    "noMetadata": "ไม่มีข้อมูลเมตาที่พร้อมใช้งาน",
+    "threats": "ภัยคุกคาม",
+    "noThreats": "ยังไม่มีการกำหนดภัยคุกคาม",
+    "diagrams": "แผนภาพ",
+    "noDiagrams": "ยังไม่มีการเพิ่มแผนภาพ",
+    "diagramsCount": "แผนภาพ",
+    "threatsCount": "ภัยคุกคาม",
+    "idLabel": "รหัส:",
+    "tooltips": {
+      "create": "สร้าง",
+      "delete": "ลบ",
+      "addThreat": "เพิ่มภัยคุกคาม",
+      "addDiagram": "เพิ่มแผนภาพ"
+    }
+  },
   "editor": {
     "properties": {
       "title": "คุณสมบัติ",
@@ -138,7 +168,6 @@
         "redo": "ทำซ้ำ",
         "threats": "ภัยคุกคาม",
         "share": "แชร์",
-        "save": "บันทึก",
         "export": "ส่งออก...",
         "close": "ปิด"
       }

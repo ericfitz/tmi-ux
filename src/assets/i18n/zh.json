@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "保存",
+    "cancel": "取消"
+  },
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
     "logoutButton": "退出登录",
@@ -118,6 +122,32 @@
       "delete": "删除"
     }
   },
+  "threatModels": {
+    "pageTitle": "威胁模型",
+    "lastModified": "最后修改: {{date}}",
+    "noItemsMessage": "您还没有任何威胁模型。",
+    "createFirstButton": "创建您的第一个威胁模型",
+    "newThreatModel": "新威胁模型",
+    "details": "威胁模型详情",
+    "name": "名称",
+    "description": "描述",
+    "descriptionPlaceholder": "描述此威胁模型的目的和范围",
+    "metadata": "元数据",
+    "noMetadata": "没有可用的元数据",
+    "threats": "威胁",
+    "noThreats": "尚未定义威胁",
+    "diagrams": "图表",
+    "noDiagrams": "尚未添加图表",
+    "diagramsCount": "图表",
+    "threatsCount": "威胁",
+    "idLabel": "ID:",
+    "tooltips": {
+      "create": "创建",
+      "delete": "删除",
+      "addThreat": "添加威胁",
+      "addDiagram": "添加图表"
+    }
+  },
   "editor": {
     "properties": {
       "title": "属性",
@@ -135,7 +165,6 @@
         "redo": "重做",
         "threats": "威胁",
         "share": "分享",
-        "save": "保存",
         "export": "导出...",
         "close": "关闭"
       }

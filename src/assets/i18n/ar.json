@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء"
+  },
   "navbar": {
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "logoutButton": "تسجيل الخروج",
@@ -118,6 +122,32 @@
       "delete": "حذف"
     }
   },
+  "threatModels": {
+    "pageTitle": "نماذج التهديدات",
+    "lastModified": "آخر تعديل: {{date}}",
+    "noItemsMessage": "ليس لديك أي نماذج تهديدات حتى الآن.",
+    "createFirstButton": "أنشئ نموذج التهديد الأول",
+    "newThreatModel": "نموذج تهديد جديد",
+    "details": "تفاصيل نموذج التهديد",
+    "name": "الاسم",
+    "description": "الوصف",
+    "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
+    "metadata": "البيانات الوصفية",
+    "noMetadata": "لا توجد بيانات وصفية متاحة",
+    "threats": "التهديدات",
+    "noThreats": "لم يتم تحديد أي تهديدات بعد",
+    "diagrams": "المخططات",
+    "noDiagrams": "لم تتم إضافة أي مخططات بعد",
+    "diagramsCount": "مخططات",
+    "threatsCount": "تهديدات",
+    "idLabel": "المعرف:",
+    "tooltips": {
+      "create": "إنشاء",
+      "delete": "حذف",
+      "addThreat": "إضافة تهديد",
+      "addDiagram": "إضافة مخطط"
+    }
+  },
   "editor": {
     "properties": {
       "title": "الخصائص",
@@ -135,7 +165,6 @@
         "redo": "إعادة",
         "threats": "تهديدات",
         "share": "مشاركة",
-        "save": "حفظ",
         "export": "تصدير...",
         "close": "إغلاق"
       }

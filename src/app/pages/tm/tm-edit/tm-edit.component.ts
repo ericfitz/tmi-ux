@@ -11,6 +11,12 @@ import { SharedModule } from '../../../shared/shared.module';
 import { ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
 
+// Define form value interface
+interface ThreatModelFormValues {
+  name: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-tm-edit',
   standalone: true,
@@ -46,7 +52,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.router.navigate(['/tm']);
+      void this.router.navigate(['/tm']);
       return;
     }
 
@@ -96,10 +102,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Get form values with proper typing
+    const formValues = this.threatModelForm.getRawValue() as ThreatModelFormValues;
+
     const updatedThreatModel: ThreatModel = {
       ...this.threatModel,
-      name: this.threatModelForm.value.name,
-      description: this.threatModelForm.value.description,
+      name: formValues.name,
+      description: formValues.description,
       modified_at: new Date().toISOString(),
     };
 

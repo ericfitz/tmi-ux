@@ -25,7 +25,7 @@
   grid-template-columns: 1fr;
   gap: 24px;
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -36,7 +36,7 @@
 
 .threats-card,
 .diagrams-card {
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     grid-column: auto;
   }
 }
@@ -73,7 +73,7 @@ mat-card-header {
 }
 
 .no-items-message {
-  color: rgba(0, 0, 0, 0.6);
+  color: rgb(0 0 0 / 60%);
   font-style: italic;
   padding: 16px 0;
   text-align: center;

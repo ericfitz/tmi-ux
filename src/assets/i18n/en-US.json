@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel"
+  },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "logoutButton": "Logout",
@@ -108,14 +112,40 @@
     }
   },
   "diagrams": {
-    "pageTitle": "Threat Models",
+    "pageTitle": "Diagrams",
     "lastModified": "Last modified: {{date}}",
-    "noItemsMessage": "You don't have any threat models yet.",
-    "createFirstButton": "Create your first threat model",
+    "noItemsMessage": "You don't have any diagrams yet.",
+    "createFirstButton": "Create your first diagram",
     "diagramTitle": "{{name}}",
     "tooltips": {
       "create": "Create",
       "delete": "Delete"
+    }
+  },
+  "threatModels": {
+    "pageTitle": "Threat Models",
+    "lastModified": "Last modified: {{date}}",
+    "noItemsMessage": "You don't have any threat models yet.",
+    "createFirstButton": "Create your first threat model",
+    "newThreatModel": "New Threat Model",
+    "details": "Threat Model Details",
+    "name": "Name",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
+    "metadata": "Metadata",
+    "noMetadata": "No metadata available",
+    "threats": "Threats",
+    "noThreats": "No threats defined yet",
+    "diagrams": "Diagrams",
+    "noDiagrams": "No diagrams added yet",
+    "diagramsCount": "diagrams",
+    "threatsCount": "threats",
+    "idLabel": "ID:",
+    "tooltips": {
+      "create": "Create",
+      "delete": "Delete",
+      "addThreat": "Add Threat",
+      "addDiagram": "Add Diagram"
     }
   },
   "editor": {
@@ -135,7 +165,6 @@
         "redo": "Redo",
         "threats": "Threats",
         "share": "Share",
-        "save": "Save",
         "export": "Export...",
         "close": "Close"
       }
