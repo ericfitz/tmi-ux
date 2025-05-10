@@ -2,6 +2,18 @@
 
 Angular-based user interface for the TMI application.
 
+## Overview
+
+TMI (Threat Modeling Improved) is a server based web application enabling collaborative threat modeling with support for:
+
+- Real-time collaborative diagram editing via WebSockets
+- Role-based access control (reader, writer, owner)
+- OAuth authentication with JWT
+- RESTful API with OpenAPI 3.0 specification
+- MCP integration (planned)
+
+The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
+
 > **Note:** Documentation about architecture, implementation plans, and development guidelines can be found in the [context](./context) directory.
 
 ## Development
