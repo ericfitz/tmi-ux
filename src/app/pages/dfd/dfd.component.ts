@@ -22,11 +22,19 @@ import { ShapeType } from './services/dfd-node.service';
 import { DfdEventBusService } from './services/dfd-event-bus.service';
 import { DfdStateStore } from './state/dfd.state';
 import { DfdCommandService } from './services/dfd-command.service';
+import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 
 @Component({
   selector: 'app-dfd',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule, MatMenuModule, MatTooltipModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    CoreMaterialModule,
+    MatMenuModule,
+    MatTooltipModule,
+    TranslocoModule,
+    DfdCollaborationComponent,
+  ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

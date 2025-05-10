@@ -1,0 +1,135 @@
+.collaboration-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// Style for the active collaboration icon
+.active {
+  color: #4caf50;
+}
+
+// Status indicators
+.user-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-active {
+  background-color: #4caf50; // Green
+}
+
+.status-idle {
+  background-color: #ff9800; // Orange
+}
+
+.status-disconnected {
+  background-color: #f44336; // Red
+}
+
+// Menu styling
+::ng-deep .collaboration-menu {
+  min-width: 300px;
+  max-width: 350px;
+  padding: 0;
+
+  .menu-header {
+    padding: 16px 16px 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+
+  .invite-section,
+  .users-section {
+    padding: 8px 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .invite-header,
+  .users-header {
+    margin-bottom: 8px;
+
+    h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .invite-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .email-input {
+      width: 100%;
+    }
+
+    .role-select {
+      width: 100%;
+    }
+  }
+
+  .users-list {
+    max-height: 200px;
+    overflow-y: auto;
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+
+        .user-name {
+          font-weight: 500;
+          margin-right: 8px;
+        }
+
+        .user-role {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+          background-color: rgba(0, 0, 0, 0.05);
+          padding: 2px 6px;
+          border-radius: 12px;
+        }
+      }
+
+      .user-actions {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  .warn-text {
+    color: #f44336;
+  }
+}
+
+// Fix for mat-menu width
+::ng-deep .mat-mdc-menu-panel.collaboration-menu {
+  max-width: 350px !important;
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  ::ng-deep .collaboration-menu {
+    min-width: 250px;
+  }
+}

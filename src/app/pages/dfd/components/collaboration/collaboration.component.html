@@ -1,0 +1,121 @@
+<div class="collaboration-container">
+  <!-- Main collaboration button with badge showing number of users when active -->
+  <button
+    mat-icon-button
+    color="primary"
+    [matBadge]="isCollaborating ? collaborationUsers.length : null"
+    matBadgeColor="accent"
+    [matTooltip]="isCollaborating ? 'Manage Collaboration' : 'Start Collaboration'"
+    [matMenuTriggerFor]="collaborationMenu"
+  >
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      fontWeight="100"
+      style="font-variation-settings: 'FILL' 0"
+      [class.active]="isCollaborating"
+    >
+      group
+    </mat-icon>
+  </button>
+
+  <!-- Collaboration menu -->
+  <mat-menu #collaborationMenu="matMenu" class="collaboration-menu">
+    <div class="menu-header">
+      <h3>Collaboration</h3>
+    </div>
+
+    <!-- Toggle collaboration button -->
+    <button mat-menu-item (click)="toggleCollaboration()">
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        fontWeight="100"
+        style="font-variation-settings: 'FILL' 0"
+      >
+        {{ isCollaborating ? 'stop' : 'play_arrow' }}
+      </mat-icon>
+      <span>{{ isCollaborating ? 'End Collaboration' : 'Start Collaboration' }}</span>
+    </button>
+
+    <!-- Invite user section (only visible when collaborating) -->
+    <div *ngIf="isCollaborating && hasPermission('invite')" class="invite-section">
+      <div class="invite-header">
+        <h4>Invite User</h4>
+      </div>
+      <div class="invite-form">
+        <mat-form-field appearance="outline" class="email-input">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="inviteEmail" placeholder="user@example.com" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="role-select">
+          <mat-label>Role</mat-label>
+          <mat-select [(ngModel)]="inviteRole">
+            <mat-option value="owner">Owner</mat-option>
+            <mat-option value="writer">Writer</mat-option>
+            <mat-option value="reader">Reader</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-flat-button color="primary" [disabled]="!inviteEmail" (click)="inviteUser()">
+          Invite
+        </button>
+      </div>
+    </div>
+
+    <!-- Users list (only visible when collaborating) -->
+    <div *ngIf="isCollaborating && collaborationUsers.length > 0" class="users-section">
+      <div class="users-header">
+        <h4>Collaborators</h4>
+      </div>
+      <div class="users-list">
+        <div *ngFor="let user of collaborationUsers" class="user-item">
+          <div class="user-info">
+            <div class="user-status" [ngClass]="getStatusColor(user.status)"></div>
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-role">{{ getRoleDisplayName(user.role) }}</div>
+          </div>
+          <div
+            class="user-actions"
+            *ngIf="hasPermission('changeRole') && user.id !== 'current-user'"
+          >
+            <button mat-icon-button [matMenuTriggerFor]="userMenu" [matTooltip]="'Change Role'">
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+              >
+                settings
+              </mat-icon>
+            </button>
+            <mat-menu #userMenu="matMenu">
+              <button
+                mat-menu-item
+                (click)="updateUserRole(user.id, 'owner')"
+                [disabled]="user.role === 'owner'"
+              >
+                Make Owner
+              </button>
+              <button
+                mat-menu-item
+                (click)="updateUserRole(user.id, 'writer')"
+                [disabled]="user.role === 'writer'"
+              >
+                Make Writer
+              </button>
+              <button
+                mat-menu-item
+                (click)="updateUserRole(user.id, 'reader')"
+                [disabled]="user.role === 'reader'"
+              >
+                Make Reader
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="removeUser(user.id)" *ngIf="hasPermission('remove')">
+                <mat-icon color="warn">person_remove</mat-icon>
+                <span class="warn-text">Remove User</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-menu>
+</div>
