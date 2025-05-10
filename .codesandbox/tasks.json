@@ -1,0 +1,118 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [
+    {
+      "command": "pnpm install",
+      "name": "Installing Dependencies"
+    }
+  ],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "ng": {
+      "name": "ng",
+      "command": "pnpm ng",
+      "runAtStart": false
+    },
+    "start": {
+      "name": "start",
+      "command": "pnpm start",
+      "runAtStart": false
+    },
+    "build": {
+      "name": "build",
+      "command": "pnpm build",
+      "runAtStart": false
+    },
+    "build:prod": {
+      "name": "build:prod",
+      "command": "pnpm build:prod",
+      "runAtStart": false
+    },
+    "build:staging": {
+      "name": "build:staging",
+      "command": "pnpm build:staging",
+      "runAtStart": false
+    },
+    "build:test": {
+      "name": "build:test",
+      "command": "pnpm build:test",
+      "runAtStart": false
+    },
+    "watch": {
+      "name": "watch",
+      "command": "pnpm watch",
+      "runAtStart": false
+    },
+    "test": {
+      "name": "test",
+      "command": "pnpm test",
+      "runAtStart": false
+    },
+    "dev": {
+      "name": "dev",
+      "command": "pnpm dev",
+      "runAtStart": true
+    },
+    "dev:staging": {
+      "name": "dev:staging",
+      "command": "pnpm dev:staging",
+      "runAtStart": false
+    },
+    "dev:test": {
+      "name": "dev:test",
+      "command": "pnpm dev:test",
+      "runAtStart": false
+    },
+    "dev:prod": {
+      "name": "dev:prod",
+      "command": "pnpm dev:prod",
+      "runAtStart": false
+    },
+    "dev:custom": {
+      "name": "dev:custom",
+      "command": "pnpm dev:custom",
+      "runAtStart": false
+    },
+    "lint": {
+      "name": "lint",
+      "command": "pnpm lint",
+      "runAtStart": false
+    },
+    "lint:scss": {
+      "name": "lint:scss",
+      "command": "pnpm lint:scss",
+      "runAtStart": false
+    },
+    "lint:all": {
+      "name": "lint:all",
+      "command": "pnpm lint:all",
+      "runAtStart": false
+    },
+    "format": {
+      "name": "format",
+      "command": "pnpm format",
+      "runAtStart": false
+    },
+    "format:check": {
+      "name": "format:check",
+      "command": "pnpm format:check",
+      "runAtStart": false
+    },
+    "check": {
+      "name": "check",
+      "command": "pnpm check",
+      "runAtStart": false
+    },
+    "prepare": {
+      "name": "prepare",
+      "command": "pnpm prepare",
+      "runAtStart": false
+    },
+    "optimize-images": {
+      "name": "optimize-images",
+      "command": "pnpm optimize-images",
+      "runAtStart": false
+    }
+  }
+}

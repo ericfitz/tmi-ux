@@ -5,7 +5,8 @@
   "cli": {
     "schematicCollections": [
       "@angular-eslint/schematics"
-    ]
+    ],
+    "analytics": "18c39934-d6e0-4618-898d-43543807a9fb"
   },
   "projects": {
     "tmi-ux": {
