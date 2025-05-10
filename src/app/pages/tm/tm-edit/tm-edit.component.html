@@ -1,0 +1,109 @@
+<div class="tm-edit-container">
+  <div class="header-row">
+    <h1 class="page-title">
+      {{ isNewThreatModel ? ('threatModels.newThreatModel' | transloco) : threatModel?.name }}
+    </h1>
+    <div class="header-actions">
+      <button mat-button color="warn" (click)="cancel()">
+        <mat-icon>close</mat-icon>
+        <span [transloco]="'common.cancel'">Cancel</span>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="threatModelForm.invalid"
+        (click)="saveThreatModel()"
+      >
+        <mat-icon>save</mat-icon>
+        <span [transloco]="'common.save'">Save</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content-container" *ngIf="threatModel">
+    <mat-card class="details-card">
+      <mat-card-header>
+        <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="threatModelForm" class="threat-model-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label [transloco]="'threatModels.name'">Name</mat-label>
+            <input matInput formControlName="name" />
+            <mat-error *ngIf="threatModelForm.get('name')?.hasError('required')">
+              {{ 'validation.required' | transloco }}
+            </mat-error>
+            <mat-error *ngIf="threatModelForm.get('name')?.hasError('maxlength')">
+              {{ 'validation.maxLength' | transloco: { max: 100 } }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label [transloco]="'threatModels.description'">Description</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              rows="4"
+              placeholder="{{ 'threatModels.descriptionPlaceholder' | transloco }}"
+            ></textarea>
+            <mat-error *ngIf="threatModelForm.get('description')?.hasError('maxlength')">
+              {{ 'validation.maxLength' | transloco: { max: 500 } }}
+            </mat-error>
+          </mat-form-field>
+        </form>
+
+        <div class="metadata-section">
+          <h3 [transloco]="'threatModels.metadata'">Metadata</h3>
+          <div class="metadata-item" *ngFor="let item of threatModel.metadata">
+            <span class="metadata-key">{{ item.key }}:</span>
+            <span class="metadata-value">{{ item.value }}</span>
+          </div>
+          <div *ngIf="!threatModel.metadata?.length" class="no-items-message">
+            {{ 'threatModels.noMetadata' | transloco }}
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="threats-card">
+      <mat-card-header>
+        <mat-card-title [transloco]="'threatModels.threats'">Threats</mat-card-title>
+        <button mat-icon-button color="primary" (click)="addThreat()" matTooltip="Add Threat">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let threat of threatModel.threats">
+            <mat-icon matListItemIcon>warning</mat-icon>
+            <div matListItemTitle>{{ threat.name }}</div>
+            <div matListItemLine>{{ threat.description }}</div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.threats?.length" class="no-items-message">
+          {{ 'threatModels.noThreats' | transloco }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="diagrams-card">
+      <mat-card-header>
+        <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
+        <button mat-icon-button color="primary" (click)="addDiagram()" matTooltip="Add Diagram">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let diagramId of threatModel.diagrams">
+            <mat-icon matListItemIcon>account_tree</mat-icon>
+            <div matListItemTitle>{{ diagramId }}</div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.diagrams?.length" class="no-items-message">
+          {{ 'threatModels.noDiagrams' | transloco }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

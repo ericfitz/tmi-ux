@@ -1,0 +1,67 @@
+<div class="tm-container">
+  <div class="header-row">
+    <h1 class="page-title" [transloco]="'threatModels.pageTitle'">Threat Models</h1>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="createThreatModel()"
+      [matTooltip]="'threatModels.tooltips.create' | transloco"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="threat-models-list">
+    <mat-card
+      *ngFor="let threatModel of threatModels"
+      class="threat-model-card"
+      (click)="openThreatModel(threatModel.id)"
+    >
+      <mat-card-content>
+        <div class="threat-model-info">
+          <mat-icon class="threat-model-icon">security</mat-icon>
+          <div class="threat-model-details">
+            <h3 class="threat-model-title">
+              {{ 'threatModels.title' | transloco: { name: threatModel.name } }}
+            </h3>
+            <p
+              class="threat-model-date"
+              [transloco]="'threatModels.lastModified'"
+              [translocoParams]="{ date: threatModel.modified_at | date: 'medium' }"
+            ></p>
+            <p class="threat-model-description" *ngIf="threatModel.description">
+              {{ threatModel.description }}
+            </p>
+            <div class="threat-model-stats">
+              <span class="stat">
+                <mat-icon>account_tree</mat-icon>
+                {{ threatModel.diagrams?.length || 0 }} diagrams
+              </span>
+              <span class="stat">
+                <mat-icon>warning</mat-icon>
+                {{ threatModel.threats?.length || 0 }} threats
+              </span>
+            </div>
+          </div>
+        </div>
+        <button
+          mat-icon-button
+          color="warn"
+          class="delete-button"
+          (click)="deleteThreatModel(threatModel.id, $event)"
+          [matTooltip]="'threatModels.tooltips.delete' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="threatModels.length === 0" class="no-threat-models">
+      <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
+      <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
+      <button mat-raised-button color="primary" (click)="createThreatModel()">
+        <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
+      </button>
+    </div>
+  </div>
+</div>

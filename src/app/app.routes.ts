@@ -30,11 +30,8 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'threat-models',
-    loadComponent: () =>
-      import(
-        /* webpackChunkName: "threat-models" */ './pages/threat-models/threat-models.component'
-      ).then(c => c.ThreatModelsComponent),
+    path: 'tm',
+    loadChildren: () => import('./pages/tm/tm-routing.module').then(m => m.TmRoutingModule),
     canActivate: [authGuard],
   },
   {

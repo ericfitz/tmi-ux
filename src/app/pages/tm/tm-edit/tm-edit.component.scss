@@ -1,0 +1,88 @@
+.tm-edit-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.content-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.details-card {
+  grid-column: 1 / -1;
+}
+
+.threats-card,
+.diagrams-card {
+  @media (min-width: 768px) {
+    grid-column: auto;
+  }
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.threat-model-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.metadata-section {
+  margin-top: 24px;
+}
+
+.metadata-item {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.metadata-key {
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.no-items-message {
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+  padding: 16px 0;
+  text-align: center;
+}
+
+// RTL support
+:host-context([dir='rtl']) {
+  .metadata-key {
+    margin-right: 0;
+    margin-left: 8px;
+  }
+}

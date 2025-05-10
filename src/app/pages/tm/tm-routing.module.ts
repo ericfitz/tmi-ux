@@ -1,12 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ThreatModelsComponent } from './threat-models.component';
+import { TmComponent } from './tm.component';
+import { TmEditComponent } from './tm-edit/tm-edit.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ThreatModelsComponent,
+    component: TmComponent,
+  },
+  {
+    path: ':id',
+    component: TmEditComponent,
   },
 ];
 
@@ -14,4 +19,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class ThreatModelsRoutingModule {}
+export class TmRoutingModule {}

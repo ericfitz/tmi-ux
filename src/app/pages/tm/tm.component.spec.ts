@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 
 import { TranslocoTestingModule } from '../../i18n/testing.module';
 
-import { ThreatModelsComponent } from './threat-models.component';
+import { TmComponent } from './tm.component';
 
-describe('ThreatModelsComponent', () => {
-  let component: ThreatModelsComponent;
-  let fixture: ComponentFixture<ThreatModelsComponent>;
+describe('TmComponent', () => {
+  let component: TmComponent;
+  let fixture: ComponentFixture<TmComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
@@ -18,7 +18,7 @@ describe('ThreatModelsComponent', () => {
       providers: [{ provide: Router, useValue: routerSpy }],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ThreatModelsComponent);
+    fixture = TestBed.createComponent(TmComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
