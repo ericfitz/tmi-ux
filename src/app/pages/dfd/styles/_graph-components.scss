@@ -13,10 +13,8 @@
   border: none;
   outline: none;
   position: absolute;
-}
 
-// Position the handles - consolidated
-.x6-widget-transform-resize {
+  // Position the handles - consolidated
   &-nw {
     top: -4px;
     left: -4px;

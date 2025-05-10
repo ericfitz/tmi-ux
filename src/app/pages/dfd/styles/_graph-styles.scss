@@ -108,6 +108,19 @@ tspan.v-line {
     fill: #f36;
   }
 
+  // Edge label styling
+  .label,
+  .label text,
+  .label tspan {
+    font-family: 'Roboto Condensed', Arial, sans-serif !important;
+    font-size: 12px !important;
+    fill: #333;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: all;
+    user-select: none;
+  }
+
   &:hover {
     .connection {
       stroke: #1890ff;
@@ -121,6 +134,11 @@ tspan.v-line {
     .marker-arrowhead {
       fill: #1890ff;
       stroke: #1890ff;
+    }
+
+    .label text {
+      fill: #1890ff;
+      cursor: text;
     }
   }
 
