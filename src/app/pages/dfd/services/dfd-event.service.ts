@@ -13,7 +13,7 @@ import { StoreShape } from '../models/store-shape.model';
 import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
 import { TextboxShape } from '../models/textbox-shape.model';
 import { NodeData } from '../models/node-data.interface';
-import { DfdEventBusService } from './dfd-event-bus.service';
+import { DfdEventBusService, DfdEventType } from './dfd-event-bus.service';
 
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
@@ -67,6 +67,9 @@ export class DfdEventService {
 
     // Handle port events
     this.setupPortEvents(graph);
+
+    // Handle context menu events
+    this.setupContextMenuEvents(graph);
   }
 
   /**
@@ -763,5 +766,43 @@ export class DfdEventService {
     // Publish state change to event bus (but don't add it to history)
     // Use silent option to prevent recursive history entries
     this.eventBus.publishHistoryChange(canUndo, canRedo);
+  }
+
+  /**
+   * Sets up context menu events for cells
+   * @param graph The X6 graph instance
+   */
+  private setupContextMenuEvents(graph: Graph): void {
+    // Handle node context menu (right-click)
+    graph.on('node:contextmenu', ({ cell, e }) => {
+      // Convert the X6 event to a standard MouseEvent
+      const mouseEvent = e.originalEvent;
+
+      // Publish event for the component to handle
+      this.eventBus.publish({
+        type: DfdEventType.CellContextMenu,
+        cell,
+        event: mouseEvent,
+        timestamp: Date.now(),
+      });
+
+      this.logger.debug('Node context menu event', { nodeId: cell.id });
+    });
+
+    // Handle edge context menu (right-click)
+    graph.on('edge:contextmenu', ({ cell, e }) => {
+      // Convert the X6 event to a standard MouseEvent
+      const mouseEvent = e.originalEvent;
+
+      // Publish event for the component to handle
+      this.eventBus.publish({
+        type: DfdEventType.CellContextMenu,
+        cell,
+        event: mouseEvent,
+        timestamp: Date.now(),
+      });
+
+      this.logger.debug('Edge context menu event', { edgeId: cell.id });
+    });
   }
 }

@@ -12,16 +12,17 @@ import {
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { Node } from '@antv/x6';
+import { Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { DfdService, ExportFormat } from './services/dfd.service';
 import { ShapeType } from './services/dfd-node.service';
-import { DfdEventBusService } from './services/dfd-event-bus.service';
+import { DfdEventBusService, DfdEventType } from './services/dfd-event-bus.service';
 import { DfdStateStore } from './state/dfd.state';
 import { DfdCommandService } from './services/dfd-command.service';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
@@ -44,10 +45,15 @@ import { ThreatModelService } from '../../pages/tm/services/threat-model.service
 })
 export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('graphContainer', { static: true }) graphContainer!: ElementRef;
+  @ViewChild('contextMenuTrigger') contextMenuTrigger!: MatMenuTrigger;
 
   private _observer: MutationObserver | null = null;
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
+  private _rightClickedCell: Cell | null = null;
+
+  // Context menu position
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   // Route parameters
   threatModelId: string | null = null;
@@ -111,6 +117,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.stateStore.selectedNode$.subscribe(selectedNode => {
         this.hasSelectedCells = !!selectedNode;
         this.cdr.markForCheck();
+      }),
+    );
+
+    // Subscribe to cell context menu events
+    this._subscriptions.add(
+      this.eventBus.onEventType(DfdEventType.CellContextMenu).subscribe(event => {
+        if ('cell' in event && 'event' in event) {
+          this.openCellContextMenu(event.cell, event.event);
+        }
       }),
     );
   }
@@ -452,6 +467,63 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.logger.error('Failed to delete node', result.error);
           }
         });
+    }
+  }
+
+  /**
+   * Opens the context menu for a cell at the specified position
+   * @param cell The cell to open the context menu for
+   * @param event The mouse event that triggered the context menu
+   */
+  openCellContextMenu(cell: Cell, event: MouseEvent): void {
+    // Prevent the default context menu
+    event.preventDefault();
+
+    // Store the right-clicked cell
+    this._rightClickedCell = cell;
+
+    // Set the position of the context menu
+    this.contextMenuPosition = {
+      x: `${event.clientX}px`,
+      y: `${event.clientY}px`,
+    };
+
+    // Force change detection to update the position
+    this.cdr.detectChanges();
+
+    // Open the context menu
+    this.contextMenuTrigger.openMenu();
+
+    this.logger.info('Opened context menu for cell', { cellId: cell.id });
+  }
+
+  /**
+   * Copies the JSON representation of the right-clicked cell to the clipboard
+   */
+  copyCellJson(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for copying JSON');
+      return;
+    }
+
+    try {
+      // Get the cell data
+      const cellData = this._rightClickedCell.toJSON();
+
+      // Convert to JSON string with pretty formatting
+      const jsonString = JSON.stringify(cellData, null, 2);
+
+      // Copy to clipboard
+      navigator.clipboard
+        .writeText(jsonString)
+        .then(() => {
+          this.logger.info('Cell JSON copied to clipboard', { cellId: this._rightClickedCell?.id });
+        })
+        .catch(error => {
+          this.logger.error('Failed to copy cell JSON to clipboard', error);
+        });
+    } catch (error) {
+      this.logger.error('Error serializing cell to JSON', error);
     }
   }
 }

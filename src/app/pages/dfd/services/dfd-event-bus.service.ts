@@ -18,6 +18,7 @@ export enum DfdEventType {
   CanUndoChanged = 'canUndoChanged',
   CanRedoChanged = 'canRedoChanged',
   PortVisibilityChanged = 'portVisibilityChanged',
+  CellContextMenu = 'cellContextMenu',
   Error = 'error',
 }
 
@@ -88,6 +89,14 @@ export interface NodeDeletedEvent extends DfdEvent {
 }
 
 /**
+ * Cell context menu event
+ */
+export interface CellContextMenuEvent extends DfdEvent {
+  cell: Cell;
+  event: MouseEvent;
+}
+
+/**
  * Union type for all possible events
  */
 export type DfdEventPayload =
@@ -97,7 +106,8 @@ export type DfdEventPayload =
   | HistoryEvent
   | PortVisibilityEvent
   | GraphChangedEvent
-  | NodeDeletedEvent;
+  | NodeDeletedEvent
+  | CellContextMenuEvent;
 
 /**
  * Event bus service for DFD component

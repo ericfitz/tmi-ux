@@ -164,5 +164,24 @@
 
   <div class="graph-container">
     <div #graphContainer class="x6-graph"></div>
+
+    <!-- Cell context menu -->
+    <div
+      style="visibility: hidden; position: fixed"
+      [style.left]="contextMenuPosition.x"
+      [style.top]="contextMenuPosition.y"
+    >
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="cellContextMenu"
+        #contextMenuTrigger="matMenuTrigger"
+      ></button>
+    </div>
+    <mat-menu #cellContextMenu="matMenu">
+      <button mat-menu-item (click)="copyCellJson()">
+        <mat-icon>content_copy</mat-icon>
+        <span>Copy JSON</span>
+      </button>
+    </mat-menu>
   </div>
 </div>
