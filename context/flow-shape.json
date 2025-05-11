@@ -1,0 +1,54 @@
+{
+  "shape": "edge",
+  "attrs": {
+    "line": {
+      "targetMarker": {
+        "name": "classic",
+        "size": 7
+      }
+    },
+    "label": {
+      "text": "Flow",
+      "class": "dfd-label",
+      "fontFamily": "Roboto Condensed, Arial, sans-serif",
+      "fontSize": 12,
+      "fill": "#333",
+      "textAnchor": "middle",
+      "dominantBaseline": "middle",
+      "pointerEvents": "all",
+      "userSelect": "none"
+    }
+  },
+  "id": "51ab5b87-7a9f-456d-83cb-0148f08a6c09",
+  "labels": [
+    {
+      "position": 0.5,
+      "attrs": {
+        "text": {
+          "text": "Flow",
+          "class": "dfd-label",
+          "fontFamily": "Roboto Condensed, Arial, sans-serif",
+          "fontSize": 12,
+          "fill": "#333",
+          "textAnchor": "middle",
+          "dominantBaseline": "middle",
+          "pointerEvents": "all",
+          "userSelect": "none"
+        }
+      }
+    }
+  ],
+  "data": {
+    "label": "Flow"
+  },
+  "vertices": [],
+  "source": {
+    "cell": "502b2dc0-0fd6-4c53-bbc8-bee487a52af4",
+    "port": "eb6b95b2-3704-40ca-a713-4d5219083341"
+  },
+  "target": {
+    "cell": "33e3f85a-483f-49ac-aa23-59f78ccfa414",
+    "port": "6d00ddaf-7e09-4f71-92ec-dc105e3671d3"
+  },
+  "zIndex": 3
+}

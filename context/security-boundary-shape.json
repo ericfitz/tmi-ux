@@ -1,0 +1,148 @@
+{
+  "position": {
+    "x": 629.9999999999998,
+    "y": 15.000000000000824
+  },
+  "size": {
+    "width": 520,
+    "height": 370
+  },
+  "attrs": {
+    "label": {
+      "refX": 125,
+      "refY": 75
+    },
+    "data-shape-type": {
+      "0": "s",
+      "1": "e",
+      "2": "c",
+      "3": "u",
+      "4": "r",
+      "5": "i",
+      "6": "t",
+      "7": "y",
+      "8": "B",
+      "9": "o",
+      "10": "u",
+      "11": "n",
+      "12": "d",
+      "13": "a",
+      "14": "r",
+      "15": "y"
+    }
+  },
+  "visible": true,
+  "shape": "rect",
+  "portMarkup": [
+    {
+      "tagName": "circle",
+      "selector": "portBody"
+    }
+  ],
+  "ports": {
+    "groups": {
+      "top": {
+        "position": {
+          "name": "top"
+        },
+        "attrs": {
+          "portBody": {
+            "magnet": "active",
+            "r": 5,
+            "stroke": "#5F95FF",
+            "fill": "#fff",
+            "strokeWidth": 1,
+            "visibility": "hidden"
+          }
+        }
+      },
+      "right": {
+        "position": {
+          "name": "right"
+        },
+        "attrs": {
+          "portBody": {
+            "magnet": "active",
+            "r": 5,
+            "fill": "#fff",
+            "stroke": "#5F95FF",
+            "strokeWidth": 1,
+            "visibility": "hidden"
+          }
+        }
+      },
+      "bottom": {
+        "position": {
+          "name": "bottom"
+        },
+        "attrs": {
+          "portBody": {
+            "magnet": "active",
+            "r": 5,
+            "fill": "#fff",
+            "stroke": "#5F95FF",
+            "strokeWidth": 1,
+            "visibility": "hidden"
+          }
+        }
+      },
+      "left": {
+        "position": {
+          "name": "left"
+        },
+        "attrs": {
+          "portBody": {
+            "magnet": "active",
+            "r": 5,
+            "stroke": "#5F95FF",
+            "fill": "#fff",
+            "strokeWidth": 1,
+            "visibility": "hidden"
+          }
+        }
+      }
+    },
+    "items": [
+      {
+        "group": "top",
+        "id": "7760f490-7ca4-4420-a2d9-78ed9f20d4c0",
+        "position": {
+          "name": "top"
+        }
+      },
+      {
+        "group": "right",
+        "id": "f99dfec0-ccbc-4bfe-ac1a-8fdb8431d0dc",
+        "position": {
+          "name": "right"
+        }
+      },
+      {
+        "group": "bottom",
+        "id": "755408c8-1410-401a-93d0-cc6557dc5b2d",
+        "position": {
+          "name": "bottom"
+        }
+      },
+      {
+        "group": "left",
+        "id": "30f295c5-7e04-4e4c-b4f7-b3e9e3b1dba2",
+        "position": {
+          "name": "left"
+        }
+      }
+    ]
+  },
+  "id": "bba18318-cc28-4e02-9c84-3f05e19c48b3",
+  "zIndex": -1,
+  "data": {
+    "parent": true,
+    "label": "Security Boundary",
+    "type": "securityBoundary"
+  },
+  "children": [
+    "33e3f85a-483f-49ac-aa23-59f78ccfa414",
+    "e4970a4a-d0c5-40b2-9b4f-1c5579021ce3",
+    "360085c8-3ebc-4219-9076-b2100307ba22"
+  ]
+}
