@@ -147,7 +147,7 @@ Our preferred solution is to use an arrow function wrapper with proper type anno
 
 1. **Problem Context**:
 
-   - This error occurs when referencing a method without calling it (e.g., in Jasmine tests when using `expect(object.method).toHaveBeenCalled()`)
+   - This error occurs when referencing a method without calling it (e.g., in Vitest tests when using `expect(object.method).toHaveBeenCalled()`)
    - When a method is referenced without being called, it loses its `this` context
    - This can cause unexpected behavior if the method relies on `this` internally
 
@@ -181,7 +181,7 @@ Our preferred solution is to use an arrow function wrapper with proper type anno
 
 5. **Alternative Approaches (Not Preferred)**:
    - Using Function.prototype.bind: More verbose and less common in test code
-   - Using Jasmine's calls object: More brittle and less readable
+   - Using Vitest's mock objects directly: More brittle and less readable
    - Suppressing the lint warning: Masks potential issues
 
 Always prefer the arrow function wrapper approach for consistency across the codebase.

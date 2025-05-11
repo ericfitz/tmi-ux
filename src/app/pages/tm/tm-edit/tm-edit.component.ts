@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { MaterialModule } from '../../../shared/material/material.module';
 import { SharedModule } from '../../../shared/shared.module';
+import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
 import { ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
 
@@ -27,6 +28,7 @@ interface ThreatModelFormValues {
     MatListModule,
     TranslocoModule,
     ReactiveFormsModule,
+    RouterModule,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrl: './tm-edit.component.scss',
@@ -35,6 +37,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   threatModel: ThreatModel | undefined;
   threatModelForm: FormGroup;
   isNewThreatModel = false;
+  diagrams: Diagram[] = [];
   private subscription: Subscription | null = null;
 
   constructor(
@@ -63,6 +66,23 @@ export class TmEditComponent implements OnInit, OnDestroy {
           name: threatModel.name,
           description: threatModel.description || '',
         });
+
+        // Populate diagrams array with diagram objects
+        this.diagrams =
+          threatModel.diagrams?.map(diagramId => {
+            // Look up the diagram by ID
+            const diagram = DIAGRAMS_BY_ID.get(diagramId);
+            if (diagram) {
+              return diagram;
+            }
+            // If diagram not found, create a placeholder with the ID as name
+            return {
+              id: diagramId,
+              name: `Diagram ${diagramId.substring(0, 8)}...`,
+              created_at: new Date().toISOString(),
+              modified_at: new Date().toISOString(),
+            };
+          }) || [];
       } else {
         // Handle case where threat model is not found
         this.isNewThreatModel = true;

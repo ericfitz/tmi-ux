@@ -19,7 +19,7 @@ This file provides guidance to Roo Code when working with code in this repositor
 - Run all tests: `ng test` or `pnpm run test`
 - Run single test: `ng test --include=**/path/to/file.spec.ts`
 - Run tests for specific component: `ng test --include=**/component-name/*.spec.ts`
-- Focus tests in code: Use `fdescribe()` and `fit()` in spec files
+- Focus tests in code: Use `describe.only()` and `it.only()` in spec files
 - Lint TypeScript/HTML: `pnpm run lint`
 - Lint SCSS: `pnpm run lint:scss`
 - Lint all files: `pnpm run lint:all`

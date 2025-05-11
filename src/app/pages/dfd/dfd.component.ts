@@ -12,6 +12,7 @@ import {
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslocoModule } from '@jsverse/transloco';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Node } from '@antv/x6';
@@ -45,6 +46,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _observer: MutationObserver | null = null;
   private _subscriptions = new Subscription();
 
+  // Route parameters
+  threatModelId: string | null = null;
+  dfdId: string | null = null;
+
   // State properties - exposed as public properties for template binding
   canUndo = false;
   canRedo = false;
@@ -57,8 +62,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private eventBus: DfdEventBusService,
     private stateStore: DfdStateStore,
     private commandService: DfdCommandService,
+    private route: ActivatedRoute,
   ) {
     this.logger.info('DfdComponent constructor called');
+
+    // Get route parameters
+    this.threatModelId = this.route.snapshot.paramMap.get('id');
+    this.dfdId = this.route.snapshot.paramMap.get('dfdId');
+
+    this.logger.info('DFD Component initialized with parameters', {
+      threatModelId: this.threatModelId,
+      dfdId: this.dfdId,
+    });
   }
 
   ngOnInit(): void {

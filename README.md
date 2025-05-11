@@ -136,13 +136,46 @@ pnpm run check
 
 ## Testing
 
+The project uses Vitest with the AnalogJS Vite plugin for Angular testing. This provides faster test execution, better developer experience, and improved integration with the Vite build system.
+
 ```bash
 # Run all tests
 pnpm test
 
-# Run specific test file
-ng test --include=**/path/to/file.spec.ts
+# Run tests in watch mode (automatically re-runs on file changes)
+pnpm run test:watch
+
+# Run tests with the Vitest UI
+pnpm run test:ui
+
+# Generate test coverage report
+pnpm run test:coverage
 
 # Run tests for a specific component
-ng test --include=**/component-name/*.spec.ts
+pnpm run test:component
+# or specify any test file
+vitest run "src/app/path/to/file.spec.ts"
+```
+
+### Test Strategy
+
+- **Unit Tests**: All components, services, and utilities should have unit tests
+- **Integration Tests**: Key component interactions should be tested
+- **Test Environment**: Tests run in a JSDOM environment
+- **Coverage Reporting**: Coverage reports are generated in both text and HTML formats
+
+### Focusing Tests
+
+To focus on specific tests during development:
+
+```typescript
+// Focus on a specific test
+it.only('should do something', () => {
+  // Test code
+});
+
+// Focus on a specific test suite
+describe.only('Component', () => {
+  // Test suites and specs
+});
 ```
