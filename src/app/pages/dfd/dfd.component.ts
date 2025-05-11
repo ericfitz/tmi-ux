@@ -8,6 +8,7 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  HostListener,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -24,6 +25,7 @@ import { DfdEventBusService } from './services/dfd-event-bus.service';
 import { DfdStateStore } from './state/dfd.state';
 import { DfdCommandService } from './services/dfd-command.service';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
+import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 
 @Component({
   selector: 'app-dfd',
@@ -45,10 +47,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _observer: MutationObserver | null = null;
   private _subscriptions = new Subscription();
+  private _resizeTimeout: number | null = null;
 
   // Route parameters
   threatModelId: string | null = null;
   dfdId: string | null = null;
+
+  // Diagram data
+  diagramName: string | null = null;
 
   // State properties - exposed as public properties for template binding
   canUndo = false;
@@ -63,6 +69,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private stateStore: DfdStateStore,
     private commandService: DfdCommandService,
     private route: ActivatedRoute,
+    private threatModelService: ThreatModelService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -78,6 +85,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.info('DfdComponent ngOnInit called');
+
+    // Load diagram data if we have a dfdId
+    if (this.dfdId) {
+      this.loadDiagramData(this.dfdId);
+    }
 
     // Subscribe to state changes
     this._subscriptions.add(
@@ -103,6 +115,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  /**
+   * Loads the diagram data for the given diagram ID
+   * @param diagramId The ID of the diagram to load
+   */
+  private loadDiagramData(diagramId: string): void {
+    // In a real implementation, this would use a dedicated diagram service
+    // For now, we'll use the DIAGRAMS_BY_ID map from the diagram model
+    void import('../../pages/tm/models/diagram.model').then(module => {
+      const diagram = module.DIAGRAMS_BY_ID.get(diagramId);
+      if (diagram) {
+        this.diagramName = diagram.name;
+        this.logger.info('Loaded diagram data', { name: this.diagramName, id: diagramId });
+        this.cdr.markForCheck();
+      } else {
+        this.logger.warn('Diagram not found', { id: diagramId });
+      }
+    });
+  }
+
   ngAfterViewInit(): void {
     // Initialize the graph after the view is fully initialized
     this.initializeGraph();
@@ -115,6 +146,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this._observer = null;
     }
 
+    // Clear any pending resize timeout
+    if (this._resizeTimeout) {
+      window.clearTimeout(this._resizeTimeout);
+      this._resizeTimeout = null;
+    }
+
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
@@ -123,6 +160,36 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Reset the state store
     this.stateStore.resetState();
+  }
+
+  /**
+   * Handle window resize events to update the graph size
+   */
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    // Debounce resize events to avoid excessive updates
+    if (this._resizeTimeout) {
+      window.clearTimeout(this._resizeTimeout);
+    }
+
+    this._resizeTimeout = window.setTimeout(() => {
+      if (this.dfdService.graph) {
+        const container = this.graphContainer.nativeElement as HTMLElement;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        this.logger.info('Resizing graph due to window resize', { width, height });
+
+        // Force the graph to resize with explicit dimensions
+        this.dfdService.graph.resize(width, height);
+
+        // Update the graph's container size
+        this.dfdService.graph.container.style.width = `${width}px`;
+        this.dfdService.graph.container.style.height = `${height}px`;
+
+        this._resizeTimeout = null;
+      }
+    }, 100); // 100ms debounce
   }
 
   /**
@@ -164,6 +231,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const success = this.dfdService.initialize(this.graphContainer.nativeElement as HTMLElement);
 
       if (success) {
+        // Trigger an initial resize to ensure the graph fits the container
+        setTimeout(() => {
+          if (this.dfdService.graph) {
+            const container = this.graphContainer.nativeElement as HTMLElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            this.dfdService.graph.resize(width, height);
+            this.logger.info('Initial graph resize', { width, height });
+          }
+        }, 0);
         // Set up observation for DOM changes to add passive event listeners
         this.setupDomObservation();
 

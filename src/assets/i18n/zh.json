@@ -20,7 +20,7 @@
   "tos": {
     "title": "服务条款",
     "lastUpdatedDate": "2025-04-06",
-    "lastUpdated": "最后更新: {{date}}",
+    "lastUpdated": "最后更新: ",
     "intro": {
       "part1": "欢迎使用我们的TMI实例。这些使用条款(\"条款\")规范您对本网站的访问和使用，本网站是由本网站",
       "aboutLink": "关于",
@@ -71,7 +71,7 @@
   "privacy": {
     "title": "隐私政策",
     "lastUpdatedDate": "2025-04-06",
-    "lastUpdated": "最后更新: {{date}}",
+    "lastUpdated": "最后更新: ",
     "intro1": {
       "part1": "本网站是由本网站",
       "aboutLink": "关于",
@@ -149,6 +149,7 @@
     }
   },
   "editor": {
+    "pageTitle": "数据流图编辑器",
     "properties": {
       "title": "属性",
       "help": "选择元素后，元素属性将显示在此处。"

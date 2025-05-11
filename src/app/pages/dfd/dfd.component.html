@@ -1,6 +1,9 @@
 <div class="dfd-container">
   <div class="title-row">
-    <h1 class="page-title">Data Flow Diagram Editor</h1>
+    <div class="title-container">
+      <h1 class="page-title">{{ 'editor.pageTitle' | transloco }}</h1>
+      <h2 *ngIf="diagramName" class="diagram-name">{{ diagramName }}</h2>
+    </div>
     <app-dfd-collaboration></app-dfd-collaboration>
   </div>
 

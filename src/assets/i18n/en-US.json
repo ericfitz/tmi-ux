@@ -149,6 +149,7 @@
     }
   },
   "editor": {
+    "pageTitle": "Data Flow Diagram Editor",
     "properties": {
       "title": "Properties",
       "help": "Element properties will appear here when an element is selected."
