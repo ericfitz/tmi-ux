@@ -14,7 +14,7 @@ TMI (Threat Modeling Improved) is a server based web application enabling collab
 
 The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
 
-[Video](https://youtu.be/ikTxE0xJL1w) _current as of 2025-05-16_
+<iframe width="640" height="366" src="https://youtu.be/ikTxE0xJL1w" frameborder="0" allowfullscreen></iframe>
 
 > **Note:** Documentation about architecture, implementation plans, and development guidelines can be found in the [context](./context) directory.
 
