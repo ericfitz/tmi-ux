@@ -3,6 +3,21 @@ import { BaseCommand, CommandResult } from './command.interface'; // Removed Nod
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdShapeFactoryService, ShapeOptions } from '../services/dfd-shape-factory.service';
 import { ShapeType } from '../services/dfd-node.service';
+import { CommandDeserializerService } from './command-deserializer.service';
+import { Injectable } from '@angular/core';
+
+/**
+ * Parameters for the AddNodeCommand
+ */
+export interface AddNodeParams {
+  type: ShapeType;
+  position: { x: number; y: number };
+  size?: { width: number; height: number };
+  label?: string;
+  zIndex?: number;
+  parent?: boolean;
+  containerElement?: HTMLElement;
+}
 
 /**
  * Command for adding a node to the graph
@@ -12,20 +27,37 @@ export class AddNodeCommand extends BaseCommand<Node> {
   private createdNodeId: string | null = null;
 
   constructor(
-    private params: {
-      type: ShapeType;
-      position: { x: number; y: number };
-      size?: { width: number; height: number };
-      label?: string;
-      zIndex?: number;
-      parent?: boolean;
-      containerElement?: HTMLElement;
-    },
+    private params: AddNodeParams,
     private logger: LoggerService,
     private shapeFactory: DfdShapeFactoryService,
   ) {
     super();
     this.logger.debug('AddNodeCommand created', { params });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'add-node';
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    // Only serialize the data needed to recreate the command
+    return {
+      type: this.params.type,
+      position: this.params.position,
+      size: this.params.size,
+      label: this.params.label,
+      zIndex: this.params.zIndex,
+      parent: this.params.parent,
+      createdNodeId: this.createdNodeId,
+    };
   }
 
   /**
@@ -117,32 +149,37 @@ export class AddNodeCommand extends BaseCommand<Node> {
 }
 
 /**
+ * Interface for deleted node data
+ */
+export interface DeletedNodeData {
+  id: string;
+  type: ShapeType;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  data: unknown;
+  zIndex: number;
+  attrs: Record<string, unknown>;
+  markup: unknown;
+  connectedEdges: Array<{
+    id: string;
+    source: { cell: string; port?: string }; // Changed id to cell
+    target: { cell: string; port?: string }; // Changed id to cell
+    vertices: Array<{ x: number; y: number }>;
+    attrs: Record<string, unknown>;
+    data: unknown;
+    router?: { name: string; args?: Record<string, unknown> };
+    connector?: { name: string; args?: Record<string, unknown> };
+    labels?: Array<Record<string, unknown>>;
+    zIndex?: number;
+  }>;
+}
+
+/**
  * Command for deleting a node from the graph
  */
 export class DeleteNodeCommand extends BaseCommand<void> {
   readonly name = 'DeleteNode';
-  private deletedNodeData: {
-    id: string;
-    type: ShapeType;
-    position: { x: number; y: number };
-    size: { width: number; height: number };
-    data: unknown;
-    zIndex: number;
-    attrs: Record<string, unknown>;
-    markup: unknown;
-    connectedEdges: Array<{
-      id: string;
-      source: { cell: string; port?: string }; // Changed id to cell
-      target: { cell: string; port?: string }; // Changed id to cell
-      vertices: Array<{ x: number; y: number }>;
-      attrs: Record<string, unknown>;
-      data: unknown;
-      router?: { name: string; args?: Record<string, unknown> };
-      connector?: { name: string; args?: Record<string, unknown> };
-      labels?: Array<Record<string, unknown>>;
-      zIndex?: number;
-    }>;
-  } | null = null;
+  private deletedNodeData: DeletedNodeData | null = null;
 
   constructor(
     private nodeId: string,
@@ -151,6 +188,25 @@ export class DeleteNodeCommand extends BaseCommand<void> {
   ) {
     super();
     this.logger.debug('DeleteNodeCommand created', { nodeId });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'delete-node';
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      nodeId: this.nodeId,
+      deletedNodeData: this.deletedNodeData,
+    };
   }
 
   /**
@@ -406,6 +462,26 @@ export class MoveNodeCommand extends BaseCommand<void> {
   ) {
     super();
     this.logger.debug('MoveNodeCommand created', { nodeId, newPosition });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'move-node';
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      nodeId: this.nodeId,
+      newPosition: this.newPosition,
+      originalPosition: this.originalPosition,
+    };
   }
 
   /**

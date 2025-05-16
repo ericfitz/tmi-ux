@@ -1,6 +1,11 @@
 import { Graph } from '@antv/x6';
 
 /**
+ * Origin of a command - local or remote
+ */
+export type CommandOrigin = 'local' | 'remote';
+
+/**
  * Interface for command execution result
  */
 export interface CommandResult<T = unknown> {
@@ -22,6 +27,11 @@ export interface Command<T = unknown> {
    * Display name of the command
    */
   readonly name: string;
+
+  /**
+   * Origin of the command - local or remote
+   */
+  origin: CommandOrigin;
 
   /**
    * Execute the command
@@ -50,6 +60,18 @@ export interface Command<T = unknown> {
    * @returns Boolean indicating if the command can be undone
    */
   canUndo(graph: Graph): boolean;
+
+  /**
+   * Serialize the command to a JSON string
+   * @returns JSON string representation of the command
+   */
+  serialize(): string;
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string;
 }
 
 /**
@@ -60,6 +82,8 @@ export abstract class BaseCommand<T = unknown> implements Command<T> {
 
   abstract readonly name: string;
 
+  origin: CommandOrigin = 'local';
+
   canExecute(_graph: Graph): boolean {
     return true;
   }
@@ -67,6 +91,35 @@ export abstract class BaseCommand<T = unknown> implements Command<T> {
   canUndo(_graph: Graph): boolean {
     return true;
   }
+
+  /**
+   * Serialize the command to a JSON string
+   * @returns JSON string representation of the command
+   */
+  serialize(): string {
+    const serialized = {
+      id: this.id,
+      type: this.getType(),
+      origin: this.origin,
+      data: this.serializeData(),
+    };
+
+    return JSON.stringify(serialized);
+  }
+
+  /**
+   * Get the command type for deserialization
+   * This should be overridden by subclasses to return a unique type identifier
+   * @returns The command type identifier
+   */
+  abstract getType(): string;
+
+  /**
+   * Serialize command-specific data
+   * This should be overridden by subclasses to serialize their specific data
+   * @returns An object containing the command-specific data
+   */
+  protected abstract serializeData(): Record<string, unknown>;
 
   protected createSuccessResult<R = T>(data?: R): CommandResult<R> {
     return {

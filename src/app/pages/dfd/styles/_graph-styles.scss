@@ -1,4 +1,6 @@
 // Consolidate all graph element styles here
+@use 'shape-styles' as shapes;
+
 // Base graph container styles
 .x6-graph {
   width: 100%;
