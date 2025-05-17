@@ -110,45 +110,24 @@ svg text[font-family] {
   font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
-// Port visibility rules with state-based classes
-// 1. Base state - ports are hidden by default
+// Port visibility rules
 .x6-port-body {
   visibility: hidden;
   opacity: 0;
-  display: none;
-  transition:
-    visibility 0.2s,
-    opacity 0.2s;
+  stroke: #000;
+  fill: #fff;
 }
 
-// 2. Port states - use classes instead of inline styles
+// Show ports on hover or when connected
 .x6-port-body.port-visible,
-.x6-port-body.port-connected {
-  visibility: visible;
-  opacity: 1;
-  display: block;
-}
-
-// 3. Hover state - more specific selector to avoid !important
-.x6-graph .x6-node:hover .x6-port-body {
-  visibility: visible;
-  opacity: 1;
-  display: block;
-}
-
-// 4. Connected ports - more specific selector to avoid !important
-.x6-graph .x6-port-body.port-connected {
-  visibility: visible;
-  opacity: 1;
-  display: block;
-}
-
-// 5. Additional selectors with higher specificity
+.x6-port-body.port-connected,
+.x6-graph .x6-port-body.port-connected,
+.x6-graph .x6-node:hover .x6-port-body,
 .x6-graph g[data-shape='circle']:hover .x6-port-body,
 .x6-graph g[data-cell-id]:hover .x6-port-body {
-  visibility: visible;
-  opacity: 1;
-  display: block;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 
 // Node states

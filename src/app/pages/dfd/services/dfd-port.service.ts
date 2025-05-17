@@ -146,6 +146,7 @@ export class DfdPortService {
             if (isPortInUse) {
               // Add the connected class for ports with edges
               portNode.classList.add('port-connected');
+              // The class will handle visibility through CSS
             } else {
               // Remove all visibility classes for unused ports
               portNode.classList.remove('port-visible', 'port-connected');

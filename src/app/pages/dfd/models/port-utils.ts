@@ -92,18 +92,11 @@ export class PortUtils {
             portBody: {
               magnet: 'active',
               r: 5,
-              stroke: '#5F95FF',
-              fill: '#fff',
-              strokeWidth: 1,
               class: 'x6-port-body',
-              visibility: 'hidden',
-              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
               text: '', // Default empty text
-              fill: '#333333',
-              fontSize: 12, // Match font size with other objects
               fontFamily: '"Roboto Condensed", Arial, sans-serif',
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
@@ -120,18 +113,11 @@ export class PortUtils {
             portBody: {
               magnet: 'active',
               r: 5,
-              fill: '#fff',
-              stroke: '#5F95FF',
-              strokeWidth: 1,
               class: 'x6-port-body',
-              visibility: 'hidden',
-              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
               text: '', // Default empty text
-              fill: '#333333',
-              fontSize: 12, // Match font size with other objects
               fontFamily: '"Roboto Condensed", Arial, sans-serif',
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
@@ -148,18 +134,11 @@ export class PortUtils {
             portBody: {
               magnet: 'active',
               r: 5,
-              fill: '#fff',
-              stroke: '#5F95FF',
-              strokeWidth: 1,
               class: 'x6-port-body',
-              visibility: 'hidden',
-              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
               text: '', // Default empty text
-              fill: '#333333',
-              fontSize: 12, // Match font size with other objects
               fontFamily: '"Roboto Condensed", Arial, sans-serif',
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
@@ -176,18 +155,11 @@ export class PortUtils {
             portBody: {
               magnet: 'active',
               r: 5,
-              stroke: '#5F95FF',
-              fill: '#fff',
-              strokeWidth: 1,
               class: 'x6-port-body',
-              visibility: 'hidden',
-              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
               text: '', // Default empty text
-              fill: '#333333',
-              fontSize: 12, // Match font size with other objects
               fontFamily: '"Roboto Condensed", Arial, sans-serif',
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
