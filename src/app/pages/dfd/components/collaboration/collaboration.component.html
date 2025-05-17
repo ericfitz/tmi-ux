@@ -25,37 +25,32 @@
     </div>
 
     <!-- Toggle collaboration button -->
-    <button mat-menu-item (click)="toggleCollaboration()">
-      <mat-icon
-        fontSet="material-symbols-outlined"
-        fontWeight="100"
-        style="font-variation-settings: 'FILL' 0"
+    <div class="collaboration-action">
+      <button
+        mat-flat-button
+        [color]="isCollaborating ? 'warn' : 'success'"
+        (click)="toggleCollaboration()"
       >
-        {{ isCollaborating ? 'stop' : 'play_arrow' }}
-      </mat-icon>
-      <span>{{ isCollaborating ? 'End Collaboration' : 'Start Collaboration' }}</span>
-    </button>
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+        >
+          {{ isCollaborating ? 'stop' : 'play_arrow' }}
+        </mat-icon>
+        {{ isCollaborating ? 'End Collaboration' : 'Start Collaboration' }}
+      </button>
+    </div>
 
-    <!-- Invite user section (only visible when collaborating) -->
-    <div *ngIf="isCollaborating && hasPermission('invite')" class="invite-section">
-      <div class="invite-header">
-        <h4>Invite User</h4>
+    <!-- Copy Link section (only visible when collaborating) -->
+    <div *ngIf="isCollaborating" class="copy-link-section">
+      <div class="copy-link-header">
+        <h4>Share Collaboration Link</h4>
       </div>
-      <div class="invite-form">
-        <mat-form-field appearance="outline" class="email-input">
-          <mat-label>Email</mat-label>
-          <input matInput [(ngModel)]="inviteEmail" placeholder="user@example.com" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="role-select">
-          <mat-label>Role</mat-label>
-          <mat-select [(ngModel)]="inviteRole">
-            <mat-option value="owner">Owner</mat-option>
-            <mat-option value="writer">Writer</mat-option>
-            <mat-option value="reader">Reader</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button mat-flat-button color="primary" [disabled]="!inviteEmail" (click)="inviteUser()">
-          Invite
+      <div class="copy-link-action">
+        <button mat-flat-button color="primary" (click)="copyLinkToClipboard()">
+          <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
+          Copy Link
         </button>
       </div>
     </div>

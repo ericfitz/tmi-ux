@@ -1,7 +1,8 @@
 {
   "common": {
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "ok": "OK"
   },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
@@ -146,7 +147,9 @@
       "delete": "Delete",
       "addThreat": "Add Threat",
       "addDiagram": "Add Diagram"
-    }
+    },
+    "createNewDiagram": "Create New Diagram",
+    "diagramName": "Diagram Name"
   },
   "editor": {
     "pageTitle": "Data Flow Diagram Editor",

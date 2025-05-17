@@ -5,6 +5,7 @@ import {
   OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,9 +18,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { DOCUMENT } from '@angular/common';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import {
@@ -46,6 +49,7 @@ import {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSnackBarModule,
     TranslocoModule,
   ],
   templateUrl: './collaboration.component.html',
@@ -57,9 +61,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   isCollaborating = false;
   collaborationUsers: CollaborationUser[] = [];
 
-  // Invitation form data
-  inviteEmail = '';
-  inviteRole: 'owner' | 'writer' | 'reader' = 'writer';
+  // URL copy feedback
+  linkCopied = false;
 
   // Subscription management
   private _subscriptions = new Subscription();
@@ -69,6 +72,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private _collaborationService: DfdCollaborationService,
     private _dialog: MatDialog,
+    private _snackBar: MatSnackBar,
+    @Inject(DOCUMENT) private _document: Document,
   ) {}
 
   ngOnInit(): void {
@@ -131,24 +136,30 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Invite a user to the collaboration session
+   * Copy the current URL to clipboard
    */
-  inviteUser(): void {
-    if (!this.inviteEmail) {
-      return;
+  copyLinkToClipboard(): void {
+    try {
+      const currentUrl = this._document.location.href;
+      navigator.clipboard.writeText(currentUrl).then(
+        () => {
+          this._logger.info('URL copied to clipboard', { url: currentUrl });
+          this._snackBar.open('Link copied to clipboard', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+        },
+        error => {
+          this._logger.error('Failed to copy URL to clipboard', { error });
+          this._snackBar.open('Failed to copy link', 'Close', {
+            duration: 3000,
+          });
+        },
+      );
+    } catch (error) {
+      this._logger.error('Error copying URL to clipboard', { error });
     }
-
-    this._collaborationService
-      .inviteUser(this.inviteEmail, this.inviteRole)
-      .pipe(take(1))
-      .subscribe(success => {
-        if (success) {
-          this._logger.info('User invited successfully', { email: this.inviteEmail });
-          this.inviteEmail = ''; // Reset the form
-        } else {
-          this._logger.error('Failed to invite user', { email: this.inviteEmail });
-        }
-      });
   }
 
   /**

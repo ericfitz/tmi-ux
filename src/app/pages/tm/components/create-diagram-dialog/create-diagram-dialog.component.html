@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ 'threatModels.createNewDiagram' | transloco }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="diagramForm" class="dialog-form">
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="diagramForm.get('name')?.hasError('required')">
+          {{ 'validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="diagramForm.get('name')?.hasError('maxlength')">
+          {{ 'validation.maxLength' | transloco: { max: 100 } }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button mat-raised-button color="primary" [disabled]="diagramForm.invalid" (click)="onSubmit()">
+    {{ 'common.ok' | transloco }}
+  </button>
+</mat-dialog-actions>

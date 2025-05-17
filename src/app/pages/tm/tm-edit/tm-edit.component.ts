@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 import { MaterialModule } from '../../../shared/material/material.module';
 import { SharedModule } from '../../../shared/shared.module';
+import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
 import { ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
@@ -45,6 +48,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private router: Router,
     private threatModelService: ThreatModelService,
     private fb: FormBuilder,
+    private dialog: MatDialog,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -143,9 +147,46 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // This would be expanded in a real implementation
   }
 
+  /**
+   * Opens a dialog to create a new diagram
+   * If the user confirms, adds the new diagram to the threat model
+   */
   addDiagram(): void {
-    // Implement adding a new diagram
-    // This would be expanded in a real implementation
+    const dialogRef = this.dialog.open(CreateDiagramDialogComponent, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe(diagramName => {
+      if (diagramName && this.threatModel) {
+        // Create a new diagram with UUID and name
+        const now = new Date().toISOString();
+        const newDiagram: Diagram = {
+          id: uuidv4(),
+          name: diagramName,
+          created_at: now,
+          modified_at: now,
+        };
+
+        // Add the diagram to the DIAGRAMS_BY_ID map
+        DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
+
+        // Add the diagram ID to the threat model
+        if (!this.threatModel.diagrams) {
+          this.threatModel.diagrams = [];
+        }
+        this.threatModel.diagrams.push(newDiagram.id);
+
+        // Update the threat model
+        this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
+          if (result) {
+            this.threatModel = result;
+
+            // Add the new diagram to the diagrams array for display
+            this.diagrams.push(newDiagram);
+          }
+        });
+      }
+    });
   }
 
   cancel(): void {

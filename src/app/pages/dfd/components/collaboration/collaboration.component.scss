@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  margin-right: 8px;
 }
 
 // Style for the active collaboration icon
@@ -45,13 +46,13 @@
     }
   }
 
-  .invite-section,
+  .copy-link-section,
   .users-section {
     padding: 8px 16px;
     border-top: 1px solid rgb(0 0 0 / 12%);
   }
 
-  .invite-header,
+  .copy-link-header,
   .users-header {
     margin-bottom: 8px;
 
@@ -63,17 +64,16 @@
     }
   }
 
-  .invite-form {
+  .copy-link-action,
+  .collaboration-action {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: center;
+    padding: 8px 0;
 
-    .email-input {
-      width: 100%;
-    }
-
-    .role-select {
-      width: 100%;
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
   }
 
@@ -119,6 +119,21 @@
 
   .warn-text {
     color: #f44336;
+  }
+}
+
+// Custom button colors
+::ng-deep {
+  .mat-mdc-raised-button.mat-success,
+  .mat-mdc-unelevated-button.mat-success {
+    --mdc-filled-button-container-color: #4caf50;
+    --mdc-filled-button-label-text-color: #fff;
+  }
+
+  .mat-mdc-raised-button.mat-warn,
+  .mat-mdc-unelevated-button.mat-warn {
+    --mdc-filled-button-container-color: #f44336;
+    --mdc-filled-button-label-text-color: #fff;
   }
 }
 
