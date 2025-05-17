@@ -79,7 +79,8 @@ mat-card-header {
   text-align: center;
 }
 
-.diagram-link {
+.diagram-link,
+.clickable-item {
   cursor: pointer;
   transition: background-color 0.2s ease;
 

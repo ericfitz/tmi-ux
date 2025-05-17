@@ -27,7 +27,7 @@ interface DiagramFormValues {
     TranslocoModule,
   ],
   templateUrl: './create-diagram-dialog.component.html',
-  styleUrl: './create-diagram-dialog.component.scss',
+  styleUrls: ['./create-diagram-dialog.component.scss'],
 })
 export class CreateDiagramDialogComponent {
   diagramForm: FormGroup;

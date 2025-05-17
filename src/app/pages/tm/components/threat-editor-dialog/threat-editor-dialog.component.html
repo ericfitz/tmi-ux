@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>{{ dialogTitle | transloco }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="threatForm" class="dialog-form">
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.threatName' | transloco }}</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
+          {{ 'validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="threatForm.get('name')?.hasError('maxlength')">
+          {{ 'validation.maxLength' | transloco: { max: 100 } }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.threatDescription' | transloco }}</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="4"
+          placeholder="{{ 'threatModels.threatDescriptionPlaceholder' | transloco }}"
+        ></textarea>
+        <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
+          {{ 'validation.maxLength' | transloco: { max: 500 } }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="threatForm.invalid"
+    (click)="onSubmit()"
+    *ngIf="!isViewOnly"
+  >
+    {{ 'common.save' | transloco }}
+  </button>
+  <button mat-raised-button color="primary" (click)="onCancel()" *ngIf="isViewOnly">
+    {{ 'common.close' | transloco }}
+  </button>
+</mat-dialog-actions>

@@ -290,7 +290,7 @@ export class DfdGraphService {
       });
 
       // Add event listener to ensure resize handles are created
-      graph.on('node:selected', ({ node }: { node: Node }) => {
+      graph.on('node:selected', ({ node: _node }: { node: Node }) => {
         // Check if resize handles exist after a short delay
         setTimeout(() => {
           const resizeHandles = document.querySelectorAll('.x6-widget-transform-resize');
@@ -728,7 +728,7 @@ export class DfdGraphService {
    * Inspects the graph styles to diagnose styling issues
    * @param graph The X6 graph instance
    */
-  public inspectGraphStyles(graph: Graph): void {
+  public inspectGraphStyles(_graph: Graph): void {
     this.logger.info('Inspecting graph styles...');
 
     // Check resize handle styles

@@ -10,6 +10,7 @@ import {
   ChangeDetectorRef,
   HostListener,
 } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -27,6 +28,11 @@ import { DfdStateStore } from './state/dfd.state';
 import { DfdCommandService } from './services/dfd-command.service';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
+import {
+  ThreatEditorDialogComponent,
+  ThreatEditorDialogData,
+} from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-dfd',
@@ -76,6 +82,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private commandService: DfdCommandService,
     private route: ActivatedRoute,
     private threatModelService: ThreatModelService,
+    private dialog: MatDialog,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -525,5 +532,78 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       this.logger.error('Error serializing cell to JSON', error);
     }
+  }
+
+  /**
+   * Opens the threat editor dialog to create a new threat
+   */
+  openThreatEditor(): void {
+    if (!this.threatModelId) {
+      this.logger.warn('Cannot add threat: No threat model ID available');
+      return;
+    }
+
+    // Get the threat model to add the threat to
+    this.threatModelService
+      .getThreatModelById(this.threatModelId)
+      .pipe(take(1))
+      .subscribe(threatModel => {
+        if (!threatModel) {
+          this.logger.error('Threat model not found', { id: this.threatModelId });
+          return;
+        }
+
+        // We've already checked that threatModelId is not null above
+        const dialogData: ThreatEditorDialogData = {
+          threatModelId: this.threatModelId as string,
+          mode: 'create',
+        };
+
+        const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
+          width: '500px',
+          data: dialogData,
+        });
+
+        this._subscriptions.add(
+          dialogRef.afterClosed().subscribe(result => {
+            if (result && threatModel) {
+              const now = new Date().toISOString();
+
+              // Type the result to avoid unsafe assignments
+              interface ThreatFormResult {
+                name: string;
+                description: string;
+              }
+              const formResult = result as ThreatFormResult;
+
+              // Create a new threat
+              const newThreat = {
+                id: uuidv4(),
+                threat_model_id: threatModel.id,
+                name: formResult.name,
+                description: formResult.description,
+                created_at: now,
+                modified_at: now,
+                metadata: [],
+              };
+
+              // Add the threat to the threat model
+              if (!threatModel.threats) {
+                threatModel.threats = [];
+              }
+              threatModel.threats.push(newThreat);
+
+              // Update the threat model
+              this._subscriptions.add(
+                this.threatModelService.updateThreatModel(threatModel).subscribe(updatedModel => {
+                  if (updatedModel) {
+                    this.logger.info('Threat added successfully', { threatId: newThreat.id });
+                  }
+                }),
+              );
+            }
+          }),
+        );
+      });
   }
 }

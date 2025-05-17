@@ -71,7 +71,7 @@
         <button
           mat-icon-button
           color="primary"
-          (click)="addThreat()"
+          (click)="openThreatEditor()"
           [matTooltip]="'threatModels.tooltips.addThreat' | transloco"
         >
           <mat-icon>add</mat-icon>
@@ -79,7 +79,11 @@
       </mat-card-header>
       <mat-card-content>
         <mat-list>
-          <mat-list-item *ngFor="let threat of threatModel.threats">
+          <mat-list-item
+            *ngFor="let threat of threatModel.threats"
+            (click)="openThreatEditor(threat)"
+            class="clickable-item"
+          >
             <mat-icon matListItemIcon>warning</mat-icon>
             <div matListItemTitle>{{ threat.name }}</div>
             <div matListItemLine>{{ threat.description }}</div>

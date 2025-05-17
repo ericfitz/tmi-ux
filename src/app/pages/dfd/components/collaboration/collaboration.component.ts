@@ -150,7 +150,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
             verticalPosition: 'bottom',
           });
         },
-        error => {
+        (error: unknown) => {
           this._logger.error('Failed to copy URL to clipboard', { error });
           this._snackBar.open('Failed to copy link', 'Close', {
             duration: 3000,

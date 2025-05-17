@@ -146,8 +146,16 @@
       "create": "Create",
       "delete": "Delete",
       "addThreat": "Add Threat",
-      "addDiagram": "Add Diagram"
+      "addDiagram": "Add Diagram",
+      "viewThreat": "View Threat",
+      "editThreat": "Edit Threat"
     },
+    "createNewThreat": "Create New Threat",
+    "editThreat": "Edit Threat",
+    "viewThreat": "View Threat",
+    "threatName": "Threat Name",
+    "threatDescription": "Threat Description",
+    "threatDescriptionPlaceholder": "Describe the threat in detail",
     "createNewDiagram": "Create New Diagram",
     "diagramName": "Diagram Name"
   },
