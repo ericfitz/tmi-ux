@@ -82,14 +82,3 @@
     filter: none;
   }
 }
-
-// Label drag handle styles
-.dfd-label-drag-handle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: #000;
-  cursor: move;
-  z-index: 1000;
-  border: 1px solid #fff;
-}

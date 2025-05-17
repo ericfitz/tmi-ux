@@ -21,19 +21,12 @@
 }
 
 // Port styles
-.x6-port-body {
-  r: 5;
-  cursor: pointer;
-}
-
 .x6-port {
   z-index: 10;
 }
 
-.x6-port-body[magnet='active'] {
-  fill: #fff;
-  stroke: #5f95ff;
-  stroke-width: 1;
+.x6-port-body {
+  cursor: pointer;
 }
 
 // Highlight styles
@@ -210,16 +203,18 @@ tspan.v-line {
   pointer-events: none;
 }
 
-// Shape-specific styling
-[data-shape-type='process'] {
+// Shape-specific styling using data.type
+// We use attribute selectors to target nodes based on their data.type property
+// This is done via CSS variables set by the graph renderer
+.x6-node[data-type='process'] {
   aspect-ratio: 1 / 1;
 }
 
-[data-shape-type='store'] {
+.x6-node[data-type='store'] {
   .x6-cell-body {
     rect.body {
       fill: #fff;
-      stroke: transparent;
+      stroke: transparent; // Keep sides invisible
       opacity: 1;
     }
 
@@ -227,6 +222,13 @@ tspan.v-line {
     path.bottomLine {
       stroke: #333;
       stroke-width: 2;
+    }
+
+    // Explicitly ensure left and right sides have no stroke
+    path.leftLine,
+    path.rightLine {
+      stroke: transparent;
+      stroke-width: 0;
     }
 
     text.label {

@@ -309,7 +309,7 @@ export class DfdLabelEditorService {
       tempSpan.style.position = 'absolute';
       tempSpan.style.whiteSpace = 'nowrap';
       tempSpan.style.fontSize = '12px';
-      tempSpan.style.fontFamily = '"Roboto Condensed", Arial, sans-serif';
+      tempSpan.classList.add('dfd-label'); // Use CSS class instead of inline style
       tempSpan.textContent = input.value;
       document.body.appendChild(tempSpan);
 
@@ -406,7 +406,7 @@ export class DfdLabelEditorService {
       tempSpan.style.position = 'absolute';
       tempSpan.style.whiteSpace = 'nowrap';
       tempSpan.style.fontSize = '12px';
-      tempSpan.style.fontFamily = '"Roboto Condensed", Arial, sans-serif';
+      tempSpan.classList.add('dfd-label'); // Use CSS class instead of inline style
       tempSpan.textContent = input.value;
       document.body.appendChild(tempSpan);
 

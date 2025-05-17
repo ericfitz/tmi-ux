@@ -214,9 +214,13 @@ export class DfdNodeService {
         }
       }
 
-      // Check for data-shape-type attribute
+      // Check for data-type attribute (new approach) or data-shape-type attribute (legacy)
+      const dataType = node.attr('data-type');
       const shapeType = node.attr('data-shape-type');
-      if (typeof shapeType === 'string' && shapeType.length > 0) {
+      if (
+        (typeof dataType === 'string' && dataType.length > 0) ||
+        (typeof shapeType === 'string' && shapeType.length > 0)
+      ) {
         return true;
       }
     } catch (error) {

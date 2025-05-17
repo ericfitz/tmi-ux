@@ -386,7 +386,8 @@ export class DfdEventService {
               const portId = typeof port.id === 'string' ? port.id : String(port.id);
               const portNode = view.findPortElem(portId, 'portBody');
               if (portNode) {
-                portNode.setAttribute('visibility', 'visible');
+                // Use CSS class instead of inline attribute
+                portNode.classList.add('port-connected');
               }
             }
           });
@@ -617,18 +618,41 @@ export class DfdEventService {
    * @param node The node to add attributes to
    */
   private addShapeTypeAttributes(node: Node): void {
-    // Check constructor name instead of using instanceof
-    const constructorName = node.constructor.name;
-    if (constructorName === 'ProcessShape') {
-      node.attr('data-shape-type', 'process');
-    } else if (constructorName === 'ActorShape') {
-      node.attr('data-shape-type', 'actor');
-    } else if (constructorName === 'StoreShape') {
-      node.attr('data-shape-type', 'store');
-    } else if (constructorName === 'SecurityBoundaryShape') {
-      node.attr('data-shape-type', 'securityBoundary');
-    } else if (constructorName === 'TextboxShape') {
-      node.attr('data-shape-type', 'textbox');
+    // Get the shape type from node data instead of using constructor name
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const nodeData = node.getData();
+    if (isNodeData(nodeData) && nodeData.type) {
+      // No need to add data-shape-type attribute as we're using data.type
+      this.logger.debug(`Node has type ${nodeData.type} in its data`, { nodeId: node.id });
+    } else {
+      // Fallback to constructor name if data.type is not available
+      const constructorName = node.constructor.name;
+      let type: string;
+
+      if (constructorName === 'ProcessShape') {
+        type = 'process';
+      } else if (constructorName === 'ActorShape') {
+        type = 'actor';
+      } else if (constructorName === 'StoreShape') {
+        type = 'store';
+      } else if (constructorName === 'SecurityBoundaryShape') {
+        type = 'securityBoundary';
+      } else if (constructorName === 'TextboxShape') {
+        type = 'textbox';
+      } else {
+        type = 'unknown';
+      }
+
+      // Set the type in node data
+      const safeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+      node.setData({
+        ...safeData,
+        type,
+      });
+
+      this.logger.debug(`Set type ${type} in node data based on constructor name`, {
+        nodeId: node.id,
+      });
     }
   }
 

@@ -92,12 +92,14 @@ export class DfdPortService {
               return sourcePort === portId || targetPort === portId;
             });
 
-            // Only hide ports that are not in use
+            // Use CSS classes instead of inline attributes for port visibility
             if (!isPortInUse) {
-              portNode.setAttribute('visibility', 'hidden');
+              // Remove the connected class for unused ports
+              portNode.classList.remove('port-connected');
             } else {
-              // Ensure in-use ports are visible and have a high z-index
-              portNode.setAttribute('visibility', 'visible');
+              // Add the connected class for ports with edges
+              portNode.classList.add('port-connected');
+              // Keep the z-index attribute for stacking order
               portNode.setAttribute('z-index', '1000');
             }
           }
@@ -158,7 +160,8 @@ export class DfdPortService {
           const portId = port.id;
           const portNode = nodeView.findPortElem(portId, 'portBody');
           if (portNode) {
-            portNode.setAttribute('visibility', 'visible');
+            // Use CSS class for visibility
+            portNode.classList.add('port-connected');
             // Ensure port is above other elements by setting a high z-index
             portNode.setAttribute('z-index', '1000');
           }

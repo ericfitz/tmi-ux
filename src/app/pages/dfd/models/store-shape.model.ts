@@ -50,15 +50,22 @@ export const StoreShape = Shape.Rect.define({
     },
     body: {
       class: 'store-shape',
+      fill: '#fff',
+      stroke: 'transparent', // Make left and right sides invisible
+      strokeWidth: 0,
     },
     topLine: {
       class: 'store-top-line',
       refD: 'M 0 0 l 200 0',
+      stroke: '#333', // Visible top line
+      strokeWidth: 2,
     },
     bottomLine: {
       class: 'store-bottom-line',
       refY: '100%', // Position at the bottom of the shape
       refD: 'M 0 0 l 200 0',
+      stroke: '#333', // Visible bottom line
+      strokeWidth: 2,
     },
     label: {
       text: 'Store',
@@ -78,8 +85,12 @@ export const StoreShape = Shape.Rect.define({
           portBody: {
             magnet: 'active',
             r: 5,
-            class: 'port-body',
+            class: 'x6-port-body',
             'port-anchor': 'center',
+            fill: 'transparent',
+            stroke: '#5f95ff',
+            strokeWidth: 1,
+            visibility: 'hidden',
           },
         },
       },
@@ -91,8 +102,12 @@ export const StoreShape = Shape.Rect.define({
           portBody: {
             magnet: 'active',
             r: 5,
-            class: 'port-body',
+            class: 'x6-port-body',
             'port-anchor': 'center',
+            fill: 'transparent',
+            stroke: '#5f95ff',
+            strokeWidth: 1,
+            visibility: 'hidden',
           },
         },
       },
@@ -104,8 +119,12 @@ export const StoreShape = Shape.Rect.define({
           portBody: {
             magnet: 'active',
             r: 5,
-            class: 'port-body',
+            class: 'x6-port-body',
             'port-anchor': 'center',
+            fill: 'transparent',
+            stroke: '#5f95ff',
+            strokeWidth: 1,
+            visibility: 'hidden',
           },
         },
       },
@@ -117,8 +136,12 @@ export const StoreShape = Shape.Rect.define({
           portBody: {
             magnet: 'active',
             r: 5,
-            class: 'port-body',
+            class: 'x6-port-body',
             'port-anchor': 'center',
+            fill: 'transparent',
+            stroke: '#5f95ff',
+            strokeWidth: 1,
+            visibility: 'hidden',
           },
         },
       },

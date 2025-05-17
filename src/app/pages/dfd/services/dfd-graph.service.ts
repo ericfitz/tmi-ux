@@ -220,7 +220,6 @@ export class DfdGraphService {
                 label: {
                   text: 'Flow',
                   class: 'dfd-label', // Use CSS class for styling
-                  fontFamily: 'Roboto Condensed, Arial, sans-serif',
                   fontSize: 12,
                   fill: '#333',
                   textAnchor: 'middle',
@@ -241,7 +240,6 @@ export class DfdGraphService {
                     text: {
                       text: 'Flow',
                       class: 'dfd-label', // Use CSS class for styling
-                      fontFamily: 'Roboto Condensed, Arial, sans-serif',
                       fontSize: 12,
                       fill: '#333',
                       textAnchor: 'middle',
@@ -942,7 +940,6 @@ export class DfdGraphService {
             class: 'dfd-label',
             display: 'block',
             opacity: 1,
-            fontFamily: 'Roboto Condensed, Arial, sans-serif',
             fontSize: 12,
             fill: '#333',
             textAnchor: 'middle',
@@ -996,8 +993,16 @@ export class DfdGraphService {
 
             // Set a data attribute to help identify the node type
             if (shapeType) {
-              // Set the data-shape-type attribute for CSS targeting
-              node.attr('data-shape-type', shapeType);
+              // Set the data-type attribute for CSS targeting
+              node.attr('data-type', shapeType);
+
+              // Update the node data to include the type
+              const existingData = node.getData<NodeData>();
+              const safeData: NodeData = isNodeData(existingData) ? existingData : {};
+              node.setData({
+                ...safeData,
+                type: shapeType,
+              });
 
               // Store specific setup (with two horizontal lines and no overall border)
               if (shapeType === 'store') {

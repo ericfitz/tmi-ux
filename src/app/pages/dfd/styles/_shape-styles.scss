@@ -1,6 +1,16 @@
 // Shape styles for DFD components
 // These styles are used by the shape definitions
 
+// Common label styles mixin for all shapes
+@mixin shape-label-styles {
+  fill: #333;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
 // Actor shape styles
 .actor-shape {
   fill: #fff;
@@ -10,12 +20,7 @@
 }
 
 .actor-label {
-  fill: #333;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  pointer-events: none;
+  @include shape-label-styles;
 }
 
 // Process shape styles
@@ -27,12 +32,7 @@
 }
 
 .process-label {
-  fill: #333;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  pointer-events: none;
+  @include shape-label-styles;
 }
 
 // Store shape styles
@@ -49,12 +49,7 @@
 }
 
 .store-label {
-  fill: #333;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  pointer-events: none;
+  @include shape-label-styles;
 }
 
 // Security Boundary shape styles
@@ -69,12 +64,7 @@
 }
 
 .security-boundary-label {
-  fill: #333;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  pointer-events: none;
+  @include shape-label-styles;
 }
 
 // Textbox shape styles
@@ -93,21 +83,43 @@
   height: 100%;
   padding: 5px;
   box-sizing: border-box;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
   color: #333;
   overflow: auto;
   word-wrap: break-word;
   text-align: left;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
-// Port styles
-.port-body {
-  r: 5;
-  stroke: #5f95ff;
-  fill: #fff;
-  stroke-width: 1;
-  visibility: hidden; // Hide ports by default
+// Generic dfd-label class used by all shapes
+.dfd-label {
+  @include shape-label-styles;
+}
+
+// More specific selectors to override inline styles
+.x6-graph text.actor-label,
+.x6-graph text.process-label,
+.x6-graph text.store-label,
+.x6-graph text.security-boundary-label,
+.x6-graph text.dfd-label {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+}
+
+// Target SVG text elements with font-family attribute
+svg text[font-family] {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+}
+
+// Port visibility rules
+// 1. Ports are hidden by default (set in shape models)
+// 2. Connected ports are always visible
+.port-connected {
+  visibility: visible;
+}
+
+// 3. All ports become visible on node hover
+.x6-node:hover .x6-port-body {
+  visibility: visible;
 }
 
 // Selected state
