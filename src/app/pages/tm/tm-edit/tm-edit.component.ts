@@ -524,4 +524,76 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this.threatModel.modified_at = new Date().toISOString();
     }
   }
+
+  /**
+   * Adds a new permission to the threat model
+   */
+  addPermission(): void {
+    if (!this.threatModel) {
+      return;
+    }
+
+    // Initialize authorization array if it doesn't exist
+    if (!this.threatModel.authorization) {
+      this.threatModel.authorization = [];
+    }
+
+    // Add a new empty permission item
+    this.threatModel.authorization.push({
+      subject: '',
+      role: 'reader',
+    });
+
+    // Update the modified timestamp
+    this.threatModel.modified_at = new Date().toISOString();
+  }
+
+  /**
+   * Updates the subject (user) of a permission
+   * @param index The index of the permission to update
+   * @param event The blur event containing the new subject value
+   */
+  updatePermissionSubject(index: number, event: Event): void {
+    if (!this.threatModel || !this.threatModel.authorization) {
+      return;
+    }
+
+    const input = event.target as HTMLInputElement;
+    if (index >= 0 && index < this.threatModel.authorization.length) {
+      this.threatModel.authorization[index].subject = input.value;
+      this.threatModel.modified_at = new Date().toISOString();
+    }
+  }
+
+  /**
+   * Updates the role of a permission
+   * @param index The index of the permission to update
+   * @param event The selection change event containing the new role value
+   */
+  updatePermissionRole(index: number, event: { value: 'reader' | 'writer' | 'owner' }): void {
+    if (!this.threatModel || !this.threatModel.authorization) {
+      return;
+    }
+
+    if (index >= 0 && index < this.threatModel.authorization.length) {
+      this.threatModel.authorization[index].role = event.value;
+      this.threatModel.modified_at = new Date().toISOString();
+    }
+  }
+
+  /**
+   * Deletes a permission from the threat model
+   * @param index The index of the permission to delete
+   */
+  deletePermission(index: number): void {
+    if (!this.threatModel || !this.threatModel.authorization) {
+      return;
+    }
+
+    // Don't allow deleting the first permission (owner)
+    if (index > 0 && index < this.threatModel.authorization.length) {
+      this.threatModel.authorization.splice(index, 1);
+      this.threatModel.modified_at = new Date().toISOString();
+    }
+  }
 }

@@ -41,6 +41,24 @@
   }
 }
 
+.metadata-permissions-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  grid-column: 1 / -1;
+
+  @media (width >= 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.metadata-card,
+.permissions-card {
+  @media (width >= 768px) {
+    grid-column: auto;
+  }
+}
+
 mat-card-header {
   display: flex;
   justify-content: space-between;
@@ -124,6 +142,10 @@ mat-card-header {
 }
 
 .metadata-field {
+  width: 90%;
+}
+
+.permission-field {
   width: 90%;
 }
 

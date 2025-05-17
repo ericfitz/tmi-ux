@@ -80,20 +80,23 @@
             </mat-error>
           </mat-form-field>
         </form>
+      </mat-card-content>
+    </mat-card>
 
-        <div class="metadata-section">
-          <mat-card-header>
-            <mat-card-title [transloco]="'threatModels.metadata'">Metadata</mat-card-title>
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="addMetadataItem()"
-              [matTooltip]="'Add Metadata'"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
-          </mat-card-header>
-
+    <div class="metadata-permissions-row">
+      <mat-card class="metadata-card">
+        <mat-card-header>
+          <mat-card-title [transloco]="'threatModels.metadata'">Metadata</mat-card-title>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="addMetadataItem()"
+            [matTooltip]="'Add Metadata'"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
           <mat-grid-list cols="3" rowHeight="70px" *ngIf="threatModel.metadata?.length">
             <mat-grid-tile colspan="1">
               <div class="grid-header">Key</div>
@@ -142,9 +145,76 @@
           <div *ngIf="!threatModel.metadata?.length" class="no-items-message">
             {{ 'threatModels.noMetadata' | transloco }}
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="permissions-card">
+        <mat-card-header>
+          <mat-card-title [transloco]="'threatModels.permissions'">Permissions</mat-card-title>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="addPermission()"
+            [matTooltip]="'threatModels.addPermission' | transloco"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-grid-list cols="3" rowHeight="70px" *ngIf="threatModel.authorization?.length">
+            <mat-grid-tile colspan="1">
+              <div class="grid-header">{{ 'threatModels.permissionsUser' | transloco }}</div>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1">
+              <div class="grid-header">{{ 'threatModels.permissionsRole' | transloco }}</div>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1">
+              <div class="grid-header">Actions</div>
+            </mat-grid-tile>
+
+            <ng-container *ngFor="let auth of threatModel.authorization; let i = index">
+              <mat-grid-tile colspan="1">
+                <mat-form-field appearance="outline" class="permission-field">
+                  <input
+                    matInput
+                    [value]="auth.subject"
+                    (blur)="updatePermissionSubject(i, $event)"
+                    placeholder="User Email"
+                  />
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="1">
+                <mat-form-field appearance="outline" class="permission-field">
+                  <mat-select
+                    [value]="auth.role"
+                    (selectionChange)="updatePermissionRole(i, $event)"
+                  >
+                    <mat-option value="owner">Owner</mat-option>
+                    <mat-option value="writer">Writer</mat-option>
+                    <mat-option value="reader">Reader</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="1">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deletePermission(i)"
+                  [matTooltip]="'Delete'"
+                  [disabled]="i === 0"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-grid-tile>
+            </ng-container>
+          </mat-grid-list>
+
+          <div *ngIf="!threatModel.authorization?.length" class="no-items-message">
+            {{ 'threatModels.noPermissions' | transloco }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
     <mat-card class="threats-card">
       <mat-card-header>
