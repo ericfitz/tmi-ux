@@ -15,7 +15,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Node, Cell } from '@antv/x6';
@@ -81,6 +81,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private stateStore: DfdStateStore,
     private commandService: DfdCommandService,
     private route: ActivatedRoute,
+    private router: Router,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
   ) {
@@ -605,5 +606,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }),
         );
       });
+  }
+
+  /**
+   * Closes the diagram and navigates back to the threat model editor page
+   */
+  closeDiagram(): void {
+    this.logger.info('Closing diagram', { diagramId: this.dfdId });
+
+    if (this.threatModelId) {
+      // Navigate back to the threat model editor page
+      void this.router.navigate(['/tm', this.threatModelId]);
+    } else {
+      // Fallback to the threat models list if no threat model ID is available
+      void this.router.navigate(['/tm']);
+    }
   }
 }

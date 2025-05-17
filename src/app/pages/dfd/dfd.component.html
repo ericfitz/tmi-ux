@@ -150,7 +150,7 @@
 
       <button
         mat-icon-button
-        [disabled]="true"
+        (click)="closeDiagram()"
         [matTooltip]="'editor.toolbar.tooltips.close' | transloco"
       >
         <mat-icon

@@ -1,6 +1,35 @@
 <h2 mat-dialog-title>{{ dialogTitle | transloco }}</h2>
-<mat-dialog-content>
-  <form [formGroup]="threatForm" class="dialog-form">
+<mat-dialog-content [dir]="currentDirection">
+  <!-- Threat ID and timestamps section -->
+  <div class="info-section" *ngIf="data.threat" [dir]="currentDirection">
+    <div class="info-field">
+      <span class="info-label">{{ 'threatModels.threatId' | transloco }}:</span>
+      <span class="info-value">{{ data.threat.id }}</span>
+      <button
+        mat-icon-button
+        class="copy-button"
+        (click)="copyToClipboard(data.threat.id)"
+        matTooltip="{{ 'threatModels.copyToClipboard' | transloco }}"
+        [attr.aria-label]="'threatModels.copyToClipboard' | transloco"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </div>
+    <div class="info-field">
+      <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
+      <span class="info-value">{{
+        data.threat.created_at | date: 'longDate' : undefined : currentLocale
+      }}</span>
+    </div>
+    <div class="info-field">
+      <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
+      <span class="info-value">{{
+        data.threat.modified_at | date: 'longDate' : undefined : currentLocale
+      }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="threatForm" class="dialog-form" [dir]="currentDirection">
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.threatName' | transloco }}</mat-label>
@@ -27,6 +56,21 @@
           {{ 'validation.maxLength' | transloco: { max: 500 } }}
         </mat-error>
       </mat-form-field>
+    </div>
+
+    <!-- Metadata section -->
+    <div class="metadata-section" *ngIf="hasMetadata()">
+      <h3>{{ 'threatModels.metadata' | transloco }}</h3>
+      <div class="metadata-grid" [dir]="currentDirection">
+        <div class="metadata-header">
+          <div class="metadata-key-header">{{ 'threatModels.metadataKey' | transloco }}</div>
+          <div class="metadata-value-header">{{ 'threatModels.metadataValue' | transloco }}</div>
+        </div>
+        <div class="metadata-row" *ngFor="let item of getMetadata()">
+          <div class="metadata-key">{{ item.key }}</div>
+          <div class="metadata-value">{{ item.value }}</div>
+        </div>
+      </div>
     </div>
   </form>
 </mat-dialog-content>

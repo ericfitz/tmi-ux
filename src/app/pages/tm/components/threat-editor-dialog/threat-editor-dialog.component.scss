@@ -19,3 +19,112 @@ mat-dialog-content {
   margin-top: 16px;
   margin-bottom: 8px;
 }
+
+// Info section styles
+.info-section {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.info-field {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 14px;
+  align-items: center;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.info-label {
+  font-weight: 500;
+  min-width: 120px;
+  color: rgb(0 0 0 / 70%);
+}
+
+.info-value {
+  color: rgb(0 0 0 / 87%);
+  flex: 1;
+}
+
+.copy-button {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  margin-inline-start: 8px; // Use logical property for RTL support
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+}
+
+// Metadata section styles
+.metadata-section {
+  margin-top: 24px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+}
+
+.metadata-grid {
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metadata-header {
+  display: flex;
+  background-color: #f5f5f5;
+  font-weight: 500;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+}
+
+.metadata-key-header,
+.metadata-value-header {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.metadata-key-header {
+  flex: 1;
+  border-inline-end: 1px solid rgb(0 0 0 / 12%); // Use logical property for RTL support
+}
+
+.metadata-value-header {
+  flex: 2;
+}
+
+.metadata-row {
+  display: flex;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.metadata-key,
+.metadata-value {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.metadata-key {
+  flex: 1;
+  border-inline-end: 1px solid rgb(0 0 0 / 12%); // Use logical property for RTL support
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+.metadata-value {
+  flex: 2;
+}
