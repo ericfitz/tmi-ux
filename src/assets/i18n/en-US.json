@@ -154,7 +154,11 @@
       "addThreat": "Add Threat",
       "addDiagram": "Add Diagram",
       "viewThreat": "View Threat",
-      "editThreat": "Edit Threat"
+      "editThreat": "Edit Threat",
+      "renameDiagram": "Rename Diagram",
+      "deleteDiagram": "Delete Diagram",
+      "openDiagram": "Open Diagram",
+      "deleteThreat": "Delete Threat"
     },
     "createNewThreat": "Create New Threat",
     "editThreat": "Edit Threat",
@@ -163,6 +167,8 @@
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the threat in detail",
     "createNewDiagram": "Create New Diagram",
+    "renameDiagram": "Rename Diagram",
+    "rename": "Rename",
     "diagramName": "Diagram Name"
   },
   "editor": {

@@ -26,6 +26,35 @@
         <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
       </mat-card-header>
       <mat-card-content>
+        <!-- Threat Model ID and timestamps section -->
+        <div class="info-section" *ngIf="threatModel && !isNewThreatModel" [dir]="currentDirection">
+          <div class="info-field">
+            <span class="info-label">{{ 'threatModels.idLabel' | transloco }}</span>
+            <span class="info-value">{{ threatModel.id }}</span>
+            <button
+              mat-icon-button
+              class="copy-button"
+              (click)="copyToClipboard(threatModel.id)"
+              matTooltip="{{ 'threatModels.copyToClipboard' | transloco }}"
+              [attr.aria-label]="'threatModels.copyToClipboard' | transloco"
+            >
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          <div class="info-field">
+            <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
+            <span class="info-value">{{
+              threatModel.created_at | date: 'medium' : undefined : currentLocale
+            }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
+            <span class="info-value">{{
+              threatModel.modified_at | date: 'medium' : undefined : currentLocale
+            }}</span>
+          </div>
+        </div>
+
         <form [formGroup]="threatModelForm" class="threat-model-form">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'threatModels.name'">Name</mat-label>
@@ -53,11 +82,63 @@
         </form>
 
         <div class="metadata-section">
-          <h3 [transloco]="'threatModels.metadata'">Metadata</h3>
-          <div class="metadata-item" *ngFor="let item of threatModel.metadata">
-            <span class="metadata-key">{{ item.key }}:</span>
-            <span class="metadata-value">{{ item.value }}</span>
-          </div>
+          <mat-card-header>
+            <mat-card-title [transloco]="'threatModels.metadata'">Metadata</mat-card-title>
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="addMetadataItem()"
+              [matTooltip]="'Add Metadata'"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </mat-card-header>
+
+          <mat-grid-list cols="3" rowHeight="70px" *ngIf="threatModel.metadata?.length">
+            <mat-grid-tile colspan="1">
+              <div class="grid-header">Key</div>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1">
+              <div class="grid-header">Value</div>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1">
+              <div class="grid-header">Actions</div>
+            </mat-grid-tile>
+
+            <ng-container *ngFor="let item of threatModel.metadata; let i = index">
+              <mat-grid-tile colspan="1">
+                <mat-form-field appearance="outline" class="metadata-field">
+                  <input
+                    matInput
+                    [value]="item.key"
+                    (blur)="updateMetadataKey(i, $event)"
+                    placeholder="Key"
+                  />
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="1">
+                <mat-form-field appearance="outline" class="metadata-field">
+                  <input
+                    matInput
+                    [value]="item.value"
+                    (blur)="updateMetadataValue(i, $event)"
+                    placeholder="Value"
+                  />
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="1">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteMetadataItem(i)"
+                  [matTooltip]="'Delete'"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-grid-tile>
+            </ng-container>
+          </mat-grid-list>
+
           <div *ngIf="!threatModel.metadata?.length" class="no-items-message">
             {{ 'threatModels.noMetadata' | transloco }}
           </div>
@@ -87,6 +168,16 @@
             <mat-icon matListItemIcon>warning</mat-icon>
             <div matListItemTitle>{{ threat.name }}</div>
             <div matListItemLine>{{ threat.description }}</div>
+            <div matListItemMeta>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteThreat(threat, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteThreat' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </mat-list-item>
         </mat-list>
         <div *ngIf="!threatModel.threats?.length" class="no-items-message">
@@ -111,11 +202,29 @@
         <mat-list>
           <mat-list-item
             *ngFor="let diagram of diagrams"
+            class="diagram-item"
             [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
-            class="diagram-link"
           >
-            <mat-icon matListItemIcon>account_tree</mat-icon>
+            <mat-icon matListItemIcon class="material-symbols-outlined">graph_3</mat-icon>
             <div matListItemTitle>{{ diagram.name }}</div>
+            <div matListItemMeta>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="renameDiagram(diagram, $event)"
+                [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteDiagram(diagram, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </mat-list-item>
         </mat-list>
         <div *ngIf="!threatModel.diagrams?.length" class="no-items-message">

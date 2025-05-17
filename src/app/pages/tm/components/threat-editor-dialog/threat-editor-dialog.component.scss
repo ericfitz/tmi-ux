@@ -51,16 +51,22 @@ mat-dialog-content {
 }
 
 .copy-button {
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
   margin-inline-start: 8px; // Use logical property for RTL support
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   .mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

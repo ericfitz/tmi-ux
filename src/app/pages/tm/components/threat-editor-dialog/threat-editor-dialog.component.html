@@ -18,13 +18,13 @@
     <div class="info-field">
       <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
       <span class="info-value">{{
-        data.threat.created_at | date: 'longDate' : undefined : currentLocale
+        data.threat.created_at | date: 'medium' : undefined : currentLocale
       }}</span>
     </div>
     <div class="info-field">
       <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
       <span class="info-value">{{
-        data.threat.modified_at | date: 'longDate' : undefined : currentLocale
+        data.threat.modified_at | date: 'medium' : undefined : currentLocale
       }}</span>
     </div>
   </div>
