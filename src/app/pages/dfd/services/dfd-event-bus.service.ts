@@ -12,6 +12,8 @@ export enum DfdEventType {
   NodeDeleted = 'nodeDeleted',
   NodeMoved = 'nodeMoved',
   NodeResized = 'nodeResized',
+  NodeHovered = 'nodeHovered',
+  NodeUnhovered = 'nodeUnhovered',
   EdgeCreated = 'edgeCreated',
   EdgeRemoved = 'edgeRemoved',
   GraphChanged = 'graphChanged',
@@ -99,6 +101,17 @@ export interface CellContextMenuEvent extends DfdEvent {
 /**
  * Union type for all possible events
  */
+/**
+ * Node hover event
+ */
+export interface NodeHoverEvent extends NodeEvent {
+  // Add a property to distinguish this event type
+  hoverState: 'enter' | 'leave';
+}
+
+/**
+ * Union type for all possible events
+ */
 export type DfdEventPayload =
   | NodeEvent
   | EdgeEvent
@@ -107,7 +120,8 @@ export type DfdEventPayload =
   | PortVisibilityEvent
   | GraphChangedEvent
   | NodeDeletedEvent
-  | CellContextMenuEvent;
+  | CellContextMenuEvent
+  | NodeHoverEvent;
 
 /**
  * Event bus service for DFD component

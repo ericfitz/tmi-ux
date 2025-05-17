@@ -28,6 +28,10 @@ export class DfdPortService {
    * Hides all unused ports on all nodes in the graph
    * @param graph The X6 graph instance
    */
+  /**
+   * Hides all unused ports on all nodes in the graph
+   * @param graph The X6 graph instance
+   */
   hideUnusedPortsOnAllNodes(graph: Graph): void {
     if (!graph) {
       return;
@@ -44,6 +48,52 @@ export class DfdPortService {
           this.hideUnusedPortsOnNode(graph, node, nodeView as NodeView);
         }
       }
+    });
+  }
+
+  /**
+   * Updates the visibility state of a specific port
+   * @param graph The X6 graph instance
+   * @param node The node containing the port
+   * @param portId The ID of the port
+   * @param state The visibility state to apply ('visible', 'connected', or null to hide)
+   */
+  updatePortVisibility(
+    graph: Graph,
+    node: Node,
+    portId: string,
+    state: 'visible' | 'connected' | null,
+  ): void {
+    if (!graph || !node || !portId) {
+      return;
+    }
+
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView || !(nodeView instanceof NodeView)) {
+      return;
+    }
+
+    const portNode = nodeView.findPortElem(portId, 'portBody');
+    if (!portNode) {
+      return;
+    }
+
+    // Remove all state classes first
+    portNode.classList.remove('port-visible', 'port-connected');
+
+    // Apply the requested state
+    if (state === 'visible') {
+      portNode.classList.add('port-visible');
+    } else if (state === 'connected') {
+      portNode.classList.add('port-connected');
+    }
+
+    // Log the port visibility change
+    this.logger.debug('Port visibility updated', {
+      nodeId: node.id,
+      portId,
+      state,
+      classes: portNode.className,
     });
   }
 
@@ -92,15 +142,13 @@ export class DfdPortService {
               return sourcePort === portId || targetPort === portId;
             });
 
-            // Use CSS classes instead of inline attributes for port visibility
-            if (!isPortInUse) {
-              // Remove the connected class for unused ports
-              portNode.classList.remove('port-connected');
-            } else {
+            // Use our new updatePortVisibility method
+            if (isPortInUse) {
               // Add the connected class for ports with edges
               portNode.classList.add('port-connected');
-              // Keep the z-index attribute for stacking order
-              portNode.setAttribute('z-index', '1000');
+            } else {
+              // Remove all visibility classes for unused ports
+              portNode.classList.remove('port-visible', 'port-connected');
             }
           }
         }
@@ -160,10 +208,8 @@ export class DfdPortService {
           const portId = port.id;
           const portNode = nodeView.findPortElem(portId, 'portBody');
           if (portNode) {
-            // Use CSS class for visibility
-            portNode.classList.add('port-connected');
-            // Ensure port is above other elements by setting a high z-index
-            portNode.setAttribute('z-index', '1000');
+            // Use port-visible class for temporarily showing all ports
+            portNode.classList.add('port-visible');
           }
         }
       }

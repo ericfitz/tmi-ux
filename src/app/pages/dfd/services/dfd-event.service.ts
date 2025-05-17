@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Node } from '@antv/x6';
+import { Graph, Node, Cell, Edge } from '@antv/x6';
 import { History } from '@antv/x6-plugin-history';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -8,7 +8,7 @@ import { DfdPortService } from './dfd-port.service';
 import { DfdNodeService } from './dfd-node.service';
 import { DfdLabelEditorService } from './dfd-label-editor.service';
 import { NodeData } from '../models/node-data.interface';
-import { DfdEventBusService, DfdEventType } from './dfd-event-bus.service';
+import { DfdEventBusService, DfdEventType, DfdEventPayload } from './dfd-event-bus.service';
 
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
@@ -39,6 +39,10 @@ export class DfdEventService {
    * Sets up event handlers for the graph
    * @param graph The X6 graph instance
    */
+  /**
+   * Sets up event handlers for the graph
+   * @param graph The X6 graph instance
+   */
   setupEventHandlers(graph: Graph): void {
     if (!graph) {
       return;
@@ -47,6 +51,9 @@ export class DfdEventService {
     // Create highlighters for nodes and edges
     const nodeHighlighter = this.highlighterService.createNodeHighlighter();
     const edgeHighlighter = this.highlighterService.createEdgeHighlighter();
+
+    // Register all X6 events to forward to the event bus
+    this.registerX6EventForwarding(graph);
 
     // Handle node:change:parent event to update nodes when they're embedded or un-embedded
     this.setupEmbeddingEvents(graph);
@@ -65,6 +72,106 @@ export class DfdEventService {
 
     // Handle context menu events
     this.setupContextMenuEvents(graph);
+  }
+
+  /**
+   * Registers event forwarding from X6 to our event bus
+   * @param graph The X6 graph instance
+   */
+  private registerX6EventForwarding(graph: Graph): void {
+    // List of X6 events to forward to our event bus
+    const eventsToForward = [
+      'node:added',
+      'node:removed',
+      'node:moved',
+      'node:resized',
+      'node:rotated',
+      'edge:added',
+      'edge:removed',
+      'edge:connected',
+      'blank:click',
+      'blank:dblclick',
+      'cell:change',
+    ];
+
+    // Register listeners for each event
+    eventsToForward.forEach(eventName => {
+      graph.on(eventName, (args: { node?: Node; edge?: Edge; cell?: Cell }) => {
+        // Transform X6 event to our typed event
+        const event = this.transformX6Event(eventName, args);
+        if (event) {
+          // Publish to our event bus
+          this.eventBus.publish(event);
+        }
+      });
+    });
+  }
+
+  /**
+   * Transforms an X6 event to our typed event format
+   * @param eventName The X6 event name
+   * @param args The event arguments from X6
+   * @returns A typed event for our event bus, or undefined if not applicable
+   */
+  private transformX6Event(
+    eventName: string,
+    args: { node?: Node; edge?: Edge; cell?: Cell },
+  ): DfdEventPayload | undefined {
+    const timestamp = Date.now();
+
+    // Map X6 events to our event types
+    switch (eventName) {
+      case 'node:added':
+        return {
+          type: DfdEventType.GraphChanged,
+          cells: args.node ? [args.node] : [],
+          added: args.node ? [args.node] : [],
+          timestamp,
+        };
+      case 'node:removed':
+        return {
+          type: DfdEventType.NodeDeleted,
+          nodeId: args.node?.id || '',
+          timestamp,
+        };
+      case 'node:moved':
+        return {
+          type: DfdEventType.NodeMoved,
+          node: args.node as Node,
+          timestamp,
+        };
+      case 'edge:added':
+        return {
+          type: DfdEventType.EdgeCreated,
+          edge: args.edge as Edge,
+          source: args.edge?.getSourceCell() as Node | undefined,
+          target: args.edge?.getTargetCell() as Node | undefined,
+          timestamp,
+        };
+      case 'edge:removed':
+        return {
+          type: DfdEventType.EdgeRemoved,
+          edge: args.edge as Edge,
+          timestamp,
+        };
+      case 'edge:connected':
+        return {
+          type: DfdEventType.EdgeCreated,
+          edge: args.edge as Edge,
+          source: args.edge?.getSourceCell() as Node | undefined,
+          target: args.edge?.getTargetCell() as Node | undefined,
+          timestamp,
+        };
+      case 'cell:change':
+        return {
+          type: DfdEventType.GraphChanged,
+          cells: args.cell ? [args.cell] : [],
+          timestamp,
+        };
+      default:
+        // For events we don't have a specific mapping for
+        return undefined;
+    }
   }
 
   /**
@@ -348,50 +455,39 @@ export class DfdEventService {
    * @param graph The X6 graph instance
    * @param nodeHighlighter The node highlighter configuration
    */
+  /**
+   * Sets up node hover events
+   * @param graph The X6 graph instance
+   * @param nodeHighlighter The node highlighter configuration
+   */
   private setupNodeHoverEvents(graph: Graph, nodeHighlighter: HighlighterConfig): void {
     // Handle node hover
-    graph.on('node:mouseenter', ({ view }) => {
+    graph.on('node:mouseenter', ({ view, cell }) => {
       // Highlight the node using the view
       view.highlight(null, {
         highlighter: nodeHighlighter,
       });
 
+      // Add hover class to the node element
+      const nodeElement = view.container;
+      if (nodeElement) {
+        nodeElement.classList.add('is-hovered');
+      }
+
       // Show ports when hovering over the node
-      if (this.nodeService.isDfdNode(view.cell)) {
-        const node = view.cell;
-        const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
-          'top',
-          'right',
-          'bottom',
-          'left',
-        ];
+      if (this.nodeService.isDfdNode(cell)) {
+        const node = cell;
 
-        directions.forEach(direction => {
-          // Use a more specific type for the node
-          const dfdNode = node as Node & {
-            getPortsByGroup: (group: string) => Array<{ id: string | number | undefined }>;
-          };
-          const constructorName = node.constructor.name;
-          const ports =
-            constructorName === 'ActorShape' ||
-            constructorName === 'ProcessShape' ||
-            constructorName === 'StoreShape' ||
-            constructorName === 'SecurityBoundaryShape'
-              ? dfdNode.getPortsByGroup(direction)
-              : [];
-
-          // Use a more specific type for the port
-          ports.forEach(port => {
-            if (port.id !== undefined) {
-              const portId = typeof port.id === 'string' ? port.id : String(port.id);
-              const portNode = view.findPortElem(portId, 'portBody');
-              if (portNode) {
-                // Use CSS class instead of inline attribute
-                portNode.classList.add('port-connected');
-              }
-            }
-          });
+        // Publish node hover event to the event bus
+        this.eventBus.publish({
+          type: DfdEventType.NodeHovered,
+          node,
+          hoverState: 'enter',
+          timestamp: Date.now(),
         });
+
+        // Show ports using our port service
+        this.showNodePorts(graph, node);
       }
     });
 
@@ -402,15 +498,73 @@ export class DfdEventService {
         highlighter: nodeHighlighter,
       });
 
+      // Remove hover class from the node element
+      const nodeElement = view.container;
+      if (nodeElement) {
+        nodeElement.classList.remove('is-hovered');
+      }
+
       // Only remove tools if the node is not selected
       if (cell !== this._selectedNode) {
         cell.removeTools();
       }
 
-      // Hide ports when not hovering, except for ports that are in use
+      // Publish node unhover event to the event bus
       if (this.nodeService.isDfdNode(cell)) {
+        this.eventBus.publish({
+          type: DfdEventType.NodeUnhovered,
+          node: cell,
+          hoverState: 'leave',
+          timestamp: Date.now(),
+        });
+
+        // Hide unused ports
         this.portService.hideUnusedPortsOnAllNodes(graph);
       }
+    });
+  }
+
+  /**
+   * Shows all ports on a node
+   * @param graph The X6 graph instance
+   * @param node The node to show ports on
+   */
+  private showNodePorts(graph: Graph, node: Node): void {
+    if (!graph || !node) return;
+
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView) return;
+
+    const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ];
+
+    directions.forEach(direction => {
+      // Use a more specific type for the node
+      const dfdNode = node as Node & {
+        getPortsByGroup: (group: string) => Array<{ id: string | number | undefined }>;
+      };
+      const constructorName = node.constructor.name;
+      const ports =
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
+          ? dfdNode.getPortsByGroup(direction)
+          : [];
+
+      // Use a more specific type for the port
+      ports.forEach(port => {
+        if (port.id !== undefined) {
+          const portId = typeof port.id === 'string' ? port.id : String(port.id);
+
+          // Use our port service to update port visibility
+          this.portService.updatePortVisibility(graph, node, portId, 'visible');
+        }
+      });
     });
   }
 
@@ -431,10 +585,11 @@ export class DfdEventService {
         // Remove tools from the previously selected node
         this._selectedNode.removeTools();
 
-        // Remove selection styling
-        this._selectedNode.attr('selected', false);
-
-        // No need to remove label drag handle anymore
+        // Remove selection styling using CSS class
+        const prevView = graph.findViewByCell(this._selectedNode);
+        if (prevView && prevView.container) {
+          prevView.container.classList.remove('is-selected');
+        }
       }
 
       // If the node is already selected, do nothing (keep it selected)
@@ -442,8 +597,11 @@ export class DfdEventService {
         // Select the clicked node
         this._selectedNode = cell;
 
-        // Add selection styling
-        cell.attr('selected', true);
+        // Add selection styling using CSS class
+        const view = graph.findViewByCell(cell);
+        if (view && view.container) {
+          view.container.classList.add('is-selected');
+        }
 
         // Add tools to the selected node (remove button and boundary)
         const tools = [
@@ -473,8 +631,6 @@ export class DfdEventService {
         // Add data attributes for shape types to enable CSS targeting
         this.addShapeTypeAttributes(cell);
 
-        // No need to show label drag handle anymore
-
         // Publish event that a node was selected
         this.eventBus.publishNodeSelected(cell);
         this.logger.debug('Node selected', { nodeId: cell.id });
@@ -487,10 +643,11 @@ export class DfdEventService {
         // Remove all tools from the selected node
         this._selectedNode.removeTools();
 
-        // Remove selection styling
-        this._selectedNode.attr('selected', false);
-
-        // No need to remove label drag handle anymore
+        // Remove selection styling using CSS class
+        const view = graph.findViewByCell(this._selectedNode);
+        if (view && view.container) {
+          view.container.classList.remove('is-selected');
+        }
 
         // Publish event that a node was deselected
         this.eventBus.publishNodeDeselected();
@@ -619,8 +776,7 @@ export class DfdEventService {
    */
   private addShapeTypeAttributes(node: Node): void {
     // Get the shape type from node data instead of using constructor name
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const nodeData = node.getData();
+    const nodeData: unknown = node.getData();
     if (isNodeData(nodeData) && nodeData.type) {
       // No need to add data-shape-type attribute as we're using data.type
       this.logger.debug(`Node has type ${nodeData.type} in its data`, { nodeId: node.id });
@@ -665,8 +821,11 @@ export class DfdEventService {
       // Remove tools from the selected node
       this._selectedNode.removeTools();
 
-      // Remove selection styling
-      this._selectedNode.attr('selected', false);
+      // Remove selection styling using CSS class
+      const view = graph.findViewByCell(this._selectedNode);
+      if (view && view.container) {
+        view.container.classList.remove('is-selected');
+      }
 
       // Clear selection
       this._selectedNode = null;
@@ -677,7 +836,10 @@ export class DfdEventService {
 
     // Make sure no other nodes have selection styling
     graph.getNodes().forEach(node => {
-      node.attr('selected', false);
+      const view = graph.findViewByCell(node);
+      if (view && view.container) {
+        view.container.classList.remove('is-selected');
+      }
       node.removeTools();
     });
 
@@ -694,11 +856,8 @@ export class DfdEventService {
   selectNode(node: Node): void {
     if (!node) return;
 
-    // No need to cast to specific shape types
-
     // Get node data to determine its real type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const nodeData = node.getData();
+    const nodeData: unknown = node.getData();
     if (nodeData && typeof nodeData === 'object' && 'label' in nodeData) {
       // Looks like a DFD node based on data, even if its constructor doesn't match
       // This happens with nodes restored via undo/redo which can lose their specific shape type
@@ -720,8 +879,16 @@ export class DfdEventService {
     // Set as selected node
     this._selectedNode = node;
 
-    // Add selection styling
-    node.attr('selected', true);
+    // We don't have direct access to the graph from the node
+    // So we'll just use the CSS class approach for consistency
+    // The component will handle the visual update when it receives the event
+
+    // Add selection styling via event
+    this.eventBus.publish({
+      type: DfdEventType.NodeSelected,
+      node,
+      timestamp: Date.now(),
+    });
 
     // Add tools to the selected node (remove button and boundary)
     const tools = [

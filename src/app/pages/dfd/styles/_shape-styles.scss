@@ -110,20 +110,90 @@ svg text[font-family] {
   font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
-// Port visibility rules
-// 1. Ports are hidden by default (set in shape models)
-// 2. Connected ports are always visible
-.port-connected {
-  visibility: visible;
+// Port visibility rules with state-based classes
+// 1. Base state - ports are hidden by default
+.x6-port-body {
+  visibility: hidden;
+  opacity: 0;
+  display: none;
+  transition:
+    visibility 0.2s,
+    opacity 0.2s;
 }
 
-// 3. All ports become visible on node hover
-.x6-node:hover .x6-port-body {
+// 2. Port states - use classes instead of inline styles
+.x6-port-body.port-visible,
+.x6-port-body.port-connected {
   visibility: visible;
+  opacity: 1;
+  display: block;
 }
 
-// Selected state
+// 3. Hover state - more specific selector to avoid !important
+.x6-graph .x6-node:hover .x6-port-body {
+  visibility: visible;
+  opacity: 1;
+  display: block;
+}
+
+// 4. Connected ports - more specific selector to avoid !important
+.x6-graph .x6-port-body.port-connected {
+  visibility: visible;
+  opacity: 1;
+  display: block;
+}
+
+// 5. Additional selectors with higher specificity
+.x6-graph g[data-shape='circle']:hover .x6-port-body,
+.x6-graph g[data-cell-id]:hover .x6-port-body {
+  visibility: visible;
+  opacity: 1;
+  display: block;
+}
+
+// Node states
+// 1. Selected state
 .selected-node {
   stroke: #47c769;
   stroke-width: 2.5;
+}
+
+// 2. Node state classes for consistent styling
+.x6-node {
+  &.is-selected {
+    .body {
+      stroke: #47c769;
+      stroke-width: 2.5;
+    }
+  }
+
+  &.is-hovered {
+    .body {
+      stroke-width: 2;
+      filter: brightness(1.05);
+    }
+  }
+}
+
+// Z-index hierarchy
+.x6-graph {
+  .security-boundary-shape {
+    z-index: 0; // Security boundaries at the bottom
+  }
+
+  .x6-node {
+    z-index: 10; // Regular nodes above boundaries
+
+    &.is-selected {
+      z-index: 20; // Selected nodes above regular nodes
+    }
+  }
+
+  .x6-edge {
+    z-index: 5; // Edges between boundaries and nodes
+
+    &.is-selected {
+      z-index: 15; // Selected edges above regular nodes
+    }
+  }
 }

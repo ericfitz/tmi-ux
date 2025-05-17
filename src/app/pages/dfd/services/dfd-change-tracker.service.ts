@@ -651,9 +651,9 @@ export class DfdChangeTrackerService {
    * @returns The property value or undefined
    */
   private getNodeDataProperty<T>(node: Node, property: string): T | undefined {
-    const data = node.getData();
-    if (data && typeof data === 'object' && property in data) {
-      return data[property] as T;
+    const data: unknown = node.getData();
+    if (data && typeof data === 'object' && property in (data as Record<string, unknown>)) {
+      return (data as Record<string, unknown>)[property] as T;
     }
     return undefined;
   }
@@ -664,7 +664,7 @@ export class DfdChangeTrackerService {
    * @returns The node data as a record
    */
   private getSafeNodeData(node: Node): Record<string, unknown> {
-    const data = node.getData();
+    const data: unknown = node.getData();
     return data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
   }
 
@@ -674,7 +674,7 @@ export class DfdChangeTrackerService {
    * @returns The edge data as a record
    */
   private getSafeEdgeData(edge: Edge): Record<string, unknown> {
-    const data = edge.getData();
+    const data: unknown = edge.getData();
     return data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
   }
 

@@ -95,7 +95,9 @@ export class PortUtils {
               stroke: '#5F95FF',
               fill: '#fff',
               strokeWidth: 1,
+              class: 'x6-port-body',
               visibility: 'hidden',
+              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
@@ -121,7 +123,9 @@ export class PortUtils {
               fill: '#fff',
               stroke: '#5F95FF',
               strokeWidth: 1,
+              class: 'x6-port-body',
               visibility: 'hidden',
+              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
@@ -147,7 +151,9 @@ export class PortUtils {
               fill: '#fff',
               stroke: '#5F95FF',
               strokeWidth: 1,
+              class: 'x6-port-body',
               visibility: 'hidden',
+              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
@@ -173,7 +179,9 @@ export class PortUtils {
               stroke: '#5F95FF',
               fill: '#fff',
               strokeWidth: 1,
+              class: 'x6-port-body',
               visibility: 'hidden',
+              opacity: 0,
             },
             // Add text attribute but make it invisible
             text: {
