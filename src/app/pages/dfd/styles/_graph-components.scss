@@ -1,7 +1,8 @@
 // Interactive component styles
 // Base transform widget styles
 .x6-widget-transform {
-  border: none;
+  border: 2px dashed #47c769;
+  pointer-events: none;
 }
 
 // Resize handle styles
@@ -13,6 +14,10 @@
   border: none;
   outline: none;
   position: absolute;
+  pointer-events: all;
+  display: block !important; /* Force display of all handles */
+  visibility: visible !important; /* Ensure visibility */
+  opacity: 1 !important; /* Ensure opacity */
 
   // Position the handles - consolidated
   &-nw {
@@ -22,6 +27,8 @@
 
   &-n {
     top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   &-ne {
@@ -31,6 +38,8 @@
 
   &-e {
     right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   &-se {
@@ -40,6 +49,8 @@
 
   &-s {
     bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   &-sw {
@@ -49,7 +60,23 @@
 
   &-w {
     left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
   }
+}
+
+// Force all resize handles to be visible
+.x6-widget-transform-resize-nw,
+.x6-widget-transform-resize-n,
+.x6-widget-transform-resize-ne,
+.x6-widget-transform-resize-e,
+.x6-widget-transform-resize-se,
+.x6-widget-transform-resize-s,
+.x6-widget-transform-resize-sw,
+.x6-widget-transform-resize-w {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 // Port tooltip styles - consolidated

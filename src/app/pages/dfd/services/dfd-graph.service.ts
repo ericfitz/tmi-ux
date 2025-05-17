@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Shape, Cell, Node, Model } from '@antv/x6';
+import { Graph, Shape, Node, Model } from '@antv/x6';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { History } from '@antv/x6-plugin-history';
@@ -276,20 +276,63 @@ export class DfdGraphService {
         });
       });
 
-      // Register the Transform plugin for node resizing
-      graph.use(
-        new Transform({
-          resizing: {
-            enabled: true,
-            minWidth: 60,
-            minHeight: 30,
-            // Preserve aspect ratio for ProcessShape (circle)
-            preserveAspectRatio: false,
-            orthogonal: false,
-          },
-          rotating: false, // Disable rotation
-        }),
-      );
+      // Register the Transform plugin for node resizing with custom options
+      const transformPlugin = new Transform({
+        resizing: {
+          enabled: true,
+          minWidth: 60,
+          minHeight: 30,
+          // Preserve aspect ratio for ProcessShape (circle)
+          preserveAspectRatio: false,
+          orthogonal: false,
+        },
+        rotating: false, // Disable rotation
+      });
+
+      // Add event listener to ensure resize handles are created
+      graph.on('node:selected', ({ node }: { node: Node }) => {
+        // Check if resize handles exist after a short delay
+        setTimeout(() => {
+          const resizeHandles = document.querySelectorAll('.x6-widget-transform-resize');
+          if (resizeHandles.length < 8) {
+            this.logger.info('Creating missing resize handles for selected node');
+
+            // Find the transform widget
+            const transformWidget = document.querySelector('.x6-widget-transform');
+            if (transformWidget) {
+              // Define all handle positions
+              const handlePositions = [
+                { name: 'nw', className: 'x6-widget-transform-resize-nw' },
+                { name: 'n', className: 'x6-widget-transform-resize-n' },
+                { name: 'ne', className: 'x6-widget-transform-resize-ne' },
+                { name: 'e', className: 'x6-widget-transform-resize-e' },
+                { name: 'se', className: 'x6-widget-transform-resize-se' },
+                { name: 's', className: 'x6-widget-transform-resize-s' },
+                { name: 'sw', className: 'x6-widget-transform-resize-sw' },
+                { name: 'w', className: 'x6-widget-transform-resize-w' },
+              ];
+
+              // Create each handle if it doesn't exist
+              handlePositions.forEach(pos => {
+                // Check if the handle already exists
+                const existingHandle = document.querySelector(`.${pos.className}`);
+                if (!existingHandle) {
+                  // Create the handle
+                  const handle = document.createElement('div');
+                  handle.className = `x6-widget-transform-resize ${pos.className}`;
+
+                  // Add it to the transform widget
+                  transformWidget.appendChild(handle);
+                  this.logger.info(`Created missing resize handle: ${pos.name}`);
+                }
+              });
+            }
+          }
+        }, 100);
+      });
+
+      // Use the plugin
+      graph.use(transformPlugin);
 
       // Register the Snapline plugin for alignment guides
       graph.use(
@@ -682,6 +725,261 @@ export class DfdGraphService {
   }
 
   /**
+   * Inspects the graph styles to diagnose styling issues
+   * @param graph The X6 graph instance
+   */
+  public inspectGraphStyles(graph: Graph): void {
+    this.logger.info('Inspecting graph styles...');
+
+    // Check resize handle styles
+    setTimeout(() => {
+      const resizeHandles = document.querySelectorAll('.x6-widget-transform-resize');
+      if (resizeHandles.length) {
+        const computedStyle = window.getComputedStyle(resizeHandles[0]);
+        this.logger.info('Resize handle computed styles:', {
+          borderRadius: computedStyle.borderRadius,
+          width: computedStyle.width,
+          height: computedStyle.height,
+          backgroundColor: computedStyle.backgroundColor,
+        });
+
+        // Check if inline styles are overriding
+        const inlineStyles = (resizeHandles[0] as HTMLElement).style;
+        this.logger.info('Resize handle inline styles:', {
+          borderRadius: inlineStyles.borderRadius,
+          width: inlineStyles.width,
+          height: inlineStyles.height,
+        });
+      } else {
+        this.logger.warn('No resize handles found in DOM');
+      }
+
+      // Check font styles on labels
+      const labels = document.querySelectorAll('.x6-graph text');
+      if (labels.length) {
+        const computedStyle = window.getComputedStyle(labels[0]);
+        this.logger.info('Label text computed styles:', {
+          fontFamily: computedStyle.fontFamily,
+          fontSize: computedStyle.fontSize,
+        });
+      } else {
+        this.logger.warn('No label elements found in DOM');
+      }
+
+      // Check port visibility
+      const ports = document.querySelectorAll('.x6-port-body');
+      this.logger.info(`Found ${ports.length} ports in DOM`);
+      if (ports.length) {
+        const visiblePorts = Array.from(ports).filter(
+          port => window.getComputedStyle(port).visibility === 'visible',
+        );
+        this.logger.info(`${visiblePorts.length} ports are visible`);
+      }
+    }, 1000); // Wait for graph to be fully rendered
+  }
+
+  /**
+   * Forces custom styles to override AntV X6 defaults
+   * @param graph The X6 graph instance
+   */
+  public forceCustomStyles(graph: Graph): void {
+    this.logger.info('Attempting to force custom styles...');
+
+    // Create a more comprehensive style element with higher specificity selectors
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      /* Font styles for all text elements */
+      .x6-graph text,
+      .x6-graph text.label,
+      .x6-graph text.dfd-label,
+      .x6-graph text[font-family],
+      .x6-graph tspan,
+      .x6-graph tspan.v-line {
+        font-family: 'Roboto Condensed', Arial, sans-serif !important;
+      }
+      
+      /* Resize handle styles - make them hollow squares at the corners */
+      .x6-widget-transform {
+        border: 2px dashed #47c769 !important;
+      }
+      
+      .x6-widget-transform-resize,
+      .x6-widget-transform-resize-nw,
+      .x6-widget-transform-resize-n,
+      .x6-widget-transform-resize-ne,
+      .x6-widget-transform-resize-e,
+      .x6-widget-transform-resize-se,
+      .x6-widget-transform-resize-s,
+      .x6-widget-transform-resize-sw,
+      .x6-widget-transform-resize-w {
+        border-radius: 0 !important;
+        width: 8px !important;
+        height: 8px !important;
+        background-color: transparent !important;
+        border: 2px solid #000 !important;
+        outline: none !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Position the handles at the corners and midpoints of the bounding box */
+      .x6-widget-transform-resize-nw {
+        top: -4px !important;
+        left: -4px !important;
+        transform: none !important;
+      }
+      
+      .x6-widget-transform-resize-n {
+        top: -4px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+      }
+      
+      .x6-widget-transform-resize-ne {
+        top: -4px !important;
+        right: -4px !important;
+        left: auto !important;
+        transform: none !important;
+      }
+      
+      .x6-widget-transform-resize-e {
+        top: 50% !important;
+        right: -4px !important;
+        left: auto !important;
+        transform: translateY(-50%) !important;
+      }
+      
+      .x6-widget-transform-resize-se {
+        bottom: -4px !important;
+        right: -4px !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+      }
+      
+      .x6-widget-transform-resize-s {
+        bottom: -4px !important;
+        left: 50% !important;
+        top: auto !important;
+        transform: translateX(-50%) !important;
+      }
+      
+      .x6-widget-transform-resize-sw {
+        bottom: -4px !important;
+        left: -4px !important;
+        top: auto !important;
+        transform: none !important;
+      }
+      
+      .x6-widget-transform-resize-w {
+        top: 50% !important;
+        left: -4px !important;
+        transform: translateY(-50%) !important;
+      }
+      
+      /* Port visibility styles */
+      .x6-graph .x6-node:hover .x6-port-body {
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+      }
+      
+      .x6-graph .x6-port-body.port-connected {
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+      }
+      
+      /* Selection styles */
+      .x6-node.is-selected .body {
+        stroke: #47c769 !important;
+        stroke-width: 2.5 !important;
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    // For resize handles, we can try to modify the Transform plugin
+    const transformPlugin = graph.getPlugin<Transform>('transform');
+    if (transformPlugin) {
+      this.logger.info('Found transform plugin, attempting to customize...');
+
+      // Try to force a refresh of the transform plugin
+      setTimeout(() => {
+        // Select a node to trigger the transform plugin
+        const nodes = graph.getNodes();
+        if (nodes.length > 0) {
+          // Use the event service to select and deselect nodes
+          // We already have access to dfdEventService through constructor injection
+
+          // Select the first node to trigger the transform plugin
+          const firstNode = nodes[0];
+          this.dfdEventService.selectNode(firstNode);
+
+          // Force a redraw of the graph by resizing it to its current container dimensions
+          const container = graph.container;
+          if (container) {
+            graph.resize(container.clientWidth, container.clientHeight);
+
+            // Log that we're attempting to refresh the transform plugin
+            this.logger.info('Forcing graph refresh to update transform handles');
+
+            // Add a small delay and then check if resize handles are visible
+            setTimeout(() => {
+              const resizeHandles = document.querySelectorAll('.x6-widget-transform-resize');
+              this.logger.info(`Found ${resizeHandles.length} resize handles after refresh`);
+
+              if (resizeHandles.length === 0 || resizeHandles.length < 8) {
+                this.logger.warn(
+                  'No resize handles found or missing side handles, creating them manually',
+                );
+
+                // Try to manually create the transform widget if it doesn't exist
+                const transformWidget = document.querySelector('.x6-widget-transform');
+                if (transformWidget) {
+                  // Create the resize handles if they don't exist or if only corner handles exist
+                  const handlePositions = [
+                    { name: 'nw', className: 'x6-widget-transform-resize-nw' },
+                    { name: 'n', className: 'x6-widget-transform-resize-n' },
+                    { name: 'ne', className: 'x6-widget-transform-resize-ne' },
+                    { name: 'e', className: 'x6-widget-transform-resize-e' },
+                    { name: 'se', className: 'x6-widget-transform-resize-se' },
+                    { name: 's', className: 'x6-widget-transform-resize-s' },
+                    { name: 'sw', className: 'x6-widget-transform-resize-sw' },
+                    { name: 'w', className: 'x6-widget-transform-resize-w' },
+                  ];
+
+                  // Create each handle if it doesn't exist
+                  handlePositions.forEach(pos => {
+                    // Check if the handle already exists
+                    const existingHandle = document.querySelector(`.${pos.className}`);
+                    if (!existingHandle) {
+                      // Create the handle
+                      const handle = document.createElement('div');
+                      handle.className = `x6-widget-transform-resize ${pos.className}`;
+
+                      // Add it to the transform widget
+                      transformWidget.appendChild(handle);
+                      this.logger.info(`Created missing resize handle: ${pos.name}`);
+                    }
+                  });
+                } else {
+                  this.logger.warn('No transform widget found, cannot create resize handles');
+                }
+              }
+            }, 200);
+          }
+        }
+      }, 500);
+    }
+
+    // Ensure Roboto Condensed font is loaded
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href =
+      'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap';
+    document.head.appendChild(fontLink);
+  }
+
+  /**
    * Validates the graph container and sets up dimensions
    * @param containerElement The container element
    * @param logger The logger service
@@ -743,7 +1041,7 @@ export class DfdGraphService {
   }
 
   /**
-   * Sets up label editing functionality using the keyboard plugin
+   * Sets up label editing functionality for the graph
    * @param graph The X6 graph instance
    */
   setupLabelEditing(graph: Graph): void {
@@ -751,7 +1049,10 @@ export class DfdGraphService {
       return;
     }
 
-    // Get the keyboard plugin
+    // Use the DfdLabelEditorService to set up label editing handlers
+    this.labelEditorService.setupLabelEditingHandlers(graph);
+
+    // Get the keyboard plugin for keyboard shortcuts
     const keyboard = graph.getPlugin<Keyboard>('keyboard');
     if (!keyboard) {
       this.logger.warn('Keyboard plugin not found, label editing shortcuts will not work');
@@ -763,135 +1064,27 @@ export class DfdGraphService {
       // Use the custom selection mechanism instead of the Selection plugin
       const selectedNode = this.dfdEventService.getSelectedNode();
       if (selectedNode) {
-        this.editCellLabel(selectedNode, graph);
-      }
-    });
+        // Simulate a double-click on the node to trigger the label editor
+        // This uses the event handlers already set up by setupLabelEditingHandlers
+        const nodeView = graph.findViewByCell(selectedNode);
+        if (nodeView) {
+          // Create and dispatch a custom double-click event
+          const event = new MouseEvent('dblclick', {
+            bubbles: true,
+            cancelable: true,
+          });
 
-    // Double-click on node or edge to edit label
-    graph.on('node:dblclick', ({ node, e }) => {
-      e.stopPropagation();
-      this.editCellLabel(node, graph);
-    });
-
-    graph.on('edge:dblclick', ({ edge, e }) => {
-      e.stopPropagation();
-      this.editCellLabel(edge, graph);
-    });
-  }
-
-  /**
-   * Edits the label of a cell (node or edge)
-   * @param cell The cell to edit
-   * @param graph The X6 graph instance
-   */
-  private editCellLabel(cell: Cell, _graph: Graph): void {
-    // Get the current label text
-    let labelText = '';
-    if (cell.isNode()) {
-      // For nodes, get the label from the node data or attrs
-      const nodeData = cell.getData<Record<string, unknown>>();
-      const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
-
-      if (safeNodeData && typeof safeNodeData['label'] === 'string') {
-        labelText = safeNodeData['label'];
-      } else {
-        // If no label in data, get it from the attrs
-        const attrLabel = cell.attr('label/text');
-        labelText = typeof attrLabel === 'string' ? attrLabel : '';
-      }
-    } else if (cell.isEdge()) {
-      // For edges, get the label from the edge attrs
-      const attrLabel = cell.attr('label/text');
-      labelText = typeof attrLabel === 'string' ? attrLabel : '';
-    }
-
-    // Create a prompt to edit the label
-    const newText = window.prompt('Edit label:', labelText);
-    if (newText !== null) {
-      this.saveCellLabel(cell, newText);
-    }
-  }
-
-  /**
-   * Saves the label text to the cell
-   * @param cell The cell to save the label to
-   * @param newText The new label text
-   */
-  private saveCellLabel(cell: Cell, newText: string): void {
-    try {
-      if (cell.isNode()) {
-        const node = cell;
-
-        // Check if the node is a TextboxShape
-        if (node.constructor.name === 'TextboxShape') {
-          // Use type assertion with a more specific type
-          if (
-            typeof (node as unknown as { updateHtml: (text: string) => void }).updateHtml ===
-            'function'
-          ) {
-            (node as unknown as { updateHtml: (text: string) => void }).updateHtml(newText);
+          // Find the node element and dispatch the event
+          const nodeElement = nodeView.container;
+          if (nodeElement) {
+            this.logger.debug('Triggering label editing via keyboard shortcut', {
+              nodeId: selectedNode.id,
+            });
+            nodeElement.dispatchEvent(event);
           }
-
-          // Also update the label in the node data
-          const nodeData = node.getData<Record<string, unknown>>();
-          const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
-
-          const updatedData = { ...safeNodeData, ['label']: newText };
-          node.setData(updatedData);
-        } else {
-          // Update node label for other shape types
-          node.attr('label/text', newText);
-
-          // Add the dfd-label class to ensure proper styling
-          node.attr('label/class', 'dfd-label');
-
-          // Also update the label in the node data
-          const nodeData = node.getData<Record<string, unknown>>();
-          const safeNodeData = typeof nodeData === 'object' && nodeData !== null ? nodeData : {};
-
-          const updatedData = { ...safeNodeData, ['label']: newText };
-          node.setData(updatedData);
-        }
-      } else if (cell.isEdge()) {
-        const edge = cell;
-
-        // Update edge label in both attr and labels array
-        edge.attr('label/text', newText);
-        edge.attr('label/class', 'dfd-label');
-
-        // Update the label in the labels array
-        const labels = edge.getLabels();
-        if (labels && labels.length > 0) {
-          // Define a proper type for the edge label
-          interface EdgeLabel {
-            attrs?: {
-              text?: {
-                text?: string;
-                [key: string]: unknown;
-              };
-              [key: string]: unknown;
-            };
-            [key: string]: unknown;
-          }
-
-          edge.setLabels(
-            labels.map((label: EdgeLabel) => ({
-              ...label,
-              attrs: {
-                ...label.attrs,
-                text: {
-                  ...(label.attrs?.text || {}),
-                  text: newText,
-                  class: 'dfd-label',
-                },
-              },
-            })),
-          );
         }
       }
-    } catch (error) {
-      this.logger.error('Error saving label:', error);
-    }
+    });
   }
 
   /**

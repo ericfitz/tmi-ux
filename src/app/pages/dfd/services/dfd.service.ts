@@ -106,6 +106,11 @@ export class DfdService {
       // Set up label editing handlers
       this.graphService.setupLabelEditing(this._graph);
 
+      // Run diagnostic tools to inspect and fix styling issues
+      this.logger.info('Running diagnostic tools for styling issues');
+      this.graphService.inspectGraphStyles(this._graph);
+      this.graphService.forceCustomStyles(this._graph);
+
       // Clean history before adding nodes
       const history = this._graph.getPlugin<History>('history');
       if (history) {
