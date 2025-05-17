@@ -1,14 +1,14 @@
 .tm-edit-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 24px;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .page-title {
@@ -23,7 +23,7 @@
 .content-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 16px;
 
   @media (width >= 768px) {
     grid-template-columns: 1fr 1fr;
@@ -42,14 +42,7 @@
 }
 
 .metadata-permissions-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  grid-column: 1 / -1;
-
-  @media (width >= 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
+  display: contents;
 }
 
 .metadata-card,
@@ -63,13 +56,20 @@ mat-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+
+  .mat-mdc-card-title {
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    margin-bottom: 0;
+    font-weight: bold;
+  }
 }
 
 .threat-model-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .full-width {
@@ -80,14 +80,14 @@ mat-card-header {
 .info-section {
   background-color: #f5f5f5;
   border-radius: 4px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
   font-family: Roboto, Arial, sans-serif;
 }
 
 .info-field {
   display: flex;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-size: 14px;
   align-items: center;
 
@@ -105,6 +105,7 @@ mat-card-header {
 .info-value {
   color: rgb(0 0 0 / 87%);
   flex: 1;
+  font-family: Roboto, Arial, sans-serif;
 }
 
 .copy-button {
@@ -128,12 +129,12 @@ mat-card-header {
 }
 
 .metadata-section {
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .metadata-item {
   display: flex;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .metadata-key {
@@ -141,34 +142,72 @@ mat-card-header {
   margin-right: 8px;
 }
 
-.metadata-field {
-  width: 90%;
+.table-field {
+  width: 100%;
+  margin-bottom: 0;
+
+  // Remove outline appearance for form fields in tables
+  ::ng-deep .mat-mdc-form-field-flex {
+    border: none;
+    padding: 0 3px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding: 6px 0;
+    min-height: unset;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
 }
 
-.permission-field {
-  width: 90%;
+// Make the role column in permissions table only as wide as needed
+.permissions-table {
+  .mat-column-role {
+    width: 100px; // Just enough for "Owner", "Writer", or "Reader"
+  }
 }
 
-.grid-header {
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.metadata-table,
+.permissions-table {
+  width: 100%;
+
+  input,
+  mat-select {
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+  }
+}
+
+.mat-mdc-header-cell {
   font-weight: 500;
   color: rgb(0 0 0 / 70%);
-  width: 100%;
-  text-align: center;
+  text-align: left;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  padding: 0 6px;
 }
 
-mat-grid-list {
-  margin-bottom: 20px;
+.mat-mdc-cell {
+  padding: 3px 6px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
-mat-grid-tile {
-  padding: 0 8px;
+.mat-mdc-row:hover {
+  background-color: rgb(0 0 0 / 4%);
 }
 
 .no-items-message {
   color: rgb(0 0 0 / 60%);
   font-style: italic;
-  padding: 16px 0;
+  padding: 12px 0;
   text-align: center;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
 .diagram-item,

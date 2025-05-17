@@ -97,50 +97,64 @@
           </button>
         </mat-card-header>
         <mat-card-content>
-          <mat-grid-list cols="3" rowHeight="70px" *ngIf="threatModel.metadata?.length">
-            <mat-grid-tile colspan="1">
-              <div class="grid-header">Key</div>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1">
-              <div class="grid-header">Value</div>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1">
-              <div class="grid-header">Actions</div>
-            </mat-grid-tile>
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="metadataDataSource"
+              #metadataTable
+              matSort
+              #metadataSort="matSort"
+              class="metadata-table"
+            >
+              <!-- Key Column -->
+              <ng-container matColumnDef="key">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Key</th>
+                <td mat-cell *matCellDef="let item; let i = index">
+                  <mat-form-field class="table-field">
+                    <input
+                      matInput
+                      [value]="item.key"
+                      (blur)="updateMetadataKey(i, $event)"
+                      placeholder="Key"
+                    />
+                  </mat-form-field>
+                </td>
+              </ng-container>
 
-            <ng-container *ngFor="let item of threatModel.metadata; let i = index">
-              <mat-grid-tile colspan="1">
-                <mat-form-field appearance="outline" class="metadata-field">
-                  <input
-                    matInput
-                    [value]="item.key"
-                    (blur)="updateMetadataKey(i, $event)"
-                    placeholder="Key"
-                  />
-                </mat-form-field>
-              </mat-grid-tile>
-              <mat-grid-tile colspan="1">
-                <mat-form-field appearance="outline" class="metadata-field">
-                  <input
-                    matInput
-                    [value]="item.value"
-                    (blur)="updateMetadataValue(i, $event)"
-                    placeholder="Value"
-                  />
-                </mat-form-field>
-              </mat-grid-tile>
-              <mat-grid-tile colspan="1">
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteMetadataItem(i)"
-                  [matTooltip]="'Delete'"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-grid-tile>
-            </ng-container>
-          </mat-grid-list>
+              <!-- Value Column -->
+              <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Value</th>
+                <td mat-cell *matCellDef="let item; let i = index">
+                  <mat-form-field class="table-field">
+                    <input
+                      matInput
+                      [value]="item.value"
+                      (blur)="updateMetadataValue(i, $event)"
+                      placeholder="Value"
+                    />
+                  </mat-form-field>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let item; let i = index">
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteMetadataItem(i)"
+                    [matTooltip]="'Delete'"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="metadataColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: metadataColumns"></tr>
+            </table>
+          </div>
 
           <div *ngIf="!threatModel.metadata?.length" class="no-items-message">
             {{ 'threatModels.noMetadata' | transloco }}
@@ -161,53 +175,71 @@
           </button>
         </mat-card-header>
         <mat-card-content>
-          <mat-grid-list cols="3" rowHeight="70px" *ngIf="threatModel.authorization?.length">
-            <mat-grid-tile colspan="1">
-              <div class="grid-header">{{ 'threatModels.permissionsUser' | transloco }}</div>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1">
-              <div class="grid-header">{{ 'threatModels.permissionsRole' | transloco }}</div>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1">
-              <div class="grid-header">Actions</div>
-            </mat-grid-tile>
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="permissionsDataSource"
+              #permissionsTable
+              matSort
+              #permissionsSort="matSort"
+              class="permissions-table"
+            >
+              <!-- Subject Column -->
+              <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsUser' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  <mat-form-field class="table-field">
+                    <input
+                      matInput
+                      [value]="auth.subject"
+                      (blur)="updatePermissionSubject(i, $event)"
+                      placeholder="User Email"
+                    />
+                  </mat-form-field>
+                </td>
+              </ng-container>
 
-            <ng-container *ngFor="let auth of threatModel.authorization; let i = index">
-              <mat-grid-tile colspan="1">
-                <mat-form-field appearance="outline" class="permission-field">
-                  <input
-                    matInput
-                    [value]="auth.subject"
-                    (blur)="updatePermissionSubject(i, $event)"
-                    placeholder="User Email"
-                  />
-                </mat-form-field>
-              </mat-grid-tile>
-              <mat-grid-tile colspan="1">
-                <mat-form-field appearance="outline" class="permission-field">
-                  <mat-select
-                    [value]="auth.role"
-                    (selectionChange)="updatePermissionRole(i, $event)"
+              <!-- Role Column -->
+              <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsRole' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  <mat-form-field class="table-field">
+                    <mat-select
+                      [value]="auth.role"
+                      (selectionChange)="updatePermissionRole(i, $event)"
+                    >
+                      <mat-option value="owner">Owner</mat-option>
+                      <mat-option value="writer">Writer</mat-option>
+                      <mat-option value="reader">Reader</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deletePermission(i)"
+                    [matTooltip]="'Delete'"
+                    [disabled]="i === 0"
                   >
-                    <mat-option value="owner">Owner</mat-option>
-                    <mat-option value="writer">Writer</mat-option>
-                    <mat-option value="reader">Reader</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </mat-grid-tile>
-              <mat-grid-tile colspan="1">
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deletePermission(i)"
-                  [matTooltip]="'Delete'"
-                  [disabled]="i === 0"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-grid-tile>
-            </ng-container>
-          </mat-grid-list>
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="permissionsColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: permissionsColumns"></tr>
+            </table>
+          </div>
 
           <div *ngIf="!threatModel.authorization?.length" class="no-items-message">
             {{ 'threatModels.noPermissions' | transloco }}

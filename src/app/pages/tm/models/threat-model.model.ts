@@ -46,7 +46,20 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         role: 'owner',
       },
     ],
-    metadata: [],
+    metadata: [
+      {
+        key: 'Framework',
+        value: 'STRIDE',
+      },
+      {
+        key: 'Reviewer',
+        value: 'John Doe',
+      },
+      {
+        key: 'Contributor',
+        value: 'Other Person',
+      },
+    ],
     diagrams: [
       '123e4567-e89b-12d3-a456-426614174000',
       '123e4567-e89b-12d3-a456-426614174001',
@@ -104,7 +117,20 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         role: 'owner',
       },
     ],
-    metadata: [],
+    metadata: [
+      {
+        key: 'Framework',
+        value: 'STRIDE',
+      },
+      {
+        key: 'Reviewer',
+        value: 'John Doe',
+      },
+      {
+        key: 'Contributor',
+        value: 'Other Person',
+      },
+    ],
     diagrams: ['223e4567-e89b-12d3-a456-426614174000', '223e4567-e89b-12d3-a456-426614174001'],
     threats: [
       {
@@ -140,7 +166,20 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         role: 'owner',
       },
     ],
-    metadata: [],
+    metadata: [
+      {
+        key: 'Framework',
+        value: 'STRIDE',
+      },
+      {
+        key: 'Reviewer',
+        value: 'John Doe',
+      },
+      {
+        key: 'Contributor',
+        value: 'Other Person',
+      },
+    ],
     diagrams: ['323e4567-e89b-12d3-a456-426614174000'],
     threats: [
       {

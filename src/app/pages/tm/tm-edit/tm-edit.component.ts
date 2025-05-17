@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
+import { MatSort } from '@angular/material/sort';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -20,7 +22,7 @@ import {
   ThreatEditorDialogData,
 } from '../components/threat-editor-dialog/threat-editor-dialog.component';
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
-import { Threat, ThreatModel } from '../models/threat-model.model';
+import { Authorization, Metadata, Threat, ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
 
 // Define form value interface
@@ -52,6 +54,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
   diagrams: Diagram[] = [];
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
+
+  // Data sources for tables
+  metadataDataSource = new MatTableDataSource<Metadata>([]);
+  permissionsDataSource = new MatTableDataSource<Authorization>([]);
+
+  // Column definitions
+  metadataColumns: string[] = ['key', 'value', 'actions'];
+  permissionsColumns: string[] = ['subject', 'role', 'actions'];
+
+  // ViewChild references for tables and sorting
+  @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
+  @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
+  @ViewChild('metadataSort') metadataSort!: MatSort;
+  @ViewChild('permissionsSort') permissionsSort!: MatSort;
+
   private _subscriptions = new Subscription();
 
   constructor(
@@ -131,6 +148,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
                 modified_at: new Date().toISOString(),
               };
             }) || [];
+
+          // Initialize table data sources
+          this.updateTableDataSources();
         } else {
           // Handle case where threat model is not found
           this.isNewThreatModel = true;
@@ -155,6 +175,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
             name: this.threatModel.name,
             description: this.threatModel.description || '',
           });
+
+          // Initialize table data sources for new threat model
+          this.updateTableDataSources();
         }
       }),
     );
@@ -162,6 +185,28 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
+  }
+
+  /**
+   * Updates the data sources for the metadata and permissions tables
+   */
+  updateTableDataSources(): void {
+    if (this.threatModel) {
+      // Update metadata data source
+      this.metadataDataSource.data = this.threatModel.metadata || [];
+
+      // Update permissions data source
+      this.permissionsDataSource.data = this.threatModel.authorization || [];
+
+      // Refresh tables if they exist
+      if (this.metadataTable) {
+        this.metadataTable.renderRows();
+      }
+
+      if (this.permissionsTable) {
+        this.permissionsTable.renderRows();
+      }
+    }
   }
 
   saveThreatModel(): void {
@@ -474,6 +519,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
       key: '',
       value: '',
     });
+
+    // Update the data source
+    this.updateTableDataSources();
   }
 
   /**
@@ -490,6 +538,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (index >= 0 && index < this.threatModel.metadata.length) {
       this.threatModel.metadata[index].key = input.value;
       this.threatModel.modified_at = new Date().toISOString();
+      this.updateTableDataSources();
     }
   }
 
@@ -507,6 +556,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (index >= 0 && index < this.threatModel.metadata.length) {
       this.threatModel.metadata[index].value = input.value;
       this.threatModel.modified_at = new Date().toISOString();
+      this.updateTableDataSources();
     }
   }
 
@@ -522,6 +572,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (index >= 0 && index < this.threatModel.metadata.length) {
       this.threatModel.metadata.splice(index, 1);
       this.threatModel.modified_at = new Date().toISOString();
+      this.updateTableDataSources();
     }
   }
 
@@ -546,6 +597,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Update the modified timestamp
     this.threatModel.modified_at = new Date().toISOString();
+
+    // Update the data source
+    this.updateTableDataSources();
   }
 
   /**
@@ -562,6 +616,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (index >= 0 && index < this.threatModel.authorization.length) {
       this.threatModel.authorization[index].subject = input.value;
       this.threatModel.modified_at = new Date().toISOString();
+      this.updateTableDataSources();
     }
   }
 
@@ -578,6 +633,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (index >= 0 && index < this.threatModel.authorization.length) {
       this.threatModel.authorization[index].role = event.value;
       this.threatModel.modified_at = new Date().toISOString();
+      this.updateTableDataSources();
     }
   }
 
@@ -594,6 +650,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (index > 0 && index < this.threatModel.authorization.length) {
       this.threatModel.authorization.splice(index, 1);
       this.threatModel.modified_at = new Date().toISOString();
+      this.updateTableDataSources();
     }
   }
 }
