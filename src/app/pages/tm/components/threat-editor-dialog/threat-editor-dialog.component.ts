@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,9 @@ import { Metadata, Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTable } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
 
 /**
  * Interface for threat form values
@@ -43,6 +46,8 @@ export interface ThreatEditorDialogData {
     MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
+    MatTableModule,
+    MatSortModule,
   ],
   templateUrl: './threat-editor-dialog.component.html',
   styleUrls: ['./threat-editor-dialog.component.scss'],
@@ -53,6 +58,12 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
   isViewOnly: boolean = false;
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
+
+  // Metadata table properties
+  metadataDataSource = new MatTableDataSource<Metadata>([]);
+  metadataColumns: string[] = ['key', 'value', 'actions'];
+  @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
+
   private langSubscription: Subscription | null = null;
   private directionSubscription: Subscription | null = null;
 
@@ -90,7 +101,23 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
    * @returns Array of metadata or empty array if not available
    */
   getMetadata(): Metadata[] {
-    return this.data.threat?.metadata || [];
+    if (!this.data.threat) {
+      this.data.threat = {
+        id: '',
+        threat_model_id: this.data.threatModelId,
+        name: '',
+        description: '',
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        metadata: [],
+      };
+    }
+
+    if (!this.data.threat.metadata) {
+      this.data.threat.metadata = [];
+    }
+
+    return this.data.threat.metadata;
   }
 
   /**
@@ -101,6 +128,71 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     return !!this.data.threat?.metadata && this.data.threat.metadata.length > 0;
   }
 
+  /**
+   * Updates the data source for the metadata table
+   */
+  updateMetadataDataSource(): void {
+    this.metadataDataSource.data = this.getMetadata();
+    if (this.metadataTable) {
+      this.metadataTable.renderRows();
+    }
+  }
+
+  /**
+   * Adds a new metadata item
+   */
+  addMetadataItem(): void {
+    const metadata = this.getMetadata();
+    metadata.push({
+      key: '',
+      value: '',
+    });
+    this.updateMetadataDataSource();
+  }
+
+  /**
+   * Updates the key of a metadata item
+   * @param index The index of the metadata item to update
+   * @param event The blur event containing the new key value
+   */
+  updateMetadataKey(index: number, event: Event): void {
+    const metadata = this.getMetadata();
+    const input = event.target as HTMLInputElement;
+
+    if (index >= 0 && index < metadata.length) {
+      metadata[index].key = input.value;
+      this.updateMetadataDataSource();
+    }
+  }
+
+  /**
+   * Updates the value of a metadata item
+   * @param index The index of the metadata item to update
+   * @param event The blur event containing the new value
+   */
+  updateMetadataValue(index: number, event: Event): void {
+    const metadata = this.getMetadata();
+    const input = event.target as HTMLInputElement;
+
+    if (index >= 0 && index < metadata.length) {
+      metadata[index].value = input.value;
+      this.updateMetadataDataSource();
+    }
+  }
+
+  /**
+   * Deletes a metadata item
+   * @param index The index of the metadata item to delete
+   */
+  deleteMetadataItem(index: number): void {
+    const metadata = this.getMetadata();
+
+    if (index >= 0 && index < metadata.length) {
+      metadata.splice(index, 1);
+      this.updateMetadataDataSource();
+    }
+  }
+
   ngOnInit(): void {
     // Set dialog mode
     this.isViewOnly = this.data.mode === 'view';
@@ -108,6 +200,27 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     // Set dialog title based on mode
     if (this.data.mode === 'create') {
       this.dialogTitle = 'threatModels.createNewThreat';
+
+      // Initialize with mock metadata for new threats
+      if (!this.data.threat) {
+        this.data.threat = {
+          id: '',
+          threat_model_id: this.data.threatModelId,
+          name: '',
+          description: '',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+          metadata: [
+            { key: 'DiagramId', value: '123e4567-e89b-12d3-a456-426614174000' },
+            { key: 'NodeId', value: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88' },
+            { key: 'Type', value: 'Elevation of Privilege' },
+            { key: 'Status', value: 'Open' },
+            { key: 'Priority', value: 'High' },
+            { key: 'CVSS', value: '7.3' },
+            { key: 'Issue ID', value: 'jira-10881' },
+          ],
+        };
+      }
     } else if (this.data.mode === 'edit') {
       this.dialogTitle = 'threatModels.editThreat';
     } else {
@@ -126,6 +239,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
         this.threatForm.disable();
       }
     }
+
+    // Initialize metadata table data source
+    this.updateMetadataDataSource();
 
     // Subscribe to language changes
     this.langSubscription = this.languageService.currentLanguage$.subscribe(language => {
@@ -170,6 +286,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     this.dialogRef.close({
       name: formValues.name,
       description: formValues.description,
+      metadata: this.getMetadata(),
     });
   }
 

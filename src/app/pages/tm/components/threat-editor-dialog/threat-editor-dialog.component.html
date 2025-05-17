@@ -59,17 +59,79 @@
     </div>
 
     <!-- Metadata section -->
-    <div class="metadata-section" *ngIf="hasMetadata()">
-      <h3>{{ 'threatModels.metadata' | transloco }}</h3>
-      <div class="metadata-grid" [dir]="currentDirection">
-        <div class="metadata-header">
-          <div class="metadata-key-header">{{ 'threatModels.metadataKey' | transloco }}</div>
-          <div class="metadata-value-header">{{ 'threatModels.metadataValue' | transloco }}</div>
-        </div>
-        <div class="metadata-row" *ngFor="let item of getMetadata()">
-          <div class="metadata-key">{{ item.key }}</div>
-          <div class="metadata-value">{{ item.value }}</div>
-        </div>
+    <div class="metadata-section">
+      <div class="metadata-header">
+        <h3>{{ 'threatModels.metadata' | transloco }}</h3>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addMetadataItem()"
+          [matTooltip]="'Add Metadata'"
+          *ngIf="!isViewOnly"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="metadataDataSource" #metadataTable class="metadata-table">
+          <!-- Key Column -->
+          <ng-container matColumnDef="key">
+            <th mat-header-cell *matHeaderCellDef>{{ 'threatModels.metadataKey' | transloco }}</th>
+            <td mat-cell *matCellDef="let item; let i = index">
+              <mat-form-field class="table-field" *ngIf="!isViewOnly">
+                <input
+                  matInput
+                  [value]="item.key"
+                  (blur)="updateMetadataKey(i, $event)"
+                  placeholder="Key"
+                />
+              </mat-form-field>
+              <span *ngIf="isViewOnly">{{ item.key }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Value Column -->
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'threatModels.metadataValue' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let item; let i = index">
+              <mat-form-field class="table-field" *ngIf="!isViewOnly">
+                <input
+                  matInput
+                  [value]="item.value"
+                  (blur)="updateMetadataValue(i, $event)"
+                  placeholder="Value"
+                />
+              </mat-form-field>
+              <span *ngIf="isViewOnly">{{ item.value }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let item; let i = index">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteMetadataItem(i)"
+                [matTooltip]="'Delete'"
+                *ngIf="!isViewOnly"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="metadataColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: metadataColumns"></tr>
+        </table>
+      </div>
+
+      <div *ngIf="!hasMetadata()" class="no-items-message">
+        {{ 'threatModels.noMetadata' | transloco }}
       </div>
     </div>
   </form>
