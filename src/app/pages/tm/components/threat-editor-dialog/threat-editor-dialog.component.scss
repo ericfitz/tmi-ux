@@ -91,7 +91,7 @@ mat-dialog-content {
 
 .table-container {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: visible;
   border: 1px solid rgb(0 0 0 / 12%);
   border-radius: 4px;
 }
@@ -126,16 +126,17 @@ mat-dialog-content {
 }
 
 .mat-column-key {
-  width: 30%;
+  width: 15%;
 }
 
 .mat-column-value {
-  width: 50%;
+  width: 65%;
 }
 
 .mat-column-actions {
   width: 20%;
   text-align: center;
+  white-space: nowrap;
 }
 
 .mat-mdc-header-cell {

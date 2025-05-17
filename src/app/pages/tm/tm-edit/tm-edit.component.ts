@@ -285,7 +285,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
               description: formResult.description,
               created_at: now,
               modified_at: now,
-              metadata: [],
+              metadata: [
+                { key: 'DiagramId', value: '123e4567-e89b-12d3-a456-426614174000' },
+                { key: 'NodeId', value: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88' },
+                { key: 'Type', value: 'Elevation of Privilege' },
+                { key: 'Status', value: 'Open' },
+                { key: 'Priority', value: 'High' },
+                { key: 'CVSS', value: '7.3' },
+                { key: 'Issue ID', value: 'jira-10881' },
+              ],
             };
 
             // Add the threat to the threat model
