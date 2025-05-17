@@ -147,7 +147,7 @@ export const SecurityBoundaryShape = Shape.Rect.define({
  * @returns The shape instance for chaining
  */
 (SecurityBoundaryShape.prototype as SecurityBoundaryShapeType).updatePorts = function (
-  graph: Graph,
+  _graph: Graph,
 ): SecurityBoundaryShapeType {
   const directions: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left'];
   const portsPerDirection = 1;

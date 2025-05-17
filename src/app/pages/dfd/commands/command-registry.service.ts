@@ -68,7 +68,11 @@ export class CommandRegistryService {
 
       // Restore the createdNodeId if it exists
       if (params.createdNodeId) {
-        (command as any).createdNodeId = params.createdNodeId;
+        // Use Object.defineProperty to set the private property
+        Object.defineProperty(command, 'createdNodeId', {
+          value: params.createdNodeId,
+          writable: true,
+        });
       }
 
       return command;
@@ -89,7 +93,11 @@ export class CommandRegistryService {
 
       // Restore the deletedNodeData if it exists
       if (params.deletedNodeData) {
-        (command as any).deletedNodeData = params.deletedNodeData;
+        // Use Object.defineProperty to set the private property
+        Object.defineProperty(command, 'deletedNodeData', {
+          value: params.deletedNodeData,
+          writable: true,
+        });
       }
 
       return command;
@@ -111,7 +119,11 @@ export class CommandRegistryService {
 
       // Restore the originalPosition if it exists
       if (params.originalPosition) {
-        (command as any).originalPosition = params.originalPosition;
+        // Use Object.defineProperty to set the private property
+        Object.defineProperty(command, 'originalPosition', {
+          value: params.originalPosition,
+          writable: true,
+        });
       }
 
       return command;

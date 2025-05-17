@@ -162,7 +162,7 @@ export const StoreShape = Shape.Rect.define({
  * @param graph The X6 graph instance
  * @returns The shape instance for chaining
  */
-(StoreShape.prototype as StoreShapeType).updatePorts = function (graph: Graph): StoreShapeType {
+(StoreShape.prototype as StoreShapeType).updatePorts = function (_graph: Graph): StoreShapeType {
   const directions: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left'];
   const portsPerDirection = 1;
 

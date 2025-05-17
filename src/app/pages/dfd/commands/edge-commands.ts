@@ -1,5 +1,5 @@
 import { Graph, Edge } from '@antv/x6';
-import { BaseCommand, CommandResult } from './command.interface'; // Removed EdgeCommandParams
+import { BaseCommand, CommandResult } from './command.interface';
 import { LoggerService } from '../../../core/services/logger.service';
 
 /**
@@ -23,6 +23,14 @@ export class AddEdgeCommand extends BaseCommand<Edge> {
   ) {
     super();
     this.logger.debug('AddEdgeCommand created', { params });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'add-edge';
   }
 
   /**
@@ -109,6 +117,7 @@ export class AddEdgeCommand extends BaseCommand<Edge> {
    * @param graph The X6 graph instance
    * @returns Boolean indicating if the command can be executed
    */
+
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -119,13 +128,25 @@ export class AddEdgeCommand extends BaseCommand<Edge> {
     return !!sourceCell && sourceCell.isNode() && !!targetCell && targetCell.isNode();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     return !!graph && !!this.createdEdgeId;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      source: this.params.source,
+      target: this.params.target,
+      vertices: this.params.vertices,
+      attrs: this.params.attrs,
+      data: this.params.data,
+      router: this.params.router,
+      connector: this.params.connector,
+      createdEdgeId: this.createdEdgeId,
+    };
   }
 }
 
@@ -151,6 +172,14 @@ export class DeleteEdgeCommand extends BaseCommand<void> {
   ) {
     super();
     this.logger.debug('DeleteEdgeCommand created', { edgeId });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'delete-edge';
   }
 
   /**
@@ -203,6 +232,11 @@ export class DeleteEdgeCommand extends BaseCommand<void> {
     }
   }
 
+  /**
+   * Check if this command can be executed
+   * @param graph The X6 graph instance
+   * @returns Boolean indicating if the command can be executed
+   */
   /**
    * Undo the command - restores the deleted edge
    * @param graph The X6 graph instance
@@ -258,11 +292,6 @@ export class DeleteEdgeCommand extends BaseCommand<void> {
     }
   }
 
-  /**
-   * Check if this command can be executed
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be executed
-   */
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -270,11 +299,6 @@ export class DeleteEdgeCommand extends BaseCommand<void> {
     return !!edge && edge.isEdge();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     if (!graph || !this.deletedEdgeData) return false;
 
@@ -283,6 +307,17 @@ export class DeleteEdgeCommand extends BaseCommand<void> {
     const targetCell = graph.getCellById(this.deletedEdgeData.target.cell);
 
     return !!sourceCell && sourceCell.isNode() && !!targetCell && targetCell.isNode();
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      edgeId: this.edgeId,
+      deletedEdgeData: this.deletedEdgeData,
+    };
   }
 }
 
@@ -300,6 +335,14 @@ export class UpdateEdgeVerticesCommand extends BaseCommand<void> {
   ) {
     super();
     this.logger.debug('UpdateEdgeVerticesCommand created', { edgeId, newVertices });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'update-edge-vertices';
   }
 
   /**
@@ -374,6 +417,7 @@ export class UpdateEdgeVerticesCommand extends BaseCommand<void> {
    * @param graph The X6 graph instance
    * @returns Boolean indicating if the command can be executed
    */
+
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -381,15 +425,22 @@ export class UpdateEdgeVerticesCommand extends BaseCommand<void> {
     return !!edge && edge.isEdge();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     if (!graph) return false;
 
     const edge = graph.getCellById(this.edgeId);
     return !!edge && edge.isEdge() && !!this.originalVertices;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      edgeId: this.edgeId,
+      newVertices: this.newVertices,
+      originalVertices: this.originalVertices,
+    };
   }
 }

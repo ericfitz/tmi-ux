@@ -11,7 +11,6 @@ import { DfdLabelEditorService } from './dfd-label-editor.service';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 // Import NodeData interface for type checking - used in type assertions
 import { NodeData } from '../models/node-data.interface';
-import { TextboxShape } from '../models/textbox-shape.model';
 
 // Type guard function to check if an object is a NodeData
 function isNodeData(data: unknown): data is NodeData {
@@ -95,7 +94,8 @@ export class DfdGraphService {
                 if (parent.id === node.id) return false;
 
                 // Skip textbox shapes as potential parents
-                if (parent instanceof TextboxShape) {
+                // Check constructor name instead of using instanceof
+                if (parent.constructor.name === 'TextboxShape') {
                   return false;
                 }
 
@@ -826,9 +826,13 @@ export class DfdGraphService {
 
         // Check if the node is a TextboxShape
         if (node.constructor.name === 'TextboxShape') {
-          // Update the HTML content for TextboxShape
-          // Cast to TextboxShape to access the updateHtml method
-          (node as unknown as TextboxShape).updateHtml(newText);
+          // Use type assertion with a more specific type
+          if (
+            typeof (node as unknown as { updateHtml: (text: string) => void }).updateHtml ===
+            'function'
+          ) {
+            (node as unknown as { updateHtml: (text: string) => void }).updateHtml(newText);
+          }
 
           // Also update the label in the node data
           const nodeData = node.getData<Record<string, unknown>>();

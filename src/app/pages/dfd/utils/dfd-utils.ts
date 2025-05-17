@@ -1,9 +1,4 @@
 import { Edge, Graph, Node } from '@antv/x6';
-import { ActorShape } from '../models/actor-shape.model';
-import { ProcessShape } from '../models/process-shape.model';
-import { StoreShape } from '../models/store-shape.model';
-import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
-import { TextboxShape } from '../models/textbox-shape.model';
 import { ShapeType } from '../services/dfd-node.service';
 
 /**
@@ -24,13 +19,29 @@ export function generateUniqueId(): string {
  * @returns Boolean indicating if this is a DFD shape
  */
 export function isDfdNode(node: Node): boolean {
-  return (
-    node instanceof ActorShape ||
-    node instanceof ProcessShape ||
-    node instanceof StoreShape ||
-    node instanceof SecurityBoundaryShape ||
-    node instanceof TextboxShape
-  );
+  // Check the constructor name or data-shape-type attribute instead of using instanceof
+  try {
+    const shapeType = node.attr('data-shape-type');
+    if (shapeType) {
+      return ['actor', 'process', 'store', 'securityBoundary', 'textbox'].includes(
+        shapeType as string,
+      );
+    }
+
+    // Fallback to checking constructor name
+    const constructorName = node.constructor.name;
+    return [
+      'ActorShape',
+      'ProcessShape',
+      'StoreShape',
+      'SecurityBoundaryShape',
+      'TextboxShape',
+    ].includes(constructorName);
+  } catch {
+    // Error is intentionally ignored
+    // If we can't access attributes, it's not a DFD node
+    return false;
+  }
 }
 
 /**
@@ -39,12 +50,33 @@ export function isDfdNode(node: Node): boolean {
  * @returns The shape type or undefined if not recognized
  */
 export function getShapeType(node: Node): ShapeType | undefined {
-  if (node instanceof ActorShape) return 'actor';
-  if (node instanceof ProcessShape) return 'process';
-  if (node instanceof StoreShape) return 'store';
-  if (node instanceof SecurityBoundaryShape) return 'securityBoundary';
-  if (node instanceof TextboxShape) return 'textbox';
-  return undefined;
+  try {
+    // First try to get the shape type from the data-shape-type attribute
+    const shapeType = node.attr('data-shape-type');
+    if (shapeType) {
+      return shapeType as ShapeType;
+    }
+
+    // Fallback to checking constructor name
+    const constructorName = node.constructor.name;
+    switch (constructorName) {
+      case 'ActorShape':
+        return 'actor';
+      case 'ProcessShape':
+        return 'process';
+      case 'StoreShape':
+        return 'store';
+      case 'SecurityBoundaryShape':
+        return 'securityBoundary';
+      case 'TextboxShape':
+        return 'textbox';
+      default:
+        return undefined;
+    }
+  } catch {
+    // Error is intentionally ignored
+    return undefined;
+  }
 }
 
 /**
@@ -147,7 +179,9 @@ export function updateZIndices(graph: Graph): void {
 
   // First pass: security boundaries to z-index -1
   nodes.forEach(node => {
-    if (node instanceof SecurityBoundaryShape) {
+    // Check if this is a security boundary by type
+    const shapeType = getShapeType(node);
+    if (shapeType === 'securityBoundary') {
       node.setZIndex(-1);
     }
   });
@@ -157,7 +191,7 @@ export function updateZIndices(graph: Graph): void {
   const rootNodes: Node[] = [];
 
   nodes
-    .filter(node => !(node instanceof SecurityBoundaryShape))
+    .filter(node => getShapeType(node) !== 'securityBoundary')
     .forEach(node => {
       const parent = node.getParent();
       if (parent) {

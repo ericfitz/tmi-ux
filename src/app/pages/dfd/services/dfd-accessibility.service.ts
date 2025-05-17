@@ -7,7 +7,6 @@ import { LoggerService } from '../../../core/services/logger.service';
 // import { ProcessShape } from '../models/process-shape.model';
 // import { StoreShape } from '../models/store-shape.model';
 // import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
-import { TextboxShape } from '../models/textbox-shape.model';
 import { DfdErrorService } from './dfd-error.service';
 import { DfdEventBusService } from './dfd-event-bus.service';
 import { getShapeType } from '../utils/dfd-utils';
@@ -294,7 +293,11 @@ export class DfdAccessibilityService {
 
     // Get the current label
     let labelText = '';
-    if (node instanceof TextboxShape) {
+
+    // Use constructor name to determine if it's a TextboxShape
+    const isTextbox = node.constructor.name === 'TextboxShape';
+
+    if (isTextbox) {
       // For TextboxShape, the label is in the HTML content
       // This would need custom handling
       this.errorService.logWarning('Label editing not implemented for textbox nodes');
@@ -308,8 +311,14 @@ export class DfdAccessibilityService {
     const newText = window.prompt('Edit label:', labelText);
     if (newText !== null && newText !== labelText) {
       // Update the label
-      if (node instanceof TextboxShape) {
-        node.updateHtml(newText);
+      if (isTextbox) {
+        // Use type assertion with a more specific type
+        if (
+          typeof (node as unknown as { updateHtml: (text: string) => void }).updateHtml ===
+          'function'
+        ) {
+          (node as unknown as { updateHtml: (text: string) => void }).updateHtml(newText);
+        }
       } else {
         node.attr('label/text', newText);
       }

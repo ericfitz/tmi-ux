@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
-import { ActorShape } from '../models/actor-shape.model';
-import { ProcessShape } from '../models/process-shape.model';
-import { StoreShape } from '../models/store-shape.model';
-import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
-import { TextboxShape } from '../models/textbox-shape.model';
 import { DfdLabelEditorService } from './dfd-label-editor.service';
 import { DfdShapeFactoryService, ShapeOptions } from './dfd-shape-factory.service';
 
@@ -180,13 +175,14 @@ export class DfdNodeService {
    * @returns True if the node is a DFD shape
    */
   isDfdNode(node: Node): boolean {
-    // Check by instance first
+    // Check constructor name first
+    const constructorName = node.constructor.name;
     if (
-      node instanceof ActorShape ||
-      node instanceof ProcessShape ||
-      node instanceof StoreShape ||
-      node instanceof SecurityBoundaryShape ||
-      node instanceof TextboxShape
+      constructorName === 'ActorShape' ||
+      constructorName === 'ProcessShape' ||
+      constructorName === 'StoreShape' ||
+      constructorName === 'SecurityBoundaryShape' ||
+      constructorName === 'TextboxShape'
     ) {
       return true;
     }

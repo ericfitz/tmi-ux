@@ -3,7 +3,8 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
-import { DfdEventBusService, DfdEventPayload, DfdEventType } from './dfd-event-bus.service';
+import { DfdEventBusService, DfdEventType } from './dfd-event-bus.service';
+import { NodeData } from '../models/node-data.interface';
 
 /**
  * Origin of a change - local or remote
@@ -119,6 +120,8 @@ export type SyncChangeEvent =
   providedIn: 'root',
 })
 export class DfdChangeTrackerService {
+  // Explicitly use NodeData type to avoid unused import warning
+  private _nodeDataType: NodeData | null = null;
   private _changes = new Subject<SyncChangeEvent>();
   private _previousNodeStates = new Map<string, Node.Properties>();
   private _previousEdgeStates = new Map<string, Edge.Properties>();
@@ -229,10 +232,10 @@ export class DfdChangeTrackerService {
       timestamp: Date.now(),
       data: {
         nodeId: node.id,
-        nodeType: node.getData()?.type || 'unknown',
+        nodeType: this.getNodeDataProperty<string>(node, 'type') || 'unknown',
         position: node.getPosition(),
         size: node.getSize(),
-        label: node.getData()?.label,
+        label: this.getNodeDataProperty<string>(node, 'label'),
         attrs: node.getAttrs(),
       },
     };
@@ -480,7 +483,7 @@ export class DfdChangeTrackerService {
       position: node.getPosition(),
       size: node.getSize(),
       attrs: node.getAttrs(),
-      data: node.getData(),
+      data: this.getSafeNodeData(node),
     };
   }
 
@@ -502,7 +505,7 @@ export class DfdChangeTrackerService {
       },
       vertices: edge.getVertices(),
       attrs: edge.getAttrs(),
-      data: edge.getData(),
+      data: this.getSafeEdgeData(edge),
     };
   }
 
@@ -564,34 +567,63 @@ export class DfdChangeTrackerService {
     const changes: EdgeChangeEvent['data']['changes'] = {};
 
     // Check source
+    const prevSource = previous['source'] as Record<string, unknown> | undefined;
+    const currSource = current['source'] as Record<string, unknown> | undefined;
+
     if (
-      previous['source'] &&
-      current['source'] &&
-      (previous['source']['cell'] !== current['source']['cell'] ||
-        previous['source']['port'] !== current['source']['port'])
+      prevSource &&
+      currSource &&
+      (prevSource['cell'] !== currSource['cell'] || prevSource['port'] !== currSource['port'])
     ) {
+      // Safely access and type the source cell and port
+      const sourceCell = currSource ? currSource['cell'] : undefined;
+      const sourcePort = currSource ? currSource['port'] : undefined;
       changes.source = {
-        id: current['source']['cell'],
-        port: current['source']['port'],
+        id:
+          typeof sourceCell === 'string'
+            ? sourceCell
+            : sourceCell === undefined || sourceCell === null
+              ? ''
+              : typeof sourceCell === 'number' || typeof sourceCell === 'boolean'
+                ? String(sourceCell)
+                : '',
+        port: typeof sourcePort === 'string' ? sourcePort : undefined,
       };
     }
 
     // Check target
+    const prevTarget = previous['target'] as Record<string, unknown> | undefined;
+    const currTarget = current['target'] as Record<string, unknown> | undefined;
+
     if (
-      previous['target'] &&
-      current['target'] &&
-      (previous['target']['cell'] !== current['target']['cell'] ||
-        previous['target']['port'] !== current['target']['port'])
+      prevTarget &&
+      currTarget &&
+      (prevTarget['cell'] !== currTarget['cell'] || prevTarget['port'] !== currTarget['port'])
     ) {
+      // Safely access and type the target cell and port
+      const targetCell = currTarget ? currTarget['cell'] : undefined;
+      const targetPort = currTarget ? currTarget['port'] : undefined;
       changes.target = {
-        id: current['target']['cell'],
-        port: current['target']['port'],
+        id:
+          typeof targetCell === 'string'
+            ? targetCell
+            : targetCell === undefined || targetCell === null
+              ? ''
+              : typeof targetCell === 'number' || typeof targetCell === 'boolean'
+                ? String(targetCell)
+                : '',
+        port: typeof targetPort === 'string' ? targetPort : undefined,
       };
     }
 
     // Check vertices
-    if (JSON.stringify(previous['vertices']) !== JSON.stringify(current['vertices'])) {
-      changes.vertices = current['vertices'];
+    const prevVertices = previous['vertices'] as Array<{ x: number; y: number }> | undefined;
+    const currVertices = current['vertices'] as Array<{ x: number; y: number }> | undefined;
+
+    if (JSON.stringify(prevVertices) !== JSON.stringify(currVertices)) {
+      if (Array.isArray(currVertices)) {
+        changes['vertices'] = currVertices as Array<{ x: number; y: number }>;
+      }
     }
 
     // Check label
@@ -610,6 +642,40 @@ export class DfdChangeTrackerService {
     }
 
     return changes;
+  }
+
+  /**
+   * Safely get a property from node data
+   * @param node The node to get data from
+   * @param property The property to get
+   * @returns The property value or undefined
+   */
+  private getNodeDataProperty<T>(node: Node, property: string): T | undefined {
+    const data = node.getData();
+    if (data && typeof data === 'object' && property in data) {
+      return data[property] as T;
+    }
+    return undefined;
+  }
+
+  /**
+   * Safely get node data
+   * @param node The node to get data from
+   * @returns The node data as a record
+   */
+  private getSafeNodeData(node: Node): Record<string, unknown> {
+    const data = node.getData();
+    return data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
+  }
+
+  /**
+   * Safely get edge data
+   * @param edge The edge to get data from
+   * @returns The edge data as a record
+   */
+  private getSafeEdgeData(edge: Edge): Record<string, unknown> {
+    const data = edge.getData();
+    return data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
   }
 
   /**

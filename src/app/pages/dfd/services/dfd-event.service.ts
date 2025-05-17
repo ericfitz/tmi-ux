@@ -7,11 +7,6 @@ import { DfdHighlighterService } from './dfd-highlighter.service';
 import { DfdPortService } from './dfd-port.service';
 import { DfdNodeService } from './dfd-node.service';
 import { DfdLabelEditorService } from './dfd-label-editor.service';
-import { ActorShape } from '../models/actor-shape.model';
-import { ProcessShape } from '../models/process-shape.model';
-import { StoreShape } from '../models/store-shape.model';
-import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
-import { TextboxShape } from '../models/textbox-shape.model';
 import { NodeData } from '../models/node-data.interface';
 import { DfdEventBusService, DfdEventType } from './dfd-event-bus.service';
 
@@ -28,8 +23,8 @@ function isNodeData(data: unknown): data is NodeData {
 })
 export class DfdEventService {
   // Reference to the currently selected node
-  private _selectedNode: ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape | null =
-    null;
+  // Use Node type instead of specific shape types
+  private _selectedNode: Node | null = null;
 
   constructor(
     private logger: LoggerService,
@@ -164,7 +159,8 @@ export class DfdEventService {
     this.logger.debug(`Resetting z-indices after un-embedding node ${node.id}`);
 
     // Set the un-embedded node's z-index to 0 (unless it's a security boundary)
-    if (!(node instanceof SecurityBoundaryShape)) {
+    // Check constructor name instead of using instanceof
+    if (node.constructor.name !== 'SecurityBoundaryShape') {
       node.setZIndex(0);
       this.logger.debug(`Reset z-index of un-embedded node ${node.id} to 0`);
     } else {
@@ -254,7 +250,8 @@ export class DfdEventService {
     const regularNodes: Node<Node.Properties>[] = [];
 
     allNodes.forEach(node => {
-      if (node instanceof SecurityBoundaryShape) {
+      // Check constructor name instead of using instanceof
+      if (node.constructor.name === 'SecurityBoundaryShape') {
         securityBoundaries.push(node);
       } else {
         regularNodes.push(node);
@@ -370,20 +367,27 @@ export class DfdEventService {
         ];
 
         directions.forEach(direction => {
-          const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+          // Use a more specific type for the node
+          const dfdNode = node as Node & {
+            getPortsByGroup: (group: string) => Array<{ id: string | number | undefined }>;
+          };
+          const constructorName = node.constructor.name;
           const ports =
-            dfdNode instanceof ActorShape ||
-            dfdNode instanceof ProcessShape ||
-            dfdNode instanceof StoreShape ||
-            dfdNode instanceof SecurityBoundaryShape
+            constructorName === 'ActorShape' ||
+            constructorName === 'ProcessShape' ||
+            constructorName === 'StoreShape' ||
+            constructorName === 'SecurityBoundaryShape'
               ? dfdNode.getPortsByGroup(direction)
               : [];
 
+          // Use a more specific type for the port
           ports.forEach(port => {
-            const portId = typeof port.id === 'string' ? port.id : String(port.id);
-            const portNode = view.findPortElem(portId, 'portBody');
-            if (portNode) {
-              portNode.setAttribute('visibility', 'visible');
+            if (port.id !== undefined) {
+              const portId = typeof port.id === 'string' ? port.id : String(port.id);
+              const portNode = view.findPortElem(portId, 'portBody');
+              if (portNode) {
+                portNode.setAttribute('visibility', 'visible');
+              }
             }
           });
         });
@@ -435,7 +439,7 @@ export class DfdEventService {
       // If the node is already selected, do nothing (keep it selected)
       if (!isAlreadySelected) {
         // Select the clicked node
-        this._selectedNode = cell as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+        this._selectedNode = cell;
 
         // Add selection styling
         cell.attr('selected', true);
@@ -613,15 +617,17 @@ export class DfdEventService {
    * @param node The node to add attributes to
    */
   private addShapeTypeAttributes(node: Node): void {
-    if (node instanceof ProcessShape) {
+    // Check constructor name instead of using instanceof
+    const constructorName = node.constructor.name;
+    if (constructorName === 'ProcessShape') {
       node.attr('data-shape-type', 'process');
-    } else if (node instanceof ActorShape) {
+    } else if (constructorName === 'ActorShape') {
       node.attr('data-shape-type', 'actor');
-    } else if (node instanceof StoreShape) {
+    } else if (constructorName === 'StoreShape') {
       node.attr('data-shape-type', 'store');
-    } else if (node instanceof SecurityBoundaryShape) {
+    } else if (constructorName === 'SecurityBoundaryShape') {
       node.attr('data-shape-type', 'securityBoundary');
-    } else if (node instanceof TextboxShape) {
+    } else if (constructorName === 'TextboxShape') {
       node.attr('data-shape-type', 'textbox');
     }
   }
@@ -664,8 +670,7 @@ export class DfdEventService {
   selectNode(node: Node): void {
     if (!node) return;
 
-    // Cast to proper type
-    const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+    // No need to cast to specific shape types
 
     // Get node data to determine its real type
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -689,7 +694,7 @@ export class DfdEventService {
     }
 
     // Set as selected node
-    this._selectedNode = dfdNode;
+    this._selectedNode = node;
 
     // Add selection styling
     node.attr('selected', true);
@@ -735,7 +740,7 @@ export class DfdEventService {
    * Gets the currently selected node
    * @returns The currently selected node
    */
-  getSelectedNode(): ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape | null {
+  getSelectedNode(): Node | null {
     return this._selectedNode;
   }
 
@@ -743,9 +748,7 @@ export class DfdEventService {
    * Sets the currently selected node
    * @param node The node to select
    */
-  setSelectedNode(
-    node: ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape | null,
-  ): void {
+  setSelectedNode(node: Node | null): void {
     this._selectedNode = node;
   }
 

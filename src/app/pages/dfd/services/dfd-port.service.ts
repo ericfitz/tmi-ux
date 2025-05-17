@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, NodeView } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
-import { ActorShape } from '../models/actor-shape.model';
-import { ProcessShape } from '../models/process-shape.model';
-import { StoreShape } from '../models/store-shape.model';
-import { SecurityBoundaryShape } from '../models/security-boundary-shape.model';
 import { PortDirection } from '../models/dfd-types';
 import { DfdNodeService } from './dfd-node.service';
+
+/**
+ * Type for port objects returned by getPortsByGroup
+ */
+type PortInfo = {
+  id: string;
+  [key: string]: unknown;
+};
 
 /**
  * Service for managing ports in the DFD component
@@ -53,41 +57,52 @@ export class DfdPortService {
     const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
 
     directions.forEach(direction => {
-      const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+      // Use a type assertion for the node with getPortsByGroup method
+      const dfdNode = node as Node & { getPortsByGroup: (group: string) => PortInfo[] };
+      const constructorName = node.constructor.name;
+
+      // Check if the node has the getPortsByGroup method
+      if (typeof dfdNode.getPortsByGroup !== 'function') {
+        return;
+      }
+
       const ports =
-        dfdNode instanceof ActorShape ||
-        dfdNode instanceof ProcessShape ||
-        dfdNode instanceof StoreShape ||
-        dfdNode instanceof SecurityBoundaryShape
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
           ? dfdNode.getPortsByGroup(direction)
           : [];
 
-      ports.forEach(port => {
-        const portId = typeof port.id === 'string' ? port.id : String(port.id);
-        const portNode = nodeView.findPortElem(portId, 'portBody');
-        if (portNode) {
-          // Check if this port has any connected edges
-          const connectedEdges = graph.getConnectedEdges(node, {
-            outgoing: true,
-            incoming: true,
-          });
+      // Process each port
+      for (const port of ports) {
+        if (port && port.id) {
+          const portId = port.id;
+          const portNode = nodeView.findPortElem(portId, 'portBody');
+          if (portNode) {
+            // Check if this port has any connected edges
+            const connectedEdges = graph.getConnectedEdges(node, {
+              outgoing: true,
+              incoming: true,
+            });
 
-          const isPortInUse = connectedEdges.some(edge => {
-            const sourcePort = edge.getSourcePortId();
-            const targetPort = edge.getTargetPortId();
-            return sourcePort === portId || targetPort === portId;
-          });
+            const isPortInUse = connectedEdges.some(edge => {
+              const sourcePort = edge.getSourcePortId();
+              const targetPort = edge.getTargetPortId();
+              return sourcePort === portId || targetPort === portId;
+            });
 
-          // Only hide ports that are not in use
-          if (!isPortInUse) {
-            portNode.setAttribute('visibility', 'hidden');
-          } else {
-            // Ensure in-use ports are visible and have a high z-index
-            portNode.setAttribute('visibility', 'visible');
-            portNode.setAttribute('z-index', '1000');
+            // Only hide ports that are not in use
+            if (!isPortInUse) {
+              portNode.setAttribute('visibility', 'hidden');
+            } else {
+              // Ensure in-use ports are visible and have a high z-index
+              portNode.setAttribute('visibility', 'visible');
+              portNode.setAttribute('z-index', '1000');
+            }
           }
         }
-      });
+      }
     });
   }
 
@@ -120,24 +135,35 @@ export class DfdPortService {
     const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
 
     directions.forEach(direction => {
-      const dfdNode = node as ActorShape | ProcessShape | StoreShape | SecurityBoundaryShape;
+      // Use a type assertion for the node with getPortsByGroup method
+      const dfdNode = node as Node & { getPortsByGroup: (group: string) => PortInfo[] };
+      const constructorName = node.constructor.name;
+
+      // Check if the node has the getPortsByGroup method
+      if (typeof dfdNode.getPortsByGroup !== 'function') {
+        return;
+      }
+
       const ports =
-        dfdNode instanceof ActorShape ||
-        dfdNode instanceof ProcessShape ||
-        dfdNode instanceof StoreShape ||
-        dfdNode instanceof SecurityBoundaryShape
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
           ? dfdNode.getPortsByGroup(direction)
           : [];
 
-      ports.forEach(port => {
-        const portId = typeof port.id === 'string' ? port.id : String(port.id);
-        const portNode = nodeView.findPortElem(portId, 'portBody');
-        if (portNode) {
-          portNode.setAttribute('visibility', 'visible');
-          // Ensure port is above other elements by setting a high z-index
-          portNode.setAttribute('z-index', '1000');
+      // Process each port
+      for (const port of ports) {
+        if (port && port.id) {
+          const portId = port.id;
+          const portNode = nodeView.findPortElem(portId, 'portBody');
+          if (portNode) {
+            portNode.setAttribute('visibility', 'visible');
+            // Ensure port is above other elements by setting a high z-index
+            portNode.setAttribute('z-index', '1000');
+          }
         }
-      });
+      }
     });
   }
 }

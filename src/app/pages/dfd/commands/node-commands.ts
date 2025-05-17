@@ -1,10 +1,8 @@
 import { Graph, Node, Edge } from '@antv/x6';
-import { BaseCommand, CommandResult } from './command.interface'; // Removed NodeCommandParams
+import { BaseCommand, CommandResult } from './command.interface';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdShapeFactoryService, ShapeOptions } from '../services/dfd-shape-factory.service';
 import { ShapeType } from '../services/dfd-node.service';
-import { CommandDeserializerService } from './command-deserializer.service';
-import { Injectable } from '@angular/core';
 
 /**
  * Parameters for the AddNodeCommand
@@ -41,23 +39,6 @@ export class AddNodeCommand extends BaseCommand<Node> {
    */
   getType(): string {
     return 'add-node';
-  }
-
-  /**
-   * Serialize command-specific data
-   * @returns An object containing the command-specific data
-   */
-  protected serializeData(): Record<string, unknown> {
-    // Only serialize the data needed to recreate the command
-    return {
-      type: this.params.type,
-      position: this.params.position,
-      size: this.params.size,
-      label: this.params.label,
-      zIndex: this.params.zIndex,
-      parent: this.params.parent,
-      createdNodeId: this.createdNodeId,
-    };
   }
 
   /**
@@ -134,17 +115,30 @@ export class AddNodeCommand extends BaseCommand<Node> {
    * @param graph The X6 graph instance
    * @returns Boolean indicating if the command can be executed
    */
+
   override canExecute(graph: Graph): boolean {
     return !!graph;
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     return !!graph && !!this.createdNodeId;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    // Only serialize the data needed to recreate the command
+    return {
+      type: this.params.type,
+      position: this.params.position,
+      size: this.params.size,
+      label: this.params.label,
+      zIndex: this.params.zIndex,
+      parent: this.params.parent,
+      createdNodeId: this.createdNodeId,
+    };
   }
 }
 
@@ -196,17 +190,6 @@ export class DeleteNodeCommand extends BaseCommand<void> {
    */
   getType(): string {
     return 'delete-node';
-  }
-
-  /**
-   * Serialize command-specific data
-   * @returns An object containing the command-specific data
-   */
-  protected serializeData(): Record<string, unknown> {
-    return {
-      nodeId: this.nodeId,
-      deletedNodeData: this.deletedNodeData,
-    };
   }
 
   /**
@@ -301,6 +284,11 @@ export class DeleteNodeCommand extends BaseCommand<void> {
     }
   }
 
+  /**
+   * Check if this command can be executed
+   * @param graph The X6 graph instance
+   * @returns Boolean indicating if the command can be executed
+   */
   /**
    * Undo the command - restores the deleted node and its connected edges
    * @param graph The X6 graph instance
@@ -426,11 +414,6 @@ export class DeleteNodeCommand extends BaseCommand<void> {
     }
   }
 
-  /**
-   * Check if this command can be executed
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be executed
-   */
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -438,13 +421,19 @@ export class DeleteNodeCommand extends BaseCommand<void> {
     return !!node && node.isNode();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     return !!graph && !!this.deletedNodeData;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      nodeId: this.nodeId,
+      deletedNodeData: this.deletedNodeData,
+    };
   }
 }
 
@@ -470,18 +459,6 @@ export class MoveNodeCommand extends BaseCommand<void> {
    */
   getType(): string {
     return 'move-node';
-  }
-
-  /**
-   * Serialize command-specific data
-   * @returns An object containing the command-specific data
-   */
-  protected serializeData(): Record<string, unknown> {
-    return {
-      nodeId: this.nodeId,
-      newPosition: this.newPosition,
-      originalPosition: this.originalPosition,
-    };
   }
 
   /**
@@ -556,6 +533,7 @@ export class MoveNodeCommand extends BaseCommand<void> {
    * @param graph The X6 graph instance
    * @returns Boolean indicating if the command can be executed
    */
+
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -563,13 +541,20 @@ export class MoveNodeCommand extends BaseCommand<void> {
     return !!node && node.isNode();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(_graph: Graph): boolean {
     // Prefixed graph with _
     return !!this.originalPosition;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      nodeId: this.nodeId,
+      newPosition: this.newPosition,
+      originalPosition: this.originalPosition,
+    };
   }
 }

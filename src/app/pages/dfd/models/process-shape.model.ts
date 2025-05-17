@@ -146,7 +146,7 @@ export const ProcessShape = Shape.Circle.define({
  * @returns The shape instance for chaining
  */
 (ProcessShape.prototype as ProcessShapeType).updatePorts = function (
-  graph: Graph,
+  _graph: Graph,
 ): ProcessShapeType {
   const directions: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left'];
   const portsPerDirection = 1;

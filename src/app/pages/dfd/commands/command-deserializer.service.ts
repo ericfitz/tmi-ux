@@ -32,7 +32,15 @@ export class CommandDeserializerService {
    */
   deserialize(json: string): Command {
     try {
-      const parsed = JSON.parse(json);
+      const parsed: {
+        type?: string;
+        data?: Record<string, unknown>;
+        origin?: string;
+      } = JSON.parse(json) as {
+        type?: string;
+        data?: Record<string, unknown>;
+        origin?: string;
+      };
 
       if (!parsed.type || typeof parsed.type !== 'string') {
         throw new Error('Invalid command format: missing or invalid type');
@@ -43,7 +51,7 @@ export class CommandDeserializerService {
         throw new Error(`No deserializer registered for command type: ${parsed.type}`);
       }
 
-      const command = deserializer(parsed.data);
+      const command = deserializer(parsed.data || {});
 
       // Set the command origin if it exists in the serialized data
       if (parsed.origin && (parsed.origin === 'local' || parsed.origin === 'remote')) {

@@ -68,7 +68,13 @@ export class DfdShapeFactoryService {
       case 'textbox':
         node = new TextboxShape().resize(width, height).position(options.x, options.y);
         // TextboxShape uses HTML for content
-        (node as TextboxShape).updateHtml(label);
+        // Use type assertion with a more specific type
+        if (
+          typeof (node as unknown as { updateHtml: (text: string) => void }).updateHtml ===
+          'function'
+        ) {
+          (node as unknown as { updateHtml: (text: string) => void }).updateHtml(label);
+        }
         break;
       default:
         this.logger.error(`Unknown shape type: ${String(shapeType)}`);
@@ -94,13 +100,21 @@ export class DfdShapeFactoryService {
 
     // Update ports if graph is provided
     if (graph && shapeType !== 'textbox') {
+      // Check constructor name instead of using instanceof
+      const constructorName = node.constructor.name;
       if (
-        node instanceof ActorShape ||
-        node instanceof ProcessShape ||
-        node instanceof StoreShape ||
-        node instanceof SecurityBoundaryShape
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
       ) {
-        node.updatePorts(graph);
+        // Use type assertion with a more specific type
+        if (
+          typeof (node as unknown as { updatePorts: (graph: Graph) => void }).updatePorts ===
+          'function'
+        ) {
+          (node as unknown as { updatePorts: (graph: Graph) => void }).updatePorts(graph);
+        }
       }
     }
 

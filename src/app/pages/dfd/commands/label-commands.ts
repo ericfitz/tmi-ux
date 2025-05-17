@@ -1,4 +1,4 @@
-import { Graph, Edge } from '@antv/x6'; // Removed Node
+import { Graph, Edge } from '@antv/x6';
 import { BaseCommand, CommandResult } from './command.interface';
 import { LoggerService } from '../../../core/services/logger.service';
 
@@ -16,6 +16,14 @@ export class EditNodeLabelCommand extends BaseCommand<string> {
   ) {
     super();
     this.logger.debug('EditNodeLabelCommand created', { nodeId, newLabel });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'edit-node-label';
   }
 
   /**
@@ -57,6 +65,11 @@ export class EditNodeLabelCommand extends BaseCommand<string> {
     }
   }
 
+  /**
+   * Check if this command can be executed
+   * @param graph The X6 graph instance
+   * @returns Boolean indicating if the command can be executed
+   */
   /**
    * Undo the command - restores the original label
    * @param graph The X6 graph instance
@@ -100,11 +113,6 @@ export class EditNodeLabelCommand extends BaseCommand<string> {
     }
   }
 
-  /**
-   * Check if this command can be executed
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be executed
-   */
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -112,16 +120,23 @@ export class EditNodeLabelCommand extends BaseCommand<string> {
     return !!node && node.isNode();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     if (!graph) return false;
 
     const node = graph.getCellById(this.nodeId);
     return !!node && node.isNode() && this.originalLabel !== null;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      nodeId: this.nodeId,
+      newLabel: this.newLabel,
+      originalLabel: this.originalLabel,
+    };
   }
 }
 
@@ -151,6 +166,14 @@ export class EditEdgeLabelCommand extends BaseCommand<string> {
   ) {
     super();
     this.logger.debug('EditEdgeLabelCommand created', { edgeId, newLabel });
+  }
+
+  /**
+   * Get the command type for deserialization
+   * @returns The command type identifier
+   */
+  getType(): string {
+    return 'edit-edge-label';
   }
 
   /**
@@ -261,6 +284,11 @@ export class EditEdgeLabelCommand extends BaseCommand<string> {
   }
 
   /**
+   * Check if this command can be executed
+   * @param graph The X6 graph instance
+   * @returns Boolean indicating if the command can be executed
+   */
+  /**
    * Undo the command - restores the original edge state completely
    * @param graph The X6 graph instance
    * @returns Promise that resolves to a CommandResult
@@ -357,11 +385,6 @@ export class EditEdgeLabelCommand extends BaseCommand<string> {
     }
   }
 
-  /**
-   * Check if this command can be executed
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be executed
-   */
   override canExecute(graph: Graph): boolean {
     if (!graph) return false;
 
@@ -369,15 +392,23 @@ export class EditEdgeLabelCommand extends BaseCommand<string> {
     return !!edge && edge.isEdge();
   }
 
-  /**
-   * Check if this command can be undone
-   * @param graph The X6 graph instance
-   * @returns Boolean indicating if the command can be undone
-   */
   override canUndo(graph: Graph): boolean {
     if (!graph) return false;
 
     const edge = graph.getCellById(this.edgeId);
     return !!edge && edge.isEdge() && this.originalLabel !== null;
+  }
+
+  /**
+   * Serialize command-specific data
+   * @returns An object containing the command-specific data
+   */
+  protected serializeData(): Record<string, unknown> {
+    return {
+      edgeId: this.edgeId,
+      newLabel: this.newLabel,
+      originalLabel: this.originalLabel,
+      originalEdgeData: this.originalEdgeData,
+    };
   }
 }

@@ -183,12 +183,9 @@ export class DfdLabelEditorService {
     let labelText = '';
     if (cell.isNode()) {
       // For nodes, get the label from the node data or attrs
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const rawNodeData = cell.getData();
-      const nodeData: NodeData | undefined =
-        typeof rawNodeData === 'object' && rawNodeData !== null
-          ? (rawNodeData as NodeData)
-          : undefined;
+      const rawNodeData: unknown = cell.getData();
+      // Use the isNodeData type guard function
+      const nodeData: NodeData | undefined = isNodeData(rawNodeData) ? rawNodeData : undefined;
 
       if (nodeData && typeof nodeData.label === 'string') {
         labelText = nodeData.label;
@@ -692,17 +689,26 @@ export class DfdLabelEditorService {
           });
         } else {
           // Check if the node is a TextboxShape
-          if (node instanceof TextboxShape) {
+          // Use constructor name instead of instanceof
+          if (node.constructor.name === 'TextboxShape') {
             // Update the HTML content for TextboxShape
-            node.updateHtml(newText);
+            // Define a type for TextboxShape-like nodes
+            interface TextboxShapeLike {
+              updateHtml: (text: string) => void;
+            }
+
+            // Use type assertion with a more specific type
+            const textboxNode = node as unknown as TextboxShapeLike;
+            if (typeof textboxNode.updateHtml === 'function') {
+              textboxNode.updateHtml(newText);
+            }
 
             // Also update the label in the node data
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const rawNodeData = node.getData();
-            const nodeData: NodeData | undefined =
-              typeof rawNodeData === 'object' && rawNodeData !== null
-                ? (rawNodeData as NodeData)
-                : undefined;
+            const rawNodeData: unknown = node.getData();
+            // Use the isNodeData type guard function
+            const nodeData: NodeData | undefined = isNodeData(rawNodeData)
+              ? rawNodeData
+              : undefined;
 
             if (nodeData) {
               // Create a history point for the label change
@@ -722,15 +728,16 @@ export class DfdLabelEditorService {
             });
           } else {
             // Update node label for other shape types
-            node.attr('label/text', newText);
+            if (typeof node.attr === 'function') {
+              node.attr('label/text', newText);
+            }
 
             // Also update the label in the node data
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const rawNodeData = node.getData();
-            const nodeData: NodeData | undefined =
-              typeof rawNodeData === 'object' && rawNodeData !== null
-                ? (rawNodeData as NodeData)
-                : undefined;
+            const rawNodeData: unknown = node.getData();
+            // Use the isNodeData type guard function
+            const nodeData: NodeData | undefined = isNodeData(rawNodeData)
+              ? rawNodeData
+              : undefined;
 
             // Check if the label already has a position
             const hasPosition =
@@ -757,12 +764,14 @@ export class DfdLabelEditorService {
               node.setData(updatedData);
 
               // Apply the position to the label
-              node.attr({
-                label: {
-                  refX: centerX,
-                  refY: centerY,
-                },
-              });
+              if (typeof node.attr === 'function') {
+                node.attr({
+                  label: {
+                    refX: centerX,
+                    refY: centerY,
+                  },
+                });
+              }
 
               this.logger.info(`Centered label for node ${node.id}`, {
                 nodeId: node.id,
@@ -935,9 +944,9 @@ export class DfdLabelEditorService {
       } else {
         // For regular node labels, update the position
         // Get the current node data
-        const nodeData = node.getData<Record<string, unknown>>();
-        const safeNodeData: NodeData =
-          typeof nodeData === 'object' && nodeData !== null ? (nodeData as NodeData) : {};
+        const nodeData: unknown = node.getData();
+        // Use the isNodeData type guard function
+        const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : ({} as NodeData);
 
         // Get current label position from node data
         const currentPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
@@ -1043,11 +1052,9 @@ export class DfdLabelEditorService {
       const node = cell;
 
       // Get the node data to check if the label has a position
-      const rawNodeData = node.getData<Record<string, unknown>>();
-      const nodeData: NodeData | undefined =
-        typeof rawNodeData === 'object' && rawNodeData !== null
-          ? (rawNodeData as NodeData)
-          : undefined;
+      const rawNodeData: unknown = node.getData();
+      // Use the isNodeData type guard function
+      const nodeData: NodeData | undefined = isNodeData(rawNodeData) ? rawNodeData : undefined;
 
       // Check if the label already has a position
       const hasPosition =
@@ -1139,8 +1146,8 @@ export class DfdLabelEditorService {
 
       // Get current label position from node data
       if (cell.isNode()) {
-        const nodeData = cell.getData<Record<string, unknown>>();
-        const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+        const nodeData: unknown = cell.getData();
+        const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : ({} as NodeData);
         const currentPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
         this._initialPosition = { ...currentPosition };
       }
@@ -1240,8 +1247,8 @@ export class DfdLabelEditorService {
    */
   private updateNodeLabelPosition(node: Node, deltaX: number, deltaY: number): void {
     // Get the current node data
-    const nodeData = node.getData<Record<string, unknown>>();
-    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+    const nodeData: unknown = node.getData();
+    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : ({} as NodeData);
 
     // Get current label position from node data
     const currentPosition = safeNodeData.labelPosition || { x: 0, y: 0 };
@@ -1262,8 +1269,9 @@ export class DfdLabelEditorService {
    */
   updateLabelPosition(node: Node, x: number, y: number): void {
     // Get the current node data
-    const nodeData = node.getData<Record<string, unknown>>();
-    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+    const nodeData: unknown = node.getData();
+    // Use the isNodeData type guard function that's already being used
+    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : ({} as NodeData);
 
     this.logger.debug('[LabelEditor] Current label position before update', {
       nodeId: node.id,
@@ -1310,7 +1318,7 @@ export class DfdLabelEditorService {
    */
   applyLabelPosition(node: Node, graph?: Graph): void {
     // Don't apply to TextboxShape
-    if (node instanceof TextboxShape) {
+    if (node.constructor.name === 'TextboxShape') {
       this.logger.debug('[LabelEditor] Skipping label position for TextboxShape', {
         nodeId: node.id,
       });
@@ -1323,8 +1331,9 @@ export class DfdLabelEditorService {
     });
 
     // Get the node data
-    const nodeData = node.getData<Record<string, unknown>>();
-    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : {};
+    const nodeData: unknown = node.getData();
+    // Use the isNodeData type guard function
+    const safeNodeData: NodeData = isNodeData(nodeData) ? nodeData : ({} as NodeData);
 
     // Get the node size to calculate center if needed
     const nodeSize = node.getSize();
@@ -1341,12 +1350,14 @@ export class DfdLabelEditorService {
       });
 
       // Apply the position to the label using refX and refY
-      node.attr({
-        label: {
-          refX: x,
-          refY: y,
-        },
-      });
+      if (typeof node.attr === 'function') {
+        node.attr({
+          label: {
+            refX: x,
+            refY: y,
+          },
+        });
+      }
 
       this.logger.info('[LabelEditor] Applied saved label position to node', {
         nodeId: node.id,
@@ -1360,12 +1371,14 @@ export class DfdLabelEditorService {
         center: { x: centerX, y: centerY },
       });
 
-      node.attr({
-        label: {
-          refX: centerX,
-          refY: centerY,
-        },
-      });
+      if (typeof node.attr === 'function') {
+        node.attr({
+          label: {
+            refX: centerX,
+            refY: centerY,
+          },
+        });
+      }
 
       this.logger.info('[LabelEditor] Applied center position to node label', {
         nodeId: node.id,
@@ -1387,7 +1400,7 @@ export class DfdLabelEditorService {
    */
   createLabelBoundingBoxForNode(node: Node, graph: Graph): void {
     // Don't apply to TextboxShape
-    if (node instanceof TextboxShape) {
+    if (node.constructor.name === 'TextboxShape') {
       return;
     }
 

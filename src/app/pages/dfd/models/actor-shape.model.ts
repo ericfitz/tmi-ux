@@ -148,7 +148,7 @@ export const ActorShape = Shape.Rect.define({
  * @param graph The X6 graph instance
  * @returns The shape instance for chaining
  */
-(ActorShape.prototype as ActorShapeType).updatePorts = function (graph: Graph): ActorShapeType {
+(ActorShape.prototype as ActorShapeType).updatePorts = function (_graph: Graph): ActorShapeType {
   const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
   const portsPerDirection = 1;
 

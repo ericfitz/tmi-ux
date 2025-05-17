@@ -34,20 +34,6 @@ export interface Command<T = unknown> {
   origin: CommandOrigin;
 
   /**
-   * Execute the command
-   * @param graph The X6 graph instance
-   * @returns Promise that resolves to a CommandResult
-   */
-  execute(graph: Graph): Promise<CommandResult<T>>;
-
-  /**
-   * Undo the command
-   * @param graph The X6 graph instance
-   * @returns Promise that resolves to a CommandResult
-   */
-  undo(graph: Graph): Promise<CommandResult>;
-
-  /**
    * Check if this command can be executed on the current graph state
    * @param graph The X6 graph instance
    * @returns Boolean indicating if the command can be executed
@@ -68,6 +54,20 @@ export interface Command<T = unknown> {
   serialize(): string;
 
   /**
+   * Execute the command
+   * @param graph The X6 graph instance
+   * @returns Promise that resolves to a CommandResult
+   */
+  execute(graph: Graph): Promise<CommandResult<T>>;
+
+  /**
+   * Undo the command
+   * @param graph The X6 graph instance
+   * @returns Promise that resolves to a CommandResult
+   */
+  undo(graph: Graph): Promise<CommandResult>;
+
+  /**
    * Get the command type for deserialization
    * @returns The command type identifier
    */
@@ -80,9 +80,9 @@ export interface Command<T = unknown> {
 export abstract class BaseCommand<T = unknown> implements Command<T> {
   readonly id: string = Math.random().toString(36).substring(2, 11);
 
-  abstract readonly name: string;
-
   origin: CommandOrigin = 'local';
+
+  abstract readonly name: string;
 
   canExecute(_graph: Graph): boolean {
     return true;
@@ -107,20 +107,6 @@ export abstract class BaseCommand<T = unknown> implements Command<T> {
     return JSON.stringify(serialized);
   }
 
-  /**
-   * Get the command type for deserialization
-   * This should be overridden by subclasses to return a unique type identifier
-   * @returns The command type identifier
-   */
-  abstract getType(): string;
-
-  /**
-   * Serialize command-specific data
-   * This should be overridden by subclasses to serialize their specific data
-   * @returns An object containing the command-specific data
-   */
-  protected abstract serializeData(): Record<string, unknown>;
-
   protected createSuccessResult<R = T>(data?: R): CommandResult<R> {
     return {
       success: true,
@@ -138,6 +124,20 @@ export abstract class BaseCommand<T = unknown> implements Command<T> {
 
   abstract execute(graph: Graph): Promise<CommandResult<T>>;
   abstract undo(graph: Graph): Promise<CommandResult>;
+
+  /**
+   * Get the command type for deserialization
+   * This should be overridden by subclasses to return a unique type identifier
+   * @returns The command type identifier
+   */
+  abstract getType(): string;
+
+  /**
+   * Serialize command-specific data
+   * This should be overridden by subclasses to serialize their specific data
+   * @returns An object containing the command-specific data
+   */
+  protected abstract serializeData(): Record<string, unknown>;
 }
 
 /**
