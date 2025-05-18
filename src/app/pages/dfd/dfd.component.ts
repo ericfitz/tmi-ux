@@ -561,7 +561,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
-          width: '500px',
+          width: '900px',
+          maxHeight: '90vh',
           data: dialogData,
         });
 
@@ -574,6 +575,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               interface ThreatFormResult {
                 name: string;
                 description: string;
+                severity?: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+                threat_type?: string;
               }
               const formResult = result as ThreatFormResult;
 
@@ -585,6 +588,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 description: formResult.description,
                 created_at: now,
                 modified_at: now,
+                // Add required fields for the updated Threat interface
+                severity: formResult.severity || 'High',
+                threat_type: formResult.threat_type || 'Information Disclosure',
                 metadata: [],
               };
 

@@ -170,5 +170,46 @@
         "close": "关闭"
       }
     }
+  },
+  "threatEditor": {
+    "createNewThreat": "创建新威胁",
+    "editThreat": "编辑威胁",
+    "viewThreat": "查看威胁",
+    "threatId": "威胁ID",
+    "threatName": "威胁名称",
+    "threatDescription": "威胁描述",
+    "threatDescriptionPlaceholder": "详细描述威胁",
+    "threatType": "威胁类型",
+    "severity": "严重程度",
+    "severityUnknown": "未知",
+    "severityNone": "无",
+    "severityLow": "低",
+    "severityMedium": "中",
+    "severityHigh": "高",
+    "severityCritical": "严重",
+    "score": "评分",
+    "priority": "优先级",
+    "status": "状态",
+    "mitigated": "已缓解",
+    "issueUrl": "问题URL",
+    "diagramId": "图表ID",
+    "nodeId": "节点ID",
+    "createdAt": "创建时间",
+    "modifiedAt": "最后修改",
+    "copyToClipboard": "复制到剪贴板",
+    "metadata": "元数据",
+    "metadataKey": "键",
+    "metadataValue": "值",
+    "actions": "操作",
+    "addMetadata": "添加元数据",
+    "delete": "删除",
+    "noMetadata": "没有可用的元数据",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭",
+    "validation": {
+      "required": "此字段为必填项",
+      "maxLength": "最大长度为 {{max}} 个字符"
+    }
   }
 }

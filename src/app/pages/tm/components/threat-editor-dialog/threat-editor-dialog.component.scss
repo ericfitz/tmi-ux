@@ -4,38 +4,144 @@
 
 mat-dialog-content {
   min-width: 300px;
-  padding-top: 16px;
+  padding-top: 12px;
 }
 
 .mat-mdc-form-field {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .dialog-form {
-  padding: 8px 0;
+  padding: 4px 0;
 }
 
 .form-field-container {
-  margin-top: 16px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+// Form field rows
+.form-field-row {
+  margin-top: 8px;
   margin-bottom: 8px;
+
+  &.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  &.three-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+// URL field with copy button
+.url-field-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .mat-form-field {
+    flex: 1;
+  }
+
+  .url-copy-button {
+    margin-left: 8px;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
+  }
+}
+
+// For smaller screens, adjust the grid
+@media (width <= 800px) {
+  .form-field-row.three-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 600px) {
+  .form-field-row.three-columns,
+  .form-field-row.two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Checkbox field styling
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  height: 56px; // Match height of form fields with some extra space for alignment
 }
 
 // Info section styles
 .info-section {
   background-color: #f5f5f5;
   border-radius: 4px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+// Vertical info section for threat ID and timestamps
+.info-section-vertical {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
 .info-field {
   display: flex;
-  margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 13px;
   align-items: center;
+  margin-bottom: 4px;
 
   &:last-child {
     margin-bottom: 0;
+  }
+
+  &.dates-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .date-field {
+      display: flex;
+      align-items: center;
+      width: 48%;
+    }
+  }
+}
+
+@media (width <= 800px) {
+  .info-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 600px) {
+  .info-section {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -50,6 +156,7 @@ mat-dialog-content {
   flex: 1;
 }
 
+// Copy button styles
 .copy-button {
   width: 36px;
   height: 36px;
@@ -72,12 +179,12 @@ mat-dialog-content {
 
 // Metadata section styles
 .metadata-section {
-  margin-top: 16px;
+  margin-top: 8px;
 
   h3 {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-family: Roboto, Arial, sans-serif;
   }
 }
@@ -86,7 +193,7 @@ mat-dialog-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .table-container {
@@ -104,6 +211,22 @@ mat-dialog-content {
   }
 }
 
+// Make all form fields more compact
+::ng-deep .mat-mdc-form-field-infix {
+  min-height: 40px !important;
+  padding-top: 12px !important;
+  padding-bottom: 8px !important;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  height: 16px !important;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
 .table-field {
   width: 100%;
   margin-bottom: 0;
@@ -111,11 +234,11 @@ mat-dialog-content {
   // Remove outline appearance for form fields in tables
   ::ng-deep .mat-mdc-form-field-flex {
     border: none;
-    padding: 0 3px;
+    padding: 0 2px;
   }
 
   ::ng-deep .mat-mdc-form-field-infix {
-    padding: 6px 0;
+    padding: 4px 0;
     min-height: unset;
     font-family: 'Roboto Condensed', Arial, sans-serif;
   }
@@ -126,17 +249,39 @@ mat-dialog-content {
 }
 
 .mat-column-key {
-  width: 15%;
+  width: 20%;
+  max-width: 150px;
 }
 
 .mat-column-value {
-  width: 65%;
+  width: 70%;
 }
 
 .mat-column-actions {
-  width: 20%;
+  width: 10%;
+  min-width: 50px;
   text-align: center;
   white-space: nowrap;
+}
+
+.actions-column {
+  padding: 0 2px !important;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+.compact-button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
 }
 
 .mat-mdc-header-cell {
@@ -144,12 +289,14 @@ mat-dialog-content {
   color: rgb(0 0 0 / 70%);
   text-align: left;
   font-family: 'Roboto Condensed', Arial, sans-serif;
-  padding: 0 6px;
+  padding: 0 4px;
+  font-size: 13px;
 }
 
 .mat-mdc-cell {
-  padding: 3px 6px;
+  padding: 2px 4px;
   font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 13px;
 }
 
 .mat-mdc-row:hover {

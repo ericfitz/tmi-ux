@@ -41,17 +41,19 @@
               <mat-icon>content_copy</mat-icon>
             </button>
           </div>
-          <div class="info-field">
-            <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
-            <span class="info-value">{{
-              threatModel.created_at | date: 'medium' : undefined : currentLocale
-            }}</span>
-          </div>
-          <div class="info-field">
-            <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
-            <span class="info-value">{{
-              threatModel.modified_at | date: 'medium' : undefined : currentLocale
-            }}</span>
+          <div class="info-field dates-row">
+            <div class="date-field">
+              <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
+              <span class="info-value">{{
+                threatModel.created_at | date: 'short' : undefined : currentLocale
+              }}</span>
+            </div>
+            <div class="date-field">
+              <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
+              <span class="info-value">{{
+                threatModel.modified_at | date: 'short' : undefined : currentLocale
+              }}</span>
+            </div>
           </div>
         </div>
 
@@ -79,6 +81,32 @@
               {{ 'validation.maxLength' | transloco: { max: 500 } }}
             </mat-error>
           </mat-form-field>
+
+          <!-- New fields for threat model framework and issue URL -->
+          <div class="form-fields-row">
+            <mat-form-field appearance="outline">
+              <mat-label [transloco]="'threatModels.threatModelFramework'"
+                >Threat Model Framework</mat-label
+              >
+              <mat-select formControlName="threat_model_framework">
+                <mat-option value="STRIDE">STRIDE</mat-option>
+                <mat-option value="CIA">CIA</mat-option>
+                <mat-option value="LINDDUN">LINDDUN</mat-option>
+                <mat-option value="DIE">DIE</mat-option>
+                <mat-option value="PLOT4ai">PLOT4ai</mat-option>
+              </mat-select>
+              <mat-error
+                *ngIf="threatModelForm.get('threat_model_framework')?.hasError('required')"
+              >
+                {{ 'validation.required' | transloco }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label [transloco]="'threatModels.issueUrl'">Issue URL</mat-label>
+              <input matInput formControlName="issue_url" type="url" />
+            </mat-form-field>
+          </div>
         </form>
       </mat-card-content>
     </mat-card>

@@ -32,19 +32,29 @@ export class ThreatModelService {
   /**
    * Create a new threat model
    */
-  createThreatModel(name: string, description?: string): Observable<ThreatModel> {
+  createThreatModel(
+    name: string,
+    description?: string,
+    framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai' = 'STRIDE',
+    issueUrl?: string,
+  ): Observable<ThreatModel> {
     // In a real implementation, this would call the API
     const now = new Date().toISOString();
+    const currentUser = 'user@example.com'; // Would come from auth service in real implementation
+
     const newThreatModel: ThreatModel = {
       id: uuidv4(),
       name,
       description,
       created_at: now,
       modified_at: now,
-      owner: 'user@example.com', // Would come from auth service in real implementation
+      owner: currentUser,
+      created_by: currentUser,
+      threat_model_framework: framework,
+      issue_url: issueUrl,
       authorization: [
         {
-          subject: 'user@example.com',
+          subject: currentUser,
           role: 'owner',
         },
       ],

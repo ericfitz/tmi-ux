@@ -173,5 +173,46 @@
         "close": "ปิด"
       }
     }
+  },
+  "threatEditor": {
+    "createNewThreat": "สร้างภัยคุกคามใหม่",
+    "editThreat": "แก้ไขภัยคุกคาม",
+    "viewThreat": "ดูภัยคุกคาม",
+    "threatId": "รหัสภัยคุกคาม",
+    "threatName": "ชื่อภัยคุกคาม",
+    "threatDescription": "คำอธิบายภัยคุกคาม",
+    "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
+    "threatType": "ประเภทภัยคุกคาม",
+    "severity": "ความรุนแรง",
+    "severityUnknown": "ไม่ทราบ",
+    "severityNone": "ไม่มี",
+    "severityLow": "ต่ำ",
+    "severityMedium": "ปานกลาง",
+    "severityHigh": "สูง",
+    "severityCritical": "วิกฤต",
+    "score": "คะแนน",
+    "priority": "ความสำคัญ",
+    "status": "สถานะ",
+    "mitigated": "บรรเทาแล้ว",
+    "issueUrl": "URL ปัญหา",
+    "diagramId": "รหัสแผนภาพ",
+    "nodeId": "รหัสโหนด",
+    "createdAt": "สร้างเมื่อ",
+    "modifiedAt": "แก้ไขล่าสุด",
+    "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
+    "metadata": "ข้อมูลเมตา",
+    "metadataKey": "คีย์",
+    "metadataValue": "ค่า",
+    "actions": "การกระทำ",
+    "addMetadata": "เพิ่มข้อมูลเมตา",
+    "delete": "ลบ",
+    "noMetadata": "ไม่มีข้อมูลเมตาที่พร้อมใช้งาน",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "close": "ปิด",
+    "validation": {
+      "required": "จำเป็นต้องกรอกข้อมูลนี้",
+      "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร"
+    }
   }
 }

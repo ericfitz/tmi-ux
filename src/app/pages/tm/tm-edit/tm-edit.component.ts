@@ -29,6 +29,8 @@ import { ThreatModelService } from '../services/threat-model.service';
 interface ThreatModelFormValues {
   name: string;
   description: string;
+  threat_model_framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
+  issue_url?: string;
 }
 
 @Component({
@@ -83,6 +85,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
+      threat_model_framework: ['STRIDE', Validators.required],
+      issue_url: [''],
     });
   }
 
@@ -130,6 +134,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
           this.threatModelForm.patchValue({
             name: threatModel.name,
             description: threatModel.description || '',
+            threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
+            issue_url: threatModel.issue_url || '',
           });
 
           // Populate diagrams array with diagram objects
@@ -161,6 +167,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
             created_at: new Date().toISOString(),
             modified_at: new Date().toISOString(),
             owner: 'user@example.com',
+            created_by: 'user@example.com',
+            threat_model_framework: 'STRIDE',
             authorization: [
               {
                 subject: 'user@example.com',
@@ -174,6 +182,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
           this.threatModelForm.patchValue({
             name: this.threatModel.name,
             description: this.threatModel.description || '',
+            threat_model_framework: this.threatModel.threat_model_framework,
+            issue_url: this.threatModel.issue_url || '',
           });
 
           // Initialize table data sources for new threat model
@@ -221,6 +231,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
       ...this.threatModel,
       name: formValues.name,
       description: formValues.description,
+      threat_model_framework: formValues.threat_model_framework,
+      issue_url: formValues.issue_url,
       modified_at: new Date().toISOString(),
     };
 
@@ -260,7 +272,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
-      width: '500px',
+      width: '900px',
+      maxHeight: '90vh',
       data: dialogData,
     });
 
@@ -273,6 +286,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
           interface ThreatFormResult {
             name: string;
             description: string;
+            severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+            threat_type: string;
+            diagram_id?: string;
+            node_id?: string;
+            score?: number;
+            priority?: string;
+            mitigated?: boolean;
+            status?: string;
+            issue_url?: string;
           }
           const formResult = result as ThreatFormResult;
 
@@ -285,13 +307,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
               description: formResult.description,
               created_at: now,
               modified_at: now,
+              severity: formResult.severity || 'High',
+              threat_type: formResult.threat_type || 'Information Disclosure',
+              diagram_id: formResult.diagram_id,
+              node_id: formResult.node_id,
+              score: formResult.score,
+              priority: formResult.priority,
+              mitigated: formResult.mitigated || false,
+              status: formResult.status || 'Open',
+              issue_url: formResult.issue_url,
               metadata: [
-                { key: 'DiagramId', value: '123e4567-e89b-12d3-a456-426614174000' },
-                { key: 'NodeId', value: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88' },
-                { key: 'Type', value: 'Elevation of Privilege' },
-                { key: 'Status', value: 'Open' },
-                { key: 'Priority', value: 'High' },
-                { key: 'CVSS', value: '7.3' },
+                { key: 'CVSS', value: formResult.score?.toString() || '7.3' },
                 { key: 'Issue ID', value: 'jira-10881' },
               ],
             };
@@ -309,6 +335,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
                 ...threat,
                 name: formResult.name,
                 description: formResult.description,
+                severity: formResult.severity || threat.severity,
+                threat_type: formResult.threat_type || threat.threat_type,
+                diagram_id: formResult.diagram_id,
+                node_id: formResult.node_id,
+                score: formResult.score,
+                priority: formResult.priority,
+                mitigated: formResult.mitigated,
+                status: formResult.status,
+                issue_url: formResult.issue_url,
                 modified_at: now,
               };
             }

@@ -293,6 +293,20 @@
             "type": "string",
             "description": "Username or identifier of the current owner (may be email address or other format)"
           },
+          "created_by": {
+            "type": "string",
+            "description": "Username or identifier of the creator of the threat model"
+          },
+          "threat_model_framework": {
+            "type": "string",
+            "enum": ["STRIDE", "CIA", "LINDDUN", "DIE", "PLOT4ai"],
+            "description": "The framework used for this threat model"
+          },
+          "issue_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to an issue in an issue tracking system for this threat model"
+          },
           "authorization": {
             "type": "array",
             "items": {
@@ -324,7 +338,16 @@
             "description": "List of threats within the threat model"
           }
         },
-        "required": ["id", "name", "created_at", "modified_at", "owner", "authorization"],
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "modified_at",
+          "owner",
+          "authorization",
+          "created_by",
+          "threat_model_framework"
+        ],
         "example": {
           "id": "550e8400-e29b-41d4-a716-446655440000",
           "name": "System Threat Model",
@@ -332,6 +355,9 @@
           "created_at": "2025-04-06T12:00:00Z",
           "modified_at": "2025-04-06T12:00:00Z",
           "owner": "user@example.com",
+          "created_by": "user@example.com",
+          "threat_model_framework": "STRIDE",
+          "issue_url": "https://issues.example.com/browse/TM-123",
           "authorization": [
             {
               "subject": "user@example.com",
@@ -348,6 +374,15 @@
               "description": "Unauthorized data access",
               "created_at": "2025-04-06T12:01:00Z",
               "modified_at": "2025-04-06T12:01:00Z",
+              "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
+              "node_id": "c7d10424-3c10-43d0-8ac6-47d61dee3f88",
+              "severity": "High",
+              "score": 7.5,
+              "priority": "High",
+              "mitigated": false,
+              "status": "Open",
+              "threat_type": "Information Disclosure",
+              "issue_url": "https://issues.example.com/browse/SEC-456",
               "metadata": []
             }
           ]
@@ -385,6 +420,46 @@
             "format": "date-time",
             "description": "Last modification timestamp (RFC3339)"
           },
+          "diagram_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the associated diagram (if applicable)"
+          },
+          "node_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the associated node (if applicable)"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["Unknown", "None", "Low", "Medium", "High", "Critical"],
+            "description": "Severity level of the threat"
+          },
+          "score": {
+            "type": "number",
+            "description": "Numeric score representing the risk or impact of the threat"
+          },
+          "priority": {
+            "type": "string",
+            "description": "Priority level for addressing the threat"
+          },
+          "mitigated": {
+            "type": "boolean",
+            "description": "Whether the threat has been mitigated"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the threat"
+          },
+          "threat_type": {
+            "type": "string",
+            "description": "Type or category of the threat"
+          },
+          "issue_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to an issue in an issue tracking system for this threat"
+          },
           "metadata": {
             "type": "array",
             "items": {
@@ -393,7 +468,15 @@
             "description": "Key-value pairs for additional threat metadata"
           }
         },
-        "required": ["id", "threat_model_id", "name", "created_at", "modified_at"]
+        "required": [
+          "id",
+          "threat_model_id",
+          "name",
+          "created_at",
+          "modified_at",
+          "severity",
+          "threat_type"
+        ]
       },
       "Authorization": {
         "type": "object",

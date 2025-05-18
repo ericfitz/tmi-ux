@@ -62,9 +62,11 @@ export class TmComponent implements OnInit, OnDestroy {
 
   createThreatModel(): void {
     // Create a new threat model and navigate to the edit page
-    this.threatModelService.createThreatModel('New Threat Model').subscribe(model => {
-      void this.router.navigate(['/tm', model.id]);
-    });
+    this.threatModelService
+      .createThreatModel('New Threat Model', 'Description of the threat model', 'STRIDE')
+      .subscribe(model => {
+        void this.router.navigate(['/tm', model.id]);
+      });
   }
 
   openThreatModel(id: string): void {

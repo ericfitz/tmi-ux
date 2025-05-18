@@ -72,6 +72,17 @@ mat-card-header {
   gap: 12px;
 }
 
+.form-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+
+  @media (width < 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .full-width {
   width: 100%;
 }
@@ -93,6 +104,18 @@ mat-card-header {
 
   &:last-child {
     margin-bottom: 0;
+  }
+
+  &.dates-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .date-field {
+      display: flex;
+      align-items: center;
+      width: 48%;
+    }
   }
 }
 

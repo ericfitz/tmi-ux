@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,8 +6,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Metadata, Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
@@ -22,6 +24,15 @@ import { MatSortModule } from '@angular/material/sort';
 interface ThreatFormValues {
   name: string;
   description: string;
+  severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+  threat_type: string;
+  diagram_id?: string;
+  node_id?: string;
+  score?: number;
+  priority?: string;
+  mitigated?: boolean;
+  status?: string;
+  issue_url?: string;
 }
 
 /**
@@ -44,6 +55,8 @@ export interface ThreatEditorDialogData {
     MatInputModule,
     MatIconModule,
     MatTooltipModule,
+    MatSelectModule,
+    MatCheckboxModule,
     ReactiveFormsModule,
     TranslocoModule,
     MatTableModule,
@@ -51,8 +64,9 @@ export interface ThreatEditorDialogData {
   ],
   templateUrl: './threat-editor-dialog.component.html',
   styleUrls: ['./threat-editor-dialog.component.scss'],
+  providers: [],
 })
-export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
+export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterViewInit {
   threatForm: FormGroup;
   dialogTitle: string = '';
   isViewOnly: boolean = false;
@@ -72,11 +86,21 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private logger: LoggerService,
     private languageService: LanguageService,
+    private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: ThreatEditorDialogData,
   ) {
     this.threatForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
+      severity: ['High', Validators.required],
+      threat_type: ['', Validators.required],
+      diagram_id: [''],
+      node_id: [''],
+      score: [null],
+      priority: [''],
+      mitigated: [false],
+      status: ['Open'],
+      issue_url: [''],
     });
   }
 
@@ -91,8 +115,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
         // Could add a snackbar notification here if desired
         this.logger.info('Text copied to clipboard');
       })
-      .catch(err => {
-        this.logger.error('Could not copy text: ', err);
+      .catch((err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        this.logger.error('Could not copy text: ', errorMessage);
       });
   }
 
@@ -109,23 +134,24 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
         description: '',
         created_at: new Date().toISOString(),
         modified_at: new Date().toISOString(),
-        metadata: [
-          { key: 'DiagramId', value: '123e4567-e89b-12d3-a456-426614174000' },
-          { key: 'NodeId', value: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88' },
-          { key: 'Type', value: 'Elevation of Privilege' },
-          { key: 'Status', value: 'Open' },
-          { key: 'Priority', value: 'High' },
-          { key: 'CVSS', value: '7.3' },
-          { key: 'Issue ID', value: 'jira-10881' },
-        ],
+        severity: 'High',
+        threat_type: 'Information Disclosure',
+        diagram_id: '',
+        node_id: '',
+        score: undefined,
+        priority: '',
+        mitigated: false,
+        status: 'Open',
+        issue_url: '',
+        metadata: [],
       };
     }
 
-    if (!this.data.threat.metadata) {
+    if (!this.data.threat?.metadata) {
       this.data.threat.metadata = [];
     }
 
-    return this.data.threat.metadata;
+    return this.data.threat.metadata || [];
   }
 
   /**
@@ -205,11 +231,56 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     // Set dialog mode
     this.isViewOnly = this.data.mode === 'view';
 
+    const currentLang = this.translocoService.getActiveLang();
+
+    // First load English as fallback
+    this.translocoService.load('en-US').subscribe({
+      next: () => {
+        this.logger.info('English translations loaded successfully');
+
+        // Then load current language if not English
+        if (currentLang !== 'en-US') {
+          this.translocoService.load(currentLang).subscribe({
+            next: () => {
+              // Force translation update
+              this.translocoService.setActiveLang(currentLang);
+              this.logger.info('Translations loaded successfully for language: ' + currentLang);
+
+              // Force change detection to update the translations
+              setTimeout(() => {
+                this.dialogRef.updateSize();
+                this.logger.info('Dialog size updated to force refresh');
+              }, 100);
+            },
+            error: (err: unknown) => {
+              const errorMessage = err instanceof Error ? err.message : String(err);
+              this.logger.error(
+                'Failed to load translations for language: ' + currentLang,
+                errorMessage,
+              );
+              // Fallback to English
+              this.translocoService.setActiveLang('en-US');
+            },
+          });
+        } else {
+          // Force change detection to update the translations
+          setTimeout(() => {
+            this.dialogRef.updateSize();
+            this.logger.info('Dialog size updated to force refresh');
+          }, 100);
+        }
+      },
+      error: (err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        this.logger.error('Failed to load English translations', errorMessage);
+      },
+    });
+
     // Set dialog title based on mode
     if (this.data.mode === 'create') {
-      this.dialogTitle = 'threatModels.createNewThreat';
+      this.dialogTitle = 'threatEditor.createNewThreat';
 
-      // Initialize with mock metadata for new threats
+      // Initialize with empty data for new threats
       if (!this.data.threat) {
         this.data.threat = {
           id: '',
@@ -218,21 +289,22 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
           description: '',
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
-          metadata: [
-            { key: 'DiagramId', value: '123e4567-e89b-12d3-a456-426614174000' },
-            { key: 'NodeId', value: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88' },
-            { key: 'Type', value: 'Elevation of Privilege' },
-            { key: 'Status', value: 'Open' },
-            { key: 'Priority', value: 'High' },
-            { key: 'CVSS', value: '7.3' },
-            { key: 'Issue ID', value: 'jira-10881' },
-          ],
+          severity: 'High',
+          threat_type: 'Information Disclosure',
+          diagram_id: '',
+          node_id: '',
+          score: undefined,
+          priority: '',
+          mitigated: false,
+          status: 'Open',
+          issue_url: '',
+          metadata: [],
         };
       }
     } else if (this.data.mode === 'edit') {
-      this.dialogTitle = 'threatModels.editThreat';
+      this.dialogTitle = 'threatEditor.editThreat';
     } else {
-      this.dialogTitle = 'threatModels.viewThreat';
+      this.dialogTitle = 'threatEditor.viewThreat';
     }
 
     // If editing or viewing, populate form with threat data
@@ -240,6 +312,15 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
       this.threatForm.patchValue({
         name: this.data.threat.name,
         description: this.data.threat.description || '',
+        severity: this.data.threat.severity || 'High',
+        threat_type: this.data.threat.threat_type || '',
+        diagram_id: this.data.threat.diagram_id || '',
+        node_id: this.data.threat.node_id || '',
+        score: this.data.threat.score || null,
+        priority: this.data.threat.priority || '',
+        mitigated: this.data.threat.mitigated || false,
+        status: this.data.threat.status || 'Open',
+        issue_url: this.data.threat.issue_url || '',
       });
 
       // If view only, disable the form
@@ -251,18 +332,109 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     // Initialize metadata table data source
     this.updateMetadataDataSource();
 
+    // Force translations to be applied
+    this.forceTranslationUpdate();
+
     // Subscribe to language changes
     this.langSubscription = this.languageService.currentLanguage$.subscribe(language => {
       this.currentLocale = language.code;
       this.currentDirection = language.rtl ? 'rtl' : 'ltr';
-      // Force change detection to update the date format
+      // Force change detection to update the date format and translations
       this.dialogRef.updateSize();
+      this.forceTranslationUpdate();
     });
 
     // Also subscribe to direction changes
     this.directionSubscription = this.languageService.direction$.subscribe(direction => {
       this.currentDirection = direction;
+      // Force translation update when direction changes
+      this.forceTranslationUpdate();
     });
+  }
+
+  /**
+   * After view initialization, force translation update
+   */
+  ngAfterViewInit(): void {
+    // Force translation update after view is initialized
+    this.forceTranslationUpdate();
+  }
+
+  /**
+   * Force translation update by triggering a dialog resize
+   * This helps ensure translations are properly applied
+   */
+  private forceTranslationUpdate(): void {
+    // Use setTimeout to ensure this runs after Angular's change detection cycle
+    setTimeout(() => {
+      // Update dialog size to force a refresh
+      this.dialogRef.updateSize();
+      this.logger.info('Force translation update triggered');
+
+      // Manually trigger translation update for all keys
+      const keys = [
+        'threatEditor.threatName',
+        'threatEditor.threatDescription',
+        'threatEditor.threatType',
+        'threatEditor.severity',
+        'threatEditor.score',
+        'threatEditor.priority',
+        'threatEditor.issueUrl',
+        'threatEditor.status',
+        'threatEditor.mitigated',
+        'threatEditor.diagramId',
+        'threatEditor.nodeId',
+        'threatEditor.metadata',
+        'threatEditor.metadataKey',
+        'threatEditor.metadataValue',
+        'threatEditor.actions',
+        'threatEditor.delete',
+        'threatEditor.noMetadata',
+        'threatEditor.cancel',
+        'threatEditor.save',
+        'threatEditor.close',
+      ];
+
+      // Force translation of each key
+      keys.forEach(key => {
+        this.translateKey(key);
+      });
+    }, 200);
+  }
+
+  /**
+   * Force translation update for a specific key
+   * @param key The translation key to update
+   */
+  private translateKey(key: string): void {
+    try {
+      // Get the translation
+      const translation = this.translocoService.translate(key);
+
+      // Log the translation for debugging
+      this.logger.debug(`Translation for ${key}: ${translation}`);
+
+      // If translation is missing or empty, try to load it again
+      if (!translation || translation === key) {
+        this.logger.warn(`Missing translation for key: ${key}`);
+
+        // Try to load the translation again
+        const currentLang = this.translocoService.getActiveLang();
+        this.translocoService.load(currentLang).subscribe({
+          next: () => {
+            const retryTranslation = this.translocoService.translate(key);
+            this.logger.debug(`Retry translation for ${key}: ${retryTranslation}`);
+          },
+          error: (err: unknown) => {
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            this.logger.error(`Failed to load translations for retry: ${errorMessage}`);
+          },
+        });
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error translating key ${key}: ${errorMessage}`);
+    }
   }
 
   /**
@@ -294,6 +466,15 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy {
     this.dialogRef.close({
       name: formValues.name,
       description: formValues.description,
+      severity: formValues.severity,
+      threat_type: formValues.threat_type,
+      diagram_id: formValues.diagram_id || undefined,
+      node_id: formValues.node_id || undefined,
+      score: formValues.score || undefined,
+      priority: formValues.priority || undefined,
+      mitigated: formValues.mitigated,
+      status: formValues.status || undefined,
+      issue_url: formValues.issue_url || undefined,
       metadata: this.getMetadata(),
     });
   }

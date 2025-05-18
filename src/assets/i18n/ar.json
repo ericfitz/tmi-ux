@@ -170,5 +170,46 @@
         "close": "إغلاق"
       }
     }
+  },
+  "threatEditor": {
+    "createNewThreat": "إنشاء تهديد جديد",
+    "editThreat": "تحرير التهديد",
+    "viewThreat": "عرض التهديد",
+    "threatId": "معرف التهديد",
+    "threatName": "اسم التهديد",
+    "threatDescription": "وصف التهديد",
+    "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
+    "threatType": "نوع التهديد",
+    "severity": "الخطورة",
+    "severityUnknown": "غير معروف",
+    "severityNone": "لا شيء",
+    "severityLow": "منخفض",
+    "severityMedium": "متوسط",
+    "severityHigh": "عالي",
+    "severityCritical": "حرج",
+    "score": "النتيجة",
+    "priority": "الأولوية",
+    "status": "الحالة",
+    "mitigated": "تم التخفيف",
+    "issueUrl": "رابط المشكلة",
+    "diagramId": "معرف المخطط",
+    "nodeId": "معرف العقدة",
+    "createdAt": "تم الإنشاء",
+    "modifiedAt": "آخر تعديل",
+    "copyToClipboard": "نسخ إلى الحافظة",
+    "metadata": "البيانات الوصفية",
+    "metadataKey": "المفتاح",
+    "metadataValue": "القيمة",
+    "actions": "الإجراءات",
+    "addMetadata": "إضافة بيانات وصفية",
+    "delete": "حذف",
+    "noMetadata": "لا توجد بيانات وصفية متاحة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "validation": {
+      "required": "هذا الحقل مطلوب",
+      "maxLength": "الحد الأقصى للطول هو {{max}} حرف"
+    }
   }
 }

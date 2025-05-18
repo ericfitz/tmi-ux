@@ -170,5 +170,46 @@
         "close": "Schließen"
       }
     }
+  },
+  "threatEditor": {
+    "createNewThreat": "Neue Bedrohung erstellen",
+    "editThreat": "Bedrohung bearbeiten",
+    "viewThreat": "Bedrohung anzeigen",
+    "threatId": "Bedrohungs-ID",
+    "threatName": "Bedrohungsname",
+    "threatDescription": "Bedrohungsbeschreibung",
+    "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
+    "threatType": "Bedrohungstyp",
+    "severity": "Schweregrad",
+    "severityUnknown": "Unbekannt",
+    "severityNone": "Keine",
+    "severityLow": "Niedrig",
+    "severityMedium": "Mittel",
+    "severityHigh": "Hoch",
+    "severityCritical": "Kritisch",
+    "score": "Bewertung",
+    "priority": "Priorität",
+    "status": "Status",
+    "mitigated": "Gemildert",
+    "issueUrl": "Problem-URL",
+    "diagramId": "Diagramm-ID",
+    "nodeId": "Knoten-ID",
+    "createdAt": "Erstellt",
+    "modifiedAt": "Zuletzt geändert",
+    "copyToClipboard": "In die Zwischenablage kopieren",
+    "metadata": "Metadaten",
+    "metadataKey": "Schlüssel",
+    "metadataValue": "Wert",
+    "actions": "Aktionen",
+    "addMetadata": "Metadaten hinzufügen",
+    "delete": "Löschen",
+    "noMetadata": "Keine Metadaten verfügbar",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "validation": {
+      "required": "Dieses Feld ist erforderlich",
+      "maxLength": "Maximale Länge ist {{max}} Zeichen"
+    }
   }
 }
