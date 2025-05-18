@@ -29,6 +29,7 @@ This document outlines the plan for implementing collaborative diagram editing i
 2. User sends diagram to server (or serialized pieces)
 3. Server builds its state and confirms readiness
 4. User can enable collaboration, marking the diagram as available for collaboration
+5. Additional users can browse to a diagram, or the user that initiates the collaboration can send a link to the diagram directly to users (outside of the application) as part of an invitation.
 
 ### Joining a Collaboration Session
 
