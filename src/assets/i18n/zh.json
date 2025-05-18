@@ -210,7 +210,7 @@
     "mitigated": "已缓解",
     "issueUrl": "问题URL",
     "diagramId": "图表ID",
-    "nodeId": "节点ID",
+    "cellId": "单元格ID",
     "createdAt": "创建时间",
     "modifiedAt": "最后修改",
     "copyToClipboard": "复制到剪贴板",

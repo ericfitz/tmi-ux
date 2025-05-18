@@ -375,7 +375,7 @@
               "created_at": "2025-04-06T12:01:00Z",
               "modified_at": "2025-04-06T12:01:00Z",
               "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
-              "node_id": "c7d10424-3c10-43d0-8ac6-47d61dee3f88",
+              "cell_id": "c7d10424-3c10-43d0-8ac6-47d61dee3f88",
               "severity": "High",
               "score": 7.5,
               "priority": "High",
@@ -425,10 +425,10 @@
             "format": "uuid",
             "description": "UUID of the associated diagram (if applicable)"
           },
-          "node_id": {
+          "cell_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated node (if applicable)"
+            "description": "UUID of the associated cell (if applicable)"
           },
           "severity": {
             "type": "string",

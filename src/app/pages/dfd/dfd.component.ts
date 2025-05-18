@@ -559,7 +559,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           threatModelId: this.threatModelId as string,
           mode: 'create',
           diagramId: this.dfdId || '',
-          nodeId: this.stateStore.selectedNode?.id || '',
+          cellId: this.stateStore.selectedNode?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -579,6 +579,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 description: string;
                 severity?: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
                 threat_type?: string;
+                diagram_id?: string;
+                cell_id?: string;
+                score?: number;
+                priority?: string;
+                issue_url?: string;
+                metadata?: Array<{ key: string; value: string }>;
               }
               const formResult = result as ThreatFormResult;
 
@@ -593,12 +599,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Add required fields for the updated Threat interface
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
-                diagram_id: result.diagram_id || this.dfdId || '',
-                node_id: result.node_id || this.stateStore.selectedNode?.id || '',
-                score: result.score || 10.0,
-                priority: result.priority || 'High',
-                issue_url: result.issue_url || 'n/a',
-                metadata: result.metadata || [],
+                diagram_id: formResult.diagram_id || this.dfdId || '',
+                cell_id: formResult.cell_id || this.stateStore.selectedNode?.id || '',
+                score: formResult.score || 10.0,
+                priority: formResult.priority || 'High',
+                issue_url: formResult.issue_url || 'n/a',
+                metadata: formResult.metadata || [],
               };
 
               // Add the threat to the threat model

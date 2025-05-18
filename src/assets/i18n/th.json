@@ -213,7 +213,7 @@
     "mitigated": "บรรเทาแล้ว",
     "issueUrl": "URL ปัญหา",
     "diagramId": "รหัสแผนภาพ",
-    "nodeId": "รหัสโหนด",
+    "cellId": "รหัสเซลล์",
     "createdAt": "สร้างเมื่อ",
     "modifiedAt": "แก้ไขล่าสุด",
     "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",

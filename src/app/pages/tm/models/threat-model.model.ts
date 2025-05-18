@@ -16,7 +16,7 @@ export interface Threat {
   created_at: string;
   modified_at: string;
   diagram_id?: string;
-  node_id?: string;
+  cell_id?: string;
   severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
   score?: number;
   priority?: string;
@@ -85,7 +85,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
-        node_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
+        cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
         severity: 'High',
         score: 7.3,
         priority: 'High',
@@ -103,7 +103,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 6 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
-        node_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
+        cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
         severity: 'Critical',
         score: 8.5,
         priority: 'High',
@@ -121,7 +121,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
-        node_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
+        cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
         severity: 'High',
         score: 7.0,
         priority: 'Medium',
@@ -139,7 +139,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 4 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
-        node_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
+        cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
         severity: 'Medium',
         score: 6.5,
         priority: 'Medium',
@@ -187,7 +187,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 5 * 86400000).toISOString(),
         diagram_id: '223e4567-e89b-12d3-a456-426614174000',
-        node_id: 'd8e20525-4d20-54e1-9bd7-58e72eef4f99',
+        cell_id: 'd8e20525-4d20-54e1-9bd7-58e72eef4f99',
         severity: 'High',
         score: 7.8,
         priority: 'High',
@@ -205,7 +205,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 13 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 5 * 86400000).toISOString(),
         diagram_id: '223e4567-e89b-12d3-a456-426614174001',
-        node_id: 'e9f31636-5e31-65f2-0ce8-69f83ff5f0aa',
+        cell_id: 'e9f31636-5e31-65f2-0ce8-69f83ff5f0aa',
         severity: 'Critical',
         score: 8.9,
         priority: 'Critical',
@@ -253,7 +253,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         diagram_id: '323e4567-e89b-12d3-a456-426614174000',
-        node_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
+        cell_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
         severity: 'High',
         score: 7.2,
         priority: 'High',
@@ -271,7 +271,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         diagram_id: '323e4567-e89b-12d3-a456-426614174000',
-        node_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
+        cell_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
         severity: 'Medium',
         score: 6.8,
         priority: 'Medium',
@@ -289,7 +289,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         diagram_id: '323e4567-e89b-12d3-a456-426614174000',
-        node_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
+        cell_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
         severity: 'High',
         score: 7.5,
         priority: 'High',

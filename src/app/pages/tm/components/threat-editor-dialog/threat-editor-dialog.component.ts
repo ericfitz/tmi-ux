@@ -27,7 +27,7 @@ interface ThreatFormValues {
   severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
   threat_type: string;
   diagram_id?: string;
-  node_id?: string;
+  cell_id?: string;
   score?: number;
   priority?: string;
   mitigated?: boolean;
@@ -43,7 +43,7 @@ export interface ThreatEditorDialogData {
   threatModelId: string;
   mode: 'create' | 'edit' | 'view';
   diagramId?: string;
-  nodeId?: string;
+  cellId?: string;
 }
 
 @Component({
@@ -100,7 +100,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       severity: ['High', Validators.required],
       threat_type: ['Elevation of Privilege', Validators.required],
       diagram_id: [''],
-      node_id: [''],
+      cell_id: [''],
       score: [null],
       priority: ['High'],
       mitigated: [false],
@@ -142,7 +142,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         severity: 'High',
         threat_type: 'Information Disclosure',
         diagram_id: '',
-        node_id: '',
+        cell_id: '',
         score: undefined,
         priority: '',
         mitigated: false,
@@ -257,7 +257,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
             severity: this.data.threat.severity,
             threat_type: this.data.threat.threat_type,
             diagram_id: this.data.threat.diagram_id,
-            node_id: this.data.threat.node_id,
+            cell_id: this.data.threat.cell_id,
           })
         : 'No threat data',
       stackTrace: new Error().stack,
@@ -328,7 +328,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           severity: 'High',
           threat_type: 'Information Disclosure',
           diagram_id: this.data.diagramId || '',
-          node_id: this.data.nodeId || '',
+          cell_id: this.data.cellId || '',
           score: 10.0,
           priority: 'High',
           mitigated: false,
@@ -345,7 +345,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     // Initialize form with empty values for text fields and default values for other fields
     // We're using floatLabel="always" in the HTML to ensure labels are always visible
-    const defaultNodeId = this.data.nodeId || '';
+    const defaultCellId = this.data.cellId || '';
 
     this.threatForm.patchValue({
       name: '',
@@ -353,7 +353,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       severity: 'High',
       threat_type: 'Information Disclosure',
       diagram_id: this.data.diagramId || '',
-      node_id: defaultNodeId,
+      cell_id: defaultCellId,
       score: 10.0,
       priority: 'High',
       mitigated: false,
@@ -369,7 +369,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         severity: this.data.threat.severity || 'High',
         threat_type: this.data.threat.threat_type || '',
         diagram_id: this.data.threat.diagram_id || '',
-        node_id: this.data.threat.node_id || '',
+        cell_id: this.data.threat.cell_id || '',
         score: this.data.threat.score || null,
         priority: this.data.threat.priority || '',
         mitigated: this.data.threat.mitigated || false,
@@ -616,7 +616,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       severity: formValues.severity,
       threat_type: formValues.threat_type,
       diagram_id: formValues.diagram_id || undefined,
-      node_id: formValues.node_id || undefined,
+      cell_id: formValues.cell_id || undefined,
       score: formValues.score || undefined,
       priority: formValues.priority || undefined,
       mitigated: formValues.mitigated,

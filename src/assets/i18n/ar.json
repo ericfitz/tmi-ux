@@ -210,7 +210,7 @@
     "mitigated": "تم التخفيف",
     "issueUrl": "رابط المشكلة",
     "diagramId": "معرف المخطط",
-    "nodeId": "معرف العقدة",
+    "cellId": "معرف الخلية",
     "createdAt": "تم الإنشاء",
     "modifiedAt": "آخر تعديل",
     "copyToClipboard": "نسخ إلى الحافظة",

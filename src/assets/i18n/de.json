@@ -210,7 +210,7 @@
     "mitigated": "Gemildert",
     "issueUrl": "Problem-URL",
     "diagramId": "Diagramm-ID",
-    "nodeId": "Knoten-ID",
+    "cellId": "Zellen-ID",
     "createdAt": "Erstellt",
     "modifiedAt": "Zuletzt geändert",
     "copyToClipboard": "In die Zwischenablage kopieren",
