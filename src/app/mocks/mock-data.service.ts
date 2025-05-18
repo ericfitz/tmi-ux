@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../core/services/logger.service';
 
 import { ThreatModel } from '../pages/tm/models/threat-model.model';
@@ -26,9 +26,6 @@ export class MockDataService implements OnDestroy {
   // BehaviorSubject to track mock data usage state
   private _useMockData = new BehaviorSubject<boolean>(this.getInitialMockState());
 
-  // Public observable for components to subscribe to
-  public useMockData$ = this._useMockData.asObservable();
-
   // Cached mock data
   private _mockThreatModels: ThreatModel[] = [mockThreatModel1, mockThreatModel2, mockThreatModel3];
 
@@ -42,35 +39,9 @@ export class MockDataService implements OnDestroy {
     this.initDiagramsMap();
   }
 
-  /**
-   * Initialize the diagrams map with all mock diagrams
-   */
-  private initDiagramsMap(): void {
-    // Add all diagrams from mockDiagrams1
-    Object.entries(mockDiagrams1).forEach(([id, diagram]) => {
-      this._mockDiagramsMap.set(id, diagram);
-    });
-
-    // Add all diagrams from mockDiagrams2
-    Object.entries(mockDiagrams2).forEach(([id, diagram]) => {
-      this._mockDiagramsMap.set(id, diagram);
-    });
-
-    // Add all diagrams from mockDiagrams3
-    Object.entries(mockDiagrams3).forEach(([id, diagram]) => {
-      this._mockDiagramsMap.set(id, diagram);
-    });
-
-    this.logger.debug(`Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`);
-  }
-
-  /**
-   * Get the initial mock state from localStorage
-   * @returns Boolean indicating whether to use mock data
-   */
-  private getInitialMockState(): boolean {
-    const storedValue = localStorage.getItem('useMockData');
-    return storedValue !== null ? storedValue === 'true' : true;
+  // Public observable for components to subscribe to
+  get useMockData$(): Observable<boolean> {
+    return this._useMockData.asObservable();
   }
 
   /**
@@ -180,5 +151,36 @@ export class MockDataService implements OnDestroy {
    */
   ngOnDestroy(): void {
     this._useMockData.complete();
+  }
+
+  /**
+   * Initialize the diagrams map with all mock diagrams
+   */
+  private initDiagramsMap(): void {
+    // Add all diagrams from mockDiagrams1
+    Object.entries(mockDiagrams1).forEach(([id, diagram]) => {
+      this._mockDiagramsMap.set(id, diagram);
+    });
+
+    // Add all diagrams from mockDiagrams2
+    Object.entries(mockDiagrams2).forEach(([id, diagram]) => {
+      this._mockDiagramsMap.set(id, diagram);
+    });
+
+    // Add all diagrams from mockDiagrams3
+    Object.entries(mockDiagrams3).forEach(([id, diagram]) => {
+      this._mockDiagramsMap.set(id, diagram);
+    });
+
+    this.logger.debug(`Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`);
+  }
+
+  /**
+   * Get the initial mock state from localStorage
+   * @returns Boolean indicating whether to use mock data
+   */
+  private getInitialMockState(): boolean {
+    const storedValue = localStorage.getItem('useMockData');
+    return storedValue !== null ? storedValue === 'true' : true;
   }
 }

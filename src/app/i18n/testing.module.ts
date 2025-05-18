@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslocoModule, provideTransloco, TranslocoLoader } from '@jsverse/transloco';
 import { Observable, of } from 'rxjs';
 
@@ -15,9 +16,10 @@ class TestLoader implements TranslocoLoader {
 }
 
 @NgModule({
-  imports: [HttpClientTestingModule],
   exports: [TranslocoModule],
   providers: [
+    provideHttpClient(),
+    provideHttpClientTesting(),
     provideTransloco({
       config: {
         availableLangs: ['en-US', 'de', 'zh', 'ar'],

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ThreatModel, Authorization } from '../../pages/tm/models/threat-model.model';
+import { ThreatModel } from '../../pages/tm/models/threat-model.model';
 
 /**
  * Creates a mock threat model with default values that can be overridden

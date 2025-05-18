@@ -23,5 +23,6 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/testing/matchers/graph-matchers.d.ts"]
 }

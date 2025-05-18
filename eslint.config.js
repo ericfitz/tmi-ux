@@ -72,6 +72,11 @@ export default [
 
   // Ignore patterns
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', '.angular/**/*'],
+    ignores: [
+      'dist/**/*',
+      'node_modules/**/*',
+      '.angular/**/*',
+      'src/testing/matchers/graph-matchers.d.ts'
+    ],
   },
 ];
