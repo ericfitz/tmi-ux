@@ -28,8 +28,11 @@
       </mat-menu>
     </div>
 
-    <!-- Right side: User info and logout button -->
+    <!-- Right side: Mock data toggle, User info and logout button -->
     <div class="navbar-right">
+      <!-- Mock data toggle in development mode -->
+      <app-mock-data-toggle *ngIf="isDevelopmentMode"></app-mock-data-toggle>
+
       <!-- User info and logout when authenticated -->
       <ng-container *ngIf="isAuthenticated">
         <span

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -12,17 +12,29 @@ import { CoreMaterialModule } from '../../../shared/material/core-material.modul
 import { AuthService } from '../../../auth/services/auth.service';
 import { LanguageService, Language } from '../../../i18n/language.service';
 
+// Import the MockDataToggleComponent
+import { MockDataToggleComponent } from '../mock-data-toggle/mock-data-toggle.component';
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true,
-  imports: [CommonModule, RouterModule, CoreMaterialModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    CoreMaterialModule,
+    TranslocoModule,
+    MockDataToggleComponent,
+  ],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   username = '';
   homeLink = '/';
+
+  // Flag to determine if we're in development mode
+  isDevelopmentMode = isDevMode();
 
   // Languages
   languages: Language[] = [];
