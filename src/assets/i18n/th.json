@@ -214,6 +214,8 @@
     "issueUrl": "URL ปัญหา",
     "diagramId": "รหัสแผนภาพ",
     "cellId": "รหัสเซลล์",
+    "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ",
+    "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
     "createdAt": "สร้างเมื่อ",
     "modifiedAt": "แก้ไขล่าสุด",
     "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",

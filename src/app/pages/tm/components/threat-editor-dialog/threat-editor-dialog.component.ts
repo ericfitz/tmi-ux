@@ -38,12 +38,33 @@ interface ThreatFormValues {
 /**
  * Dialog data interface
  */
+/**
+ * Interface for diagram dropdown options
+ */
+export interface DiagramOption {
+  id: string;
+  name: string;
+}
+
+/**
+ * Interface for cell dropdown options
+ */
+export interface CellOption {
+  id: string;
+  label: string;
+}
+
+/**
+ * Dialog data interface
+ */
 export interface ThreatEditorDialogData {
   threat?: Threat;
   threatModelId: string;
   mode: 'create' | 'edit' | 'view';
   diagramId?: string;
   cellId?: string;
+  diagrams?: DiagramOption[];
+  cells?: CellOption[];
 }
 
 @Component({
@@ -74,6 +95,13 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   isViewOnly: boolean = false;
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
+
+  // Dropdown options
+  diagramOptions: DiagramOption[] = [];
+  cellOptions: CellOption[] = [];
+
+  // Special option for "Not associated" selection
+  readonly NOT_ASSOCIATED_VALUE = '';
 
   // Metadata table properties
   metadataDataSource = new MatTableDataSource<Metadata>([]);
@@ -232,6 +260,60 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     }
   }
 
+  /**
+   * Initialize diagram options for the dropdown
+   */
+  private initializeDiagramOptions(): void {
+    // Initialize with "Not associated" option
+    this.diagramOptions = [
+      {
+        id: this.NOT_ASSOCIATED_VALUE,
+        name: this.translocoService.translate('threatEditor.notAssociatedWithDiagram'),
+      },
+    ];
+
+    // Add diagrams from input if provided
+    if (this.data.diagrams && this.data.diagrams.length > 0) {
+      this.diagramOptions = [...this.diagramOptions, ...this.data.diagrams];
+    }
+    // If no diagrams provided but there's a current diagram ID, add it as an option
+    else if (this.data.diagramId) {
+      this.diagramOptions.push({
+        id: this.data.diagramId,
+        name: this.data.diagramId, // Use ID as name if no name provided
+      });
+    }
+
+    this.logger.info('Diagram options initialized:', this.diagramOptions);
+  }
+
+  /**
+   * Initialize cell options for the dropdown
+   */
+  private initializeCellOptions(): void {
+    // Initialize with "Not associated" option
+    this.cellOptions = [
+      {
+        id: this.NOT_ASSOCIATED_VALUE,
+        label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
+      },
+    ];
+
+    // Add cells from input if provided
+    if (this.data.cells && this.data.cells.length > 0) {
+      this.cellOptions = [...this.cellOptions, ...this.data.cells];
+    }
+    // If no cells provided but there's a current cell ID, add it as an option
+    else if (this.data.cellId) {
+      this.cellOptions.push({
+        id: this.data.cellId,
+        label: this.data.cellId, // Use ID as label if no label provided
+      });
+    }
+
+    this.logger.info('Cell options initialized:', this.cellOptions);
+  }
+
   ngOnInit(): void {
     // Set dialog mode
     this.isViewOnly = this.data.mode === 'view';
@@ -282,6 +364,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               this.translocoService.setActiveLang(currentLang);
               this.logger.info('Translations loaded successfully for language: ' + currentLang);
 
+              // Initialize dropdown options after translations are loaded
+              this.initializeDiagramOptions();
+              this.initializeCellOptions();
+
               // Force change detection to update the translations
               setTimeout(() => {
                 this.dialogRef.updateSize();
@@ -296,9 +382,17 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               );
               // Fallback to English
               this.translocoService.setActiveLang('en-US');
+
+              // Initialize dropdown options with English translations
+              this.initializeDiagramOptions();
+              this.initializeCellOptions();
             },
           });
         } else {
+          // Initialize dropdown options with English translations
+          this.initializeDiagramOptions();
+          this.initializeCellOptions();
+
           // Force change detection to update the translations
           setTimeout(() => {
             this.dialogRef.updateSize();
@@ -309,6 +403,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       error: (err: unknown) => {
         const errorMessage = err instanceof Error ? err.message : String(err);
         this.logger.error('Failed to load English translations', errorMessage);
+
+        // Initialize dropdown options even if translations failed
+        this.initializeDiagramOptions();
+        this.initializeCellOptions();
       },
     });
 
@@ -396,6 +494,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Force change detection to update the date format and translations
       this.dialogRef.updateSize();
       this.forceTranslationUpdate();
+
+      // Reinitialize dropdown options when language changes
+      this.initializeDiagramOptions();
+      this.initializeCellOptions();
     });
 
     // Also subscribe to direction changes
@@ -459,7 +561,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'threatEditor.status',
         'threatEditor.mitigated',
         'threatEditor.diagramId',
-        'threatEditor.nodeId',
+        'threatEditor.cellId',
+        'threatEditor.notAssociatedWithDiagram',
+        'threatEditor.notAssociatedWithCell',
         'threatEditor.metadata',
         'threatEditor.metadataKey',
         'threatEditor.metadataValue',

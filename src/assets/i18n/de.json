@@ -211,6 +211,8 @@
     "issueUrl": "Problem-URL",
     "diagramId": "Diagramm-ID",
     "cellId": "Zellen-ID",
+    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
+    "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
     "createdAt": "Erstellt",
     "modifiedAt": "Zuletzt geändert",
     "copyToClipboard": "In die Zwischenablage kopieren",

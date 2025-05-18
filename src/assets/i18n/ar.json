@@ -211,6 +211,8 @@
     "issueUrl": "رابط المشكلة",
     "diagramId": "معرف المخطط",
     "cellId": "معرف الخلية",
+    "notAssociatedWithDiagram": "غير مرتبط بمخطط",
+    "notAssociatedWithCell": "غير مرتبط بخلية",
     "createdAt": "تم الإنشاء",
     "modifiedAt": "آخر تعديل",
     "copyToClipboard": "نسخ إلى الحافظة",

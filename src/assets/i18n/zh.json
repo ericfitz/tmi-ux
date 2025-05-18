@@ -211,6 +211,8 @@
     "issueUrl": "问题URL",
     "diagramId": "图表ID",
     "cellId": "单元格ID",
+    "notAssociatedWithDiagram": "未关联图表",
+    "notAssociatedWithCell": "未关联单元格",
     "createdAt": "创建时间",
     "modifiedAt": "最后修改",
     "copyToClipboard": "复制到剪贴板",

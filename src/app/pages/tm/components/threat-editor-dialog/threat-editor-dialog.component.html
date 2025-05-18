@@ -146,7 +146,15 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.diagramId' | transloco }}</mat-label>
-        <input matInput formControlName="diagram_id" />
+        <mat-select formControlName="diagram_id">
+          <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
+            {{
+              diagram.id === NOT_ASSOCIATED_VALUE
+                ? diagram.name
+                : diagram.id + ' (' + diagram.name + ')'
+            }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
 
@@ -154,7 +162,11 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.cellId' | transloco }}</mat-label>
-        <input matInput formControlName="cell_id" />
+        <mat-select formControlName="cell_id">
+          <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
+            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.id + ' (' + cell.label + ')' }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
 

@@ -246,6 +246,8 @@
     "issueUrl": "Issue URL",
     "diagramId": "Diagram ID",
     "cellId": "Cell ID",
+    "notAssociatedWithDiagram": "Not associated with a diagram",
+    "notAssociatedWithCell": "Not associated with a cell",
     "createdAt": "Created",
     "modifiedAt": "Last Modified",
     "copyToClipboard": "Copy to clipboard",
