@@ -95,17 +95,17 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     @Inject(MAT_DIALOG_DATA) public data: ThreatEditorDialogData,
   ) {
     this.threatForm = this.fb.group({
-      name: ['Threat Name', [Validators.required, Validators.maxLength(100)]],
-      description: ['Threat Description', Validators.maxLength(500)],
+      name: ['', [Validators.required, Validators.maxLength(100)]],
+      description: ['', Validators.maxLength(500)],
       severity: ['High', Validators.required],
       threat_type: ['Elevation of Privilege', Validators.required],
-      diagram_id: ['00000000-0000-0000-0000-000000000000'],
-      node_id: ['00000000-0000-0000-0000-000000000000'],
+      diagram_id: [''],
+      node_id: [''],
       score: [null],
       priority: ['High'],
       mitigated: [false],
       status: ['Open'],
-      issue_url: ['n/a'],
+      issue_url: [''],
     });
   }
 
@@ -343,14 +343,13 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.dialogTitle = 'threatEditor.viewThreat';
     }
 
-    // Initialize form with default values to ensure labels float
-    // Empty strings aren't sufficient to make Angular Material float the labels
-    // Use meaningful default values instead
-    const defaultNodeId = this.data.nodeId || '00000000-0000-0000-0000-000000000000';
+    // Initialize form with empty values for text fields and default values for other fields
+    // We're using floatLabel="always" in the HTML to ensure labels are always visible
+    const defaultNodeId = this.data.nodeId || '';
 
     this.threatForm.patchValue({
-      name: 'New Threat',
-      description: 'Describe the threat here',
+      name: '',
+      description: '',
       severity: 'High',
       threat_type: 'Information Disclosure',
       diagram_id: this.data.diagramId || '',
@@ -359,7 +358,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: 'High',
       mitigated: false,
       status: 'Open',
-      issue_url: 'n/a',
+      issue_url: '',
     });
 
     // If editing or viewing, populate form with threat data
