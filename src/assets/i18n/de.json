@@ -141,11 +141,28 @@
     "diagramsCount": "Diagramme",
     "threatsCount": "Bedrohungen",
     "idLabel": "ID:",
+    "metadataKey": "Schlüssel",
+    "metadataValue": "Wert",
+    "permissions": "Berechtigungen",
+    "permissionsUser": "Benutzer",
+    "permissionsRole": "Rolle",
+    "noPermissions": "Keine Berechtigungen definiert",
+    "addPermission": "Berechtigung hinzufügen",
+    "threatId": "Bedrohungs-ID",
+    "createdAt": "Erstellt",
+    "modifiedAt": "Zuletzt geändert",
+    "copyToClipboard": "In die Zwischenablage kopieren",
     "tooltips": {
       "create": "Erstellen",
       "delete": "Löschen",
       "addThreat": "Bedrohung hinzufügen",
-      "addDiagram": "Diagramm hinzufügen"
+      "addDiagram": "Diagramm hinzufügen",
+      "viewThreat": "Bedrohung anzeigen",
+      "editThreat": "Bedrohung bearbeiten",
+      "renameDiagram": "Diagramm umbenennen",
+      "deleteDiagram": "Diagramm löschen",
+      "openDiagram": "Diagramm öffnen",
+      "deleteThreat": "Bedrohung löschen"
     }
   },
   "editor": {

@@ -141,11 +141,28 @@
     "diagramsCount": "مخططات",
     "threatsCount": "تهديدات",
     "idLabel": "المعرف:",
+    "metadataKey": "المفتاح",
+    "metadataValue": "القيمة",
+    "permissions": "الأذونات",
+    "permissionsUser": "المستخدم",
+    "permissionsRole": "الدور",
+    "noPermissions": "لم يتم تحديد أي أذونات",
+    "addPermission": "إضافة إذن",
+    "threatId": "معرف التهديد",
+    "createdAt": "تم الإنشاء",
+    "modifiedAt": "آخر تعديل",
+    "copyToClipboard": "نسخ إلى الحافظة",
     "tooltips": {
       "create": "إنشاء",
       "delete": "حذف",
       "addThreat": "إضافة تهديد",
-      "addDiagram": "إضافة مخطط"
+      "addDiagram": "إضافة مخطط",
+      "viewThreat": "عرض التهديد",
+      "editThreat": "تحرير التهديد",
+      "renameDiagram": "إعادة تسمية المخطط",
+      "deleteDiagram": "حذف المخطط",
+      "openDiagram": "فتح المخطط",
+      "deleteThreat": "حذف التهديد"
     }
   },
   "editor": {

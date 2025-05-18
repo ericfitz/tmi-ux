@@ -198,47 +198,6 @@
     "validation": {
       "required": "This field is required",
       "maxLength": "Maximum length is {{max}} characters"
-    },
-    "threatEditor": {
-      "createNewThreat": "Create New Threat",
-      "editThreat": "Edit Threat",
-      "viewThreat": "View Threat",
-      "threatId": "Threat ID",
-      "threatName": "Threat Name",
-      "threatDescription": "Threat Description",
-      "threatDescriptionPlaceholder": "Describe the threat in detail",
-      "threatType": "Threat Type",
-      "severity": "Severity",
-      "severityUnknown": "Unknown",
-      "severityNone": "None",
-      "severityLow": "Low",
-      "severityMedium": "Medium",
-      "severityHigh": "High",
-      "severityCritical": "Critical",
-      "score": "Score",
-      "priority": "Priority",
-      "status": "Status",
-      "mitigated": "Mitigated",
-      "issueUrl": "Issue URL",
-      "diagramId": "Diagram ID",
-      "nodeId": "Node ID",
-      "createdAt": "Created",
-      "modifiedAt": "Last Modified",
-      "copyToClipboard": "Copy to clipboard",
-      "metadata": "Metadata",
-      "metadataKey": "Key",
-      "metadataValue": "Value",
-      "actions": "Actions",
-      "addMetadata": "Add Metadata",
-      "delete": "Delete",
-      "noMetadata": "No metadata available",
-      "save": "Save",
-      "cancel": "Cancel",
-      "close": "Close",
-      "validation": {
-        "required": "This field is required",
-        "maxLength": "Maximum length is {{max}} characters"
-      }
     }
   },
   "editor": {

@@ -141,11 +141,28 @@
     "diagramsCount": "图表",
     "threatsCount": "威胁",
     "idLabel": "ID:",
+    "metadataKey": "键",
+    "metadataValue": "值",
+    "permissions": "权限",
+    "permissionsUser": "用户",
+    "permissionsRole": "角色",
+    "noPermissions": "未定义权限",
+    "addPermission": "添加权限",
+    "threatId": "威胁ID",
+    "createdAt": "创建时间",
+    "modifiedAt": "最后修改",
+    "copyToClipboard": "复制到剪贴板",
     "tooltips": {
       "create": "创建",
       "delete": "删除",
       "addThreat": "添加威胁",
-      "addDiagram": "添加图表"
+      "addDiagram": "添加图表",
+      "viewThreat": "查看威胁",
+      "editThreat": "编辑威胁",
+      "renameDiagram": "重命名图表",
+      "deleteDiagram": "删除图表",
+      "openDiagram": "打开图表",
+      "deleteThreat": "删除威胁"
     }
   },
   "editor": {

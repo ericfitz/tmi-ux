@@ -38,6 +38,25 @@ mat-dialog-content {
   }
 }
 
+// Common styles for button icons (placeholder selectors)
+%button-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Smaller button icon (placeholder selector)
+%small-button-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
 // URL field with copy button
 .url-field-container {
   display: flex;
@@ -58,10 +77,7 @@ mat-dialog-content {
     justify-content: center;
 
     .mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-      line-height: 18px;
+      @extend %button-icon;
     }
   }
 }
@@ -167,13 +183,7 @@ mat-dialog-content {
   justify-content: center;
 
   .mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @extend %button-icon;
   }
 }
 
@@ -277,10 +287,7 @@ mat-dialog-content {
   line-height: 32px;
 
   .mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
+    @extend %small-button-icon;
   }
 }
 

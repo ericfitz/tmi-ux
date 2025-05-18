@@ -144,11 +144,28 @@
     "diagramsCount": "แผนภาพ",
     "threatsCount": "ภัยคุกคาม",
     "idLabel": "รหัส:",
+    "metadataKey": "คีย์",
+    "metadataValue": "ค่า",
+    "permissions": "สิทธิ์การเข้าถึง",
+    "permissionsUser": "ผู้ใช้",
+    "permissionsRole": "บทบาท",
+    "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
+    "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
+    "threatId": "รหัสภัยคุกคาม",
+    "createdAt": "สร้างเมื่อ",
+    "modifiedAt": "แก้ไขล่าสุด",
+    "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
     "tooltips": {
       "create": "สร้าง",
       "delete": "ลบ",
       "addThreat": "เพิ่มภัยคุกคาม",
-      "addDiagram": "เพิ่มแผนภาพ"
+      "addDiagram": "เพิ่มแผนภาพ",
+      "viewThreat": "ดูภัยคุกคาม",
+      "editThreat": "แก้ไขภัยคุกคาม",
+      "renameDiagram": "เปลี่ยนชื่อแผนภาพ",
+      "deleteDiagram": "ลบแผนภาพ",
+      "openDiagram": "เปิดแผนภาพ",
+      "deleteThreat": "ลบภัยคุกคาม"
     }
   },
   "editor": {
