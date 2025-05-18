@@ -558,6 +558,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         const dialogData: ThreatEditorDialogData = {
           threatModelId: this.threatModelId as string,
           mode: 'create',
+          diagramId: this.dfdId || '',
+          nodeId: this.stateStore.selectedNode?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -591,7 +593,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Add required fields for the updated Threat interface
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
-                metadata: [],
+                diagram_id: result.diagram_id || this.dfdId || '',
+                node_id: result.node_id || this.stateStore.selectedNode?.id || '',
+                score: result.score || 10.0,
+                priority: result.priority || 'High',
+                issue_url: result.issue_url || 'n/a',
+                metadata: result.metadata || [],
               };
 
               // Add the threat to the threat model

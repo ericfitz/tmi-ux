@@ -42,6 +42,8 @@ export interface ThreatEditorDialogData {
   threat?: Threat;
   threatModelId: string;
   mode: 'create' | 'edit' | 'view';
+  diagramId?: string;
+  nodeId?: string;
 }
 
 @Component({
@@ -81,26 +83,29 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   private langSubscription: Subscription | null = null;
   private directionSubscription: Subscription | null = null;
 
+  // Track dialog source for debugging
+  dialogSource: string = '';
+
   constructor(
     private dialogRef: MatDialogRef<ThreatEditorDialogComponent>,
     private fb: FormBuilder,
-    private logger: LoggerService,
+    public logger: LoggerService, // Make logger public for debugging
     private languageService: LanguageService,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: ThreatEditorDialogData,
   ) {
     this.threatForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', Validators.maxLength(500)],
+      name: ['Threat Name', [Validators.required, Validators.maxLength(100)]],
+      description: ['Threat Description', Validators.maxLength(500)],
       severity: ['High', Validators.required],
-      threat_type: ['', Validators.required],
-      diagram_id: [''],
-      node_id: [''],
+      threat_type: ['Elevation of Privilege', Validators.required],
+      diagram_id: ['00000000-0000-0000-0000-000000000000'],
+      node_id: ['00000000-0000-0000-0000-000000000000'],
       score: [null],
-      priority: [''],
+      priority: ['High'],
       mitigated: [false],
       status: ['Open'],
-      issue_url: [''],
+      issue_url: ['n/a'],
     });
   }
 
@@ -231,7 +236,38 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Set dialog mode
     this.isViewOnly = this.data.mode === 'view';
 
+    // Log initialization context
+    const openedFrom = new Error().stack?.includes('dfd.component') ? 'DFD Editor' : 'TM Edit';
+    this.logger.info('ThreatEditorDialog initialized with data:', {
+      mode: this.data.mode,
+      threatModelId: this.data.threatModelId,
+      hasThreat: !!this.data.threat,
+      openedFrom,
+    });
+
+    // Log detailed initialization data for debugging
+    this.logger.info('Detailed initialization data:', {
+      source: openedFrom,
+      dialogData: JSON.stringify(this.data),
+      threatData: this.data.threat
+        ? JSON.stringify({
+            id: this.data.threat.id,
+            name: this.data.threat.name,
+            description: this.data.threat.description,
+            severity: this.data.threat.severity,
+            threat_type: this.data.threat.threat_type,
+            diagram_id: this.data.threat.diagram_id,
+            node_id: this.data.threat.node_id,
+          })
+        : 'No threat data',
+      stackTrace: new Error().stack,
+    });
+
+    // Add a property to track the source for debugging
+    this.dialogSource = openedFrom;
+
     const currentLang = this.translocoService.getActiveLang();
+    this.logger.info('Current language:', currentLang);
 
     // First load English as fallback
     this.translocoService.load('en-US').subscribe({
@@ -291,13 +327,13 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           modified_at: new Date().toISOString(),
           severity: 'High',
           threat_type: 'Information Disclosure',
-          diagram_id: '',
-          node_id: '',
-          score: undefined,
-          priority: '',
+          diagram_id: this.data.diagramId || '',
+          node_id: this.data.nodeId || '',
+          score: 10.0,
+          priority: 'High',
           mitigated: false,
           status: 'Open',
-          issue_url: '',
+          issue_url: 'n/a',
           metadata: [],
         };
       }
@@ -306,6 +342,25 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     } else {
       this.dialogTitle = 'threatEditor.viewThreat';
     }
+
+    // Initialize form with default values to ensure labels float
+    // Empty strings aren't sufficient to make Angular Material float the labels
+    // Use meaningful default values instead
+    const defaultNodeId = this.data.nodeId || '00000000-0000-0000-0000-000000000000';
+
+    this.threatForm.patchValue({
+      name: 'New Threat',
+      description: 'Describe the threat here',
+      severity: 'High',
+      threat_type: 'Information Disclosure',
+      diagram_id: this.data.diagramId || '',
+      node_id: defaultNodeId,
+      score: 10.0,
+      priority: 'High',
+      mitigated: false,
+      status: 'Open',
+      issue_url: 'n/a',
+    });
 
     // If editing or viewing, populate form with threat data
     if (this.data.threat) {
@@ -358,6 +413,28 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   ngAfterViewInit(): void {
     // Force translation update after view is initialized
     this.forceTranslationUpdate();
+
+    // Add diagnostic check for Angular Material form field initialization
+    setTimeout(() => {
+      // Check if the form fields are properly initialized
+      const formFields = document.querySelectorAll('.mat-form-field');
+      const labels = document.querySelectorAll('.mat-form-field-label');
+
+      this.logger.info('Form field initialization in ngAfterViewInit:', {
+        source: this.dialogSource,
+        formFieldsCount: formFields.length,
+        labelsCount: labels.length,
+        // Check if form field is properly initialized with Angular Material classes
+        formFieldClasses: Array.from(formFields).map(field => {
+          return {
+            classList: Array.from(field.classList),
+            hasLabel: !!field.querySelector('.mat-form-field-label'),
+            labelText:
+              field.querySelector('.mat-form-field-label')?.textContent?.trim() || 'No label text',
+          };
+        }),
+      });
+    }, 150);
   }
 
   /**
@@ -395,10 +472,81 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'threatEditor.close',
       ];
 
+      // Log the problematic labels that are not showing
+      this.logger.info('Checking translations for problematic labels:', {
+        source: this.dialogSource,
+        threatName: this.translocoService.translate('threatEditor.threatName'),
+        threatDescription: this.translocoService.translate('threatEditor.threatDescription'),
+        priority: this.translocoService.translate('threatEditor.priority'),
+        issueUrl: this.translocoService.translate('threatEditor.issueUrl'),
+        diagramId: this.translocoService.translate('threatEditor.diagramId'),
+        nodeId: this.translocoService.translate('threatEditor.nodeId'),
+      });
+
+      // Check if form fields have the floating label class
+      setTimeout(() => {
+        const formFields = document.querySelectorAll('.mat-form-field');
+        const floatingLabels = document.querySelectorAll(
+          '.mat-form-field.mat-form-field-should-float',
+        );
+        this.logger.info('Form field state:', {
+          source: this.dialogSource,
+          totalFormFields: formFields.length,
+          fieldsWithFloatingLabels: floatingLabels.length,
+          formFieldsHaveContent: Array.from(formFields).map(field => {
+            const input = field.querySelector('input, textarea');
+            return input && 'value' in input
+              ? !!(input as HTMLInputElement | HTMLTextAreaElement).value
+              : false;
+          }),
+        });
+      }, 50);
+
+      // Add additional diagnostics for Angular Material form field classes
+      setTimeout(() => {
+        // Check for mat-form-field-appearance-outline class
+        const outlineFields = document.querySelectorAll('.mat-form-field-appearance-outline');
+
+        // Check for mat-focused class
+        const focusedFields = document.querySelectorAll('.mat-focused');
+
+        // Check for mat-form-field-label elements
+        const labelElements = document.querySelectorAll('.mat-form-field-label');
+
+        // Check if labels are visible (not having mat-form-field-empty class)
+        const emptyFields = document.querySelectorAll('.mat-form-field-empty');
+
+        this.logger.info('Angular Material form field diagnostics:', {
+          source: this.dialogSource,
+          outlineFieldsCount: outlineFields.length,
+          focusedFieldsCount: focusedFields.length,
+          labelElementsCount: labelElements.length,
+          emptyFieldsCount: emptyFields.length,
+          // Check if labels have computed style of visibility: hidden or display: none
+          labelVisibility: Array.from(labelElements).map(label => {
+            const computedStyle = window.getComputedStyle(label);
+            return {
+              visibility: computedStyle.visibility,
+              display: computedStyle.display,
+              opacity: computedStyle.opacity,
+            };
+          }),
+        });
+      }, 100);
+
       // Force translation of each key
       keys.forEach(key => {
         this.translateKey(key);
       });
+
+      // Add a second delayed update to ensure translations are applied
+      setTimeout(() => {
+        this.logger.info('Running secondary translation update');
+        this.dialogRef.updateSize();
+        keys.forEach(key => {
+          this.translateKey(key);
+        });
+      }, 300);
     }, 200);
   }
 
