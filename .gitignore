@@ -45,3 +45,6 @@ Thumbs.db
 CLAUDE.local.md
 .clinerules
 CLAUDE.md
+
+# Local environment files
+src/environments/environment.local.ts

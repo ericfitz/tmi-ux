@@ -25,6 +25,7 @@
     "dev:staging": "ng serve --configuration=staging --open",
     "dev:test": "ng serve --configuration=test --open",
     "dev:prod": "ng serve --configuration=production --open",
+    "dev:local": "ng serve --configuration=local --open",
     "dev:custom": "ng serve --host=${TMI_INTERFACE:-0.0.0.0} --port=${TMI_PORT:-4200} --ssl=${TMI_SSL:-false} --ssl-key=${TMI_SSL_KEY:-} --ssl-cert=${TMI_SSL_CERT:-} --open",
     "lint": "eslint \"src/**/*.{ts,html}\" --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --fix",

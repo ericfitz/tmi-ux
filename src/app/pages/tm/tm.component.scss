@@ -8,7 +8,7 @@
 .collaboration-sessions-container {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 1px solid rgb(0 0 0 / 12%);
 }
 
 .header-row {
@@ -43,19 +43,24 @@
   gap: 20px;
 }
 
-.threat-model-card,
+// Base styles for cards
+.threat-model-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+// Collaboration session card base styles
 .collaboration-session-card {
   cursor: pointer;
   transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
-  }
+  background-color: rgb(0 151 167 / 5%); // Light cyan background
 }
 
-.collaboration-session-card {
-  background-color: rgba(0, 151, 167, 0.05); // Light cyan background
+// Hover styles for both card types
+.threat-model-card:hover,
+.collaboration-session-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
 }
 
 mat-card-content {
