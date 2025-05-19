@@ -15,6 +15,22 @@ import { SharedModule } from '../../shared/shared.module';
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from './models/threat-model.model';
 import { ThreatModelService } from './services/threat-model.service';
+import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
+import { LoggerService } from '../../core/services/logger.service';
+
+/**
+ * Interface for collaboration session data
+ */
+export interface CollaborationSession {
+  id: string;
+  threatModelId: string;
+  threatModelName: string;
+  diagramId: string;
+  diagramName: string;
+  hostUser: string;
+  startedAt: Date;
+  activeUsers: number;
+}
 
 @Component({
   selector: 'app-tm',
@@ -26,14 +42,18 @@ import { ThreatModelService } from './services/threat-model.service';
 })
 export class TmComponent implements OnInit, OnDestroy {
   threatModels: ThreatModel[] = [];
+  collaborationSessions: CollaborationSession[] = [];
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
+  private collaborationSubscription: Subscription | null = null;
   private currentLocale: string = 'en-US';
 
   constructor(
     private router: Router,
     private threatModelService: ThreatModelService,
     private languageService: LanguageService,
+    private collaborationService: DfdCollaborationService,
+    private logger: LoggerService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -49,6 +69,9 @@ export class TmComponent implements OnInit, OnDestroy {
       // Force change detection to re-evaluate date formatting
       this.cdr.detectChanges();
     });
+
+    // Load active collaboration sessions
+    this.loadCollaborationSessions();
   }
 
   ngOnDestroy(): void {
@@ -57,6 +80,9 @@ export class TmComponent implements OnInit, OnDestroy {
     }
     if (this.languageSubscription) {
       this.languageSubscription.unsubscribe();
+    }
+    if (this.collaborationSubscription) {
+      this.collaborationSubscription.unsubscribe();
     }
   }
 
@@ -94,5 +120,49 @@ export class TmComponent implements OnInit, OnDestroy {
         this.threatModels = this.threatModels.filter(tm => tm.id !== id);
       }
     });
+  }
+
+  /**
+   * Load active collaboration sessions
+   */
+  private loadCollaborationSessions(): void {
+    // For now, we'll use mock data since the actual implementation would depend on the backend API
+    // In a real implementation, this would fetch active sessions from the server
+
+    // Mock data for demonstration purposes
+    this.collaborationSessions = [
+      {
+        id: '1',
+        threatModelId: '550e8400-e29b-41d4-a716-446655440000',
+        threatModelName: 'System Threat Model',
+        diagramId: '123e4567-e89b-12d3-a456-426614174000',
+        diagramName: 'System Architecture',
+        hostUser: 'John Doe',
+        startedAt: new Date(),
+        activeUsers: 3,
+      },
+      {
+        id: '2',
+        threatModelId: '550e8400-e29b-41d4-a716-446655440001',
+        threatModelName: 'Cloud Infrastructure Threat Model',
+        diagramId: '223e4567-e89b-12d3-a456-426614174000',
+        diagramName: 'Cloud Infrastructure',
+        hostUser: 'Jane Smith',
+        startedAt: new Date(),
+        activeUsers: 2,
+      },
+    ];
+
+    this.logger.info('Loaded collaboration sessions', { count: this.collaborationSessions.length });
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Navigate to the DFD page for a specific diagram
+   * @param diagramId The ID of the diagram to open
+   */
+  openCollaborationSession(diagramId: string): void {
+    this.logger.info('Opening collaboration session', { diagramId });
+    void this.router.navigate(['/dfd', diagramId]);
   }
 }

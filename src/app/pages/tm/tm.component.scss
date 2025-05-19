@@ -1,7 +1,14 @@
-.tm-container {
+.tm-container,
+.collaboration-sessions-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 24px;
+}
+
+.collaboration-sessions-container {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .header-row {
@@ -29,13 +36,15 @@
   }
 }
 
-.threat-models-list {
+.threat-models-list,
+.collaboration-sessions-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 20px;
 }
 
-.threat-model-card {
+.threat-model-card,
+.collaboration-session-card {
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -45,19 +54,25 @@
   }
 }
 
+.collaboration-session-card {
+  background-color: rgba(0, 151, 167, 0.05); // Light cyan background
+}
+
 mat-card-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.threat-model-info {
+.threat-model-info,
+.collaboration-session-info {
   display: flex;
   align-items: flex-start;
-  width: calc(100% - 40px); // Account for delete button
+  width: calc(100% - 40px); // Account for icon on the right
 }
 
-.threat-model-icon {
+.threat-model-icon,
+.collaboration-session-icon {
   margin-right: 16px;
   color: #0097a7; // Cyan 700
   font-size: 32px;
@@ -66,12 +81,18 @@ mat-card-content {
   flex-shrink: 0;
 }
 
-.threat-model-details {
+.collaboration-session-icon {
+  color: #00796b; // Teal 700
+}
+
+.threat-model-details,
+.collaboration-session-details {
   flex: 1;
   min-width: 0; // Allow text to truncate
 }
 
-.threat-model-title {
+.threat-model-title,
+.collaboration-session-title {
   margin: 0 0 4px;
   font-weight: 500;
   white-space: nowrap;
@@ -123,7 +144,8 @@ mat-card-content {
   }
 }
 
-.no-threat-models {
+.no-threat-models,
+.no-collaboration-sessions {
   grid-column: 1 / -1;
   text-align: center;
   padding: 40px 0;
@@ -142,9 +164,53 @@ mat-card-content {
 }
 
 // RTL support
+// Specific styles for collaboration sessions
+.collaboration-session-diagram,
+.collaboration-session-host {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: rgb(0 0 0 / 70%);
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+}
+
+.join-icon {
+  color: #00796b; // Teal 700
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0;
+  color: #00796b; // Teal 700
+}
+
+// RTL support
 :host-context([dir='rtl']) {
-  .threat-model-icon {
+  .threat-model-icon,
+  .collaboration-session-icon {
     margin-right: 0;
     margin-left: 16px;
+  }
+
+  .collaboration-session-diagram,
+  .collaboration-session-host {
+    mat-icon {
+      margin-right: 0;
+      margin-left: 4px;
+    }
   }
 }

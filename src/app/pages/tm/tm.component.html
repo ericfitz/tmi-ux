@@ -66,3 +66,40 @@
     </div>
   </div>
 </div>
+
+<div class="collaboration-sessions-container">
+  <div class="header-row">
+    <h2 class="section-title">Collaboration Sessions</h2>
+  </div>
+
+  <div class="collaboration-sessions-list">
+    <mat-card
+      *ngFor="let session of collaborationSessions"
+      class="collaboration-session-card"
+      (click)="openCollaborationSession(session.diagramId)"
+    >
+      <mat-card-content>
+        <div class="collaboration-session-info">
+          <mat-icon class="collaboration-session-icon">groups</mat-icon>
+          <div class="collaboration-session-details">
+            <h3 class="collaboration-session-title">
+              {{ session.threatModelName }}
+            </h3>
+            <p class="collaboration-session-diagram">
+              <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
+            </p>
+            <p class="collaboration-session-host">
+              <mat-icon>person</mat-icon> Hosted by {{ session.hostUser }}
+            </p>
+          </div>
+        </div>
+        <mat-icon class="join-icon">login</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="collaborationSessions.length === 0" class="no-collaboration-sessions">
+      <mat-icon class="empty-icon">groups_off</mat-icon>
+      <p>No active collaboration sessions</p>
+    </div>
+  </div>
+</div>
