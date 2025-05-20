@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{ dialogTitle | transloco }}</h2>
-<!-- Force translation update -->
-<div style="display: none">{{ 'threatEditor.threatName' | transloco }}</div>
 <mat-dialog-content [dir]="currentDirection">
+  <!-- Force translation update -->
+  <div style="display: none">{{ 'threatEditor.threatName' | transloco }}</div>
   <!-- Threat ID and timestamps section -->
   <div class="info-section-vertical" *ngIf="data.threat" [dir]="currentDirection">
     <div class="info-field">
