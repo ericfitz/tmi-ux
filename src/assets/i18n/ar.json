@@ -1,4 +1,24 @@
 {
+  "collaboration": {
+    "title": "التعاون",
+    "availableCollaborationSessions": "جلسات التعاون المتاحة",
+    "startCollaboration": "بدء التعاون",
+    "endCollaboration": "إنهاء التعاون",
+    "manageCollaboration": "إدارة التعاون",
+    "shareLinkHeader": "مشاركة رابط التعاون",
+    "copyLink": "نسخ الرابط",
+    "collaboratorsHeader": "المتعاونون",
+    "changeRole": "تغيير الدور",
+    "makeOwner": "جعله مالكًا",
+    "makeWriter": "جعله كاتبًا",
+    "makeReader": "جعله قارئًا",
+    "removeUser": "إزالة المستخدم",
+    "roles": {
+      "owner": "مالك",
+      "writer": "كاتب",
+      "reader": "قارئ"
+    }
+  },
   "common": {
     "save": "حفظ",
     "cancel": "إلغاء"
@@ -124,6 +144,9 @@
   },
   "threatModels": {
     "pageTitle": "نماذج التهديدات",
+    "dashboard": "لوحة المعلومات",
+    "yourThreatModels": "نماذج التهديدات الخاصة بك",
+    "threatModelPrefix": "نموذج التهديد:",
     "lastModified": "آخر تعديل: {{date}}",
     "noItemsMessage": "ليس لديك أي نماذج تهديدات حتى الآن.",
     "createFirstButton": "أنشئ نموذج التهديد الأول",
@@ -141,6 +164,7 @@
     "diagramsCount": "مخططات",
     "threatsCount": "تهديدات",
     "idLabel": "المعرف:",
+    "createdBy": "تم إنشاؤه بواسطة:",
     "metadataKey": "المفتاح",
     "metadataValue": "القيمة",
     "permissions": "الأذونات",
@@ -167,6 +191,7 @@
   },
   "editor": {
     "pageTitle": "محرر مخطط تدفق البيانات",
+    "diagramPrefix": "مخطط:",
     "properties": {
       "title": "الخصائص",
       "help": "ستظهر خصائص العنصر هنا عند تحديد عنصر."

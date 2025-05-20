@@ -1,6 +1,10 @@
+<div class="header-row dashboard-title">
+  <h1 class="page-title" [transloco]="'threatModels.dashboard'">Dashboard</h1>
+</div>
+
 <div class="tm-container">
   <div class="header-row">
-    <h1 class="page-title" [transloco]="'threatModels.pageTitle'">Threat Models</h1>
+    <h2 class="section-title" [transloco]="'threatModels.yourThreatModels'">Your Threat Models</h2>
     <button
       mat-icon-button
       color="primary"
@@ -69,7 +73,9 @@
 
 <div class="collaboration-sessions-container">
   <div class="header-row">
-    <h2 class="section-title">Collaboration Sessions</h2>
+    <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
+      Available Collaboration Sessions
+    </h2>
   </div>
 
   <div class="collaboration-sessions-list">

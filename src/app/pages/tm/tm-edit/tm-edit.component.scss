@@ -106,16 +106,21 @@ mat-card-header {
     margin-bottom: 0;
   }
 
-  &.dates-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  // No special styling needed for individual info-field elements anymore
+}
 
-    .date-field {
-      display: flex;
-      align-items: center;
-      width: 48%;
-    }
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-field {
+    width: 50%;
+    margin-bottom: 0;
   }
 }
 
@@ -132,19 +137,20 @@ mat-card-header {
 }
 
 .copy-button {
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  margin-inline-start: 8px; // Use logical property for RTL support
-  display: flex;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  margin-inline-start: 2px; // Use logical property for RTL support
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  vertical-align: middle;
 
   .mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;

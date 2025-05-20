@@ -125,6 +125,9 @@
   },
   "threatModels": {
     "pageTitle": "Threat Models",
+    "dashboard": "Dashboard",
+    "yourThreatModels": "Your Threat Models",
+    "threatModelPrefix": "Threat Model:",
     "lastModified": "Last modified: {{date}}",
     "noItemsMessage": "You don't have any threat models yet.",
     "createFirstButton": "Create your first threat model",
@@ -153,6 +156,7 @@
     "diagramsCount": "diagrams",
     "threatsCount": "threats",
     "idLabel": "ID:",
+    "createdBy": "Created by:",
     "tooltips": {
       "create": "Create",
       "delete": "Delete",
@@ -202,6 +206,7 @@
   },
   "editor": {
     "pageTitle": "Data Flow Diagram Editor",
+    "diagramPrefix": "Diagram:",
     "properties": {
       "title": "Properties",
       "help": "Element properties will appear here when an element is selected."
@@ -264,6 +269,26 @@
     "validation": {
       "required": "This field is required",
       "maxLength": "Maximum length is {{max}} characters"
+    }
+  },
+  "collaboration": {
+    "title": "Collaboration",
+    "availableCollaborationSessions": "Available Collaboration Sessions",
+    "startCollaboration": "Start Collaboration",
+    "endCollaboration": "End Collaboration",
+    "manageCollaboration": "Manage Collaboration",
+    "shareLinkHeader": "Share Collaboration Link",
+    "copyLink": "Copy Link",
+    "collaboratorsHeader": "Collaborators",
+    "changeRole": "Change Role",
+    "makeOwner": "Make Owner",
+    "makeWriter": "Make Writer",
+    "makeReader": "Make Reader",
+    "removeUser": "Remove User",
+    "roles": {
+      "owner": "Owner",
+      "writer": "Writer",
+      "reader": "Reader"
     }
   }
 }

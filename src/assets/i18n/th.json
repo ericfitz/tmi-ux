@@ -1,4 +1,24 @@
 {
+  "collaboration": {
+    "title": "การทำงานร่วมกัน",
+    "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
+    "startCollaboration": "เริ่มการทำงานร่วมกัน",
+    "endCollaboration": "สิ้นสุดการทำงานร่วมกัน",
+    "manageCollaboration": "จัดการการทำงานร่วมกัน",
+    "shareLinkHeader": "แชร์ลิงก์การทำงานร่วมกัน",
+    "copyLink": "คัดลอกลิงก์",
+    "collaboratorsHeader": "ผู้ร่วมงาน",
+    "changeRole": "เปลี่ยนบทบาท",
+    "makeOwner": "ทำให้เป็นเจ้าของ",
+    "makeWriter": "ทำให้เป็นผู้เขียน",
+    "makeReader": "ทำให้เป็นผู้อ่าน",
+    "removeUser": "ลบผู้ใช้",
+    "roles": {
+      "owner": "เจ้าของ",
+      "writer": "ผู้เขียน",
+      "reader": "ผู้อ่าน"
+    }
+  },
   "common": {
     "save": "บันทึก",
     "cancel": "ยกเลิก"
@@ -127,6 +147,9 @@
   },
   "threatModels": {
     "pageTitle": "แบบจำลองภัยคุกคาม",
+    "dashboard": "แดชบอร์ด",
+    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ",
+    "threatModelPrefix": "แบบจำลองภัยคุกคาม:",
     "lastModified": "แก้ไขล่าสุด: {{date}}",
     "noItemsMessage": "คุณยังไม่มีแบบจำลองภัยคุกคามใด ๆ",
     "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
@@ -144,6 +167,7 @@
     "diagramsCount": "แผนภาพ",
     "threatsCount": "ภัยคุกคาม",
     "idLabel": "รหัส:",
+    "createdBy": "สร้างโดย:",
     "metadataKey": "คีย์",
     "metadataValue": "ค่า",
     "permissions": "สิทธิ์การเข้าถึง",
@@ -170,6 +194,7 @@
   },
   "editor": {
     "pageTitle": "โปรแกรมแก้ไขแผนภาพการไหลของข้อมูล",
+    "diagramPrefix": "แผนภาพ:",
     "properties": {
       "title": "คุณสมบัติ",
       "help": "คุณสมบัติของสิ่งประกอบจะปรากฏที่นี่เมื่อเลือกสิ่งประกอบ"

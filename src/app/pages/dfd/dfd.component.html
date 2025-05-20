@@ -1,7 +1,10 @@
 <div class="dfd-container">
   <div class="title-row">
     <div class="title-container">
-      <h1 class="page-title">{{ diagramName || ('editor.pageTitle' | transloco) }}</h1>
+      <h1 class="page-title">
+        {{ 'editor.diagramPrefix' | transloco }}
+        {{ diagramName || ('editor.pageTitle' | transloco) }}
+      </h1>
     </div>
     <app-dfd-collaboration></app-dfd-collaboration>
   </div>

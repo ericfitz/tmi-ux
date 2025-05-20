@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../../../core/services/logger.service';
+import { AuthService } from '../../../auth/services/auth.service';
 
 /**
  * Represents a user in a collaboration session
@@ -31,7 +32,10 @@ export class DfdCollaborationService {
   // WebSocket connection
   private _webSocket: WebSocket | null = null;
 
-  constructor(private _logger: LoggerService) {
+  constructor(
+    private _logger: LoggerService,
+    private _authService: AuthService,
+  ) {
     this._logger.info('DfdCollaborationService initialized');
   }
 
@@ -52,7 +56,7 @@ export class DfdCollaborationService {
       // Add the current user as the owner
       const currentUser: CollaborationUser = {
         id: 'current-user',
-        name: 'Current User',
+        name: this._authService.username || 'Current User', // Use actual username or fallback
         role: 'owner',
         status: 'active',
       };

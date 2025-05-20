@@ -1,7 +1,11 @@
 <div class="tm-edit-container">
   <div class="header-row">
     <h1 class="page-title">
-      {{ isNewThreatModel ? ('threatModels.newThreatModel' | transloco) : threatModel?.name }}
+      {{
+        isNewThreatModel
+          ? ('threatModels.newThreatModel' | transloco)
+          : ('threatModels.threatModelPrefix' | transloco) + ' ' + threatModel?.name
+      }}
     </h1>
     <div class="header-actions">
       <button mat-button color="warn" (click)="cancel()">
@@ -28,30 +32,41 @@
       <mat-card-content>
         <!-- Threat Model ID and timestamps section -->
         <div class="info-section" *ngIf="threatModel && !isNewThreatModel" [dir]="currentDirection">
-          <div class="info-field">
-            <span class="info-label">{{ 'threatModels.idLabel' | transloco }}</span>
-            <span class="info-value">{{ threatModel.id }}</span>
-            <button
-              mat-icon-button
-              class="copy-button"
-              (click)="copyToClipboard(threatModel.id)"
-              matTooltip="{{ 'threatModels.copyToClipboard' | transloco }}"
-              [attr.aria-label]="'threatModels.copyToClipboard' | transloco"
-            >
-              <mat-icon>content_copy</mat-icon>
-            </button>
-          </div>
-          <div class="info-field dates-row">
-            <div class="date-field">
-              <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
-              <span class="info-value">{{
-                threatModel.created_at | date: 'short' : undefined : currentLocale
-              }}</span>
+          <!-- First row: ID and Created By -->
+          <div class="info-row">
+            <div class="info-field">
+              <span class="info-label">{{ 'threatModels.idLabel' | transloco }}</span>
+              <span class="info-value"
+                >{{ threatModel.id }}
+                <button
+                  mat-icon-button
+                  class="copy-button"
+                  (click)="copyToClipboard(threatModel.id)"
+                  matTooltip="{{ 'threatModels.copyToClipboard' | transloco }}"
+                  [attr.aria-label]="'threatModels.copyToClipboard' | transloco"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </span>
             </div>
-            <div class="date-field">
+            <div class="info-field">
+              <span class="info-label">{{ 'threatModels.createdBy' | transloco }}</span>
+              <span class="info-value">{{ threatModel.created_by }}</span>
+            </div>
+          </div>
+
+          <!-- Second row: Last Modified and Created (reversed order) -->
+          <div class="info-row">
+            <div class="info-field">
               <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
               <span class="info-value">{{
                 threatModel.modified_at | date: 'short' : undefined : currentLocale
+              }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
+              <span class="info-value">{{
+                threatModel.created_at | date: 'short' : undefined : currentLocale
               }}</span>
             </div>
           </div>

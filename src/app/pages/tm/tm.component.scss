@@ -17,6 +17,10 @@
   align-items: center;
   margin-bottom: 24px;
 
+  &.dashboard-title {
+    margin-bottom: 8px;
+  }
+
   button[mat-icon-button] {
     color: #555;
     display: flex;

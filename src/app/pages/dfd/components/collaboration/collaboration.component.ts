@@ -224,21 +224,5 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Get the role display name
-   * @param role The role
-   * @returns The display name for the role
-   */
-  getRoleDisplayName(role: 'owner' | 'writer' | 'reader'): string {
-    switch (role) {
-      case 'owner':
-        return 'Owner';
-      case 'writer':
-        return 'Writer';
-      case 'reader':
-        return 'Reader';
-      default:
-        return '';
-    }
-  }
+  // The getRoleDisplayName method is no longer needed as we're using translations
 }

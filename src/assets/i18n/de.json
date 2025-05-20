@@ -1,4 +1,24 @@
 {
+  "collaboration": {
+    "title": "Zusammenarbeit",
+    "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen",
+    "startCollaboration": "Zusammenarbeit starten",
+    "endCollaboration": "Zusammenarbeit beenden",
+    "manageCollaboration": "Zusammenarbeit verwalten",
+    "shareLinkHeader": "Kollaborationslink teilen",
+    "copyLink": "Link kopieren",
+    "collaboratorsHeader": "Mitarbeiter",
+    "changeRole": "Rolle ändern",
+    "makeOwner": "Zum Eigentümer machen",
+    "makeWriter": "Zum Bearbeiter machen",
+    "makeReader": "Zum Leser machen",
+    "removeUser": "Benutzer entfernen",
+    "roles": {
+      "owner": "Eigentümer",
+      "writer": "Bearbeiter",
+      "reader": "Leser"
+    }
+  },
   "common": {
     "save": "Speichern",
     "cancel": "Abbrechen"
@@ -124,6 +144,9 @@
   },
   "threatModels": {
     "pageTitle": "Bedrohungsmodelle",
+    "dashboard": "Dashboard",
+    "yourThreatModels": "Ihre Bedrohungsmodelle",
+    "threatModelPrefix": "Bedrohungsmodell:",
     "lastModified": "Zuletzt geändert: {{date}}",
     "noItemsMessage": "Sie haben noch keine Bedrohungsmodelle.",
     "createFirstButton": "Erstellen Sie Ihr erstes Bedrohungsmodell",
@@ -141,6 +164,7 @@
     "diagramsCount": "Diagramme",
     "threatsCount": "Bedrohungen",
     "idLabel": "ID:",
+    "createdBy": "Erstellt von:",
     "metadataKey": "Schlüssel",
     "metadataValue": "Wert",
     "permissions": "Berechtigungen",
@@ -167,6 +191,7 @@
   },
   "editor": {
     "pageTitle": "Datenflussdiagramm-Editor",
+    "diagramPrefix": "Diagramm:",
     "properties": {
       "title": "Eigenschaften",
       "help": "Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist."
