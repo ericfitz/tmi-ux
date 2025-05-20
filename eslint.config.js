@@ -76,7 +76,8 @@ export default [
       'dist/**/*',
       'node_modules/**/*',
       '.angular/**/*',
-      'src/testing/matchers/graph-matchers.d.ts'
+      'src/testing/matchers/graph-matchers.d.ts',
+      'vitest.config.ts'
     ],
   },
 ];

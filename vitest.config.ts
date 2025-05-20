@@ -8,6 +8,7 @@ export default defineConfig({
       '@app': resolve(__dirname, './src/app'),
       '@assets': resolve(__dirname, './src/assets'),
       '@environments': resolve(__dirname, './src/environments'),
+      '@testing': resolve(__dirname, './src/testing'),
     },
   },
   plugins: [
@@ -34,5 +35,8 @@ export default defineConfig({
         '**/environments/**',
       ],
     },
+    // Add these options for better Zone.js compatibility
+    isolate: false,
+    pool: 'forks', // Use 'forks' instead of 'threads' for better Zone.js compatibility
   },
 });

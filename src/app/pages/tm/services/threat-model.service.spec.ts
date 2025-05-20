@@ -1,6 +1,4 @@
-// Import Zone.js first
-import 'zone.js';
-import 'zone.js/testing';
+// Import Zone.js is handled by the test setup
 
 // Import Angular compiler
 import '@angular/compiler';
@@ -10,12 +8,10 @@ import { ThreatModelService } from './threat-model.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
 import { BehaviorSubject, of } from 'rxjs';
-import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest';
-import { getTestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Import testing utilities
+import { waitForAsync } from '../../../../testing/async-utils';
 
 // Import mock data directly from the mocks directory
 import { mockThreatModel1 } from '../../../mocks/instances/threat-model-1';
@@ -23,16 +19,7 @@ import { mockThreatModel2 } from '../../../mocks/instances/threat-model-2';
 import { mockThreatModel3 } from '../../../mocks/instances/threat-model-3';
 import { createMockThreatModel } from '../../../mocks/factories/threat-model.factory';
 
-// Initialize the Angular testing environment
-beforeAll(() => {
-  try {
-    getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-      teardown: { destroyAfterEach: true },
-    });
-  } catch (e) {
-    console.info('Angular testing environment already initialized: ', e);
-  }
-});
+// The Angular testing environment is initialized in src/testing/zone-setup.ts
 
 describe.only('ThreatModelService', () => {
   let service: ThreatModelService;
@@ -89,40 +76,31 @@ describe.only('ThreatModelService', () => {
       }
     });
 
-    it('should return mock threat models', async () => {
-      return new Promise<void>(resolve => {
-        service.getThreatModels().subscribe(threatModels => {
-          expect(threatModels.length).toBe(3);
-          expect(threatModels).toContain(mockThreatModel1);
-          expect(threatModels).toContain(mockThreatModel2);
-          expect(threatModels).toContain(mockThreatModel3);
-          resolve();
-        });
+    it('should return mock threat models', waitForAsync(() => {
+      service.getThreatModels().subscribe(threatModels => {
+        expect(threatModels.length).toBe(3);
+        expect(threatModels).toContain(mockThreatModel1);
+        expect(threatModels).toContain(mockThreatModel2);
+        expect(threatModels).toContain(mockThreatModel3);
       });
-    });
+    }));
 
-    it('should return a specific mock threat model by ID', async () => {
-      return new Promise<void>(resolve => {
-        service.getThreatModelById(mockThreatModel1.id).subscribe(threatModel => {
+    it('should return a specific mock threat model by ID', waitForAsync(() => {
+      service.getThreatModelById(mockThreatModel1.id).subscribe(threatModel => {
+        expect(threatModel).toBeDefined();
+        expect(threatModel?.id).toBe(mockThreatModel1.id);
+      });
+    }));
+
+    it('should create a new mock threat model', waitForAsync(() => {
+      service
+        .createThreatModel('New Test Threat Model', 'Created for testing')
+        .subscribe(threatModel => {
+          expect(mockDataService.createThreatModel).toHaveBeenCalled();
           expect(threatModel).toBeDefined();
-          expect(threatModel?.id).toBe(mockThreatModel1.id);
-          resolve();
+          expect(threatModel?.name).toBe('New Test Threat Model');
         });
-      });
-    });
-
-    it('should create a new mock threat model', async () => {
-      return new Promise<void>(resolve => {
-        service
-          .createThreatModel('New Test Threat Model', 'Created for testing')
-          .subscribe(threatModel => {
-            expect(mockDataService.createThreatModel).toHaveBeenCalled();
-            expect(threatModel).toBeDefined();
-            expect(threatModel?.name).toBe('New Test Threat Model');
-            resolve();
-          });
-      });
-    });
+    }));
   });
 
   describe('with mock data disabled', () => {
@@ -134,15 +112,12 @@ describe.only('ThreatModelService', () => {
     });
 
     // Add at least one test to avoid the "No test found in suite" error
-    it('should handle API calls when mock data is disabled', async () => {
+    it('should handle API calls when mock data is disabled', waitForAsync(() => {
       // Disable mock data
       (mockDataService.useMockData$ as BehaviorSubject<boolean>).next(false);
 
       // This is a placeholder test
       expect(true).toBe(true);
-
-      // Return a resolved promise to complete the test
-      return Promise.resolve();
-    });
+    }));
   });
 });
