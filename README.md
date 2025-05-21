@@ -2,15 +2,26 @@
 
 Angular-based user interface for the TMI application.
 
-## Overview
+## Overview & Benefits
 
-TMI (Threat Modeling Improved) is a server based web application enabling collaborative threat modeling with support for:
+TMI (Threat Modeling Improved) is a server based threat modeling web application.
 
-- Real-time collaborative diagram editing via WebSockets
+- TMI makes threat modeling **easier and more accurate** with real-time colloboration
+- TMI makes threat modeling **faster and less toilsome** with agent-driven or agent-assisted threat model creation
+- TMI uses **your workflows** - it fits into your existing security tool chains
+
+## Features
+
+- Full REST API - threat models and their associated data flow diagrams (DFDs) and threats are human- and machine-readable and editable
+- Threats, threat models, diagrams and objects can be extended with arbitrary key-value metadata
+- Real-time collaborative diagram editing
 - Role-based access control (reader, writer, owner)
 - OAuth authentication with JWT
-- RESTful API with OpenAPI 3.0 specification
-- MCP integration (planned)
+- OpenAPI 3.0 specification
+- Supports multiple threat model frameworks (STRIDE, CIA, etc.)
+- Supports integration with issue tracking systems
+- Apache licensed for customizability
+- LLM & agentic functionality will be a separate component under a different license
 
 The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
 
@@ -19,13 +30,13 @@ The associated back-end server, written in Go, is called [TMI](https://github.co
 1. [Demo 2025-05-16](https://youtu.be/ikTxE0xJL1w) Shows localization, basic functionality
 2. [Demo 2025-05-20](https://youtu.be/quOBYdKNx2E) Shows detailed threat editing
 
-**Note:** Documentation about architecture, implementation plans, and development guidelines can be found in the [context](./context) directory.
+**Note:** Documentation about architecture, implementation plans, and development guidelines can be found in the [context](./context) and [docs](./docs) directories. Authorization details are documented in [AUTHORIZATION.md](./docs/AUTHORIZATION.md) and collaborative editing information in [COLLABORATIVE_EDITING.md](./docs/COLLABORATIVE_EDITING.md).
 
 ## Development
 
 ### Prerequisites
 
-- Node.js (see `.nvmrc` for version)
+- Node.js (latest LTS version recommended)
 - pnpm
 
 ### Setup
@@ -54,6 +65,7 @@ The application supports multiple environment configurations:
    pnpm run dev:staging  # Uses environment.staging.ts file
    pnpm run dev:test     # Uses environment.test.ts file
    pnpm run dev:prod     # Uses environment.prod.ts file
+   pnpm run dev:local    # Uses environment.local.ts file
    ```
 
 3. **Custom Configuration with Environment Variables**
@@ -76,6 +88,7 @@ Environment files are located in `src/environments/`. The application uses:
 
 - `environment.ts` - Default development environment
 - `environment.dev.ts` - Development environment (when configured)
+- `environment.local.ts` - Local development environment
 - `environment.prod.ts` - Production environment
 - `environment.staging.ts` - Staging environment
 - `environment.test.ts` - Test environment
@@ -141,7 +154,7 @@ pnpm run check
 
 ## Testing
 
-The project uses Vitest with the AnalogJS Vite plugin for Angular testing. This provides faster test execution, better developer experience, and improved integration with the Vite build system.
+The project uses Vitest with the AnalogJS Vite plugin for Angular testing. This provides faster test execution, better developer experience, and improved integration with the Vite build system. Cypress is used for end-to-end and component testing.
 
 ```bash
 # Run all tests
@@ -160,13 +173,27 @@ pnpm run test:coverage
 pnpm run test:component
 # or specify any test file
 vitest run "src/app/path/to/file.spec.ts"
+
+# Run end-to-end tests
+pnpm run test:e2e
+
+# Run end-to-end tests with UI
+pnpm run test:e2e:open
+
+# Run component tests with Cypress
+pnpm run test:e2e:component
+
+# Run component tests with Cypress UI
+pnpm run test:e2e:component:open
 ```
 
 ### Test Strategy
 
-- **Unit Tests**: All components, services, and utilities should have unit tests
+- **Unit Tests**: All components, services, and utilities should have unit tests (Vitest)
 - **Integration Tests**: Key component interactions should be tested
-- **Test Environment**: Tests run in a JSDOM environment
+- **Component Tests**: UI components are tested with Cypress component testing
+- **End-to-End Tests**: Critical user flows are tested with Cypress
+- **Test Environment**: Unit tests run in a JSDOM environment (confirmed in vitest.config.ts)
 - **Coverage Reporting**: Coverage reports are generated in both text and HTML formats
 
 ### Focusing Tests
