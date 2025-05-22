@@ -11,4 +11,10 @@ export const environment: Environment = {
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Staging)',
   operatorContact: 'contact@example.com',
+  oauth: {
+    google: {
+      clientId: 'STAGING_GOOGLE_CLIENT_ID', // Staging client ID
+      redirectUri: 'https://staging.example.com/auth/callback',
+    },
+  },
 };

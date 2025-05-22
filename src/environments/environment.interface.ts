@@ -83,4 +83,27 @@ export interface Environment {
    * Default: system hostname
    */
   tlsSubjectName?: string;
+
+  /**
+   * OAuth configuration for authentication providers
+   * Contains settings for each supported OAuth provider
+   */
+  oauth?: {
+    /**
+     * Google OAuth configuration
+     */
+    google?: {
+      /**
+       * Google OAuth client ID
+       * Obtained from Google Cloud Console
+       */
+      clientId: string;
+
+      /**
+       * Redirect URI for OAuth callback
+       * Must match one of the authorized redirect URIs in Google Cloud Console
+       */
+      redirectUri: string;
+    };
+  };
 }

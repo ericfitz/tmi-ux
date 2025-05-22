@@ -14,4 +14,10 @@ export const environment: Environment = {
   serverPort: 4200,
   serverInterface: '0.0.0.0',
   enableTLS: false,
+  oauth: {
+    google: {
+      clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual Google OAuth client ID
+      redirectUri: 'http://localhost:4200/auth/callback',
+    },
+  },
 };

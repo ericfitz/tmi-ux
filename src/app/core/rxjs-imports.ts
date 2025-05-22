@@ -12,6 +12,7 @@ export { of } from 'rxjs/internal/observable/of';
 export { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 export { from } from 'rxjs/internal/observable/from';
 export { fromEvent } from 'rxjs/internal/observable/fromEvent';
+export { interval } from 'rxjs/internal/observable/interval';
 
 // Operators
 export { map } from 'rxjs/internal/operators/map';
@@ -29,5 +30,6 @@ export { startWith } from 'rxjs/internal/operators/startWith';
 export { delay } from 'rxjs/internal/operators/delay';
 export { retry } from 'rxjs/internal/operators/retry';
 export { share } from 'rxjs/internal/operators/share';
+export { throwError } from 'rxjs/internal/observable/throwError';
 
 // Add more operators as needed
