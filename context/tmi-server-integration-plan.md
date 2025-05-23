@@ -301,7 +301,9 @@ export class JwtInterceptor implements HttpInterceptor {
 }
 ```
 
-#### Task 2.3: Create Session Manager Service
+#### Task 2.3: Create Session Manager Service - **Complete**
+
+The `SessionManagerService` (`src/app/auth/services/session-manager.service.ts`) has been implemented with session monitoring, token expiration checks, and warning mechanisms. The `handleSessionTimeout` and `extendSession` methods are present, and the service now integrates with the `ReauthDialogComponent` to show re-authentication prompts.
 
 ```typescript
 // src/app/auth/services/session-manager.service.ts
@@ -343,7 +345,9 @@ export class SessionManagerService {
 }
 ```
 
-#### Task 2.4: Create Re-authentication Dialog Component
+#### Task 2.4: Create Re-authentication Dialog Component - **Complete**
+
+The `ReauthDialogComponent` (`src/app/auth/components/reauth-dialog/reauth-dialog.component.ts`) has been created along with its HTML and SCSS files. It is now integrated with the `SessionManagerService` to handle re-authentication prompts.
 
 ```typescript
 // src/app/auth/components/reauth-dialog/reauth-dialog.component.ts
@@ -397,7 +401,9 @@ export class ReauthDialogComponent {
 
 ### Phase 3: Authentication UI Components
 
-#### Task 3.1: Create Login Component
+#### Task 3.1: Create Login Component - **Complete**
+
+The `LoginComponent` (`src/app/auth/components/login/login.component.ts`) has been created along with its HTML and SCSS files. It is now responsible for initiating the Google OAuth login flow and handling the callback, including error handling and navigation.
 
 ```typescript
 // src/app/auth/components/login/login.component.ts
@@ -435,7 +441,9 @@ export class LoginComponent implements OnInit {
 }
 ```
 
-#### Task 3.2: Update Navigation Components
+#### Task 3.2: Update Navigation Components - **Complete**
+
+The `AppComponent` (`src/app/app.component.ts`) has been updated to subscribe to the authentication state and user profile, and includes the logout functionality. This ensures the UI dynamically reflects the user's authentication status.
 
 ```typescript
 // src/app/app.component.ts
@@ -477,7 +485,9 @@ export class AppComponent implements OnInit {
 
 ### Phase 4: Authorization Implementation
 
-#### Task 4.1: Update Auth Guards
+#### Task 4.1: Update Auth Guards - **Complete**
+
+The `authGuard` (`src/app/auth/guards/auth.guard.ts`) has been updated to properly check the authentication status using the `AuthService` and redirect to the login page if the user is not authenticated.
 
 ```typescript
 // src/app/auth/guards/auth.guard.ts
@@ -501,7 +511,9 @@ export const authGuard: CanActivateFn = (route, state) => {
 };
 ```
 
-#### Task 4.2: Create Role Guard
+#### Task 4.2: Create Role Guard - **Complete**
+
+The `roleGuard` (`src/app/auth/guards/role.guard.ts`) has been created and implements role-based access control, ensuring that users can only access resources for which they have the necessary permissions.
 
 ```typescript
 // src/app/auth/guards/role.guard.ts
@@ -527,7 +539,9 @@ export const roleGuard: CanActivateFn = (route, state) => {
 };
 ```
 
-#### Task 4.3: Update API Service
+#### Task 4.3: Update API Service - **Complete**
+
+The `ApiService` (`src/app/core/services/api.service.ts`) has been updated to specifically handle 401 Unauthorized and 403 Forbidden authorization errors, redirecting users to the login or unauthorized pages as appropriate.
 
 ```typescript
 // src/app/core/services/api.service.ts
@@ -577,7 +591,9 @@ export class ApiService {
 }
 ```
 
-#### Task 4.4: Create Unauthorized Component
+#### Task 4.4: Create Unauthorized Component - **Complete**
+
+The `UnauthorizedComponent` (`src/app/auth/components/unauthorized/unauthorized.component.ts`) has been created along with its HTML and SCSS files. This component is now available to display a user-friendly message when a user attempts to access a resource without the necessary authorization.
 
 ```typescript
 // src/app/auth/components/unauthorized/unauthorized.component.ts

@@ -1,21 +1,30 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { LoggerService } from '../../core/services/logger.service';
+import { map, take } from 'rxjs';
 
-export const authGuard: CanActivateFn = (_route, _state) => {
-  // For development: always allow access
-  return true;
-
-  /*
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
   const router = inject(Router);
+  const logger = inject(LoggerService);
 
-  // Check for authentication - using localStorage for demo
-  // In a real app, would use a full AuthService with JWT validation
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
-  if (!isAuthenticated) {
-    void router.navigate(['/']);
-    return false;
-  }
-
-  return true;
-  */
+  return authService.isAuthenticated$.pipe(
+    take(1),
+    map(isAuthenticated => {
+      if (isAuthenticated) {
+        logger.debug('User is authenticated, allowing access');
+        return true;
+      } else {
+        logger.debug('User is not authenticated, redirecting to login page');
+        void router.navigate(['/login'], {
+          queryParams: {
+            returnUrl: state.url,
+            reason: 'session_expired',
+          },
+        });
+        return false;
+      }
+    }),
+  );
 };

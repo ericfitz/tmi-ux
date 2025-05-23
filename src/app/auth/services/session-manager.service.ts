@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subject, Subscription, interval, of } from '../../core/rxjs-imports';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { Observable, Subject, Subscription, interval, of, take } from '../../core/rxjs-imports';
+import { ReauthDialogComponent } from '../components/reauth-dialog/reauth-dialog.component';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthService } from './auth.service';
@@ -147,9 +148,23 @@ export class SessionManagerService {
     // Emit warning event
     this.sessionTimeoutWarning$.next(minutesLeft);
 
-    // TODO: In a real implementation, we would show a dialog or notification here
-    // For now, we'll just log a message
-    this.logger.warn(`Your session will expire in ${minutesLeft} minutes. Please save your work.`);
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true; // Prevent closing by clicking outside or pressing ESC
+    dialogConfig.autoFocus = true; // Focus the first focusable element
+    dialogConfig.data = { reason: 'timeout_warning', minutesLeft };
+
+    const dialogRef = this.dialog.open(ReauthDialogComponent, dialogConfig);
+
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe(result => {
+        if (result === true) {
+          this.extendSession();
+        } else {
+          this.authService.logout();
+        }
+      });
   }
 
   /**
@@ -165,9 +180,21 @@ export class SessionManagerService {
     // Log out the user
     this.authService.logout();
 
-    // TODO: In a real implementation, we would show a dialog explaining the session timeout
-    // For now, we'll just log a message
-    this.logger.warn('Your session has expired. Please log in again.');
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = { reason: 'session_expired' };
+
+    const dialogRef = this.dialog.open(ReauthDialogComponent, dialogConfig);
+
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe(result => {
+        if (result !== true) {
+          this.authService.logout();
+        }
+      });
   }
 
   /**

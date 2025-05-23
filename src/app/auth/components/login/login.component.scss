@@ -1,0 +1,29 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px - 64px); /* Full viewport height minus header/footer */
+  background-color: var(--mat-app-background-color);
+}
+
+.login-card {
+  width: 400px;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-message {
+  color: var(--mat-form-field-error-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+
+  mat-icon {
+    margin-right: 5px;
+  }
+}
+
+mat-spinner {
+  margin-left: 10px;
+}

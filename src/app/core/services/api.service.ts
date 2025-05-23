@@ -2,9 +2,11 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../auth/services/auth.service';
 
 /**
  * Service for making API requests
@@ -19,6 +21,8 @@ export class ApiService {
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
+    private router: Router,
+    private authService: AuthService,
   ) {
     this.logger.info(`API Service initialized with endpoint: ${this.apiUrl}`);
   }
@@ -97,6 +101,20 @@ export class ApiService {
       // Server-side error
       errorMessage = `Server Error: ${error.status} ${error.statusText} for ${method} ${endpoint}`;
       this.logger.error(errorMessage, error);
+
+      // Handle authorization errors
+      if (error.status === 401) {
+        this.logger.warn('API returned 401 Unauthorized. Redirecting to login.');
+        this.authService.logout(); // Clear session
+        void this.router.navigate(['/login'], {
+          queryParams: { returnUrl: this.router.url, reason: 'unauthorized_api' },
+        });
+      } else if (error.status === 403) {
+        this.logger.warn('API returned 403 Forbidden. Redirecting to unauthorized page.');
+        void this.router.navigate(['/unauthorized'], {
+          queryParams: { currentUrl: this.router.url, reason: 'forbidden_api' },
+        });
+      }
 
       // Log more details in debug mode
       this.logger.debug('Full error response', error);
