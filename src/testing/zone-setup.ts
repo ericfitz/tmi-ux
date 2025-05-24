@@ -4,7 +4,10 @@
  */
 
 import 'zone.js';
-import 'zone.js/testing';
+import 'zone.js/testing'; // Standard import for Zone.js testing bundle
+import 'zone.js/dist/zone-patch-rxjs'; // Patch for RxJS operators
+import 'zone.js/dist/zone-patch-rxjs-interop'; // Patch for RxJS interop
+
 import { TestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
@@ -12,10 +15,6 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 // Initialize the Angular testing environment
-try {
-  TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
-    teardown: { destroyAfterEach: true },
-  });
-} catch (e) {
-  console.info('Angular testing environment already initialized: ', e);
-}
+TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
+  teardown: { destroyAfterEach: true },
+});

@@ -21,7 +21,7 @@ import { createMockThreatModel } from '../../../mocks/factories/threat-model.fac
 
 // The Angular testing environment is initialized in src/testing/zone-setup.ts
 
-describe.only('ThreatModelService', () => {
+describe('ThreatModelService', () => {
   let service: ThreatModelService;
   let mockDataService: MockDataService;
   let loggerService: LoggerService;
