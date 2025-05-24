@@ -8,9 +8,28 @@ import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { JwtToken, UserProfile, OAuthResponse, AuthError, UserRole } from '../models/auth.models';
-import { environment } from '../../../environments/environment';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
+
+// Mock the environment module
+vi.mock('../../../environments/environment', () => ({
+  environment: {
+    production: false,
+    logLevel: 'DEBUG',
+    apiUrl: 'http://localhost:8080',
+    authTokenExpiryMinutes: 60,
+    operatorName: 'TMI Operator (Test)',
+    operatorContact: 'test@example.com',
+    oauth: {
+      google: {
+        clientId: 'test-client-id',
+        redirectUri: 'http://localhost:4200/auth/callback',
+      },
+    },
+  },
+}));
+
+import { environment } from '../../../environments/environment';
 
 // Mock interfaces for type safety
 interface MockLoggerService {
@@ -253,23 +272,43 @@ describe('AuthService', () => {
     });
 
     it('should handle missing OAuth configuration', () => {
-      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-      // Temporarily mock environment to have no OAuth config for this test
-      const environmentSpy = vi.spyOn(environment, 'oauth', 'get');
-      environmentSpy.mockReturnValue(undefined);
+      // Temporarily remove OAuth config from environment
+      const originalOAuth = environment.oauth;
+      Object.defineProperty(environment, 'oauth', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
-      service.loginWithGoogle();
+      // Create a new service instance with the modified environment
+      const serviceWithoutOAuth = new AuthService(
+        router as unknown as Router,
+        httpClient,
+        loggerService as unknown as LoggerService,
+      );
+
+      const handleAuthErrorSpy = vi.spyOn(serviceWithoutOAuth, 'handleAuthError');
+
+      serviceWithoutOAuth.loginWithGoogle();
 
       expect(handleAuthErrorSpy).toHaveBeenCalledWith({
         code: 'config_error',
         message: 'Google OAuth configuration is missing',
         retryable: false,
       });
-      environmentSpy.mockRestore(); // Restore original environment.oauth
+
+      // Restore original OAuth config
+      Object.defineProperty(environment, 'oauth', {
+        value: originalOAuth,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('should handle errors during OAuth initialization', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+
+      // Make crypto throw an error
       cryptoMock.getRandomValues.mockImplementation(() => {
         throw new Error('Crypto error');
       });
