@@ -10,7 +10,7 @@ import { LoggerService } from '../../core/services/logger.service';
 import { JwtToken, UserProfile, OAuthResponse, AuthError, UserRole } from '../models/auth.models';
 import { environment } from '../../../environments/environment';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 // Mock interfaces for type safety
 interface MockLoggerService {
@@ -109,7 +109,7 @@ describe('AuthService', () => {
       navigate: vi.fn().mockResolvedValue(true) as ReturnType<typeof vi.fn>,
     };
 
-    // Create a simple mock for HttpClient
+    // Create a properly typed mock for HttpClient
     httpClient = {
       get: vi.fn().mockReturnValue(of([])),
       post: vi.fn().mockReturnValue(of({})),
@@ -192,7 +192,6 @@ describe('AuthService', () => {
       expect(service.userEmail).toBe('');
     });
 
-    /*
     it('should restore authentication state from localStorage', () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') {
@@ -239,10 +238,8 @@ describe('AuthService', () => {
         expect.any(Error),
       );
     });
-    */
   }); /* End of Service Initialization describe block */
 
-  /*
   describe('Google OAuth Login', () => {
     it('should initiate Google OAuth login flow', () => {
       service.loginWithGoogle();
@@ -289,10 +286,8 @@ describe('AuthService', () => {
         expect.any(Error),
       );
     });
-  });
-  */ /* End of Google OAuth Login describe block */
+  }); /* End of Google OAuth Login describe block */
 
-  /*
   describe('OAuth Callback Handling', () => {
     beforeEach(() => {
       localStorageMock.getItem.mockReturnValue('mock-state-value');
@@ -301,19 +296,17 @@ describe('AuthService', () => {
     it('should handle successful authentication', () => {
       const tokenResponse = { token: mockJwtToken.token, expires_in: 3600 };
 
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+      // Mock the HTTP post method
+      vi.mocked(httpClient.post).mockReturnValue(of(tokenResponse));
 
-      // Mock the HTTP request
-      const req = httpMock.expectOne(`${environment.apiUrl}/auth/token`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({
-        code: 'mock-auth-code',
-        redirect_uri: environment.oauth?.google?.redirectUri,
-      });
-      req.flush(tokenResponse);
+      const result$ = service.handleOAuthCallback(mockOAuthResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(true);
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/token`, {
+          code: 'mock-auth-code',
+          redirect_uri: environment.oauth?.google?.redirectUri,
+        });
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile).toEqual(
           expect.objectContaining({
@@ -347,10 +340,10 @@ describe('AuthService', () => {
     it('should handle failed authentication due to token exchange error', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+      // Mock the HTTP post method to throw an error
+      vi.mocked(httpClient.post).mockReturnValue(throwError(() => new Error('Network error')));
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/auth/token`);
-      req.error(new ErrorEvent('Network error'));
+      const result$ = service.handleOAuthCallback(mockOAuthResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(false);
@@ -365,10 +358,8 @@ describe('AuthService', () => {
         );
       });
     });
-  });
-  */ /* End of OAuth Callback Handling describe block */
+  }); /* End of OAuth Callback Handling describe block */
 
-  /*
   describe('Token Management', () => {
     it('should store and retrieve tokens correctly using demoLogin', () => {
       const testEmail = 'demo.user@example.com';
@@ -421,23 +412,20 @@ describe('AuthService', () => {
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
 
+      // Mock the HTTP post method for logout
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
       service.logout();
 
-      // Verify HTTP request to logout endpoint
-      const req = httpMock.expectOne(`${environment.apiUrl}/auth/logout`);
-      expect(req.request.method).toBe('POST');
-      req.flush({});
-
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {});
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_profile');
       expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
-  });
-  */ /* End of Token Management describe block */
+  }); /* End of Token Management describe block */
 
-  /*
   describe('Authentication State Management', () => {
     it('should emit authentication state changes', () => {
       const authStates: boolean[] = [];
@@ -481,15 +469,13 @@ describe('AuthService', () => {
       // Simulate login
       service['userProfileSubject'].next(mockUserProfile);
       expect(usernames[1]).toBe('Test User');
-      
+
       // Simulate logout
       service['userProfileSubject'].next(null);
       expect(usernames[2]).toBe('');
     });
-  });
-  */ /* End of Authentication State Management describe block */
+  }); /* End of Authentication State Management describe block */
 
-  /*
   describe('Role-based Authorization', () => {
     it('should return true for any role when authenticated', () => {
       service['isAuthenticatedSubject'].next(true);
@@ -506,6 +492,5 @@ describe('AuthService', () => {
       expect(service.hasRole(UserRole.Writer)).toBe(false);
       expect(service.hasRole(UserRole.Reader)).toBe(false);
     });
-  });
-  */ /* End of Role-based Authorization describe block */
+  }); /* End of Role-based Authorization describe block */
 });

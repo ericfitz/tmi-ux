@@ -83,11 +83,12 @@ export class LoginComponent implements OnInit {
           });
         }
       },
-      error: err => {
+      error: (err: unknown) => {
         this.isLoading = false;
         const authError: AuthError = {
           code: 'oauth_error',
-          message: err.message || 'An unexpected error occurred during OAuth.',
+          message:
+            err instanceof Error ? err.message : 'An unexpected error occurred during OAuth.',
           retryable: true,
         };
         this.authService.handleAuthError(authError); // Propagate error through auth service
