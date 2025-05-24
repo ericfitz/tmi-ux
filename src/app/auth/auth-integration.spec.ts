@@ -25,15 +25,15 @@ interface MockLoggerService {
 }
 
 interface MockRouter {
-  navigate: ReturnType<typeof vi.fn>;
+  navigate: ReturnType<typeof vi.fn<[string[]], Promise<boolean>>>;
   url: string;
 }
 
 interface MockStorage {
-  getItem: ReturnType<typeof vi.fn>;
-  setItem: ReturnType<typeof vi.fn>;
-  removeItem: ReturnType<typeof vi.fn>;
-  clear: ReturnType<typeof vi.fn>;
+  getItem: ReturnType<typeof vi.fn<[string], string | null>>;
+  setItem: ReturnType<typeof vi.fn<[string, string], void>>;
+  removeItem: ReturnType<typeof vi.fn<[string], void>>;
+  clear: ReturnType<typeof vi.fn<[], void>>;
 }
 
 /**
@@ -60,7 +60,7 @@ describe('Authentication Integration', () => {
     };
 
     router = {
-      navigate: vi.fn().mockResolvedValue(true),
+      navigate: vi.fn<[string[]], Promise<boolean>>().mockResolvedValue(true),
       url: '/test',
     };
 
@@ -72,10 +72,10 @@ describe('Authentication Integration', () => {
     } as unknown as HttpClient;
 
     localStorageMock = {
-      getItem: vi.fn().mockReturnValue(null),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
-      clear: vi.fn(),
+      getItem: vi.fn<[string], string | null>().mockReturnValue(null),
+      setItem: vi.fn<[string, string], void>(),
+      removeItem: vi.fn<[string], void>(),
+      clear: vi.fn<[], void>(),
     };
 
     // Mock global localStorage
