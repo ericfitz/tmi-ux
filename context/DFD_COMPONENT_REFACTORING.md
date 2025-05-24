@@ -6,11 +6,18 @@ This document outlines the plan for refactoring the DFD component to simplify ev
 
 - Multiple users will be editing the diagram simultaneously
 - Some users will be viewing only, others will be editing
-- Automation will be able to generate and collaborate on diagrams
-- Shapes and styles will be fixed, with styles managed in CSS
-- Need to monitor user-made changes (not automatic style changes)
-- Need to serialize changes and send them to the server
-- Need to consume a stream of changes from the server and apply them locally
+- The TMI server will coordinate collaboration
+  - Users will each only have a session (authenticated websocket) with the TMI server
+  - The TMI server will receive updates and fan them out to each user in a session
+  - The TMI server will be authoritative for diagram state
+- Automation will be able to generate and collaborate on diagrams via TMI server API
+- Shapes and styles will be fixed in advance, with styles managed in CSS, to allow us to omit style information from collaboration messaging
+- TMI-UX will
+  - Implement UX for diagram management
+  - Implement UX for colloboration session management
+  - Monitor user-made changes (not automatic style changes)
+  - Serialize changes and send them to the server
+  - Consume a stream of changes from the server and apply them locally
 
 ## Implementation Plan
 
@@ -37,7 +44,7 @@ This document outlines the plan for refactoring the DFD component to simplify ev
 
 1. **Implement Collaboration Service**
 
-   - Create service for handling WebSocket connections
+   - Create service for handling WebSocket connections with the TMI server
    - Implement message serialization/deserialization
    - Add authentication and authorization
 
