@@ -1,4 +1,4 @@
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import {
   ApplicationConfig,
   provideZoneChangeDetection,
@@ -10,6 +10,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
+import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -34,5 +35,11 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     // Add Transloco root module
     importProvidersFrom(TranslocoRootModule),
+    // Register JWT Interceptor
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true,
+    },
   ],
 };

@@ -13,6 +13,27 @@ export const routes: Routes = [
     canActivate: [homeGuard],
   },
   {
+    path: 'login',
+    loadComponent: () =>
+      import(/* webpackChunkName: "login" */ './auth/components/login/login.component').then(
+        c => c.LoginComponent,
+      ),
+  },
+  {
+    path: 'auth/callback',
+    loadComponent: () =>
+      import(/* webpackChunkName: "login" */ './auth/components/login/login.component').then(
+        c => c.LoginComponent,
+      ),
+  },
+  {
+    path: 'unauthorized',
+    loadComponent: () =>
+      import(
+        /* webpackChunkName: "unauthorized" */ './auth/components/unauthorized/unauthorized.component'
+      ).then(c => c.UnauthorizedComponent),
+  },
+  {
     path: 'about',
     loadComponent: () =>
       import(/* webpackChunkName: "about" */ './pages/about/about.component').then(
