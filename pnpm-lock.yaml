@@ -106,8 +106,8 @@ importers:
         specifier: ^19.2.12
         version: 19.2.12(@angular/compiler-cli@19.2.10(@angular/compiler@19.2.10)(typescript@5.8.3))(@angular/compiler@19.2.10)(@types/node@22.15.19)(chokidar@4.0.3)(jest@29.7.0(@types/node@22.15.19))(jiti@1.21.7)(typescript@5.8.3)(vite@6.2.7(@types/node@22.15.19)(jiti@1.21.7)(less@4.2.2)(sass@1.85.0)(terser@5.39.0)(yaml@2.8.0))(yaml@2.8.0)
       '@angular-eslint/builder':
-        specifier: ^19.4.0
-        version: 19.4.0(chokidar@4.0.3)(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)
+        specifier: ^19.5.0
+        version: 19.5.0(chokidar@4.0.3)(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)
       '@angular-eslint/eslint-plugin':
         specifier: ^19.4.0
         version: 19.4.0(@typescript-eslint/utils@8.32.1(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3))(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)
@@ -333,6 +333,12 @@ packages:
 
   '@angular-eslint/builder@19.4.0':
     resolution: {integrity: sha512-+mI/YwXiT+IPRNuTNrQqOm97iqbPM5Zc4fxR3p9N1xj1dxLyXJrtGXbbWJPK6i74ON7KdpkY3WLhMKnhWM4RzQ==}
+    peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
+
+  '@angular-eslint/builder@19.5.0':
+    resolution: {integrity: sha512-alYhEnZcA4RMfgC8AMMl29q77KhvfH9D0x80UPgd0XBUua94iYJky/Ng/LKq7gcIDWPRvEYCd5Tbmk4xfsmJVw==}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
@@ -7261,8 +7267,17 @@ snapshots:
 
   '@angular-eslint/builder@19.4.0(chokidar@4.0.3)(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)':
     dependencies:
-      '@angular-devkit/architect': 0.1902.12(chokidar@4.0.3)
-      '@angular-devkit/core': 19.2.12(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.1902.13(chokidar@4.0.3)
+      '@angular-devkit/core': 19.2.13(chokidar@4.0.3)
+      eslint: 9.26.0(jiti@1.21.7)
+      typescript: 5.8.3
+    transitivePeerDependencies:
+      - chokidar
+
+  '@angular-eslint/builder@19.5.0(chokidar@4.0.3)(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)':
+    dependencies:
+      '@angular-devkit/architect': 0.1902.13(chokidar@4.0.3)
+      '@angular-devkit/core': 19.2.13(chokidar@4.0.3)
       eslint: 9.26.0(jiti@1.21.7)
       typescript: 5.8.3
     transitivePeerDependencies:
