@@ -1,6 +1,12 @@
-// Import Zone.js is handled by the test setup
+/*
+ * unit test for auth integration with tmi server
+ *
+ * additional context:
+ *     run this test only: pnpm run test "src/app/auth/auth-integration.spec.ts"
+ *     unit tests only use vitest syntax; no jasmine or jest
+ *     do not disable or skip failing tests, ask the user what to do
+ */
 
-// Import Angular compiler
 import '@angular/compiler';
 
 import { HttpClient } from '@angular/common/http';

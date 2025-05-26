@@ -1,6 +1,11 @@
-// Import Zone.js is handled by the test setup
-
-// Import Angular compiler
+/*
+ * unit test for auth service
+ *
+ * additional context:
+ *     run this test only: pnpm run test "src/app/auth/services/auth.service.spec.ts"
+ *     unit tests only use vitest syntax; no jasmine or jest
+ *     do not disable or skip failing tests, ask the user what to do
+ */
 import '@angular/compiler';
 
 import { HttpClient } from '@angular/common/http';
