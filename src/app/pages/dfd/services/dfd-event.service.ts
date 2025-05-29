@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Cell, Edge } from '@antv/x6';
-import { NodeView } from '@antv/x6/lib/view/node';
 import { History } from '@antv/x6-plugin-history';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 import { LoggerService } from '../../../core/services/logger.service';
