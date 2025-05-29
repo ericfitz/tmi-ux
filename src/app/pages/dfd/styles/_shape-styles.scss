@@ -111,23 +111,22 @@ svg text[font-family] {
 }
 
 // Port visibility rules
-.x6-port-body {
-  visibility: hidden;
-  opacity: 0;
+// Port visibility rules
+// Hide all ports by default with high specificity
+.x6-graph .x6-node .x6-port-body {
   stroke: #000;
   fill: #fff;
+  transition:
+    visibility 0.1s ease-in-out,
+    opacity 0.1s ease-in-out;
 }
 
 // Show ports on hover or when connected
-.x6-port-body.port-visible,
-.x6-port-body.port-connected,
-.x6-graph .x6-port-body.port-connected,
-.x6-graph .x6-node:hover .x6-port-body,
-.x6-graph g[data-shape='circle']:hover .x6-port-body,
-.x6-graph g[data-cell-id]:hover .x6-port-body {
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
+.x6-graph .x6-node.is-hovered .x6-port-body, /* Show on node hover */
+.x6-graph .x6-node .x6-port-body.port-visible, /* Show when port-visible class is applied */
+.x6-graph .x6-node .x6-port-body.port-connected /* Show when port is connected */ {
+  display: block; /* Ensure it's block for layout */
+  pointer-events: all; /* Ensure it's clickable when visible */
 }
 
 // Node states

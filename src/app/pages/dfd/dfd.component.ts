@@ -160,6 +160,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Initialize the graph after the view is fully initialized
     this.initializeGraph();
+
+    // Ensure Roboto Condensed font is loaded
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href =
+      'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap';
+    document.head.appendChild(fontLink);
   }
 
   ngOnDestroy(): void {
@@ -460,7 +467,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const selectedNode = this.stateStore.selectedNode;
     if (selectedNode) {
       this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
-
       // Use command service to delete node with command pattern
       this.commandService
         .deleteNode(selectedNode.id)
@@ -468,7 +474,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .subscribe(result => {
           if (result.success) {
             this.logger.info('Node deleted successfully', { nodeId: selectedNode.id });
-
             // Selection is updated in the command service already
             this.cdr.markForCheck();
           } else {

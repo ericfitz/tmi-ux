@@ -64,9 +64,15 @@
 }
 
 // Font styles for graph elements
-tspan.v-line {
+// Apply to all SVG text elements within the graph with high specificity
+.x6-graph svg text,
+.x6-graph svg tspan,
+.x6-graph svg text.label,
+.x6-graph svg text.dfd-label,
+.x6-graph svg tspan.v-line {
   font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
+  fill: #333; /* Ensure text color is consistent */
 }
 
 // Edge styles - consolidated

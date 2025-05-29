@@ -101,7 +101,6 @@ export class PortUtils {
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
               pointerEvents: 'none',
-              visibility: 'hidden', // Hide the text by default
             },
           },
         },
@@ -122,7 +121,6 @@ export class PortUtils {
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
               pointerEvents: 'none',
-              visibility: 'hidden', // Hide the text by default
             },
           },
         },
@@ -143,7 +141,6 @@ export class PortUtils {
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
               pointerEvents: 'none',
-              visibility: 'hidden', // Hide the text by default
             },
           },
         },
@@ -164,7 +161,6 @@ export class PortUtils {
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
               pointerEvents: 'none',
-              visibility: 'hidden', // Hide the text by default
             },
           },
         },

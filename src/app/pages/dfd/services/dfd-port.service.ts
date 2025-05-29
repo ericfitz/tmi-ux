@@ -28,10 +28,6 @@ export class DfdPortService {
    * Hides all unused ports on all nodes in the graph
    * @param graph The X6 graph instance
    */
-  /**
-   * Hides all unused ports on all nodes in the graph
-   * @param graph The X6 graph instance
-   */
   hideUnusedPortsOnAllNodes(graph: Graph): void {
     if (!graph) {
       return;
@@ -73,19 +69,36 @@ export class DfdPortService {
       return;
     }
 
-    const portNode = nodeView.findPortElem(portId, 'portBody');
-    if (!portNode) {
+    const portBodyElement = nodeView.findPortElem(portId, 'portBody');
+    if (!portBodyElement) {
       return;
     }
 
-    // Remove all state classes first
-    portNode.classList.remove('port-visible', 'port-connected');
+    // Get the parent <g> element which has the class 'x6-port'
+    const portGroupElement = portBodyElement.closest('g.x6-port') as HTMLElement;
+    if (!portGroupElement) {
+      this.logger.warn('Could not find parent port group element for port', {
+        nodeId: node.id,
+        portId,
+      });
+      return;
+    }
 
-    // Apply the requested state
+    // Remove all state classes from the portBodyElement first
+    portBodyElement.classList.remove('port-visible', 'port-connected');
+
+    // Apply the requested state to the portBodyElement directly
     if (state === 'visible') {
-      portNode.classList.add('port-visible');
+      portBodyElement.classList.add('port-visible');
+      portBodyElement.setAttribute('visibility', 'visible');
+      portBodyElement.setAttribute('opacity', '1');
     } else if (state === 'connected') {
-      portNode.classList.add('port-connected');
+      portBodyElement.classList.add('port-connected');
+      portBodyElement.setAttribute('visibility', 'visible');
+      portBodyElement.setAttribute('opacity', '1');
+    } else {
+      portBodyElement.setAttribute('visibility', 'hidden');
+      portBodyElement.setAttribute('opacity', '0');
     }
 
     // Log the port visibility change
@@ -93,7 +106,9 @@ export class DfdPortService {
       nodeId: node.id,
       portId,
       state,
-      classes: portNode.className,
+      classes: portBodyElement.className,
+      visibility: portBodyElement.getAttribute('visibility'),
+      opacity: portBodyElement.getAttribute('opacity'),
     });
   }
 
@@ -128,8 +143,17 @@ export class DfdPortService {
       for (const port of ports) {
         if (port && port.id) {
           const portId = port.id;
-          const portNode = nodeView.findPortElem(portId, 'portBody');
-          if (portNode) {
+          const portBodyElement = nodeView.findPortElem(portId, 'portBody');
+          if (portBodyElement) {
+            const portGroupElement = portBodyElement.closest('g.x6-port') as HTMLElement;
+            if (!portGroupElement) {
+              this.logger.warn('Could not find parent port group element for port', {
+                nodeId: node.id,
+                portId,
+              });
+              continue; // Skip to next port
+            }
+
             // Check if this port has any connected edges
             const connectedEdges = graph.getConnectedEdges(node, {
               outgoing: true,
@@ -144,12 +168,13 @@ export class DfdPortService {
 
             // Use our new updatePortVisibility method
             if (isPortInUse) {
-              // Add the connected class for ports with edges
-              portNode.classList.add('port-connected');
-              // The class will handle visibility through CSS
+              portBodyElement.classList.add('port-connected');
+              portBodyElement.setAttribute('visibility', 'visible');
+              portBodyElement.setAttribute('opacity', '1');
             } else {
-              // Remove all visibility classes for unused ports
-              portNode.classList.remove('port-visible', 'port-connected');
+              portBodyElement.classList.remove('port-visible', 'port-connected');
+              portBodyElement.setAttribute('visibility', 'hidden');
+              portBodyElement.setAttribute('opacity', '0');
             }
           }
         }
@@ -206,11 +231,14 @@ export class DfdPortService {
       // Process each port
       for (const port of ports) {
         if (port && port.id) {
-          const portId = port.id;
-          const portNode = nodeView.findPortElem(portId, 'portBody');
-          if (portNode) {
-            // Use port-visible class for temporarily showing all ports
-            portNode.classList.add('port-visible');
+          const portBodyElement = nodeView.findPortElem(port.id, 'portBody');
+          if (portBodyElement) {
+            const portGroupElement = portBodyElement.closest('g.x6-port') as HTMLElement;
+            if (portGroupElement) {
+              portBodyElement.classList.add('port-visible');
+              portBodyElement.setAttribute('visibility', 'visible');
+              portBodyElement.setAttribute('opacity', '1');
+            }
           }
         }
       }

@@ -15,9 +15,9 @@
   outline: none;
   position: absolute;
   pointer-events: all;
-  display: block !important; /* Force display of all handles */
-  visibility: visible !important; /* Ensure visibility */
-  opacity: 1 !important; /* Ensure opacity */
+  display: block; /* Force display of all handles */
+  visibility: visible; /* Ensure visibility */
+  opacity: 1; /* Ensure opacity */
 
   // Position the handles - consolidated
   &-nw {
@@ -74,9 +74,9 @@
 .x6-widget-transform-resize-s,
 .x6-widget-transform-resize-sw,
 .x6-widget-transform-resize-w {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 // Port tooltip styles - consolidated

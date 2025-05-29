@@ -42,12 +42,14 @@ export const SecurityBoundaryShape = Shape.Rect.define({
     },
     body: {
       class: 'security-boundary-shape',
+      strokeDasharray: '5,5', // Temporarily add directly to confirm if it works
     },
     label: {
       text: 'Security Boundary',
       class: 'security-boundary-label',
       refX: '50%',
       refY: '50%',
+      fontFamily: 'Roboto Condensed, Arial, sans-serif',
     },
   },
   ports: {
@@ -66,8 +68,6 @@ export const SecurityBoundaryShape = Shape.Rect.define({
             fill: 'transparent',
             stroke: '#5f95ff',
             strokeWidth: 1,
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -84,8 +84,6 @@ export const SecurityBoundaryShape = Shape.Rect.define({
             fill: 'transparent',
             stroke: '#5f95ff',
             strokeWidth: 1,
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -102,8 +100,6 @@ export const SecurityBoundaryShape = Shape.Rect.define({
             fill: 'transparent',
             stroke: '#5f95ff',
             strokeWidth: 1,
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -120,8 +116,6 @@ export const SecurityBoundaryShape = Shape.Rect.define({
             fill: 'transparent',
             stroke: '#5f95ff',
             strokeWidth: 1,
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -225,5 +219,5 @@ export const SecurityBoundaryShape = Shape.Rect.define({
 ): void {
   this.attr('body/stroke', color);
   this.attr('body/strokeWidth', strokeWidth);
-  this.attr('body/strokeDasharray', dash);
+  // Removed this.attr('body/strokeDasharray', dash); - now handled by CSS
 };
