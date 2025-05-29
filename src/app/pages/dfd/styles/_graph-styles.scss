@@ -20,16 +20,58 @@
   opacity: 1;
 }
 
-// Port styles
+// Port styles with proper visibility states
 .x6-port {
   z-index: 10;
 }
 
 .x6-port-body {
   cursor: pointer;
+
+  // Default state: hidden
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+
+  // Default styling when visible
   stroke: #000;
   fill: #fff;
-  stroke-width: 1;
+  stroke-width: 2;
+  r: 5;
+}
+
+// Port visibility states
+.x6-port-body.port-visible {
+  visibility: visible;
+  opacity: 1;
+  stroke: #000;
+  fill: #fff;
+  stroke-width: 2;
+}
+
+.x6-port-body.port-connected {
+  visibility: visible;
+  opacity: 1;
+  stroke: #000;
+  fill: #fff;
+  stroke-width: 2;
+}
+
+.x6-port-body.port-hovered {
+  visibility: visible;
+  opacity: 1;
+  stroke: #000;
+  fill: #fff;
+  stroke-width: 2;
+}
+
+// Node hover state - show all ports
+.x6-node.is-hovered .x6-port-body {
+  visibility: visible;
+  opacity: 1;
+  stroke: #000;
+  fill: #fff;
+  stroke-width: 2;
 }
 
 // Highlight styles

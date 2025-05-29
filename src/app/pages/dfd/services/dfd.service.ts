@@ -116,6 +116,13 @@ export class DfdService {
       // Now add initial nodes (with fresh history)
       this.nodeService.createInitialNodes(this._graph);
 
+      // Hide all unused ports after initial nodes are created
+      setTimeout(() => {
+        if (this._graph) {
+          this.portService.hideUnusedPortsOnAllNodes(this._graph);
+        }
+      }, 100);
+
       // Set up history state change listener after creating nodes
       this.setupHistoryStateListener();
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Cell, Edge } from '@antv/x6';
+import { NodeView } from '@antv/x6/lib/view/node';
 import { History } from '@antv/x6-plugin-history';
 import { HighlighterConfig } from '../models/highlighter-config.interface';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -488,6 +489,9 @@ export class DfdEventService {
 
         // Show ports using our port service
         this.showNodePorts(graph, node);
+
+        // Also add hover class to all port elements for CSS targeting
+        this.addHoverClassToPorts(graph, node);
       }
     });
 
@@ -520,6 +524,9 @@ export class DfdEventService {
 
         // Hide unused ports
         this.portService.hideUnusedPortsOnAllNodes(graph);
+
+        // Also remove hover class from all port elements
+        this.removeHoverClassFromPorts(graph, cell);
       }
     });
   }
@@ -563,6 +570,108 @@ export class DfdEventService {
 
           // Use our port service to update port visibility
           this.portService.updatePortVisibility(graph, node, portId, 'visible');
+        }
+      });
+    });
+  }
+
+  /**
+   * Adds hover class to all ports on a node for CSS targeting
+   * @param graph The X6 graph instance
+   * @param node The node to add hover classes to
+   */
+  private addHoverClassToPorts(graph: Graph, node: Node): void {
+    if (!graph || !node) return;
+
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView || !(nodeView instanceof NodeView)) return;
+
+    const typedNodeView = nodeView as NodeView;
+
+    const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ];
+
+    directions.forEach(direction => {
+      // Use a more specific type for the node
+      const dfdNode = node as Node & {
+        getPortsByGroup: (group: string) => Array<{ id: string | number | undefined }>;
+      };
+      const constructorName = node.constructor.name;
+      const ports =
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
+          ? dfdNode.getPortsByGroup(direction)
+          : [];
+
+      ports.forEach(port => {
+        if (port.id !== undefined) {
+          const portId = typeof port.id === 'string' ? port.id : String(port.id);
+          const portBodyElement = typedNodeView.findPortElem(portId, 'portBody');
+          if (portBodyElement) {
+            // Directly set SVG attributes to override inline styles
+            portBodyElement.setAttribute('visibility', 'visible');
+            portBodyElement.setAttribute('opacity', '1');
+            portBodyElement.classList.add('port-hovered');
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Removes hover class from all ports on a node
+   * @param graph The X6 graph instance
+   * @param node The node to remove hover classes from
+   */
+  private removeHoverClassFromPorts(graph: Graph, node: Node): void {
+    if (!graph || !node) return;
+
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView || !(nodeView instanceof NodeView)) return;
+
+    const typedNodeView = nodeView as NodeView;
+
+    const directions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ];
+
+    directions.forEach(direction => {
+      // Use a more specific type for the node
+      const dfdNode = node as Node & {
+        getPortsByGroup: (group: string) => Array<{ id: string | number | undefined }>;
+      };
+      const constructorName = node.constructor.name;
+      const ports =
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
+          ? dfdNode.getPortsByGroup(direction)
+          : [];
+
+      ports.forEach(port => {
+        if (port.id !== undefined) {
+          const portId = typeof port.id === 'string' ? port.id : String(port.id);
+          const portBodyElement = typedNodeView.findPortElem(portId, 'portBody');
+          if (portBodyElement) {
+            // Check if port is connected before hiding
+            const isConnected = portBodyElement.classList.contains('port-connected');
+            if (!isConnected) {
+              // Only hide if not connected
+              portBodyElement.setAttribute('visibility', 'hidden');
+              portBodyElement.setAttribute('opacity', '0');
+            }
+            portBodyElement.classList.remove('port-hovered');
+          }
         }
       });
     });

@@ -90,15 +90,11 @@ export class DfdPortService {
     // Apply the requested state to the portBodyElement directly
     if (state === 'visible') {
       portBodyElement.classList.add('port-visible');
-      portBodyElement.setAttribute('visibility', 'visible');
-      portBodyElement.setAttribute('opacity', '1');
     } else if (state === 'connected') {
       portBodyElement.classList.add('port-connected');
-      portBodyElement.setAttribute('visibility', 'visible');
-      portBodyElement.setAttribute('opacity', '1');
     } else {
-      portBodyElement.setAttribute('visibility', 'hidden');
-      portBodyElement.setAttribute('opacity', '0');
+      // Let CSS handle the hidden state via default styling
+      // No classes needed for hidden state
     }
 
     // Log the port visibility change
@@ -168,13 +164,9 @@ export class DfdPortService {
 
             // Use our new updatePortVisibility method
             if (isPortInUse) {
-              portBodyElement.classList.add('port-connected');
-              portBodyElement.setAttribute('visibility', 'visible');
-              portBodyElement.setAttribute('opacity', '1');
+              this.updatePortVisibility(graph, node, portId, 'connected');
             } else {
-              portBodyElement.classList.remove('port-visible', 'port-connected');
-              portBodyElement.setAttribute('visibility', 'hidden');
-              portBodyElement.setAttribute('opacity', '0');
+              this.updatePortVisibility(graph, node, portId, null);
             }
           }
         }
@@ -196,7 +188,7 @@ export class DfdPortService {
       if (this.nodeService.isDfdNode(node)) {
         const nodeView = graph.findViewByCell(node);
         if (nodeView && nodeView instanceof NodeView) {
-          this.showAllPortsOnNode(node, nodeView as NodeView);
+          this.showAllPortsOnNode(graph, node, nodeView as NodeView);
         }
       }
     });
@@ -204,10 +196,11 @@ export class DfdPortService {
 
   /**
    * Shows all ports on a specific node
+   * @param graph The X6 graph instance
    * @param node The node to show ports on
    * @param nodeView The node view
    */
-  private showAllPortsOnNode(node: Node, nodeView: NodeView): void {
+  private showAllPortsOnNode(graph: Graph, node: Node, _nodeView: NodeView): void {
     const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
 
     directions.forEach(direction => {
@@ -231,15 +224,9 @@ export class DfdPortService {
       // Process each port
       for (const port of ports) {
         if (port && port.id) {
-          const portBodyElement = nodeView.findPortElem(port.id, 'portBody');
-          if (portBodyElement) {
-            const portGroupElement = portBodyElement.closest('g.x6-port') as HTMLElement;
-            if (portGroupElement) {
-              portBodyElement.classList.add('port-visible');
-              portBodyElement.setAttribute('visibility', 'visible');
-              portBodyElement.setAttribute('opacity', '1');
-            }
-          }
+          const portId = typeof port.id === 'string' ? port.id : String(port.id);
+          // Use our port service to update port visibility
+          this.updatePortVisibility(graph, node, portId, 'visible');
         }
       }
     });
