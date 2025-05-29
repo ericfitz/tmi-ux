@@ -64,13 +64,10 @@ export const ProcessShape = Shape.Circle.define({
             r: 5,
             class: 'x6-port-body',
             'port-anchor': 'center',
-            // Remove inline styling to let CSS handle it
+            // Let port service control visibility via SVG attributes
             fill: '#fff',
             stroke: '#000',
             strokeWidth: 2,
-            // Start hidden by default
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -84,13 +81,10 @@ export const ProcessShape = Shape.Circle.define({
             r: 5,
             class: 'x6-port-body',
             'port-anchor': 'center',
-            // Remove inline styling to let CSS handle it
+            // Let port service control visibility via SVG attributes
             fill: '#fff',
             stroke: '#000',
             strokeWidth: 2,
-            // Start hidden by default
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -104,13 +98,10 @@ export const ProcessShape = Shape.Circle.define({
             r: 5,
             class: 'x6-port-body',
             'port-anchor': 'center',
-            // Remove inline styling to let CSS handle it
+            // Let port service control visibility via SVG attributes
             fill: '#fff',
             stroke: '#000',
             strokeWidth: 2,
-            // Start hidden by default
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },
@@ -124,13 +115,10 @@ export const ProcessShape = Shape.Circle.define({
             r: 5,
             class: 'x6-port-body',
             'port-anchor': 'center',
-            // Remove inline styling to let CSS handle it
+            // Let port service control visibility via SVG attributes
             fill: '#fff',
             stroke: '#000',
             strokeWidth: 2,
-            // Start hidden by default
-            visibility: 'hidden',
-            opacity: 0,
           },
         },
       },

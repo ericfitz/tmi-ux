@@ -25,6 +25,126 @@ export class DfdPortService {
   ) {}
 
   /**
+   * Sets the visibility of a port element using direct SVG attributes
+   * @param portElement The port element to modify
+   * @param visible Whether the port should be visible
+   */
+  private setPortVisibility(portElement: Element, visible: boolean): void {
+    if (visible) {
+      portElement.setAttribute('visibility', 'visible');
+      portElement.setAttribute('opacity', '1');
+    } else {
+      portElement.setAttribute('visibility', 'hidden');
+      portElement.setAttribute('opacity', '0');
+    }
+  }
+
+  /**
+   * Shows all ports on a specific node using direct SVG attribute manipulation
+   * @param graph The X6 graph instance
+   * @param node The node to show ports on
+   */
+  showPortsOnNode(graph: Graph, node: Node): void {
+    if (!graph || !node) {
+      return;
+    }
+
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView || !(nodeView instanceof NodeView)) {
+      return;
+    }
+
+    const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
+
+    directions.forEach(direction => {
+      const dfdNode = node as Node & { getPortsByGroup: (group: string) => PortInfo[] };
+      const constructorName = node.constructor.name;
+
+      if (typeof dfdNode.getPortsByGroup !== 'function') {
+        return;
+      }
+
+      const ports =
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
+          ? dfdNode.getPortsByGroup(direction)
+          : [];
+
+      ports.forEach(port => {
+        if (port && port.id) {
+          const portId = typeof port.id === 'string' ? port.id : String(port.id);
+          const portBodyElement = nodeView.findPortElem(portId, 'portBody');
+          if (portBodyElement) {
+            this.setPortVisibility(portBodyElement, true);
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Hides unused ports on a specific node using direct SVG attribute manipulation
+   * @param graph The X6 graph instance
+   * @param node The node to hide unused ports on
+   */
+  hideUnusedPortsOnNode(graph: Graph, node: Node): void {
+    if (!graph || !node) {
+      return;
+    }
+
+    const nodeView = graph.findViewByCell(node);
+    if (!nodeView || !(nodeView instanceof NodeView)) {
+      return;
+    }
+
+    const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
+
+    directions.forEach(direction => {
+      const dfdNode = node as Node & { getPortsByGroup: (group: string) => PortInfo[] };
+      const constructorName = node.constructor.name;
+
+      if (typeof dfdNode.getPortsByGroup !== 'function') {
+        return;
+      }
+
+      const ports =
+        constructorName === 'ActorShape' ||
+        constructorName === 'ProcessShape' ||
+        constructorName === 'StoreShape' ||
+        constructorName === 'SecurityBoundaryShape'
+          ? dfdNode.getPortsByGroup(direction)
+          : [];
+
+      ports.forEach(port => {
+        if (port && port.id) {
+          const portId = typeof port.id === 'string' ? port.id : String(port.id);
+          const portBodyElement = nodeView.findPortElem(portId, 'portBody');
+          if (portBodyElement) {
+            // Check if this port has any connected edges
+            const connectedEdges = graph.getConnectedEdges(node, {
+              outgoing: true,
+              incoming: true,
+            });
+
+            const isPortInUse = connectedEdges.some(edge => {
+              const sourcePort = edge.getSourcePortId();
+              const targetPort = edge.getTargetPortId();
+              return sourcePort === portId || targetPort === portId;
+            });
+
+            // Only hide if not connected
+            if (!isPortInUse) {
+              this.setPortVisibility(portBodyElement, false);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  /**
    * Hides all unused ports on all nodes in the graph
    * @param graph The X6 graph instance
    */
@@ -39,10 +159,7 @@ export class DfdPortService {
     // For each node, hide all ports that aren't connected to an edge
     nodes.forEach(node => {
       if (this.nodeService.isDfdNode(node)) {
-        const nodeView = graph.findViewByCell(node);
-        if (nodeView && nodeView instanceof NodeView) {
-          this.hideUnusedPortsOnNode(graph, node, nodeView as NodeView);
-        }
+        this.hideUnusedPortsOnNode(graph, node);
       }
     });
   }
@@ -109,72 +226,6 @@ export class DfdPortService {
   }
 
   /**
-   * Hides unused ports on a specific node
-   * @param graph The X6 graph instance
-   * @param node The node to hide ports on
-   * @param nodeView The node view
-   */
-  private hideUnusedPortsOnNode(graph: Graph, node: Node, nodeView: NodeView): void {
-    const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
-
-    directions.forEach(direction => {
-      // Use a type assertion for the node with getPortsByGroup method
-      const dfdNode = node as Node & { getPortsByGroup: (group: string) => PortInfo[] };
-      const constructorName = node.constructor.name;
-
-      // Check if the node has the getPortsByGroup method
-      if (typeof dfdNode.getPortsByGroup !== 'function') {
-        return;
-      }
-
-      const ports =
-        constructorName === 'ActorShape' ||
-        constructorName === 'ProcessShape' ||
-        constructorName === 'StoreShape' ||
-        constructorName === 'SecurityBoundaryShape'
-          ? dfdNode.getPortsByGroup(direction)
-          : [];
-
-      // Process each port
-      for (const port of ports) {
-        if (port && port.id) {
-          const portId = port.id;
-          const portBodyElement = nodeView.findPortElem(portId, 'portBody');
-          if (portBodyElement) {
-            const portGroupElement = portBodyElement.closest('g.x6-port') as HTMLElement;
-            if (!portGroupElement) {
-              this.logger.warn('Could not find parent port group element for port', {
-                nodeId: node.id,
-                portId,
-              });
-              continue; // Skip to next port
-            }
-
-            // Check if this port has any connected edges
-            const connectedEdges = graph.getConnectedEdges(node, {
-              outgoing: true,
-              incoming: true,
-            });
-
-            const isPortInUse = connectedEdges.some(edge => {
-              const sourcePort = edge.getSourcePortId();
-              const targetPort = edge.getTargetPortId();
-              return sourcePort === portId || targetPort === portId;
-            });
-
-            // Use our new updatePortVisibility method
-            if (isPortInUse) {
-              this.updatePortVisibility(graph, node, portId, 'connected');
-            } else {
-              this.updatePortVisibility(graph, node, portId, null);
-            }
-          }
-        }
-      }
-    });
-  }
-
-  /**
    * Shows all ports on all nodes
    * @param graph The X6 graph instance
    */
@@ -201,34 +252,7 @@ export class DfdPortService {
    * @param nodeView The node view
    */
   private showAllPortsOnNode(graph: Graph, node: Node, _nodeView: NodeView): void {
-    const directions: PortDirection[] = ['top', 'right', 'bottom', 'left'];
-
-    directions.forEach(direction => {
-      // Use a type assertion for the node with getPortsByGroup method
-      const dfdNode = node as Node & { getPortsByGroup: (group: string) => PortInfo[] };
-      const constructorName = node.constructor.name;
-
-      // Check if the node has the getPortsByGroup method
-      if (typeof dfdNode.getPortsByGroup !== 'function') {
-        return;
-      }
-
-      const ports =
-        constructorName === 'ActorShape' ||
-        constructorName === 'ProcessShape' ||
-        constructorName === 'StoreShape' ||
-        constructorName === 'SecurityBoundaryShape'
-          ? dfdNode.getPortsByGroup(direction)
-          : [];
-
-      // Process each port
-      for (const port of ports) {
-        if (port && port.id) {
-          const portId = typeof port.id === 'string' ? port.id : String(port.id);
-          // Use our port service to update port visibility
-          this.updatePortVisibility(graph, node, portId, 'visible');
-        }
-      }
-    });
+    // Use the new public method
+    this.showPortsOnNode(graph, node);
   }
 }
