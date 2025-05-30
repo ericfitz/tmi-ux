@@ -33,6 +33,7 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json,md}\"",
     "check": "pnpm run format:check && pnpm run lint:all",
+    "bump": "pnpm update && pnpm install",
     "prepare": "husky",
     "optimize-images": "node convert-images.js"
   },
