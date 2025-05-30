@@ -130,7 +130,7 @@ describe('AuthService', () => {
     };
 
     router = {
-      navigate: vi.fn().mockResolvedValue(true) as ReturnType<typeof vi.fn>,
+      navigate: vi.fn().mockResolvedValue(true),
     };
 
     // Create a properly typed mock for HttpClient
@@ -152,7 +152,7 @@ describe('AuthService', () => {
     // Create crypto mock
     const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
     cryptoMock = {
-      getRandomValues: vi.fn().mockReturnValue(mockArray) as ReturnType<typeof vi.fn>,
+      getRandomValues: vi.fn().mockReturnValue(mockArray),
     };
 
     // Mock global objects for Node.js environment
