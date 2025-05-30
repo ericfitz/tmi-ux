@@ -80,6 +80,8 @@ export class DfdEventService {
    */
   private registerX6EventForwarding(graph: Graph): void {
     // List of X6 events to forward to our event bus
+    // Note: node:dblclick and edge:dblclick are NOT forwarded here
+    // because they are handled directly by the label editor service
     const eventsToForward = [
       'node:added',
       'node:removed',
@@ -573,9 +575,9 @@ export class DfdEventService {
    * @param graph The X6 graph instance
    */
   private setupNodeClickEvents(graph: Graph): void {
-    graph.on('node:click', ({ cell, e }) => {
-      // Prevent event propagation to avoid deselection
-      e.stopPropagation();
+    graph.on('node:click', ({ cell }) => {
+      // Don't stop propagation - let double-click events work
+      // We'll handle deselection logic differently
 
       // Check if the clicked node is already selected
       const isAlreadySelected = this._selectedNode === cell;

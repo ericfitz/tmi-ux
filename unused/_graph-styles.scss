@@ -1,5 +1,4 @@
 // Consolidate all graph element styles here
-@use 'shape-styles' as shapes;
 
 // Base graph container styles
 .x6-graph {
@@ -31,12 +30,6 @@
   // Default state: hidden
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-
-  // Default styling when visible
-  stroke: #000;
-  fill: #fff;
-  stroke-width: 2;
   r: 5;
 }
 

@@ -112,7 +112,8 @@ svg text[font-family] {
 
 // Port visibility rules
 // Hide all ports by default with high specificity
-.x6-graph .x6-node .x6-port-body {
+circle.x6-port-body {
+  display: block;
   stroke: #000;
   fill: #fff;
   visibility: hidden;
@@ -120,9 +121,7 @@ svg text[font-family] {
 }
 
 // Show ports on hover or when connected
-.x6-graph .x6-node.is-hovered .x6-port-body, /* Show on node hover */
-.x6-graph .x6-node .x6-port-body.port-visible, /* Show when port-visible class is applied */
-.x6-graph .x6-node .x6-port-body.port-connected /* Show when port is connected */ {
+.is-hovered circle.x6-port-body .is-connected circle.x6-port-body {
   display: block; /* Ensure it's block for layout */
   pointer-events: all; /* Ensure it's clickable when visible */
   visibility: visible;
