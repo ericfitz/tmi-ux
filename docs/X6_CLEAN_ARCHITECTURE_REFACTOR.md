@@ -300,13 +300,17 @@ src/app/pages/dfd/
 - [x] Task 1.1.1: Create domain directory structure
 - [x] Task 1.1.2: Implement core value objects
 - [x] Task 1.1.3: Define domain events
+- [x] Task 1.1.4: Implement domain commands
+- [x] Task 1.1.5: Create DiagramAggregate
 
 ### Next Sprint
 
-**Sprint 2: Domain Commands and Aggregates**
+**Sprint 2: Application Layer Foundation**
 
-- [ ] Task 1.1.4: Implement domain commands
-- [ ] Task 1.1.5: Create DiagramAggregate
+- [ ] Task 1.2.1: Create application directory structure
+- [ ] Task 1.2.2: Implement CommandBus
+- [ ] Task 1.2.3: Create DfdApplicationService
+- [ ] Task 1.2.4: Implement Command Handlers
 
 ## Notes and Decisions
 
