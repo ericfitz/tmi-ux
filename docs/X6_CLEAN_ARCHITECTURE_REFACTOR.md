@@ -307,10 +307,10 @@ src/app/pages/dfd/
 
 **Sprint 2: Application Layer Foundation**
 
-- [ ] Task 1.2.1: Create application directory structure
-- [ ] Task 1.2.2: Implement CommandBus
-- [ ] Task 1.2.3: Create DfdApplicationService
-- [ ] Task 1.2.4: Implement Command Handlers
+- [x] Task 1.2.1: Create application directory structure
+- [x] Task 1.2.2: Implement CommandBus
+- [x] Task 1.2.3: Create DfdApplicationService
+- [x] Task 1.2.4: Implement Command Handlers
 
 ## Notes and Decisions
 
