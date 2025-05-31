@@ -10,12 +10,17 @@ export class Point {
   }
 
   /**
-   * Validates the point coordinates
+   * Creates a Point from a plain object
    */
-  private validate(): void {
-    if (!Number.isFinite(this.x) || !Number.isFinite(this.y)) {
-      throw new Error('Point coordinates must be finite numbers');
-    }
+  static fromJSON(data: { x: number; y: number }): Point {
+    return new Point(data.x, data.y);
+  }
+
+  /**
+   * Creates a Point at the origin (0, 0)
+   */
+  static origin(): Point {
+    return new Point(0, 0);
   }
 
   /**
@@ -70,16 +75,11 @@ export class Point {
   }
 
   /**
-   * Creates a Point from a plain object
+   * Validates the point coordinates
    */
-  static fromJSON(data: { x: number; y: number }): Point {
-    return new Point(data.x, data.y);
-  }
-
-  /**
-   * Creates a Point at the origin (0, 0)
-   */
-  static origin(): Point {
-    return new Point(0, 0);
+  private validate(): void {
+    if (!Number.isFinite(this.x) || !Number.isFinite(this.y)) {
+      throw new Error('Point coordinates must be finite numbers');
+    }
   }
 }

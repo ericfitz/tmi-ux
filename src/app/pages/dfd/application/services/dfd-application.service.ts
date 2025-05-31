@@ -1,10 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
-import { ICommandBus } from '../interfaces/command-bus.interface';
 import { CommandBusService } from './command-bus.service';
 import { DiagramCommandFactory, AnyDiagramCommand } from '../../domain/commands/diagram-commands';
-import { DiagramAggregate, DiagramSnapshot } from '../../domain/aggregates/diagram-aggregate';
+import { DiagramSnapshot } from '../../domain/aggregates/diagram-aggregate';
 import { BaseDomainEvent } from '../../domain/events/domain-event';
 import { Point } from '../../domain/value-objects/point';
 import { NodeData } from '../../domain/value-objects/node-data';
@@ -66,16 +65,16 @@ export class DfdApplicationService {
 
     this._isLoading$.next(true);
 
-    return this.commandBus.execute(command).pipe(
-      map((result: any) => {
+    return this.commandBus.execute<DiagramOperationResult>(command).pipe(
+      map((result: DiagramOperationResult) => {
         this.emitEvents(result.events);
         this.updateCurrentDiagram(result.diagramSnapshot);
-        return result.diagramId;
+        return result.diagramSnapshot.id;
       }),
       tap(() => this._isLoading$.next(false)),
-      catchError(error => {
+      catchError((error: unknown) => {
         this._isLoading$.next(false);
-        this.handleError(error);
+        this.handleError(error instanceof Error ? error : new Error(String(error)));
         return throwError(() => error);
       }),
     );
@@ -88,19 +87,19 @@ export class DfdApplicationService {
     this._isLoading$.next(true);
 
     return this.diagramRepository.findById(diagramId).pipe(
-      map(diagram => {
+      map((diagram: any) => {
         if (!diagram) {
           throw new Error(`Diagram with ID ${diagramId} not found`);
         }
         return diagram.toSnapshot();
       }),
-      tap(snapshot => {
+      tap((snapshot: DiagramSnapshot) => {
         this.updateCurrentDiagram(snapshot);
         this._isLoading$.next(false);
       }),
-      catchError(error => {
+      catchError((error: unknown) => {
         this._isLoading$.next(false);
-        this.handleError(error);
+        this.handleError(error instanceof Error ? error : new Error(String(error)));
         return throwError(() => error);
       }),
     );
@@ -283,15 +282,15 @@ export class DfdApplicationService {
   private executeCommand(command: AnyDiagramCommand): Observable<void> {
     this._isLoading$.next(true);
 
-    return this.commandBus.execute(command).pipe(
-      map((result: any) => {
+    return this.commandBus.execute<DiagramOperationResult>(command).pipe(
+      map((result: DiagramOperationResult) => {
         this.emitEvents(result.events);
         this.updateCurrentDiagram(result.diagramSnapshot);
       }),
       tap(() => this._isLoading$.next(false)),
-      catchError(error => {
+      catchError((error: unknown) => {
         this._isLoading$.next(false);
-        this.handleError(error);
+        this.handleError(error instanceof Error ? error : new Error(String(error)));
         return throwError(() => error);
       }),
     );
@@ -385,7 +384,7 @@ export class DfdApplicationServiceExtended extends DfdApplicationService {
    */
   createDiagramWithContent(options: CreateDiagramOptions): Observable<string> {
     return this.createDiagram(options.name, options.description, options.userId).pipe(
-      switchMap(diagramId => {
+      switchMap((diagramId: string) => {
         const operations: Observable<void>[] = [];
 
         // Add initial nodes

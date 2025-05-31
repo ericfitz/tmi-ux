@@ -30,7 +30,7 @@ export class NodeAddedEvent extends BaseDomainEvent {
       data.metadata,
     );
     // Override the generated ID with the serialized one
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -76,7 +76,7 @@ export class NodeMovedEvent extends BaseDomainEvent {
       Point.fromJSON(data.newPosition),
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -123,7 +123,7 @@ export class NodeRemovedEvent extends BaseDomainEvent {
       NodeData.fromJSON(data.nodeData),
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -171,7 +171,7 @@ export class NodeLabelUpdatedEvent extends BaseDomainEvent {
       data.newLabel,
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -227,7 +227,7 @@ export class NodeResizedEvent extends BaseDomainEvent {
       data.newHeight,
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -275,7 +275,7 @@ export class EdgeAddedEvent extends BaseDomainEvent {
       EdgeData.fromJSON(data.edgeData),
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -318,7 +318,7 @@ export class EdgeRemovedEvent extends BaseDomainEvent {
       EdgeData.fromJSON(data.edgeData),
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -366,7 +366,7 @@ export class EdgeVerticesUpdatedEvent extends BaseDomainEvent {
       data.newVertices.map(v => Point.fromJSON(v)),
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 
@@ -413,7 +413,7 @@ export class DiagramChangedEvent extends BaseDomainEvent {
       data.affectedIds,
       data.metadata,
     );
-    (event as any).id = data.id;
+    (event as { id: string }).id = data.id;
     return event;
   }
 

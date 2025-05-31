@@ -34,7 +34,7 @@ export class NodeData {
     }
 
     if (!this.isValidNodeType(this.type)) {
-      throw new Error(`Invalid node type: ${this.type}`);
+      throw new Error(`Invalid node type: ${String(this.type)}`);
     }
 
     if (!this.label || this.label.trim().length === 0) {

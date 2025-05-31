@@ -8,7 +8,7 @@ export interface ICommandBus {
   /**
    * Executes a command through the command bus
    */
-  execute<T = any>(command: AnyDiagramCommand): Observable<T>;
+  execute<T = unknown>(command: AnyDiagramCommand): Observable<T>;
 
   /**
    * Registers a command handler
@@ -31,7 +31,7 @@ export interface ICommandHandler<T extends AnyDiagramCommand = AnyDiagramCommand
   /**
    * Handles the command execution
    */
-  handle(command: T): Observable<any>;
+  handle(command: T): Observable<unknown>;
 
   /**
    * Returns the command type this handler supports
@@ -44,17 +44,17 @@ export interface ICommandHandler<T extends AnyDiagramCommand = AnyDiagramCommand
  */
 export interface ICommandMiddleware {
   /**
-   * Executes middleware logic
-   */
-  execute<T = any>(
-    command: AnyDiagramCommand,
-    next: (command: AnyDiagramCommand) => Observable<T>,
-  ): Observable<T>;
-
-  /**
    * Priority for middleware execution order (lower = earlier)
    */
   priority: number;
+
+  /**
+   * Executes middleware logic
+   */
+  execute<T = unknown>(
+    command: AnyDiagramCommand,
+    next: (command: AnyDiagramCommand) => Observable<T>,
+  ): Observable<T>;
 }
 
 /**
@@ -70,7 +70,7 @@ export interface CommandExecutionContext {
 /**
  * Command execution result
  */
-export interface CommandExecutionResult<T = any> {
+export interface CommandExecutionResult<T = unknown> {
   readonly success: boolean;
   readonly result?: T;
   readonly error?: Error;

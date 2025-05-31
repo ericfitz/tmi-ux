@@ -1,6 +1,5 @@
 import { DiagramNode } from '../value-objects/diagram-node';
 import { DiagramEdge } from '../value-objects/diagram-edge';
-import { Point } from '../value-objects/point';
 import { NodeData } from '../value-objects/node-data';
 import { EdgeData } from '../value-objects/edge-data';
 import { BaseDomainEvent } from '../events/domain-event';
@@ -115,7 +114,7 @@ export class DiagramAggregate {
         break;
       default:
         throw new DiagramDomainError(
-          `Unknown command type: ${(command as any).type}`,
+          `Unknown command type: ${(command as { type: string }).type}`,
           'UNKNOWN_COMMAND',
         );
     }
@@ -367,29 +366,6 @@ export class DiagramAggregate {
     }
   }
 
-  /**
-   * Adds an event to the uncommitted events list
-   */
-  private addEvent(event: BaseDomainEvent): void {
-    this._uncommittedEvents.push(event);
-  }
-
-  /**
-   * Gets and clears uncommitted events
-   */
-  getUncommittedEvents(): BaseDomainEvent[] {
-    const events = [...this._uncommittedEvents];
-    this._uncommittedEvents = [];
-    return events;
-  }
-
-  /**
-   * Marks events as committed
-   */
-  markEventsAsCommitted(): void {
-    this._uncommittedEvents = [];
-  }
-
   // Getters
   get id(): string {
     return this._id;
@@ -425,6 +401,22 @@ export class DiagramAggregate {
 
   get edges(): ReadonlyMap<string, DiagramEdge> {
     return this._edges;
+  }
+
+  /**
+   * Gets and clears uncommitted events
+   */
+  getUncommittedEvents(): BaseDomainEvent[] {
+    const events = [...this._uncommittedEvents];
+    this._uncommittedEvents = [];
+    return events;
+  }
+
+  /**
+   * Marks events as committed
+   */
+  markEventsAsCommitted(): void {
+    this._uncommittedEvents = [];
   }
 
   /**
@@ -493,6 +485,13 @@ export class DiagramAggregate {
       edges: Array.from(this._edges.values()).map(edge => edge.toJSON()),
     };
   }
+
+  /**
+   * Adds an event to the uncommitted events list
+   */
+  private addEvent(event: BaseDomainEvent): void {
+    this._uncommittedEvents.push(event);
+  }
 }
 
 /**
@@ -506,6 +505,6 @@ export interface DiagramSnapshot {
   readonly updatedAt: Date;
   readonly createdBy: string;
   readonly version: number;
-  readonly nodes: any[];
-  readonly edges: any[];
+  readonly nodes: Record<string, unknown>[];
+  readonly edges: Record<string, unknown>[];
 }

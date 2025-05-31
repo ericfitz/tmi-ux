@@ -51,13 +51,6 @@ export abstract class BaseDomainEvent implements DomainEvent {
   }
 
   /**
-   * Generates a unique event ID
-   */
-  private generateEventId(): string {
-    return `${this.type}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-  }
-
-  /**
    * Converts the event to a plain object for serialization
    */
   toJSON(): {
@@ -83,5 +76,12 @@ export abstract class BaseDomainEvent implements DomainEvent {
    */
   toString(): string {
     return `${this.type}(${this.id}, ${this.aggregateId})`;
+  }
+
+  /**
+   * Generates a unique event ID
+   */
+  private generateEventId(): string {
+    return `${this.type}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
   }
 }

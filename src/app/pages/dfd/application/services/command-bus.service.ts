@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import {
   ICommandBus,
@@ -24,14 +24,18 @@ export class CommandBusService implements ICommandBus {
   /**
    * Executes a command through the command bus with middleware pipeline
    */
-  execute<T = any>(command: AnyDiagramCommand): Observable<T> {
+  execute<T = unknown>(command: AnyDiagramCommand): Observable<T> {
     const context = this.createExecutionContext(command);
     const startTime = Date.now();
 
     return this.executeWithMiddleware(command).pipe(
-      map(result => this.createSuccessResult<T>(result, context, startTime)),
+      map(result => this.createSuccessResult<T>(result as T, context, startTime)),
       catchError(error => {
-        const errorResult = this.createErrorResult<T>(error, context, startTime);
+        const errorResult = this.createErrorResult<T>(
+          error instanceof Error ? error : new Error(String(error)),
+          context,
+          startTime,
+        );
         return throwError(() => errorResult);
       }),
       map(result => result.result as T),
@@ -63,7 +67,7 @@ export class CommandBusService implements ICommandBus {
   /**
    * Executes command through middleware pipeline
    */
-  private executeWithMiddleware<T = any>(command: AnyDiagramCommand): Observable<T> {
+  private executeWithMiddleware<T = unknown>(command: AnyDiagramCommand): Observable<T> {
     if (this._middleware.length === 0) {
       return this.executeHandler(command);
     }
@@ -84,13 +88,13 @@ export class CommandBusService implements ICommandBus {
   /**
    * Executes the actual command handler
    */
-  private executeHandler<T = any>(command: AnyDiagramCommand): Observable<T> {
+  private executeHandler<T = unknown>(command: AnyDiagramCommand): Observable<T> {
     const handler = this._handlers.get(command.type);
     if (!handler) {
       return throwError(() => new Error(`No handler registered for command type: ${command.type}`));
     }
 
-    return handler.handle(command);
+    return handler.handle(command) as Observable<T>;
   }
 
   /**
@@ -154,7 +158,7 @@ export class CommandBusService implements ICommandBus {
 export class CommandValidationMiddleware implements ICommandMiddleware {
   readonly priority = 1;
 
-  execute<T = any>(
+  execute<T = unknown>(
     command: AnyDiagramCommand,
     next: (command: AnyDiagramCommand) => Observable<T>,
   ): Observable<T> {
@@ -179,34 +183,37 @@ export class CommandValidationMiddleware implements ICommandMiddleware {
 export class CommandLoggingMiddleware implements ICommandMiddleware {
   readonly priority = 2;
 
-  execute<T = any>(
+  execute<T = unknown>(
     command: AnyDiagramCommand,
     next: (command: AnyDiagramCommand) => Observable<T>,
   ): Observable<T> {
-    const startTime = Date.now();
-
-    console.log(`[CommandBus] Executing command: ${command.type}`, {
-      commandId: command.commandId,
-      diagramId: command.diagramId,
-      userId: command.userId,
-    });
+    // TODO: Replace with proper logging service
+    // console.log(`[CommandBus] Executing command: ${command.type}`, {
+    //   commandId: command.commandId,
+    //   diagramId: command.diagramId,
+    //   userId: command.userId,
+    // });
 
     return next(command).pipe(
       tap({
-        next: result => {
-          const executionTime = Date.now() - startTime;
-          console.log(`[CommandBus] Command executed successfully: ${command.type}`, {
-            commandId: command.commandId,
-            executionTime: `${executionTime}ms`,
-          });
+        next: _result => {
+          // TODO: Replace with proper logging service
+          // const startTime = Date.now();
+          // const executionTime = Date.now() - startTime;
+          // console.log(`[CommandBus] Command executed successfully: ${command.type}`, {
+          //   commandId: command.commandId,
+          //   executionTime: `${executionTime}ms`,
+          // });
         },
-        error: error => {
-          const executionTime = Date.now() - startTime;
-          console.error(`[CommandBus] Command execution failed: ${command.type}`, {
-            commandId: command.commandId,
-            executionTime: `${executionTime}ms`,
-            error: error.message,
-          });
+        error: _error => {
+          // TODO: Replace with proper logging service
+          // const startTime = Date.now();
+          // const executionTime = Date.now() - startTime;
+          // console.error(`[CommandBus] Command execution failed: ${command.type}`, {
+          //   commandId: command.commandId,
+          //   executionTime: `${executionTime}ms`,
+          //   error: error instanceof Error ? error.message : String(error),
+          // });
         },
       }),
     );
@@ -222,7 +229,7 @@ export class CommandLoggingMiddleware implements ICommandMiddleware {
 export class CommandSerializationMiddleware implements ICommandMiddleware {
   readonly priority = 3;
 
-  execute<T = any>(
+  execute<T = unknown>(
     command: AnyDiagramCommand,
     next: (command: AnyDiagramCommand) => Observable<T>,
   ): Observable<T> {
@@ -245,7 +252,7 @@ export class CommandSerializationMiddleware implements ICommandMiddleware {
   /**
    * Emits command for collaboration (placeholder for future implementation)
    */
-  private emitCommandForCollaboration(command: AnyDiagramCommand): void {
+  private emitCommandForCollaboration(_command: AnyDiagramCommand): void {
     // TODO: Implement collaboration command emission
     // This will be connected to WebSocket service in Phase 2
   }

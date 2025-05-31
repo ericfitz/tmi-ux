@@ -338,7 +338,7 @@ export class DiagramCommandValidator {
           errors.push('Diagram name is required');
         }
         break;
-      case 'ADD_NODE':
+      case 'ADD_NODE': {
         const addNodeCmd = command;
         if (!addNodeCmd.nodeId) {
           errors.push('Node ID is required');
@@ -350,7 +350,8 @@ export class DiagramCommandValidator {
           errors.push('Node data is required');
         }
         break;
-      case 'UPDATE_NODE_POSITION':
+      }
+      case 'UPDATE_NODE_POSITION': {
         const updatePosCmd = command;
         if (!updatePosCmd.nodeId) {
           errors.push('Node ID is required');
@@ -362,7 +363,8 @@ export class DiagramCommandValidator {
           errors.push('Old position is required');
         }
         break;
-      case 'ADD_EDGE':
+      }
+      case 'ADD_EDGE': {
         const addEdgeCmd = command;
         if (!addEdgeCmd.edgeId) {
           errors.push('Edge ID is required');
@@ -377,6 +379,7 @@ export class DiagramCommandValidator {
           errors.push('Edge data is required');
         }
         break;
+      }
       // Add more validation cases as needed
     }
 

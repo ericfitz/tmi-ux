@@ -1,5 +1,5 @@
 import { Injectable, InjectionToken, Inject } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { ICommandHandler } from '../interfaces/command-bus.interface';
 import {
@@ -12,9 +12,20 @@ import {
   RemoveEdgeCommand,
   UpdateDiagramMetadataCommand,
   CreateDiagramCommand,
-  AnyDiagramCommand,
 } from '../../domain/commands/diagram-commands';
 import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
+import { BaseDomainEvent } from '../../domain/events/domain-event';
+import { DiagramSnapshot } from '../../domain/aggregates/diagram-aggregate';
+
+/**
+ * Command execution result interface
+ */
+export interface CommandResult {
+  success: boolean;
+  diagramId: string;
+  events: BaseDomainEvent[];
+  diagramSnapshot: DiagramSnapshot;
+}
 
 /**
  * Repository interface for diagram aggregates
@@ -47,7 +58,7 @@ export class CreateDiagramCommandHandler implements ICommandHandler<CreateDiagra
     return 'CREATE_DIAGRAM';
   }
 
-  handle(command: CreateDiagramCommand): Observable<any> {
+  handle(command: CreateDiagramCommand): Observable<CommandResult> {
     try {
       const diagram = DiagramAggregate.create(command);
 
@@ -64,7 +75,12 @@ export class CreateDiagramCommandHandler implements ICommandHandler<CreateDiagra
           };
         }),
         catchError(error =>
-          throwError(() => new Error(`Failed to create diagram: ${error.message}`)),
+          throwError(
+            () =>
+              new Error(
+                `Failed to create diagram: ${error instanceof Error ? error.message : String(error)}`,
+              ),
+          ),
         ),
       );
     } catch (error) {
@@ -88,14 +104,21 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
     return 'ADD_NODE';
   }
 
-  handle(command: AddNodeCommand): Observable<any> {
+  handle(command: AddNodeCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error => throwError(() => new Error(`Failed to add node: ${error.message}`))),
+      catchError(error =>
+        throwError(
+          () =>
+            new Error(
+              `Failed to add node: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
+      ),
     );
   }
 
@@ -110,7 +133,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -118,6 +141,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -143,7 +167,7 @@ export class UpdateNodePositionCommandHandler
     return 'UPDATE_NODE_POSITION';
   }
 
-  handle(command: UpdateNodePositionCommand): Observable<any> {
+  handle(command: UpdateNodePositionCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
@@ -151,7 +175,12 @@ export class UpdateNodePositionCommandHandler
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
       catchError(error =>
-        throwError(() => new Error(`Failed to update node position: ${error.message}`)),
+        throwError(
+          () =>
+            new Error(
+              `Failed to update node position: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
       ),
     );
   }
@@ -167,7 +196,7 @@ export class UpdateNodePositionCommandHandler
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -175,6 +204,7 @@ export class UpdateNodePositionCommandHandler
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -198,7 +228,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
     return 'UPDATE_NODE_DATA';
   }
 
-  handle(command: UpdateNodeDataCommand): Observable<any> {
+  handle(command: UpdateNodeDataCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
@@ -206,7 +236,12 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
       catchError(error =>
-        throwError(() => new Error(`Failed to update node data: ${error.message}`)),
+        throwError(
+          () =>
+            new Error(
+              `Failed to update node data: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
       ),
     );
   }
@@ -222,7 +257,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -230,6 +265,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -253,14 +289,21 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
     return 'REMOVE_NODE';
   }
 
-  handle(command: RemoveNodeCommand): Observable<any> {
+  handle(command: RemoveNodeCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error => throwError(() => new Error(`Failed to remove node: ${error.message}`))),
+      catchError(error =>
+        throwError(
+          () =>
+            new Error(
+              `Failed to remove node: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
+      ),
     );
   }
 
@@ -275,7 +318,7 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -283,6 +326,7 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -306,14 +350,21 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
     return 'ADD_EDGE';
   }
 
-  handle(command: AddEdgeCommand): Observable<any> {
+  handle(command: AddEdgeCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error => throwError(() => new Error(`Failed to add edge: ${error.message}`))),
+      catchError(error =>
+        throwError(
+          () =>
+            new Error(
+              `Failed to add edge: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
+      ),
     );
   }
 
@@ -328,7 +379,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -336,6 +387,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -359,7 +411,7 @@ export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeD
     return 'UPDATE_EDGE_DATA';
   }
 
-  handle(command: UpdateEdgeDataCommand): Observable<any> {
+  handle(command: UpdateEdgeDataCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
@@ -367,7 +419,12 @@ export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeD
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
       catchError(error =>
-        throwError(() => new Error(`Failed to update edge data: ${error.message}`)),
+        throwError(
+          () =>
+            new Error(
+              `Failed to update edge data: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
       ),
     );
   }
@@ -383,7 +440,7 @@ export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeD
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -391,6 +448,7 @@ export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeD
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -414,14 +472,21 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
     return 'REMOVE_EDGE';
   }
 
-  handle(command: RemoveEdgeCommand): Observable<any> {
+  handle(command: RemoveEdgeCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error => throwError(() => new Error(`Failed to remove edge: ${error.message}`))),
+      catchError(error =>
+        throwError(
+          () =>
+            new Error(
+              `Failed to remove edge: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
+      ),
     );
   }
 
@@ -436,7 +501,7 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -444,6 +509,7 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
@@ -469,7 +535,7 @@ export class UpdateDiagramMetadataCommandHandler
     return 'UPDATE_DIAGRAM_METADATA';
   }
 
-  handle(command: UpdateDiagramMetadataCommand): Observable<any> {
+  handle(command: UpdateDiagramMetadataCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
@@ -477,7 +543,12 @@ export class UpdateDiagramMetadataCommandHandler
       }),
       switchMap(diagram => this.saveDiagram(diagram)),
       catchError(error =>
-        throwError(() => new Error(`Failed to update diagram metadata: ${error.message}`)),
+        throwError(
+          () =>
+            new Error(
+              `Failed to update diagram metadata: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        ),
       ),
     );
   }
@@ -493,7 +564,7 @@ export class UpdateDiagramMetadataCommandHandler
     );
   }
 
-  private saveDiagram(diagram: DiagramAggregate): Observable<any> {
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
     const events = diagram.getUncommittedEvents();
 
     return this.diagramRepository.save(diagram).pipe(
@@ -501,6 +572,7 @@ export class UpdateDiagramMetadataCommandHandler
         diagram.markEventsAsCommitted();
         return {
           success: true,
+          diagramId: diagram.id,
           events,
           diagramSnapshot: diagram.toSnapshot(),
         };
