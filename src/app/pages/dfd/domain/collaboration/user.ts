@@ -1,0 +1,126 @@
+/**
+ * Represents a user in the collaboration system
+ */
+export class User {
+  constructor(
+    public readonly id: string,
+    public readonly name: string,
+    public readonly email: string,
+    public readonly avatar?: string,
+    public readonly color?: string,
+  ) {
+    this._validate();
+  }
+
+  /**
+   * Create a user with a generated color
+   */
+  static create(id: string, name: string, email: string, avatar?: string): User {
+    const color = this._generateUserColor(id);
+    return new User(id, name, email, avatar, color);
+  }
+
+  /**
+   * Check if this user equals another user
+   */
+  equals(other: User): boolean {
+    return this.id === other.id;
+  }
+
+  /**
+   * Get user initials for display
+   */
+  getInitials(): string {
+    return this.name
+      .split(' ')
+      .map(part => part.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join('');
+  }
+
+  /**
+   * Convert to JSON representation
+   */
+  toJSON(): {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    color?: string;
+  } {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      avatar: this.avatar,
+      color: this.color,
+    };
+  }
+
+  /**
+   * Create user from JSON data
+   */
+  static fromJSON(data: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    color?: string;
+  }): User {
+    return new User(data.id, data.name, data.email, data.avatar, data.color);
+  }
+
+  /**
+   * Validate user data
+   */
+  private _validate(): void {
+    if (!this.id || this.id.trim().length === 0) {
+      throw new Error('User ID is required');
+    }
+
+    if (!this.name || this.name.trim().length === 0) {
+      throw new Error('User name is required');
+    }
+
+    if (!this.email || this.email.trim().length === 0) {
+      throw new Error('User email is required');
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      throw new Error('Invalid email format');
+    }
+  }
+
+  /**
+   * Generate a consistent color for a user based on their ID
+   */
+  private static _generateUserColor(userId: string): string {
+    const colors = [
+      '#FF6B6B',
+      '#4ECDC4',
+      '#45B7D1',
+      '#96CEB4',
+      '#FFEAA7',
+      '#DDA0DD',
+      '#98D8C8',
+      '#F7DC6F',
+      '#BB8FCE',
+      '#85C1E9',
+      '#F8C471',
+      '#82E0AA',
+      '#F1948A',
+      '#85C1E9',
+      '#D7BDE2',
+    ];
+
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  }
+}
