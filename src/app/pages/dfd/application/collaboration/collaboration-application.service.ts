@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, filter, distinctUntilChanged, shareReplay } from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { map, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { CollaborationSession } from '../../domain/collaboration/collaboration-session';
 import { User } from '../../domain/collaboration/user';

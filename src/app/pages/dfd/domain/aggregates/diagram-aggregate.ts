@@ -1,7 +1,6 @@
 import { DiagramNode } from '../value-objects/diagram-node';
 import { DiagramEdge } from '../value-objects/diagram-edge';
 import { NodeData } from '../value-objects/node-data';
-import { EdgeData } from '../value-objects/edge-data';
 import { BaseDomainEvent } from '../events/domain-event';
 import {
   NodeAddedEvent,

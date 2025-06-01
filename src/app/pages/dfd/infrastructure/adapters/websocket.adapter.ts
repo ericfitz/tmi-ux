@@ -1,14 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, fromEvent, NEVER } from 'rxjs';
-import {
-  map,
-  filter,
-  catchError,
-  retry,
-  takeUntil,
-  distinctUntilChanged,
-  shareReplay,
-} from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 /**
  * WebSocket connection states

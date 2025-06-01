@@ -21,11 +21,12 @@ import { take } from 'rxjs/operators';
 import { Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
-import { DfdService, ExportFormat } from './services/dfd.service';
+import { ExportFormat } from './services/dfd.service';
 import { ShapeType } from './services/dfd-node.service';
 import { DfdEventBusService, DfdEventType } from './services/dfd-event-bus.service';
 import { DfdStateStore } from './state/dfd.state';
-import { DfdCommandService } from './services/dfd-command.service';
+import { DfdMigrationFacadeService } from './migration/dfd-migration-facade.service';
+import { CommandResult } from './migration/legacy-command.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import {
@@ -76,10 +77,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
-    private dfdService: DfdService,
+    private migrationFacade: DfdMigrationFacadeService,
     private eventBus: DfdEventBusService,
     private stateStore: DfdStateStore,
-    private commandService: DfdCommandService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -105,24 +105,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
-    // Subscribe to state changes
+    // Subscribe to state changes via migration facade
     this._subscriptions.add(
-      this.stateStore.canUndo$.subscribe(canUndo => {
+      this.migrationFacade.canUndo$.subscribe(canUndo => {
         this.canUndo = canUndo;
         this.cdr.markForCheck();
       }),
     );
 
     this._subscriptions.add(
-      this.stateStore.canRedo$.subscribe(canRedo => {
+      this.migrationFacade.canRedo$.subscribe(canRedo => {
         this.canRedo = canRedo;
         this.cdr.markForCheck();
       }),
     );
 
-    // Subscribe to selection state changes
+    // Subscribe to selection state changes via migration facade
     this._subscriptions.add(
-      this.stateStore.selectedNode$.subscribe(selectedNode => {
+      this.migrationFacade.selectedNode$.subscribe(selectedNode => {
         this.hasSelectedCells = !!selectedNode;
         this.cdr.markForCheck();
       }),
@@ -185,8 +185,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
-    // Dispose the DFD service
-    this.dfdService.dispose();
+    // Dispose the migration facade
+    this.migrationFacade.dispose();
 
     // Reset the state store
     this.stateStore.resetState();
@@ -203,7 +203,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this._resizeTimeout = window.setTimeout(() => {
-      if (this.dfdService.graph) {
+      const graph = this.migrationFacade.graph;
+      if (graph) {
         const container = this.graphContainer.nativeElement as HTMLElement;
         const width = container.clientWidth;
         const height = container.clientHeight;
@@ -211,11 +212,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.info('Resizing graph due to window resize', { width, height });
 
         // Force the graph to resize with explicit dimensions
-        this.dfdService.graph.resize(width, height);
+        graph.resize(width, height);
 
         // Update the graph's container size
-        this.dfdService.graph.container.style.width = `${width}px`;
-        this.dfdService.graph.container.style.height = `${height}px`;
+        graph.container.style.width = `${width}px`;
+        graph.container.style.height = `${height}px`;
 
         this._resizeTimeout = null;
       }
@@ -227,16 +228,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param shapeType The type of shape to create
    */
   addRandomNode(shapeType: ShapeType = 'actor'): void {
-    if (!this.stateStore.isInitialized) {
+    if (!this.migrationFacade.isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
     }
 
-    // Use command service to create node with command pattern
-    this.commandService
+    // Use migration facade to create node with command pattern
+    this.migrationFacade
       .createRandomNode(shapeType, this.graphContainer.nativeElement as HTMLElement)
       .pipe(take(1))
-      .subscribe(result => {
+      .subscribe((result: CommandResult<Node>) => {
         if (result.success) {
           this.logger.info('Node created successfully', {
             nodeId: result.data?.id,
@@ -257,17 +258,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('DfdComponent initializeGraph called');
 
     try {
-      // Initialize the graph
-      const success = this.dfdService.initialize(this.graphContainer.nativeElement as HTMLElement);
+      // Initialize the graph using migration facade
+      const success = this.migrationFacade.initialize(
+        this.graphContainer.nativeElement as HTMLElement,
+      );
 
       if (success) {
         // Trigger an initial resize to ensure the graph fits the container
         setTimeout(() => {
-          if (this.dfdService.graph) {
+          const graph = this.migrationFacade.graph;
+          if (graph) {
             const container = this.graphContainer.nativeElement as HTMLElement;
             const width = container.clientWidth;
             const height = container.clientHeight;
-            this.dfdService.graph.resize(width, height);
+            graph.resize(width, height);
             this.logger.info('Initial graph resize', { width, height });
           }
         }, 0);
@@ -275,7 +279,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setupDomObservation();
 
         // Add passive event listeners for touch and wheel events
-        this.dfdService.addPassiveEventListeners(this.graphContainer.nativeElement as HTMLElement);
+        this.migrationFacade.addPassiveEventListeners(
+          this.graphContainer.nativeElement as HTMLElement,
+        );
 
         // Set up port tooltips
         this.setupPortTooltips();
@@ -284,7 +290,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.stateStore.updateState(
           {
             isInitialized: true,
-            graph: this.dfdService.graph,
+            graph: this.migrationFacade.graph,
           },
           'DfdComponent.initializeGraph',
         );
@@ -352,7 +358,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Set up tooltips for ports
    */
   private setupPortTooltips(): void {
-    const graph = this.dfdService.graph;
+    const graph = this.migrationFacade.graph;
     if (!graph) {
       return;
     }
@@ -419,10 +425,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Undo the last action
    */
   undo(): void {
-    this.commandService
+    this.migrationFacade
       .undo()
       .pipe(take(1))
-      .subscribe(result => {
+      .subscribe((result: CommandResult) => {
         if (result.success) {
           this.logger.info('Undo successful');
         } else {
@@ -435,10 +441,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Redo the last undone action
    */
   redo(): void {
-    this.commandService
+    this.migrationFacade
       .redo()
       .pipe(take(1))
-      .subscribe(result => {
+      .subscribe((result: CommandResult) => {
         if (result.success) {
           this.logger.info('Redo successful');
         } else {
@@ -452,26 +458,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param format The format to export to (png, jpeg, svg)
    */
   exportDiagram(format: ExportFormat): void {
-    this.dfdService.exportDiagram(format);
+    this.migrationFacade.exportDiagram(format);
   }
 
   /**
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    if (!this.stateStore.isInitialized) {
+    if (!this.migrationFacade.isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;
     }
 
-    const selectedNode = this.stateStore.selectedNode;
+    const selectedNode = this.migrationFacade.selectedNode;
     if (selectedNode) {
       this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
-      // Use command service to delete node with command pattern
-      this.commandService
+      // Use migration facade to delete node with command pattern
+      this.migrationFacade
         .deleteNode(selectedNode.id)
         .pipe(take(1))
-        .subscribe(result => {
+        .subscribe((result: CommandResult<void>) => {
           if (result.success) {
             this.logger.info('Node deleted successfully', { nodeId: selectedNode.id });
             // Selection is updated in the command service already
@@ -564,7 +570,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           threatModelId: this.threatModelId as string,
           mode: 'create',
           diagramId: this.dfdId || '',
-          cellId: this.stateStore.selectedNode?.id || '',
+          cellId: this.migrationFacade.selectedNode?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -605,7 +611,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
                 diagram_id: formResult.diagram_id || this.dfdId || '',
-                cell_id: formResult.cell_id || this.stateStore.selectedNode?.id || '',
+                cell_id: formResult.cell_id || this.migrationFacade.selectedNode?.id || '',
                 score: formResult.score || 10.0,
                 priority: formResult.priority || 'High',
                 issue_url: formResult.issue_url || 'n/a',

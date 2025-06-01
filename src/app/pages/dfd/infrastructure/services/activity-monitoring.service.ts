@@ -4,11 +4,7 @@ import { filter, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { UserTrackingService, UserActivityEvent } from './user-tracking.service';
 import { CollaborationApplicationService } from '../../application/collaboration/collaboration-application.service';
-import {
-  UserPresence,
-  PresenceStatus,
-  UserActivity,
-} from '../../domain/collaboration/user-presence';
+import { UserPresence, UserActivity } from '../../domain/collaboration/user-presence';
 import { User } from '../../domain/collaboration/user';
 
 /**

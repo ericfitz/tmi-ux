@@ -1,5 +1,5 @@
 import { User } from './user';
-import { UserPresence, PresenceStatus, UserActivity } from './user-presence';
+import { UserPresence } from './user-presence';
 import { Point } from '../value-objects/point';
 import {
   AnyCollaborationEvent,
