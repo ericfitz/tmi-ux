@@ -92,6 +92,32 @@ export class DiagramNode {
   }
 
   /**
+   * Creates a DiagramNode from a plain object
+   */
+  static fromJSON(data: {
+    data: Parameters<typeof NodeData.fromJSON>[0];
+    isSelected?: boolean;
+    isHighlighted?: boolean;
+    connectedEdgeIds?: string[];
+  }): DiagramNode {
+    const node = new DiagramNode(NodeData.fromJSON(data.data));
+
+    if (data.isSelected) {
+      node.select();
+    }
+
+    if (data.isHighlighted) {
+      node.highlight();
+    }
+
+    if (data.connectedEdgeIds) {
+      data.connectedEdgeIds.forEach(edgeId => node.addConnectedEdge(edgeId));
+    }
+
+    return node;
+  }
+
+  /**
    * Updates the node data
    */
   updateData(data: NodeData): void {
@@ -236,32 +262,6 @@ export class DiagramNode {
     cloned._isHighlighted = this._isHighlighted;
     cloned._connectedEdgeIds = new Set(this._connectedEdgeIds);
     return cloned;
-  }
-
-  /**
-   * Creates a DiagramNode from a plain object
-   */
-  static fromJSON(data: {
-    data: Parameters<typeof NodeData.fromJSON>[0];
-    isSelected?: boolean;
-    isHighlighted?: boolean;
-    connectedEdgeIds?: string[];
-  }): DiagramNode {
-    const node = new DiagramNode(NodeData.fromJSON(data.data));
-
-    if (data.isSelected) {
-      node.select();
-    }
-
-    if (data.isHighlighted) {
-      node.highlight();
-    }
-
-    if (data.connectedEdgeIds) {
-      data.connectedEdgeIds.forEach(edgeId => node.addConnectedEdge(edgeId));
-    }
-
-    return node;
   }
 
   /**

@@ -91,6 +91,27 @@ export class DiagramEdge {
   }
 
   /**
+   * Creates a DiagramEdge from a plain object
+   */
+  static fromJSON(data: {
+    data: Parameters<typeof EdgeData.fromJSON>[0];
+    isSelected?: boolean;
+    isHighlighted?: boolean;
+  }): DiagramEdge {
+    const edge = new DiagramEdge(EdgeData.fromJSON(data.data));
+
+    if (data.isSelected) {
+      edge.select();
+    }
+
+    if (data.isHighlighted) {
+      edge.highlight();
+    }
+
+    return edge;
+  }
+
+  /**
    * Updates the edge data
    */
   updateData(data: EdgeData): void {
@@ -238,27 +259,6 @@ export class DiagramEdge {
     }
 
     return false;
-  }
-
-  /**
-   * Creates a DiagramEdge from a plain object
-   */
-  static fromJSON(data: {
-    data: Parameters<typeof EdgeData.fromJSON>[0];
-    isSelected?: boolean;
-    isHighlighted?: boolean;
-  }): DiagramEdge {
-    const edge = new DiagramEdge(EdgeData.fromJSON(data.data));
-
-    if (data.isSelected) {
-      edge.select();
-    }
-
-    if (data.isHighlighted) {
-      edge.highlight();
-    }
-
-    return edge;
   }
 
   /**

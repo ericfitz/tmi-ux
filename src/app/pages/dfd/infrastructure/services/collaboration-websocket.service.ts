@@ -497,7 +497,7 @@ export class CollaborationWebSocketService implements OnDestroy {
         // TODO: Replace with LoggerService when available
         // console.warn('Unknown message type:', message.type);
       }
-    } catch (error) {
+    } catch {
       // TODO: Replace with LoggerService when available
       // console.error('Error handling WebSocket message:', error);
     }
@@ -666,7 +666,7 @@ export class CollaborationWebSocketService implements OnDestroy {
           // console.error('Failed to broadcast event:', error);
         },
       });
-    } catch (error) {
+    } catch {
       // TODO: Replace with LoggerService when available
       // console.error('Failed to broadcast event:', error);
     }

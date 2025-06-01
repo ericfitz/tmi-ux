@@ -53,6 +53,27 @@ export class UserPresence {
   }
 
   /**
+   * Create presence from JSON data
+   */
+  static fromJSON(data: {
+    user: ReturnType<User['toJSON']>;
+    status: PresenceStatus;
+    activity: UserActivity;
+    lastSeen: string;
+    cursorState?: CursorState;
+    currentTool?: string;
+  }): UserPresence {
+    return new UserPresence(
+      User.fromJSON(data.user),
+      data.status,
+      data.activity,
+      new Date(data.lastSeen),
+      data.cursorState,
+      data.currentTool,
+    );
+  }
+
+  /**
    * Update presence status
    */
   withStatus(status: PresenceStatus): UserPresence {
@@ -174,27 +195,6 @@ export class UserPresence {
    */
   isInactiveFor(milliseconds: number): boolean {
     return this.getTimeSinceLastSeen() > milliseconds;
-  }
-
-  /**
-   * Create presence from JSON data
-   */
-  static fromJSON(data: {
-    user: ReturnType<User['toJSON']>;
-    status: PresenceStatus;
-    activity: UserActivity;
-    lastSeen: string;
-    cursorState?: CursorState;
-    currentTool?: string;
-  }): UserPresence {
-    return new UserPresence(
-      User.fromJSON(data.user),
-      data.status,
-      data.activity,
-      new Date(data.lastSeen),
-      data.cursorState,
-      data.currentTool,
-    );
   }
 
   /**

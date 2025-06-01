@@ -22,37 +22,47 @@ import { AnyDiagramCommand } from '../../domain/commands/diagram-commands';
   providedIn: 'root',
 })
 export class CollaborationApplicationService {
+  /**
+   * Observable for reactive updates
+   */
+  public readonly currentUser$: Observable<User | null>;
+  public readonly currentSession$: Observable<CollaborationSession | null>;
+  public readonly collaborationEvents$: Observable<AnyCollaborationEvent>;
+  public readonly sessionParticipants$: Observable<UserPresence[]>;
+  public readonly activeParticipants$: Observable<UserPresence[]>;
+  public readonly unresolvedConflicts$: Observable<unknown[]>;
+  public readonly sessionState$: Observable<unknown>;
+
   private readonly _activeSessions = new Map<string, CollaborationSession>();
   private readonly _currentUser$ = new BehaviorSubject<User | null>(null);
   private readonly _currentSession$ = new BehaviorSubject<CollaborationSession | null>(null);
   private readonly _collaborationEvents$ = new Subject<AnyCollaborationEvent>();
 
-  /**
-   * Observable for reactive updates
-   */
-  public readonly currentUser$ = this._currentUser$.asObservable();
-  public readonly currentSession$ = this._currentSession$.asObservable();
-  public readonly collaborationEvents$ = this._collaborationEvents$.asObservable();
-  public readonly sessionParticipants$ = this.currentSession$.pipe(
-    map(session => session?.getParticipants() || []),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    shareReplay(1),
-  );
-  public readonly activeParticipants$ = this.currentSession$.pipe(
-    map(session => session?.getActiveParticipants() || []),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    shareReplay(1),
-  );
-  public readonly unresolvedConflicts$ = this.currentSession$.pipe(
-    map(session => session?.getUnresolvedConflicts() || []),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    shareReplay(1),
-  );
-  public readonly sessionState$ = this.currentSession$.pipe(
-    map(session => session?.state || null),
-    distinctUntilChanged(),
-    shareReplay(1),
-  );
+  constructor() {
+    this.currentUser$ = this._currentUser$.asObservable();
+    this.currentSession$ = this._currentSession$.asObservable();
+    this.collaborationEvents$ = this._collaborationEvents$.asObservable();
+    this.sessionParticipants$ = this.currentSession$.pipe(
+      map(session => session?.getParticipants() || []),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      shareReplay(1),
+    );
+    this.activeParticipants$ = this.currentSession$.pipe(
+      map(session => session?.getActiveParticipants() || []),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      shareReplay(1),
+    );
+    this.unresolvedConflicts$ = this.currentSession$.pipe(
+      map(session => session?.getUnresolvedConflicts() || []),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      shareReplay(1),
+    );
+    this.sessionState$ = this.currentSession$.pipe(
+      map(session => session?.state || null),
+      distinctUntilChanged(),
+      shareReplay(1),
+    );
+  }
 
   /**
    * Set the current user

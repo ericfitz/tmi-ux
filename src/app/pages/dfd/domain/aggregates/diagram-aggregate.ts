@@ -338,6 +338,9 @@ export class DiagramAggregate {
       throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
     }
 
+    // Get the node before deleting it
+    const node = this._nodes.get(command.nodeId)!;
+
     // Remove all connected edges
     const connectedEdges = this.getConnectedEdges(command.nodeId);
     for (const edge of connectedEdges) {
@@ -345,7 +348,6 @@ export class DiagramAggregate {
     }
 
     this._nodes.delete(command.nodeId);
-    const node = this._nodes.get(command.nodeId)!;
     this.addEvent(new NodeRemovedEvent(this._id, this._version, command.nodeId, node.data));
   }
 
@@ -408,8 +410,9 @@ export class DiagramAggregate {
       throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');
     }
 
-    this._edges.delete(command.edgeId);
+    // Get the edge before deleting it
     const edge = this._edges.get(command.edgeId)!;
+    this._edges.delete(command.edgeId);
     this.addEvent(new EdgeRemovedEvent(this._id, this._version, command.edgeId, edge.data));
   }
 

@@ -17,11 +17,11 @@ export interface MigrationFlags {
  * Default migration flags - all disabled initially for safe rollout
  */
 const DEFAULT_FLAGS: MigrationFlags = {
-  useNewGraphAdapter: false,
-  useNewCommandBus: false,
-  useNewCollaboration: false,
-  useNewStateManagement: false,
-  useNewEventSystem: false,
+  useNewGraphAdapter: true, // Enable new graph adapter
+  useNewCommandBus: true, // Enable new command bus
+  useNewCollaboration: false, // Keep collaboration disabled for now
+  useNewStateManagement: true, // Enable new state management
+  useNewEventSystem: false, // Keep event system disabled for now
 };
 
 /**
