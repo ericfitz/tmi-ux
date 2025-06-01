@@ -27,6 +27,26 @@ export interface DiagramChange {
  */
 export interface IChangeDetectionService {
   /**
+   * Observable for all detected changes
+   */
+  changes$: Observable<DiagramChange>;
+
+  /**
+   * Observable for user-initiated changes only
+   */
+  userChanges$: Observable<DiagramChange>;
+
+  /**
+   * Observable for remote changes only
+   */
+  remoteChanges$: Observable<DiagramChange>;
+
+  /**
+   * Observable for system changes only
+   */
+  systemChanges$: Observable<DiagramChange>;
+
+  /**
    * Mark the beginning of a user-initiated change
    */
   markUserChangeStart(): void;
@@ -70,26 +90,6 @@ export interface IChangeDetectionService {
    * Check if changes are currently being tracked
    */
   isTrackingChanges(): boolean;
-
-  /**
-   * Observable for all detected changes
-   */
-  changes$: Observable<DiagramChange>;
-
-  /**
-   * Observable for user-initiated changes only
-   */
-  userChanges$: Observable<DiagramChange>;
-
-  /**
-   * Observable for remote changes only
-   */
-  remoteChanges$: Observable<DiagramChange>;
-
-  /**
-   * Observable for system changes only
-   */
-  systemChanges$: Observable<DiagramChange>;
 
   /**
    * Record a change with the current context

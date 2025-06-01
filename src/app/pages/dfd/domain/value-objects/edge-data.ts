@@ -18,31 +18,54 @@ export class EdgeData {
   }
 
   /**
-   * Validates the edge data
+   * Creates EdgeData from a plain object
    */
-  private validate(): void {
-    if (!this.id || this.id.trim().length === 0) {
-      throw new Error('Edge ID cannot be empty');
-    }
+  static fromJSON(data: {
+    id: string;
+    sourceNodeId: string;
+    targetNodeId: string;
+    sourcePortId?: string;
+    targetPortId?: string;
+    label?: string;
+    vertices?: Array<{ x: number; y: number }>;
+    metadata?: Record<string, string>;
+  }): EdgeData {
+    return new EdgeData(
+      data.id,
+      data.sourceNodeId,
+      data.targetNodeId,
+      data.sourcePortId,
+      data.targetPortId,
+      data.label,
+      (data.vertices || []).map(vertex => Point.fromJSON(vertex)),
+      data.metadata || {},
+    );
+  }
 
-    if (!this.sourceNodeId || this.sourceNodeId.trim().length === 0) {
-      throw new Error('Source node ID cannot be empty');
-    }
+  /**
+   * Creates a simple edge between two nodes
+   */
+  static createSimple(
+    id: string,
+    sourceNodeId: string,
+    targetNodeId: string,
+    label?: string,
+  ): EdgeData {
+    return new EdgeData(id, sourceNodeId, targetNodeId, undefined, undefined, label);
+  }
 
-    if (!this.targetNodeId || this.targetNodeId.trim().length === 0) {
-      throw new Error('Target node ID cannot be empty');
-    }
-
-    if (this.sourceNodeId === this.targetNodeId) {
-      throw new Error('Self-loops are not allowed');
-    }
-
-    // Validate vertices are valid points
-    this.vertices.forEach((vertex, index) => {
-      if (!(vertex instanceof Point)) {
-        throw new Error(`Vertex at index ${index} must be a Point instance`);
-      }
-    });
+  /**
+   * Creates an edge with port connections
+   */
+  static createWithPorts(
+    id: string,
+    sourceNodeId: string,
+    targetNodeId: string,
+    sourcePortId: string,
+    targetPortId: string,
+    label?: string,
+  ): EdgeData {
+    return new EdgeData(id, sourceNodeId, targetNodeId, sourcePortId, targetPortId, label);
   }
 
   /**
@@ -203,31 +226,6 @@ export class EdgeData {
   }
 
   /**
-   * Checks if vertices arrays are equal
-   */
-  private verticesEqual(other: Point[]): boolean {
-    if (this.vertices.length !== other.length) {
-      return false;
-    }
-
-    return this.vertices.every((vertex, index) => vertex.equals(other[index]));
-  }
-
-  /**
-   * Checks if metadata objects are equal
-   */
-  private metadataEquals(other: Record<string, string>): boolean {
-    const thisKeys = Object.keys(this.metadata).sort();
-    const otherKeys = Object.keys(other).sort();
-
-    if (thisKeys.length !== otherKeys.length) {
-      return false;
-    }
-
-    return thisKeys.every(key => this.metadata[key] === other[key]);
-  }
-
-  /**
    * Returns a string representation of the edge data
    */
   toString(): string {
@@ -260,53 +258,55 @@ export class EdgeData {
   }
 
   /**
-   * Creates EdgeData from a plain object
+   * Validates the edge data
    */
-  static fromJSON(data: {
-    id: string;
-    sourceNodeId: string;
-    targetNodeId: string;
-    sourcePortId?: string;
-    targetPortId?: string;
-    label?: string;
-    vertices?: Array<{ x: number; y: number }>;
-    metadata?: Record<string, string>;
-  }): EdgeData {
-    return new EdgeData(
-      data.id,
-      data.sourceNodeId,
-      data.targetNodeId,
-      data.sourcePortId,
-      data.targetPortId,
-      data.label,
-      (data.vertices || []).map(vertex => Point.fromJSON(vertex)),
-      data.metadata || {},
-    );
+  private validate(): void {
+    if (!this.id || this.id.trim().length === 0) {
+      throw new Error('Edge ID cannot be empty');
+    }
+
+    if (!this.sourceNodeId || this.sourceNodeId.trim().length === 0) {
+      throw new Error('Source node ID cannot be empty');
+    }
+
+    if (!this.targetNodeId || this.targetNodeId.trim().length === 0) {
+      throw new Error('Target node ID cannot be empty');
+    }
+
+    if (this.sourceNodeId === this.targetNodeId) {
+      throw new Error('Self-loops are not allowed');
+    }
+
+    // Validate vertices are valid points
+    this.vertices.forEach((vertex, index) => {
+      if (!(vertex instanceof Point)) {
+        throw new Error(`Vertex at index ${index} must be a Point instance`);
+      }
+    });
   }
 
   /**
-   * Creates a simple edge between two nodes
+   * Checks if vertices arrays are equal
    */
-  static createSimple(
-    id: string,
-    sourceNodeId: string,
-    targetNodeId: string,
-    label?: string,
-  ): EdgeData {
-    return new EdgeData(id, sourceNodeId, targetNodeId, undefined, undefined, label);
+  private verticesEqual(other: Point[]): boolean {
+    if (this.vertices.length !== other.length) {
+      return false;
+    }
+
+    return this.vertices.every((vertex, index) => vertex.equals(other[index]));
   }
 
   /**
-   * Creates an edge with port connections
+   * Checks if metadata objects are equal
    */
-  static createWithPorts(
-    id: string,
-    sourceNodeId: string,
-    targetNodeId: string,
-    sourcePortId: string,
-    targetPortId: string,
-    label?: string,
-  ): EdgeData {
-    return new EdgeData(id, sourceNodeId, targetNodeId, sourcePortId, targetPortId, label);
+  private metadataEquals(other: Record<string, string>): boolean {
+    const thisKeys = Object.keys(this.metadata).sort();
+    const otherKeys = Object.keys(other).sort();
+
+    if (thisKeys.length !== otherKeys.length) {
+      return false;
+    }
+
+    return thisKeys.every(key => this.metadata[key] === other[key]);
   }
 }

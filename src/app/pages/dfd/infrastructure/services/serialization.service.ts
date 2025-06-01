@@ -7,6 +7,9 @@ import {
   SerializedEvent,
   SerializedDiagramState,
 } from '../interfaces/serialization.interface';
+import { Point } from '../../domain/value-objects/point';
+import { NodeData } from '../../domain/value-objects/node-data';
+import { EdgeData } from '../../domain/value-objects/edge-data';
 
 /**
  * Service that handles serialization and deserialization of domain objects
@@ -86,7 +89,7 @@ export class SerializationService implements ISerializationService {
         super(
           data.type,
           data.aggregateId,
-          (data.metadata as any)?.aggregateVersion || 1,
+          ((data.metadata as Record<string, unknown>)?.['aggregateVersion'] as number) || 1,
           data.data,
         );
       }
@@ -316,24 +319,24 @@ export class SerializationService implements ISerializationService {
           diagramId,
           userId,
           commandData['nodeId'] as string,
-          commandData['position'] as any,
-          commandData['data'] as any,
+          commandData['position'] as Point,
+          commandData['data'] as NodeData,
         );
       case 'UPDATE_NODE_POSITION':
         return DiagramCommandFactory.updateNodePosition(
           diagramId,
           userId,
           commandData['nodeId'] as string,
-          commandData['newPosition'] as any,
-          commandData['oldPosition'] as any,
+          commandData['newPosition'] as Point,
+          commandData['oldPosition'] as Point,
         );
       case 'UPDATE_NODE_DATA':
         return DiagramCommandFactory.updateNodeData(
           diagramId,
           userId,
           commandData['nodeId'] as string,
-          commandData['newData'] as any,
-          commandData['oldData'] as any,
+          commandData['newData'] as NodeData,
+          commandData['oldData'] as NodeData,
         );
       case 'REMOVE_NODE':
         return DiagramCommandFactory.removeNode(diagramId, userId, commandData['nodeId'] as string);
@@ -344,15 +347,15 @@ export class SerializationService implements ISerializationService {
           commandData['edgeId'] as string,
           commandData['sourceNodeId'] as string,
           commandData['targetNodeId'] as string,
-          commandData['data'] as any,
+          commandData['data'] as EdgeData,
         );
       case 'UPDATE_EDGE_DATA':
         return DiagramCommandFactory.updateEdgeData(
           diagramId,
           userId,
           commandData['edgeId'] as string,
-          commandData['newData'] as any,
-          commandData['oldData'] as any,
+          commandData['newData'] as EdgeData,
+          commandData['oldData'] as EdgeData,
         );
       case 'REMOVE_EDGE':
         return DiagramCommandFactory.removeEdge(diagramId, userId, commandData['edgeId'] as string);

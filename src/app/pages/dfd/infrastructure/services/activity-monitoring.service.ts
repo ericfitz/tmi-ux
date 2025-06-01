@@ -1,6 +1,6 @@
 import { Injectable, NgZone, Optional, Inject, InjectionToken } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, timer, combineLatest } from 'rxjs';
-import { map, filter, distinctUntilChanged, takeUntil, switchMap } from 'rxjs/operators';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { filter, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { UserTrackingService, UserActivityEvent } from './user-tracking.service';
 import { CollaborationApplicationService } from '../../application/collaboration/collaboration-application.service';
@@ -329,7 +329,7 @@ export class ActivityMonitoringService {
   /**
    * Create new user metrics
    */
-  private _createUserMetrics(userId: string, user: User): ActivityMetrics {
+  private _createUserMetrics(userId: string, _user: User): ActivityMetrics {
     return {
       userId,
       sessionStartTime: new Date(),

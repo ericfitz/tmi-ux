@@ -98,20 +98,23 @@ export class WebSocketAdapter {
   /**
    * Observable for connection state changes
    */
-  public readonly connectionState$ = this._connectionState$.pipe(
-    distinctUntilChanged(),
-    shareReplay(1),
-  );
+  get connectionState$(): Observable<WebSocketState> {
+    return this._connectionState$.pipe(distinctUntilChanged(), shareReplay(1));
+  }
 
   /**
    * Observable for incoming messages
    */
-  public readonly messages$ = this._messages$.asObservable();
+  get messages$(): Observable<WebSocketMessage> {
+    return this._messages$.asObservable();
+  }
 
   /**
    * Observable for connection errors
    */
-  public readonly errors$ = this._errors$.asObservable();
+  get errors$(): Observable<Error> {
+    return this._errors$.asObservable();
+  }
 
   /**
    * Get current connection state
@@ -146,7 +149,7 @@ export class WebSocketAdapter {
         this._setupEventListeners();
 
         // Wait for connection to open
-        const openHandler = () => {
+        const openHandler = (): void => {
           this._connectionState$.next(WebSocketState.CONNECTED);
           this._reconnectAttempts = 0;
           this._startHeartbeat();
@@ -154,7 +157,7 @@ export class WebSocketAdapter {
           observer.complete();
         };
 
-        const errorHandler = (error: Event) => {
+        const errorHandler = (_error: Event): void => {
           this._connectionState$.next(WebSocketState.ERROR);
           observer.error(new Error('WebSocket connection failed'));
         };
@@ -318,7 +321,7 @@ export class WebSocketAdapter {
 
     this._socket.addEventListener('message', event => {
       try {
-        const message: WebSocketMessage = JSON.parse(event.data);
+        const message = JSON.parse(event.data as string) as WebSocketMessage;
 
         // Handle acknowledgments
         if (message.type === MessageType.ACKNOWLEDGMENT) {
@@ -338,7 +341,7 @@ export class WebSocketAdapter {
         }
 
         this._messages$.next(message);
-      } catch (error) {
+      } catch {
         this._errors$.next(new Error('Failed to parse WebSocket message'));
       }
     });
@@ -353,7 +356,7 @@ export class WebSocketAdapter {
       }
     });
 
-    this._socket.addEventListener('error', error => {
+    this._socket.addEventListener('error', () => {
       this._connectionState$.next(WebSocketState.ERROR);
       this._errors$.next(new Error('WebSocket error occurred'));
     });
@@ -468,7 +471,7 @@ export class WebSocketAdapter {
    * Clear all pending acknowledgments
    */
   private _clearPendingAcks(): void {
-    for (const [messageId, pending] of Array.from(this._pendingAcks.entries())) {
+    for (const [, pending] of Array.from(this._pendingAcks.entries())) {
       clearTimeout(pending.timeout);
       pending.reject(new Error('Connection closed'));
     }

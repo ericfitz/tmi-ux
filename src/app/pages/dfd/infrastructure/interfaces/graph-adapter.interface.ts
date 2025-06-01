@@ -10,6 +10,36 @@ import { Point } from '../../domain/value-objects/point';
  */
 export interface IGraphAdapter {
   /**
+   * Observable for node addition events
+   */
+  nodeAdded$: Observable<Node>;
+
+  /**
+   * Observable for node removal events
+   */
+  nodeRemoved$: Observable<{ nodeId: string; node: Node }>;
+
+  /**
+   * Observable for node movement events
+   */
+  nodeMoved$: Observable<{ nodeId: string; position: Point; previous: Point }>;
+
+  /**
+   * Observable for edge addition events
+   */
+  edgeAdded$: Observable<Edge>;
+
+  /**
+   * Observable for edge removal events
+   */
+  edgeRemoved$: Observable<{ edgeId: string; edge: Edge }>;
+
+  /**
+   * Observable for selection changes
+   */
+  selectionChanged$: Observable<{ selected: string[]; deselected: string[] }>;
+
+  /**
    * Initialize the graph with the given container element
    */
   initialize(container: HTMLElement): void;
@@ -78,36 +108,6 @@ export interface IGraphAdapter {
    * Center the graph in the viewport
    */
   centerContent(): void;
-
-  /**
-   * Observable for node addition events
-   */
-  nodeAdded$: Observable<Node>;
-
-  /**
-   * Observable for node removal events
-   */
-  nodeRemoved$: Observable<{ nodeId: string; node: Node }>;
-
-  /**
-   * Observable for node movement events
-   */
-  nodeMoved$: Observable<{ nodeId: string; position: Point; previous: Point }>;
-
-  /**
-   * Observable for edge addition events
-   */
-  edgeAdded$: Observable<Edge>;
-
-  /**
-   * Observable for edge removal events
-   */
-  edgeRemoved$: Observable<{ edgeId: string; edge: Edge }>;
-
-  /**
-   * Observable for selection changes
-   */
-  selectionChanged$: Observable<{ selected: string[]; deselected: string[] }>;
 
   /**
    * Dispose of the graph and clean up resources

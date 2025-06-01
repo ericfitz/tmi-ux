@@ -60,23 +60,6 @@ export class CollaborationSession {
     this._validate();
   }
 
-  /**
-   * Create a new collaboration session
-   */
-  static create(
-    sessionId: string,
-    diagramId: string,
-    createdBy: string,
-    creator: User,
-  ): CollaborationSession {
-    const session = new CollaborationSession(sessionId, diagramId, createdBy, new Date());
-
-    // Add creator as first participant
-    session.addParticipant(creator);
-
-    return session;
-  }
-
   // Getters
   get state(): SessionState {
     return this._state;
@@ -96,6 +79,23 @@ export class CollaborationSession {
 
   get activeParticipantCount(): number {
     return Array.from(this._participants.values()).filter(p => p.isOnline()).length;
+  }
+
+  /**
+   * Create a new collaboration session
+   */
+  static create(
+    sessionId: string,
+    diagramId: string,
+    createdBy: string,
+    creator: User,
+  ): CollaborationSession {
+    const session = new CollaborationSession(sessionId, diagramId, createdBy, new Date());
+
+    // Add creator as first participant
+    session.addParticipant(creator);
+
+    return session;
   }
 
   /**
@@ -394,15 +394,15 @@ export class CollaborationSession {
   private _commandsConflict(cmd1: AnyDiagramCommand, cmd2: AnyDiagramCommand): boolean {
     // Check for conflicts on same node
     if (cmd1.type.includes('NODE') && cmd2.type.includes('NODE')) {
-      const nodeId1 = (cmd1 as any).nodeId;
-      const nodeId2 = (cmd2 as any).nodeId;
+      const nodeId1 = (cmd1 as { nodeId: string }).nodeId;
+      const nodeId2 = (cmd2 as { nodeId: string }).nodeId;
       return nodeId1 === nodeId2;
     }
 
     // Check for conflicts on same edge
     if (cmd1.type.includes('EDGE') && cmd2.type.includes('EDGE')) {
-      const edgeId1 = (cmd1 as any).edgeId;
-      const edgeId2 = (cmd2 as any).edgeId;
+      const edgeId1 = (cmd1 as { edgeId: string }).edgeId;
+      const edgeId2 = (cmd2 as { edgeId: string }).edgeId;
       return edgeId1 === edgeId2;
     }
 

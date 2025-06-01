@@ -1,7 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { UserPresence } from '../../domain/collaboration/user-presence';
 import { CollaborationApplicationService } from '../../application/collaboration/collaboration-application.service';

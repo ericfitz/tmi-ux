@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 
@@ -29,6 +29,48 @@ export class X6GraphAdapter implements IGraphAdapter {
   private readonly _edgeAdded$ = new Subject<Edge>();
   private readonly _edgeRemoved$ = new Subject<{ edgeId: string; edge: Edge }>();
   private readonly _selectionChanged$ = new Subject<{ selected: string[]; deselected: string[] }>();
+
+  /**
+   * Observable for node addition events
+   */
+  get nodeAdded$(): Observable<Node> {
+    return this._nodeAdded$.asObservable();
+  }
+
+  /**
+   * Observable for node removal events
+   */
+  get nodeRemoved$(): Observable<{ nodeId: string; node: Node }> {
+    return this._nodeRemoved$.asObservable();
+  }
+
+  /**
+   * Observable for node movement events
+   */
+  get nodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
+    return this._nodeMoved$.asObservable();
+  }
+
+  /**
+   * Observable for edge addition events
+   */
+  get edgeAdded$(): Observable<Edge> {
+    return this._edgeAdded$.asObservable();
+  }
+
+  /**
+   * Observable for edge removal events
+   */
+  get edgeRemoved$(): Observable<{ edgeId: string; edge: Edge }> {
+    return this._edgeRemoved$.asObservable();
+  }
+
+  /**
+   * Observable for selection changes
+   */
+  get selectionChanged$(): Observable<{ selected: string[]; deselected: string[] }> {
+    return this._selectionChanged$.asObservable();
+  }
 
   /**
    * Initialize the graph with the given container element
@@ -119,7 +161,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       height: node.data.height || 60,
       shape: this._getX6ShapeForNodeType(node.data.type as string),
       label: node.data.label,
-      attrs: this._getNodeAttrs(node.data.type as string) as any,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      attrs: this._getNodeAttrs(node.data.type as string),
       data: {
         ...node.data,
         domainNodeId: node.id,
@@ -164,7 +207,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       source: edge.sourceNodeId,
       target: edge.targetNodeId,
       label: edge.data.label as string,
-      attrs: this._getEdgeAttrs('data-flow') as any,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      attrs: this._getEdgeAttrs('data-flow'),
       data: {
         ...edge.data,
         domainEdgeId: edge.id,
@@ -242,48 +286,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   centerContent(): void {
     const graph = this.getGraph();
     graph.centerContent();
-  }
-
-  /**
-   * Observable for node addition events
-   */
-  get nodeAdded$(): Observable<Node> {
-    return this._nodeAdded$.asObservable();
-  }
-
-  /**
-   * Observable for node removal events
-   */
-  get nodeRemoved$(): Observable<{ nodeId: string; node: Node }> {
-    return this._nodeRemoved$.asObservable();
-  }
-
-  /**
-   * Observable for node movement events
-   */
-  get nodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
-    return this._nodeMoved$.asObservable();
-  }
-
-  /**
-   * Observable for edge addition events
-   */
-  get edgeAdded$(): Observable<Edge> {
-    return this._edgeAdded$.asObservable();
-  }
-
-  /**
-   * Observable for edge removal events
-   */
-  get edgeRemoved$(): Observable<{ edgeId: string; edge: Edge }> {
-    return this._edgeRemoved$.asObservable();
-  }
-
-  /**
-   * Observable for selection changes
-   */
-  get selectionChanged$(): Observable<{ selected: string[]; deselected: string[] }> {
-    return this._selectionChanged$.asObservable();
   }
 
   /**
@@ -380,7 +382,8 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get X6 node attributes for domain node type
    */
-  private _getNodeAttrs(nodeType: string): Record<string, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _getNodeAttrs(nodeType: string): any {
     const baseAttrs = {
       body: {
         strokeWidth: 2,
@@ -439,7 +442,8 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get X6 edge attributes for domain edge type
    */
-  private _getEdgeAttrs(edgeType: string): Record<string, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _getEdgeAttrs(edgeType: string): any {
     const baseAttrs = {
       line: {
         stroke: '#A2B1C3',

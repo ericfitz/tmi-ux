@@ -87,7 +87,7 @@ export class DfdApplicationService {
     this._isLoading$.next(true);
 
     return this.diagramRepository.findById(diagramId).pipe(
-      map((diagram: any) => {
+      map((diagram: { toSnapshot(): DiagramSnapshot } | null) => {
         if (!diagram) {
           throw new Error(`Diagram with ID ${diagramId} not found`);
         }
@@ -314,7 +314,8 @@ export class DfdApplicationService {
    * Handles application errors
    */
   private handleError(error: Error): void {
-    console.error('[DfdApplicationService] Error:', error);
+    // TODO: Replace with LoggerService when available
+    // console.error('[DfdApplicationService] Error:', error);
     this._errors$.next(error);
   }
 

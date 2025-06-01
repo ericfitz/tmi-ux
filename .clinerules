@@ -48,7 +48,6 @@ This file provides guidance to Roo Code when working with code in this repositor
 
 ## User Preferences
 
-- When starting, read all of the markdown files in the context/ directory
 - When making changes to the code:
   - Always run a build and fix any build errors
   - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance

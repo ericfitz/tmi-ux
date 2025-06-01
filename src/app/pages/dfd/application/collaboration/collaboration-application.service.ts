@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
 import { map, filter, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
-import {
-  CollaborationSession,
-  SessionState,
-} from '../../domain/collaboration/collaboration-session';
+import { CollaborationSession } from '../../domain/collaboration/collaboration-session';
 import { User } from '../../domain/collaboration/user';
 import {
   UserPresence,
@@ -30,41 +27,27 @@ export class CollaborationApplicationService {
   private readonly _currentSession$ = new BehaviorSubject<CollaborationSession | null>(null);
   private readonly _collaborationEvents$ = new Subject<AnyCollaborationEvent>();
 
-  // Observables for reactive updates
+  /**
+   * Observable for reactive updates
+   */
   public readonly currentUser$ = this._currentUser$.asObservable();
   public readonly currentSession$ = this._currentSession$.asObservable();
   public readonly collaborationEvents$ = this._collaborationEvents$.asObservable();
-
-  /**
-   * Observable for current session participants
-   */
   public readonly sessionParticipants$ = this.currentSession$.pipe(
     map(session => session?.getParticipants() || []),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     shareReplay(1),
   );
-
-  /**
-   * Observable for active participants only
-   */
   public readonly activeParticipants$ = this.currentSession$.pipe(
     map(session => session?.getActiveParticipants() || []),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     shareReplay(1),
   );
-
-  /**
-   * Observable for unresolved conflicts
-   */
   public readonly unresolvedConflicts$ = this.currentSession$.pipe(
     map(session => session?.getUnresolvedConflicts() || []),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     shareReplay(1),
   );
-
-  /**
-   * Observable for session state changes
-   */
   public readonly sessionState$ = this.currentSession$.pipe(
     map(session => session?.state || null),
     distinctUntilChanged(),
@@ -406,7 +389,6 @@ export class CollaborationApplicationService {
    * Clean up inactive sessions
    */
   cleanupInactiveSessions(inactivityThreshold: number = 30 * 60 * 1000): void {
-    const now = Date.now();
     const sessionsToRemove: string[] = [];
 
     for (const [sessionId, session] of this._activeSessions) {
@@ -430,6 +412,16 @@ export class CollaborationApplicationService {
   }
 
   /**
+   * Dispose of the service and clean up resources
+   */
+  dispose(): void {
+    this._activeSessions.clear();
+    this._currentUser$.complete();
+    this._currentSession$.complete();
+    this._collaborationEvents$.complete();
+  }
+
+  /**
    * Emit session events
    */
   private _emitSessionEvents(session: CollaborationSession): void {
@@ -438,15 +430,5 @@ export class CollaborationApplicationService {
       this._collaborationEvents$.next(event);
     }
     session.markEventsAsCommitted();
-  }
-
-  /**
-   * Dispose of the service and clean up resources
-   */
-  dispose(): void {
-    this._activeSessions.clear();
-    this._currentUser$.complete();
-    this._currentSession$.complete();
-    this._collaborationEvents$.complete();
   }
 }

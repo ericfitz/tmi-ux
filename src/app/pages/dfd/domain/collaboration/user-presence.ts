@@ -177,27 +177,6 @@ export class UserPresence {
   }
 
   /**
-   * Convert to JSON representation
-   */
-  toJSON(): {
-    user: ReturnType<User['toJSON']>;
-    status: PresenceStatus;
-    activity: UserActivity;
-    lastSeen: string;
-    cursorState?: CursorState;
-    currentTool?: string;
-  } {
-    return {
-      user: this.user.toJSON(),
-      status: this.status,
-      activity: this.activity,
-      lastSeen: this.lastSeen.toISOString(),
-      cursorState: this.cursorState,
-      currentTool: this.currentTool,
-    };
-  }
-
-  /**
    * Create presence from JSON data
    */
   static fromJSON(data: {
@@ -216,6 +195,27 @@ export class UserPresence {
       data.cursorState,
       data.currentTool,
     );
+  }
+
+  /**
+   * Convert to JSON representation
+   */
+  toJSON(): {
+    user: ReturnType<User['toJSON']>;
+    status: PresenceStatus;
+    activity: UserActivity;
+    lastSeen: string;
+    cursorState?: CursorState;
+    currentTool?: string;
+  } {
+    return {
+      user: this.user.toJSON(),
+      status: this.status,
+      activity: this.activity,
+      lastSeen: this.lastSeen.toISOString(),
+      cursorState: this.cursorState,
+      currentTool: this.currentTool,
+    };
   }
 
   /**

@@ -1,5 +1,5 @@
 import { Injectable, NgZone, Optional, Inject, InjectionToken } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, fromEvent, merge } from 'rxjs';
+import { Subject, BehaviorSubject, fromEvent } from 'rxjs';
 import { map, filter, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { Point } from '../../domain/value-objects/point';

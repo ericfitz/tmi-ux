@@ -57,6 +57,42 @@ export class DiagramAggregate {
     private readonly _createdBy: string = '',
   ) {}
 
+  get id(): string {
+    return this._id;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  get description(): string {
+    return this._description;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
+
+  get createdBy(): string {
+    return this._createdBy;
+  }
+
+  get version(): number {
+    return this._version;
+  }
+
+  get nodes(): ReadonlyMap<string, DiagramNode> {
+    return this._nodes;
+  }
+
+  get edges(): ReadonlyMap<string, DiagramEdge> {
+    return this._edges;
+  }
+
   /**
    * Creates a new diagram aggregate
    */
@@ -121,286 +157,6 @@ export class DiagramAggregate {
 
     this._updatedAt = command.timestamp;
     this._version++;
-  }
-
-  /**
-   * Adds a node to the diagram
-   */
-  private handleAddNode(command: AddNodeCommand): void {
-    if (this._nodes.has(command.nodeId)) {
-      throw new DiagramDomainError(
-        `Node with ID ${command.nodeId} already exists`,
-        'NODE_ALREADY_EXISTS',
-      );
-    }
-
-    // Create NodeData with the position and other data
-    const nodeData = new NodeData(
-      command.nodeId,
-      command.data.type,
-      command.data.label,
-      command.position,
-      command.data.width,
-      command.data.height,
-      command.data.metadata,
-    );
-
-    const node = new DiagramNode(nodeData);
-    this._nodes.set(command.nodeId, node);
-
-    this.addEvent(new NodeAddedEvent(this._id, this._version, nodeData));
-  }
-
-  /**
-   * Updates a node's position
-   */
-  private handleUpdateNodePosition(command: UpdateNodePositionCommand): void {
-    const node = this._nodes.get(command.nodeId);
-    if (!node) {
-      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
-    }
-
-    // Update the node position using the moveTo method
-    node.moveTo(command.newPosition);
-
-    this.addEvent(
-      new NodeMovedEvent(
-        this._id,
-        this._version,
-        command.nodeId,
-        command.oldPosition,
-        command.newPosition,
-      ),
-    );
-  }
-
-  /**
-   * Updates a node's data
-   */
-  private handleUpdateNodeData(command: UpdateNodeDataCommand): void {
-    const node = this._nodes.get(command.nodeId);
-    if (!node) {
-      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
-    }
-
-    // Update the node data
-    node.updateData(command.newData);
-
-    // If the label changed, emit a label updated event
-    if (command.oldData.label !== command.newData.label) {
-      this.addEvent(
-        new NodeLabelUpdatedEvent(
-          this._id,
-          this._version,
-          command.nodeId,
-          command.oldData.label,
-          command.newData.label,
-        ),
-      );
-    }
-  }
-
-  /**
-   * Removes a node from the diagram
-   */
-  private handleRemoveNode(command: RemoveNodeCommand): void {
-    const node = this._nodes.get(command.nodeId);
-    if (!node) {
-      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
-    }
-
-    // Remove all edges connected to this node
-    const connectedEdges = Array.from(this._edges.values()).filter(
-      edge => edge.sourceNodeId === command.nodeId || edge.targetNodeId === command.nodeId,
-    );
-
-    for (const edge of connectedEdges) {
-      this._edges.delete(edge.id);
-      this.addEvent(new EdgeRemovedEvent(this._id, this._version, edge.id, edge.data));
-    }
-
-    this._nodes.delete(command.nodeId);
-
-    this.addEvent(new NodeRemovedEvent(this._id, this._version, command.nodeId, node.data));
-  }
-
-  /**
-   * Adds an edge to the diagram
-   */
-  private handleAddEdge(command: AddEdgeCommand): void {
-    if (this._edges.has(command.edgeId)) {
-      throw new DiagramDomainError(
-        `Edge with ID ${command.edgeId} already exists`,
-        'EDGE_ALREADY_EXISTS',
-      );
-    }
-
-    // Validate that source and target nodes exist
-    if (!this._nodes.has(command.sourceNodeId)) {
-      throw new DiagramDomainError(
-        `Source node with ID ${command.sourceNodeId} not found`,
-        'SOURCE_NODE_NOT_FOUND',
-      );
-    }
-
-    if (!this._nodes.has(command.targetNodeId)) {
-      throw new DiagramDomainError(
-        `Target node with ID ${command.targetNodeId} not found`,
-        'TARGET_NODE_NOT_FOUND',
-      );
-    }
-
-    // Prevent self-loops for certain node types
-    if (command.sourceNodeId === command.targetNodeId) {
-      const sourceNode = this._nodes.get(command.sourceNodeId)!;
-      if (sourceNode.data.type === 'actor' || sourceNode.data.type === 'store') {
-        throw new DiagramDomainError(
-          'Self-loops are not allowed for actor and store nodes',
-          'SELF_LOOP_NOT_ALLOWED',
-        );
-      }
-    }
-
-    // Create EdgeData with the provided information
-    const edgeData = new EdgeData(
-      command.edgeId,
-      command.sourceNodeId,
-      command.targetNodeId,
-      command.data.sourcePortId,
-      command.data.targetPortId,
-      command.data.label,
-      command.data.vertices,
-      command.data.metadata,
-    );
-
-    const edge = new DiagramEdge(edgeData);
-    this._edges.set(command.edgeId, edge);
-
-    // Update node connections
-    const sourceNode = this._nodes.get(command.sourceNodeId)!;
-    const targetNode = this._nodes.get(command.targetNodeId)!;
-    sourceNode.addConnectedEdge(command.edgeId);
-    targetNode.addConnectedEdge(command.edgeId);
-
-    this.addEvent(new EdgeAddedEvent(this._id, this._version, edgeData));
-  }
-
-  /**
-   * Updates an edge's data
-   */
-  private handleUpdateEdgeData(command: UpdateEdgeDataCommand): void {
-    const edge = this._edges.get(command.edgeId);
-    if (!edge) {
-      throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');
-    }
-
-    // Update the edge data
-    edge.updateData(command.newData);
-
-    // Emit a diagram changed event for edge updates
-    this.addEvent(
-      new DiagramChangedEvent(this._id, this._version, 'edge', [command.edgeId], {
-        action: 'updated',
-      }),
-    );
-  }
-
-  /**
-   * Removes an edge from the diagram
-   */
-  private handleRemoveEdge(command: RemoveEdgeCommand): void {
-    const edge = this._edges.get(command.edgeId);
-    if (!edge) {
-      throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');
-    }
-
-    // Update node connections
-    const sourceNode = this._nodes.get(edge.sourceNodeId);
-    const targetNode = this._nodes.get(edge.targetNodeId);
-    if (sourceNode) {
-      sourceNode.removeConnectedEdge(command.edgeId);
-    }
-    if (targetNode) {
-      targetNode.removeConnectedEdge(command.edgeId);
-    }
-
-    this._edges.delete(command.edgeId);
-
-    this.addEvent(new EdgeRemovedEvent(this._id, this._version, command.edgeId, edge.data));
-  }
-
-  /**
-   * Updates diagram metadata
-   */
-  private handleUpdateDiagramMetadata(command: UpdateDiagramMetadataCommand): void {
-    const oldName = this._name;
-    const oldDescription = this._description;
-
-    if (command.name !== undefined) {
-      this._name = command.name;
-    }
-    if (command.description !== undefined) {
-      this._description = command.description;
-    }
-
-    this.addEvent(
-      new DiagramChangedEvent(this._id, this._version, 'bulk', [], {
-        action: 'metadata_updated',
-        oldName,
-        newName: this._name,
-        oldDescription,
-        newDescription: this._description,
-      }),
-    );
-  }
-
-  /**
-   * Validates a command before processing
-   */
-  private validateCommand(command: AnyDiagramCommand): void {
-    if (command.diagramId !== this._id) {
-      throw new DiagramDomainError(
-        `Command diagram ID ${command.diagramId} does not match aggregate ID ${this._id}`,
-        'DIAGRAM_ID_MISMATCH',
-      );
-    }
-  }
-
-  // Getters
-  get id(): string {
-    return this._id;
-  }
-
-  get name(): string {
-    return this._name;
-  }
-
-  get description(): string {
-    return this._description;
-  }
-
-  get createdAt(): Date {
-    return this._createdAt;
-  }
-
-  get updatedAt(): Date {
-    return this._updatedAt;
-  }
-
-  get createdBy(): string {
-    return this._createdBy;
-  }
-
-  get version(): number {
-    return this._version;
-  }
-
-  get nodes(): ReadonlyMap<string, DiagramNode> {
-    return this._nodes;
-  }
-
-  get edges(): ReadonlyMap<string, DiagramEdge> {
-    return this._edges;
   }
 
   /**
@@ -484,6 +240,198 @@ export class DiagramAggregate {
       nodes: Array.from(this._nodes.values()).map(node => node.toJSON()),
       edges: Array.from(this._edges.values()).map(edge => edge.toJSON()),
     };
+  }
+
+  /**
+   * Adds a node to the diagram
+   */
+  private handleAddNode(command: AddNodeCommand): void {
+    if (this._nodes.has(command.nodeId)) {
+      throw new DiagramDomainError(
+        `Node with ID ${command.nodeId} already exists`,
+        'NODE_ALREADY_EXISTS',
+      );
+    }
+
+    // Create NodeData with the position and other data
+    const nodeData = new NodeData(
+      command.nodeId,
+      command.data.type,
+      command.data.label,
+      command.position,
+      command.data.width,
+      command.data.height,
+      command.data.metadata,
+    );
+
+    const node = new DiagramNode(nodeData);
+    this._nodes.set(command.nodeId, node);
+
+    this.addEvent(new NodeAddedEvent(this._id, this._version, nodeData));
+  }
+
+  /**
+   * Validates a command before processing
+   */
+  private validateCommand(command: AnyDiagramCommand): void {
+    if (!command.diagramId || command.diagramId !== this._id) {
+      throw new DiagramDomainError(
+        `Invalid diagram ID in command: ${command.diagramId}`,
+        'INVALID_DIAGRAM_ID',
+      );
+    }
+  }
+
+  /**
+   * Updates node position
+   */
+  private handleUpdateNodePosition(command: UpdateNodePositionCommand): void {
+    const node = this._nodes.get(command.nodeId);
+    if (!node) {
+      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
+    }
+
+    const updatedNodeData = node.data.withPosition(command.newPosition);
+    const updatedNode = new DiagramNode(updatedNodeData);
+    this._nodes.set(command.nodeId, updatedNode);
+
+    this.addEvent(
+      new NodeMovedEvent(
+        this._id,
+        this._version,
+        command.nodeId,
+        command.oldPosition,
+        command.newPosition,
+      ),
+    );
+  }
+
+  /**
+   * Updates node data
+   */
+  private handleUpdateNodeData(command: UpdateNodeDataCommand): void {
+    const node = this._nodes.get(command.nodeId);
+    if (!node) {
+      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
+    }
+
+    const updatedNode = new DiagramNode(command.newData);
+    this._nodes.set(command.nodeId, updatedNode);
+
+    if (command.newData.label !== command.oldData.label) {
+      this.addEvent(
+        new NodeLabelUpdatedEvent(
+          this._id,
+          this._version,
+          command.nodeId,
+          command.oldData.label,
+          command.newData.label,
+        ),
+      );
+    }
+  }
+
+  /**
+   * Removes a node from the diagram
+   */
+  private handleRemoveNode(command: RemoveNodeCommand): void {
+    if (!this._nodes.has(command.nodeId)) {
+      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
+    }
+
+    // Remove all connected edges
+    const connectedEdges = this.getConnectedEdges(command.nodeId);
+    for (const edge of connectedEdges) {
+      this._edges.delete(edge.id);
+    }
+
+    this._nodes.delete(command.nodeId);
+    const node = this._nodes.get(command.nodeId)!;
+    this.addEvent(new NodeRemovedEvent(this._id, this._version, command.nodeId, node.data));
+  }
+
+  /**
+   * Adds an edge to the diagram
+   */
+  private handleAddEdge(command: AddEdgeCommand): void {
+    if (this._edges.has(command.edgeId)) {
+      throw new DiagramDomainError(
+        `Edge with ID ${command.edgeId} already exists`,
+        'EDGE_ALREADY_EXISTS',
+      );
+    }
+
+    // Validate source and target nodes exist
+    if (!this._nodes.has(command.sourceNodeId)) {
+      throw new DiagramDomainError(
+        `Source node ${command.sourceNodeId} not found`,
+        'SOURCE_NODE_NOT_FOUND',
+      );
+    }
+    if (!this._nodes.has(command.targetNodeId)) {
+      throw new DiagramDomainError(
+        `Target node ${command.targetNodeId} not found`,
+        'TARGET_NODE_NOT_FOUND',
+      );
+    }
+
+    const edge = new DiagramEdge(command.data);
+    this._edges.set(command.edgeId, edge);
+
+    this.addEvent(new EdgeAddedEvent(this._id, this._version, command.data));
+  }
+
+  /**
+   * Updates edge data
+   */
+  private handleUpdateEdgeData(command: UpdateEdgeDataCommand): void {
+    const edge = this._edges.get(command.edgeId);
+    if (!edge) {
+      throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');
+    }
+
+    const updatedEdge = new DiagramEdge(command.newData);
+    this._edges.set(command.edgeId, updatedEdge);
+
+    // Emit appropriate events based on what changed
+    this.addEvent(
+      new DiagramChangedEvent(this._id, this._version, 'edge', [command.edgeId], {
+        action: 'updated',
+      }),
+    );
+  }
+
+  /**
+   * Removes an edge from the diagram
+   */
+  private handleRemoveEdge(command: RemoveEdgeCommand): void {
+    if (!this._edges.has(command.edgeId)) {
+      throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');
+    }
+
+    this._edges.delete(command.edgeId);
+    const edge = this._edges.get(command.edgeId)!;
+    this.addEvent(new EdgeRemovedEvent(this._id, this._version, command.edgeId, edge.data));
+  }
+
+  /**
+   * Updates diagram metadata
+   */
+  private handleUpdateDiagramMetadata(command: UpdateDiagramMetadataCommand): void {
+    if (command.name !== undefined) {
+      this._name = command.name;
+    }
+    if (command.description !== undefined) {
+      this._description = command.description;
+    }
+
+    this.addEvent(
+      new DiagramChangedEvent(this._id, this._version, 'bulk', [], {
+        action: 'updated',
+        name: command.name,
+        description: command.description,
+      }),
+    );
   }
 
   /**

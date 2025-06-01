@@ -21,6 +21,50 @@ export class User {
   }
 
   /**
+   * Create user from JSON data
+   */
+  static fromJSON(data: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    color?: string;
+  }): User {
+    return new User(data.id, data.name, data.email, data.avatar, data.color);
+  }
+
+  /**
+   * Generate a consistent color for a user based on their ID
+   */
+  private static _generateUserColor(userId: string): string {
+    const colors = [
+      '#FF6B6B',
+      '#4ECDC4',
+      '#45B7D1',
+      '#96CEB4',
+      '#FFEAA7',
+      '#DDA0DD',
+      '#98D8C8',
+      '#F7DC6F',
+      '#BB8FCE',
+      '#85C1E9',
+      '#F8C471',
+      '#82E0AA',
+      '#F1948A',
+      '#85C1E9',
+      '#D7BDE2',
+    ];
+
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  }
+
+  /**
    * Check if this user equals another user
    */
   equals(other: User): boolean {
@@ -58,19 +102,6 @@ export class User {
   }
 
   /**
-   * Create user from JSON data
-   */
-  static fromJSON(data: {
-    id: string;
-    name: string;
-    email: string;
-    avatar?: string;
-    color?: string;
-  }): User {
-    return new User(data.id, data.name, data.email, data.avatar, data.color);
-  }
-
-  /**
    * Validate user data
    */
   private _validate(): void {
@@ -91,36 +122,5 @@ export class User {
     if (!emailRegex.test(this.email)) {
       throw new Error('Invalid email format');
     }
-  }
-
-  /**
-   * Generate a consistent color for a user based on their ID
-   */
-  private static _generateUserColor(userId: string): string {
-    const colors = [
-      '#FF6B6B',
-      '#4ECDC4',
-      '#45B7D1',
-      '#96CEB4',
-      '#FFEAA7',
-      '#DDA0DD',
-      '#98D8C8',
-      '#F7DC6F',
-      '#BB8FCE',
-      '#85C1E9',
-      '#F8C471',
-      '#82E0AA',
-      '#F1948A',
-      '#85C1E9',
-      '#D7BDE2',
-    ];
-
-    let hash = 0;
-    for (let i = 0; i < userId.length; i++) {
-      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    const index = Math.abs(hash) % colors.length;
-    return colors[index];
   }
 }

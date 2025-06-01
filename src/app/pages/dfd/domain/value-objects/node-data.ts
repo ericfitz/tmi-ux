@@ -22,39 +22,83 @@ export class NodeData {
   }
 
   /**
-   * Validates the node data
+   * Creates NodeData from a plain object
    */
-  private validate(): void {
-    if (!this.id || this.id.trim().length === 0) {
-      throw new Error('Node ID cannot be empty');
-    }
+  static fromJSON(data: {
+    id: string;
+    type: NodeType;
+    label: string;
+    position: { x: number; y: number };
+    width: number;
+    height: number;
+    metadata?: Record<string, string>;
+  }): NodeData {
+    return new NodeData(
+      data.id,
+      data.type,
+      data.label,
+      Point.fromJSON(data.position),
+      data.width,
+      data.height,
+      data.metadata || {},
+    );
+  }
 
-    if (!this.type) {
-      throw new Error('Node type is required');
-    }
+  /**
+   * Creates a default NodeData for the given type
+   */
+  static createDefault(id: string, type: NodeType, position: Point): NodeData {
+    const defaultDimensions = this.getDefaultDimensions(type);
+    const defaultLabel = this.getDefaultLabel(type);
 
-    if (!this.isValidNodeType(this.type)) {
-      throw new Error(`Invalid node type: ${String(this.type)}`);
-    }
+    return new NodeData(
+      id,
+      type,
+      defaultLabel,
+      position,
+      defaultDimensions.width,
+      defaultDimensions.height,
+    );
+  }
 
-    if (!this.label || this.label.trim().length === 0) {
-      throw new Error('Node label cannot be empty');
-    }
-
-    if (this.width <= 0 || this.height <= 0) {
-      throw new Error('Node dimensions must be positive');
-    }
-
-    if (!Number.isFinite(this.width) || !Number.isFinite(this.height)) {
-      throw new Error('Node dimensions must be finite numbers');
+  /**
+   * Gets default dimensions for a node type
+   */
+  private static getDefaultDimensions(type: NodeType): { width: number; height: number } {
+    switch (type) {
+      case 'actor':
+        return { width: 120, height: 60 };
+      case 'process':
+        return { width: 140, height: 80 };
+      case 'store':
+        return { width: 160, height: 60 };
+      case 'security-boundary':
+        return { width: 200, height: 150 };
+      case 'textbox':
+        return { width: 100, height: 40 };
+      default:
+        return { width: 120, height: 60 };
     }
   }
 
   /**
-   * Checks if the given type is a valid node type
+   * Gets default label for a node type
    */
-  private isValidNodeType(type: string): type is NodeType {
-    return ['actor', 'process', 'store', 'security-boundary', 'textbox'].includes(type);
+  private static getDefaultLabel(type: NodeType): string {
+    switch (type) {
+      case 'actor':
+        return 'Actor';
+      case 'process':
+        return 'Process';
+      case 'store':
+        return 'Data Store';
+      case 'security-boundary':
+        return 'Security Boundary';
+      case 'textbox':
+        return 'Text';
+      default:
+        return 'Node';
+    }
   }
 
   /**
@@ -145,20 +189,6 @@ export class NodeData {
   }
 
   /**
-   * Checks if metadata objects are equal
-   */
-  private metadataEquals(other: Record<string, string>): boolean {
-    const thisKeys = Object.keys(this.metadata).sort();
-    const otherKeys = Object.keys(other).sort();
-
-    if (thisKeys.length !== otherKeys.length) {
-      return false;
-    }
-
-    return thisKeys.every(key => this.metadata[key] === other[key]);
-  }
-
-  /**
    * Returns a string representation of the node data
    */
   toString(): string {
@@ -189,82 +219,52 @@ export class NodeData {
   }
 
   /**
-   * Creates NodeData from a plain object
+   * Validates the node data
    */
-  static fromJSON(data: {
-    id: string;
-    type: NodeType;
-    label: string;
-    position: { x: number; y: number };
-    width: number;
-    height: number;
-    metadata?: Record<string, string>;
-  }): NodeData {
-    return new NodeData(
-      data.id,
-      data.type,
-      data.label,
-      Point.fromJSON(data.position),
-      data.width,
-      data.height,
-      data.metadata || {},
-    );
-  }
+  private validate(): void {
+    if (!this.id || this.id.trim().length === 0) {
+      throw new Error('Node ID cannot be empty');
+    }
 
-  /**
-   * Creates a default NodeData for the given type
-   */
-  static createDefault(id: string, type: NodeType, position: Point): NodeData {
-    const defaultDimensions = this.getDefaultDimensions(type);
-    const defaultLabel = this.getDefaultLabel(type);
+    if (!this.type) {
+      throw new Error('Node type is required');
+    }
 
-    return new NodeData(
-      id,
-      type,
-      defaultLabel,
-      position,
-      defaultDimensions.width,
-      defaultDimensions.height,
-    );
-  }
+    if (!this.isValidNodeType(this.type)) {
+      throw new Error(`Invalid node type: ${String(this.type)}`);
+    }
 
-  /**
-   * Gets default dimensions for a node type
-   */
-  private static getDefaultDimensions(type: NodeType): { width: number; height: number } {
-    switch (type) {
-      case 'actor':
-        return { width: 120, height: 60 };
-      case 'process':
-        return { width: 140, height: 80 };
-      case 'store':
-        return { width: 160, height: 60 };
-      case 'security-boundary':
-        return { width: 200, height: 150 };
-      case 'textbox':
-        return { width: 100, height: 40 };
-      default:
-        return { width: 120, height: 60 };
+    if (!this.label || this.label.trim().length === 0) {
+      throw new Error('Node label cannot be empty');
+    }
+
+    if (this.width <= 0 || this.height <= 0) {
+      throw new Error('Node dimensions must be positive');
+    }
+
+    if (!Number.isFinite(this.width) || !Number.isFinite(this.height)) {
+      throw new Error('Node dimensions must be finite numbers');
     }
   }
 
   /**
-   * Gets default label for a node type
+   * Checks if the given type is a valid node type
    */
-  private static getDefaultLabel(type: NodeType): string {
-    switch (type) {
-      case 'actor':
-        return 'Actor';
-      case 'process':
-        return 'Process';
-      case 'store':
-        return 'Data Store';
-      case 'security-boundary':
-        return 'Security Boundary';
-      case 'textbox':
-        return 'Text';
-      default:
-        return 'Node';
+  private isValidNodeType(type: string): type is NodeType {
+    return ['actor', 'process', 'store', 'security-boundary', 'textbox'].includes(type);
+  }
+
+  /**
+   * Checks if metadata objects are equal
+   */
+  private metadataEquals(other: Record<string, string>): boolean {
+    const thisKeys = Object.keys(this.metadata).sort();
+    const otherKeys = Object.keys(other).sort();
+
+    if (thisKeys.length !== otherKeys.length) {
+      return false;
     }
+
+    return thisKeys.every(key => this.metadata[key] === other[key]);
   }
 }

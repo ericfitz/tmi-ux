@@ -239,23 +239,6 @@ export class DiagramNode {
   }
 
   /**
-   * Converts the node to a plain object for serialization
-   */
-  toJSON(): {
-    data: ReturnType<NodeData['toJSON']>;
-    isSelected: boolean;
-    isHighlighted: boolean;
-    connectedEdgeIds: string[];
-  } {
-    return {
-      data: this._data.toJSON(),
-      isSelected: this._isSelected,
-      isHighlighted: this._isHighlighted,
-      connectedEdgeIds: this.connectedEdgeIds,
-    };
-  }
-
-  /**
    * Creates a DiagramNode from a plain object
    */
   static fromJSON(data: {
@@ -279,6 +262,23 @@ export class DiagramNode {
     }
 
     return node;
+  }
+
+  /**
+   * Converts the node to a plain object for serialization
+   */
+  toJSON(): {
+    data: ReturnType<NodeData['toJSON']>;
+    isSelected: boolean;
+    isHighlighted: boolean;
+    connectedEdgeIds: string[];
+  } {
+    return {
+      data: this._data.toJSON(),
+      isSelected: this._isSelected,
+      isHighlighted: this._isHighlighted,
+      connectedEdgeIds: this.connectedEdgeIds,
+    };
   }
 
   /**

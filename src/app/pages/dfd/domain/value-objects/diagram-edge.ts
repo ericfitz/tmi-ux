@@ -241,41 +241,24 @@ export class DiagramEdge {
   }
 
   /**
-   * Calculates the distance from a point to a line segment
+   * Creates a DiagramEdge from a plain object
    */
-  private distanceToLineSegment(point: Point, lineStart: Point, lineEnd: Point): number {
-    const A = point.x - lineStart.x;
-    const B = point.y - lineStart.y;
-    const C = lineEnd.x - lineStart.x;
-    const D = lineEnd.y - lineStart.y;
+  static fromJSON(data: {
+    data: Parameters<typeof EdgeData.fromJSON>[0];
+    isSelected?: boolean;
+    isHighlighted?: boolean;
+  }): DiagramEdge {
+    const edge = new DiagramEdge(EdgeData.fromJSON(data.data));
 
-    const dot = A * C + B * D;
-    const lenSq = C * C + D * D;
-
-    if (lenSq === 0) {
-      // Line segment is actually a point
-      return point.distanceTo(lineStart);
+    if (data.isSelected) {
+      edge.select();
     }
 
-    const param = dot / lenSq;
-
-    let xx: number;
-    let yy: number;
-
-    if (param < 0) {
-      xx = lineStart.x;
-      yy = lineStart.y;
-    } else if (param > 1) {
-      xx = lineEnd.x;
-      yy = lineEnd.y;
-    } else {
-      xx = lineStart.x + param * C;
-      yy = lineStart.y + param * D;
+    if (data.isHighlighted) {
+      edge.highlight();
     }
 
-    const dx = point.x - xx;
-    const dy = point.y - yy;
-    return Math.sqrt(dx * dx + dy * dy);
+    return edge;
   }
 
   /**
@@ -338,30 +321,47 @@ export class DiagramEdge {
   }
 
   /**
-   * Creates a DiagramEdge from a plain object
-   */
-  static fromJSON(data: {
-    data: Parameters<typeof EdgeData.fromJSON>[0];
-    isSelected?: boolean;
-    isHighlighted?: boolean;
-  }): DiagramEdge {
-    const edge = new DiagramEdge(EdgeData.fromJSON(data.data));
-
-    if (data.isSelected) {
-      edge.select();
-    }
-
-    if (data.isHighlighted) {
-      edge.highlight();
-    }
-
-    return edge;
-  }
-
-  /**
    * Returns a string representation of the edge
    */
   toString(): string {
     return `DiagramEdge(${this.id}, ${this.sourceNodeId} -> ${this.targetNodeId})`;
+  }
+
+  /**
+   * Calculates the distance from a point to a line segment
+   */
+  private distanceToLineSegment(point: Point, lineStart: Point, lineEnd: Point): number {
+    const A = point.x - lineStart.x;
+    const B = point.y - lineStart.y;
+    const C = lineEnd.x - lineStart.x;
+    const D = lineEnd.y - lineStart.y;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+
+    if (lenSq === 0) {
+      // Line segment is actually a point
+      return point.distanceTo(lineStart);
+    }
+
+    const param = dot / lenSq;
+
+    let xx: number;
+    let yy: number;
+
+    if (param < 0) {
+      xx = lineStart.x;
+      yy = lineStart.y;
+    } else if (param > 1) {
+      xx = lineEnd.x;
+      yy = lineEnd.y;
+    } else {
+      xx = lineStart.x + param * C;
+      yy = lineStart.y + param * D;
+    }
+
+    const dx = point.x - xx;
+    const dy = point.y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
   }
 }

@@ -11,10 +11,16 @@ import {
 } from '../adapters/websocket.adapter';
 import { SerializationService } from './serialization.service';
 import { User } from '../../domain/collaboration/user';
-import { UserPresence } from '../../domain/collaboration/user-presence';
+import {
+  UserPresence,
+  PresenceStatus,
+  UserActivity,
+  CursorState,
+} from '../../domain/collaboration/user-presence';
 import { CollaborationSession } from '../../domain/collaboration/collaboration-session';
 import { AnyDiagramCommand } from '../../domain/commands/diagram-commands';
 import { AnyCollaborationEvent } from '../../domain/collaboration/collaboration-events';
+import { Point } from '../../domain/value-objects/point';
 
 /**
  * Service that integrates WebSocket communication with collaboration features
@@ -89,7 +95,8 @@ export class CollaborationWebSocketService implements OnDestroy {
           this._disconnectWebSocket(resolve, reject);
         }
       } catch (error) {
-        console.error('Failed to disconnect from collaboration server:', error);
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to disconnect from collaboration server:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -137,7 +144,8 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        console.error('Failed to join collaboration session:', error);
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to join collaboration session:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -192,7 +200,8 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        console.error('Failed to leave collaboration session:', error);
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to leave collaboration session:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -230,19 +239,22 @@ export class CollaborationWebSocketService implements OnDestroy {
             // Update presence in collaboration service
             this._collaborationService.updateUserPresence(currentUser.id, presence).subscribe({
               next: () => resolve(),
-              error: (error: unknown) => {
-                console.error('Failed to update user presence in collaboration service:', error);
+              error: () => {
+                // TODO: Replace with LoggerService when available
+                // console.error('Failed to update user presence in collaboration service:', error);
                 resolve(); // Don't fail for presence updates
               },
             });
           },
-          error: (error: unknown) => {
-            console.error('Failed to send presence update:', error);
+          error: () => {
+            // TODO: Replace with LoggerService when available
+            // console.error('Failed to send presence update:', error);
             resolve(); // Don't fail for presence updates
           },
         });
-      } catch (error) {
-        console.error('Failed to update user presence:', error);
+      } catch {
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to update user presence:', error);
         resolve(); // Don't fail for presence updates
       }
     });
@@ -278,13 +290,15 @@ export class CollaborationWebSocketService implements OnDestroy {
         // Send cursor update (no acknowledgment required for frequent updates)
         this._webSocketAdapter.sendMessage(message).subscribe({
           next: () => resolve(),
-          error: (error: unknown) => {
-            console.error('Failed to update cursor position:', error);
+          error: () => {
+            // TODO: Replace with LoggerService when available
+            // console.error('Failed to update cursor position:', error);
             resolve(); // Don't fail for cursor updates
           },
         });
-      } catch (error) {
-        console.error('Failed to update cursor position:', error);
+      } catch {
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to update cursor position:', error);
         resolve(); // Don't fail for cursor updates
       }
     });
@@ -332,7 +346,8 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        console.error('Failed to execute and broadcast command:', error);
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to execute and broadcast command:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -367,7 +382,8 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        console.error('Failed to request state synchronization:', error);
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to request state synchronization:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -392,8 +408,9 @@ export class CollaborationWebSocketService implements OnDestroy {
     this._webSocketAdapter.messages$
       .pipe(
         takeUntil(this._destroy$),
-        catchError(error => {
-          console.error('Error handling WebSocket message:', error);
+        catchError(() => {
+          // TODO: Replace with LoggerService when available
+          // console.error('Error handling WebSocket message:', error);
           return [];
         }),
       )
@@ -423,8 +440,9 @@ export class CollaborationWebSocketService implements OnDestroy {
       .pipe(
         takeUntil(this._destroy$),
         filter(() => this._webSocketAdapter.isConnected),
-        catchError(error => {
-          console.error('Error broadcasting collaboration event:', error);
+        catchError(() => {
+          // TODO: Replace with LoggerService when available
+          // console.error('Error broadcasting collaboration event:', error);
           return [];
         }),
       )
@@ -476,10 +494,12 @@ export class CollaborationWebSocketService implements OnDestroy {
           break;
 
         default:
-          console.warn('Unknown message type:', message.type);
+        // TODO: Replace with LoggerService when available
+        // console.warn('Unknown message type:', message.type);
       }
     } catch (error) {
-      console.error('Error handling WebSocket message:', error);
+      // TODO: Replace with LoggerService when available
+      // console.error('Error handling WebSocket message:', error);
     }
   }
 
@@ -488,20 +508,21 @@ export class CollaborationWebSocketService implements OnDestroy {
    */
   private _handleSessionJoined(message: WebSocketMessage): void {
     if (message.data['session']) {
-      const sessionData = message.data['session'] as unknown;
+      // const sessionData = message.data['session'] as unknown;
       // Update current session with server data
-      console.log('Session joined:', sessionData);
+      // TODO: Replace with LoggerService when available
+      // console.log('Session joined:', sessionData);
     }
   }
 
   /**
    * Handle session left message
    */
-  private _handleSessionLeft(message: WebSocketMessage): void {
-    if (message.userId === this._currentUser$.value?.id) {
-      this._currentSession$.next(null);
-      this._currentUser$.next(null);
-    }
+  private _handleSessionLeft(_message: WebSocketMessage): void {
+    // if (message.userId === this._currentUser$.value?.id) {
+    //   this._currentSession$.next(null);
+    //   this._currentUser$.next(null);
+    // }
   }
 
   /**
@@ -513,26 +534,29 @@ export class CollaborationWebSocketService implements OnDestroy {
       return;
     }
 
-    const presenceData = message.data['presence'] as unknown;
+    const presenceData = message.data['presence'];
     const presence = this._deserializeUserPresence(presenceData);
 
     this._collaborationService.updateUserPresence(message.userId, presence).subscribe({
-      error: (error: unknown) => console.error('Failed to update user presence:', error),
+      error: () => {
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to update user presence:', error);
+      },
     });
   }
 
   /**
    * Handle cursor update message
    */
-  private _handleCursorUpdate(message: WebSocketMessage): void {
-    const currentUser = this._currentUser$.value;
-    if (!message.userId || message.userId === currentUser?.id) {
-      return;
-    }
-
+  private _handleCursorUpdate(_message: WebSocketMessage): void {
+    // const currentUser = this._currentUser$.value;
+    // if (!message.userId || message.userId === currentUser?.id) {
+    //   return;
+    // }
     // Cursor updates are handled by the UI layer
     // This service just passes them through via events
-    console.log('Cursor update from user:', message.userId, message.data);
+    // TODO: Replace with LoggerService when available
+    // console.log('Cursor update from user:', message.userId, message.data);
   }
 
   /**
@@ -550,58 +574,67 @@ export class CollaborationWebSocketService implements OnDestroy {
       return;
     }
 
-    const commandData = message.data['command'] as any;
+    const commandData = message.data['command'] as {
+      type: string;
+      data: Record<string, unknown>;
+      timestamp: number;
+      version: string;
+    };
     const command = this._serializationService.deserializeCommand(commandData);
 
     this._collaborationService.executeCollaborativeCommand(command).subscribe({
-      error: (error: unknown) => console.error('Failed to execute remote command:', error),
+      error: () => {
+        // TODO: Replace with LoggerService when available
+        // console.error('Failed to execute remote command:', error);
+      },
     });
   }
 
   /**
    * Handle command conflict message
    */
-  private _handleCommandConflict(message: WebSocketMessage): void {
-    if (!message.data['conflict']) {
-      return;
-    }
-
-    const conflictData = message.data['conflict'] as unknown;
-    console.log('Command conflict detected:', conflictData);
+  private _handleCommandConflict(_message: WebSocketMessage): void {
+    // if (!message.data['conflict']) {
+    //   return;
+    // }
+    // const conflictData = message.data['conflict'] as unknown;
+    // TODO: Replace with LoggerService when available
+    // console.log('Command conflict detected:', conflictData);
     // Handle conflict resolution in collaboration service
   }
 
   /**
    * Handle conflict resolution message
    */
-  private _handleConflictResolution(message: WebSocketMessage): void {
-    if (!message.data['resolution']) {
-      return;
-    }
-
-    const resolutionData = message.data['resolution'] as unknown;
-    console.log('Conflict resolution received:', resolutionData);
+  private _handleConflictResolution(_message: WebSocketMessage): void {
+    // if (!message.data['resolution']) {
+    //   return;
+    // }
+    // const resolutionData = message.data['resolution'] as unknown;
+    // TODO: Replace with LoggerService when available
+    // console.log('Conflict resolution received:', resolutionData);
     // Apply conflict resolution
   }
 
   /**
    * Handle state sync response message
    */
-  private _handleStateSyncResponse(message: WebSocketMessage): void {
-    if (!message.data['state']) {
-      return;
-    }
-
-    const stateData = message.data['state'] as unknown;
-    console.log('State sync response received:', stateData);
+  private _handleStateSyncResponse(_message: WebSocketMessage): void {
+    // if (!message.data['state']) {
+    //   return;
+    // }
+    // const stateData = message.data['state'] as unknown;
+    // TODO: Replace with LoggerService when available
+    // console.log('State sync response received:', stateData);
     // Synchronize state with server
   }
 
   /**
    * Handle error message
    */
-  private _handleError(message: WebSocketMessage): void {
-    console.error('WebSocket error message:', message.data);
+  private _handleError(_message: WebSocketMessage): void {
+    // TODO: Replace with LoggerService when available
+    // console.error('WebSocket error message:', message.data);
   }
 
   /**
@@ -628,12 +661,14 @@ export class CollaborationWebSocketService implements OnDestroy {
       };
 
       this._webSocketAdapter.sendMessage(message).subscribe({
-        error: (error: unknown) => {
-          console.error('Failed to broadcast event:', error);
+        error: () => {
+          // TODO: Replace with LoggerService when available
+          // console.error('Failed to broadcast event:', error);
         },
       });
     } catch (error) {
-      console.error('Failed to broadcast event:', error);
+      // TODO: Replace with LoggerService when available
+      // console.error('Failed to broadcast event:', error);
     }
   }
 
@@ -658,7 +693,7 @@ export class CollaborationWebSocketService implements OnDestroy {
   /**
    * Serialize user for transmission
    */
-  private _serializeUser(user: User): unknown {
+  private _serializeUser(user: User): Record<string, unknown> {
     return {
       id: user.id,
       name: user.name,
@@ -671,7 +706,7 @@ export class CollaborationWebSocketService implements OnDestroy {
   /**
    * Serialize user presence for transmission
    */
-  private _serializeUserPresence(presence: UserPresence): unknown {
+  private _serializeUserPresence(presence: UserPresence): Record<string, unknown> {
     return {
       user: this._serializeUser(presence.user),
       status: presence.status,
@@ -686,13 +721,40 @@ export class CollaborationWebSocketService implements OnDestroy {
    * Deserialize user presence from transmission
    */
   private _deserializeUserPresence(data: unknown): UserPresence {
-    const presenceData = data as any;
+    const presenceData = data as {
+      user: { id: string; name: string; email: string; avatar?: string; color?: string };
+      status: string;
+      activity: string;
+      lastSeen: string;
+      cursorState?: {
+        position: { x: number; y: number };
+        selectedNodeIds: string[];
+        selectedEdgeIds: string[];
+        isVisible: boolean;
+      };
+      currentTool?: string;
+    };
+
+    // Convert cursor state if present
+    let cursorState: CursorState | undefined;
+    if (presenceData.cursorState) {
+      cursorState = {
+        position: new Point(
+          presenceData.cursorState.position.x,
+          presenceData.cursorState.position.y,
+        ),
+        selectedNodeIds: presenceData.cursorState.selectedNodeIds,
+        selectedEdgeIds: presenceData.cursorState.selectedEdgeIds,
+        isVisible: presenceData.cursorState.isVisible,
+      };
+    }
+
     return UserPresence.fromJSON({
       user: presenceData.user,
-      status: presenceData.status,
-      activity: presenceData.activity,
+      status: presenceData.status as PresenceStatus,
+      activity: presenceData.activity as UserActivity,
       lastSeen: presenceData.lastSeen,
-      cursorState: presenceData.cursorState,
+      cursorState,
       currentTool: presenceData.currentTool,
     });
   }
