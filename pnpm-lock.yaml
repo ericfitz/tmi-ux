@@ -118,8 +118,8 @@ importers:
         specifier: 19.4.0
         version: 19.4.0(@typescript-eslint/types@8.32.1)(@typescript-eslint/utils@8.32.1(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3))(chokidar@4.0.3)(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)
       '@angular-eslint/template-parser':
-        specifier: ^19.6.0
-        version: 19.6.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)
+        specifier: ^19.7.0
+        version: 19.7.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)
       '@angular/cli':
         specifier: ^20.0.0
         version: 20.0.0(@types/node@22.15.27)(chokidar@4.0.3)
@@ -343,8 +343,8 @@ packages:
   '@angular-eslint/bundled-angular-compiler@19.4.0':
     resolution: {integrity: sha512-Djq+je34czagDxvkBbbe1dLlhUGYK2MbHjEgPTQ00tVkacLQGAW4UmT1A0JGZzfzl/lDVvli64/lYQsJTSSM6A==}
 
-  '@angular-eslint/bundled-angular-compiler@19.6.0':
-    resolution: {integrity: sha512-ro+seaTAg5GvtJ72uWEEnP9J5mT0vtgdqH6YMrmMt4pZbSZxvkLfLjZGkXo/HjVDVcCjPnmZeMwKN+uoEc27Jg==}
+  '@angular-eslint/bundled-angular-compiler@19.7.0':
+    resolution: {integrity: sha512-95Z30MhQ93s1G1mEnsVuG45te82I+6dp8Y0MamRgyh4OZvOajmEXpvCwT+hkr/9WAroLZ7p5nlMbzAA+OXZ+YQ==}
 
   '@angular-eslint/eslint-plugin-template@19.4.0':
     resolution: {integrity: sha512-6WAGnHf5SKi7k8/AOOLwGCoN3iQUE8caKsg0OucL4CWPUyzsYpQjx7ALKyxx9lqoAngn3CTlQ2tcwDv6aYtfmg==}
@@ -370,8 +370,8 @@ packages:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
 
-  '@angular-eslint/template-parser@19.6.0':
-    resolution: {integrity: sha512-NGxXUZkI5lXjoKnmL51C8DoJx8AjwF9sonieC2EVxgXycK2MYAamFWYGHMiVemzFsg1nIv+JvhHITgjSjyC3HQ==}
+  '@angular-eslint/template-parser@19.7.0':
+    resolution: {integrity: sha512-XLPt6gk8VMOrUO9NWRpXN8zgwJuCDV+9y3KbVnd4WyakO0sOz9SVzktuI4AeY9jWS9/tqU6P8Uj0WZsMVz7F8w==}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
@@ -1164,6 +1164,10 @@ packages:
 
   '@babel/runtime@7.27.1':
     resolution: {integrity: sha512-1x3D2xEk2fRo3PAhwQwu5UubzgiVWSXTBfWpVd2Mx2AzRqJuDJCsgaDVZ7HB5iGzDW1Hl1sWN2mFyKjmR9uAog==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.27.4':
+    resolution: {integrity: sha512-t3yaEOuGu9NlIZ+hIeGbBjFtZT7j2cb2tg0fuaJKeGotchRjjLfrBA9Kwf8quhpP1EUuxModQg04q/mBwyg8uA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.27.2':
@@ -2219,6 +2223,7 @@ packages:
 
   '@rollup/rollup-darwin-arm64@4.40.1':
     resolution: {integrity: sha512-VWXGISWFY18v/0JyNUy4A46KCFCb9NVsH+1100XP31lud+TzlezBbz24CYzbnA4x6w4hx+NYCXDfnvDVO6lcAA==}
+    cpu: [arm64]
     os: [darwin]
 
   '@rollup/rollup-darwin-arm64@4.40.2':
@@ -7318,7 +7323,7 @@ snapshots:
 
   '@angular-eslint/bundled-angular-compiler@19.4.0': {}
 
-  '@angular-eslint/bundled-angular-compiler@19.6.0': {}
+  '@angular-eslint/bundled-angular-compiler@19.7.0': {}
 
   '@angular-eslint/eslint-plugin-template@19.4.0(@typescript-eslint/types@8.32.1)(@typescript-eslint/utils@8.32.1(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3))(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)':
     dependencies:
@@ -7362,9 +7367,9 @@ snapshots:
       eslint-scope: 8.3.0
       typescript: 5.8.3
 
-  '@angular-eslint/template-parser@19.6.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)':
+  '@angular-eslint/template-parser@19.7.0(eslint@9.26.0(jiti@1.21.7))(typescript@5.8.3)':
     dependencies:
-      '@angular-eslint/bundled-angular-compiler': 19.6.0
+      '@angular-eslint/bundled-angular-compiler': 19.7.0
       eslint: 9.26.0(jiti@1.21.7)
       eslint-scope: 8.3.0
       typescript: 5.8.3
@@ -8321,6 +8326,8 @@ snapshots:
       esutils: 2.0.3
 
   '@babel/runtime@7.27.1': {}
+
+  '@babel/runtime@7.27.4': {}
 
   '@babel/template@7.27.2':
     dependencies:
@@ -9454,7 +9461,7 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.27.1
-      '@babel/runtime': 7.27.1
+      '@babel/runtime': 7.27.4
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       chalk: 4.1.2
