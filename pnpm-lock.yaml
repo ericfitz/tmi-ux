@@ -420,16 +420,13 @@ packages:
         integrity: sha512-Djq+je34czagDxvkBbbe1dLlhUGYK2MbHjEgPTQ00tVkacLQGAW4UmT1A0JGZzfzl/lDVvli64/lYQsJTSSM6A==,
       }
 
-<<<<<<< HEAD
+  '@angular-eslint/bundled-angular-compiler@20.0.0':
+    resolution: {integrity: sha512-mDXMQd08s11q9fC6Ps3ffZmvXop9eLuAAXexofHhA7uuoQAoUWS2zoOSNTWtDR6oxMcqEeMnALCjjFeJVBSVmg==}
   '@angular-eslint/bundled-angular-compiler@19.6.0':
     resolution:
       {
         integrity: sha512-ro+seaTAg5GvtJ72uWEEnP9J5mT0vtgdqH6YMrmMt4pZbSZxvkLfLjZGkXo/HjVDVcCjPnmZeMwKN+uoEc27Jg==,
       }
-=======
-  '@angular-eslint/bundled-angular-compiler@20.0.0':
-    resolution: {integrity: sha512-mDXMQd08s11q9fC6Ps3ffZmvXop9eLuAAXexofHhA7uuoQAoUWS2zoOSNTWtDR6oxMcqEeMnALCjjFeJVBSVmg==}
->>>>>>> 39fa104 (Bump @angular-eslint/template-parser from 19.6.0 to 20.0.0)
 
   '@angular-eslint/eslint-plugin-template@19.4.0':
     resolution:
@@ -467,16 +464,13 @@ packages:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
 
-<<<<<<< HEAD
+  '@angular-eslint/template-parser@20.0.0':
+    resolution: {integrity: sha512-5y9hxH/z+9rIOJp1FwRBSgJ6xt8/pgRfBF+eEIPyIHKl5mV0cVzlQiD7j1LMYTcxJZLHAoryomvSBDpmbtAlWg==}
   '@angular-eslint/template-parser@19.6.0':
     resolution:
       {
         integrity: sha512-NGxXUZkI5lXjoKnmL51C8DoJx8AjwF9sonieC2EVxgXycK2MYAamFWYGHMiVemzFsg1nIv+JvhHITgjSjyC3HQ==,
       }
-=======
-  '@angular-eslint/template-parser@20.0.0':
-    resolution: {integrity: sha512-5y9hxH/z+9rIOJp1FwRBSgJ6xt8/pgRfBF+eEIPyIHKl5mV0cVzlQiD7j1LMYTcxJZLHAoryomvSBDpmbtAlWg==}
->>>>>>> 39fa104 (Bump @angular-eslint/template-parser from 19.6.0 to 20.0.0)
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
@@ -1678,6 +1672,8 @@ packages:
       }
     engines: { node: '>=6.9.0' }
 
+  '@babel/runtime@7.27.6':
+    resolution: {integrity: sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==}
   '@babel/runtime@7.27.6':
     resolution: {integrity: sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==}
     engines: {node: '>=6.9.0'}
@@ -12782,10 +12778,8 @@ snapshots:
 
   '@babel/runtime@7.27.1': {}
 
-<<<<<<< HEAD
+  '@babel/runtime@7.27.6': {}
   '@babel/runtime@7.27.3': {}
-=======
->>>>>>> 39fa104 (Bump @angular-eslint/template-parser from 19.6.0 to 20.0.0)
   '@babel/runtime@7.27.6': {}
 
   '@babel/template@7.27.2':
@@ -13841,10 +13835,8 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.27.1
-<<<<<<< HEAD
+      '@babel/runtime': 7.27.6
       '@babel/runtime': 7.27.3
-=======
->>>>>>> 39fa104 (Bump @angular-eslint/template-parser from 19.6.0 to 20.0.0)
       '@babel/runtime': 7.27.6
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
