@@ -21,9 +21,9 @@ import { take } from 'rxjs/operators';
 import { Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
-import { ExportFormat } from './services/dfd.service';
-import { ShapeType } from './services/dfd-node.service';
-import { DfdEventBusService, DfdEventType } from './services/dfd-event-bus.service';
+import { ExportFormat } from './migration/dfd-migration-facade.service';
+import { NodeType } from './domain/value-objects/node-data';
+// Legacy event bus removed - context menu handling moved to component level
 import { DfdMigrationFacadeService } from './migration/dfd-migration-facade.service';
 import { CommandResult } from './migration/legacy-command.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
@@ -77,7 +77,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private migrationFacade: DfdMigrationFacadeService,
-    private eventBus: DfdEventBusService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -126,14 +125,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     );
 
-    // Subscribe to cell context menu events
-    this._subscriptions.add(
-      this.eventBus.onEventType(DfdEventType.CellContextMenu).subscribe(event => {
-        if ('cell' in event && 'event' in event) {
-          this.openCellContextMenu(event.cell, event.event);
-        }
-      }),
-    );
+    // TODO: Context menu events will be handled by the new architecture
+    // Legacy event bus removed - context menu handling will be implemented in migration facade
   }
 
   /**
@@ -222,7 +215,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Method to add a node at a random position
    * @param shapeType The type of shape to create
    */
-  addRandomNode(shapeType: ShapeType = 'actor'): void {
+  addRandomNode(shapeType: NodeType = 'actor'): void {
     if (!this.migrationFacade.isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;

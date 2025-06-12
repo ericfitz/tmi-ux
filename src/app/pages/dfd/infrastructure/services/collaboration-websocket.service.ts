@@ -2,6 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { filter, takeUntil, catchError } from 'rxjs/operators';
 
+import { LoggerService } from '../../../../core/services/logger.service';
 import { CollaborationApplicationService } from '../../application/collaboration/collaboration-application.service';
 import {
   WebSocketAdapter,
@@ -54,6 +55,7 @@ export class CollaborationWebSocketService implements OnDestroy {
   public readonly connectionErrors$: Observable<Error>;
 
   constructor(
+    private readonly logger: LoggerService,
     private readonly _collaborationService: CollaborationApplicationService,
     private readonly _webSocketAdapter: WebSocketAdapter,
     private readonly _serializationService: SerializationService,
@@ -95,8 +97,7 @@ export class CollaborationWebSocketService implements OnDestroy {
           this._disconnectWebSocket(resolve, reject);
         }
       } catch (error) {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to disconnect from collaboration server:', error);
+        this.logger.error('Failed to disconnect from collaboration server:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -144,8 +145,7 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to join collaboration session:', error);
+        this.logger.error('Failed to join collaboration session:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -200,8 +200,7 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to leave collaboration session:', error);
+        this.logger.error('Failed to leave collaboration session:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -239,22 +238,22 @@ export class CollaborationWebSocketService implements OnDestroy {
             // Update presence in collaboration service
             this._collaborationService.updateUserPresence(currentUser.id, presence).subscribe({
               next: () => resolve(),
-              error: () => {
-                // TODO: Replace with LoggerService when available
-                // console.error('Failed to update user presence in collaboration service:', error);
+              error: (error: Error) => {
+                this.logger.error(
+                  'Failed to update user presence in collaboration service:',
+                  error,
+                );
                 resolve(); // Don't fail for presence updates
               },
             });
           },
-          error: () => {
-            // TODO: Replace with LoggerService when available
-            // console.error('Failed to send presence update:', error);
+          error: (error: Error) => {
+            this.logger.error('Failed to send presence update:', error);
             resolve(); // Don't fail for presence updates
           },
         });
       } catch {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to update user presence:', error);
+        this.logger.error('Failed to update user presence');
         resolve(); // Don't fail for presence updates
       }
     });
@@ -290,15 +289,13 @@ export class CollaborationWebSocketService implements OnDestroy {
         // Send cursor update (no acknowledgment required for frequent updates)
         this._webSocketAdapter.sendMessage(message).subscribe({
           next: () => resolve(),
-          error: () => {
-            // TODO: Replace with LoggerService when available
-            // console.error('Failed to update cursor position:', error);
+          error: (error: Error) => {
+            this.logger.error('Failed to update cursor position:', error);
             resolve(); // Don't fail for cursor updates
           },
         });
       } catch {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to update cursor position:', error);
+        this.logger.error('Failed to update cursor position');
         resolve(); // Don't fail for cursor updates
       }
     });
@@ -346,8 +343,7 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to execute and broadcast command:', error);
+        this.logger.error('Failed to execute and broadcast command:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -382,8 +378,7 @@ export class CollaborationWebSocketService implements OnDestroy {
           error: (error: Error) => reject(error),
         });
       } catch (error) {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to request state synchronization:', error);
+        this.logger.error('Failed to request state synchronization:', error);
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -408,9 +403,8 @@ export class CollaborationWebSocketService implements OnDestroy {
     this._webSocketAdapter.messages$
       .pipe(
         takeUntil(this._destroy$),
-        catchError(() => {
-          // TODO: Replace with LoggerService when available
-          // console.error('Error handling WebSocket message:', error);
+        catchError((error: Error) => {
+          this.logger.error('Error handling WebSocket message:', error);
           return [];
         }),
       )
@@ -440,9 +434,8 @@ export class CollaborationWebSocketService implements OnDestroy {
       .pipe(
         takeUntil(this._destroy$),
         filter(() => this._webSocketAdapter.isConnected),
-        catchError(() => {
-          // TODO: Replace with LoggerService when available
-          // console.error('Error broadcasting collaboration event:', error);
+        catchError((error: Error) => {
+          this.logger.error('Error broadcasting collaboration event:', error);
           return [];
         }),
       )
@@ -494,12 +487,10 @@ export class CollaborationWebSocketService implements OnDestroy {
           break;
 
         default:
-        // TODO: Replace with LoggerService when available
-        // console.warn('Unknown message type:', message.type);
+          this.logger.warn('Unknown message type:', message.type);
       }
-    } catch {
-      // TODO: Replace with LoggerService when available
-      // console.error('Error handling WebSocket message:', error);
+    } catch (error) {
+      this.logger.error('Error handling WebSocket message:', error);
     }
   }
 
@@ -510,8 +501,7 @@ export class CollaborationWebSocketService implements OnDestroy {
     if (message.data['session']) {
       // const sessionData = message.data['session'] as unknown;
       // Update current session with server data
-      // TODO: Replace with LoggerService when available
-      // console.log('Session joined:', sessionData);
+      this.logger.info('Session joined');
     }
   }
 
@@ -539,8 +529,7 @@ export class CollaborationWebSocketService implements OnDestroy {
 
     this._collaborationService.updateUserPresence(message.userId, presence).subscribe({
       error: () => {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to update user presence:', error);
+        this.logger.error('Failed to update user presence');
       },
     });
   }
@@ -555,8 +544,7 @@ export class CollaborationWebSocketService implements OnDestroy {
     // }
     // Cursor updates are handled by the UI layer
     // This service just passes them through via events
-    // TODO: Replace with LoggerService when available
-    // console.log('Cursor update from user:', message.userId, message.data);
+    this.logger.debug('Cursor update from user:', _message.userId);
   }
 
   /**
@@ -584,8 +572,7 @@ export class CollaborationWebSocketService implements OnDestroy {
 
     this._collaborationService.executeCollaborativeCommand(command).subscribe({
       error: () => {
-        // TODO: Replace with LoggerService when available
-        // console.error('Failed to execute remote command:', error);
+        this.logger.error('Failed to execute remote command');
       },
     });
   }
@@ -598,7 +585,7 @@ export class CollaborationWebSocketService implements OnDestroy {
     //   return;
     // }
     // const conflictData = message.data['conflict'] as unknown;
-    // TODO: Replace with LoggerService when available
+    this.logger.warn('Command conflict detected');
     // console.log('Command conflict detected:', conflictData);
     // Handle conflict resolution in collaboration service
   }
@@ -611,7 +598,7 @@ export class CollaborationWebSocketService implements OnDestroy {
     //   return;
     // }
     // const resolutionData = message.data['resolution'] as unknown;
-    // TODO: Replace with LoggerService when available
+    this.logger.info('Conflict resolution received');
     // console.log('Conflict resolution received:', resolutionData);
     // Apply conflict resolution
   }
@@ -624,7 +611,7 @@ export class CollaborationWebSocketService implements OnDestroy {
     //   return;
     // }
     // const stateData = message.data['state'] as unknown;
-    // TODO: Replace with LoggerService when available
+    this.logger.info('State sync response received');
     // console.log('State sync response received:', stateData);
     // Synchronize state with server
   }
@@ -632,9 +619,8 @@ export class CollaborationWebSocketService implements OnDestroy {
   /**
    * Handle error message
    */
-  private _handleError(_message: WebSocketMessage): void {
-    // TODO: Replace with LoggerService when available
-    // console.error('WebSocket error message:', message.data);
+  private _handleError(message: WebSocketMessage): void {
+    this.logger.error('WebSocket error message:', message.data);
   }
 
   /**
@@ -661,14 +647,12 @@ export class CollaborationWebSocketService implements OnDestroy {
       };
 
       this._webSocketAdapter.sendMessage(message).subscribe({
-        error: () => {
-          // TODO: Replace with LoggerService when available
-          // console.error('Failed to broadcast event:', error);
+        error: (error: Error) => {
+          this.logger.error('Failed to broadcast event:', error);
         },
       });
-    } catch {
-      // TODO: Replace with LoggerService when available
-      // console.error('Failed to broadcast event:', error);
+    } catch (error) {
+      this.logger.error('Failed to broadcast event:', error);
     }
   }
 

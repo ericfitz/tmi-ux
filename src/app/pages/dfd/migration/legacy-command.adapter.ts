@@ -8,8 +8,10 @@ import { DiagramCommandFactory } from '../domain/commands/diagram-commands';
 import { Point } from '../domain/value-objects/point';
 import { NodeData } from '../domain/value-objects/node-data';
 import { EdgeData } from '../domain/value-objects/edge-data';
-import { ShapeType } from '../services/dfd-node.service';
 import { NodeType } from '../domain/value-objects/node-data';
+
+// Type alias for backward compatibility during migration - extends NodeType to include legacy values
+type ShapeType = NodeType | 'securityBoundary';
 
 /**
  * Result interface for command operations (legacy compatibility)

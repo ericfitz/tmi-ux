@@ -5,9 +5,13 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { MigrationFlagsService } from './migration-flags.service';
 import { LegacyGraphAdapter } from './legacy-graph.adapter';
 import { LegacyCommandAdapter, CommandResult } from './legacy-command.adapter';
-import { DfdService, ExportFormat } from '../services/dfd.service';
-import { DfdCommandService } from '../services/dfd-command.service';
-import { ShapeType } from '../services/dfd-node.service';
+
+// Legacy ExportFormat type for migration compatibility
+export type ExportFormat = 'png' | 'jpeg' | 'svg';
+import { NodeType } from '../domain/value-objects/node-data';
+
+// Type alias for backward compatibility during migration
+type ShapeType = NodeType;
 
 /**
  * Migration facade service that provides the same interface as legacy services
@@ -27,8 +31,6 @@ export class DfdMigrationFacadeService {
     private migrationFlags: MigrationFlagsService,
     private legacyGraphAdapter: LegacyGraphAdapter,
     private legacyCommandAdapter: LegacyCommandAdapter,
-    private legacyDfdService: DfdService,
-    private legacyCommandService: DfdCommandService,
   ) {
     this.logger.info('DfdMigrationFacadeService initialized');
     this.setupStateSync();
@@ -38,90 +40,63 @@ export class DfdMigrationFacadeService {
    * Get the X6 graph instance (legacy interface)
    */
   get graph(): Graph | null {
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      return this.legacyGraphAdapter.graph;
-    }
-    return this.legacyDfdService.graph;
+    return this.legacyGraphAdapter.graph;
   }
 
   /**
    * Check if the graph is initialized (legacy interface)
    */
   get isInitialized(): boolean {
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      return this.legacyGraphAdapter.isInitialized;
-    }
-    return this.legacyDfdService.isInitialized;
+    return this.legacyGraphAdapter.isInitialized;
   }
 
   /**
    * Get initialization state as observable (legacy interface)
    */
   get isInitialized$(): Observable<boolean> {
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      return this.legacyGraphAdapter.isInitialized$;
-    }
-    return this.legacyDfdService.isInitialized$;
+    return this.legacyGraphAdapter.isInitialized$;
   }
 
   /**
    * Get selected node (legacy interface)
    */
   get selectedNode(): Node | null {
-    if (this.migrationFlags.isEnabled('useNewStateManagement')) {
-      return this._selectedNode.value;
-    }
-    return this.legacyDfdService.selectedNode;
+    return this._selectedNode.value;
   }
 
   /**
    * Get selected node as observable (legacy interface)
    */
   get selectedNode$(): Observable<Node | null> {
-    if (this.migrationFlags.isEnabled('useNewStateManagement')) {
-      return this._selectedNode.asObservable();
-    }
-    return this.legacyDfdService.selectedNode$;
+    return this._selectedNode.asObservable();
   }
 
   /**
    * Get undo capability as observable (legacy interface)
    */
   get canUndo$(): Observable<boolean> {
-    if (this.migrationFlags.isEnabled('useNewCommandBus')) {
-      return this._canUndo.asObservable();
-    }
-    return this.legacyDfdService.canUndo$;
+    return this._canUndo.asObservable();
   }
 
   /**
    * Get redo capability as observable (legacy interface)
    */
   get canRedo$(): Observable<boolean> {
-    if (this.migrationFlags.isEnabled('useNewCommandBus')) {
-      return this._canRedo.asObservable();
-    }
-    return this.legacyDfdService.canRedo$;
+    return this._canRedo.asObservable();
   }
 
   /**
    * Get current undo capability (legacy interface)
    */
   get canUndo(): boolean {
-    if (this.migrationFlags.isEnabled('useNewCommandBus')) {
-      return this._canUndo.value;
-    }
-    return this.legacyDfdService.canUndo;
+    return this._canUndo.value;
   }
 
   /**
    * Get current redo capability (legacy interface)
    */
   get canRedo(): boolean {
-    if (this.migrationFlags.isEnabled('useNewCommandBus')) {
-      return this._canRedo.value;
-    }
-    return this.legacyDfdService.canRedo;
+    return this._canRedo.value;
   }
 
   /**
@@ -134,13 +109,7 @@ export class DfdMigrationFacadeService {
       useNewGraphAdapter: this.migrationFlags.isEnabled('useNewGraphAdapter'),
     });
 
-    let success: boolean;
-
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      success = this.legacyGraphAdapter.initialize(containerElement);
-    } else {
-      success = this.legacyDfdService.initialize(containerElement);
-    }
+    const success = this.legacyGraphAdapter.initialize(containerElement);
 
     this._isInitialized.next(success);
     return success;
@@ -152,11 +121,7 @@ export class DfdMigrationFacadeService {
   dispose(): void {
     this.logger.info('DfdMigrationFacadeService: Disposing graph');
 
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      this.legacyGraphAdapter.dispose();
-    } else {
-      this.legacyDfdService.dispose();
-    }
+    this.legacyGraphAdapter.dispose();
 
     // Reset facade state
     this._isInitialized.next(false);
@@ -172,11 +137,7 @@ export class DfdMigrationFacadeService {
   addPassiveEventListeners(container: HTMLElement): void {
     this.logger.info('DfdMigrationFacadeService: Adding passive event listeners');
 
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      this.legacyGraphAdapter.addPassiveEventListeners(container);
-    } else {
-      this.legacyDfdService.addPassiveEventListeners(container);
-    }
+    this.legacyGraphAdapter.addPassiveEventListeners(container);
   }
 
   /**
@@ -187,11 +148,7 @@ export class DfdMigrationFacadeService {
   exportDiagram(format: ExportFormat, callback?: (blob: Blob, filename: string) => void): void {
     this.logger.info('DfdMigrationFacadeService: Exporting diagram', { format });
 
-    if (this.migrationFlags.isEnabled('useNewGraphAdapter')) {
-      this.legacyGraphAdapter.exportDiagram(format, callback);
-    } else {
-      this.legacyDfdService.exportDiagram(format, callback);
-    }
+    this.legacyGraphAdapter.exportDiagram(format, callback);
   }
 
   /**
@@ -211,7 +168,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.createNode(shapeType, position, containerElement);
     } else {
-      return this.legacyCommandService.createNode(shapeType, position, containerElement);
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.createNode(shapeType, position, containerElement);
     }
   }
 
@@ -230,7 +188,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.createRandomNode(shapeType, containerElement);
     } else {
-      return this.legacyCommandService.createRandomNode(shapeType, containerElement);
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.createRandomNode(shapeType, containerElement);
     }
   }
 
@@ -245,7 +204,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.deleteNode(nodeId);
     } else {
-      return this.legacyCommandService.deleteNode(nodeId);
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.deleteNode(nodeId);
     }
   }
 
@@ -261,7 +221,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.moveNode(nodeId, newPosition);
     } else {
-      return this.legacyCommandService.moveNode(nodeId, newPosition);
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.moveNode(nodeId, newPosition);
     }
   }
 
@@ -277,7 +238,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.editNodeLabel(nodeId, newLabel);
     } else {
-      return this.legacyCommandService.editNodeLabel(nodeId, newLabel);
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.editNodeLabel(nodeId, newLabel);
     }
   }
 
@@ -291,7 +253,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.undo();
     } else {
-      return this.legacyCommandService.undo();
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.undo();
     }
   }
 
@@ -305,7 +268,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       return this.legacyCommandAdapter.redo();
     } else {
-      return this.legacyCommandService.redo();
+      // Legacy command service not available - always use new architecture
+      return this.legacyCommandAdapter.redo();
     }
   }
 
@@ -318,7 +282,8 @@ export class DfdMigrationFacadeService {
     if (this.migrationFlags.isEnabled('useNewCommandBus')) {
       this.legacyCommandAdapter.clearHistory();
     } else {
-      this.legacyCommandService.clearHistory();
+      // Legacy command service not available - always use new architecture
+      this.legacyCommandAdapter.clearHistory();
     }
   }
 
@@ -361,20 +326,7 @@ export class DfdMigrationFacadeService {
       this.logger.debug('DfdMigrationFacadeService: Migration flags changed', flags);
     });
 
-    // Sync state from legacy services when not using new architecture
-    if (!this.migrationFlags.isEnabled('useNewStateManagement')) {
-      this.legacyDfdService.selectedNode$.subscribe(node => {
-        this._selectedNode.next(node);
-      });
-
-      this.legacyDfdService.canUndo$.subscribe(canUndo => {
-        this._canUndo.next(canUndo);
-      });
-
-      this.legacyDfdService.canRedo$.subscribe(canRedo => {
-        this._canRedo.next(canRedo);
-      });
-    }
+    // Legacy service state sync removed - new architecture manages state directly
 
     this.logger.debug('DfdMigrationFacadeService: State synchronization set up');
   }

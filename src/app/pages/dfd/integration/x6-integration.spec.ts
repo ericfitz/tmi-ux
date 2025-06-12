@@ -263,7 +263,7 @@ describe('X6 Integration Tests', () => {
       const node = new DiagramNode(nodeData);
 
       // Act
-      const x6Node = adapter.addNode(node);
+      adapter.addNode(node);
 
       // Assert
       const x6Graph = adapter.getGraph();
@@ -367,7 +367,7 @@ describe('X6 Integration Tests', () => {
       const edge = new DiagramEdge(edgeData);
 
       // Act
-      const x6Edge = adapter.addEdge(edge);
+      adapter.addEdge(edge);
 
       // Assert
       const x6Graph = adapter.getGraph();

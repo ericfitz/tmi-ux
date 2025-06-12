@@ -1,5 +1,8 @@
 import { Edge, Graph, Node } from '@antv/x6';
-import { ShapeType } from '../services/dfd-node.service';
+import { NodeType } from '../domain/value-objects/node-data';
+
+// Type alias for backward compatibility - extends NodeType to include legacy values
+type ShapeType = NodeType | 'securityBoundary';
 
 /**
  * Utility functions for DFD components
@@ -181,7 +184,7 @@ export function updateZIndices(graph: Graph): void {
   nodes.forEach(node => {
     // Check if this is a security boundary by type
     const shapeType = getShapeType(node);
-    if (shapeType === 'securityBoundary') {
+    if (shapeType === 'securityBoundary' || shapeType === 'security-boundary') {
       node.setZIndex(-1);
     }
   });
