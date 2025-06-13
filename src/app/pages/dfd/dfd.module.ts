@@ -6,6 +6,32 @@ import { DfdComponent } from './dfd.component';
 import { DfdHighlighterService } from './services/dfd-highlighter.service';
 import { DfdStateStore } from './state/dfd.state';
 
+// New architecture services
+import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
+import {
+  CommandBusService,
+  CommandValidationMiddleware,
+  CommandLoggingMiddleware,
+  CommandSerializationMiddleware,
+} from './application/services/command-bus.service';
+import {
+  DIAGRAM_REPOSITORY_TOKEN,
+  CreateDiagramCommandHandler,
+  AddNodeCommandHandler,
+  UpdateNodePositionCommandHandler,
+  UpdateNodeDataCommandHandler,
+  RemoveNodeCommandHandler,
+  AddEdgeCommandHandler,
+  UpdateEdgeDataCommandHandler,
+  RemoveEdgeCommandHandler,
+  UpdateDiagramMetadataCommandHandler,
+} from './application/handlers/diagram-command-handlers';
+import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
+import { LegacyCommandAdapter } from './migration/legacy-command.adapter';
+import { DfdMigrationFacadeService } from './migration/dfd-migration-facade.service';
+import { LegacyGraphAdapter } from './migration/legacy-graph.adapter';
+import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
+
 /**
  * Module for the DFD component and related services
  */
@@ -14,9 +40,43 @@ import { DfdStateStore } from './state/dfd.state';
   imports: [CommonModule, CoreMaterialModule, TranslocoModule, DfdComponent],
   exports: [],
   providers: [
-    // Remaining services - legacy services removed during clean architecture migration
+    // Legacy services
     DfdHighlighterService,
     DfdStateStore,
+
+    // Command Bus and middleware
+    CommandBusService,
+    CommandValidationMiddleware,
+    CommandLoggingMiddleware,
+    CommandSerializationMiddleware,
+
+    // Repository implementation
+    {
+      provide: DIAGRAM_REPOSITORY_TOKEN,
+      useClass: InMemoryDiagramRepository,
+    },
+
+    // Command Handlers (explicitly provided to ensure proper DI)
+    CreateDiagramCommandHandler,
+    AddNodeCommandHandler,
+    UpdateNodePositionCommandHandler,
+    UpdateNodeDataCommandHandler,
+    RemoveNodeCommandHandler,
+    AddEdgeCommandHandler,
+    UpdateEdgeDataCommandHandler,
+    RemoveEdgeCommandHandler,
+    UpdateDiagramMetadataCommandHandler,
+
+    // CommandBus initializer
+    CommandBusInitializerService,
+
+    // Migration adapters
+    DfdMigrationFacadeService,
+    LegacyGraphAdapter,
+    LegacyCommandAdapter,
+
+    // Infrastructure adapters
+    X6GraphAdapter,
   ],
 })
 export class DfdModule {}

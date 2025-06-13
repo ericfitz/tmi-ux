@@ -46,9 +46,7 @@ export const DIAGRAM_REPOSITORY_TOKEN = new InjectionToken<IDiagramRepository>(
 /**
  * Handler for CreateDiagramCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class CreateDiagramCommandHandler implements ICommandHandler<CreateDiagramCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -92,9 +90,7 @@ export class CreateDiagramCommandHandler implements ICommandHandler<CreateDiagra
 /**
  * Handler for AddNodeCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -153,9 +149,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
 /**
  * Handler for UpdateNodePositionCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UpdateNodePositionCommandHandler
   implements ICommandHandler<UpdateNodePositionCommand>
 {
@@ -216,9 +210,7 @@ export class UpdateNodePositionCommandHandler
 /**
  * Handler for UpdateNodeDataCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeDataCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -277,9 +269,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
 /**
  * Handler for RemoveNodeCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -338,9 +328,7 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
 /**
  * Handler for AddEdgeCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -399,9 +387,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
 /**
  * Handler for UpdateEdgeDataCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeDataCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -460,9 +446,7 @@ export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeD
 /**
  * Handler for RemoveEdgeCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
@@ -521,9 +505,7 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
 /**
  * Handler for UpdateDiagramMetadataCommand
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UpdateDiagramMetadataCommandHandler
   implements ICommandHandler<UpdateDiagramMetadataCommand>
 {
@@ -584,9 +566,7 @@ export class UpdateDiagramMetadataCommandHandler
 /**
  * Command handler registry service
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class CommandHandlerRegistry {
   private readonly _handlers: ICommandHandler[] = [];
 

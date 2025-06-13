@@ -17,9 +17,7 @@ type ShapeType = NodeType;
  * Migration facade service that provides the same interface as legacy services
  * but delegates to either legacy or new architecture based on feature flags
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class DfdMigrationFacadeService {
   private _isInitialized = new BehaviorSubject<boolean>(false);
   private _selectedNode = new BehaviorSubject<Node | null>(null);

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Graph, Node } from '@antv/x6';
+import '@antv/x6-plugin-export';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 
@@ -8,9 +9,7 @@ import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
  * Adapter that provides the legacy DfdService interface while using the new clean architecture
  * This allows gradual migration without breaking existing component code
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LegacyGraphAdapter {
   private _isInitialized = new BehaviorSubject<boolean>(false);
   private _selectedNode = new BehaviorSubject<Node | null>(null);
@@ -202,8 +201,15 @@ export class LegacyGraphAdapter {
 
       const finalCallback = callback || defaultCallback;
 
+      // Cast graph to access export methods added by the plugin
+      const exportGraph = graph as Graph & {
+        toSVG: (callback: (svgString: string) => void) => void;
+        toPNG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
+        toJPEG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
+      };
+
       if (format === 'svg') {
-        graph.toSVG((svgString: string) => {
+        exportGraph.toSVG((svgString: string) => {
           const blob = new Blob([svgString], { type: 'image/svg+xml' });
           finalCallback(blob, filename);
           this.logger.info('LegacyGraphAdapter: SVG export completed', { filename });
@@ -216,13 +222,13 @@ export class LegacyGraphAdapter {
         };
 
         if (format === 'png') {
-          graph.toPNG((dataUri: string) => {
+          exportGraph.toPNG((dataUri: string) => {
             const blob = this.dataUriToBlob(dataUri, 'image/png');
             finalCallback(blob, filename);
             this.logger.info('LegacyGraphAdapter: PNG export completed', { filename });
           }, exportOptions);
         } else {
-          graph.toJPEG((dataUri: string) => {
+          exportGraph.toJPEG((dataUri: string) => {
             const blob = this.dataUriToBlob(dataUri, 'image/jpeg');
             finalCallback(blob, filename);
             this.logger.info('LegacyGraphAdapter: JPEG export completed', { filename });

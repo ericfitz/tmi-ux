@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
+import '@antv/x6-plugin-export';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
@@ -11,9 +12,7 @@ import { Point } from '../../domain/value-objects/point';
  * X6 Graph Adapter that provides abstraction over X6 Graph operations
  * while maintaining direct access to X6's native capabilities.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class X6GraphAdapter implements IGraphAdapter {
   private _graph: Graph | null = null;
   private readonly _destroy$ = new Subject<void>();
@@ -374,6 +373,8 @@ export class X6GraphAdapter implements IGraphAdapter {
         return 'rect';
       case 'security-boundary':
         return 'rect';
+      case 'textbox':
+        return 'rect';
       default:
         return 'rect';
     }
@@ -432,6 +433,21 @@ export class X6GraphAdapter implements IGraphAdapter {
             stroke: '#722ED1',
             fill: '#F9F0FF',
             strokeDasharray: '5 5',
+          },
+        };
+      case 'textbox':
+        return {
+          ...baseAttrs,
+          body: {
+            ...baseAttrs.body,
+            stroke: '#8C8C8C',
+            fill: '#FAFAFA',
+            strokeWidth: 1,
+          },
+          text: {
+            ...baseAttrs.text,
+            fontSize: 11,
+            fill: '#595959',
           },
         };
       default:

@@ -4,11 +4,18 @@ import { map, catchError } from 'rxjs/operators';
 import { Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { CommandBusService } from '../application/services/command-bus.service';
+import { CommandBusInitializerService } from '../application/services/command-bus-initializer.service';
+import { CommandResult as DomainCommandResult } from '../application/handlers/diagram-command-handlers';
 import { DiagramCommandFactory } from '../domain/commands/diagram-commands';
 import { Point } from '../domain/value-objects/point';
 import { NodeData } from '../domain/value-objects/node-data';
 import { EdgeData } from '../domain/value-objects/edge-data';
 import { NodeType } from '../domain/value-objects/node-data';
+import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { DiagramNode } from '../domain/value-objects/diagram-node';
+import { DiagramEdge } from '../domain/value-objects/diagram-edge';
+import { BaseDomainEvent } from '../domain/events/domain-event';
+import { NodeAddedEvent } from '../domain/events/diagram-events';
 
 // Type alias for backward compatibility during migration - extends NodeType to include legacy values
 type ShapeType = NodeType | 'securityBoundary';
@@ -26,9 +33,7 @@ export interface CommandResult<T = unknown> {
  * Adapter that provides the legacy DfdCommandService interface while using the new clean architecture
  * This allows gradual migration without breaking existing component code
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LegacyCommandAdapter {
   private readonly _currentUserId = 'migration-user'; // TODO: Get from auth service
   private readonly _currentDiagramId = 'migration-diagram'; // TODO: Get from current context
@@ -36,8 +41,13 @@ export class LegacyCommandAdapter {
   constructor(
     private logger: LoggerService,
     private commandBus: CommandBusService,
+    private commandBusInitializer: CommandBusInitializerService,
+    private x6GraphAdapter: X6GraphAdapter,
   ) {
-    this.logger.info('LegacyCommandAdapter initialized');
+    this.logger.info('LegacyCommandAdapter initialized', {
+      commandBusInitialized: this.commandBusInitializer.isInitialized,
+    });
+    this.ensureDefaultDiagram();
   }
 
   /**
@@ -75,14 +85,27 @@ export class LegacyCommandAdapter {
       );
 
       return this.commandBus.execute(command).pipe(
-        map(_result => {
+        map((result: unknown) => {
+          const domainResult = result as DomainCommandResult;
           this.logger.info('LegacyCommandAdapter: Node created successfully', { nodeId });
-          // For legacy compatibility, we need to return a mock Node object
-          // In a real implementation, this would be the actual X6 Node
-          const mockNode = { id: nodeId } as Node;
+
+          // Sync domain state to visual graph
+          if (domainResult.success) {
+            this.syncDomainEventsToGraph(domainResult.events);
+          }
+
+          // Try to get the actual X6 node that was created
+          let actualNode: Node | undefined = undefined;
+          try {
+            actualNode = this.x6GraphAdapter.getNode(nodeId) || undefined;
+          } catch {
+            // If graph adapter fails, create a mock node for compatibility
+            actualNode = { id: nodeId } as Node;
+          }
+
           return {
             success: true,
-            data: mockNode,
+            data: actualNode,
           };
         }),
         catchError((error: unknown) => {
@@ -428,6 +451,7 @@ export class LegacyCommandAdapter {
       case 'store':
         return 'store';
       case 'securityBoundary':
+      case 'security-boundary':
         return 'security-boundary';
       case 'textbox':
         return 'textbox';
@@ -448,11 +472,170 @@ export class LegacyCommandAdapter {
       case 'store':
         return 'Data Store';
       case 'securityBoundary':
+      case 'security-boundary':
         return 'Security Boundary';
       case 'textbox':
         return 'Text';
       default:
         return 'Element';
     }
+  }
+
+  /**
+   * Ensure a default diagram exists for the migration adapter to work with
+   */
+  private ensureDefaultDiagram(): void {
+    // Import the command factory and create a default diagram
+    const command = DiagramCommandFactory.createDiagram(
+      this._currentDiagramId,
+      this._currentUserId,
+      'Migration Diagram',
+      'Default diagram for migration testing',
+    );
+
+    // Execute the command to create the diagram
+    this.commandBus.execute(command).subscribe({
+      next: () => {
+        this.logger.info('Default diagram created successfully', {
+          diagramId: this._currentDiagramId,
+        });
+      },
+      error: error => {
+        // If diagram already exists, that's fine
+        if (error && typeof error === 'object' && 'message' in error) {
+          const errorMessage = String((error as { message: unknown }).message);
+          if (errorMessage.includes('already exists')) {
+            this.logger.debug('Default diagram already exists', {
+              diagramId: this._currentDiagramId,
+            });
+          } else {
+            this.logger.warn('Failed to create default diagram', error);
+          }
+        } else {
+          this.logger.warn('Failed to create default diagram', error);
+        }
+      },
+    });
+  }
+
+  /**
+   * Sync domain events to the visual graph
+   * @param events The domain events to sync
+   */
+  private syncDomainEventsToGraph(events: BaseDomainEvent[]): void {
+    this.logger.debug('LegacyCommandAdapter: Syncing domain events to graph', {
+      eventCount: events.length,
+    });
+
+    for (const event of events) {
+      try {
+        switch (event.type) {
+          case 'NodeAdded':
+            this.handleNodeAddedEvent(event);
+            break;
+          case 'NodeRemoved':
+            this.handleNodeRemovedEvent(event);
+            break;
+          case 'NodePositionUpdated':
+            this.handleNodePositionUpdatedEvent(event);
+            break;
+          case 'EdgeAdded':
+            this.handleEdgeAddedEvent(event);
+            break;
+          case 'EdgeRemoved':
+            this.handleEdgeRemovedEvent(event);
+            break;
+          default:
+            this.logger.debug('LegacyCommandAdapter: Unhandled event type', { type: event.type });
+        }
+      } catch (error) {
+        this.logger.error('LegacyCommandAdapter: Error syncing event to graph', { event, error });
+      }
+    }
+  }
+
+  /**
+   * Handle NodeAdded domain event
+   */
+  private handleNodeAddedEvent(event: BaseDomainEvent): void {
+    // Cast to NodeAddedEvent to get proper type safety
+    const nodeAddedEvent = event as NodeAddedEvent;
+    const nodeData = nodeAddedEvent.nodeData;
+
+    // Create DiagramNode using the complete NodeData from the event
+    const diagramNode = new DiagramNode(nodeData);
+    this.x6GraphAdapter.addNode(diagramNode);
+
+    this.logger.debug('LegacyCommandAdapter: Added node to graph', {
+      nodeId: nodeData.id,
+      nodeType: nodeData.type,
+      label: nodeData.label,
+      position: nodeData.position.toJSON(),
+    });
+  }
+
+  /**
+   * Handle NodeRemoved domain event
+   */
+  private handleNodeRemovedEvent(event: BaseDomainEvent): void {
+    const eventData = event as { nodeId?: string; aggregateId?: string };
+    const nodeId = eventData.nodeId || eventData.aggregateId || '';
+
+    this.x6GraphAdapter.removeNode(nodeId);
+    this.logger.debug('LegacyCommandAdapter: Removed node from graph', { nodeId });
+  }
+
+  /**
+   * Handle NodePositionUpdated domain event
+   */
+  private handleNodePositionUpdatedEvent(event: BaseDomainEvent): void {
+    const eventData = event as { nodeId?: string; aggregateId?: string; newPosition?: Point };
+    const nodeId = eventData.nodeId || eventData.aggregateId || '';
+    const position = eventData.newPosition || new Point(100, 100);
+
+    this.x6GraphAdapter.moveNode(nodeId, position);
+    this.logger.debug('LegacyCommandAdapter: Updated node position in graph', { nodeId, position });
+  }
+
+  /**
+   * Handle EdgeAdded domain event
+   */
+  private handleEdgeAddedEvent(event: BaseDomainEvent): void {
+    const eventData = event as {
+      edgeId?: string;
+      aggregateId?: string;
+      sourceNodeId?: string;
+      targetNodeId?: string;
+    };
+    const edgeId = eventData.edgeId || eventData.aggregateId || '';
+    const sourceNodeId = eventData.sourceNodeId || 'source';
+    const targetNodeId = eventData.targetNodeId || 'target';
+
+    // Create EdgeData for the diagram edge
+    const edgeData = new EdgeData(
+      edgeId,
+      sourceNodeId,
+      targetNodeId,
+      undefined, // sourcePort
+      undefined, // targetPort
+      'Data Flow', // default label
+      [], // empty vertices
+      {}, // empty metadata
+    );
+
+    const diagramEdge = new DiagramEdge(edgeData);
+    this.x6GraphAdapter.addEdge(diagramEdge);
+    this.logger.debug('LegacyCommandAdapter: Added edge to graph', { edgeId });
+  }
+
+  /**
+   * Handle EdgeRemoved domain event
+   */
+  private handleEdgeRemovedEvent(event: BaseDomainEvent): void {
+    const eventData = event as { edgeId?: string; aggregateId?: string };
+    const edgeId = eventData.edgeId || eventData.aggregateId || '';
+
+    this.x6GraphAdapter.removeEdge(edgeId);
+    this.logger.debug('LegacyCommandAdapter: Removed edge from graph', { edgeId });
   }
 }

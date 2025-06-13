@@ -34,6 +34,31 @@ import {
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { v4 as uuidv4 } from 'uuid';
 
+// Import providers needed for standalone component
+import { LegacyCommandAdapter } from './migration/legacy-command.adapter';
+import { LegacyGraphAdapter } from './migration/legacy-graph.adapter';
+import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
+import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
+import {
+  CommandBusService,
+  CommandValidationMiddleware,
+  CommandLoggingMiddleware,
+  CommandSerializationMiddleware,
+} from './application/services/command-bus.service';
+import {
+  DIAGRAM_REPOSITORY_TOKEN,
+  CreateDiagramCommandHandler,
+  AddNodeCommandHandler,
+  UpdateNodePositionCommandHandler,
+  UpdateNodeDataCommandHandler,
+  RemoveNodeCommandHandler,
+  AddEdgeCommandHandler,
+  UpdateEdgeDataCommandHandler,
+  RemoveEdgeCommandHandler,
+  UpdateDiagramMetadataCommandHandler,
+} from './application/handlers/diagram-command-handlers';
+import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
+
 @Component({
   selector: 'app-dfd',
   standalone: true,
@@ -44,6 +69,41 @@ import { v4 as uuidv4 } from 'uuid';
     MatTooltipModule,
     TranslocoModule,
     DfdCollaborationComponent,
+  ],
+  providers: [
+    // Command Bus and middleware
+    CommandBusService,
+    CommandValidationMiddleware,
+    CommandLoggingMiddleware,
+    CommandSerializationMiddleware,
+
+    // Repository implementation
+    {
+      provide: DIAGRAM_REPOSITORY_TOKEN,
+      useClass: InMemoryDiagramRepository,
+    },
+
+    // Command Handlers (explicitly provided to ensure proper DI)
+    CreateDiagramCommandHandler,
+    AddNodeCommandHandler,
+    UpdateNodePositionCommandHandler,
+    UpdateNodeDataCommandHandler,
+    RemoveNodeCommandHandler,
+    AddEdgeCommandHandler,
+    UpdateEdgeDataCommandHandler,
+    RemoveEdgeCommandHandler,
+    UpdateDiagramMetadataCommandHandler,
+
+    // CommandBus initializer
+    CommandBusInitializerService,
+
+    // Migration adapters
+    DfdMigrationFacadeService,
+    LegacyGraphAdapter,
+    LegacyCommandAdapter,
+
+    // Infrastructure adapters
+    X6GraphAdapter,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],

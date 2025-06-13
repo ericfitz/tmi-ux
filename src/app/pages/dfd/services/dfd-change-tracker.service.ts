@@ -3,8 +3,6 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
-import { DfdEventBusService, DfdEventType } from './dfd-event-bus.service';
-import { NodeData } from '../models/node-data.interface';
 
 /**
  * Origin of a change - local or remote
@@ -120,53 +118,21 @@ export type SyncChangeEvent =
   providedIn: 'root',
 })
 export class DfdChangeTrackerService {
-  // Explicitly use NodeData type to avoid unused import warning
-  private _nodeDataType: NodeData | null = null;
   private _changes = new Subject<SyncChangeEvent>();
   private _previousNodeStates = new Map<string, Node.Properties>();
   private _previousEdgeStates = new Map<string, Edge.Properties>();
 
-  constructor(
-    private logger: LoggerService,
-    private eventBus: DfdEventBusService,
-  ) {
+  constructor(private logger: LoggerService) {
     this.logger.info('DfdChangeTrackerService initialized');
-    this.subscribeToEvents();
+    // TODO: Subscribe to events when DfdEventBusService is implemented
   }
 
   /**
    * Subscribe to DFD events and track changes
+   * TODO: Implement when DfdEventBusService is available
    */
   private subscribeToEvents(): void {
-    // Subscribe to graph changes
-    this.eventBus.onEventType(DfdEventType.GraphChanged).subscribe(event => {
-      if ('added' in event && event.added && event.added.length > 0) {
-        this.handleAddedCells(event.added);
-      }
-
-      if ('removed' in event && event.removed && event.removed.length > 0) {
-        this.handleRemovedCells(event.removed);
-      }
-
-      // Track changes to existing cells
-      if ('cells' in event && event.cells) {
-        this.trackCellChanges(event.cells);
-      }
-    });
-
-    // Subscribe to node moved events
-    this.eventBus.onEventType(DfdEventType.NodeMoved).subscribe(event => {
-      if ('node' in event && event.node) {
-        this.trackNodeMove(event.node);
-      }
-    });
-
-    // Subscribe to node resized events
-    this.eventBus.onEventType(DfdEventType.NodeResized).subscribe(event => {
-      if ('node' in event && event.node) {
-        this.trackNodeResize(event.node);
-      }
-    });
+    // Implementation pending DfdEventBusService
   }
 
   /**
