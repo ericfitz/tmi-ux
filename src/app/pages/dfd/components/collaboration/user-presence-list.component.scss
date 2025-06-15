@@ -1,32 +1,3 @@
-// Base styles (must come before specific variants)
-.header-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-.user-count {
-  font-size: 12px;
-  color: #666;
-  background: #f5f5f5;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: 500;
-}
-
-.presence-item {
-  transition: all 0.2s ease;
-  border-radius: 6px;
-  padding: 4px;
-  animation: slide-in 0.3s ease-out;
-
-  &:hover {
-    background-color: rgb(0 0 0 / 2%);
-    transform: translateY(-1px);
-  }
-}
-
 .presence-header {
   display: flex;
   align-items: center;
@@ -52,6 +23,18 @@
   }
 }
 
+.presence-item {
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  padding: 4px;
+  animation: slide-in 0.3s ease-out;
+
+  &:hover {
+    background-color: rgb(0 0 0 / 2%);
+    transform: translateY(-1px);
+  }
+}
+
 .presence-items {
   display: flex;
 
@@ -69,17 +52,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 8px;
-  }
-
-  .presence-item {
-    transition: all 0.2s ease;
-    border-radius: 6px;
-    padding: 4px;
-
-    &:hover {
-      background-color: rgb(0 0 0 / 2%);
-      transform: translateY(-1px);
-    }
   }
 }
 
@@ -131,45 +103,6 @@
 
       .user-count {
         font-size: 11px;
-      }
-    }
-  }
-
-  // Animations
-  @keyframes slide-in {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  // Dark theme support
-  @media (prefers-color-scheme: dark) {
-    .user-presence-list {
-      background: #2d2d2d;
-      color: #e0e0e0;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-
-      .presence-header {
-        border-bottom-color: #404040;
-
-        .header-title {
-          color: #e0e0e0;
-        }
-
-        .user-count {
-          background: #404040;
-          color: #b0b0b0;
-        }
-      }
-
-      .presence-item:hover {
-        background-color: rgb(255 255 255 / 5%);
       }
     }
   }
@@ -275,12 +208,12 @@
 @keyframes slide-in {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(-10px);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 

@@ -194,12 +194,7 @@ svg text[font-family] {
     }
 
     text.label {
-      fill: #333;
-      font-size: 12px;
-      font-family: 'Roboto Condensed', Arial, sans-serif;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      pointer-events: none;
+      @include shape-label-styles;
     }
   }
 }
@@ -358,39 +353,6 @@ circle.x6-port-body {
 }
 
 // =============================================================================
-// LABEL EDITING STYLES
-// =============================================================================
-
-.dfd-label-editor {
-  position: absolute;
-  z-index: 1000;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  padding: 2px;
-  border: 1px solid #1890ff;
-  border-radius: 2px;
-  outline: none;
-  background: white;
-  text-align: center;
-}
-
-.dfd-label-bounding-box {
-  position: absolute;
-  z-index: 1000;
-  border: 2px dashed #f00;
-  background-color: rgb(255 0 0 / 10%);
-  cursor: move;
-}
-
-.dfd-label-placeholder {
-  position: fixed;
-  z-index: 9999;
-  border: 2px dashed #f36;
-  background-color: rgb(255 51 102 / 20%);
-  pointer-events: none;
-}
-
-// =============================================================================
 // SELECTION AND INTERACTION STYLES - CONSOLIDATED
 // =============================================================================
 
@@ -460,20 +422,6 @@ circle.x6-port-body {
   }
 }
 
-// Force all resize handles to be visible
-.x6-widget-transform-resize-nw,
-.x6-widget-transform-resize-n,
-.x6-widget-transform-resize-ne,
-.x6-widget-transform-resize-e,
-.x6-widget-transform-resize-se,
-.x6-widget-transform-resize-s,
-.x6-widget-transform-resize-sw,
-.x6-widget-transform-resize-w {
-  display: block;
-  visibility: visible;
-  opacity: 1;
-}
-
 // Selection box styles
 .x6-cell-tool-boundary {
   fill: #47c769;
@@ -494,25 +442,9 @@ circle.x6-port-body {
   }
 }
 
-// Additional resize handle styles for selected elements
-[selected='true'] .x6-widget-transform-resize {
-  width: 8px;
-  height: 8px;
-  border-radius: 0;
-  background-color: #000;
-  border: none;
-  outline: none;
-  margin: 0;
-}
-
 // =============================================================================
 // NODE STATES - CONSOLIDATED
 // =============================================================================
-
-.selected-node {
-  stroke: #47c769;
-  stroke-width: 2.5;
-}
 
 .x6-node {
   &.is-selected {
