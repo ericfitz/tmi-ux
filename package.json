@@ -77,7 +77,7 @@
     "@angular-eslint/template-parser": "^20.0.0",
     "@angular/cli": "^20.0.2",
     "@angular/compiler-cli": "^20.0.3",
-    "@eslint/js": "^9.28.0",
+    "@eslint/js": "^9.29.0",
     "@rollup/rollup-darwin-arm64": "^4.43.0",
     "@testing-library/angular": "^17.4.0",
     "@types/cypress-image-snapshot": "^3.1.9",
