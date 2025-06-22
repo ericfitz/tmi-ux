@@ -320,9 +320,15 @@ export class CollaborationApplicationService {
           throw new Error(`User ${userId} not found in session`);
         }
 
-        const onlinePresence = participant
-          .withStatus(PresenceStatus.ONLINE)
-          .withActivity(UserActivity.VIEWING);
+        // Create a new presence object with both status and activity updated
+        const onlinePresence = new UserPresence(
+          participant.user,
+          PresenceStatus.ONLINE,
+          UserActivity.VIEWING,
+          new Date(),
+          participant.cursorState,
+          participant.currentTool,
+        );
 
         session.updateUserPresence(userId, onlinePresence);
 
