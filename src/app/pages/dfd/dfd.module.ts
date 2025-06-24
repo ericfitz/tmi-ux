@@ -27,9 +27,6 @@ import {
   UpdateDiagramMetadataCommandHandler,
 } from './application/handlers/diagram-command-handlers';
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
-import { LegacyCommandAdapter } from './migration/legacy-command.adapter';
-import { DfdMigrationFacadeService } from './migration/dfd-migration-facade.service';
-import { LegacyGraphAdapter } from './migration/legacy-graph.adapter';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 
 /**
@@ -69,11 +66,6 @@ import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 
     // CommandBus initializer
     CommandBusInitializerService,
-
-    // Migration adapters
-    DfdMigrationFacadeService,
-    LegacyGraphAdapter,
-    LegacyCommandAdapter,
 
     // Infrastructure adapters
     X6GraphAdapter,

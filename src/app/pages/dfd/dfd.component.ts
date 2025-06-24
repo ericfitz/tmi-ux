@@ -16,16 +16,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
-import { ExportFormat } from './migration/dfd-migration-facade.service';
 import { NodeType } from './domain/value-objects/node-data';
-// Legacy event bus removed - context menu handling moved to component level
-import { DfdMigrationFacadeService } from './migration/dfd-migration-facade.service';
-import { CommandResult } from './migration/legacy-command.adapter';
+import { DfdApplicationService } from './application/services/dfd-application.service';
+import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
+import { PerformanceTestingService } from './infrastructure/services/performance-testing.service';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import {
@@ -33,14 +32,15 @@ import {
   ThreatEditorDialogData,
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { v4 as uuidv4 } from 'uuid';
+import { CommandBusService } from './application/services/command-bus.service';
+import { DiagramCommandFactory } from './domain/commands/diagram-commands';
+import { NodeData } from './domain/value-objects/node-data';
+import { Point } from './domain/value-objects/point';
+import { DiagramNode } from './domain/value-objects/diagram-node';
 
 // Import providers needed for standalone component
-import { LegacyCommandAdapter } from './migration/legacy-command.adapter';
-import { LegacyGraphAdapter } from './migration/legacy-graph.adapter';
-import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
 import {
-  CommandBusService,
   CommandValidationMiddleware,
   CommandLoggingMiddleware,
   CommandSerializationMiddleware,
@@ -58,6 +58,8 @@ import {
   UpdateDiagramMetadataCommandHandler,
 } from './application/handlers/diagram-command-handlers';
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
+
+type ExportFormat = 'png' | 'jpeg' | 'svg';
 
 @Component({
   selector: 'app-dfd',
@@ -83,7 +85,7 @@ import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memo
       useClass: InMemoryDiagramRepository,
     },
 
-    // Command Handlers (explicitly provided to ensure proper DI)
+    // Command Handlers
     CreateDiagramCommandHandler,
     AddNodeCommandHandler,
     UpdateNodePositionCommandHandler,
@@ -97,13 +99,14 @@ import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memo
     // CommandBus initializer
     CommandBusInitializerService,
 
-    // Migration adapters
-    DfdMigrationFacadeService,
-    LegacyGraphAdapter,
-    LegacyCommandAdapter,
-
     // Infrastructure adapters
     X6GraphAdapter,
+
+    // Application services
+    DfdApplicationService,
+
+    // Performance testing
+    PerformanceTestingService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -117,6 +120,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
   private _rightClickedCell: Cell | null = null;
+  private _selectedNode$ = new BehaviorSubject<Node | null>(null);
+  private _isInitialized = false;
 
   // Context menu position
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -136,7 +141,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
-    private migrationFacade: DfdMigrationFacadeService,
+    private dfdApplicationService: DfdApplicationService,
+    private x6GraphAdapter: X6GraphAdapter,
+    private commandBus: CommandBusService,
+    private performanceTestingService: PerformanceTestingService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -162,40 +170,32 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
-    // Subscribe to state changes via migration facade
+    // Subscribe to selection state changes
     this._subscriptions.add(
-      this.migrationFacade.canUndo$.subscribe(canUndo => {
-        this.canUndo = canUndo;
-        this.cdr.markForCheck();
-      }),
-    );
-
-    this._subscriptions.add(
-      this.migrationFacade.canRedo$.subscribe(canRedo => {
-        this.canRedo = canRedo;
-        this.cdr.markForCheck();
-      }),
-    );
-
-    // Subscribe to selection state changes via migration facade
-    this._subscriptions.add(
-      this.migrationFacade.selectedNode$.subscribe(selectedNode => {
+      this._selectedNode$.subscribe(selectedNode => {
         this.hasSelectedCells = !!selectedNode;
         this.cdr.markForCheck();
       }),
     );
 
-    // TODO: Context menu events will be handled by the new architecture
-    // Legacy event bus removed - context menu handling will be implemented in migration facade
+    // Subscribe to graph adapter events
+    this._subscriptions.add(
+      this.x6GraphAdapter.selectionChanged$.subscribe(({ selected }) => {
+        if (selected.length > 0) {
+          const node = this.x6GraphAdapter.getNode(selected[0]);
+          this._selectedNode$.next(node);
+        } else {
+          this._selectedNode$.next(null);
+        }
+      }),
+    );
   }
 
   /**
    * Loads the diagram data for the given diagram ID
-   * @param diagramId The ID of the diagram to load
    */
   private loadDiagramData(diagramId: string): void {
     // In a real implementation, this would use a dedicated diagram service
-    // For now, we'll use the DIAGRAMS_BY_ID map from the diagram model
     void import('../../pages/tm/models/diagram.model').then(module => {
       const diagram = module.DIAGRAMS_BY_ID.get(diagramId);
       if (diagram) {
@@ -236,8 +236,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
-    // Dispose the migration facade
-    this.migrationFacade.dispose();
+    // Dispose the graph adapter
+    this.x6GraphAdapter.dispose();
   }
 
   /**
@@ -251,7 +251,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this._resizeTimeout = window.setTimeout(() => {
-      const graph = this.migrationFacade.graph;
+      const graph = this.x6GraphAdapter.getGraph();
       if (graph) {
         const container = this.graphContainer.nativeElement as HTMLElement;
         const width = container.clientWidth;
@@ -273,30 +273,86 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Method to add a node at a random position
-   * @param shapeType The type of shape to create
    */
   addRandomNode(shapeType: NodeType = 'actor'): void {
-    if (!this.migrationFacade.isInitialized) {
+    if (!this._isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
     }
 
-    // Use migration facade to create node with command pattern
-    this.migrationFacade
-      .createRandomNode(shapeType, this.graphContainer.nativeElement as HTMLElement)
+    const container = this.graphContainer.nativeElement as HTMLElement;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Calculate a random position with some padding
+    const padding = 100;
+    const x = Math.floor(Math.random() * (width - 2 * padding)) + padding;
+    const y = Math.floor(Math.random() * (height - 2 * padding)) + padding;
+
+    this.createNode(shapeType, { x, y });
+  }
+
+  /**
+   * Create a node with the specified type and position
+   */
+  private createNode(shapeType: NodeType, position: { x: number; y: number }): void {
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+    const nodeId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const nodeData = new NodeData(
+      nodeId,
+      shapeType,
+      this.getDefaultLabelForType(shapeType),
+      new Point(position.x, position.y),
+      120, // default width
+      80, // default height
+      {}, // empty metadata
+    );
+
+    const command = DiagramCommandFactory.addNode(
+      diagramId,
+      userId,
+      nodeId,
+      new Point(position.x, position.y),
+      nodeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
       .pipe(take(1))
-      .subscribe((result: CommandResult<Node>) => {
-        if (result.success) {
-          this.logger.info('Node created successfully', {
-            nodeId: result.data?.id,
-            shapeType,
-          });
-          // Force change detection
+      .subscribe({
+        next: () => {
+          this.logger.info('Node created successfully', { nodeId, shapeType });
+          // Add the node to the visual graph
+          const diagramNode = new DiagramNode(nodeData);
+          this.x6GraphAdapter.addNode(diagramNode);
           this.cdr.detectChanges();
-        } else {
-          this.logger.error('Failed to create node', result.error);
-        }
+        },
+        error: error => {
+          this.logger.error('Error creating node', error);
+        },
       });
+  }
+
+  /**
+   * Get default label for a shape type
+   */
+  private getDefaultLabelForType(shapeType: NodeType): string {
+    switch (shapeType) {
+      case 'actor':
+        return 'Actor';
+      case 'process':
+        return 'Process';
+      case 'store':
+        return 'Data Store';
+      case 'security-boundary':
+        return 'Security Boundary';
+      case 'textbox':
+        return 'Text';
+      default:
+        return 'Element';
+    }
   }
 
   /**
@@ -306,38 +362,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('DfdComponent initializeGraph called');
 
     try {
-      // Initialize the graph using migration facade
-      const success = this.migrationFacade.initialize(
-        this.graphContainer.nativeElement as HTMLElement,
-      );
+      // Initialize the graph using X6GraphAdapter
+      this.x6GraphAdapter.initialize(this.graphContainer.nativeElement as HTMLElement);
+      this._isInitialized = true;
 
-      if (success) {
-        // Trigger an initial resize to ensure the graph fits the container
-        setTimeout(() => {
-          const graph = this.migrationFacade.graph;
-          if (graph) {
-            const container = this.graphContainer.nativeElement as HTMLElement;
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            graph.resize(width, height);
-            this.logger.info('Initial graph resize', { width, height });
-          }
-        }, 0);
-        // Set up observation for DOM changes to add passive event listeners
-        this.setupDomObservation();
+      // Trigger an initial resize to ensure the graph fits the container
+      setTimeout(() => {
+        const graph = this.x6GraphAdapter.getGraph();
+        if (graph) {
+          const container = this.graphContainer.nativeElement as HTMLElement;
+          const width = container.clientWidth;
+          const height = container.clientHeight;
+          graph.resize(width, height);
+          this.logger.info('Initial graph resize', { width, height });
+        }
+      }, 0);
 
-        // Add passive event listeners for touch and wheel events
-        this.migrationFacade.addPassiveEventListeners(
-          this.graphContainer.nativeElement as HTMLElement,
-        );
+      // Set up observation for DOM changes to add passive event listeners
+      this.setupDomObservation();
 
-        // Set up port tooltips
-        this.setupPortTooltips();
+      // Set up port tooltips
+      this.setupPortTooltips();
 
-        this.logger.info('Graph initialization complete');
-      } else {
-        this.logger.error('Failed to initialize graph');
-      }
+      this.logger.info('Graph initialization complete');
 
       // Force change detection after initialization
       this.cdr.detectChanges();
@@ -397,7 +444,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Set up tooltips for ports
    */
   private setupPortTooltips(): void {
-    const graph = this.migrationFacade.graph;
+    const graph = this.x6GraphAdapter.getGraph();
     if (!graph) {
       return;
     }
@@ -417,12 +464,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         // Get the port label
-        // Get port details from the node - define a structured port object type
         type PortObject = {
           id?: string;
           attrs?: Record<string, { text?: string }>;
         };
-        // Cast node to any and then to PortObject to avoid TypeScript errors with the X6 library
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
         if (!portObj) {
@@ -464,74 +509,138 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Undo the last action
    */
   undo(): void {
-    this.migrationFacade
-      .undo()
-      .pipe(take(1))
-      .subscribe((result: CommandResult) => {
-        if (result.success) {
-          this.logger.info('Undo successful');
-        } else {
-          this.logger.warn('Undo failed', result.error);
-        }
-      });
+    this.logger.info('Undo operation requested - not yet implemented');
+    // TODO: Implement undo functionality
   }
 
   /**
    * Redo the last undone action
    */
   redo(): void {
-    this.migrationFacade
-      .redo()
-      .pipe(take(1))
-      .subscribe((result: CommandResult) => {
-        if (result.success) {
-          this.logger.info('Redo successful');
-        } else {
-          this.logger.warn('Redo failed', result.error);
-        }
-      });
+    this.logger.info('Redo operation requested - not yet implemented');
+    // TODO: Implement redo functionality
   }
 
   /**
    * Export the diagram to the specified format
-   * @param format The format to export to (png, jpeg, svg)
    */
   exportDiagram(format: ExportFormat): void {
-    this.migrationFacade.exportDiagram(format);
+    const graph = this.x6GraphAdapter.getGraph();
+    if (!graph) {
+      this.logger.warn('Cannot export - graph not initialized');
+      return;
+    }
+
+    this.logger.info('Exporting diagram', { format });
+
+    try {
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `dfd-diagram-${timestamp}.${format}`;
+
+      // Default callback for handling exported data
+      const handleExport = (blob: Blob, name: string): void => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      // Cast graph to access export methods added by the plugin
+      const exportGraph = graph as {
+        toSVG: (callback: (svgString: string) => void) => void;
+        toPNG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
+        toJPEG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
+      };
+
+      if (format === 'svg') {
+        exportGraph.toSVG((svgString: string) => {
+          const blob = new Blob([svgString], { type: 'image/svg+xml' });
+          handleExport(blob, filename);
+          this.logger.info('SVG export completed', { filename });
+        });
+      } else {
+        const exportOptions = {
+          backgroundColor: 'white',
+          padding: 20,
+          quality: format === 'jpeg' ? 0.8 : 1,
+        };
+
+        if (format === 'png') {
+          exportGraph.toPNG((dataUri: string) => {
+            const blob = this.dataUriToBlob(dataUri, 'image/png');
+            handleExport(blob, filename);
+            this.logger.info('PNG export completed', { filename });
+          }, exportOptions);
+        } else {
+          exportGraph.toJPEG((dataUri: string) => {
+            const blob = this.dataUriToBlob(dataUri, 'image/jpeg');
+            handleExport(blob, filename);
+            this.logger.info('JPEG export completed', { filename });
+          }, exportOptions);
+        }
+      }
+    } catch (error) {
+      this.logger.error('Error exporting diagram', error);
+    }
+  }
+
+  /**
+   * Convert data URI to Blob
+   */
+  private dataUriToBlob(dataUri: string, mimeType: string): Blob {
+    const byteString = atob(dataUri.split(',')[1]);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([arrayBuffer], { type: mimeType });
   }
 
   /**
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    if (!this.migrationFacade.isInitialized) {
+    if (!this._isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;
     }
 
-    const selectedNode = this.migrationFacade.selectedNode;
+    const selectedNode = this._selectedNode$.value;
     if (selectedNode) {
       this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
-      // Use migration facade to delete node with command pattern
-      this.migrationFacade
-        .deleteNode(selectedNode.id)
+
+      const diagramId = this.dfdId || 'default-diagram';
+      const userId = 'current-user'; // TODO: Get from auth service
+
+      const command = DiagramCommandFactory.removeNode(diagramId, userId, selectedNode.id);
+
+      this.commandBus
+        .execute<void>(command)
         .pipe(take(1))
-        .subscribe((result: CommandResult<void>) => {
-          if (result.success) {
+        .subscribe({
+          next: () => {
             this.logger.info('Node deleted successfully', { nodeId: selectedNode.id });
-            // Selection is updated in the command service already
+            // Remove from visual graph
+            this.x6GraphAdapter.removeNode(selectedNode.id);
             this.cdr.markForCheck();
-          } else {
-            this.logger.error('Failed to delete node', result.error);
-          }
+          },
+          error: error => {
+            this.logger.error('Error deleting node', error);
+          },
         });
     }
   }
 
   /**
    * Opens the context menu for a cell at the specified position
-   * @param cell The cell to open the context menu for
-   * @param event The mouse event that triggered the context menu
    */
   openCellContextMenu(cell: Cell, event: MouseEvent): void {
     // Prevent the default context menu
@@ -604,12 +713,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           return;
         }
 
-        // We've already checked that threatModelId is not null above
         const dialogData: ThreatEditorDialogData = {
           threatModelId: this.threatModelId as string,
           mode: 'create',
           diagramId: this.dfdId || '',
-          cellId: this.migrationFacade.selectedNode?.id || '',
+          cellId: this._selectedNode$.value?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -623,7 +731,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             if (result && threatModel) {
               const now = new Date().toISOString();
 
-              // Type the result to avoid unsafe assignments
               interface ThreatFormResult {
                 name: string;
                 description: string;
@@ -646,11 +753,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 description: formResult.description,
                 created_at: now,
                 modified_at: now,
-                // Add required fields for the updated Threat interface
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
                 diagram_id: formResult.diagram_id || this.dfdId || '',
-                cell_id: formResult.cell_id || this.migrationFacade.selectedNode?.id || '',
+                cell_id: formResult.cell_id || this._selectedNode$.value?.id || '',
                 score: formResult.score || 10.0,
                 priority: formResult.priority || 'High',
                 issue_url: formResult.issue_url || 'n/a',
@@ -690,5 +796,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Fallback to the threat models list if no threat model ID is available
       void this.router.navigate(['/tm']);
     }
+  }
+
+  /**
+   * Run performance tests
+   */
+  runPerformanceTests(): void {
+    this.logger.info('Starting performance tests');
+    this.performanceTestingService.runPerformanceTestSuite().subscribe({
+      next: results => {
+        this.logger.info('Performance tests completed', { results });
+      },
+      error: error => {
+        this.logger.error('Performance tests failed', error);
+      },
+    });
   }
 }
