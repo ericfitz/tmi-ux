@@ -13,11 +13,11 @@ TMI (Threat Modeling Improved) is a server based threat modeling web application
 ## Features
 
 - Full REST API - threat models and their associated data flow diagrams (DFDs) and threats are human- and machine-readable and editable
+    - OpenAPI 3.0 specification
 - Threats, threat models, diagrams and objects can be extended with arbitrary key-value metadata
 - Real-time collaborative diagram editing
 - Role-based access control (reader, writer, owner)
-- OAuth authentication with JWT
-- OpenAPI 3.0 specification
+- OAuth authentication with configurable OAuth providers
 - Supports multiple threat model frameworks (STRIDE, CIA, etc.)
 - Supports integration with issue tracking systems
 - Apache licensed for customizability
