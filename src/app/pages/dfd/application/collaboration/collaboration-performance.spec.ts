@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-function-return-type */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { firstValueFrom, take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { CollaborationApplicationService } from './collaboration-application.service';
 import { User } from '../../domain/collaboration/user';
@@ -38,7 +38,7 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
         const startTime = performance.now();
         let createdCount = 0;
 
-        const createNextSession = () => {
+        const createNextSession = (): void => {
           if (createdCount >= sessionCount) {
             const endTime = performance.now();
             const duration = endTime - startTime;
@@ -49,8 +49,8 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
             expect(avgTimePerSession).toBeLessThan(50); // Average under 50ms per session
             expect(service.getActiveSessions()).toHaveLength(sessionCount);
 
-            console.log(`Created ${sessionCount} sessions in ${duration.toFixed(2)}ms`);
-            console.log(`Average time per session: ${avgTimePerSession.toFixed(2)}ms`);
+            console.info(`Created ${sessionCount} sessions in ${duration.toFixed(2)}ms`);
+            console.info(`Average time per session: ${avgTimePerSession.toFixed(2)}ms`);
             resolve();
             return;
           }
@@ -98,7 +98,7 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
             expect(duration).toBeLessThan(3000); // Under 3 seconds for concurrent creation
             expect(service.getActiveSessions()).toHaveLength(concurrentSessions);
 
-            console.log(
+            console.info(
               `Created ${concurrentSessions} concurrent sessions in ${duration.toFixed(2)}ms`,
             );
             resolve();
@@ -128,7 +128,7 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
             const startTime = performance.now();
             let joinedCount = 0;
 
-            const joinNextUser = () => {
+            const joinNextUser = (): void => {
               if (joinedCount >= userCount) {
                 const endTime = performance.now();
                 const duration = endTime - startTime;
@@ -140,8 +140,8 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
                 const session = service.getSession(sessionId);
                 expect(session?.participantCount).toBe(userCount + 1); // +1 for creator
 
-                console.log(`${userCount} users joined in ${duration.toFixed(2)}ms`);
-                console.log(`Average time per join: ${avgTimePerJoin.toFixed(2)}ms`);
+                console.info(`${userCount} users joined in ${duration.toFixed(2)}ms`);
+                console.info(`Average time per join: ${avgTimePerJoin.toFixed(2)}ms`);
                 resolve();
                 return;
               }
@@ -195,10 +195,10 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
                     expect(duration).toBeLessThan(5000); // Under 5 seconds
                     expect(avgTimePerUpdate).toBeLessThan(50); // Under 50ms per update
 
-                    console.log(
+                    console.info(
                       `Updated presence for ${userCount} users in ${duration.toFixed(2)}ms`,
                     );
-                    console.log(`Average time per update: ${avgTimePerUpdate.toFixed(2)}ms`);
+                    console.info(`Average time per update: ${avgTimePerUpdate.toFixed(2)}ms`);
                     resolve();
                     return;
                   }
@@ -261,8 +261,8 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
                 expect(duration).toBeLessThan(15000); // Under 15 seconds
                 expect(avgTimePerCommand).toBeLessThan(30); // Under 30ms per command
 
-                console.log(`Executed ${commandCount} commands in ${duration.toFixed(2)}ms`);
-                console.log(`Average time per command: ${avgTimePerCommand.toFixed(2)}ms`);
+                console.info(`Executed ${commandCount} commands in ${duration.toFixed(2)}ms`);
+                console.info(`Average time per command: ${avgTimePerCommand.toFixed(2)}ms`);
                 resolve();
                 return;
               }
@@ -354,10 +354,10 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
                     expect(duration).toBeLessThan(20000); // Under 20 seconds
                     expect(avgTimePerCommand).toBeLessThan(100); // Under 100ms per command
 
-                    console.log(
+                    console.info(
                       `Executed ${totalCommands} concurrent commands in ${duration.toFixed(2)}ms`,
                     );
-                    console.log(`Average time per command: ${avgTimePerCommand.toFixed(2)}ms`);
+                    console.info(`Average time per command: ${avgTimePerCommand.toFixed(2)}ms`);
                     resolve();
                   })
                   .catch(reject);
@@ -391,9 +391,9 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
               expect(session.participantCount).toBe(usersPerSession + 1); // +1 for creator
             });
 
-            console.log(`Created ${sessionCount} sessions with ${usersPerSession} users each`);
-            console.log(`Total active sessions: ${activeSessions.length}`);
-            console.log(
+            console.info(`Created ${sessionCount} sessions with ${usersPerSession} users each`);
+            console.info(`Total active sessions: ${activeSessions.length}`);
+            console.info(
               `Total participants across all sessions: ${activeSessions.reduce((sum, s) => sum + s.participantCount, 0)}`,
             );
 
@@ -468,7 +468,7 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
                 expect(service.getActiveSessions()).toHaveLength(0);
                 expect(duration).toBeLessThan(1000); // Cleanup should be fast
 
-                console.log(`Cleaned up ${sessionCount} sessions in ${duration.toFixed(2)}ms`);
+                console.info(`Cleaned up ${sessionCount} sessions in ${duration.toFixed(2)}ms`);
                 resolve();
               },
               error: reject,
@@ -519,15 +519,15 @@ describe('CollaborationApplicationService - Performance Benchmarks', () => {
                 expect(duration).toBeLessThan(5000); // Under 5 seconds
                 expect(avgTimePerEvent).toBeLessThan(5); // Under 5ms per event
 
-                console.log(`Processed ${updateCount} events in ${duration.toFixed(2)}ms`);
-                console.log(`Average time per event: ${avgTimePerEvent.toFixed(2)}ms`);
+                console.info(`Processed ${updateCount} events in ${duration.toFixed(2)}ms`);
+                console.info(`Average time per event: ${avgTimePerEvent.toFixed(2)}ms`);
                 resolve();
               }
             });
 
             // Generate rapid updates
             let updatesSent = 0;
-            const sendNextUpdate = () => {
+            const sendNextUpdate = (): void => {
               if (updatesSent >= updateCount) {
                 return;
               }

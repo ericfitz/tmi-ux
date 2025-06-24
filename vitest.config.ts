@@ -35,6 +35,7 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.spec.ts',
         '**/environments/**',
+        'unused/**',
       ],
     },
     // Add these options for better Zone.js compatibility

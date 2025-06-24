@@ -56,7 +56,7 @@ export enum DebounceType {
 /**
  * Represents a debounced operation
  */
-export interface DebouncedOperation<T = any> {
+export interface DebouncedOperation<T = unknown> {
   id: string;
   type: DebounceType;
   data: T;
