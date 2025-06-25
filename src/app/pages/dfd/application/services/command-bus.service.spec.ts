@@ -1,4 +1,3 @@
- 
 // Import Angular compiler
 import '@angular/compiler';
 

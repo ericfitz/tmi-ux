@@ -229,6 +229,14 @@ vi.mock('@antv/x6', () => {
 
       return mockGraph;
     }),
+    Shape: {
+      Rect: {
+        define: vi.fn(),
+      },
+    },
+    Node: vi.fn(),
+    Edge: vi.fn(),
+    Cell: vi.fn(),
   };
 });
 

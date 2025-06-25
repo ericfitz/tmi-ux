@@ -1,12 +1,67 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Graph, Node, Edge, Cell } from '@antv/x6';
+import { Graph, Node, Edge, Cell, Shape } from '@antv/x6';
 import '@antv/x6-plugin-export';
+import { Selection } from '@antv/x6-plugin-selection';
+import { Snapline } from '@antv/x6-plugin-snapline';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
+
+// Register custom store shape with only top and bottom borders
+Shape.Rect.define({
+  shape: 'store-shape',
+  markup: [
+    {
+      tagName: 'rect',
+      selector: 'body',
+    },
+    {
+      tagName: 'path',
+      selector: 'topBorder',
+    },
+    {
+      tagName: 'path',
+      selector: 'bottomBorder',
+    },
+    {
+      tagName: 'text',
+      selector: 'text',
+    },
+  ],
+  attrs: {
+    body: {
+      refWidth: '100%',
+      refHeight: '100%',
+      fill: '#FFFFFF',
+      stroke: 'none',
+      strokeWidth: 0,
+    },
+    topBorder: {
+      refD: 'M 0 0 L 100% 0',
+      stroke: '#000000',
+      strokeWidth: 2,
+      fill: 'none',
+    },
+    bottomBorder: {
+      refD: 'M 0 100% L 100% 100%',
+      stroke: '#000000',
+      strokeWidth: 2,
+      fill: 'none',
+    },
+    text: {
+      refX: '50%',
+      refY: '50%',
+      textAnchor: 'middle',
+      textVerticalAnchor: 'middle',
+      fontFamily: '"Roboto Condensed", Arial, sans-serif',
+      fontSize: 12,
+      fill: '#000000',
+    },
+  },
+});
 
 /**
  * X6 Graph Adapter that provides abstraction over X6 Graph operations
@@ -16,6 +71,7 @@ import { Point } from '../../domain/value-objects/point';
 export class X6GraphAdapter implements IGraphAdapter {
   private _graph: Graph | null = null;
   private readonly _destroy$ = new Subject<void>();
+  private _isConnecting = false;
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -98,19 +154,19 @@ export class X6GraphAdapter implements IGraphAdapter {
         minScale: 0.5,
       },
       connecting: {
-        router: 'manhattan',
+        router: 'orth',
         connector: {
-          name: 'rounded',
-          args: {
-            radius: 8,
-          },
+          name: 'smooth',
         },
         anchor: 'center',
         connectionPoint: 'anchor',
         allowBlank: false,
+        allowNode: true,
+        allowPort: true,
         snap: {
           radius: 20,
         },
+        highlight: true,
         createEdge() {
           return new Edge({
             attrs: {
@@ -131,9 +187,40 @@ export class X6GraphAdapter implements IGraphAdapter {
           return !!targetMagnet;
         },
       },
+      highlighting: {
+        magnetAdsorbed: {
+          name: 'stroke',
+          args: {
+            padding: 4,
+            attrs: {
+              strokeWidth: 4,
+              stroke: '#5F95FF',
+            },
+          },
+        },
+        magnetAvailable: {
+          name: 'stroke',
+          args: {
+            padding: 2,
+            attrs: {
+              strokeWidth: 2,
+              stroke: '#31d0c6',
+            },
+          },
+        },
+        nodeAvailable: {
+          name: 'className',
+          args: {
+            className: 'available',
+          },
+        },
+      },
     });
 
+    // Enable plugins
+    this._setupPlugins();
     this._setupEventListeners();
+    this._setupPortVisibility();
   }
 
   /**
@@ -162,6 +249,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       label: node.data.label,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       attrs: this._getNodeAttrs(node.data.type as string),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      ports: this._getNodePorts(node.data.type as string),
       data: {
         ...node.data,
         domainNodeId: node.id,
@@ -368,7 +457,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       case 'process':
         return 'ellipse';
       case 'store':
-        return 'rect';
+        return 'store-shape'; // Use custom shape for store
       case 'actor':
         return 'rect';
       case 'security-boundary':
@@ -388,12 +477,13 @@ export class X6GraphAdapter implements IGraphAdapter {
     const baseAttrs = {
       body: {
         strokeWidth: 2,
-        stroke: '#5F95FF',
-        fill: '#EFF4FF',
+        stroke: '#000000',
+        fill: '#FFFFFF',
       },
       text: {
+        fontFamily: '"Roboto Condensed", Arial, sans-serif',
         fontSize: 12,
-        fill: '#262626',
+        fill: '#000000',
       },
     };
 
@@ -409,11 +499,25 @@ export class X6GraphAdapter implements IGraphAdapter {
         };
       case 'store':
         return {
-          ...baseAttrs,
           body: {
-            ...baseAttrs.body,
-            stroke: '#FF6B35',
-            fill: '#FFE7E0',
+            fill: '#FFFFFF',
+            stroke: 'none',
+            strokeWidth: 0,
+          },
+          topBorder: {
+            stroke: '#000000',
+            strokeWidth: 2,
+            fill: 'none',
+          },
+          bottomBorder: {
+            stroke: '#000000',
+            strokeWidth: 2,
+            fill: 'none',
+          },
+          text: {
+            fontFamily: '"Roboto Condensed", Arial, sans-serif',
+            fontSize: 12,
+            fill: '#000000',
           },
         };
       case 'actor':
@@ -421,8 +525,6 @@ export class X6GraphAdapter implements IGraphAdapter {
           ...baseAttrs,
           body: {
             ...baseAttrs.body,
-            stroke: '#52C41A',
-            fill: '#F6FFED',
           },
         };
       case 'security-boundary':
@@ -430,9 +532,9 @@ export class X6GraphAdapter implements IGraphAdapter {
           ...baseAttrs,
           body: {
             ...baseAttrs.body,
-            stroke: '#722ED1',
-            fill: '#F9F0FF',
             strokeDasharray: '5 5',
+            rx: 10,
+            ry: 10,
           },
         };
       case 'textbox':
@@ -440,14 +542,11 @@ export class X6GraphAdapter implements IGraphAdapter {
           ...baseAttrs,
           body: {
             ...baseAttrs.body,
-            stroke: '#8C8C8C',
-            fill: '#FAFAFA',
             strokeWidth: 1,
           },
           text: {
             ...baseAttrs.text,
             fontSize: 11,
-            fill: '#595959',
           },
         };
       default:
@@ -487,5 +586,215 @@ export class X6GraphAdapter implements IGraphAdapter {
       default:
         return baseAttrs;
     }
+  }
+
+  /**
+   * Get X6 port configuration for domain node type
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _getNodePorts(_nodeType: string): any {
+    const basePorts = {
+      groups: {
+        top: {
+          position: 'top',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+        right: {
+          position: 'right',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+        bottom: {
+          position: 'bottom',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+        left: {
+          position: 'left',
+          attrs: {
+            circle: {
+              r: 4,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff',
+              style: {
+                visibility: 'hidden',
+              },
+            },
+          },
+        },
+      },
+      items: [{ group: 'top' }, { group: 'right' }, { group: 'bottom' }, { group: 'left' }],
+    };
+
+    // All node types get the same port configuration for now
+    // Can be customized per node type if needed
+    return basePorts;
+  }
+
+  /**
+   * Setup port visibility behavior for connection interactions
+   */
+  private _setupPortVisibility(): void {
+    if (!this._graph) return;
+
+    // Show ports on node hover
+    this._graph.on('node:mouseenter', ({ node }) => {
+      const ports = node.getPorts();
+      ports.forEach(port => {
+        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+      });
+    });
+
+    // Hide ports on node leave (unless connecting)
+    this._graph.on('node:mouseleave', ({ node }) => {
+      if (!this._isConnecting) {
+        const ports = node.getPorts();
+        ports.forEach(port => {
+          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+        });
+      }
+    });
+
+    // Show all ports when starting to connect
+    this._graph.on('edge:connecting', () => {
+      this._isConnecting = true;
+      this._graph?.getNodes().forEach(node => {
+        const ports = node.getPorts();
+        ports.forEach(port => {
+          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+        });
+      });
+    });
+
+    // Hide ports when connection is complete or cancelled
+    this._graph.on('edge:connected', () => {
+      this._isConnecting = false;
+      this._hideAllPorts();
+    });
+
+    this._graph.on('edge:disconnected', () => {
+      this._isConnecting = false;
+      this._hideAllPorts();
+    });
+  }
+
+  /**
+   * Hide all ports on all nodes
+   */
+  private _hideAllPorts(): void {
+    if (!this._graph) return;
+
+    this._graph.getNodes().forEach(node => {
+      const ports = node.getPorts();
+      ports.forEach(port => {
+        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+      });
+    });
+  }
+
+  /**
+   * Setup X6 plugins for enhanced functionality
+   */
+  private _setupPlugins(): void {
+    if (!this._graph) return;
+
+    // Check if the graph has the use method (not available in test mocks)
+    if (typeof this._graph.use === 'function') {
+      // Enable selection plugin
+      this._graph.use(
+        new Selection({
+          enabled: true,
+          multiple: true,
+          rubberband: true,
+          movable: true,
+          showNodeSelectionBox: true,
+          showEdgeSelectionBox: true,
+          modifiers: ['shift'] as ('alt' | 'ctrl' | 'meta' | 'shift')[],
+          pointerEvents: 'none',
+        }),
+      );
+
+      // Enable snapline plugin
+      this._graph.use(
+        new Snapline({
+          enabled: true,
+          sharp: true,
+        }),
+      );
+    }
+
+    // Setup selection event handlers
+    this._setupSelectionEvents();
+  }
+
+  /**
+   * Setup selection event handlers for visual feedback
+   */
+  private _setupSelectionEvents(): void {
+    if (!this._graph) return;
+
+    // Clear selection on blank click (only if method exists)
+    this._graph.on('blank:click', () => {
+      const graph = this._graph;
+      if (graph && typeof graph.cleanSelection === 'function') {
+        graph.cleanSelection();
+      }
+    });
+
+    // Visual feedback for selected cells
+    this._graph.on('cell:selected', ({ cell }: { cell: Cell }) => {
+      if (cell.isNode()) {
+        cell.attr('body/stroke', '#1890ff');
+        cell.attr('body/strokeWidth', 3);
+      } else if (cell.isEdge()) {
+        cell.attr('line/stroke', '#1890ff');
+        cell.attr('line/strokeWidth', 3);
+      }
+    });
+
+    this._graph.on('cell:unselected', ({ cell }: { cell: Cell }) => {
+      if (cell.isNode()) {
+        // Reset to original node styling
+        cell.attr('body/stroke', '#000000');
+        cell.attr('body/strokeWidth', 2);
+      } else if (cell.isEdge()) {
+        // Reset to original edge styling
+        cell.attr('line/stroke', '#A2B1C3');
+        cell.attr('line/strokeWidth', 2);
+      }
+    });
   }
 }
