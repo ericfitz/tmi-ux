@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { IDiagramRepository } from '../../application/handlers/diagram-command-handlers';
 import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
+import { MOCK_DIAGRAMS } from '../../../tm/models/diagram.model';
+import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
 
 /**
  * In-memory implementation of IDiagramRepository for development and testing
@@ -12,6 +14,11 @@ import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
 })
 export class InMemoryDiagramRepository implements IDiagramRepository {
   private readonly _diagrams = new Map<string, DiagramAggregate>();
+
+  constructor() {
+    // Initialize with mock data
+    this.initializeWithMockData();
+  }
 
   /**
    * Find a diagram by ID
@@ -64,5 +71,23 @@ export class InMemoryDiagramRepository implements IDiagramRepository {
    */
   count(): number {
     return this._diagrams.size;
+  }
+
+  /**
+   * Initialize the repository with mock diagram data
+   */
+  private initializeWithMockData(): void {
+    MOCK_DIAGRAMS.forEach(mockDiagram => {
+      // Create a diagram aggregate from the mock data
+      const createCommand = DiagramCommandFactory.createDiagram(
+        mockDiagram.id,
+        'system', // system user for mock data
+        mockDiagram.name,
+        mockDiagram.description,
+      );
+
+      const aggregate = DiagramAggregate.create(createCommand);
+      this._diagrams.set(mockDiagram.id, aggregate);
+    });
   }
 }

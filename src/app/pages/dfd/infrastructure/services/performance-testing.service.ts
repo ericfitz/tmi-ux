@@ -364,9 +364,12 @@ export class PerformanceTestingService {
       if (
         config.enableMemoryProfiling &&
         'performance' in window &&
-        'memory' in (window.performance as any)
+        'memory' in (window.performance as unknown as { memory: { usedJSHeapSize: number } })
       ) {
-        const initialMemory = (window.performance as any).memory.usedJSHeapSize;
+        const performanceWithMemory = window.performance as unknown as {
+          memory: { usedJSHeapSize: number };
+        };
+        const initialMemory = performanceWithMemory.memory.usedJSHeapSize;
 
         // Create large dataset and measure memory impact
         const largeDataset = Array.from({ length: config.nodeCount * 10 }, (_, i) => ({
@@ -375,7 +378,7 @@ export class PerformanceTestingService {
         }));
 
         setTimeout(() => {
-          const finalMemory = (window.performance as any).memory.usedJSHeapSize;
+          const finalMemory = performanceWithMemory.memory.usedJSHeapSize;
           const memoryDelta = finalMemory - initialMemory;
 
           metrics.push({
@@ -431,7 +434,6 @@ export class PerformanceTestingService {
     this.logger.info('Testing large dataset performance');
 
     return new Observable(observer => {
-      const metrics: PerformanceMetrics[] = [];
       const largeConfig = {
         ...config,
         nodeCount: config.nodeCount * 10,

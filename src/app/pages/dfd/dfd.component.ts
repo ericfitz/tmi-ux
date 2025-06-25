@@ -149,8 +149,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
+    private commandBusInitializer: CommandBusInitializerService,
   ) {
     this.logger.info('DfdComponent constructor called');
+
+    // Ensure command bus is initialized
+    if (!this.commandBusInitializer.isInitialized) {
+      this.logger.warn('CommandBus not initialized, forcing initialization');
+      this.commandBusInitializer.initialize();
+    }
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -203,7 +210,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.info('Loaded diagram data', { name: this.diagramName, id: diagramId });
         this.cdr.markForCheck();
       } else {
-        this.logger.warn('Diagram not found', { id: diagramId });
+        this.logger.warn('Diagram not found, redirecting to threat model page', { id: diagramId });
+        // Redirect to threat model page if diagram doesn't exist
+        if (this.threatModelId) {
+          void this.router.navigate(['/tm', this.threatModelId]);
+        } else {
+          void this.router.navigate(['/tm']);
+        }
       }
     });
   }
