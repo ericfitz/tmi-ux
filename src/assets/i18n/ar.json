@@ -213,6 +213,14 @@
         "export": "تصدير...",
         "close": "إغلاق"
       }
+    },
+    "nodeLabels": {
+      "actor": "ممثل",
+      "process": "عملية",
+      "store": "مخزن البيانات",
+      "securityBoundary": "حدود أمنية",
+      "textbox": "نص",
+      "node": "عقدة"
     }
   },
   "threatEditor": {

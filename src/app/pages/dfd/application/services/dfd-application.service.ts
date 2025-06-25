@@ -112,7 +112,7 @@ export class DfdApplicationService {
     diagramId: string,
     nodeId: string,
     position: Point,
-    nodeType: 'actor' | 'store' | 'security-boundary' | 'textbox',
+    nodeType: 'actor' | 'store' | 'process' | 'security-boundary' | 'textbox',
     label: string,
     userId: string,
     width: number = 120,
@@ -356,7 +356,7 @@ export interface CreateDiagramOptions {
   userId: string;
   initialNodes?: Array<{
     id: string;
-    type: 'actor' | 'store' | 'security-boundary' | 'textbox';
+    type: 'actor' | 'store' | 'process' | 'security-boundary' | 'textbox';
     label: string;
     position: Point;
     width?: number;

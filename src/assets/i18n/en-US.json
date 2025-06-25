@@ -228,6 +228,14 @@
         "export": "Export...",
         "close": "Close"
       }
+    },
+    "nodeLabels": {
+      "actor": "Actor",
+      "process": "Process",
+      "store": "Data Store",
+      "securityBoundary": "Security Boundary",
+      "textbox": "Text",
+      "node": "Node"
     }
   },
   "threatEditor": {

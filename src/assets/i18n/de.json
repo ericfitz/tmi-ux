@@ -213,6 +213,14 @@
         "export": "Exportieren...",
         "close": "Schließen"
       }
+    },
+    "nodeLabels": {
+      "actor": "Akteur",
+      "process": "Prozess",
+      "store": "Datenspeicher",
+      "securityBoundary": "Sicherheitsgrenze",
+      "textbox": "Text",
+      "node": "Knoten"
     }
   },
   "threatEditor": {

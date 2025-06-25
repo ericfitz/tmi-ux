@@ -47,9 +47,14 @@ export class NodeData {
   /**
    * Creates a default NodeData for the given type
    */
-  static createDefault(id: string, type: NodeType, position: Point): NodeData {
+  static createDefault(
+    id: string,
+    type: NodeType,
+    position: Point,
+    translateFn?: (key: string) => string,
+  ): NodeData {
     const defaultDimensions = this.getDefaultDimensions(type);
-    const defaultLabel = this.getDefaultLabel(type);
+    const defaultLabel = this.getDefaultLabel(type, translateFn);
 
     return new NodeData(
       id,
@@ -84,20 +89,39 @@ export class NodeData {
   /**
    * Gets default label for a node type
    */
-  private static getDefaultLabel(type: NodeType): string {
+  private static getDefaultLabel(type: NodeType, translateFn?: (key: string) => string): string {
+    if (!translateFn) {
+      // Fallback to English labels if no translation function provided
+      switch (type) {
+        case 'actor':
+          return 'Actor';
+        case 'process':
+          return 'Process';
+        case 'store':
+          return 'Data Store';
+        case 'security-boundary':
+          return 'Security Boundary';
+        case 'textbox':
+          return 'Text';
+        default:
+          return 'Node';
+      }
+    }
+
+    // Use translation function with appropriate keys
     switch (type) {
       case 'actor':
-        return 'Actor';
+        return translateFn('editor.nodeLabels.actor');
       case 'process':
-        return 'Process';
+        return translateFn('editor.nodeLabels.process');
       case 'store':
-        return 'Data Store';
+        return translateFn('editor.nodeLabels.store');
       case 'security-boundary':
-        return 'Security Boundary';
+        return translateFn('editor.nodeLabels.securityBoundary');
       case 'textbox':
-        return 'Text';
+        return translateFn('editor.nodeLabels.textbox');
       default:
-        return 'Node';
+        return translateFn('editor.nodeLabels.node');
     }
   }
 

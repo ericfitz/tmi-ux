@@ -193,6 +193,14 @@
         "export": "导出...",
         "close": "关闭"
       }
+    },
+    "nodeLabels": {
+      "actor": "角色",
+      "process": "处理",
+      "store": "数据存储",
+      "securityBoundary": "安全边界",
+      "textbox": "文本",
+      "node": "节点"
     }
   },
   "threatEditor": {

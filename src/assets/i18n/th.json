@@ -216,6 +216,14 @@
         "export": "ส่งออก...",
         "close": "ปิด"
       }
+    },
+    "nodeLabels": {
+      "actor": "ผู้กระทำ",
+      "process": "กระบวนการ",
+      "store": "ที่เก็บข้อมูล",
+      "securityBoundary": "ขอบเขตความปลอดภัย",
+      "textbox": "ข้อความ",
+      "node": "โหนด"
     }
   },
   "threatEditor": {
