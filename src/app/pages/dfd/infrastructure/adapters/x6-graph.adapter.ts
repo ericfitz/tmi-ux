@@ -961,7 +961,7 @@ export class X6GraphAdapter implements IGraphAdapter {
               r: 5,
               magnet: 'active',
               'port-group': 'right',
-              stroke: '#fff',
+              stroke: '#000',
               strokeWidth: 2,
               fill: '#fff',
               style: {

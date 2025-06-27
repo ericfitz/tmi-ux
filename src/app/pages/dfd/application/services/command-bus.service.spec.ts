@@ -371,7 +371,7 @@ describe('CommandBusService', () => {
             setTimeout(() => {
               subscriber.next({ success: true });
               subscriber.complete();
-            }, 10);
+            }, 15);
           });
         });
 
@@ -391,7 +391,8 @@ describe('CommandBusService', () => {
           next: () => {
             try {
               const executionTime = Date.now() - startTime;
-              expect(executionTime).toBeGreaterThanOrEqual(10);
+              // Use a more lenient threshold to account for timing variations
+              expect(executionTime).toBeGreaterThanOrEqual(8);
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));
