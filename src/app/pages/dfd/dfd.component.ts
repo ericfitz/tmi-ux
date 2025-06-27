@@ -806,8 +806,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     textArea.select();
 
     try {
-      document.execCommand('copy');
-      this.logger.info('Text copied to clipboard (fallback method)');
+      // Use the Clipboard API if available as a fallback
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        void navigator.clipboard.writeText(text).then(
+          () => {
+            this.logger.info('Text copied to clipboard (Clipboard API fallback)');
+          },
+          (err: unknown) => {
+            this.logger.error('Clipboard API fallback failed', err);
+          },
+        );
+      } else {
+        // Last resort: show the text in an alert so user can manually copy
+        this.logger.warn('No clipboard API available, showing text for manual copy');
+        alert('Please manually copy this text:\n\n' + text);
+      }
     } catch (error) {
       this.logger.error('Fallback copy to clipboard failed', error);
     }
