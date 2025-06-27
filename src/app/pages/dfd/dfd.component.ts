@@ -138,6 +138,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   canUndo = false;
   canRedo = false;
   hasSelectedCells = false;
+  hasExactlyOneSelectedCell = false;
 
   constructor(
     private logger: LoggerService,
@@ -182,6 +183,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this._selectedCells$.subscribe(selectedCells => {
         this.hasSelectedCells = selectedCells.length > 0;
+        this.hasExactlyOneSelectedCell = selectedCells.length === 1;
         this.cdr.markForCheck();
       }),
     );

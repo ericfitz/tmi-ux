@@ -110,7 +110,7 @@
 
       <button
         mat-icon-button
-        [disabled]="!threatModelId"
+        [disabled]="!threatModelId || !hasExactlyOneSelectedCell"
         (click)="openThreatEditor()"
         [matTooltip]="'editor.toolbar.tooltips.threats' | transloco"
       >

@@ -4,6 +4,7 @@ import { Graph, Node, Edge, Cell, Shape } from '@antv/x6';
 import '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
+import { Transform } from '@antv/x6-plugin-transform';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
@@ -1295,15 +1296,15 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Check if the graph has the use method (not available in test mocks)
     if (typeof this._graph.use === 'function') {
-      // Enable selection plugin
+      // Enable selection plugin with no selection box (we'll use custom styling)
       this._graph.use(
         new Selection({
           enabled: true,
           multiple: true,
           rubberband: true,
           movable: true,
-          showNodeSelectionBox: true,
-          showEdgeSelectionBox: true,
+          showNodeSelectionBox: false,
+          showEdgeSelectionBox: false,
           modifiers: null, // Allow rubberband selection without modifiers
           pointerEvents: 'none',
         }),
@@ -1314,6 +1315,23 @@ export class X6GraphAdapter implements IGraphAdapter {
         new Snapline({
           enabled: true,
           sharp: true,
+        }),
+      );
+
+      // Enable transform plugin for resizing
+      this._graph.use(
+        new Transform({
+          resizing: {
+            enabled: true,
+            minWidth: 40,
+            minHeight: 30,
+            maxWidth: 400,
+            maxHeight: 300,
+            orthogonal: false,
+            restrict: false,
+            preserveAspectRatio: false,
+          },
+          rotating: false,
         }),
       );
     }
@@ -1336,21 +1354,20 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     });
 
-    // Visual feedback for selected cells
+    // Visual feedback for selected cells with yellow glow
     this._graph.on('cell:selected', ({ cell }: { cell: Cell }) => {
       this._selectedCells.add(cell.id);
 
       if (cell.isNode()) {
-        cell.attr('body/stroke', '#1890ff');
+        // Add yellow glow effect for selected nodes
+        cell.attr('body/filter', 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))');
+        // Keep original stroke but make it slightly thicker
         cell.attr('body/strokeWidth', 3);
       } else if (cell.isEdge()) {
-        // Enhanced edge selection styling
-        cell.attr('line/stroke', '#1890ff');
+        // Add yellow glow effect for selected edges
+        cell.attr('line/filter', 'drop-shadow(0 0 6px rgba(255, 215, 0, 0.8))');
+        // Keep original stroke but make it slightly thicker
         cell.attr('line/strokeWidth', 3);
-        cell.attr('line/targetMarker/fill', '#1890ff');
-        cell.attr('line/targetMarker/stroke', '#1890ff');
-        // Add selection glow effect
-        cell.attr('line/filter', 'drop-shadow(0 0 4px rgba(24, 144, 255, 0.6))');
       }
     });
 
@@ -1358,35 +1375,38 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._selectedCells.delete(cell.id);
 
       if (cell.isNode()) {
-        // Reset to original node styling
-        cell.attr('body/stroke', '#000000');
+        // Remove glow effect and reset stroke width
+        cell.attr('body/filter', 'none');
         cell.attr('body/strokeWidth', 2);
       } else if (cell.isEdge()) {
-        // Reset to original edge styling
-        cell.attr('line/stroke', '#000000');
-        cell.attr('line/strokeWidth', 2);
-        cell.attr('line/targetMarker/fill', '#000000');
-        cell.attr('line/targetMarker/stroke', '#000000');
+        // Remove glow effect and reset stroke width
         cell.attr('line/filter', 'none');
+        cell.attr('line/strokeWidth', 2);
       }
     });
 
-    // Add hover effects for edges
+    // Add hover effects with subtle yellow glow
     this._graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
-      if (cell.isEdge() && !this._selectedCells.has(cell.id)) {
-        cell.attr('line/stroke', '#1890ff');
-        cell.attr('line/strokeWidth', 3);
-        cell.attr('line/targetMarker/fill', '#1890ff');
-        cell.attr('line/targetMarker/stroke', '#1890ff');
+      if (!this._selectedCells.has(cell.id)) {
+        if (cell.isNode()) {
+          // Add subtle yellow glow for node hover
+          cell.attr('body/filter', 'drop-shadow(0 0 4px rgba(255, 215, 0, 0.4))');
+        } else if (cell.isEdge()) {
+          // Add subtle yellow glow for edge hover
+          cell.attr('line/filter', 'drop-shadow(0 0 3px rgba(255, 215, 0, 0.4))');
+        }
       }
     });
 
     this._graph.on('cell:mouseleave', ({ cell }: { cell: Cell }) => {
-      if (cell.isEdge() && !this._selectedCells.has(cell.id)) {
-        cell.attr('line/stroke', '#000000');
-        cell.attr('line/strokeWidth', 2);
-        cell.attr('line/targetMarker/fill', '#000000');
-        cell.attr('line/targetMarker/stroke', '#000000');
+      if (!this._selectedCells.has(cell.id)) {
+        if (cell.isNode()) {
+          // Remove hover glow
+          cell.attr('body/filter', 'none');
+        } else if (cell.isEdge()) {
+          // Remove hover glow
+          cell.attr('line/filter', 'none');
+        }
       }
     });
   }
