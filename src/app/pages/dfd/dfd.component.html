@@ -181,9 +181,9 @@
       ></button>
     </div>
     <mat-menu #cellContextMenu="matMenu">
-      <button mat-menu-item (click)="copyCellJson()">
+      <button mat-menu-item (click)="copyCellDefinition()">
         <mat-icon>content_copy</mat-icon>
-        <span>Copy JSON</span>
+        <span>{{ 'contextMenu.copyDefinitionToClipboard' | transloco }}</span>
       </button>
     </mat-menu>
   </div>

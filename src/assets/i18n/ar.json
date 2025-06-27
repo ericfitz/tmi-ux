@@ -223,6 +223,9 @@
       "node": "عقدة"
     }
   },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "نسخ التعريف إلى الحافظة"
+  },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
     "editThreat": "تحرير التهديد",

@@ -203,6 +203,9 @@
       "node": "节点"
     }
   },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "复制定义到剪贴板"
+  },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
     "editThreat": "编辑威胁",

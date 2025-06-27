@@ -226,6 +226,9 @@
       "node": "โหนด"
     }
   },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "คัดลอกคำจำกัดความไปยังคลิปบอร์ด"
+  },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
     "editThreat": "แก้ไขภัยคุกคาม",

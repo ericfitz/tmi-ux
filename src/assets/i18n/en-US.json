@@ -238,6 +238,9 @@
       "node": "Node"
     }
   },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "Copy definition to clipboard"
+  },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
     "editThreat": "Edit Threat",

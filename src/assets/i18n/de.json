@@ -223,6 +223,9 @@
       "node": "Knoten"
     }
   },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "Definition in Zwischenablage kopieren"
+  },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
     "editThreat": "Bedrohung bearbeiten",

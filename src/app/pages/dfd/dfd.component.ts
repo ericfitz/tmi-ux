@@ -203,6 +203,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.handleEdgeAdded(edge);
       }),
     );
+
+    // Subscribe to context menu events
+    this._subscriptions.add(
+      this.x6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }) => {
+        this.openCellContextMenu(cell, x, y);
+      }),
+    );
   }
 
   /**
@@ -732,17 +739,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Opens the context menu for a cell at the specified position
    */
-  openCellContextMenu(cell: Cell, event: MouseEvent): void {
-    // Prevent the default context menu
-    event.preventDefault();
-
+  openCellContextMenu(cell: Cell, x: number, y: number): void {
     // Store the right-clicked cell
     this._rightClickedCell = cell;
 
     // Set the position of the context menu
     this.contextMenuPosition = {
-      x: `${event.clientX}px`,
-      y: `${event.clientY}px`,
+      x: `${x}px`,
+      y: `${y}px`,
     };
 
     // Force change detection to update the position
@@ -755,33 +759,60 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Copies the JSON representation of the right-clicked cell to the clipboard
+   * Copies the complete definition of the right-clicked cell to the clipboard
    */
-  copyCellJson(): void {
+  copyCellDefinition(): void {
     if (!this._rightClickedCell) {
-      this.logger.warn('No cell selected for copying JSON');
+      this.logger.warn('No cell selected for copying definition');
       return;
     }
 
     try {
-      // Get the cell data
-      const cellData = this._rightClickedCell.toJSON();
+      // Get the complete cell state including all properties
+      const cellDefinition = this._rightClickedCell.toJSON();
 
-      // Convert to JSON string with pretty formatting
-      const jsonString = JSON.stringify(cellData, null, 2);
+      // Convert to formatted JSON string
+      const jsonString = JSON.stringify(cellDefinition, null, 2);
 
       // Copy to clipboard
       navigator.clipboard
         .writeText(jsonString)
         .then(() => {
-          this.logger.info('Cell JSON copied to clipboard', { cellId: this._rightClickedCell?.id });
+          this.logger.info('Cell definition copied to clipboard', {
+            cellId: this._rightClickedCell?.id,
+          });
         })
         .catch(error => {
-          this.logger.error('Failed to copy cell JSON to clipboard', error);
+          this.logger.error('Failed to copy cell definition to clipboard', error);
+          // Fallback for older browsers
+          this._fallbackCopyToClipboard(jsonString);
         });
     } catch (error) {
-      this.logger.error('Error serializing cell to JSON', error);
+      this.logger.error('Error serializing cell definition', error);
     }
+  }
+
+  /**
+   * Fallback method to copy text to clipboard for older browsers
+   */
+  private _fallbackCopyToClipboard(text: string): void {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand('copy');
+      this.logger.info('Text copied to clipboard (fallback method)');
+    } catch (error) {
+      this.logger.error('Fallback copy to clipboard failed', error);
+    }
+
+    document.body.removeChild(textArea);
   }
 
   /**

@@ -87,6 +87,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   private readonly _edgeAdded$ = new Subject<Edge>();
   private readonly _edgeRemoved$ = new Subject<{ edgeId: string; edge: Edge }>();
   private readonly _selectionChanged$ = new Subject<{ selected: string[]; deselected: string[] }>();
+  private readonly _cellContextMenu$ = new Subject<{ cell: Cell; x: number; y: number }>();
 
   constructor(private logger: LoggerService) {}
 
@@ -130,6 +131,13 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   get selectionChanged$(): Observable<{ selected: string[]; deselected: string[] }> {
     return this._selectionChanged$.asObservable();
+  }
+
+  /**
+   * Observable for cell context menu events
+   */
+  get cellContextMenu$(): Observable<{ cell: Cell; x: number; y: number }> {
+    return this._cellContextMenu$.asObservable();
   }
 
   /**
@@ -812,9 +820,46 @@ export class X6GraphAdapter implements IGraphAdapter {
         const selected = added.map((cell: Cell) => cell.id);
         const deselected = removed.map((cell: Cell) => cell.id);
 
+        // Apply glow effects to newly selected cells
+        added.forEach((cell: Cell) => {
+          this._selectedCells.add(cell.id);
+          if (cell.isNode()) {
+            cell.attr('body/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
+            cell.attr('body/strokeWidth', 3);
+          } else if (cell.isEdge()) {
+            cell.attr('line/filter', 'drop-shadow(0 0 6px rgba(255, 0, 0, 0.8))');
+            cell.attr('line/strokeWidth', 3);
+          }
+        });
+
+        // Remove glow effects from deselected cells
+        removed.forEach((cell: Cell) => {
+          this._selectedCells.delete(cell.id);
+          if (cell.isNode()) {
+            cell.attr('body/filter', 'none');
+            cell.attr('body/strokeWidth', 2);
+          } else if (cell.isEdge()) {
+            cell.attr('line/filter', 'none');
+            cell.attr('line/strokeWidth', 2);
+          }
+        });
+
         this._selectionChanged$.next({ selected, deselected });
       },
     );
+
+    // Context menu events
+    this._graph.on('cell:contextmenu', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
+      e.preventDefault();
+      this.logger.debugComponent('DFD', 'Cell context menu triggered', { cellId: cell.id });
+
+      // Emit context menu event for the DFD component to handle
+      this._cellContextMenu$.next({
+        cell,
+        x: e.clientX,
+        y: e.clientY,
+      });
+    });
   }
 
   /**
@@ -1354,46 +1399,15 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     });
 
-    // Visual feedback for selected cells with yellow glow
-    this._graph.on('cell:selected', ({ cell }: { cell: Cell }) => {
-      this._selectedCells.add(cell.id);
-
-      if (cell.isNode()) {
-        // Add yellow glow effect for selected nodes
-        cell.attr('body/filter', 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))');
-        // Keep original stroke but make it slightly thicker
-        cell.attr('body/strokeWidth', 3);
-      } else if (cell.isEdge()) {
-        // Add yellow glow effect for selected edges
-        cell.attr('line/filter', 'drop-shadow(0 0 6px rgba(255, 215, 0, 0.8))');
-        // Keep original stroke but make it slightly thicker
-        cell.attr('line/strokeWidth', 3);
-      }
-    });
-
-    this._graph.on('cell:unselected', ({ cell }: { cell: Cell }) => {
-      this._selectedCells.delete(cell.id);
-
-      if (cell.isNode()) {
-        // Remove glow effect and reset stroke width
-        cell.attr('body/filter', 'none');
-        cell.attr('body/strokeWidth', 2);
-      } else if (cell.isEdge()) {
-        // Remove glow effect and reset stroke width
-        cell.attr('line/filter', 'none');
-        cell.attr('line/strokeWidth', 2);
-      }
-    });
-
     // Add hover effects with subtle yellow glow
     this._graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
       if (!this._selectedCells.has(cell.id)) {
         if (cell.isNode()) {
           // Add subtle yellow glow for node hover
-          cell.attr('body/filter', 'drop-shadow(0 0 4px rgba(255, 215, 0, 0.4))');
+          cell.attr('body/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
         } else if (cell.isEdge()) {
           // Add subtle yellow glow for edge hover
-          cell.attr('line/filter', 'drop-shadow(0 0 3px rgba(255, 215, 0, 0.4))');
+          cell.attr('line/filter', 'drop-shadow(0 0 3px rgba(255, 0, 0, 0.6))');
         }
       }
     });
