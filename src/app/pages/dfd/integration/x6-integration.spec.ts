@@ -80,6 +80,8 @@ interface MockEdge {
   isEdge: () => boolean;
   getSourceCellId: () => string;
   getTargetCellId: () => string;
+  getSourcePortId: () => string | undefined;
+  getTargetPortId: () => string | undefined;
   getLabels: () => MockLabel[];
   setLabel: (label: string) => void;
   attr: (path?: string) => unknown;
@@ -161,6 +163,8 @@ vi.mock('@antv/x6', () => {
     isEdge: vi.fn(() => true),
     getSourceCellId: vi.fn(() => config.source),
     getTargetCellId: vi.fn(() => config.target),
+    getSourcePortId: vi.fn(() => undefined), // Mock edges don't use specific ports
+    getTargetPortId: vi.fn(() => undefined), // Mock edges don't use specific ports
     getLabels: vi.fn(() => (config.label ? [{ attrs: { text: { text: config.label } } }] : [])),
     setLabel: vi.fn(),
     attr: vi.fn((path?: string) => {

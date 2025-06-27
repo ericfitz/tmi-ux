@@ -1025,12 +1025,15 @@ export class X6GraphAdapter implements IGraphAdapter {
       });
     });
 
-    // Hide ports on node leave (unless connecting)
+    // Hide ports on node leave (unless connecting or connected)
     this._graph.on('node:mouseleave', ({ node }) => {
       if (!this._isConnecting) {
         const ports = node.getPorts();
         ports.forEach(port => {
-          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+          // Only hide ports that are not connected
+          if (!this._isPortConnected(node, port.id!)) {
+            node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+          }
         });
       }
     });
@@ -1047,22 +1050,38 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._showAllPorts();
     });
 
-    // Hide ports when connection is complete or cancelled
-    this._graph.on('edge:connected', () => {
+    // Hide ports when connection is complete or cancelled, but keep connected ports visible
+    this._graph.on('edge:connected', ({ edge }) => {
       this._isConnecting = false;
-      this._hideAllPorts();
+      // Add a small delay to ensure the edge connection is fully established
+      // before updating port visibility
+      setTimeout(() => {
+        this._hideUnconnectedPorts();
+        // Ensure the newly connected ports remain visible
+        this._ensureConnectedPortsVisible(edge);
+      }, 10);
     });
 
     this._graph.on('edge:disconnected', () => {
       this._isConnecting = false;
-      this._hideAllPorts();
+      this._hideUnconnectedPorts();
     });
 
     // Handle mouse up to stop connecting if no valid connection was made
     this._graph.on('blank:mouseup', () => {
       if (this._isConnecting) {
         this._isConnecting = false;
-        this._hideAllPorts();
+        this._hideUnconnectedPorts();
+      }
+    });
+
+    // Handle node mouse up during edge creation to prevent port hiding
+    this._graph.on('node:mouseup', () => {
+      // If we just finished connecting, ensure connected ports stay visible
+      if (!this._isConnecting) {
+        setTimeout(() => {
+          this._hideUnconnectedPorts();
+        }, 50);
       }
     });
   }
@@ -1093,6 +1112,72 @@ export class X6GraphAdapter implements IGraphAdapter {
         node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
       });
     });
+  }
+
+  /**
+   * Hide only unconnected ports on all nodes
+   */
+  private _hideUnconnectedPorts(): void {
+    if (!this._graph) return;
+
+    this._graph.getNodes().forEach(node => {
+      const ports = node.getPorts();
+      ports.forEach(port => {
+        // Only hide ports that are not connected
+        if (!this._isPortConnected(node, port.id!)) {
+          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+        }
+      });
+    });
+  }
+
+  /**
+   * Check if a specific port is connected to any edge
+   */
+  private _isPortConnected(node: Node, portId: string): boolean {
+    if (!this._graph) return false;
+
+    const edges = this._graph.getEdges();
+    return edges.some(edge => {
+      const sourceCellId = edge.getSourceCellId();
+      const targetCellId = edge.getTargetCellId();
+      const sourcePortId = edge.getSourcePortId();
+      const targetPortId = edge.getTargetPortId();
+
+      // Check if this edge connects to the specific port on this node
+      return (
+        (sourceCellId === node.id && sourcePortId === portId) ||
+        (targetCellId === node.id && targetPortId === portId)
+      );
+    });
+  }
+
+  /**
+   * Ensure that the ports connected by a specific edge remain visible
+   */
+  private _ensureConnectedPortsVisible(edge: Edge): void {
+    if (!this._graph) return;
+
+    const sourceCellId = edge.getSourceCellId();
+    const targetCellId = edge.getTargetCellId();
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    // Make sure source port is visible
+    if (sourceCellId && sourcePortId) {
+      const sourceNode = this._graph.getCellById(sourceCellId) as Node;
+      if (sourceNode && sourceNode.isNode()) {
+        sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
+      }
+    }
+
+    // Make sure target port is visible
+    if (targetCellId && targetPortId) {
+      const targetNode = this._graph.getCellById(targetCellId) as Node;
+      if (targetNode && targetNode.isNode()) {
+        targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
+      }
+    }
   }
 
   /**
