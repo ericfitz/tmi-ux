@@ -18,7 +18,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { Node, Cell } from '@antv/x6';
+import { Node, Cell, Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { NodeType } from './domain/value-objects/node-data';
@@ -35,6 +35,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CommandBusService } from './application/services/command-bus.service';
 import { DiagramCommandFactory } from './domain/commands/diagram-commands';
 import { NodeData } from './domain/value-objects/node-data';
+import { EdgeData } from './domain/value-objects/edge-data';
 import { Point } from './domain/value-objects/point';
 import { DiagramNode } from './domain/value-objects/diagram-node';
 
@@ -194,6 +195,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this._selectedNode$.next(null);
         }
+      }),
+    );
+
+    // Subscribe to edge creation events
+    this._subscriptions.add(
+      this.x6GraphAdapter.edgeAdded$.subscribe(edge => {
+        this.handleEdgeAdded(edge);
       }),
     );
   }
@@ -809,6 +817,131 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Fallback to the threat models list if no threat model ID is available
       void this.router.navigate(['/tm']);
     }
+  }
+
+  /**
+   * Handle edge added events from the graph adapter
+   */
+  private handleEdgeAdded(edge: Edge): void {
+    if (!this._isInitialized) {
+      this.logger.warn('Cannot handle edge added: Graph is not initialized');
+      return;
+    }
+
+    // Check if this edge was created by user interaction (drag-connect)
+    // We can identify this by checking if the edge has source and target nodes
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Edge added without valid source or target nodes', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+      });
+      // Remove the invalid edge from the graph
+      this.x6GraphAdapter.removeEdge(edge.id);
+      return;
+    }
+
+    // Verify that the source and target nodes actually exist in the graph
+    const sourceNode = this.x6GraphAdapter.getNode(sourceNodeId);
+    const targetNode = this.x6GraphAdapter.getNode(targetNodeId);
+
+    if (!sourceNode || !targetNode) {
+      this.logger.warn('Edge references non-existent nodes', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+        sourceNodeExists: !!sourceNode,
+        targetNodeExists: !!targetNode,
+      });
+      // Remove the invalid edge from the graph
+      this.x6GraphAdapter.removeEdge(edge.id);
+      return;
+    }
+
+    // Check if this edge already exists in the domain (to avoid duplicate processing)
+    const existingEdge = this.x6GraphAdapter.getEdge(edge.id);
+    if (existingEdge) {
+      const existingEdgeData: unknown = existingEdge.getData();
+      if (
+        existingEdgeData &&
+        typeof existingEdgeData === 'object' &&
+        existingEdgeData !== null &&
+        'domainEdgeId' in existingEdgeData
+      ) {
+        this.logger.debug('Edge already has domain representation, skipping', { edgeId: edge.id });
+        return;
+      }
+    }
+
+    this.logger.info('Processing user-created edge', {
+      edgeId: edge.id,
+      sourceNodeId,
+      targetNodeId,
+    });
+
+    // Extract port information if available
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    // Create domain edge data
+    const domainEdgeData =
+      sourcePortId && targetPortId
+        ? EdgeData.createWithPorts(
+            edge.id,
+            sourceNodeId,
+            targetNodeId,
+            sourcePortId,
+            targetPortId,
+            'Data Flow', // Default label
+          )
+        : EdgeData.createSimple(
+            edge.id,
+            sourceNodeId,
+            targetNodeId,
+            'Data Flow', // Default label
+          );
+
+    // Create and execute AddEdgeCommand
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    const command = DiagramCommandFactory.addEdge(
+      diagramId,
+      userId,
+      edge.id,
+      sourceNodeId,
+      targetNodeId,
+      domainEdgeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.logger.info('Edge created successfully in domain model', {
+            edgeId: edge.id,
+            sourceNodeId,
+            targetNodeId,
+          });
+
+          // Update the edge's data to mark it as having a domain representation
+          edge.setData({
+            ...edge.getData(),
+            domainEdgeId: edge.id,
+          });
+
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Error creating edge in domain model', error);
+          // Remove the visual edge if domain creation failed
+          this.x6GraphAdapter.removeEdge(edge.id);
+        },
+      });
   }
 
   /**

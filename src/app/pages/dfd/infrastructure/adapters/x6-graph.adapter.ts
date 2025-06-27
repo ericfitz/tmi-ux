@@ -9,6 +9,7 @@ import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -72,6 +73,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _graph: Graph | null = null;
   private readonly _destroy$ = new Subject<void>();
   private _isConnecting = false;
+  private _selectedCells = new Set<string>();
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -84,6 +86,8 @@ export class X6GraphAdapter implements IGraphAdapter {
   private readonly _edgeAdded$ = new Subject<Edge>();
   private readonly _edgeRemoved$ = new Subject<{ edgeId: string; edge: Edge }>();
   private readonly _selectionChanged$ = new Subject<{ selected: string[]; deselected: string[] }>();
+
+  constructor(private logger: LoggerService) {}
 
   /**
    * Observable for node addition events
@@ -154,37 +158,160 @@ export class X6GraphAdapter implements IGraphAdapter {
         minScale: 0.5,
       },
       connecting: {
-        router: 'orth',
-        connector: {
-          name: 'smooth',
-        },
-        anchor: 'center',
-        connectionPoint: 'anchor',
+        snap: true,
         allowBlank: false,
-        allowNode: true,
+        allowLoop: false,
+        allowNode: false,
+        allowEdge: false,
         allowPort: true,
-        snap: {
-          radius: 20,
-        },
+        allowMulti: true,
         highlight: true,
-        createEdge() {
-          return new Edge({
+        router: {
+          name: 'manhattan',
+          args: {
+            padding: 10,
+          },
+        },
+        connector: {
+          name: 'rounded',
+          args: {
+            radius: 8,
+          },
+        },
+        validateMagnet: args => {
+          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet called', {
+            magnet: args.magnet,
+            magnetAttribute: args.magnet?.getAttribute('magnet'),
+            portGroup: args.magnet?.getAttribute('port-group'),
+          });
+
+          const magnet = args.magnet;
+          if (!magnet) {
+            this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet: no magnet found');
+            return false;
+          }
+
+          const isValid = magnet.getAttribute('magnet') === 'active';
+          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet result:', { isValid });
+          return isValid;
+        },
+        validateConnection: args => {
+          this.logger.debugComponent('DFD', '[Edge Creation] validateConnection called', {
+            sourceView: args.sourceView?.cell?.id,
+            targetView: args.targetView?.cell?.id,
+            sourceMagnet: args.sourceMagnet?.getAttribute('port-group'),
+            targetMagnet: args.targetMagnet?.getAttribute('port-group'),
+          });
+
+          const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
+
+          // Prevent creating an edge if source and target are the same
+          if (sourceView === targetView && sourceMagnet === targetMagnet) {
+            this.logger.debugComponent(
+              'DFD',
+              '[Edge Creation] validateConnection: same source and target',
+            );
+            return false;
+          }
+
+          if (!targetMagnet || !sourceMagnet) {
+            this.logger.debugComponent(
+              'DFD',
+              '[Edge Creation] validateConnection: missing magnet',
+              {
+                hasSourceMagnet: !!sourceMagnet,
+                hasTargetMagnet: !!targetMagnet,
+              },
+            );
+            return false;
+          }
+
+          // Allow connections to any port
+          const sourcePortGroup = sourceMagnet.getAttribute('port-group');
+          const targetPortGroup = targetMagnet.getAttribute('port-group');
+
+          if (!sourcePortGroup || !targetPortGroup) {
+            this.logger.debugComponent(
+              'DFD',
+              '[Edge Creation] validateConnection: missing port groups',
+              {
+                sourcePortGroup,
+                targetPortGroup,
+              },
+            );
+            return false;
+          }
+
+          // Get the source and target cells
+          const sourceCell = sourceView?.cell;
+          const targetCell = targetView?.cell;
+
+          // Prevent connecting to self
+          if (sourceCell === targetCell) {
+            this.logger.debugComponent(
+              'DFD',
+              '[Edge Creation] validateConnection: self-connection not allowed',
+            );
+            return false;
+          }
+
+          this.logger.debugComponent('DFD', '[Edge Creation] validateConnection: connection valid');
+          return true;
+        },
+        createEdge: () => {
+          this.logger.debugComponent('DFD', '[Edge Creation] createEdge called');
+
+          const edge = new Edge({
+            shape: 'edge',
+            markup: [
+              {
+                tagName: 'path',
+                selector: 'line',
+                attrs: {
+                  fill: 'none',
+                  'pointer-events': 'none',
+                },
+              },
+            ],
             attrs: {
               line: {
-                stroke: '#A2B1C3',
+                stroke: '#000000',
                 strokeWidth: 2,
                 targetMarker: {
                   name: 'block',
                   width: 12,
                   height: 8,
+                  fill: '#000000',
+                  stroke: '#000000',
                 },
               },
             },
-            zIndex: 0,
+            labels: [
+              {
+                position: 0.5,
+                attrs: {
+                  text: {
+                    text: 'Flow',
+                    fontSize: 12,
+                    fill: '#333',
+                    textAnchor: 'middle',
+                    dominantBaseline: 'middle',
+                  },
+                  rect: {
+                    fill: '#ffffff',
+                    stroke: 'none',
+                  },
+                },
+              },
+            ],
+            data: {
+              label: 'Flow',
+            },
+            zIndex: 1,
           });
-        },
-        validateConnection({ targetMagnet }) {
-          return !!targetMagnet;
+
+          this.logger.debugComponent('DFD', '[Edge Creation] Edge created with markup');
+          return edge;
         },
       },
       highlighting: {
@@ -377,6 +504,72 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Debug method to manually inspect edge rendering
+   * Call this from browser console: adapter.debugEdgeRendering()
+   */
+  debugEdgeRendering(): void {
+    if (!this._graph) {
+      this.logger.debugComponent('DFD', '[Edge Debug] No graph instance');
+      return;
+    }
+
+    const edges = this._graph.getEdges();
+    this.logger.debugComponent('DFD', `[Edge Debug] Found ${edges.length} edges`);
+
+    edges.forEach((edge, index) => {
+      const edgeView = this._graph!.findViewByCell(edge);
+      const lineAttrs = edge.attr('line');
+
+      this.logger.debugComponent('DFD', `[Edge Debug] Edge ${index + 1}:`, {
+        id: edge.id,
+        source: edge.getSourceCellId(),
+        target: edge.getTargetCellId(),
+        attrs: edge.attr(),
+        lineAttrs: lineAttrs
+          ? {
+              stroke: (lineAttrs as Record<string, unknown>)['stroke'],
+              strokeWidth: (lineAttrs as Record<string, unknown>)['strokeWidth'],
+              targetMarker: (lineAttrs as Record<string, unknown>)['targetMarker'],
+            }
+          : null,
+      });
+
+      // Try to find the SVG element
+      if (edgeView && 'container' in edgeView) {
+        const container = (edgeView as unknown as Record<string, unknown>)[
+          'container'
+        ] as HTMLElement;
+        const pathElements = container?.querySelectorAll('path');
+
+        if (pathElements && pathElements.length > 0) {
+          pathElements.forEach((path, pathIndex) => {
+            this.logger.debugComponent(
+              'DFD',
+              `[Edge Debug] Edge ${index + 1} Path ${pathIndex + 1}:`,
+              {
+                stroke: path.getAttribute('stroke'),
+                strokeWidth: path.getAttribute('stroke-width'),
+                fill: path.getAttribute('fill'),
+                d: path.getAttribute('d'),
+                className: path.getAttribute('class'),
+                style: path.getAttribute('style'),
+                computedStroke: window.getComputedStyle(path).stroke,
+                computedStrokeWidth: window.getComputedStyle(path).strokeWidth,
+                computedOpacity: window.getComputedStyle(path).opacity,
+                computedVisibility: window.getComputedStyle(path).visibility,
+                computedDisplay: window.getComputedStyle(path).display,
+              },
+            );
+          });
+        }
+      }
+    });
+
+    // Check CSS rules
+    this._debugEdgeStyles();
+  }
+
+  /**
    * Dispose of the graph and clean up resources
    */
   dispose(): void {
@@ -428,9 +621,95 @@ export class X6GraphAdapter implements IGraphAdapter {
       },
     );
 
-    // Edge events
+    // Edge lifecycle events for proper edge creation handling
+    this._graph.on('edge:connecting', ({ edge }: { edge: Edge }) => {
+      this.logger.debugComponent('DFD', '[Edge Creation] edge:connecting event', {
+        edgeId: edge.id,
+        sourceId: edge.getSourceCellId(),
+        targetId: edge.getTargetCellId(),
+        attrs: edge.attr(),
+        lineAttrs: edge.attr('line'),
+      });
+    });
+
+    this._graph.on('edge:connected', ({ edge }: { edge: Edge }) => {
+      this.logger.debugComponent('DFD', '[Edge Creation] edge:connected event', {
+        edgeId: edge.id,
+        sourceId: edge.getSourceCellId(),
+        targetId: edge.getTargetCellId(),
+      });
+
+      // Only emit for edges with valid source and target
+      const sourceId = edge.getSourceCellId();
+      const targetId = edge.getTargetCellId();
+
+      if (sourceId && targetId) {
+        this.logger.debugComponent(
+          'DFD',
+          '[Edge Creation] Valid edge created, emitting edgeAdded$',
+        );
+        this._edgeAdded$.next(edge);
+      } else {
+        this.logger.debugComponent('DFD', '[Edge Creation] Invalid edge, removing', {
+          hasSource: !!sourceId,
+          hasTarget: !!targetId,
+        });
+        // Remove invalid edges
+        setTimeout(() => {
+          if (this._graph && this._graph.getCellById(edge.id)) {
+            this._graph.removeCell(edge);
+          }
+        }, 0);
+      }
+    });
+
+    this._graph.on('edge:disconnected', ({ edge }: { edge: Edge }) => {
+      this.logger.debugComponent('DFD', '[Edge Creation] edge:disconnected event', {
+        edgeId: edge.id,
+      });
+    });
+
+    // Edge events - handle addition and removal
     this._graph.on('edge:added', ({ edge }: { edge: Edge }) => {
-      this._edgeAdded$.next(edge);
+      this.logger.debugComponent('DFD', '[Edge Creation] edge:added event', {
+        edgeId: edge.id,
+        sourceId: edge.getSourceCellId(),
+        targetId: edge.getTargetCellId(),
+        attrs: edge.attr(),
+        lineAttrs: edge.attr('line'),
+      });
+
+      // Debug: Inspect the actual SVG element (only in non-test environment)
+      if (this._graph && typeof this._graph.findViewByCell === 'function') {
+        setTimeout(() => {
+          // Get the edge element from the graph
+          const edgeElement = this._graph?.getCellById(edge.id);
+          if (edgeElement && edgeElement.isEdge()) {
+            const edgeView = this._graph?.findViewByCell(edgeElement);
+            if (edgeView && 'container' in edgeView) {
+              const container = (edgeView as unknown as Record<string, unknown>)[
+                'container'
+              ] as HTMLElement;
+              const svgPath = container?.querySelector('path.x6-edge-line');
+              if (svgPath) {
+                this.logger.debugComponent('DFD', '[Edge Creation] SVG path element inspection:', {
+                  stroke: svgPath.getAttribute('stroke'),
+                  strokeWidth: svgPath.getAttribute('stroke-width'),
+                  fill: svgPath.getAttribute('fill'),
+                  d: svgPath.getAttribute('d'),
+                  className: svgPath.getAttribute('class'),
+                  style: svgPath.getAttribute('style'),
+                  computedStyle: window.getComputedStyle(svgPath).stroke,
+                });
+              } else {
+                this.logger.debugComponent('DFD', '[Edge Creation] No SVG path element found');
+              }
+            }
+          }
+        }, 100);
+      }
+
+      // Note: We handle edge creation in edge:connected event instead
     });
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
@@ -561,12 +840,14 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _getEdgeAttrs(edgeType: string): any {
     const baseAttrs = {
       line: {
-        stroke: '#A2B1C3',
+        stroke: '#000000',
         strokeWidth: 2,
         targetMarker: {
           name: 'block',
           width: 12,
           height: 8,
+          fill: '#000000',
+          stroke: '#000000',
         },
       },
     };
@@ -581,6 +862,11 @@ export class X6GraphAdapter implements IGraphAdapter {
             ...baseAttrs.line,
             stroke: '#722ED1',
             strokeDasharray: '5 5',
+            targetMarker: {
+              ...baseAttrs.line.targetMarker,
+              fill: '#722ED1',
+              stroke: '#722ED1',
+            },
           },
         };
       default:
@@ -600,7 +886,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           attrs: {
             circle: {
               r: 4,
-              magnet: true,
+              magnet: 'active',
+              'port-group': 'top',
               stroke: '#31d0c6',
               strokeWidth: 2,
               fill: '#fff',
@@ -615,7 +902,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           attrs: {
             circle: {
               r: 4,
-              magnet: true,
+              magnet: 'active',
+              'port-group': 'right',
               stroke: '#31d0c6',
               strokeWidth: 2,
               fill: '#fff',
@@ -630,7 +918,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           attrs: {
             circle: {
               r: 4,
-              magnet: true,
+              magnet: 'active',
+              'port-group': 'bottom',
               stroke: '#31d0c6',
               strokeWidth: 2,
               fill: '#fff',
@@ -645,7 +934,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           attrs: {
             circle: {
               r: 4,
-              magnet: true,
+              magnet: 'active',
+              'port-group': 'left',
               stroke: '#31d0c6',
               strokeWidth: 2,
               fill: '#fff',
@@ -691,12 +981,13 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Show all ports when starting to connect
     this._graph.on('edge:connecting', () => {
       this._isConnecting = true;
-      this._graph?.getNodes().forEach(node => {
-        const ports = node.getPorts();
-        ports.forEach(port => {
-          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-        });
-      });
+      this._showAllPorts();
+    });
+
+    // Also listen for mouse down on magnets to show ports
+    this._graph.on('node:magnet:mousedown', () => {
+      this._isConnecting = true;
+      this._showAllPorts();
     });
 
     // Hide ports when connection is complete or cancelled
@@ -708,6 +999,28 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:disconnected', () => {
       this._isConnecting = false;
       this._hideAllPorts();
+    });
+
+    // Handle mouse up to stop connecting if no valid connection was made
+    this._graph.on('blank:mouseup', () => {
+      if (this._isConnecting) {
+        this._isConnecting = false;
+        this._hideAllPorts();
+      }
+    });
+  }
+
+  /**
+   * Show all ports on all nodes
+   */
+  private _showAllPorts(): void {
+    if (!this._graph) return;
+
+    this._graph.getNodes().forEach(node => {
+      const ports = node.getPorts();
+      ports.forEach(port => {
+        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+      });
     });
   }
 
@@ -723,6 +1036,63 @@ export class X6GraphAdapter implements IGraphAdapter {
         node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
       });
     });
+  }
+
+  /**
+   * Debug method to check CSS rules affecting edges
+   */
+  private _debugEdgeStyles(): void {
+    if (!this._graph) return;
+
+    // Check for any CSS rules that might affect edges
+    const styleSheets = Array.from(document.styleSheets);
+    const edgeRules: string[] = [];
+
+    styleSheets.forEach(sheet => {
+      try {
+        const rules = Array.from(sheet.cssRules || []);
+        rules.forEach(rule => {
+          if (rule instanceof CSSStyleRule) {
+            const selector = rule.selectorText;
+            // Check for rules that might affect edges
+            if (
+              selector.includes('edge') ||
+              selector.includes('line') ||
+              selector.includes('path') ||
+              selector.includes('x6-edge') ||
+              selector.includes('svg')
+            ) {
+              const style = rule.style;
+              if (
+                style.stroke !== '' ||
+                style.strokeWidth !== '' ||
+                style.opacity !== '' ||
+                style.visibility !== '' ||
+                style.display !== ''
+              ) {
+                edgeRules.push(`${selector}: ${rule.cssText}`);
+              }
+            }
+          }
+        });
+      } catch {
+        // Ignore cross-origin stylesheets
+      }
+    });
+
+    if (edgeRules.length > 0) {
+      this.logger.debugComponent('DFD', '[Edge Debug] CSS rules affecting edges:', edgeRules);
+    }
+
+    // Also check inline styles on the graph container
+    const graphContainer = this._graph.container;
+    const svgElement = graphContainer.querySelector('svg');
+    if (svgElement) {
+      this.logger.debugComponent('DFD', '[Edge Debug] SVG element styles:', {
+        style: svgElement.getAttribute('style'),
+        className: svgElement.getAttribute('class'),
+      });
+    }
   }
 
   /**
@@ -776,24 +1146,55 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Visual feedback for selected cells
     this._graph.on('cell:selected', ({ cell }: { cell: Cell }) => {
+      this._selectedCells.add(cell.id);
+
       if (cell.isNode()) {
         cell.attr('body/stroke', '#1890ff');
         cell.attr('body/strokeWidth', 3);
       } else if (cell.isEdge()) {
+        // Enhanced edge selection styling
         cell.attr('line/stroke', '#1890ff');
         cell.attr('line/strokeWidth', 3);
+        cell.attr('line/targetMarker/fill', '#1890ff');
+        cell.attr('line/targetMarker/stroke', '#1890ff');
+        // Add selection glow effect
+        cell.attr('line/filter', 'drop-shadow(0 0 4px rgba(24, 144, 255, 0.6))');
       }
     });
 
     this._graph.on('cell:unselected', ({ cell }: { cell: Cell }) => {
+      this._selectedCells.delete(cell.id);
+
       if (cell.isNode()) {
         // Reset to original node styling
         cell.attr('body/stroke', '#000000');
         cell.attr('body/strokeWidth', 2);
       } else if (cell.isEdge()) {
         // Reset to original edge styling
-        cell.attr('line/stroke', '#A2B1C3');
+        cell.attr('line/stroke', '#000000');
         cell.attr('line/strokeWidth', 2);
+        cell.attr('line/targetMarker/fill', '#000000');
+        cell.attr('line/targetMarker/stroke', '#000000');
+        cell.attr('line/filter', 'none');
+      }
+    });
+
+    // Add hover effects for edges
+    this._graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
+      if (cell.isEdge() && !this._selectedCells.has(cell.id)) {
+        cell.attr('line/stroke', '#1890ff');
+        cell.attr('line/strokeWidth', 3);
+        cell.attr('line/targetMarker/fill', '#1890ff');
+        cell.attr('line/targetMarker/stroke', '#1890ff');
+      }
+    });
+
+    this._graph.on('cell:mouseleave', ({ cell }: { cell: Cell }) => {
+      if (cell.isEdge() && !this._selectedCells.has(cell.id)) {
+        cell.attr('line/stroke', '#000000');
+        cell.attr('line/strokeWidth', 2);
+        cell.attr('line/targetMarker/fill', '#000000');
+        cell.attr('line/targetMarker/stroke', '#000000');
       }
     });
   }

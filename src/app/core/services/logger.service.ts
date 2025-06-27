@@ -42,11 +42,21 @@ const LOG_LEVEL_PRIORITY = {
 export class LoggerService {
   // Private members
   private logLevel: LogLevel;
+  private debugComponents: Set<string>;
 
   constructor() {
     // Get log level from environment, default to ERROR if not set
     this.logLevel = (environment.logLevel as LogLevel) || LogLevel.ERROR;
+
+    // Initialize component-specific debug logging
+    this.debugComponents = new Set(environment.debugComponents || []);
+
     this.info(`Logger initialized with level: ${this.logLevel}`);
+    if (this.debugComponents.size > 0) {
+      this.info(
+        `Component-specific debug logging enabled for: ${Array.from(this.debugComponents).join(', ')}`,
+      );
+    }
   }
 
   /**
@@ -65,6 +75,20 @@ export class LoggerService {
   debug(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       console.debug(this.formatMessage(LogLevel.DEBUG, message), ...optionalParams);
+    }
+  }
+
+  /**
+   * Log a component-specific debug message
+   * This will log at debug level if the component is in the debugComponents list,
+   * regardless of the global log level
+   */
+  debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
+    if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
+      console.debug(
+        this.formatMessage(LogLevel.DEBUG, `[${component}] ${message}`),
+        ...optionalParams,
+      );
     }
   }
 
@@ -154,6 +178,19 @@ export class LoggerService {
    */
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[this.logLevel];
+  }
+
+  /**
+   * Determine if a component-specific message should be logged
+   * Component-specific debug logging overrides global log level for enabled components
+   */
+  private shouldLogComponent(component: string, level: LogLevel): boolean {
+    // If component-specific debug is enabled for this component and level is DEBUG, always log
+    if (level === LogLevel.DEBUG && this.debugComponents.has(component)) {
+      return true;
+    }
+    // Otherwise, use normal log level check
+    return this.shouldLog(level);
   }
 
   /**

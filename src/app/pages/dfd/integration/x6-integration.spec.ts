@@ -21,6 +21,7 @@ import { DiagramEdge } from '../domain/value-objects/diagram-edge';
 import { NodeData } from '../domain/value-objects/node-data';
 import { EdgeData } from '../domain/value-objects/edge-data';
 import { Point } from '../domain/value-objects/point';
+import { LoggerService } from '../../../core/services/logger.service';
 
 // Type definitions for X6 mocks
 interface MockNodeConfig {
@@ -57,6 +58,11 @@ interface MockLabel {
   attrs: MockAttrs;
 }
 
+interface MockPort {
+  id: string;
+  group: string;
+}
+
 interface MockNode {
   id: string;
   isNode: () => boolean;
@@ -65,6 +71,8 @@ interface MockNode {
   getAttrs: () => MockAttrs;
   setPosition: (x: number, y: number) => void;
   setLabel: (label: string) => void;
+  getPorts: () => MockPort[];
+  setPortProp: (portId: string, path: string, value: unknown) => void;
 }
 
 interface MockEdge {
@@ -74,6 +82,7 @@ interface MockEdge {
   getTargetCellId: () => string;
   getLabels: () => MockLabel[];
   setLabel: (label: string) => void;
+  attr: (path?: string) => unknown;
 }
 
 interface MockEventHandler {
@@ -101,6 +110,7 @@ interface MockGraph {
   on: MockViFunction;
   off: MockViFunction;
   dispose: () => void;
+  findViewByCell: (cell: MockNode | MockEdge) => unknown;
 }
 
 // Mock X6 Graph to avoid SVG DOM dependencies
@@ -136,6 +146,13 @@ vi.mock('@antv/x6', () => {
         }
       }),
       setLabel: vi.fn(),
+      getPorts: vi.fn(() => [
+        { id: 'top', group: 'top' },
+        { id: 'right', group: 'right' },
+        { id: 'bottom', group: 'bottom' },
+        { id: 'left', group: 'left' },
+      ]),
+      setPortProp: vi.fn(),
     };
   };
 
@@ -146,6 +163,38 @@ vi.mock('@antv/x6', () => {
     getTargetCellId: vi.fn(() => config.target),
     getLabels: vi.fn(() => (config.label ? [{ attrs: { text: { text: config.label } } }] : [])),
     setLabel: vi.fn(),
+    attr: vi.fn((path?: string) => {
+      if (path === 'line') {
+        return {
+          stroke: '#000000',
+          strokeWidth: 2,
+          targetMarker: {
+            name: 'block',
+            width: 12,
+            height: 8,
+            fill: '#000000',
+            stroke: '#000000',
+          },
+        };
+      }
+      if (!path) {
+        // Return all attributes when no path is specified
+        return {
+          line: {
+            stroke: '#000000',
+            strokeWidth: 2,
+            targetMarker: {
+              name: 'block',
+              width: 12,
+              height: 8,
+              fill: '#000000',
+              stroke: '#000000',
+            },
+          },
+        };
+      }
+      return undefined;
+    }),
   });
 
   return {
@@ -174,6 +223,13 @@ vi.mock('@antv/x6', () => {
           mockGraph.on.mock.calls.forEach((call: unknown[]) => {
             const [event, handler] = call as [string, MockEventHandler];
             if (event === 'edge:added') {
+              handler({ edge });
+            }
+          });
+          // Also trigger edge:connected event for proper lifecycle handling
+          mockGraph.on.mock.calls.forEach((call: unknown[]) => {
+            const [event, handler] = call as [string, MockEventHandler];
+            if (event === 'edge:connected') {
               handler({ edge });
             }
           });
@@ -225,6 +281,7 @@ vi.mock('@antv/x6', () => {
         on: vi.fn(),
         off: vi.fn(),
         dispose: vi.fn(),
+        findViewByCell: vi.fn(() => null),
       };
 
       return mockGraph;
@@ -243,6 +300,7 @@ vi.mock('@antv/x6', () => {
 describe('X6 Integration Tests', () => {
   let adapter: X6GraphAdapter;
   let container: HTMLElement;
+  let mockLogger: LoggerService;
 
   beforeEach(() => {
     // Create mock container
@@ -252,8 +310,18 @@ describe('X6 Integration Tests', () => {
     Object.defineProperty(container, 'clientWidth', { value: 800 });
     Object.defineProperty(container, 'clientHeight', { value: 600 });
 
+    // Create mock logger
+    mockLogger = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debugComponent: vi.fn(),
+      shouldLogComponent: vi.fn(() => true),
+    } as unknown as LoggerService;
+
     // Create fresh adapter instance
-    adapter = new X6GraphAdapter();
+    adapter = new X6GraphAdapter(mockLogger);
     adapter.initialize(container);
   });
 

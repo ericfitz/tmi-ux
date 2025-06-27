@@ -78,100 +78,8 @@ svg text[font-family] {
   font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
-// Base edge styles - must come before more specific selectors
-.x6-edge {
-  transition: all 0.2s ease-in-out;
-
-  .connection {
-    stroke: #333;
-    stroke-width: 2px;
-    fill: none;
-  }
-
-  .connection-wrap {
-    stroke: transparent;
-    stroke-width: 10px;
-    cursor: pointer;
-  }
-
-  .marker-source,
-  .marker-target,
-  .marker-arrowhead {
-    fill: #333;
-    stroke: #333;
-  }
-
-  .marker-vertex {
-    fill: #fff;
-    stroke: #333;
-    stroke-width: 1.5px;
-    r: 5px;
-
-    &:hover {
-      fill: #f36;
-      stroke: #f36;
-    }
-  }
-
-  .marker-vertex-remove {
-    fill: #f36;
-  }
-
-  // Edge label styling
-  .label {
-    text {
-      font-family: 'Roboto Condensed', Arial, sans-serif;
-      font-size: 12px;
-      fill: #333;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      pointer-events: all;
-      user-select: none;
-    }
-  }
-
-  &:hover {
-    .connection {
-      stroke: #1890ff;
-      stroke-width: 3px;
-    }
-
-    .marker-vertex {
-      display: block;
-    }
-
-    .marker-arrowhead {
-      fill: #1890ff;
-      stroke: #1890ff;
-    }
-
-    .label text {
-      fill: #1890ff;
-      cursor: text;
-    }
-  }
-
-  &[selected='true'] {
-    .connection {
-      stroke: #1890ff;
-      stroke-width: 3px;
-    }
-
-    .marker-vertex {
-      display: block;
-      fill: #1890ff;
-    }
-
-    .marker-arrowhead {
-      fill: #1890ff;
-      stroke: #1890ff;
-    }
-  }
-
-  &.selected {
-    filter: drop-shadow(0 0 4px rgb(24 144 255 / 60%));
-  }
-}
+// Edge styling is now handled entirely by X6 configuration
+// No CSS edge styling needed - X6 manages all edge appearance
 
 .x6-graph {
   width: 100%;
@@ -193,13 +101,7 @@ svg text[font-family] {
     }
   }
 
-  .x6-edge {
-    z-index: 5; // Edges between boundaries and nodes
-
-    &.is-selected {
-      z-index: 15; // Selected edges above regular nodes
-    }
-  }
+  // Edge z-index is now handled by X6 configuration
 }
 
 // =============================================================================
