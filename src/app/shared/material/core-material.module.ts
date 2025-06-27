@@ -4,12 +4,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 
 /**
  * Core Material module that includes only the essential components
  * used in the app shell (navbar, footer, etc.)
  */
 @NgModule({
-  exports: [MatButtonModule, MatIconModule, MatToolbarModule, MatMenuModule, MatTooltipModule],
+  exports: [
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatDividerModule,
+  ],
 })
 export class CoreMaterialModule {}

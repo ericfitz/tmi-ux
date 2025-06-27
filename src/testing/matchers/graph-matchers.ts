@@ -105,8 +105,9 @@ export const graphMatchers: ChaiPlugin = (chai, _utils) => {
     const graph = this._obj;
     const nodes = graph.getNodes();
     const hasNodeWithLabel = nodes.some(node => {
-      const nodeLabel = node.attr('text/text') || node.attr('label/text');
-      return nodeLabel === label;
+      // Use standardized text/text attribute for node labels
+      const nodeLabel = node.attr('text/text');
+      return typeof nodeLabel === 'string' && nodeLabel === label;
     });
 
     this.assert(

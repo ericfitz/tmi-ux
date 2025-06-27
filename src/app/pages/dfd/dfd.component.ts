@@ -14,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -152,6 +152,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
     private commandBusInitializer: CommandBusInitializerService,
+    private transloco: TranslocoService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -201,6 +202,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.x6GraphAdapter.edgeAdded$.subscribe(edge => {
         this.handleEdgeAdded(edge);
+      }),
+    );
+
+    // Subscribe to edge vertices changes
+    this._subscriptions.add(
+      this.x6GraphAdapter.edgeVerticesChanged$.subscribe(({ edgeId, vertices }) => {
+        this.handleEdgeVerticesChanged(edgeId, vertices);
       }),
     );
 
@@ -387,17 +395,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private getDefaultLabelForType(shapeType: NodeType): string {
     switch (shapeType) {
       case 'actor':
-        return 'Actor';
+        return this.transloco.translate('editor.nodeLabels.actor');
       case 'process':
-        return 'Process';
+        return this.transloco.translate('editor.nodeLabels.process');
       case 'store':
-        return 'Data Store';
+        return this.transloco.translate('editor.nodeLabels.store');
       case 'security-boundary':
-        return 'Security Boundary';
+        return this.transloco.translate('editor.nodeLabels.securityBoundary');
       case 'textbox':
-        return 'Text';
+        return this.transloco.translate('editor.nodeLabels.textbox');
       default:
-        return 'Element';
+        return this.transloco.translate('editor.nodeLabels.node');
     }
   }
 
@@ -1061,6 +1069,122 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Handle edge vertices changes from the graph adapter
+   */
+  private handleEdgeVerticesChanged(
+    edgeId: string,
+    vertices: Array<{ x: number; y: number }>,
+  ): void {
+    if (!this._isInitialized) {
+      this.logger.warn('Cannot handle edge vertices changed: Graph is not initialized');
+      return;
+    }
+
+    this.logger.info('Edge vertices changed', {
+      edgeId,
+      vertexCount: vertices.length,
+      vertices,
+    });
+
+    // Convert vertices to domain Points
+    const domainVertices = vertices.map(v => new Point(v.x, v.y));
+
+    // Create and execute UpdateEdgeDataCommand to update the domain model
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    // Get the current edge from the graph to extract other data
+    const edge = this.x6GraphAdapter.getEdge(edgeId);
+    if (!edge) {
+      this.logger.warn('Edge not found for vertices update', { edgeId });
+      return;
+    }
+
+    // Create updated edge data with new vertices
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Edge missing source or target for vertices update', {
+        edgeId,
+        sourceNodeId,
+        targetNodeId,
+      });
+      return;
+    }
+
+    // Get the current edge data to preserve existing information
+    const currentEdgeData: unknown = edge.getData();
+    const currentLabel =
+      currentEdgeData &&
+      typeof currentEdgeData === 'object' &&
+      'label' in currentEdgeData &&
+      typeof currentEdgeData.label === 'string'
+        ? currentEdgeData.label
+        : 'Data Flow';
+
+    // Create a new EdgeData instance with updated vertices
+    const updatedEdgeData = new EdgeData(
+      edgeId,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      currentLabel,
+      domainVertices,
+      {}, // metadata - could be preserved from current data if needed
+    );
+
+    // We need the old data for the command, so let's create it from current state
+    const oldVerticesData =
+      currentEdgeData &&
+      typeof currentEdgeData === 'object' &&
+      'vertices' in currentEdgeData &&
+      Array.isArray(currentEdgeData.vertices)
+        ? (currentEdgeData.vertices as Array<{ x: number; y: number }>)
+        : [];
+    const oldDomainVertices = oldVerticesData.map(v => new Point(v.x, v.y));
+
+    const oldEdgeData = new EdgeData(
+      edgeId,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      currentLabel || 'Data Flow',
+      oldDomainVertices,
+      {}, // metadata
+    );
+
+    // Create and execute UpdateEdgeDataCommand
+    const command = DiagramCommandFactory.updateEdgeData(
+      diagramId,
+      userId,
+      edgeId,
+      updatedEdgeData,
+      oldEdgeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.logger.info('Edge vertices updated successfully in domain model', {
+            edgeId,
+            vertexCount: domainVertices.length,
+          });
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Error updating edge vertices in domain model', error);
+        },
+      });
+  }
+
+  /**
    * Run performance tests
    */
   runPerformanceTests(): void {
@@ -1073,5 +1197,57 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.error('Performance tests failed', error);
       },
     });
+  }
+
+  /**
+   * Move selected cells forward in z-order
+   */
+  moveForward(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move forward operation');
+      return;
+    }
+
+    this.logger.info('Moving cell forward', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsForward();
+  }
+
+  /**
+   * Move selected cells backward in z-order
+   */
+  moveBackward(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move backward operation');
+      return;
+    }
+
+    this.logger.info('Moving cell backward', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsBackward();
+  }
+
+  /**
+   * Move selected cells to front
+   */
+  moveToFront(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move to front operation');
+      return;
+    }
+
+    this.logger.info('Moving cell to front', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsToFront();
+  }
+
+  /**
+   * Move selected cells to back
+   */
+  moveToBack(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move to back operation');
+      return;
+    }
+
+    this.logger.info('Moving cell to back', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsToBack();
   }
 }

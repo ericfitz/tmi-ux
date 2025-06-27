@@ -224,7 +224,11 @@
     }
   },
   "contextMenu": {
-    "copyDefinitionToClipboard": "نسخ التعريف إلى الحافظة"
+    "copyDefinitionToClipboard": "نسخ التعريف إلى الحافظة",
+    "moveForward": "تحريك للأمام",
+    "moveBackward": "تحريك للخلف",
+    "moveToFront": "نقل إلى المقدمة",
+    "moveToBack": "نقل إلى الخلف"
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",

@@ -239,7 +239,11 @@
     }
   },
   "contextMenu": {
-    "copyDefinitionToClipboard": "Copy definition to clipboard"
+    "copyDefinitionToClipboard": "Copy definition to clipboard",
+    "moveForward": "Move forward",
+    "moveBackward": "Move backward",
+    "moveToFront": "Move to front",
+    "moveToBack": "Move to back"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",

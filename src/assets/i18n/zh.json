@@ -204,7 +204,11 @@
     }
   },
   "contextMenu": {
-    "copyDefinitionToClipboard": "复制定义到剪贴板"
+    "copyDefinitionToClipboard": "复制定义到剪贴板",
+    "moveForward": "向前移动",
+    "moveBackward": "向后移动",
+    "moveToFront": "移到最前",
+    "moveToBack": "移到最后"
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",

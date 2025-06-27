@@ -75,6 +75,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   private readonly _destroy$ = new Subject<void>();
   private _isConnecting = false;
   private _selectedCells = new Set<string>();
+  private _currentEditor: HTMLInputElement | HTMLTextAreaElement | null = null;
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -88,6 +89,10 @@ export class X6GraphAdapter implements IGraphAdapter {
   private readonly _edgeRemoved$ = new Subject<{ edgeId: string; edge: Edge }>();
   private readonly _selectionChanged$ = new Subject<{ selected: string[]; deselected: string[] }>();
   private readonly _cellContextMenu$ = new Subject<{ cell: Cell; x: number; y: number }>();
+  private readonly _edgeVerticesChanged$ = new Subject<{
+    edgeId: string;
+    vertices: Array<{ x: number; y: number }>;
+  }>();
 
   constructor(private logger: LoggerService) {}
 
@@ -141,12 +146,24 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Observable for edge vertex changes
+   */
+  get edgeVerticesChanged$(): Observable<{
+    edgeId: string;
+    vertices: Array<{ x: number; y: number }>;
+  }> {
+    return this._edgeVerticesChanged$.asObservable();
+  }
+
+  /**
    * Initialize the graph with the given container element
    */
   initialize(container: HTMLElement): void {
     if (this._graph) {
       this.dispose();
     }
+
+    this.logger.info('[DFD Graph Init] Initializing X6 graph with embedding support');
 
     this._graph = new Graph({
       container,
@@ -166,6 +183,25 @@ export class X6GraphAdapter implements IGraphAdapter {
         factor: 1.1,
         maxScale: 1.5,
         minScale: 0.5,
+      },
+      embedding: {
+        enabled: true,
+        findParent: 'bbox',
+        validate: (_args: { parent: Node; child: Node }) => {
+          // Allow any node to be embedded in any other node
+          // This can be refined based on business rules
+          return true;
+        },
+      },
+      interacting: {
+        nodeMovable: true,
+        edgeMovable: true,
+        edgeLabelMovable: true,
+        arrowheadMovable: true,
+        vertexMovable: true,
+        vertexAddable: true,
+        vertexDeletable: true,
+        magnetConnectable: true,
       },
       connecting: {
         snap: true,
@@ -311,10 +347,8 @@ export class X6GraphAdapter implements IGraphAdapter {
                 },
               },
             },
-            // Add default vertices for better routing
-            vertices: [
-              // Default vertices will be adjusted by the router
-            ],
+            // Enable vertices for edge manipulation
+            vertices: [],
             labels: [
               {
                 position: 0.5,
@@ -397,6 +431,13 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   addNode(node: DiagramNode): Node {
     const graph = this.getGraph();
+    const nodeType = node.data.type as string;
+
+    // Set z-index based on node type
+    let zIndex = 10; // Default z-index for regular nodes
+    if (nodeType === 'security-boundary') {
+      zIndex = 1; // Lower z-index for security boundaries to appear behind other nodes
+    }
 
     const x6Node = graph.addNode({
       id: node.id,
@@ -404,16 +445,21 @@ export class X6GraphAdapter implements IGraphAdapter {
       y: node.position.y,
       width: node.data.width || 120,
       height: node.data.height || 60,
-      shape: this._getX6ShapeForNodeType(node.data.type as string),
-      label: node.data.label,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      attrs: this._getNodeAttrs(node.data.type as string),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      ports: this._getNodePorts(node.data.type as string),
+      label: node.data.label || '', // Add label for mock compatibility
+      shape: this._getX6ShapeForNodeType(nodeType),
+      attrs: {
+        ...this._getNodeAttrs(nodeType),
+        text: {
+          ...((this._getNodeAttrs(nodeType)['text'] as Record<string, unknown>) || {}),
+          text: node.data.label || '',
+        },
+      },
+      ports: this._getNodePorts(nodeType),
       data: {
         ...node.data,
         domainNodeId: node.id,
       },
+      zIndex,
     });
 
     return x6Node;
@@ -453,9 +499,26 @@ export class X6GraphAdapter implements IGraphAdapter {
       id: edge.id,
       source: edge.sourceNodeId,
       target: edge.targetNodeId,
-      label: edge.data.label as string,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      label: (edge.data.label as string) || 'Flow', // Add label for mock compatibility
       attrs: this._getEdgeAttrs('data-flow'),
+      labels: [
+        {
+          position: 0.5,
+          attrs: {
+            text: {
+              text: (edge.data.label as string) || 'Flow',
+              fontSize: 12,
+              fill: '#333',
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+            rect: {
+              fill: '#ffffff',
+              stroke: 'none',
+            },
+          },
+        },
+      ],
       data: {
         ...edge.data,
         domainEdgeId: edge.id,
@@ -654,9 +717,175 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._destroy$.next();
     this._destroy$.complete();
 
+    // Clean up any existing editor
+    this._removeExistingEditor();
+
     if (this._graph) {
       this._graph.dispose();
       this._graph = null;
+    }
+  }
+
+  /**
+   * Move selected cells forward in z-order (increase z-index to move above next nearest unselected cell)
+   */
+  moveSelectedCellsForward(): void {
+    const graph = this.getGraph();
+    const selectedCells = graph.getSelectedCells();
+
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move forward operation');
+      return;
+    }
+
+    this.logger.info('Moving selected cells forward', {
+      selectedCellIds: selectedCells.map(cell => cell.id),
+    });
+
+    selectedCells.forEach(cell => {
+      this._moveCellForward(cell);
+    });
+  }
+
+  /**
+   * Move selected cells backward in z-order (decrease z-index to move below next nearest unselected cell)
+   */
+  moveSelectedCellsBackward(): void {
+    const graph = this.getGraph();
+    const selectedCells = graph.getSelectedCells();
+
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move backward operation');
+      return;
+    }
+
+    this.logger.info('Moving selected cells backward', {
+      selectedCellIds: selectedCells.map(cell => cell.id),
+    });
+
+    selectedCells.forEach(cell => {
+      this._moveCellBackward(cell);
+    });
+  }
+
+  /**
+   * Move selected cells to front (highest z-index among cells of the same type)
+   */
+  moveSelectedCellsToFront(): void {
+    const graph = this.getGraph();
+    const selectedCells = graph.getSelectedCells();
+
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move to front operation');
+      return;
+    }
+
+    this.logger.info('Moving selected cells to front', {
+      selectedCellIds: selectedCells.map(cell => cell.id),
+    });
+
+    selectedCells.forEach(cell => {
+      this._moveCellToFront(cell);
+    });
+  }
+
+  /**
+   * Move selected cells to back (lowest z-index among cells of the same type)
+   */
+  moveSelectedCellsToBack(): void {
+    const graph = this.getGraph();
+    const selectedCells = graph.getSelectedCells();
+
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move to back operation');
+      return;
+    }
+
+    this.logger.info('Moving selected cells to back', {
+      selectedCellIds: selectedCells.map(cell => cell.id),
+    });
+
+    selectedCells.forEach(cell => {
+      this._moveCellToBack(cell);
+    });
+  }
+
+  /**
+   * Get the standardized label text from a cell
+   */
+  getCellLabel(cell: Cell): string {
+    if (cell.isNode()) {
+      const textAttr = cell.attr('text/text');
+      return typeof textAttr === 'string' ? textAttr : '';
+    } else {
+      const edge = cell as Edge;
+      const labels = edge.getLabels();
+      if (labels.length > 0 && labels[0].attrs && labels[0].attrs['text']) {
+        const textAttr = labels[0].attrs['text'] as Record<string, unknown>;
+        const textValue = textAttr['text'];
+        return typeof textValue === 'string' ? textValue : '';
+      }
+      return '';
+    }
+  }
+
+  /**
+   * Set the standardized label text for a cell
+   */
+  setCellLabel(cell: Cell, text: string): void {
+    if (cell.isNode()) {
+      cell.attr('text/text', text);
+      // Also update the data for consistency
+      const rawData: unknown = cell.getData();
+      const currentData = (rawData && typeof rawData === 'object' ? rawData : {}) as Record<
+        string,
+        unknown
+      >;
+      cell.setData({ ...currentData, label: text });
+    } else {
+      const edge = cell as Edge;
+      const labels = edge.getLabels();
+      if (labels.length > 0) {
+        const currentLabel = labels[0];
+        const currentAttrs = currentLabel.attrs || {};
+        const currentTextAttrs = (currentAttrs['text'] as Record<string, unknown>) || {};
+
+        edge.setLabelAt(0, {
+          ...currentLabel,
+          attrs: {
+            ...currentAttrs,
+            text: {
+              ...currentTextAttrs,
+              text,
+            },
+          },
+        });
+      } else {
+        // Create a new label if none exists
+        edge.appendLabel({
+          position: 0.5,
+          attrs: {
+            text: {
+              text,
+              fontSize: 12,
+              fill: '#333',
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+            rect: {
+              fill: '#ffffff',
+              stroke: 'none',
+            },
+          },
+        });
+      }
+      // Also update the data for consistency
+      const rawData: unknown = edge.getData();
+      const currentData = (rawData && typeof rawData === 'object' ? rawData : {}) as Record<
+        string,
+        unknown
+      >;
+      edge.setData({ ...currentData, label: text });
     }
   }
 
@@ -747,6 +976,76 @@ export class X6GraphAdapter implements IGraphAdapter {
       });
     });
 
+    // Node embedding events
+    this._graph.on('node:embedding', ({ node }: { node: Node }) => {
+      // When a node is being embedded, ensure it appears in front temporarily
+      node.setZIndex(20);
+    });
+
+    this._graph.on(
+      'node:embedded',
+      ({ node, currentParent }: { node: Node; currentParent: Node }) => {
+        // After embedding, adjust z-indices
+        const parentType = this._getNodeType(currentParent);
+        const childType = this._getNodeType(node);
+
+        // Parent keeps its base z-index (security boundaries stay behind)
+        if (parentType === 'security-boundary') {
+          currentParent.setZIndex(1); // Security boundaries stay at the back
+        } else {
+          currentParent.setZIndex(10);
+        }
+
+        // Child gets appropriate z-index based on type
+        if (childType === 'security-boundary') {
+          // Security boundaries should always stay behind, even when embedded
+          node.setZIndex(2); // Slightly higher than non-embedded security boundaries but still behind regular nodes
+        } else {
+          node.setZIndex(15); // Regular nodes appear in front when embedded
+        }
+
+        // Ensure edges connected to the child also appear appropriately
+        const edges = this._graph?.getConnectedEdges(node) || [];
+        edges.forEach(edge => {
+          if (childType === 'security-boundary') {
+            edge.setZIndex(3); // Edges connected to security boundaries stay relatively low
+          } else {
+            edge.setZIndex(16); // Edges connected to regular nodes appear in front
+          }
+        });
+
+        // Update fill color based on embedding depth
+        this._updateEmbeddedNodeColor(node);
+      },
+    );
+
+    this._graph.on('node:change:parent', ({ node, current }: { node: Node; current?: string }) => {
+      // When a node is removed from its parent (unembedded)
+      if (!current) {
+        const nodeType = this._getNodeType(node);
+
+        // Reset to default z-index based on type
+        if (nodeType === 'security-boundary') {
+          node.setZIndex(1); // Security boundaries always stay at the back
+        } else {
+          node.setZIndex(10);
+        }
+
+        // Reset edges to appropriate z-index based on node type
+        const edges = this._graph?.getConnectedEdges(node) || [];
+        edges.forEach(edge => {
+          if (nodeType === 'security-boundary') {
+            edge.setZIndex(2); // Edges connected to security boundaries stay low
+          } else {
+            edge.setZIndex(11); // Regular edge z-index
+          }
+        });
+
+        // Update fill color based on new embedding depth (or reset to white if fully unembedded)
+        this._updateEmbeddedNodeColor(node);
+      }
+    });
+
     // Edge events - handle addition and removal
     this._graph.on('edge:added', ({ edge }: { edge: Edge }) => {
       this.logger.debugComponent('DFD', '[Edge Creation] edge:added event', {
@@ -820,19 +1119,23 @@ export class X6GraphAdapter implements IGraphAdapter {
         const selected = added.map((cell: Cell) => cell.id);
         const deselected = removed.map((cell: Cell) => cell.id);
 
-        // Apply glow effects to newly selected cells
+        // Apply glow effects and tools to newly selected cells
         added.forEach((cell: Cell) => {
           this._selectedCells.add(cell.id);
           if (cell.isNode()) {
             cell.attr('body/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
             cell.attr('body/strokeWidth', 3);
+            // Add tools for selected nodes
+            this._addNodeTools(cell);
           } else if (cell.isEdge()) {
             cell.attr('line/filter', 'drop-shadow(0 0 6px rgba(255, 0, 0, 0.8))');
             cell.attr('line/strokeWidth', 3);
+            // Add tools for selected edges
+            this._addEdgeTools(cell);
           }
         });
 
-        // Remove glow effects from deselected cells
+        // Remove glow effects and tools from deselected cells
         removed.forEach((cell: Cell) => {
           this._selectedCells.delete(cell.id);
           if (cell.isNode()) {
@@ -842,6 +1145,8 @@ export class X6GraphAdapter implements IGraphAdapter {
             cell.attr('line/filter', 'none');
             cell.attr('line/strokeWidth', 2);
           }
+          // Remove tools from deselected cells
+          cell.removeTools();
         });
 
         this._selectionChanged$.next({ selected, deselected });
@@ -859,6 +1164,15 @@ export class X6GraphAdapter implements IGraphAdapter {
         x: e.clientX,
         y: e.clientY,
       });
+    });
+
+    // Double-click events for label editing
+    this._graph.on('cell:dblclick', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
+      this.logger.debugComponent('DFD', 'Cell double-click triggered', { cellId: cell.id });
+      // Stop event propagation to prevent interference with tools
+      e.stopPropagation();
+      e.preventDefault();
+      this._addLabelEditor(cell, e);
     });
   }
 
@@ -885,8 +1199,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get X6 node attributes for domain node type
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _getNodeAttrs(nodeType: string): any {
+  private _getNodeAttrs(nodeType: string): Record<string, unknown> {
     const baseAttrs = {
       body: {
         strokeWidth: 2,
@@ -955,7 +1268,9 @@ export class X6GraphAdapter implements IGraphAdapter {
           ...baseAttrs,
           body: {
             ...baseAttrs.body,
-            strokeWidth: 1,
+            stroke: 'none',
+            strokeWidth: 0,
+            fill: 'transparent',
           },
           text: {
             ...baseAttrs.text,
@@ -970,8 +1285,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get X6 edge attributes for domain edge type
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _getEdgeAttrs(edgeType: string): any {
+  private _getEdgeAttrs(edgeType: string): Record<string, unknown> {
     const baseAttrs = {
       line: {
         stroke: '#000000',
@@ -1011,8 +1325,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get X6 port configuration for domain node type
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _getNodePorts(_nodeType: string): any {
+  private _getNodePorts(_nodeType: string): Record<string, unknown> {
     const basePorts = {
       groups: {
         top: {
@@ -1423,5 +1736,549 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
       }
     });
+  }
+
+  /**
+   * Helper function to safely extract node type from node data
+   */
+  private _getNodeType(node: Node | null | undefined): string | undefined {
+    if (!node) return undefined;
+    // Use unknown first to avoid direct any assignment
+    const rawData: unknown = node.getData();
+    // Type guard to check if it's an object with a type property
+    if (rawData && typeof rawData === 'object' && 'type' in rawData) {
+      const data = rawData as { type?: string };
+      return data.type;
+    }
+    return undefined;
+  }
+
+  /**
+   * Calculate the embedding depth of a node (how many levels deep it is embedded)
+   */
+  private _getEmbeddingDepth(node: Node): number {
+    if (!this._graph) return 0;
+
+    let depth = 0;
+    let currentNode = node;
+
+    // Traverse up the parent chain to count embedding levels
+    while (currentNode.getParent()) {
+      depth++;
+      const parent = currentNode.getParent();
+      if (!parent) break;
+
+      // The parent is already a Cell object, not an ID
+      if (!parent.isNode()) break;
+
+      currentNode = parent;
+
+      // Safety check to prevent infinite loops
+      if (depth > 10) {
+        this.logger.warn('Maximum embedding depth reached, breaking loop', { nodeId: node.id });
+        break;
+      }
+    }
+
+    return depth;
+  }
+
+  /**
+   * Calculate the fill color based on embedding depth
+   * Level 0 (not embedded): white (#FFFFFF)
+   * Level 1: very light bluish white (#F8F9FF)
+   * Level 2: slightly darker (#F0F2FF)
+   * Level 3+: progressively darker bluish tints
+   */
+  private _getEmbeddingFillColor(depth: number): string {
+    if (depth === 0) {
+      return '#FFFFFF'; // Pure white for non-embedded nodes
+    }
+
+    // Base bluish white color components
+    const baseRed = 240;
+    const baseGreen = 250;
+
+    // Calculate darker tint based on depth
+    // Each level reduces the RGB values by 8 points to create a progressively darker tint
+    const reduction = Math.min(depth * 10, 60); // Cap at 48 to avoid going too dark
+
+    const red = Math.max(baseRed - reduction, 200);
+    const green = Math.max(baseGreen - reduction, 200);
+    const blue = 255; // Keep blue at maximum to maintain bluish tint
+
+    return `rgb(${red}, ${green}, ${blue})`;
+  }
+
+  /**
+   * Update the fill color of an embedded node based on its embedding depth
+   */
+  private _updateEmbeddedNodeColor(node: Node): void {
+    if (!this._graph) return;
+
+    const depth = this._getEmbeddingDepth(node);
+    const fillColor = this._getEmbeddingFillColor(depth);
+    const nodeType = this._getNodeType(node);
+
+    this.logger.info('Updating embedded node color', {
+      nodeId: node.id,
+      nodeType,
+      embeddingDepth: depth,
+      fillColor,
+    });
+
+    // Update the fill color based on node type
+    if (nodeType === 'store') {
+      // For store nodes, update the body fill
+      node.attr('body/fill', fillColor);
+    } else {
+      // For all other node types, update the body fill
+      node.attr('body/fill', fillColor);
+    }
+  }
+
+  /**
+   * Add tools to a selected node
+   */
+  private _addNodeTools(node: Node): void {
+    if (!this._graph) return;
+
+    const tools = [
+      // Use X6's native button-remove tool
+      {
+        name: 'button-remove',
+        args: {
+          x: '100%',
+          y: 0,
+          offset: { x: -10, y: 10 },
+          onClick: ({ cell }: { cell: Cell }) => {
+            this.logger.info('Delete tool clicked for node', { nodeId: cell.id });
+            // Remove the cell directly using X6's native functionality
+            if (this._graph) {
+              this._graph.removeCell(cell);
+            }
+          },
+        },
+      },
+      // Boundary tool to show selection
+      {
+        name: 'boundary',
+        args: {
+          padding: 5,
+          attrs: {
+            fill: 'none',
+            stroke: '#fe854f',
+            'stroke-width': 2,
+            'stroke-dasharray': '5,5',
+            'pointer-events': 'none',
+          },
+        },
+      },
+    ];
+
+    node.addTools(tools);
+  }
+
+  /**
+   * Add tools to a selected edge
+   */
+  private _addEdgeTools(edge: Edge): void {
+    if (!this._graph) return;
+
+    const tools = [
+      // Use X6's native vertices tool for edge manipulation
+      {
+        name: 'vertices',
+        args: {
+          attrs: {
+            body: {
+              fill: '#fe854f',
+              stroke: '#fe854f',
+              'stroke-width': 2,
+              r: 5,
+              cursor: 'move',
+            },
+          },
+          // Disable adding vertices by clicking to avoid interference with double-click
+          addable: false,
+          // Enable removing vertices by double-clicking
+          removable: true,
+          // Snap vertices to grid
+          snapRadius: 10,
+          // Reduce threshold to make vertices less sensitive to clicks
+          threshold: 40,
+        },
+      },
+      // Target arrowhead tool for dragging target endpoint
+      {
+        name: 'target-arrowhead',
+        args: {
+          attrs: {
+            body: {
+              fill: '#fe854f',
+              stroke: '#fe854f',
+              'stroke-width': 2,
+              r: 6,
+              cursor: 'move',
+            },
+          },
+          // Enable dragging to reconnect target
+          tagName: 'circle',
+          resetOffset: true,
+        },
+      },
+      // Use X6's native button-remove tool for edges
+      {
+        name: 'button-remove',
+        args: {
+          distance: 0.5, // Position at middle of edge
+          offset: { x: 10, y: -10 },
+          onClick: ({ cell }: { cell: Cell }) => {
+            this.logger.info('Delete tool clicked for edge', { edgeId: cell.id });
+            // Remove the cell directly using X6's native functionality
+            if (this._graph) {
+              this._graph.removeCell(cell);
+            }
+          },
+        },
+      },
+      // Note: Segments tool removed - only vertices tool enabled for edges
+    ];
+
+    edge.addTools(tools);
+
+    // Set up vertex change tracking for domain model updates
+    this._setupVertexChangeTracking(edge);
+  }
+
+  /**
+   * Set up tracking for vertex changes on an edge
+   */
+  private _setupVertexChangeTracking(edge: Edge): void {
+    if (!this._graph) return;
+
+    // Listen for vertex changes on this specific edge
+    const vertexChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
+      if (changedEdge.id === edge.id) {
+        const vertices = changedEdge.getVertices();
+        this.logger.info('Edge vertices changed', {
+          edgeId: edge.id,
+          vertexCount: vertices.length,
+          vertices,
+        });
+
+        // Update the edge data with new vertices
+        const currentData: unknown = edge.getData();
+        const safeCurrentData = currentData && typeof currentData === 'object' ? currentData : {};
+        edge.setData({
+          ...safeCurrentData,
+          vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
+        });
+
+        // Emit vertex change event for domain model updates
+        // This could be handled by the DFD component to update the domain model
+        this._edgeVerticesChanged$.next({
+          edgeId: edge.id,
+          vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
+        });
+      }
+    };
+
+    // Add the event listener
+    this._graph.on('edge:change:vertices', vertexChangeHandler);
+
+    // Store the handler reference for cleanup
+    if (!edge.getData()) {
+      edge.setData({});
+    }
+    const edgeData: unknown = edge.getData();
+    if (edgeData && typeof edgeData === 'object') {
+      (edgeData as Record<string, unknown>)['_vertexChangeHandler'] = vertexChangeHandler;
+    }
+  }
+
+  /**
+   * Move a single cell forward in z-order
+   */
+  private _moveCellForward(cell: Cell): void {
+    const graph = this.getGraph();
+    const allCells = [...graph.getNodes(), ...graph.getEdges()];
+    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
+
+    // Get cells of the same type (security boundaries vs non-security boundaries)
+    const sameCategoryUnselectedCells = allCells.filter(
+      c =>
+        c.id !== cell.id &&
+        !graph.isSelected(c) &&
+        this._isSecurityBoundaryCell(c) === isSecurityBoundary,
+    );
+
+    if (sameCategoryUnselectedCells.length === 0) {
+      this.logger.info('No other cells to move forward relative to', { cellId: cell.id });
+      return;
+    }
+
+    const currentZIndex = cell.getZIndex() ?? 1;
+
+    // Find the next higher z-index among unselected cells of the same category
+    const higherZIndices = sameCategoryUnselectedCells
+      .map(c => c.getZIndex() ?? 1)
+      .filter(z => z > currentZIndex)
+      .sort((a, b) => a - b);
+
+    if (higherZIndices.length > 0) {
+      const nextHigherZIndex = higherZIndices[0];
+      cell.setZIndex(nextHigherZIndex + 1);
+      this.logger.info('Moved cell forward', {
+        cellId: cell.id,
+        oldZIndex: currentZIndex,
+        newZIndex: nextHigherZIndex + 1,
+      });
+    } else {
+      this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
+    }
+  }
+
+  /**
+   * Move a single cell backward in z-order
+   */
+  private _moveCellBackward(cell: Cell): void {
+    const graph = this.getGraph();
+    const allCells = [...graph.getNodes(), ...graph.getEdges()];
+    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
+
+    // Get cells of the same type (security boundaries vs non-security boundaries)
+    const sameCategoryUnselectedCells = allCells.filter(
+      c =>
+        c.id !== cell.id &&
+        !graph.isSelected(c) &&
+        this._isSecurityBoundaryCell(c) === isSecurityBoundary,
+    );
+
+    if (sameCategoryUnselectedCells.length === 0) {
+      this.logger.info('No other cells to move backward relative to', { cellId: cell.id });
+      return;
+    }
+
+    const currentZIndex = cell.getZIndex() ?? 1;
+
+    // Find the next lower z-index among unselected cells of the same category
+    const lowerZIndices = sameCategoryUnselectedCells
+      .map(c => c.getZIndex() ?? 1)
+      .filter(z => z < currentZIndex)
+      .sort((a, b) => b - a);
+
+    if (lowerZIndices.length > 0) {
+      const nextLowerZIndex = lowerZIndices[0];
+      cell.setZIndex(Math.max(nextLowerZIndex - 1, 1));
+      this.logger.info('Moved cell backward', {
+        cellId: cell.id,
+        oldZIndex: currentZIndex,
+        newZIndex: Math.max(nextLowerZIndex - 1, 1),
+      });
+    } else {
+      this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
+    }
+  }
+
+  /**
+   * Move a single cell to the front (highest z-index among cells of the same type)
+   */
+  private _moveCellToFront(cell: Cell): void {
+    const graph = this.getGraph();
+    const allCells = [...graph.getNodes(), ...graph.getEdges()];
+    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
+
+    // Get cells of the same type (security boundaries vs non-security boundaries)
+    const sameCategoryCells = allCells.filter(
+      c => c.id !== cell.id && this._isSecurityBoundaryCell(c) === isSecurityBoundary,
+    );
+
+    if (sameCategoryCells.length === 0) {
+      this.logger.info('No other cells to move to front relative to', { cellId: cell.id });
+      return;
+    }
+
+    const currentZIndex = cell.getZIndex() ?? 1;
+    const maxZIndex = Math.max(...sameCategoryCells.map(c => c.getZIndex() ?? 1));
+    const newZIndex = maxZIndex + 1;
+
+    if (newZIndex > currentZIndex) {
+      cell.setZIndex(newZIndex);
+      this.logger.info('Moved cell to front', {
+        cellId: cell.id,
+        oldZIndex: currentZIndex,
+        newZIndex,
+      });
+    } else {
+      this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
+    }
+  }
+
+  /**
+   * Move a single cell to the back (lowest z-index among cells of the same type)
+   */
+  private _moveCellToBack(cell: Cell): void {
+    const graph = this.getGraph();
+    const allCells = [...graph.getNodes(), ...graph.getEdges()];
+    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
+
+    // Get cells of the same type (security boundaries vs non-security boundaries)
+    const sameCategoryCells = allCells.filter(
+      c => c.id !== cell.id && this._isSecurityBoundaryCell(c) === isSecurityBoundary,
+    );
+
+    if (sameCategoryCells.length === 0) {
+      this.logger.info('No other cells to move to back relative to', { cellId: cell.id });
+      return;
+    }
+
+    const currentZIndex = cell.getZIndex() ?? 1;
+    const minZIndex = Math.min(...sameCategoryCells.map(c => c.getZIndex() ?? 1));
+    const newZIndex = Math.max(minZIndex - 1, 1);
+
+    if (newZIndex < currentZIndex) {
+      cell.setZIndex(newZIndex);
+      this.logger.info('Moved cell to back', {
+        cellId: cell.id,
+        oldZIndex: currentZIndex,
+        newZIndex,
+      });
+    } else {
+      this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
+    }
+  }
+
+  /**
+   * Add custom label editor to a cell for inline editing
+   */
+  private _addLabelEditor(cell: Cell, _e: MouseEvent): void {
+    if (!this._graph) return;
+
+    const isNode = cell.isNode();
+    this.logger.debugComponent(
+      'DFD',
+      `Starting custom label editor for ${isNode ? 'node' : 'edge'}`,
+      {
+        cellId: cell.id,
+        currentLabel: this.getCellLabel(cell),
+      },
+    );
+
+    // Remove any existing custom editors
+    this._removeExistingEditor();
+
+    // Get the cell's position in the viewport
+    const cellView = this._graph.findViewByCell(cell);
+    if (!cellView) {
+      this.logger.debugComponent('DFD', 'Could not find cell view for editor', { cellId: cell.id });
+      return;
+    }
+
+    // Get the cell's bounding box in screen coordinates
+    const cellBBox = (
+      cellView as unknown as { getBBox(): { x: number; y: number; width: number; height: number } }
+    ).getBBox();
+    const graphContainer = this._graph.container;
+    const containerRect = graphContainer.getBoundingClientRect();
+
+    // Calculate the position for the editor
+    const editorX = containerRect.left + cellBBox.x + cellBBox.width / 2;
+    const editorY = containerRect.top + cellBBox.y + cellBBox.height / 2;
+
+    // Create a custom textarea element to support multiline text
+    const textarea = document.createElement('textarea');
+    textarea.value = this.getCellLabel(cell);
+    textarea.className = 'x6-custom-label-editor';
+    textarea.style.cssText = `
+      position: fixed;
+      left: ${editorX - 60}px;
+      top: ${editorY - 25}px;
+      width: 120px;
+      min-height: 40px;
+      max-height: 120px;
+      padding: 4px 8px;
+      border: 2px solid #007bff;
+      border-radius: 4px;
+      background: #fff;
+      font-family: "Roboto Condensed", Arial, sans-serif;
+      font-size: 12px;
+      text-align: center;
+      z-index: 10000;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      resize: vertical;
+      overflow-y: auto;
+    `;
+
+    // Add event handlers
+    const commitEdit = (): void => {
+      const newText = textarea.value.trim();
+      if (newText !== this.getCellLabel(cell)) {
+        this.setCellLabel(cell, newText);
+        this.logger.debugComponent('DFD', 'Label updated via custom editor', {
+          cellId: cell.id,
+          newText,
+        });
+      }
+      this._removeExistingEditor();
+    };
+
+    const cancelEdit = (): void => {
+      this.logger.debugComponent('DFD', 'Label edit canceled', { cellId: cell.id });
+      this._removeExistingEditor();
+    };
+
+    textarea.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        commitEdit();
+      } else if (event.key === 'Enter' && event.shiftKey) {
+        // Allow Shift+Enter for line breaks - don't prevent default
+        // The textarea will handle the newline insertion naturally
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelEdit();
+      }
+    });
+
+    textarea.addEventListener('blur', () => {
+      // Small delay to allow for potential click events
+      setTimeout(commitEdit, 100);
+    });
+
+    // Add to document and focus
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    // Store reference for cleanup
+    this._currentEditor = textarea;
+
+    this.logger.debugComponent('DFD', 'Custom label editor created and focused', {
+      cellId: cell.id,
+      editorPosition: { x: editorX, y: editorY },
+    });
+  }
+
+  /**
+   * Remove any existing custom editor
+   */
+  private _removeExistingEditor(): void {
+    if (this._currentEditor && this._currentEditor.parentNode) {
+      this._currentEditor.parentNode.removeChild(this._currentEditor);
+      this._currentEditor = null;
+    }
+  }
+
+  /**
+   * Check if a cell is a security boundary
+   */
+  private _isSecurityBoundaryCell(cell: Cell): boolean {
+    if (cell.isNode()) {
+      const nodeType = this._getNodeType(cell);
+      return nodeType === 'security-boundary';
+    }
+    return false;
   }
 }

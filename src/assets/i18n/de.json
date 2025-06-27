@@ -224,7 +224,11 @@
     }
   },
   "contextMenu": {
-    "copyDefinitionToClipboard": "Definition in Zwischenablage kopieren"
+    "copyDefinitionToClipboard": "Definition in Zwischenablage kopieren",
+    "moveForward": "Nach vorne bewegen",
+    "moveBackward": "Nach hinten bewegen",
+    "moveToFront": "In den Vordergrund",
+    "moveToBack": "In den Hintergrund"
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
