@@ -149,10 +149,11 @@ export class X6GraphAdapter implements IGraphAdapter {
       },
       panning: {
         enabled: true,
+        modifiers: ['shift'],
       },
       mousewheel: {
         enabled: true,
-        modifiers: 'ctrl',
+        modifiers: ['shift'],
         factor: 1.1,
         maxScale: 1.5,
         minScale: 0.5,
@@ -502,6 +503,17 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Get selected cells from the graph
+   */
+  getSelectedCells(): Cell[] {
+    const graph = this.getGraph();
+    if (graph && typeof graph.getSelectedCells === 'function') {
+      return graph.getSelectedCells();
+    }
+    return [];
+  }
+
+  /**
    * Clear all nodes and edges from the graph
    */
   clear(): void {
@@ -771,6 +783,25 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
       this._edgeRemoved$.next({ edgeId: edge.id, edge });
+
+      // Update port visibility for the source and target nodes
+      // when an edge is removed
+      const sourceCellId = edge.getSourceCellId();
+      const targetCellId = edge.getTargetCellId();
+
+      if (sourceCellId) {
+        const sourceNode = this._graph!.getCellById(sourceCellId) as Node;
+        if (sourceNode && sourceNode.isNode()) {
+          this._updateNodePortVisibility(sourceNode);
+        }
+      }
+
+      if (targetCellId) {
+        const targetNode = this._graph!.getCellById(targetCellId) as Node;
+        if (targetNode && targetNode.isNode()) {
+          this._updateNodePortVisibility(targetNode);
+        }
+      }
     });
 
     // Selection events
@@ -1153,6 +1184,25 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Update port visibility for a specific node based on connection status
+   */
+  private _updateNodePortVisibility(node: Node): void {
+    if (!this._graph) return;
+
+    const ports = node.getPorts();
+    ports.forEach(port => {
+      // Check if this port is connected to any edge
+      if (this._isPortConnected(node, port.id!)) {
+        // Keep connected ports visible
+        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+      } else {
+        // Hide unconnected ports
+        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+      }
+    });
+  }
+
+  /**
    * Ensure that the ports connected by a specific edge remain visible
    */
   private _ensureConnectedPortsVisible(edge: Edge): void {
@@ -1254,7 +1304,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           movable: true,
           showNodeSelectionBox: true,
           showEdgeSelectionBox: true,
-          modifiers: ['shift'] as ('alt' | 'ctrl' | 'meta' | 'shift')[],
+          modifiers: null, // Allow rubberband selection without modifiers
           pointerEvents: 'none',
         }),
       );

@@ -121,7 +121,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
   private _rightClickedCell: Cell | null = null;
-  private _selectedNode$ = new BehaviorSubject<Node | null>(null);
+  private _selectedCells$ = new BehaviorSubject<Cell[]>([]);
   private _isInitialized = false;
 
   // Context menu position
@@ -180,21 +180,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to selection state changes
     this._subscriptions.add(
-      this._selectedNode$.subscribe(selectedNode => {
-        this.hasSelectedCells = !!selectedNode;
+      this._selectedCells$.subscribe(selectedCells => {
+        this.hasSelectedCells = selectedCells.length > 0;
         this.cdr.markForCheck();
       }),
     );
 
     // Subscribe to graph adapter events
     this._subscriptions.add(
-      this.x6GraphAdapter.selectionChanged$.subscribe(({ selected }) => {
-        if (selected.length > 0) {
-          const node = this.x6GraphAdapter.getNode(selected[0]);
-          this._selectedNode$.next(node);
-        } else {
-          this._selectedNode$.next(null);
-        }
+      this.x6GraphAdapter.selectionChanged$.subscribe(() => {
+        // Get selected cells directly from the adapter
+        const selectedCells = this.x6GraphAdapter.getSelectedCells();
+        this._selectedCells$.next(selectedCells);
       }),
     );
 
@@ -290,6 +287,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this._resizeTimeout = null;
       }
     }, 100); // 100ms debounce
+  }
+
+  /**
+   * Handle keyboard events for delete functionality
+   */
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    // Only handle delete key if the graph container has focus or if no input elements are focused
+    const activeElement = document.activeElement;
+    const isInputFocused =
+      activeElement &&
+      (activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        (activeElement as HTMLElement).contentEditable === 'true');
+
+    if (!isInputFocused && (event.key === 'Delete' || event.key === 'Backspace')) {
+      event.preventDefault();
+      this.deleteSelected();
+    }
   }
 
   /**
@@ -634,30 +650,81 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const selectedNode = this._selectedNode$.value;
-    if (selectedNode) {
-      this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
+    const selectedCells = this._selectedCells$.value;
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for deletion');
+      return;
+    }
 
-      const diagramId = this.dfdId || 'default-diagram';
-      const userId = 'current-user'; // TODO: Get from auth service
+    this.logger.info('Deleting selected cells', {
+      count: selectedCells.length,
+      cellIds: selectedCells.map(cell => cell.id),
+    });
 
-      const command = DiagramCommandFactory.removeNode(diagramId, userId, selectedNode.id);
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    // Separate nodes and edges for different command handling
+    const selectedNodes = selectedCells.filter(cell => cell.isNode());
+    const selectedEdges = selectedCells.filter(cell => cell.isEdge());
+
+    // Delete nodes first (this will also remove connected edges automatically)
+    selectedNodes.forEach(node => {
+      const command = DiagramCommandFactory.removeNode(diagramId, userId, node.id);
 
       this.commandBus
         .execute<void>(command)
         .pipe(take(1))
         .subscribe({
           next: () => {
-            this.logger.info('Node deleted successfully', { nodeId: selectedNode.id });
+            this.logger.info('Node deleted successfully', { nodeId: node.id });
             // Remove from visual graph
-            this.x6GraphAdapter.removeNode(selectedNode.id);
-            this.cdr.markForCheck();
+            this.x6GraphAdapter.removeNode(node.id);
           },
           error: error => {
             this.logger.error('Error deleting node', error);
           },
         });
+    });
+
+    // Delete standalone edges (edges not connected to deleted nodes)
+    selectedEdges.forEach(edge => {
+      const sourceNodeId = edge.getSourceCellId();
+      const targetNodeId = edge.getTargetCellId();
+
+      // Check if this edge is connected to any of the nodes being deleted
+      const isConnectedToDeletedNode = selectedNodes.some(
+        node => node.id === sourceNodeId || node.id === targetNodeId,
+      );
+
+      // Only delete the edge if it's not connected to a node being deleted
+      // (since deleting the node will automatically delete connected edges)
+      if (!isConnectedToDeletedNode) {
+        const command = DiagramCommandFactory.removeEdge(diagramId, userId, edge.id);
+
+        this.commandBus
+          .execute<void>(command)
+          .pipe(take(1))
+          .subscribe({
+            next: () => {
+              this.logger.info('Edge deleted successfully', { edgeId: edge.id });
+              // Remove from visual graph
+              this.x6GraphAdapter.removeEdge(edge.id);
+            },
+            error: error => {
+              this.logger.error('Error deleting edge', error);
+            },
+          });
+      }
+    });
+
+    // Clear selection after deletion
+    const graph = this.x6GraphAdapter.getGraph();
+    if (graph && typeof graph.cleanSelection === 'function') {
+      graph.cleanSelection();
     }
+
+    this.cdr.markForCheck();
   }
 
   /**
@@ -738,7 +805,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           threatModelId: this.threatModelId as string,
           mode: 'create',
           diagramId: this.dfdId || '',
-          cellId: this._selectedNode$.value?.id || '',
+          cellId: this._selectedCells$.value.find(cell => cell.isNode())?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -777,7 +844,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
                 diagram_id: formResult.diagram_id || this.dfdId || '',
-                cell_id: formResult.cell_id || this._selectedNode$.value?.id || '',
+                cell_id:
+                  formResult.cell_id ||
+                  this._selectedCells$.value.find(cell => cell.isNode())?.id ||
+                  '',
                 score: formResult.score || 10.0,
                 priority: formResult.priority || 'High',
                 issue_url: formResult.issue_url || 'n/a',
