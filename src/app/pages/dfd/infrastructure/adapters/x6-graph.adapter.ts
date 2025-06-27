@@ -160,23 +160,17 @@ export class X6GraphAdapter implements IGraphAdapter {
       connecting: {
         snap: true,
         allowBlank: false,
-        allowLoop: false,
+        allowLoop: true,
         allowNode: false,
         allowEdge: false,
         allowPort: true,
         allowMulti: true,
         highlight: true,
         router: {
-          name: 'manhattan',
-          args: {
-            padding: 10,
-          },
+          name: 'normal',
         },
         connector: {
-          name: 'rounded',
-          args: {
-            radius: 8,
-          },
+          name: 'smooth',
         },
         validateMagnet: args => {
           this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet called', {
@@ -261,22 +255,43 @@ export class X6GraphAdapter implements IGraphAdapter {
         createEdge: () => {
           this.logger.debugComponent('DFD', '[Edge Creation] createEdge called');
 
+          // Create edge with explicit markup to control both path elements
           const edge = new Edge({
             shape: 'edge',
             markup: [
               {
                 tagName: 'path',
+                selector: 'wrap',
+                attrs: {
+                  fill: 'none',
+                  cursor: 'pointer',
+                  stroke: 'transparent',
+                  strokeLinecap: 'round',
+                },
+              },
+              {
+                tagName: 'path',
                 selector: 'line',
                 attrs: {
                   fill: 'none',
-                  'pointer-events': 'none',
+                  pointerEvents: 'none',
                 },
               },
             ],
             attrs: {
+              wrap: {
+                connection: true,
+                strokeWidth: 10,
+                strokeLinecap: 'round',
+                strokeLinejoin: 'round',
+                stroke: 'transparent',
+                fill: 'none',
+              },
               line: {
+                connection: true,
                 stroke: '#000000',
                 strokeWidth: 2,
+                fill: 'none',
                 targetMarker: {
                   name: 'block',
                   width: 12,
@@ -286,6 +301,10 @@ export class X6GraphAdapter implements IGraphAdapter {
                 },
               },
             },
+            // Add default vertices for better routing
+            vertices: [
+              // Default vertices will be adjusted by the router
+            ],
             labels: [
               {
                 position: 0.5,
@@ -310,7 +329,10 @@ export class X6GraphAdapter implements IGraphAdapter {
             zIndex: 1,
           });
 
-          this.logger.debugComponent('DFD', '[Edge Creation] Edge created with markup');
+          this.logger.debugComponent(
+            'DFD',
+            '[Edge Creation] Edge created with explicit dual-path markup',
+          );
           return edge;
         },
       },
@@ -519,19 +541,27 @@ export class X6GraphAdapter implements IGraphAdapter {
     edges.forEach((edge, index) => {
       const edgeView = this._graph!.findViewByCell(edge);
       const lineAttrs = edge.attr('line');
+      const allAttrs = edge.attr();
 
       this.logger.debugComponent('DFD', `[Edge Debug] Edge ${index + 1}:`, {
         id: edge.id,
+        shape: edge.shape,
         source: edge.getSourceCellId(),
         target: edge.getTargetCellId(),
-        attrs: edge.attr(),
+        sourcePortId: edge.getSourcePortId(),
+        targetPortId: edge.getTargetPortId(),
+        markup: edge.markup,
+        attrs: allAttrs,
         lineAttrs: lineAttrs
           ? {
               stroke: (lineAttrs as Record<string, unknown>)['stroke'],
               strokeWidth: (lineAttrs as Record<string, unknown>)['strokeWidth'],
+              fill: (lineAttrs as Record<string, unknown>)['fill'],
               targetMarker: (lineAttrs as Record<string, unknown>)['targetMarker'],
             }
           : null,
+        zIndex: edge.getZIndex(),
+        visible: edge.isVisible(),
       });
 
       // Try to find the SVG element
@@ -541,27 +571,54 @@ export class X6GraphAdapter implements IGraphAdapter {
         ] as HTMLElement;
         const pathElements = container?.querySelectorAll('path');
 
+        this.logger.debugComponent('DFD', `[Edge Debug] Edge ${index + 1} DOM structure:`, {
+          containerHTML: container?.outerHTML?.substring(0, 500) + '...',
+          pathCount: pathElements?.length || 0,
+        });
+
         if (pathElements && pathElements.length > 0) {
           pathElements.forEach((path, pathIndex) => {
+            const computedStyle = window.getComputedStyle(path);
             this.logger.debugComponent(
               'DFD',
               `[Edge Debug] Edge ${index + 1} Path ${pathIndex + 1}:`,
               {
+                // Direct attributes
                 stroke: path.getAttribute('stroke'),
                 strokeWidth: path.getAttribute('stroke-width'),
                 fill: path.getAttribute('fill'),
                 d: path.getAttribute('d'),
                 className: path.getAttribute('class'),
                 style: path.getAttribute('style'),
-                computedStroke: window.getComputedStyle(path).stroke,
-                computedStrokeWidth: window.getComputedStyle(path).strokeWidth,
-                computedOpacity: window.getComputedStyle(path).opacity,
-                computedVisibility: window.getComputedStyle(path).visibility,
-                computedDisplay: window.getComputedStyle(path).display,
+                markerEnd: path.getAttribute('marker-end'),
+                // Computed styles
+                computedStroke: computedStyle.stroke,
+                computedStrokeWidth: computedStyle.strokeWidth,
+                computedOpacity: computedStyle.opacity,
+                computedVisibility: computedStyle.visibility,
+                computedDisplay: computedStyle.display,
+                computedFill: computedStyle.fill,
+                // Validation checks
+                hasValidStroke:
+                  computedStyle.stroke !== 'none' && computedStyle.stroke !== 'transparent',
+                hasValidWidth: parseFloat(computedStyle.strokeWidth) > 0,
+                isVisible:
+                  computedStyle.visibility !== 'hidden' && computedStyle.display !== 'none',
+                hasPath: !!path.getAttribute('d'),
               },
             );
           });
+        } else {
+          this.logger.debugComponent(
+            'DFD',
+            `[Edge Debug] Edge ${index + 1}: No path elements found`,
+          );
         }
+      } else {
+        this.logger.debugComponent(
+          'DFD',
+          `[Edge Debug] Edge ${index + 1}: No view or container found`,
+        );
       }
     });
 
@@ -885,10 +942,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           position: 'top',
           attrs: {
             circle: {
-              r: 4,
+              r: 5,
               magnet: 'active',
               'port-group': 'top',
-              stroke: '#31d0c6',
+              stroke: '#000',
               strokeWidth: 2,
               fill: '#fff',
               style: {
@@ -901,10 +958,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           position: 'right',
           attrs: {
             circle: {
-              r: 4,
+              r: 5,
               magnet: 'active',
               'port-group': 'right',
-              stroke: '#31d0c6',
+              stroke: '#fff',
               strokeWidth: 2,
               fill: '#fff',
               style: {
@@ -917,10 +974,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           position: 'bottom',
           attrs: {
             circle: {
-              r: 4,
+              r: 5,
               magnet: 'active',
               'port-group': 'bottom',
-              stroke: '#31d0c6',
+              stroke: '#000',
               strokeWidth: 2,
               fill: '#fff',
               style: {
@@ -933,10 +990,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           position: 'left',
           attrs: {
             circle: {
-              r: 4,
+              r: 5,
               magnet: 'active',
               'port-group': 'left',
-              stroke: '#31d0c6',
+              stroke: '#000',
               strokeWidth: 2,
               fill: '#fff',
               style: {
