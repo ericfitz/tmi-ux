@@ -42,7 +42,7 @@ We will only use Roboto Condensed for text in the graph.
 
 - **✅ IMPLEMENTED**: Edges are created by dragging from a port on one node to a port on another node
 - **✅ IMPLEMENTED**: Edge creation uses validateMagnet and validateConnection for proper port-to-port connections
-- **✅ IMPLEMENTED**: Self-connections are prevented
+- **✅ IMPLEMENTED**: Self-connections are allowed between different ports on the same node
 - **✅ IMPLEMENTED**: Edges require valid source and target ports (allowNode: false, allowPort: true)
 - **✅ IMPLEMENTED**: Multiple edges between same nodes are allowed (allowMulti: true)
 - **✅ IMPLEMENTED**: Loop connections are allowed (allowLoop: true)

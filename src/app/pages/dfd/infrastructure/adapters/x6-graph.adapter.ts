@@ -242,11 +242,11 @@ export class X6GraphAdapter implements IGraphAdapter {
 
           const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
 
-          // Prevent creating an edge if source and target are the same
+          // Prevent creating an edge if source and target are the same port on the same node
           if (sourceView === targetView && sourceMagnet === targetMagnet) {
             this.logger.debugComponent(
               'DFD',
-              '[Edge Creation] validateConnection: same source and target',
+              '[Edge Creation] validateConnection: same source and target port',
             );
             return false;
           }
@@ -283,13 +283,16 @@ export class X6GraphAdapter implements IGraphAdapter {
           const sourceCell = sourceView?.cell;
           const targetCell = targetView?.cell;
 
-          // Prevent connecting to self
+          // Allow self-connections (connecting a node to itself via different ports)
           if (sourceCell === targetCell) {
             this.logger.debugComponent(
               'DFD',
-              '[Edge Creation] validateConnection: self-connection not allowed',
+              '[Edge Creation] validateConnection: self-connection allowed between different ports',
+              {
+                sourcePort: sourcePortGroup,
+                targetPort: targetPortGroup,
+              },
             );
-            return false;
           }
 
           this.logger.debugComponent('DFD', '[Edge Creation] validateConnection: connection valid');

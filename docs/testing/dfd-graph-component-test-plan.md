@@ -165,7 +165,8 @@ describe('Node Embedding', () => {
 describe('Edge Creation', () => {
   it('should create edge with dual-path markup structure');
   it('should apply default styling (black stroke, 2px width, block arrowhead)');
-  it('should prevent self-connections');
+  it('should allow self-connections between different ports on same node');
+  it('should prevent self-connections to same port');
   it('should allow multiple edges between same nodes');
   it('should validate port-to-port connections');
 });
@@ -181,7 +182,7 @@ describe('Edge Vertices', () => {
 
 - ✅ Edge creation by dragging from port to port
 - ✅ Edge validation (validateMagnet, validateConnection)
-- ✅ Self-connection prevention
+- ✅ Self-connection support (between different ports)
 - ✅ Port-to-port connection requirements
 - ✅ Multiple edges between same nodes allowed
 - ✅ Dual-path markup (wrap + line paths)
@@ -496,12 +497,12 @@ src/app/pages/dfd/tests/
 5. **Integration Ready**: Tests work with existing X6GraphAdapter and mock infrastructure
 6. **Future-Proof**: Framework supports testing of 🔄 FUTURE features when implemented
 
-## Excluded Features
+## Updated Features
 
-The following features are explicitly excluded from this test plan as requested:
+The following features have been updated since the original test plan:
 
-- **Self-connections**: User plans to change this behavior
-- **Loop connections**: User plans to change this behavior
+- **Self-connections**: Now allowed between different ports on the same node (previously excluded)
+- **Loop connections**: Supported via allowLoop: true configuration
 
 ## Next Steps
 
