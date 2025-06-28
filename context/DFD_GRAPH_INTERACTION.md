@@ -24,7 +24,7 @@ We will only use Roboto Condensed for text in the graph.
 
 - **✅ IMPLEMENTED**: Nodes are created by clicking the corresponding button in the toolbar
 - **✅ IMPLEMENTED**: Five node types supported: Actor (rectangle), Process (ellipse), Store (custom shape with top/bottom borders), Security Boundary (dashed rectangle), and Textbox (transparent rectangle)
-- **✅ IMPLEMENTED**: Nodes are placed at random positions when created via toolbar
+- **✅ IMPLEMENTED**: Nodes are created via clicking a toolbar button. Currently placed at random locations.
 - **✅ IMPLEMENTED**: Each node type has appropriate default styling and labels
 - **✅ IMPLEMENTED**: Node creation uses command pattern with domain model integration
 

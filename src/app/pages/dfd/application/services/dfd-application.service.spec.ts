@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 // Import Angular compiler
 import '@angular/compiler';
 

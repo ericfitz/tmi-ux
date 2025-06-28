@@ -44,8 +44,9 @@ export default [
 
   // Test files
   {
-    files: ['**/*.spec.ts'],
+    files: ['**/*.spec.ts', '**/tests/**/*.ts', '**/testing/**/*.ts'],
     rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',

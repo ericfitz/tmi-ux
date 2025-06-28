@@ -8,7 +8,7 @@ import { Graph, Node } from '@antv/x6';
 interface ChaiStatic {
   Assertion: {
     // We need to use any here for the Chai API to work correctly
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     addMethod: (name: string, fn: (this: ChaiAssertionThis, ...args: any[]) => void) => void;
   };
 }
