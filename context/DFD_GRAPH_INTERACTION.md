@@ -100,9 +100,13 @@ We will only use Roboto Condensed for text in the graph.
 ### Edge Tools (on selection)
 
 - **✅ IMPLEMENTED**: Vertices tool for adding/removing/moving edge control points
+- **✅ IMPLEMENTED**: Source-arrowhead tool for reconnecting edge source
 - **✅ IMPLEMENTED**: Target-arrowhead tool for reconnecting edge target
 - **✅ IMPLEMENTED**: Button-remove tool (middle of edge) for deletion
 - **✅ IMPLEMENTED**: Vertex changes tracked and synchronized with domain model
+- **✅ IMPLEMENTED**: Source/target connection changes tracked and synchronized with domain model
+- **✅ IMPLEMENTED**: Click along edge stroke to automatically add vertices
+- **✅ IMPLEMENTED**: Drag both ends of edges to change source and target connections
 
 ### Context Menu
 

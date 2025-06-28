@@ -21,37 +21,34 @@ Shape.Rect.define({
       selector: 'body',
     },
     {
-      tagName: 'path',
-      selector: 'topBorder',
-    },
-    {
-      tagName: 'path',
-      selector: 'bottomBorder',
-    },
-    {
       tagName: 'text',
       selector: 'text',
     },
+    {
+      tagName: 'path',
+      selector: 'topLine',
+    },
+    {
+      tagName: 'path',
+      selector: 'bottomLine',
+    },
   ],
   attrs: {
+    topLine: {
+      stroke: '#333333',
+      strokeWidth: 2,
+      refD: 'M 0 0 l 200 0',
+    },
+    bottomLine: {
+      stroke: '#333333',
+      strokeWidth: 2,
+      refDy: '100%',
+      refD: 'M 0 0 l 200 0',
+    },
     body: {
-      refWidth: '100%',
-      refHeight: '100%',
-      fill: '#FFFFFF',
-      stroke: 'none',
-      strokeWidth: 0,
-    },
-    topBorder: {
-      refD: 'M 0 0 L 100% 0',
-      stroke: '#000000',
-      strokeWidth: 2,
-      fill: 'none',
-    },
-    bottomBorder: {
-      refD: 'M 0 100% L 100% 100%',
-      stroke: '#000000',
-      strokeWidth: 2,
-      fill: 'none',
+      fill: 'transparent',
+      opacity: 0,
+      fillOpacity: 0,
     },
     text: {
       refX: '50%',
@@ -1226,19 +1223,17 @@ export class X6GraphAdapter implements IGraphAdapter {
       case 'store':
         return {
           body: {
-            fill: '#FFFFFF',
-            stroke: 'none',
-            strokeWidth: 0,
+            fill: 'transparent',
+            opacity: 0,
+            fillOpacity: 0,
           },
-          topBorder: {
-            stroke: '#000000',
+          topLine: {
+            stroke: '#333333',
             strokeWidth: 2,
-            fill: 'none',
           },
-          bottomBorder: {
-            stroke: '#000000',
+          bottomLine: {
+            stroke: '#333333',
             strokeWidth: 2,
-            fill: 'none',
           },
           text: {
             fontFamily: '"Roboto Condensed", Arial, sans-serif',
@@ -1886,7 +1881,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (!this._graph) return;
 
     const tools = [
-      // Use X6's native vertices tool for edge manipulation
+      // Use X6's native vertices tool for edge manipulation with enhanced functionality
       {
         name: 'vertices',
         args: {
@@ -1899,14 +1894,34 @@ export class X6GraphAdapter implements IGraphAdapter {
               cursor: 'move',
             },
           },
-          // Disable adding vertices by clicking to avoid interference with double-click
-          addable: false,
+          // Enable adding vertices by clicking on the edge stroke
+          addable: true,
           // Enable removing vertices by double-clicking
           removable: true,
           // Snap vertices to grid
           snapRadius: 10,
           // Reduce threshold to make vertices less sensitive to clicks
           threshold: 40,
+          // Configure vertex addition behavior
+          stopPropagation: false,
+        },
+      },
+      // Source arrowhead tool for dragging source endpoint
+      {
+        name: 'source-arrowhead',
+        args: {
+          attrs: {
+            body: {
+              fill: '#31d0c6',
+              stroke: '#31d0c6',
+              'stroke-width': 2,
+              r: 6,
+              cursor: 'move',
+            },
+          },
+          // Enable dragging to reconnect source
+          tagName: 'circle',
+          resetOffset: true,
         },
       },
       // Target arrowhead tool for dragging target endpoint
@@ -1942,13 +1957,15 @@ export class X6GraphAdapter implements IGraphAdapter {
           },
         },
       },
-      // Note: Segments tool removed - only vertices tool enabled for edges
     ];
 
     edge.addTools(tools);
 
     // Set up vertex change tracking for domain model updates
     this._setupVertexChangeTracking(edge);
+
+    // Set up source/target change tracking for domain model updates
+    this._setupEdgeConnectionChangeTracking(edge);
   }
 
   /**
@@ -1995,6 +2012,71 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (edgeData && typeof edgeData === 'object') {
       (edgeData as Record<string, unknown>)['_vertexChangeHandler'] = vertexChangeHandler;
     }
+  }
+
+  /**
+   * Set up tracking for source/target connection changes on an edge
+   */
+  private _setupEdgeConnectionChangeTracking(edge: Edge): void {
+    if (!this._graph) return;
+
+    // Listen for source changes on this specific edge
+    const sourceChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
+      if (changedEdge.id === edge.id) {
+        const sourceId = changedEdge.getSourceCellId();
+        const sourcePortId = changedEdge.getSourcePortId();
+        this.logger.info('Edge source changed', {
+          edgeId: edge.id,
+          newSourceId: sourceId,
+          newSourcePortId: sourcePortId,
+        });
+
+        // Update port visibility for old and new source nodes
+        this._updatePortVisibilityAfterConnectionChange();
+      }
+    };
+
+    // Listen for target changes on this specific edge
+    const targetChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
+      if (changedEdge.id === edge.id) {
+        const targetId = changedEdge.getTargetCellId();
+        const targetPortId = changedEdge.getTargetPortId();
+        this.logger.info('Edge target changed', {
+          edgeId: edge.id,
+          newTargetId: targetId,
+          newTargetPortId: targetPortId,
+        });
+
+        // Update port visibility for old and new target nodes
+        this._updatePortVisibilityAfterConnectionChange();
+      }
+    };
+
+    // Add the event listeners
+    this._graph.on('edge:change:source', sourceChangeHandler);
+    this._graph.on('edge:change:target', targetChangeHandler);
+
+    // Store the handler references for cleanup
+    if (!edge.getData()) {
+      edge.setData({});
+    }
+    const edgeData: unknown = edge.getData();
+    if (edgeData && typeof edgeData === 'object') {
+      (edgeData as Record<string, unknown>)['_sourceChangeHandler'] = sourceChangeHandler;
+      (edgeData as Record<string, unknown>)['_targetChangeHandler'] = targetChangeHandler;
+    }
+  }
+
+  /**
+   * Update port visibility for all nodes after a connection change
+   */
+  private _updatePortVisibilityAfterConnectionChange(): void {
+    if (!this._graph) return;
+
+    // Update port visibility for all nodes to reflect new connection states
+    this._graph.getNodes().forEach(node => {
+      this._updateNodePortVisibility(node);
+    });
   }
 
   /**
