@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "TMI Threat Modeling Improved API",
-    "description": "A RESTful API with WebSocket support for threat modeling with collaborative diagram editing.",
+    "title": "TMI (Threat Modeling Improved) API",
+    "description": "A RESTful API for collaborative threat modeling.",
     "version": "1.0.0"
   },
   "servers": [
@@ -105,6 +105,94 @@
           }
         }
       },
+      "Document": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the document"
+          },
+          "name": {
+            "type": "string",
+            "description": "Document name"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL location of the document"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of document purpose or content"
+          }
+        },
+        "required": ["name", "url"],
+        "example": {
+          "id": "6ba7b810-9dad-11d1-beef-00c04fd430c8",
+          "name": "Example Application Design",
+          "url": "https://example.com/design.pdf",
+          "description": "Technical design document for the Example application"
+        }
+      },
+      "Source": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the source code reference"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name for the source code reference"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the referenced source code"
+          },
+          "type": {
+            "type": "string",
+            "description": "Source code repository type (git, svn, mercurial, other)"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to retrieve the referenced source code"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "repo-specific parameters for retrieving the source",
+            "properties": {
+              "refType": {
+                "type": "string",
+                "description": "Reference type (branch, tag, or commit)"
+              },
+              "refValue": {
+                "type": "string",
+                "description": "Reference value (branch name, tag value, or commit id)"
+              },
+              "subPath": {
+                "type": "string",
+                "description": "Sub-path within the repository"
+              }
+            },
+            "required": ["refType", "refValue"]
+          }
+        },
+        "required": ["id", "url", "parameters"],
+        "example": {
+          "id": "6ba7b810-1dad-11d1-8080-00c04fd430c8",
+          "name": "GitHub Repo",
+          "description": "Technical design document for the Example application",
+          "type": "git",
+          "url": "https://github.com/ericfitz/tmi-ux.git",
+          "parameters": {
+            "refType": "branch",
+            "refValue": "main"
+          }
+        }
+      },
       "Diagram": {
         "type": "object",
         "description": "A diagram object supporting collaborative editing",
@@ -146,14 +234,13 @@
             },
             "description": "List of graph cells"
           },
-          "version": {
-            "type": "number",
-            "description": "Diagram version number"
-          }
+          "version": "string"
         },
         "required": ["id", "name", "created_at", "modified_at"],
         "example": {
           "id": "123e4567-e89b-12d3-a456-426614174000",
+          "type": "DFD",
+          "version": "1.0",
           "name": "Workflow Diagram",
           "description": "A process workflow",
           "created_at": "2025-04-06T12:00:00Z",
@@ -169,7 +256,7 @@
                 "width": 80,
                 "height": 40
               },
-              "vertex": true,
+              "node": true,
               "edge": false,
               "metadata": []
             }
@@ -178,17 +265,17 @@
       },
       "Cell": {
         "type": "object",
-        "required": ["id", "vertex", "edge"],
+        "required": ["id", "node", "edge"],
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique identifier of the cell (vertex or edge).",
+            "description": "Unique identifier of the cell (node or edge).",
             "example": "v1"
           },
           "value": {
             "type": "string",
             "description": "The label or value associated with the cell (optional for edges).",
-            "example": "Vertex 1",
+            "example": "node 1",
             "nullable": true
           },
           "geometry": {
@@ -232,9 +319,9 @@
             "example": "rounded=1;fillColor=#ffffff;",
             "nullable": true
           },
-          "vertex": {
+          "node": {
             "type": "boolean",
-            "description": "Indicates if the cell is a vertex (true) or not (false).",
+            "description": "Indicates if the cell is a node (true) or not (false).",
             "example": true
           },
           "edge": {
@@ -250,13 +337,13 @@
           },
           "source": {
             "type": "string",
-            "description": "ID of the source vertex (for edges); null for vertices.",
+            "description": "ID of the source node (for edges); null for vertices.",
             "nullable": true,
             "example": "v1"
           },
           "target": {
             "type": "string",
-            "description": "ID of the target vertex (for edges); null for vertices.",
+            "description": "ID of the target node (for edges); null for vertices.",
             "nullable": true,
             "example": "v2"
           }
@@ -299,7 +386,7 @@
           },
           "threat_model_framework": {
             "type": "string",
-            "enum": ["STRIDE", "CIA", "LINDDUN", "DIE", "PLOT4ai"],
+            "enum": ["CIA", "STRIDE", "LINDDUN", "DIE", "PLOT4ai"],
             "description": "The framework used for this threat model"
           },
           "issue_url": {
@@ -320,6 +407,20 @@
               "$ref": "#/components/schemas/Metadata"
             },
             "description": "Key-value pairs for additional threat model metadata"
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Document"
+            },
+            "description": "List of documents related to the threat model"
+          },
+          "sourceCode": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "description": "List of source code repositories related to the threat model"
           },
           "diagrams": {
             "type": "array",
@@ -372,6 +473,7 @@
               "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
               "name": "Data Breach",
               "description": "Unauthorized data access",
+              "mitigation": "Recommended: implement least privilege authorization policy",
               "created_at": "2025-04-06T12:01:00Z",
               "modified_at": "2025-04-06T12:01:00Z",
               "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
@@ -408,7 +510,11 @@
           },
           "description": {
             "type": "string",
-            "description": "Description of the threat"
+            "description": "Description of the threat and risk to the organization"
+          },
+          "mitigation": {
+            "type": "string",
+            "description": "Recommended or planned mitigation(s) for the threat"
           },
           "created_at": {
             "type": "string",
