@@ -108,7 +108,9 @@
       "paragraph1-intro": "此应用程序是在杰出开源项目的支持下构建的。我们感谢",
       "paragraph1-outro": "背后的社区，它们提供了出色的工具和资源，为我们的界面和功能注入了生机。",
       "paragraph2-intro": "特别感谢",
-      "paragraph2-outro": "开源项目提供的灵感，帮助塑造了我们构建安全且用户友好的应用程序的愿景和方法。"
+      "paragraph2-outro": "开源项目提供的灵感，帮助塑造了我们构建安全且用户友好的应用程序的愿景和方法。",
+      "paragraph3-intro": "特别感谢",
+      "paragraph3-outro": "开源项目，该项目在整个项目开发过程中被使用。"
     }
   },
   "diagrams": {
@@ -186,12 +188,27 @@
         "deleteSelected": "删除所选",
         "undo": "撤销",
         "redo": "重做",
-        "threats": "威胁",
+        "addThreat": "添加威胁",
         "share": "分享",
         "export": "导出...",
         "close": "关闭"
       }
+    },
+    "nodeLabels": {
+      "actor": "角色",
+      "process": "处理",
+      "store": "数据存储",
+      "securityBoundary": "安全边界",
+      "textbox": "文本",
+      "node": "节点"
     }
+  },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "复制定义到剪贴板",
+    "moveForward": "向前移动",
+    "moveBackward": "向后移动",
+    "moveToFront": "移到最前",
+    "moveToBack": "移到最后"
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",

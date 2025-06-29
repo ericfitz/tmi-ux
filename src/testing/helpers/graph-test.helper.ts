@@ -67,8 +67,9 @@ export function hasConnection(graph: Graph, sourceId: string, targetId: string):
 export function hasNodeWithLabel(graph: Graph, label: string): boolean {
   const nodes = graph.getNodes();
   return nodes.some(node => {
-    const nodeLabel = node.attr('text/text') || node.attr('label/text');
-    return nodeLabel === label;
+    // Use standardized text/text attribute for node labels
+    const nodeLabel = node.attr('text/text');
+    return typeof nodeLabel === 'string' && nodeLabel === label;
   });
 }
 

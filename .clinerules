@@ -48,9 +48,11 @@ This file provides guidance to Roo Code when working with code in this repositor
 
 ## User Preferences
 
-- When starting, read all of the markdown files in the context folder in the root directory to ensure full context is present
-- When the user gives you a task, summarize your understanding of the task and ask for confirmation before proceeding
+- When starting, use the list_files tool to list all of the markdown files in the context directory and read them
 - When making changes to the code:
-  - Always run a build and fix any build errors
+  - Always run lint with "pnpm run lint:all" and fix any lint errors related to changes you made
+  - Always run a build with "pnpm run build" and fix any build errors
+  - Never complete a task if there are any remaining build errors
   - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
-- Never complete a task if there are any remaining build errors
+- Always stop and prompt the user before running the application. The user usually already has an instance of the application running on http://localhost:4200
+- When fixing lint errors about unused items, remove the unused item rather than prefixing with an underscore, unless the item is commented as a placeholder for future functionality

@@ -53,7 +53,7 @@
       <button
         mat-icon-button
         color="basic"
-        (click)="addRandomNode('securityBoundary')"
+        (click)="addRandomNode('security-boundary')"
         [matTooltip]="'editor.toolbar.tooltips.addSecurityBoundary' | transloco"
       >
         <mat-icon fontSet="material-symbols-outlined">select</mat-icon>
@@ -110,9 +110,9 @@
 
       <button
         mat-icon-button
-        [disabled]="!threatModelId"
+        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox"
         (click)="openThreatEditor()"
-        [matTooltip]="'editor.toolbar.tooltips.threats' | transloco"
+        [matTooltip]="'editor.toolbar.tooltips.addThreat' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"
@@ -181,9 +181,26 @@
       ></button>
     </div>
     <mat-menu #cellContextMenu="matMenu">
-      <button mat-menu-item (click)="copyCellJson()">
+      <button mat-menu-item (click)="copyCellDefinition()">
         <mat-icon>content_copy</mat-icon>
-        <span>Copy JSON</span>
+        <span>{{ 'contextMenu.copyDefinitionToClipboard' | transloco }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="moveForward()">
+        <mat-icon>flip_to_front</mat-icon>
+        <span>{{ 'contextMenu.moveForward' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="moveBackward()">
+        <mat-icon>flip_to_back</mat-icon>
+        <span>{{ 'contextMenu.moveBackward' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="moveToFront()">
+        <mat-icon>vertical_align_top</mat-icon>
+        <span>{{ 'contextMenu.moveToFront' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="moveToBack()">
+        <mat-icon>vertical_align_bottom</mat-icon>
+        <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
       </button>
     </mat-menu>
   </div>

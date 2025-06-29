@@ -109,7 +109,9 @@
       "paragraph1-intro": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind ",
       "paragraph1-outro": " for their outstanding tools and resources that bring our interface and functionality to life.",
       "paragraph2-intro": "A special thanks goes to the ",
-      "paragraph2-outro": " open-source project for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application."
+      "paragraph2-outro": " open-source project for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application.",
+      "paragraph3-intro": "Special thanks also goes to the ",
+      "paragraph3-outro": " open-source project that was used throughout the development of this project."
     }
   },
   "diagrams": {
@@ -217,16 +219,31 @@
         "addProcess": "Add Process",
         "addStore": "Add Store",
         "addSecurityBoundary": "Add Security Boundary",
-        "addTextbox": "Add Textbox",
+        "addTextbox": "Add Text Box",
         "deleteSelected": "Delete Selected",
         "undo": "Undo",
         "redo": "Redo",
-        "threats": "Threats",
+        "addThreat": "Add Threat",
         "share": "Share",
         "export": "Export...",
         "close": "Close"
       }
+    },
+    "nodeLabels": {
+      "actor": "Actor",
+      "process": "Process",
+      "store": "Data Store",
+      "securityBoundary": "Security Boundary",
+      "textbox": "Text",
+      "node": "Node"
     }
+  },
+  "contextMenu": {
+    "copyDefinitionToClipboard": "Copy definition to clipboard",
+    "moveForward": "Move forward",
+    "moveBackward": "Move backward",
+    "moveToFront": "Move to front",
+    "moveToBack": "Move to back"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",

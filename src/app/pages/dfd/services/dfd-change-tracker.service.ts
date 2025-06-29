@@ -3,8 +3,6 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
-import { DfdEventBusService, DfdEventType } from './dfd-event-bus.service';
-import { NodeData } from '../models/node-data.interface';
 
 /**
  * Origin of a change - local or remote
@@ -120,53 +118,21 @@ export type SyncChangeEvent =
   providedIn: 'root',
 })
 export class DfdChangeTrackerService {
-  // Explicitly use NodeData type to avoid unused import warning
-  private _nodeDataType: NodeData | null = null;
   private _changes = new Subject<SyncChangeEvent>();
   private _previousNodeStates = new Map<string, Node.Properties>();
   private _previousEdgeStates = new Map<string, Edge.Properties>();
 
-  constructor(
-    private logger: LoggerService,
-    private eventBus: DfdEventBusService,
-  ) {
+  constructor(private logger: LoggerService) {
     this.logger.info('DfdChangeTrackerService initialized');
-    this.subscribeToEvents();
+    // TODO: Subscribe to events when DfdEventBusService is implemented
   }
 
   /**
    * Subscribe to DFD events and track changes
+   * TODO: Implement when DfdEventBusService is available
    */
   private subscribeToEvents(): void {
-    // Subscribe to graph changes
-    this.eventBus.onEventType(DfdEventType.GraphChanged).subscribe(event => {
-      if ('added' in event && event.added && event.added.length > 0) {
-        this.handleAddedCells(event.added);
-      }
-
-      if ('removed' in event && event.removed && event.removed.length > 0) {
-        this.handleRemovedCells(event.removed);
-      }
-
-      // Track changes to existing cells
-      if ('cells' in event && event.cells) {
-        this.trackCellChanges(event.cells);
-      }
-    });
-
-    // Subscribe to node moved events
-    this.eventBus.onEventType(DfdEventType.NodeMoved).subscribe(event => {
-      if ('node' in event && event.node) {
-        this.trackNodeMove(event.node);
-      }
-    });
-
-    // Subscribe to node resized events
-    this.eventBus.onEventType(DfdEventType.NodeResized).subscribe(event => {
-      if ('node' in event && event.node) {
-        this.trackNodeResize(event.node);
-      }
-    });
+    // Implementation pending DfdEventBusService
   }
 
   /**
@@ -235,7 +201,7 @@ export class DfdChangeTrackerService {
         nodeType: this.getNodeDataProperty<string>(node, 'type') || 'unknown',
         position: node.getPosition(),
         size: node.getSize(),
-        label: this.getNodeDataProperty<string>(node, 'label'),
+        label: this.getNodeLabel(node),
         attrs: node.getAttrs(),
       },
     };
@@ -290,7 +256,7 @@ export class DfdChangeTrackerService {
           port: edge.getTargetPortId(),
         },
         vertices: edge.getVertices(),
-        label: edge.attr('label/text'),
+        label: this.getEdgeLabel(edge),
       },
     };
 
@@ -539,9 +505,9 @@ export class DfdChangeTrackerService {
       changes.size = current.size;
     }
 
-    // Check label
-    const previousLabel = (previous.data as { label?: string })?.label;
-    const currentLabel = (current.data as { label?: string })?.label;
+    // Check label - use standardized text/text attribute
+    const previousLabel = this.getNodeLabelFromAttrs(previous.attrs);
+    const currentLabel = this.getNodeLabelFromAttrs(current.attrs);
     if (previousLabel !== currentLabel) {
       changes.label = currentLabel;
     }
@@ -626,19 +592,11 @@ export class DfdChangeTrackerService {
       }
     }
 
-    // Check label
-    const previousLabel = previous.attrs?.['label/text'];
-    const currentLabel = current.attrs?.['label/text'];
+    // Check label - for edges, check the first label's text
+    const previousLabel = this.getEdgeLabelFromAttrs(previous.attrs);
+    const currentLabel = this.getEdgeLabelFromAttrs(current.attrs);
     if (previousLabel !== currentLabel) {
-      // Only use the label if it's a string or can be safely converted to one
-      if (typeof currentLabel === 'string') {
-        changes.label = currentLabel;
-      } else if (typeof currentLabel === 'number' || typeof currentLabel === 'boolean') {
-        changes.label = String(currentLabel);
-      } else {
-        // If it's an object or something else, use an empty string
-        changes.label = '';
-      }
+      changes.label = currentLabel;
     }
 
     return changes;
@@ -717,5 +675,49 @@ export class DfdChangeTrackerService {
    */
   publishChange(event: SyncChangeEvent): void {
     this._changes.next(event);
+  }
+
+  /**
+   * Get standardized node label from node
+   */
+  private getNodeLabel(node: Node): string {
+    const textAttr = node.attr('text/text');
+    return typeof textAttr === 'string' ? textAttr : '';
+  }
+
+  /**
+   * Get standardized edge label from edge
+   */
+  private getEdgeLabel(edge: Edge): string {
+    const labels = edge.getLabels();
+    if (labels.length > 0 && labels[0].attrs && labels[0].attrs['text']) {
+      const textAttr = labels[0].attrs['text'] as Record<string, unknown>;
+      const textValue = textAttr['text'];
+      return typeof textValue === 'string' ? textValue : '';
+    }
+    return '';
+  }
+
+  /**
+   * Get node label from attrs object
+   */
+  private getNodeLabelFromAttrs(attrs: Record<string, unknown> | undefined): string {
+    if (!attrs || !attrs['text']) return '';
+    const textAttr = attrs['text'] as Record<string, unknown>;
+    const textValue = textAttr['text'];
+    return typeof textValue === 'string' ? textValue : '';
+  }
+
+  /**
+   * Get edge label from attrs object (for edge properties)
+   */
+  private getEdgeLabelFromAttrs(attrs: Record<string, unknown> | undefined): string {
+    // For edges, we need to check the labels array structure
+    // This is a simplified approach - in practice, edge labels are more complex
+    if (!attrs) return '';
+
+    // Try to find label text in various possible locations
+    const labelText = attrs['label/text'] || attrs['text/text'];
+    return typeof labelText === 'string' ? labelText : '';
   }
 }

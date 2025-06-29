@@ -17,6 +17,14 @@ export interface Environment {
   logLevel: string;
 
   /**
+   * Component-specific debug logging configuration
+   * Allows enabling debug logging for specific components while keeping others at higher levels
+   * Example: ['DFD', 'AUTH'] to enable debug logging only for DFD and authentication components
+   * Default: [] (no component-specific debug logging)
+   */
+  debugComponents?: string[];
+
+  /**
    * Base URL for API requests
    * Default: 'https://api.example.com/v1'
    */

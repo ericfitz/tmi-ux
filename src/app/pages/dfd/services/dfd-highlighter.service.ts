@@ -18,7 +18,7 @@ export class DfdHighlighterService {
       args: {
         attrs: {
           fill: '#fff',
-          stroke: '#47C769',
+          stroke: '#31d0c6',
         },
       },
     };

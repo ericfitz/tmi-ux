@@ -8,7 +8,7 @@ import { Graph, Node } from '@antv/x6';
 interface ChaiStatic {
   Assertion: {
     // We need to use any here for the Chai API to work correctly
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     addMethod: (name: string, fn: (this: ChaiAssertionThis, ...args: any[]) => void) => void;
   };
 }
@@ -105,8 +105,9 @@ export const graphMatchers: ChaiPlugin = (chai, _utils) => {
     const graph = this._obj;
     const nodes = graph.getNodes();
     const hasNodeWithLabel = nodes.some(node => {
-      const nodeLabel = node.attr('text/text') || node.attr('label/text');
-      return nodeLabel === label;
+      // Use standardized text/text attribute for node labels
+      const nodeLabel = node.attr('text/text');
+      return typeof nodeLabel === 'string' && nodeLabel === label;
     });
 
     this.assert(

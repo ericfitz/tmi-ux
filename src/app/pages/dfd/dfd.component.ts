@@ -14,18 +14,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { Node, Cell } from '@antv/x6';
+import { Node, Cell, Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
-import { DfdService, ExportFormat } from './services/dfd.service';
-import { ShapeType } from './services/dfd-node.service';
-import { DfdEventBusService, DfdEventType } from './services/dfd-event-bus.service';
-import { DfdStateStore } from './state/dfd.state';
-import { DfdCommandService } from './services/dfd-command.service';
+import { NodeType } from './domain/value-objects/node-data';
+import { DfdApplicationService } from './application/services/dfd-application.service';
+import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
+import { PerformanceTestingService } from './infrastructure/services/performance-testing.service';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import {
@@ -33,6 +32,39 @@ import {
   ThreatEditorDialogData,
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { v4 as uuidv4 } from 'uuid';
+import { CommandBusService } from './application/services/command-bus.service';
+import { HistoryService } from './application/services/history.service';
+import { DiagramCommandFactory } from './domain/commands/diagram-commands';
+import { NodeData } from './domain/value-objects/node-data';
+import { EdgeData } from './domain/value-objects/edge-data';
+import { Point } from './domain/value-objects/point';
+import { DiagramNode } from './domain/value-objects/diagram-node';
+
+// Import providers needed for standalone component
+import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
+import {
+  CommandValidationMiddleware,
+  CommandLoggingMiddleware,
+  CommandSerializationMiddleware,
+} from './application/services/command-bus.service';
+import {
+  DIAGRAM_REPOSITORY_TOKEN,
+  CreateDiagramCommandHandler,
+  AddNodeCommandHandler,
+  UpdateNodePositionCommandHandler,
+  UpdateNodeDataCommandHandler,
+  RemoveNodeCommandHandler,
+  AddEdgeCommandHandler,
+  UpdateEdgeDataCommandHandler,
+  RemoveEdgeCommandHandler,
+  UpdateDiagramMetadataCommandHandler,
+} from './application/handlers/diagram-command-handlers';
+import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
+import { InverseCommandFactory } from './domain/commands/inverse-command-factory';
+import { OperationStateTracker } from './infrastructure/services/operation-state-tracker.service';
+import { HistoryMiddleware } from './application/middleware/history.middleware';
+
+type ExportFormat = 'png' | 'jpeg' | 'svg';
 
 @Component({
   selector: 'app-dfd',
@@ -44,6 +76,52 @@ import { v4 as uuidv4 } from 'uuid';
     MatTooltipModule,
     TranslocoModule,
     DfdCollaborationComponent,
+  ],
+  providers: [
+    // Command Bus and middleware
+    CommandBusService,
+    CommandValidationMiddleware,
+    CommandLoggingMiddleware,
+    CommandSerializationMiddleware,
+    HistoryMiddleware,
+
+    // Repository implementation
+    {
+      provide: DIAGRAM_REPOSITORY_TOKEN,
+      useClass: InMemoryDiagramRepository,
+    },
+
+    // Command Handlers
+    CreateDiagramCommandHandler,
+    AddNodeCommandHandler,
+    UpdateNodePositionCommandHandler,
+    UpdateNodeDataCommandHandler,
+    RemoveNodeCommandHandler,
+    AddEdgeCommandHandler,
+    UpdateEdgeDataCommandHandler,
+    RemoveEdgeCommandHandler,
+    UpdateDiagramMetadataCommandHandler,
+
+    // CommandBus initializer
+    CommandBusInitializerService,
+
+    // Infrastructure adapters
+    X6GraphAdapter,
+
+    // Application services
+    DfdApplicationService,
+
+    // Performance testing
+    PerformanceTestingService,
+
+    // History services
+    {
+      provide: 'ICommandBus',
+      useExisting: CommandBusService,
+    },
+    HistoryService,
+    InverseCommandFactory,
+    OperationStateTracker,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -57,6 +135,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
   private _rightClickedCell: Cell | null = null;
+  private _selectedCells$ = new BehaviorSubject<Cell[]>([]);
+  private _isInitialized = false;
 
   // Context menu position
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -72,20 +152,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   canUndo = false;
   canRedo = false;
   hasSelectedCells = false;
+  hasExactlyOneSelectedCell = false;
+  selectedCellIsTextBox = false;
 
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
-    private dfdService: DfdService,
-    private eventBus: DfdEventBusService,
-    private stateStore: DfdStateStore,
-    private commandService: DfdCommandService,
+    private dfdApplicationService: DfdApplicationService,
+    private x6GraphAdapter: X6GraphAdapter,
+    private commandBus: CommandBusService,
+    private historyService: HistoryService,
+    private performanceTestingService: PerformanceTestingService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
+    private commandBusInitializer: CommandBusInitializerService,
+    private transloco: TranslocoService,
   ) {
     this.logger.info('DfdComponent constructor called');
+
+    // Initialize command bus immediately in constructor
+    this.logger.info('Initializing command bus in constructor');
+    this.commandBusInitializer.initialize();
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -105,16 +194,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
-    // Subscribe to state changes
+    // Subscribe to history service observables
     this._subscriptions.add(
-      this.stateStore.canUndo$.subscribe(canUndo => {
+      this.historyService.canUndo$.subscribe(canUndo => {
         this.canUndo = canUndo;
         this.cdr.markForCheck();
       }),
     );
 
     this._subscriptions.add(
-      this.stateStore.canRedo$.subscribe(canRedo => {
+      this.historyService.canRedo$.subscribe(canRedo => {
         this.canRedo = canRedo;
         this.cdr.markForCheck();
       }),
@@ -122,29 +211,52 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to selection state changes
     this._subscriptions.add(
-      this.stateStore.selectedNode$.subscribe(selectedNode => {
-        this.hasSelectedCells = !!selectedNode;
+      this._selectedCells$.subscribe(selectedCells => {
+        this.hasSelectedCells = selectedCells.length > 0;
+        this.hasExactlyOneSelectedCell = selectedCells.length === 1;
+        this.selectedCellIsTextBox = selectedCells.some(
+          cell => (cell.data as { type?: string })?.type === 'textbox',
+        );
         this.cdr.markForCheck();
       }),
     );
 
-    // Subscribe to cell context menu events
+    // Subscribe to graph adapter events
     this._subscriptions.add(
-      this.eventBus.onEventType(DfdEventType.CellContextMenu).subscribe(event => {
-        if ('cell' in event && 'event' in event) {
-          this.openCellContextMenu(event.cell, event.event);
-        }
+      this.x6GraphAdapter.selectionChanged$.subscribe(() => {
+        // Get selected cells directly from the adapter
+        const selectedCells = this.x6GraphAdapter.getSelectedCells();
+        this._selectedCells$.next(selectedCells);
+      }),
+    );
+
+    // Subscribe to edge creation events
+    this._subscriptions.add(
+      this.x6GraphAdapter.edgeAdded$.subscribe(edge => {
+        this.handleEdgeAdded(edge);
+      }),
+    );
+
+    // Subscribe to edge vertices changes
+    this._subscriptions.add(
+      this.x6GraphAdapter.edgeVerticesChanged$.subscribe(({ edgeId, vertices }) => {
+        this.handleEdgeVerticesChanged(edgeId, vertices);
+      }),
+    );
+
+    // Subscribe to context menu events
+    this._subscriptions.add(
+      this.x6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }) => {
+        this.openCellContextMenu(cell, x, y);
       }),
     );
   }
 
   /**
    * Loads the diagram data for the given diagram ID
-   * @param diagramId The ID of the diagram to load
    */
   private loadDiagramData(diagramId: string): void {
     // In a real implementation, this would use a dedicated diagram service
-    // For now, we'll use the DIAGRAMS_BY_ID map from the diagram model
     void import('../../pages/tm/models/diagram.model').then(module => {
       const diagram = module.DIAGRAMS_BY_ID.get(diagramId);
       if (diagram) {
@@ -152,7 +264,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.info('Loaded diagram data', { name: this.diagramName, id: diagramId });
         this.cdr.markForCheck();
       } else {
-        this.logger.warn('Diagram not found', { id: diagramId });
+        this.logger.warn('Diagram not found, redirecting to threat model page', { id: diagramId });
+        // Redirect to threat model page if diagram doesn't exist
+        if (this.threatModelId) {
+          void this.router.navigate(['/tm', this.threatModelId]);
+        } else {
+          void this.router.navigate(['/tm']);
+        }
       }
     });
   }
@@ -185,11 +303,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
-    // Dispose the DFD service
-    this.dfdService.dispose();
-
-    // Reset the state store
-    this.stateStore.resetState();
+    // Dispose the graph adapter
+    this.x6GraphAdapter.dispose();
   }
 
   /**
@@ -203,7 +318,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this._resizeTimeout = window.setTimeout(() => {
-      if (this.dfdService.graph) {
+      const graph = this.x6GraphAdapter.getGraph();
+      if (graph) {
         const container = this.graphContainer.nativeElement as HTMLElement;
         const width = container.clientWidth;
         const height = container.clientHeight;
@@ -211,11 +327,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.info('Resizing graph due to window resize', { width, height });
 
         // Force the graph to resize with explicit dimensions
-        this.dfdService.graph.resize(width, height);
+        graph.resize(width, height);
 
         // Update the graph's container size
-        this.dfdService.graph.container.style.width = `${width}px`;
-        this.dfdService.graph.container.style.height = `${height}px`;
+        graph.container.style.width = `${width}px`;
+        graph.container.style.height = `${height}px`;
 
         this._resizeTimeout = null;
       }
@@ -223,31 +339,127 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Method to add a node at a random position
-   * @param shapeType The type of shape to create
+   * Handle keyboard events for delete functionality and undo/redo
    */
-  addRandomNode(shapeType: ShapeType = 'actor'): void {
-    if (!this.stateStore.isInitialized) {
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    // Only handle keys if the graph container has focus or if no input elements are focused
+    const activeElement = document.activeElement;
+    const isInputFocused =
+      activeElement &&
+      (activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        (activeElement as HTMLElement).contentEditable === 'true');
+
+    if (!isInputFocused) {
+      // Handle delete/backspace
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.preventDefault();
+        this.deleteSelected();
+        return;
+      }
+
+      // Handle undo/redo shortcuts
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === 'z' && !event.shiftKey) {
+          // Ctrl+Z or Cmd+Z for undo
+          event.preventDefault();
+          this.undo();
+          return;
+        }
+
+        if (event.key === 'y' || (event.key === 'z' && event.shiftKey)) {
+          // Ctrl+Y or Cmd+Y or Ctrl+Shift+Z or Cmd+Shift+Z for redo
+          event.preventDefault();
+          this.redo();
+          return;
+        }
+      }
+    }
+  }
+
+  /**
+   * Method to add a node at a random position
+   */
+  addRandomNode(shapeType: NodeType = 'actor'): void {
+    if (!this._isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
     }
 
-    // Use command service to create node with command pattern
-    this.commandService
-      .createRandomNode(shapeType, this.graphContainer.nativeElement as HTMLElement)
+    const container = this.graphContainer.nativeElement as HTMLElement;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Calculate a random position with some padding
+    const padding = 100;
+    const x = Math.floor(Math.random() * (width - 2 * padding)) + padding;
+    const y = Math.floor(Math.random() * (height - 2 * padding)) + padding;
+
+    this.createNode(shapeType, { x, y });
+  }
+
+  /**
+   * Create a node with the specified type and position
+   */
+  private createNode(shapeType: NodeType, position: { x: number; y: number }): void {
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+    const nodeId = uuidv4(); // Generate UUID type 4 for UX-created nodes
+
+    const nodeData = new NodeData(
+      nodeId,
+      shapeType,
+      this.getDefaultLabelForType(shapeType),
+      new Point(position.x, position.y),
+      120, // default width
+      80, // default height
+      {}, // empty metadata
+    );
+
+    const command = DiagramCommandFactory.addNode(
+      diagramId,
+      userId,
+      nodeId,
+      new Point(position.x, position.y),
+      nodeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
       .pipe(take(1))
-      .subscribe(result => {
-        if (result.success) {
-          this.logger.info('Node created successfully', {
-            nodeId: result.data?.id,
-            shapeType,
-          });
-          // Force change detection
+      .subscribe({
+        next: () => {
+          this.logger.info('Node created successfully', { nodeId, shapeType });
+          // Add the node to the visual graph
+          const diagramNode = new DiagramNode(nodeData);
+          this.x6GraphAdapter.addNode(diagramNode);
           this.cdr.detectChanges();
-        } else {
-          this.logger.error('Failed to create node', result.error);
-        }
+        },
+        error: error => {
+          this.logger.error('Error creating node', error);
+        },
       });
+  }
+
+  /**
+   * Get default label for a shape type
+   */
+  private getDefaultLabelForType(shapeType: NodeType): string {
+    switch (shapeType) {
+      case 'actor':
+        return this.transloco.translate('editor.nodeLabels.actor');
+      case 'process':
+        return this.transloco.translate('editor.nodeLabels.process');
+      case 'store':
+        return this.transloco.translate('editor.nodeLabels.store');
+      case 'security-boundary':
+        return this.transloco.translate('editor.nodeLabels.securityBoundary');
+      case 'textbox':
+        return this.transloco.translate('editor.nodeLabels.textbox');
+      default:
+        return this.transloco.translate('editor.nodeLabels.node');
+    }
   }
 
   /**
@@ -257,42 +469,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('DfdComponent initializeGraph called');
 
     try {
-      // Initialize the graph
-      const success = this.dfdService.initialize(this.graphContainer.nativeElement as HTMLElement);
+      // Initialize the graph using X6GraphAdapter
+      this.x6GraphAdapter.initialize(this.graphContainer.nativeElement as HTMLElement);
+      this._isInitialized = true;
 
-      if (success) {
-        // Trigger an initial resize to ensure the graph fits the container
-        setTimeout(() => {
-          if (this.dfdService.graph) {
-            const container = this.graphContainer.nativeElement as HTMLElement;
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            this.dfdService.graph.resize(width, height);
-            this.logger.info('Initial graph resize', { width, height });
-          }
-        }, 0);
-        // Set up observation for DOM changes to add passive event listeners
-        this.setupDomObservation();
+      // Trigger an initial resize to ensure the graph fits the container
+      setTimeout(() => {
+        const graph = this.x6GraphAdapter.getGraph();
+        if (graph) {
+          const container = this.graphContainer.nativeElement as HTMLElement;
+          const width = container.clientWidth;
+          const height = container.clientHeight;
+          graph.resize(width, height);
+          this.logger.info('Initial graph resize', { width, height });
+        }
+      }, 0);
 
-        // Add passive event listeners for touch and wheel events
-        this.dfdService.addPassiveEventListeners(this.graphContainer.nativeElement as HTMLElement);
+      // Set up observation for DOM changes to add passive event listeners
+      this.setupDomObservation();
 
-        // Set up port tooltips
-        this.setupPortTooltips();
+      // Set up port tooltips
+      this.setupPortTooltips();
 
-        // Update the state store with the initialized graph
-        this.stateStore.updateState(
-          {
-            isInitialized: true,
-            graph: this.dfdService.graph,
-          },
-          'DfdComponent.initializeGraph',
-        );
-
-        this.logger.info('Graph initialization complete');
-      } else {
-        this.logger.error('Failed to initialize graph');
-      }
+      this.logger.info('Graph initialization complete');
 
       // Force change detection after initialization
       this.cdr.detectChanges();
@@ -352,7 +551,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Set up tooltips for ports
    */
   private setupPortTooltips(): void {
-    const graph = this.dfdService.graph;
+    const graph = this.x6GraphAdapter.getGraph();
     if (!graph) {
       return;
     }
@@ -372,12 +571,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         // Get the port label
-        // Get port details from the node - define a structured port object type
         type PortObject = {
           id?: string;
           attrs?: Record<string, { text?: string }>;
         };
-        // Cast node to any and then to PortObject to avoid TypeScript errors with the X6 library
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
         if (!portObj) {
@@ -419,15 +616,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Undo the last action
    */
   undo(): void {
-    this.commandService
+    if (!this.canUndo) {
+      this.logger.debug('Undo requested but no operations available to undo');
+      return;
+    }
+
+    this.logger.info('Executing undo operation');
+
+    this.historyService
       .undo()
-      .pipe(take(1))
-      .subscribe(result => {
-        if (result.success) {
-          this.logger.info('Undo successful');
+      .then(success => {
+        if (success) {
+          this.logger.info('Undo operation completed successfully');
+          this.cdr.markForCheck();
         } else {
-          this.logger.warn('Undo failed', result.error);
+          this.logger.warn('Undo operation failed');
         }
+      })
+      .catch(error => {
+        this.logger.error('Undo operation failed with error', error);
       });
   }
 
@@ -435,70 +642,208 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Redo the last undone action
    */
   redo(): void {
-    this.commandService
+    if (!this.canRedo) {
+      this.logger.debug('Redo requested but no operations available to redo');
+      return;
+    }
+
+    this.logger.info('Executing redo operation');
+
+    this.historyService
       .redo()
-      .pipe(take(1))
-      .subscribe(result => {
-        if (result.success) {
-          this.logger.info('Redo successful');
+      .then(success => {
+        if (success) {
+          this.logger.info('Redo operation completed successfully');
+          this.cdr.markForCheck();
         } else {
-          this.logger.warn('Redo failed', result.error);
+          this.logger.warn('Redo operation failed');
         }
+      })
+      .catch(error => {
+        this.logger.error('Redo operation failed with error', error);
       });
   }
 
   /**
    * Export the diagram to the specified format
-   * @param format The format to export to (png, jpeg, svg)
    */
   exportDiagram(format: ExportFormat): void {
-    this.dfdService.exportDiagram(format);
+    const graph = this.x6GraphAdapter.getGraph();
+    if (!graph) {
+      this.logger.warn('Cannot export - graph not initialized');
+      return;
+    }
+
+    this.logger.info('Exporting diagram', { format });
+
+    try {
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `dfd-diagram-${timestamp}.${format}`;
+
+      // Default callback for handling exported data
+      const handleExport = (blob: Blob, name: string): void => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      // Cast graph to access export methods added by the plugin
+      const exportGraph = graph as {
+        toSVG: (callback: (svgString: string) => void) => void;
+        toPNG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
+        toJPEG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
+      };
+
+      if (format === 'svg') {
+        exportGraph.toSVG((svgString: string) => {
+          const blob = new Blob([svgString], { type: 'image/svg+xml' });
+          handleExport(blob, filename);
+          this.logger.info('SVG export completed', { filename });
+        });
+      } else {
+        const exportOptions = {
+          backgroundColor: 'white',
+          padding: 20,
+          quality: format === 'jpeg' ? 0.8 : 1,
+        };
+
+        if (format === 'png') {
+          exportGraph.toPNG((dataUri: string) => {
+            const blob = this.dataUriToBlob(dataUri, 'image/png');
+            handleExport(blob, filename);
+            this.logger.info('PNG export completed', { filename });
+          }, exportOptions);
+        } else {
+          exportGraph.toJPEG((dataUri: string) => {
+            const blob = this.dataUriToBlob(dataUri, 'image/jpeg');
+            handleExport(blob, filename);
+            this.logger.info('JPEG export completed', { filename });
+          }, exportOptions);
+        }
+      }
+    } catch (error) {
+      this.logger.error('Error exporting diagram', error);
+    }
+  }
+
+  /**
+   * Convert data URI to Blob
+   */
+  private dataUriToBlob(dataUri: string, mimeType: string): Blob {
+    const byteString = atob(dataUri.split(',')[1]);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([arrayBuffer], { type: mimeType });
   }
 
   /**
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    if (!this.stateStore.isInitialized) {
+    if (!this._isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;
     }
 
-    const selectedNode = this.stateStore.selectedNode;
-    if (selectedNode) {
-      this.logger.info('Deleting selected node', { nodeId: selectedNode.id });
-      // Use command service to delete node with command pattern
-      this.commandService
-        .deleteNode(selectedNode.id)
-        .pipe(take(1))
-        .subscribe(result => {
-          if (result.success) {
-            this.logger.info('Node deleted successfully', { nodeId: selectedNode.id });
-            // Selection is updated in the command service already
-            this.cdr.markForCheck();
-          } else {
-            this.logger.error('Failed to delete node', result.error);
-          }
-        });
+    const selectedCells = this._selectedCells$.value;
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for deletion');
+      return;
     }
+
+    this.logger.info('Deleting selected cells', {
+      count: selectedCells.length,
+      cellIds: selectedCells.map(cell => cell.id),
+    });
+
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    // Separate nodes and edges for different command handling
+    const selectedNodes = selectedCells.filter(cell => cell.isNode());
+    const selectedEdges = selectedCells.filter(cell => cell.isEdge());
+
+    // Delete nodes first (this will also remove connected edges automatically)
+    selectedNodes.forEach(node => {
+      const command = DiagramCommandFactory.removeNode(diagramId, userId, node.id);
+
+      this.commandBus
+        .execute<void>(command)
+        .pipe(take(1))
+        .subscribe({
+          next: () => {
+            this.logger.info('Node deleted successfully', { nodeId: node.id });
+            // Remove from visual graph
+            this.x6GraphAdapter.removeNode(node.id);
+          },
+          error: error => {
+            this.logger.error('Error deleting node', error);
+          },
+        });
+    });
+
+    // Delete standalone edges (edges not connected to deleted nodes)
+    selectedEdges.forEach(edge => {
+      const sourceNodeId = edge.getSourceCellId();
+      const targetNodeId = edge.getTargetCellId();
+
+      // Check if this edge is connected to any of the nodes being deleted
+      const isConnectedToDeletedNode = selectedNodes.some(
+        node => node.id === sourceNodeId || node.id === targetNodeId,
+      );
+
+      // Only delete the edge if it's not connected to a node being deleted
+      // (since deleting the node will automatically delete connected edges)
+      if (!isConnectedToDeletedNode) {
+        const command = DiagramCommandFactory.removeEdge(diagramId, userId, edge.id);
+
+        this.commandBus
+          .execute<void>(command)
+          .pipe(take(1))
+          .subscribe({
+            next: () => {
+              this.logger.info('Edge deleted successfully', { edgeId: edge.id });
+              // Remove from visual graph
+              this.x6GraphAdapter.removeEdge(edge.id);
+            },
+            error: error => {
+              this.logger.error('Error deleting edge', error);
+            },
+          });
+      }
+    });
+
+    // Clear selection after deletion
+    const graph = this.x6GraphAdapter.getGraph();
+    if (graph && typeof graph.cleanSelection === 'function') {
+      graph.cleanSelection();
+    }
+
+    this.cdr.markForCheck();
   }
 
   /**
    * Opens the context menu for a cell at the specified position
-   * @param cell The cell to open the context menu for
-   * @param event The mouse event that triggered the context menu
    */
-  openCellContextMenu(cell: Cell, event: MouseEvent): void {
-    // Prevent the default context menu
-    event.preventDefault();
-
+  openCellContextMenu(cell: Cell, x: number, y: number): void {
     // Store the right-clicked cell
     this._rightClickedCell = cell;
 
     // Set the position of the context menu
     this.contextMenuPosition = {
-      x: `${event.clientX}px`,
-      y: `${event.clientY}px`,
+      x: `${x}px`,
+      y: `${y}px`,
     };
 
     // Force change detection to update the position
@@ -511,33 +856,73 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Copies the JSON representation of the right-clicked cell to the clipboard
+   * Copies the complete definition of the right-clicked cell to the clipboard
    */
-  copyCellJson(): void {
+  copyCellDefinition(): void {
     if (!this._rightClickedCell) {
-      this.logger.warn('No cell selected for copying JSON');
+      this.logger.warn('No cell selected for copying definition');
       return;
     }
 
     try {
-      // Get the cell data
-      const cellData = this._rightClickedCell.toJSON();
+      // Get the complete cell state including all properties
+      const cellDefinition = this._rightClickedCell.toJSON();
 
-      // Convert to JSON string with pretty formatting
-      const jsonString = JSON.stringify(cellData, null, 2);
+      // Convert to formatted JSON string
+      const jsonString = JSON.stringify(cellDefinition, null, 2);
 
       // Copy to clipboard
       navigator.clipboard
         .writeText(jsonString)
         .then(() => {
-          this.logger.info('Cell JSON copied to clipboard', { cellId: this._rightClickedCell?.id });
+          this.logger.info('Cell definition copied to clipboard', {
+            cellId: this._rightClickedCell?.id,
+          });
         })
         .catch(error => {
-          this.logger.error('Failed to copy cell JSON to clipboard', error);
+          this.logger.error('Failed to copy cell definition to clipboard', error);
+          // Fallback for older browsers
+          this._fallbackCopyToClipboard(jsonString);
         });
     } catch (error) {
-      this.logger.error('Error serializing cell to JSON', error);
+      this.logger.error('Error serializing cell definition', error);
     }
+  }
+
+  /**
+   * Fallback method to copy text to clipboard for older browsers
+   */
+  private _fallbackCopyToClipboard(text: string): void {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      // Use the Clipboard API if available as a fallback
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        void navigator.clipboard.writeText(text).then(
+          () => {
+            this.logger.info('Text copied to clipboard (Clipboard API fallback)');
+          },
+          (err: unknown) => {
+            this.logger.error('Clipboard API fallback failed', err);
+          },
+        );
+      } else {
+        // Last resort: show the text in an alert so user can manually copy
+        this.logger.warn('No clipboard API available, showing text for manual copy');
+        alert('Please manually copy this text:\n\n' + text);
+      }
+    } catch (error) {
+      this.logger.error('Fallback copy to clipboard failed', error);
+    }
+
+    document.body.removeChild(textArea);
   }
 
   /**
@@ -559,12 +944,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           return;
         }
 
-        // We've already checked that threatModelId is not null above
         const dialogData: ThreatEditorDialogData = {
           threatModelId: this.threatModelId as string,
           mode: 'create',
           diagramId: this.dfdId || '',
-          cellId: this.stateStore.selectedNode?.id || '',
+          cellId: this._selectedCells$.value[0]?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -578,7 +962,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             if (result && threatModel) {
               const now = new Date().toISOString();
 
-              // Type the result to avoid unsafe assignments
               interface ThreatFormResult {
                 name: string;
                 description: string;
@@ -601,11 +984,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 description: formResult.description,
                 created_at: now,
                 modified_at: now,
-                // Add required fields for the updated Threat interface
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
                 diagram_id: formResult.diagram_id || this.dfdId || '',
-                cell_id: formResult.cell_id || this.stateStore.selectedNode?.id || '',
+                cell_id: formResult.cell_id || this._selectedCells$.value[0]?.id || '',
                 score: formResult.score || 10.0,
                 priority: formResult.priority || 'High',
                 issue_url: formResult.issue_url || 'n/a',
@@ -645,5 +1027,313 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Fallback to the threat models list if no threat model ID is available
       void this.router.navigate(['/tm']);
     }
+  }
+
+  /**
+   * Handle edge added events from the graph adapter
+   */
+  private handleEdgeAdded(edge: Edge): void {
+    if (!this._isInitialized) {
+      this.logger.warn('Cannot handle edge added: Graph is not initialized');
+      return;
+    }
+
+    // Check if this edge was created by user interaction (drag-connect)
+    // We can identify this by checking if the edge has source and target nodes
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Edge added without valid source or target nodes', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+      });
+      // Remove the invalid edge from the graph
+      this.x6GraphAdapter.removeEdge(edge.id);
+      return;
+    }
+
+    // Verify that the source and target nodes actually exist in the graph
+    const sourceNode = this.x6GraphAdapter.getNode(sourceNodeId);
+    const targetNode = this.x6GraphAdapter.getNode(targetNodeId);
+
+    if (!sourceNode || !targetNode) {
+      this.logger.warn('Edge references non-existent nodes', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+        sourceNodeExists: !!sourceNode,
+        targetNodeExists: !!targetNode,
+      });
+      // Remove the invalid edge from the graph
+      this.x6GraphAdapter.removeEdge(edge.id);
+      return;
+    }
+
+    // Check if this edge already exists in the domain (to avoid duplicate processing)
+    const existingEdge = this.x6GraphAdapter.getEdge(edge.id);
+    if (existingEdge) {
+      const existingEdgeData: unknown = existingEdge.getData();
+      if (
+        existingEdgeData &&
+        typeof existingEdgeData === 'object' &&
+        existingEdgeData !== null &&
+        'domainEdgeId' in existingEdgeData
+      ) {
+        this.logger.debug('Edge already has domain representation, skipping', { edgeId: edge.id });
+        return;
+      }
+    }
+
+    this.logger.info('Processing user-created edge', {
+      edgeId: edge.id,
+      sourceNodeId,
+      targetNodeId,
+    });
+
+    // Extract port information if available
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    // Create domain edge data
+    const domainEdgeData =
+      sourcePortId && targetPortId
+        ? EdgeData.createWithPorts(
+            edge.id,
+            sourceNodeId,
+            targetNodeId,
+            sourcePortId,
+            targetPortId,
+            'Data Flow', // Default label
+          )
+        : EdgeData.createSimple(
+            edge.id,
+            sourceNodeId,
+            targetNodeId,
+            'Data Flow', // Default label
+          );
+
+    // Create and execute AddEdgeCommand
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    const command = DiagramCommandFactory.addEdge(
+      diagramId,
+      userId,
+      edge.id,
+      sourceNodeId,
+      targetNodeId,
+      domainEdgeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.logger.info('Edge created successfully in domain model', {
+            edgeId: edge.id,
+            sourceNodeId,
+            targetNodeId,
+          });
+
+          // Update the edge's data to mark it as having a domain representation
+          edge.setData({
+            ...edge.getData(),
+            domainEdgeId: edge.id,
+          });
+
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Error creating edge in domain model', error);
+          // Remove the visual edge if domain creation failed
+          this.x6GraphAdapter.removeEdge(edge.id);
+        },
+      });
+  }
+
+  /**
+   * Handle edge vertices changes from the graph adapter
+   */
+  private handleEdgeVerticesChanged(
+    edgeId: string,
+    vertices: Array<{ x: number; y: number }>,
+  ): void {
+    if (!this._isInitialized) {
+      this.logger.warn('Cannot handle edge vertices changed: Graph is not initialized');
+      return;
+    }
+
+    this.logger.info('Edge vertices changed', {
+      edgeId,
+      vertexCount: vertices.length,
+      vertices,
+    });
+
+    // Convert vertices to domain Points
+    const domainVertices = vertices.map(v => new Point(v.x, v.y));
+
+    // Create and execute UpdateEdgeDataCommand to update the domain model
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    // Get the current edge from the graph to extract other data
+    const edge = this.x6GraphAdapter.getEdge(edgeId);
+    if (!edge) {
+      this.logger.warn('Edge not found for vertices update', { edgeId });
+      return;
+    }
+
+    // Create updated edge data with new vertices
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Edge missing source or target for vertices update', {
+        edgeId,
+        sourceNodeId,
+        targetNodeId,
+      });
+      return;
+    }
+
+    // Get the current edge data to preserve existing information
+    const currentEdgeData: unknown = edge.getData();
+    const currentLabel =
+      currentEdgeData &&
+      typeof currentEdgeData === 'object' &&
+      'label' in currentEdgeData &&
+      typeof currentEdgeData.label === 'string'
+        ? currentEdgeData.label
+        : 'Data Flow';
+
+    // Create a new EdgeData instance with updated vertices
+    const updatedEdgeData = new EdgeData(
+      edgeId,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      currentLabel,
+      domainVertices,
+      {}, // metadata - could be preserved from current data if needed
+    );
+
+    // We need the old data for the command, so let's create it from current state
+    const oldVerticesData =
+      currentEdgeData &&
+      typeof currentEdgeData === 'object' &&
+      'vertices' in currentEdgeData &&
+      Array.isArray(currentEdgeData.vertices)
+        ? (currentEdgeData.vertices as Array<{ x: number; y: number }>)
+        : [];
+    const oldDomainVertices = oldVerticesData.map(v => new Point(v.x, v.y));
+
+    const oldEdgeData = new EdgeData(
+      edgeId,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      currentLabel || 'Data Flow',
+      oldDomainVertices,
+      {}, // metadata
+    );
+
+    // Create and execute UpdateEdgeDataCommand
+    const command = DiagramCommandFactory.updateEdgeData(
+      diagramId,
+      userId,
+      edgeId,
+      updatedEdgeData,
+      oldEdgeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.logger.info('Edge vertices updated successfully in domain model', {
+            edgeId,
+            vertexCount: domainVertices.length,
+          });
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Error updating edge vertices in domain model', error);
+        },
+      });
+  }
+
+  /**
+   * Run performance tests
+   */
+  runPerformanceTests(): void {
+    this.logger.info('Starting performance tests');
+    this.performanceTestingService.runPerformanceTestSuite().subscribe({
+      next: results => {
+        this.logger.info('Performance tests completed', { results });
+      },
+      error: error => {
+        this.logger.error('Performance tests failed', error);
+      },
+    });
+  }
+
+  /**
+   * Move selected cells forward in z-order
+   */
+  moveForward(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move forward operation');
+      return;
+    }
+
+    this.logger.info('Moving cell forward', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsForward();
+  }
+
+  /**
+   * Move selected cells backward in z-order
+   */
+  moveBackward(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move backward operation');
+      return;
+    }
+
+    this.logger.info('Moving cell backward', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsBackward();
+  }
+
+  /**
+   * Move selected cells to front
+   */
+  moveToFront(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move to front operation');
+      return;
+    }
+
+    this.logger.info('Moving cell to front', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsToFront();
+  }
+
+  /**
+   * Move selected cells to back
+   */
+  moveToBack(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for move to back operation');
+      return;
+    }
+
+    this.logger.info('Moving cell to back', { cellId: this._rightClickedCell.id });
+    this.x6GraphAdapter.moveSelectedCellsToBack();
   }
 }
