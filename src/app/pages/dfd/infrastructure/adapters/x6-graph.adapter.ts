@@ -5,6 +5,7 @@ import '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
+import { v4 as uuidv4 } from 'uuid';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
@@ -42,13 +43,13 @@ Shape.Rect.define({
     bottomLine: {
       stroke: '#333333',
       strokeWidth: 2,
-      refDy: '100%',
+      refY: '100%',
       refD: 'M 0 0 l 200 0',
     },
     body: {
-      fill: 'transparent',
-      opacity: 0,
-      fillOpacity: 0,
+      fill: '#FFFFFF',
+      stroke: 'transparent',
+      strokeWidth: 0,
     },
     text: {
       refX: '50%',
@@ -184,9 +185,16 @@ export class X6GraphAdapter implements IGraphAdapter {
       embedding: {
         enabled: true,
         findParent: 'bbox',
-        validate: (_args: { parent: Node; child: Node }) => {
-          // Allow any node to be embedded in any other node
-          // This can be refined based on business rules
+        validate: (args: { parent: Node; child: Node }) => {
+          const parentType = this._getNodeType(args.parent);
+          const childType = this._getNodeType(args.child);
+
+          // Security boundaries can only be embedded into other security boundaries
+          if (childType === 'security-boundary') {
+            return parentType === 'security-boundary';
+          }
+
+          // All other node types can be embedded into any node type
           return true;
         },
       },
@@ -301,8 +309,12 @@ export class X6GraphAdapter implements IGraphAdapter {
         createEdge: () => {
           this.logger.debugComponent('DFD', '[Edge Creation] createEdge called');
 
+          // Generate UUID type 4 for UX-created edges
+          const edgeId = uuidv4();
+
           // Create edge with explicit markup to control both path elements
           const edge = new Edge({
+            id: edgeId, // Use UUID type 4 for UX-created edges
             shape: 'edge',
             markup: [
               {
@@ -375,7 +387,8 @@ export class X6GraphAdapter implements IGraphAdapter {
 
           this.logger.debugComponent(
             'DFD',
-            '[Edge Creation] Edge created with explicit dual-path markup',
+            '[Edge Creation] Edge created with UUID type 4 and explicit dual-path markup',
+            { edgeId },
           );
           return edge;
         },
@@ -524,6 +537,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         domainEdgeId: edge.id,
       },
     });
+
+    // Set edge z-order to the higher of source or target node z-orders
+    this._setEdgeZOrderFromConnectedNodes(x6Edge);
 
     return x6Edge;
   }
@@ -951,6 +967,9 @@ export class X6GraphAdapter implements IGraphAdapter {
       const targetId = edge.getTargetCellId();
 
       if (sourceId && targetId) {
+        // Set edge z-order to the higher of source or target node z-orders
+        this._setEdgeZOrderFromConnectedNodes(edge);
+
         this.logger.debugComponent(
           'DFD',
           '[Edge Creation] Valid edge created, emitting edgeAdded$',
@@ -978,44 +997,86 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Node embedding events
     this._graph.on('node:embedding', ({ node }: { node: Node }) => {
+      // Store the original z-index before temporarily changing it
+      const originalZIndex = node.getZIndex();
+      node.setData({
+        ...node.getData(),
+        _originalZIndex: originalZIndex,
+      });
+
       // When a node is being embedded, ensure it appears in front temporarily
-      node.setZIndex(20);
+      // But respect the node type - security boundaries should stay behind regular nodes
+      const nodeType = this._getNodeType(node);
+      if (nodeType === 'security-boundary') {
+        // Security boundaries get a temporary higher z-index but still behind regular nodes
+        node.setZIndex(5);
+      } else {
+        // Regular nodes get a higher temporary z-index
+        node.setZIndex(20);
+      }
     });
 
     this._graph.on(
       'node:embedded',
       ({ node, currentParent }: { node: Node; currentParent: Node }) => {
+        // Only adjust z-indices if the node was actually embedded (has a parent)
+        if (!currentParent) {
+          // If embedding was cancelled, restore original z-index
+          const rawNodeData: unknown = node.getData();
+          const nodeData =
+            rawNodeData && typeof rawNodeData === 'object'
+              ? (rawNodeData as Record<string, unknown>)
+              : {};
+          const originalZIndex = nodeData['_originalZIndex'];
+          if (typeof originalZIndex === 'number') {
+            node.setZIndex(originalZIndex);
+            // Also restore z-order for connected edges
+            this._updateConnectedEdgesZOrder(node, originalZIndex);
+          }
+          return;
+        }
+
         // After embedding, adjust z-indices
         const parentType = this._getNodeType(currentParent);
         const childType = this._getNodeType(node);
 
         // Parent keeps its base z-index (security boundaries stay behind)
+        let parentZIndex: number;
         if (parentType === 'security-boundary') {
-          currentParent.setZIndex(1); // Security boundaries stay at the back
+          parentZIndex = 1; // Security boundaries stay at the back
+          currentParent.setZIndex(parentZIndex);
         } else {
-          currentParent.setZIndex(10);
+          parentZIndex = 10;
+          currentParent.setZIndex(parentZIndex);
         }
 
         // Child gets appropriate z-index based on type
+        let childZIndex: number;
         if (childType === 'security-boundary') {
           // Security boundaries should always stay behind, even when embedded
-          node.setZIndex(2); // Slightly higher than non-embedded security boundaries but still behind regular nodes
+          childZIndex = 2; // Slightly higher than non-embedded security boundaries but still behind regular nodes
+          node.setZIndex(childZIndex);
         } else {
-          node.setZIndex(15); // Regular nodes appear in front when embedded
+          childZIndex = 15; // Regular nodes appear in front when embedded
+          node.setZIndex(childZIndex);
         }
 
-        // Ensure edges connected to the child also appear appropriately
-        const edges = this._graph?.getConnectedEdges(node) || [];
-        edges.forEach(edge => {
-          if (childType === 'security-boundary') {
-            edge.setZIndex(3); // Edges connected to security boundaries stay relatively low
-          } else {
-            edge.setZIndex(16); // Edges connected to regular nodes appear in front
-          }
-        });
+        // Update z-order for edges connected to the child node to match the child's z-order
+        this._updateConnectedEdgesZOrder(node, childZIndex);
 
         // Update fill color based on embedding depth
         this._updateEmbeddedNodeColor(node);
+
+        // Clean up the temporary data
+        const rawNodeData: unknown = node.getData();
+        const nodeData =
+          rawNodeData && typeof rawNodeData === 'object'
+            ? (rawNodeData as Record<string, unknown>)
+            : {};
+        if (nodeData && '_originalZIndex' in nodeData) {
+          delete nodeData['_originalZIndex'];
+          node.setData(nodeData);
+        }
       },
     );
 
@@ -1025,24 +1086,60 @@ export class X6GraphAdapter implements IGraphAdapter {
         const nodeType = this._getNodeType(node);
 
         // Reset to default z-index based on type
+        let nodeZIndex: number;
         if (nodeType === 'security-boundary') {
-          node.setZIndex(1); // Security boundaries always stay at the back
+          nodeZIndex = 1; // Security boundaries always stay at the back
+          node.setZIndex(nodeZIndex);
         } else {
-          node.setZIndex(10);
+          nodeZIndex = 10;
+          node.setZIndex(nodeZIndex);
         }
 
-        // Reset edges to appropriate z-index based on node type
-        const edges = this._graph?.getConnectedEdges(node) || [];
-        edges.forEach(edge => {
-          if (nodeType === 'security-boundary') {
-            edge.setZIndex(2); // Edges connected to security boundaries stay low
-          } else {
-            edge.setZIndex(11); // Regular edge z-index
-          }
-        });
+        // Update z-order for edges connected to the node to match the node's z-order
+        this._updateConnectedEdgesZOrder(node, nodeZIndex);
 
         // Update fill color based on new embedding depth (or reset to white if fully unembedded)
         this._updateEmbeddedNodeColor(node);
+      }
+    });
+
+    // Handle node movement without embedding - restore z-index when drag ends
+    this._graph.on('node:change:position', ({ node }: { node: Node }) => {
+      // Check if this node has a stored original z-index from embedding attempt
+      // Safety check for test environment where getData might not exist
+      if (typeof node.getData !== 'function') {
+        return;
+      }
+
+      const rawNodeData: unknown = node.getData();
+      const nodeData =
+        rawNodeData && typeof rawNodeData === 'object'
+          ? (rawNodeData as Record<string, unknown>)
+          : {};
+      const originalZIndex = nodeData['_originalZIndex'];
+
+      // If we have an original z-index stored and the node is not currently embedded,
+      // restore the original z-index (this handles the case where dragging was just for movement)
+      if (typeof originalZIndex === 'number' && !node.getParent()) {
+        // Use a small timeout to ensure this runs after any embedding events
+        setTimeout(() => {
+          // Double-check that the node still doesn't have a parent
+          if (!node.getParent()) {
+            node.setZIndex(originalZIndex);
+            // Clean up the temporary data
+            if (typeof node.getData === 'function') {
+              const currentNodeData: unknown = node.getData();
+              const safeNodeData =
+                currentNodeData && typeof currentNodeData === 'object'
+                  ? (currentNodeData as Record<string, unknown>)
+                  : {};
+              if (safeNodeData && '_originalZIndex' in safeNodeData) {
+                delete safeNodeData['_originalZIndex'];
+                node.setData(safeNodeData);
+              }
+            }
+          }
+        }, 50);
       }
     });
 
@@ -1226,9 +1323,9 @@ export class X6GraphAdapter implements IGraphAdapter {
       case 'store':
         return {
           body: {
-            fill: 'transparent',
-            opacity: 0,
-            fillOpacity: 0,
+            fill: '#FFFFFF',
+            stroke: 'transparent',
+            strokeWidth: 0,
           },
           topLine: {
             stroke: '#333333',
@@ -1323,7 +1420,15 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get X6 port configuration for domain node type
    */
-  private _getNodePorts(_nodeType: string): Record<string, unknown> {
+  private _getNodePorts(nodeType: string): Record<string, unknown> {
+    // Textbox shapes should not have ports
+    if (nodeType === 'textbox') {
+      return {
+        groups: {},
+        items: [],
+      };
+    }
+
     const basePorts = {
       groups: {
         top: {
@@ -1394,8 +1499,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       items: [{ group: 'top' }, { group: 'right' }, { group: 'bottom' }, { group: 'left' }],
     };
 
-    // All node types get the same port configuration for now
-    // Can be customized per node type if needed
+    // All other node types get the same port configuration
     return basePorts;
   }
 
@@ -1666,11 +1770,12 @@ export class X6GraphAdapter implements IGraphAdapter {
         }),
       );
 
-      // Enable snapline plugin
+      // Enable snapline plugin with red color
       this._graph.use(
         new Snapline({
           enabled: true,
           sharp: true,
+          className: 'dfd-snapline-red',
         }),
       );
 
@@ -2365,5 +2470,74 @@ export class X6GraphAdapter implements IGraphAdapter {
       return nodeType === 'security-boundary';
     }
     return false;
+  }
+
+  /**
+   * Update the z-order of all edges connected to a node to match the node's z-order
+   */
+  private _updateConnectedEdgesZOrder(node: Node, zIndex: number): void {
+    if (!this._graph) return;
+
+    const edges = this._graph.getConnectedEdges(node) || [];
+    edges.forEach(edge => {
+      edge.setZIndex(zIndex);
+      this.logger.info('Updated connected edge z-order', {
+        nodeId: node.id,
+        edgeId: edge.id,
+        newZIndex: zIndex,
+      });
+    });
+  }
+
+  /**
+   * Set the z-order of an edge to the higher of its source or target node z-orders
+   */
+  private _setEdgeZOrderFromConnectedNodes(edge: Edge): void {
+    if (!this._graph) return;
+
+    const sourceId = edge.getSourceCellId();
+    const targetId = edge.getTargetCellId();
+
+    if (!sourceId || !targetId) {
+      this.logger.warn('Cannot set edge z-order: missing source or target', {
+        edgeId: edge.id,
+        sourceId,
+        targetId,
+      });
+      return;
+    }
+
+    const sourceNode = this._graph.getCellById(sourceId) as Node;
+    const targetNode = this._graph.getCellById(targetId) as Node;
+
+    if (!sourceNode?.isNode() || !targetNode?.isNode()) {
+      this.logger.warn('Cannot set edge z-order: source or target is not a node', {
+        edgeId: edge.id,
+        sourceIsNode: sourceNode?.isNode(),
+        targetIsNode: targetNode?.isNode(),
+      });
+      return;
+    }
+
+    // Safety check for test environment where getZIndex might not exist
+    const sourceZIndex =
+      typeof sourceNode.getZIndex === 'function' ? (sourceNode.getZIndex() ?? 1) : 1;
+    const targetZIndex =
+      typeof targetNode.getZIndex === 'function' ? (targetNode.getZIndex() ?? 1) : 1;
+    const edgeZIndex = Math.max(sourceZIndex, targetZIndex);
+
+    // Safety check for test environment where setZIndex might not exist
+    if (typeof edge.setZIndex === 'function') {
+      edge.setZIndex(edgeZIndex);
+    }
+
+    this.logger.info('Set edge z-order from connected nodes', {
+      edgeId: edge.id,
+      sourceNodeId: sourceId,
+      targetNodeId: targetId,
+      sourceZIndex,
+      targetZIndex,
+      edgeZIndex,
+    });
   }
 }

@@ -110,9 +110,9 @@
 
       <button
         mat-icon-button
-        [disabled]="!threatModelId || !hasExactlyOneSelectedCell"
+        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox"
         (click)="openThreatEditor()"
-        [matTooltip]="'editor.toolbar.tooltips.threats' | transloco"
+        [matTooltip]="'editor.toolbar.tooltips.addThreat' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"

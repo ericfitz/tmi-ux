@@ -128,8 +128,7 @@ We will only use Roboto Condensed for text in the graph.
 
 ### Future Plans
 
-- **🔄 FUTURE**: Built-in X6 node-editor and edge-editor tools (currently using custom implementation)
-- **🔄 FUTURE**: Port label editing capabilities
+- **🔄 FUTURE**: Port label editing capabilities (attr/text attribute)
 
 ## Graph Navigation and View
 

@@ -188,7 +188,7 @@
         "deleteSelected": "删除所选",
         "undo": "撤销",
         "redo": "重做",
-        "threats": "威胁",
+        "addThreat": "添加威胁",
         "share": "分享",
         "export": "导出...",
         "close": "关闭"

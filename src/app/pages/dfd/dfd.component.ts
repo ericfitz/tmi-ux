@@ -33,6 +33,7 @@ import {
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { v4 as uuidv4 } from 'uuid';
 import { CommandBusService } from './application/services/command-bus.service';
+import { HistoryService } from './application/services/history.service';
 import { DiagramCommandFactory } from './domain/commands/diagram-commands';
 import { NodeData } from './domain/value-objects/node-data';
 import { EdgeData } from './domain/value-objects/edge-data';
@@ -59,6 +60,9 @@ import {
   UpdateDiagramMetadataCommandHandler,
 } from './application/handlers/diagram-command-handlers';
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
+import { InverseCommandFactory } from './domain/commands/inverse-command-factory';
+import { OperationStateTracker } from './infrastructure/services/operation-state-tracker.service';
+import { HistoryMiddleware } from './application/middleware/history.middleware';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -79,6 +83,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     CommandValidationMiddleware,
     CommandLoggingMiddleware,
     CommandSerializationMiddleware,
+    HistoryMiddleware,
 
     // Repository implementation
     {
@@ -108,6 +113,15 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // Performance testing
     PerformanceTestingService,
+
+    // History services
+    {
+      provide: 'ICommandBus',
+      useExisting: CommandBusService,
+    },
+    HistoryService,
+    InverseCommandFactory,
+    OperationStateTracker,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -139,6 +153,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   canRedo = false;
   hasSelectedCells = false;
   hasExactlyOneSelectedCell = false;
+  selectedCellIsTextBox = false;
 
   constructor(
     private logger: LoggerService,
@@ -146,6 +161,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dfdApplicationService: DfdApplicationService,
     private x6GraphAdapter: X6GraphAdapter,
     private commandBus: CommandBusService,
+    private historyService: HistoryService,
     private performanceTestingService: PerformanceTestingService,
     private route: ActivatedRoute,
     private router: Router,
@@ -156,11 +172,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     this.logger.info('DfdComponent constructor called');
 
-    // Ensure command bus is initialized
-    if (!this.commandBusInitializer.isInitialized) {
-      this.logger.warn('CommandBus not initialized, forcing initialization');
-      this.commandBusInitializer.initialize();
-    }
+    // Initialize command bus immediately in constructor
+    this.logger.info('Initializing command bus in constructor');
+    this.commandBusInitializer.initialize();
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -180,11 +194,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
+    // Subscribe to history service observables
+    this._subscriptions.add(
+      this.historyService.canUndo$.subscribe(canUndo => {
+        this.canUndo = canUndo;
+        this.cdr.markForCheck();
+      }),
+    );
+
+    this._subscriptions.add(
+      this.historyService.canRedo$.subscribe(canRedo => {
+        this.canRedo = canRedo;
+        this.cdr.markForCheck();
+      }),
+    );
+
     // Subscribe to selection state changes
     this._subscriptions.add(
       this._selectedCells$.subscribe(selectedCells => {
         this.hasSelectedCells = selectedCells.length > 0;
         this.hasExactlyOneSelectedCell = selectedCells.length === 1;
+        this.selectedCellIsTextBox = selectedCells.some(
+          cell => (cell.data as { type?: string })?.type === 'textbox',
+        );
         this.cdr.markForCheck();
       }),
     );
@@ -307,11 +339,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Handle keyboard events for delete functionality
+   * Handle keyboard events for delete functionality and undo/redo
    */
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    // Only handle delete key if the graph container has focus or if no input elements are focused
+    // Only handle keys if the graph container has focus or if no input elements are focused
     const activeElement = document.activeElement;
     const isInputFocused =
       activeElement &&
@@ -319,9 +351,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         activeElement.tagName === 'TEXTAREA' ||
         (activeElement as HTMLElement).contentEditable === 'true');
 
-    if (!isInputFocused && (event.key === 'Delete' || event.key === 'Backspace')) {
-      event.preventDefault();
-      this.deleteSelected();
+    if (!isInputFocused) {
+      // Handle delete/backspace
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.preventDefault();
+        this.deleteSelected();
+        return;
+      }
+
+      // Handle undo/redo shortcuts
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === 'z' && !event.shiftKey) {
+          // Ctrl+Z or Cmd+Z for undo
+          event.preventDefault();
+          this.undo();
+          return;
+        }
+
+        if (event.key === 'y' || (event.key === 'z' && event.shiftKey)) {
+          // Ctrl+Y or Cmd+Y or Ctrl+Shift+Z or Cmd+Shift+Z for redo
+          event.preventDefault();
+          this.redo();
+          return;
+        }
+      }
     }
   }
 
@@ -352,7 +405,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private createNode(shapeType: NodeType, position: { x: number; y: number }): void {
     const diagramId = this.dfdId || 'default-diagram';
     const userId = 'current-user'; // TODO: Get from auth service
-    const nodeId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const nodeId = uuidv4(); // Generate UUID type 4 for UX-created nodes
 
     const nodeData = new NodeData(
       nodeId,
@@ -563,16 +616,52 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Undo the last action
    */
   undo(): void {
-    this.logger.info('Undo operation requested - not yet implemented');
-    // TODO: Implement undo functionality
+    if (!this.canUndo) {
+      this.logger.debug('Undo requested but no operations available to undo');
+      return;
+    }
+
+    this.logger.info('Executing undo operation');
+
+    this.historyService
+      .undo()
+      .then(success => {
+        if (success) {
+          this.logger.info('Undo operation completed successfully');
+          this.cdr.markForCheck();
+        } else {
+          this.logger.warn('Undo operation failed');
+        }
+      })
+      .catch(error => {
+        this.logger.error('Undo operation failed with error', error);
+      });
   }
 
   /**
    * Redo the last undone action
    */
   redo(): void {
-    this.logger.info('Redo operation requested - not yet implemented');
-    // TODO: Implement redo functionality
+    if (!this.canRedo) {
+      this.logger.debug('Redo requested but no operations available to redo');
+      return;
+    }
+
+    this.logger.info('Executing redo operation');
+
+    this.historyService
+      .redo()
+      .then(success => {
+        if (success) {
+          this.logger.info('Redo operation completed successfully');
+          this.cdr.markForCheck();
+        } else {
+          this.logger.warn('Redo operation failed');
+        }
+      })
+      .catch(error => {
+        this.logger.error('Redo operation failed with error', error);
+      });
   }
 
   /**
@@ -859,7 +948,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           threatModelId: this.threatModelId as string,
           mode: 'create',
           diagramId: this.dfdId || '',
-          cellId: this._selectedCells$.value.find(cell => cell.isNode())?.id || '',
+          cellId: this._selectedCells$.value[0]?.id || '',
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -898,10 +987,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 severity: formResult.severity || 'High',
                 threat_type: formResult.threat_type || 'Information Disclosure',
                 diagram_id: formResult.diagram_id || this.dfdId || '',
-                cell_id:
-                  formResult.cell_id ||
-                  this._selectedCells$.value.find(cell => cell.isNode())?.id ||
-                  '',
+                cell_id: formResult.cell_id || this._selectedCells$.value[0]?.id || '',
                 score: formResult.score || 10.0,
                 priority: formResult.priority || 'High',
                 issue_url: formResult.issue_url || 'n/a',

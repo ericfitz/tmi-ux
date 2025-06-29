@@ -21,38 +21,34 @@
 // =============================================================================
 
 // Security Boundary shape styles - must come before nested selector
-.security-boundary-shape {
-  fill: #fff;
-  stroke: #333;
-  stroke-width: 2;
-  stroke-dasharray: 5, 5;
-  rx: 10;
-  ry: 10;
-  opacity: 1;
-}
+// .security-boundary-shape {
+//  fill: #fff;
+//  stroke: #333;
+//  stroke-width: 2;
+//  stroke-dasharray: 5, 5;
+//  rx: 10;
+//  ry: 10;
+//  opacity: 1;
+// }
 
 // Base node styles - must come before more specific selectors
-.x6-node {
-  transition: all 0.2s ease-in-out;
+// .x6-node {
+//  transition: all 0.2s ease-in-out;
 
-  &.is-selected {
-    .body {
-      stroke: #47c769;
-      stroke-width: 2.5;
-    }
-  }
+//  &.is-selected {
+//    .body {
+//      stroke: #47c769;
+//      stroke-width: 2.5;
+//    }
+//  }
 
-  &.is-hovered {
-    .body {
-      stroke-width: 2;
-      filter: brightness(1.05);
-    }
-  }
-
-  &.selected {
-    filter: drop-shadow(0 0 8px rgb(24 144 255 / 60%));
-  }
-}
+// &.is-hovered {
+//  .body {
+//    stroke-width: 2;
+//    filter: brightness(1.05);
+//  }
+// }
+// }
 
 // =============================================================================
 // FONT STYLES - CONSOLIDATED
@@ -76,6 +72,7 @@
 // Target SVG text elements with font-family attribute
 svg text[font-family] {
   font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 12px;
 }
 
 // Edge styling is now handled entirely by X6 configuration
@@ -102,79 +99,6 @@ svg text[font-family] {
   }
 
   // Edge z-index is now handled by X6 configuration
-}
-
-// =============================================================================
-// SHAPE STYLES
-// =============================================================================
-
-// Actor shape styles
-.actor-shape {
-  fill: #fff;
-  stroke: #333;
-  stroke-width: 2;
-  opacity: 1;
-}
-
-.actor-label {
-  @include shape-label-styles;
-}
-
-// Process shape styles
-.process-shape {
-  fill: #fff;
-  stroke: #333;
-  stroke-width: 2;
-  opacity: 1;
-}
-
-.process-label {
-  @include shape-label-styles;
-}
-
-// Store shape styles
-.store-shape {
-  fill: #fff;
-  stroke: transparent;
-  opacity: 1;
-}
-
-.store-top-line,
-.store-bottom-line {
-  stroke: #333;
-  stroke-width: 2;
-}
-
-.store-label {
-  @include shape-label-styles;
-}
-
-.security-boundary-label {
-  @include shape-label-styles;
-}
-
-// Textbox shape styles
-.textbox-shape {
-  fill: #fff;
-  stroke: #333;
-  stroke-width: 1;
-  stroke-dasharray: 2, 2;
-  opacity: 0.8;
-  rx: 4;
-  ry: 4;
-}
-
-.textbox-content {
-  width: 100%;
-  height: 100%;
-  padding: 5px;
-  box-sizing: border-box;
-  font-size: 12px;
-  color: #333;
-  overflow: auto;
-  word-wrap: break-word;
-  text-align: left;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 
 // Generic dfd-label class used by all shapes
@@ -215,6 +139,24 @@ svg text[font-family] {
 
     text.label {
       @include shape-label-styles;
+    }
+  }
+
+  // Ensure store shapes get the same hover and selection filter treatment
+  &.is-hovered,
+  &:hover {
+    .x6-cell-body {
+      rect.body {
+        filter: drop-shadow(0 0 4px rgb(255 0 0 / 60%));
+      }
+    }
+  }
+
+  &.is-selected {
+    .x6-cell-body {
+      rect.body {
+        filter: drop-shadow(0 0 8px rgb(255 0 0 / 80%));
+      }
     }
   }
 }
@@ -288,11 +230,6 @@ circle.x6-port-body {
 }
 
 // =============================================================================
-// EDGE STYLES
-// =============================================================================
-// Edge styles have been moved to the top of the file for proper specificity order
-
-// =============================================================================
 // SELECTION AND INTERACTION STYLES - CONSOLIDATED
 // =============================================================================
 
@@ -300,66 +237,6 @@ circle.x6-port-body {
 .x6-widget-transform {
   border: 2px dashed #47c769;
   pointer-events: none;
-}
-
-// Resize handle styles - consolidated
-.x6-widget-transform-resize {
-  width: 8px;
-  height: 8px;
-  border-radius: 0;
-  background-color: #000;
-  border: none;
-  outline: none;
-  position: absolute;
-  pointer-events: all;
-  display: block;
-  visibility: visible;
-  opacity: 1;
-
-  // Position the handles
-  &-nw {
-    top: -4px;
-    left: -4px;
-  }
-
-  &-n {
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  &-ne {
-    top: -4px;
-    right: -6px;
-  }
-
-  &-e {
-    right: -6px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  &-se {
-    bottom: -6px;
-    right: -6px;
-  }
-
-  &-s {
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  &-sw {
-    bottom: -6px;
-    left: -4px;
-  }
-
-  &-w {
-    left: -4px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
 }
 
 // Selection box styles
@@ -383,11 +260,6 @@ circle.x6-port-body {
 }
 
 // =============================================================================
-// NODE STATES - CONSOLIDATED
-// =============================================================================
-// Node styles have been moved to the top of the file for proper specificity order
-
-// =============================================================================
 // HIGHLIGHT STYLES
 // =============================================================================
 
@@ -405,57 +277,3 @@ circle.x6-port-body {
     filter: drop-shadow(0 0 8px rgb(49 208 198 / 40%));
   }
 }
-
-// =============================================================================
-// SNAPLINE STYLES
-// =============================================================================
-
-.x6-snapline {
-  stroke: #f36;
-  stroke-width: 2;
-  stroke-dasharray: 5, 5;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 1;
-}
-
-// Enhanced snapline styles for plugin
-.x6-widget-snapline {
-  .x6-widget-snapline-horizontal,
-  .x6-widget-snapline-vertical {
-    stroke: #ff4d4f !important;
-    stroke-width: 1px !important;
-    stroke-dasharray: 5, 5 !important;
-    opacity: 0.8 !important;
-  }
-}
-
-// =============================================================================
-// SELECTION PLUGIN STYLES
-// =============================================================================
-
-// Selection box styles
-.x6-widget-selection {
-  .x6-widget-selection-box {
-    border: 2px solid #1890ff !important;
-    background-color: rgb(24 144 255 / 10%) !important;
-  }
-
-  .x6-widget-selection-handle {
-    background-color: #1890ff !important;
-    border: 1px solid #fff !important;
-    width: 8px !important;
-    height: 8px !important;
-  }
-}
-
-// Rubberband selection styles
-.x6-widget-selection-rubberband {
-  border: 1px dashed #1890ff !important;
-  background-color: rgb(24 144 255 / 10%) !important;
-}
-
-// =============================================================================
-// Z-INDEX HIERARCHY
-// =============================================================================
-// Z-index styles have been moved to the main .x6-graph selector above

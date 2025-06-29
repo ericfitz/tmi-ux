@@ -583,7 +583,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         priority: this.translocoService.translate('threatEditor.priority'),
         issueUrl: this.translocoService.translate('threatEditor.issueUrl'),
         diagramId: this.translocoService.translate('threatEditor.diagramId'),
-        nodeId: this.translocoService.translate('threatEditor.nodeId'),
+        cellId: this.translocoService.translate('threatEditor.cellId'),
       });
 
       // Check if form fields have the floating label class

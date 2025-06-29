@@ -208,7 +208,7 @@
         "deleteSelected": "Ausgewählte löschen",
         "undo": "Rückgängig",
         "redo": "Wiederholen",
-        "threats": "Bedrohungen",
+        "addThreat": "Bedrohung hinzufügen",
         "share": "Teilen",
         "export": "Exportieren...",
         "close": "Schließen"

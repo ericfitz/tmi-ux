@@ -219,11 +219,11 @@
         "addProcess": "Add Process",
         "addStore": "Add Store",
         "addSecurityBoundary": "Add Security Boundary",
-        "addTextbox": "Add Textbox",
+        "addTextbox": "Add Text Box",
         "deleteSelected": "Delete Selected",
         "undo": "Undo",
         "redo": "Redo",
-        "threats": "Threats",
+        "addThreat": "Add Threat",
         "share": "Share",
         "export": "Export...",
         "close": "Close"
