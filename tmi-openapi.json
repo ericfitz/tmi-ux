@@ -210,7 +210,7 @@
             "required": ["refType", "refValue"]
           }
         },
-        "required": ["url", "parameters"],
+        "required": ["url"],
         "example": {
           "id": "6ba7b810-1dad-11d1-8080-00c04fd430c8",
           "name": "GitHub Repo",
@@ -729,6 +729,36 @@
           "error_uri": "https://docs.example.com/auth/errors/invalid_request"
         }
       },
+      "AuthTokenResponse": {
+        "type": "object",
+        "description": "JWT token response for authentication endpoints",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "JWT access token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Refresh token for obtaining new access tokens"
+          },
+          "token_type": {
+            "type": "string",
+            "enum": ["Bearer"],
+            "description": "Token type"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Access token expiration time in seconds"
+          }
+        },
+        "required": ["access_token", "refresh_token", "token_type", "expires_in"],
+        "example": {
+          "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+          "refresh_token": "def456...",
+          "token_type": "Bearer",
+          "expires_in": 3600
+        }
+      },
       "CollaborationSession": {
         "type": "object",
         "description": "Details of an active collaboration session for a diagram",
@@ -927,27 +957,30 @@
                   }
                 }
               }
-            }
-          }
-        },
-        "example": {
-          "request": "GET /auth/providers",
-          "response": {
-            "status": 200,
-            "body": [
-              {
-                "id": "google",
-                "name": "Google",
-                "enabled": true,
-                "icon": "google"
-              },
-              {
-                "id": "github",
-                "name": "GitHub",
-                "enabled": true,
-                "icon": "github"
+            },
+            "example": {
+              "request": "GET /auth/providers",
+              "response": {
+                "status": 200,
+                "body": [
+                  {
+                    "id": "google",
+                    "name": "Google",
+                    "enabled": true,
+                    "icon": "google"
+                  },
+                  {
+                    "id": "github",
+                    "name": "GitHub",
+                    "enabled": true,
+                    "icon": "github"
+                  }
+                ]
               }
-            ]
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -1029,33 +1062,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "access_token": {
-                      "type": "string",
-                      "description": "JWT access token"
-                    },
-                    "refresh_token": {
-                      "type": "string",
-                      "description": "Refresh token for obtaining new access tokens"
-                    },
-                    "token_type": {
-                      "type": "string",
-                      "enum": ["Bearer"],
-                      "description": "Token type"
-                    },
-                    "expires_in": {
-                      "type": "integer",
-                      "description": "Access token expiration time in seconds"
-                    }
-                  },
-                  "required": ["access_token", "refresh_token", "token_type", "expires_in"]
-                },
-                "example": {
-                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                  "refresh_token": "def456...",
-                  "token_type": "Bearer",
-                  "expires_in": 3600
+                  "$ref": "#/components/schemas/AuthTokenResponse"
                 }
               }
             }
@@ -1064,6 +1071,9 @@
             "$ref": "#/components/responses/Error"
           },
           "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         }
@@ -1097,33 +1107,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "access_token": {
-                      "type": "string",
-                      "description": "New JWT access token"
-                    },
-                    "refresh_token": {
-                      "type": "string",
-                      "description": "New refresh token (rotated)"
-                    },
-                    "token_type": {
-                      "type": "string",
-                      "enum": ["Bearer"],
-                      "description": "Token type"
-                    },
-                    "expires_in": {
-                      "type": "integer",
-                      "description": "Access token expiration time in seconds"
-                    }
-                  },
-                  "required": ["access_token", "refresh_token", "token_type", "expires_in"]
-                },
-                "example": {
-                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                  "refresh_token": "ghi789...",
-                  "token_type": "Bearer",
-                  "expires_in": 3600
+                  "$ref": "#/components/schemas/AuthTokenResponse"
                 }
               }
             }
@@ -1132,6 +1116,9 @@
             "$ref": "#/components/responses/Error"
           },
           "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         }
@@ -1207,6 +1194,9 @@
           },
           "401": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -1242,33 +1232,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "access_token": {
-                      "type": "string",
-                      "description": "JWT access token"
-                    },
-                    "refresh_token": {
-                      "type": "string",
-                      "description": "Refresh token for obtaining new access tokens"
-                    },
-                    "token_type": {
-                      "type": "string",
-                      "enum": ["Bearer"],
-                      "description": "Token type"
-                    },
-                    "expires_in": {
-                      "type": "integer",
-                      "description": "Access token expiration time in seconds"
-                    }
-                  },
-                  "required": ["access_token", "refresh_token", "token_type", "expires_in"]
-                },
-                "example": {
-                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                  "refresh_token": "def456...",
-                  "token_type": "Bearer",
-                  "expires_in": 3600
+                  "$ref": "#/components/schemas/AuthTokenResponse"
                 }
               }
             }
@@ -1277,6 +1241,9 @@
             "$ref": "#/components/responses/Error"
           },
           "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         }
@@ -1298,6 +1265,9 @@
             "description": "Session ended successfully"
           },
           "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         }
@@ -1340,6 +1310,74 @@
               "default": "created_at:desc"
             },
             "description": "Sort order (e.g., created_at:desc, name:asc)"
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by owner username or email"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat model name (partial match)"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat model description (partial match)"
+          },
+          {
+            "name": "issue_url",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by issue URL (partial match)"
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models created after this date (RFC3339 format)"
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models created before this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models modified after this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models modified before this date (RFC3339 format)"
           }
         ],
         "responses": {
@@ -1382,6 +1420,9 @@
             }
           },
           "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         }
@@ -1458,6 +1499,9 @@
           },
           "401": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -1503,6 +1547,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         }
@@ -1559,6 +1606,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         },
@@ -1659,6 +1709,9 @@
           },
           "404": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "example": {
@@ -1736,6 +1789,9 @@
           },
           "404": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "example": {
@@ -1794,6 +1850,126 @@
               "default": "created_at:desc"
             },
             "description": "Sort order (e.g., created_at:desc, name:asc)"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by diagram name (partial match)"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by diagram description (partial match)"
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter diagrams created after this date (RFC3339 format)"
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter diagrams created before this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter diagrams modified after this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter diagrams modified before this date (RFC3339 format)"
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by owner username or email"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat model name (partial match)"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat model description (partial match)"
+          },
+          {
+            "name": "issue_url",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by issue URL (partial match)"
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models created after this date (RFC3339 format)"
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models created before this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models modified after this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threat models modified before this date (RFC3339 format)"
           }
         ],
         "responses": {
@@ -1828,6 +2004,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         },
@@ -1928,6 +2107,9 @@
           },
           "404": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "example": {
@@ -2004,6 +2186,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         },
@@ -2088,6 +2273,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         },
@@ -2191,6 +2379,9 @@
           },
           "404": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "example": {
@@ -2256,6 +2447,9 @@
           },
           "404": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "example": {
@@ -2318,6 +2512,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         },
@@ -2392,6 +2589,9 @@
           },
           "404": {
             "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "example": {
@@ -2457,6 +2657,9 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
             "$ref": "#/components/responses/Error"
           }
         },
