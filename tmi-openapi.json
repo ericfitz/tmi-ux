@@ -411,13 +411,13 @@
             "type": "string",
             "format": "date-time",
             "description": "Creation timestamp (RFC3339)",
-            "maxLength": 36
+            "maxLength": 24
           },
           "modified_at": {
             "type": "string",
             "format": "date-time",
             "description": "Last modification timestamp (RFC3339)",
-            "maxLength": 36
+            "maxLength": 24
           },
           "owner": {
             "type": "string",
@@ -570,12 +570,14 @@
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Creation timestamp (RFC3339)"
+            "description": "Creation timestamp (RFC3339)",
+            "maxLength": 24
           },
           "modified_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Last modification timestamp (RFC3339)"
+            "description": "Last modification timestamp (RFC3339)",
+            "maxLength": 24
           },
           "diagram_id": {
             "type": "string",
@@ -704,25 +706,6 @@
           "error": "invalid_request",
           "error_description": "The request is missing a required parameter",
           "error_uri": "https://docs.example.com/auth/errors/invalid_request"
-        }
-      },
-      "LegacyError": {
-        "type": "object",
-        "description": "Legacy error response format for backward compatibility",
-        "properties": {
-          "error": {
-            "type": "string",
-            "description": "Error code"
-          },
-          "message": {
-            "type": "string",
-            "description": "Error description"
-          }
-        },
-        "required": ["error", "message"],
-        "example": {
-          "error": "unauthorized",
-          "message": "Invalid or expired token"
         }
       },
       "CollaborationSession": {
@@ -911,6 +894,7 @@
       "get": {
         "summary": "Initiate OAuth login",
         "description": "Redirects the user to an OAuth provider for authentication",
+        "operationId": "initiateOAuthLogin",
         "parameters": [
           {
             "name": "redirect_uri",
@@ -1182,6 +1166,7 @@
       "get": {
         "summary": "Handle OAuth callback",
         "description": "Exchanges an OAuth authorization code for a JWT",
+        "operationId": "handleOAuthCallback",
         "parameters": [
           {
             "name": "code",
@@ -1246,6 +1231,7 @@
       "post": {
         "summary": "Logout user",
         "description": "Invalidates the user's JWT and ends the session",
+        "operationId": "logoutUser",
         "security": [
           {
             "bearerAuth": []
@@ -2180,7 +2166,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram to delete"
           }
