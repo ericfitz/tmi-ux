@@ -47,11 +47,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## User Preferences
 
-- When starting, list all of the markdown files in the context directory and read them
-- When making changes to the code:
+- When starting, list all of the files in the context directory and the docs directory, and read any of them that are relevant to the current prompt.
+- When making changes to any file:
   - Always run lint with "pnpm run lint:all" and fix any lint errors related to changes you made
-  - Always run a build with "pnpm run build" and fix any build errors
-  - Never complete a task if there are any remaining build errors
-  - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
+    - When fixing lint errors about unused items, remove the unused item rather than prefixing with an underscore, unless the item is commented as a placeholder for future functionality
+  - If the file contained executable code, run a build with "pnpm run build" and fix any build errors
+    - Never complete a task if there are any remaining build errors
+  - If the file was a test file, run the test using the proper vitest syntax (path to test file in double quotes) and fix any test errors.
+    - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
 - Always stop and prompt the user before running the application. The user usually already has an instance of the application running on http://localhost:4200
-- When fixing lint errors about unused items, remove the unused item rather than prefixing with an underscore, unless the item is commented as a placeholder for future functionality
