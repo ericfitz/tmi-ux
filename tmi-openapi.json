@@ -7,8 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://api.example.com",
-      "description": "Main production server"
+      "url": "https://api.tmi.example.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:4200",
+      "description": "Local development server"
     }
   ],
   "components": {
@@ -256,9 +260,13 @@
             },
             "description": "List of graph cells"
           },
-          "version": "string"
+          "version": {
+            "type": "string",
+            "description": "Version of the diagram format",
+            "maxLength": 16
+          }
         },
-        "required": ["id", "name", "created_at", "modified_at"],
+        "required": ["id", "name", "created_at", "modified_at", "version"],
         "example": {
           "id": "359314D9-B6A3-460B-805F-B82190D7290F",
           "type": "DFD",
@@ -681,6 +689,31 @@
             "type": "string",
             "description": "Error code"
           },
+          "error_description": {
+            "type": "string",
+            "description": "Human-readable error description"
+          },
+          "error_uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "URI to documentation about the error"
+          }
+        },
+        "required": ["error", "error_description"],
+        "example": {
+          "error": "invalid_request",
+          "error_description": "The request is missing a required parameter",
+          "error_uri": "https://docs.example.com/auth/errors/invalid_request"
+        }
+      },
+      "LegacyError": {
+        "type": "object",
+        "description": "Legacy error response format for backward compatibility",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code"
+          },
           "message": {
             "type": "string",
             "description": "Error description"
@@ -813,6 +846,67 @@
         }
       }
     },
+    "/auth/providers": {
+      "get": {
+        "summary": "List available OAuth providers",
+        "description": "Returns a list of configured OAuth providers available for authentication",
+        "operationId": "getAuthProviders",
+        "responses": {
+          "200": {
+            "description": "List of available OAuth providers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Provider identifier"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Display name of the provider"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether the provider is currently enabled"
+                      },
+                      "icon": {
+                        "type": "string",
+                        "description": "Icon identifier for the provider"
+                      }
+                    },
+                    "required": ["id", "name", "enabled"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "request": "GET /auth/providers",
+          "response": {
+            "status": 200,
+            "body": [
+              {
+                "id": "google",
+                "name": "Google",
+                "enabled": true,
+                "icon": "google"
+              },
+              {
+                "id": "github",
+                "name": "GitHub",
+                "enabled": true,
+                "icon": "github"
+              }
+            ]
+          }
+        }
+      }
+    },
     "/auth/login": {
       "get": {
         "summary": "Initiate OAuth login",
@@ -846,6 +940,239 @@
             "status": 302,
             "headers": {
               "Location": "https://oauth-provider.com/auth?client_id=abc&response_type=code&redirect_uri=https://client.example.com/callback"
+            }
+          }
+        }
+      }
+    },
+    "/auth/token": {
+      "post": {
+        "summary": "Exchange authorization code for JWT",
+        "description": "Exchanges an OAuth authorization code for a JWT token",
+        "operationId": "exchangeToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Authorization code from OAuth provider"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "description": "OAuth provider identifier"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Redirect URI used in the authorization request"
+                  }
+                },
+                "required": ["code", "provider"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT issued successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "JWT access token"
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "description": "Refresh token for obtaining new access tokens"
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "enum": ["Bearer"],
+                      "description": "Token type"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Access token expiration time in seconds"
+                    }
+                  },
+                  "required": ["access_token", "refresh_token", "token_type", "expires_in"]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "example": {
+          "request": "POST /auth/token\nContent-Type: application/json\n{\"code\": \"abc123\", \"provider\": \"google\"}",
+          "response": {
+            "status": 200,
+            "body": {
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "refresh_token": "def456...",
+              "token_type": "Bearer",
+              "expires_in": 3600
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Refresh JWT token",
+        "description": "Exchanges a refresh token for a new JWT access token",
+        "operationId": "refreshToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refresh_token": {
+                    "type": "string",
+                    "description": "Valid refresh token"
+                  }
+                },
+                "required": ["refresh_token"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New JWT issued successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "New JWT access token"
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "description": "New refresh token (rotated)"
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "enum": ["Bearer"],
+                      "description": "Token type"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Access token expiration time in seconds"
+                    }
+                  },
+                  "required": ["access_token", "refresh_token", "token_type", "expires_in"]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "example": {
+          "request": "POST /auth/refresh\nContent-Type: application/json\n{\"refresh_token\": \"def456...\"}",
+          "response": {
+            "status": 200,
+            "body": {
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "refresh_token": "ghi789...",
+              "token_type": "Bearer",
+              "expires_in": 3600
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Get current user information",
+        "description": "Returns information about the currently authenticated user",
+        "operationId": "getCurrentUser",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "User ID"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "User email address"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "User display name"
+                    },
+                    "providers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "provider": {
+                            "type": "string",
+                            "description": "OAuth provider name"
+                          },
+                          "is_primary": {
+                            "type": "boolean",
+                            "description": "Whether this is the primary authentication method"
+                          }
+                        }
+                      },
+                      "description": "Linked OAuth providers"
+                    }
+                  },
+                  "required": ["id", "email", "name"]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "example": {
+          "request": "GET /auth/me\nAuthorization: Bearer <JWT>",
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "email": "user@example.com",
+              "name": "John Doe",
+              "providers": [
+                {
+                  "provider": "google",
+                  "is_primary": true
+                }
+              ]
             }
           }
         }
@@ -1139,7 +1466,7 @@
           "response": {
             "status": 200,
             "body": {
-              "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+              "id": "550e8400-e29b-41d4-a716-446655440000",
               "name": "System Threat Model",
               "description": "Threats for system X",
               "created_at": "2025-04-06T12:00:00Z",
@@ -1329,12 +1656,17 @@
               "diagrams": [],
               "threats": [
                 {
-                  "threat_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-                  "id": "550e8400-e29b-41d4-a716-446655440000",
+                  "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+                  "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
                   "name": "Data Breach",
                   "description": "Unauthorized access",
                   "created_at": "2025-04-06T12:01:00Z",
                   "modified_at": "2025-04-06T12:01:00Z",
+                  "severity": "High",
+                  "priority": "High",
+                  "mitigated": false,
+                  "status": "Open",
+                  "threat_type": "Information Disclosure",
                   "metadata": []
                 }
               ]
@@ -1561,15 +1893,9 @@
               "description": "A test diagram",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:00:00Z",
-              "owner": "user@example.com",
-              "authorization": [
-                {
-                  "subject": "user@example.com",
-                  "role": "owner"
-                }
-              ],
               "metadata": [],
-              "components": []
+              "graphData": [],
+              "version": "1.0"
             }
           }
         }
@@ -1639,15 +1965,9 @@
               "description": "A process workflow",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:30:00Z",
-              "owner": "user@example.com",
-              "authorization": [
-                {
-                  "subject": "user@example.com",
-                  "role": "owner"
-                }
-              ],
               "metadata": [],
-              "components": []
+              "graphData": [],
+              "version": "1.0"
             }
           }
         }
@@ -1727,15 +2047,9 @@
               "description": "Updated description",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:45:00Z",
-              "owner": "user@example.com",
-              "authorization": [
-                {
-                  "subject": "user@example.com",
-                  "role": "owner"
-                }
-              ],
               "metadata": [],
-              "components": []
+              "graphData": [],
+              "version": "1.0"
             }
           }
         }
@@ -1833,15 +2147,9 @@
               "description": "A process workflow",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:45:00Z",
-              "owner": "user@example.com",
-              "authorization": [
-                {
-                  "subject": "user@example.com",
-                  "role": "owner"
-                }
-              ],
               "metadata": [],
-              "components": []
+              "graphData": [],
+              "version": "1.0"
             }
           }
         }
