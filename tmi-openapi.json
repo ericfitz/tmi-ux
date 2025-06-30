@@ -97,7 +97,7 @@
             "required": ["name", "contact"]
           }
         },
-        "required": ["status", "service", "api"],
+        "required": ["status", "service", "api", "operator"],
         "example": {
           "status": {
             "code": "OK",
@@ -123,7 +123,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the document",
+            "description": "Unique identifier for the document (UUID)",
             "maxLength": 36,
             "readOnly": true
           },
@@ -141,7 +141,8 @@
           "description": {
             "type": "string",
             "description": "Description of document purpose or content",
-            "maxLength": 1024
+            "maxLength": 1024,
+            "nullable": true
           }
         },
         "required": ["name", "url"],
@@ -158,7 +159,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the source code reference",
+            "description": "Unique identifier for the source code reference (UUID)",
             "maxLength": 36,
             "readOnly": true
           },
@@ -170,11 +171,13 @@
           "description": {
             "type": "string",
             "description": "Description of the referenced source code",
-            "maxLength": 1024
+            "maxLength": 1024,
+            "nullable": true
           },
           "type": {
             "type": "string",
-            "description": "Source code repository type (git, svn, mercurial, other)",
+            "description": "Source code repository type",
+            "enum": ["git", "svn", "mercurial", "other"],
             "maxLength": 16
           },
           "url": {
@@ -227,7 +230,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the diagram",
+            "description": "Unique identifier for the diagram (UUID)",
             "maxLength": 36,
             "readOnly": true
           },
@@ -235,6 +238,12 @@
             "type": "string",
             "description": "Name of the diagram",
             "maxLength": 256
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of diagram",
+            "enum": ["DFD"],
+            "maxLength": 64
           },
           "description": {
             "type": "string",
@@ -265,7 +274,7 @@
             "items": {
               "$ref": "#/components/schemas/Cell"
             },
-            "description": "List of graph cells"
+            "description": "List of graph cells (can be empty array if diagram has no cells)"
           },
           "version": {
             "type": "string",
@@ -273,7 +282,7 @@
             "maxLength": 16
           }
         },
-        "required": ["id", "name", "created_at", "modified_at", "version"],
+        "required": ["id", "name", "type", "created_at", "modified_at", "version"],
         "example": {
           "id": "359314D9-B6A3-460B-805F-B82190D7290F",
           "type": "DFD",
@@ -306,7 +315,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique identifier of the cell (node or edge).",
+            "description": "Unique identifier of the cell (node or edge) (UUID)",
             "format": "uuid",
             "example": "37EAEDFA-BF37-4996-8665-242FEC34BBFF",
             "maxLength": 36
@@ -343,13 +352,6 @@
                 "type": "number",
                 "description": "Height of the cell.",
                 "example": 40
-              },
-              "metadata": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Metadata"
-                },
-                "description": "Key-value pairs for additional cell metadata"
               }
             }
           },
@@ -371,7 +373,7 @@
           },
           "parent": {
             "type": "string",
-            "description": "ID of the parent cell (for grouping); null if no parent.",
+            "description": "ID of the parent cell (for grouping); null if no parent (UUID)",
             "format": "uuid",
             "nullable": true,
             "example": "7054CCF4-BE1F-4E3F-B025-4840DD6C1124",
@@ -379,7 +381,7 @@
           },
           "source": {
             "type": "string",
-            "description": "ID of the source node (for edges); null for vertices.",
+            "description": "ID of the source node (for edges); null for vertices (UUID)",
             "format": "uuid",
             "nullable": true,
             "example": "93A01A72-D250-4A8A-A36D-35C0A7FD86B4",
@@ -387,11 +389,18 @@
           },
           "target": {
             "type": "string",
-            "description": "ID of the target node (for edges); null for vertices.",
+            "description": "ID of the target node (for edges); null for vertices (UUID)",
             "format": "uuid",
             "nullable": true,
             "example": "FBC06D9C-11A4-4A77-9C44-A0BCE370DC9D",
             "maxLength": 36
+          },
+          "metadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Metadata"
+            },
+            "description": "Key-value pairs for additional cell metadata"
           }
         }
       },
@@ -402,7 +411,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the threat model",
+            "description": "Unique identifier for the threat model (UUID)",
             "maxLength": 36,
             "readOnly": true
           },
@@ -481,7 +490,7 @@
             "items": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of a related diagram",
+              "description": "Unique identifier of a related diagram (UUID)",
               "maxLength": 36
             },
             "description": "List of diagram UUIDs associated with this threat model"
@@ -552,14 +561,14 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the threat",
+            "description": "Unique identifier for the threat (UUID)",
             "maxLength": 36,
             "readOnly": true
           },
           "threat_model_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the parent threat model",
+            "description": "Unique identifier of the parent threat model (UUID)",
             "maxLength": 36
           },
           "name": {
@@ -592,14 +601,14 @@
           "diagram_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated diagram (if applicable)",
+            "description": "Unique identifier of the associated diagram (if applicable) (UUID)",
             "nullable": true,
             "maxLength": 36
           },
           "cell_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated cell (if applicable)",
+            "description": "Unique identifier of the associated cell (if applicable) (UUID)",
             "nullable": true,
             "maxLength": 36
           },
@@ -727,20 +736,20 @@
           "session_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the session",
+            "description": "Unique identifier for the session (UUID)",
             "maxLength": 36,
             "readOnly": true
           },
           "threat_model_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated threat model",
+            "description": "Unique identifier of the associated threat model (UUID)",
             "maxLength": 36
           },
           "diagram_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated diagram",
+            "description": "Unique identifier of the associated diagram (UUID)",
             "maxLength": 36
           },
           "participants": {
@@ -802,7 +811,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier of the resource",
+            "description": "Unique identifier of the resource (UUID)",
             "maxLength": 36,
             "readOnly": true
           }
@@ -863,6 +872,7 @@
   "paths": {
     "/": {
       "get": {
+        "tags": ["General"],
         "summary": "Get API information",
         "description": "Returns service, API, and operator information without authentication",
         "operationId": "getApiInfo",
@@ -882,6 +892,7 @@
     },
     "/auth/providers": {
       "get": {
+        "tags": ["Authentication"],
         "summary": "List available OAuth providers",
         "description": "Returns a list of configured OAuth providers available for authentication",
         "operationId": "getAuthProviders",
@@ -943,6 +954,7 @@
     },
     "/auth/login": {
       "get": {
+        "tags": ["Authentication"],
         "summary": "Initiate OAuth login",
         "description": "Redirects the user to an OAuth provider for authentication",
         "operationId": "initiateOAuthLogin",
@@ -982,6 +994,7 @@
     },
     "/auth/token": {
       "post": {
+        "tags": ["Authentication"],
         "summary": "Exchange authorization code for JWT",
         "description": "Exchanges an OAuth authorization code for a JWT token",
         "operationId": "exchangeToken",
@@ -1058,6 +1071,7 @@
     },
     "/auth/refresh": {
       "post": {
+        "tags": ["Authentication"],
         "summary": "Refresh JWT token",
         "description": "Exchanges a refresh token for a new JWT access token",
         "operationId": "refreshToken",
@@ -1125,6 +1139,7 @@
     },
     "/auth/me": {
       "get": {
+        "tags": ["Authentication"],
         "summary": "Get current user information",
         "description": "Returns information about the currently authenticated user",
         "operationId": "getCurrentUser",
@@ -1144,7 +1159,7 @@
                     "id": {
                       "type": "string",
                       "format": "uuid",
-                      "description": "User ID",
+                      "description": "Unique identifier for the user (UUID)",
                       "maxLength": 36
                     },
                     "email": {
@@ -1198,6 +1213,7 @@
     },
     "/auth/callback": {
       "get": {
+        "tags": ["Authentication"],
         "summary": "Handle OAuth callback",
         "description": "Exchanges an OAuth authorization code for a JWT",
         "operationId": "handleOAuthCallback",
@@ -1268,6 +1284,7 @@
     },
     "/auth/logout": {
       "post": {
+        "tags": ["Authentication"],
         "summary": "Logout user",
         "description": "Invalidates the user's JWT and ends the session",
         "operationId": "logoutUser",
@@ -1288,6 +1305,7 @@
     },
     "/threat_models": {
       "get": {
+        "tags": ["Threat Models"],
         "summary": "List threat models",
         "description": "Returns a list of threat models accessible to the authenticated user as name-ID pairs",
         "security": [
@@ -1369,6 +1387,7 @@
         }
       },
       "post": {
+        "tags": ["Threat Models"],
         "summary": "Create a threat model",
         "description": "Creates a new threat model with the authenticated user as owner",
         "security": [
@@ -1419,6 +1438,8 @@
                   "created_at": "2025-04-06T12:00:00Z",
                   "modified_at": "2025-04-06T12:00:00Z",
                   "owner": "user@example.com",
+                  "created_by": "user@example.com",
+                  "threat_model_framework": "STRIDE",
                   "authorization": [
                     {
                       "subject": "user@example.com",
@@ -1443,6 +1464,7 @@
     },
     "/threat_models/{threat_model_id}": {
       "get": {
+        "tags": ["Threat Models"],
         "summary": "Retrieve a threat model",
         "description": "Retrieves the full details of a specific threat model if the user has access",
         "security": [
@@ -1460,7 +1482,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model to retrieve"
+            "description": "Unique identifier of the threat model to retrieve (UUID)"
           }
         ],
         "responses": {
@@ -1486,6 +1508,7 @@
         }
       },
       "put": {
+        "tags": ["Threat Models"],
         "summary": "Update a threat model",
         "description": "Fully updates a threat model; restricted to writer/owner roles",
         "security": [
@@ -1503,7 +1526,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model to update"
+            "description": "Unique identifier of the threat model to update (UUID)"
           }
         ],
         "requestBody": {
@@ -1540,7 +1563,7 @@
           }
         },
         "example": {
-          "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"550e8400-e29b-41d4-a716-446655440000\", \"name\": \"Updated Threat Model\", \"description\": \"Updated threats\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"owner\": \"user@example.com\", \"authorization\": [{\"subject\": \"user@example.com\", \"role\": \"owner\"}], \"metadata\": [], \"diagrams\": [], \"threats\": []}",
+          "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"550e8400-e29b-41d4-a716-446655440000\", \"name\": \"Updated Threat Model\", \"description\": \"Updated threats\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"owner\": \"user@example.com\", \"created_by\": \"user@example.com\", \"threat_model_framework\": \"STRIDE\", \"authorization\": [{\"subject\": \"user@example.com\", \"role\": \"owner\"}], \"metadata\": [], \"diagrams\": [], \"threats\": []}",
           "response": {
             "status": 200,
             "body": {
@@ -1550,6 +1573,8 @@
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:45:00Z",
               "owner": "user@example.com",
+              "created_by": "user@example.com",
+              "threat_model_framework": "STRIDE",
               "authorization": [
                 {
                   "subject": "user@example.com",
@@ -1564,6 +1589,7 @@
         }
       },
       "patch": {
+        "tags": ["Threat Models"],
         "summary": "Partially update a threat model",
         "description": "Applies JSON Patch operations to a threat model; restricted to writer/owner roles",
         "security": [
@@ -1581,7 +1607,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model to update"
+            "description": "Unique identifier of the threat model to update (UUID)"
           }
         ],
         "requestBody": {
@@ -1636,7 +1662,7 @@
           }
         },
         "example": {
-          "request": "PATCH /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n[{\"op\": \"add\", \"path\": \"/threats/-\", \"value\": {\"id\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\", \"threat_model_id\": \"550e8400-e29b-41d4-a716-446655440000\", \"name\": \"Data Breach\", \"description\": \"Unauthorized access\", \"created_at\": \"2025-04-06T12:01:00Z\", \"modified_at\": \"2025-04-06T12:01:00Z\", \"metadata\": []}}]",
+          "request": "PATCH /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n[{\"op\": \"add\", \"path\": \"/threats/-\", \"value\": {\"id\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\", \"threat_model_id\": \"550e8400-e29b-41d4-a716-446655440000\", \"name\": \"Data Breach\", \"description\": \"Unauthorized access\", \"created_at\": \"2025-04-06T12:01:00Z\", \"modified_at\": \"2025-04-06T12:01:00Z\", \"severity\": \"High\", \"priority\": \"High\", \"mitigated\": false, \"status\": \"Open\", \"threat_type\": \"Information Disclosure\", \"metadata\": []}}]",
           "response": {
             "status": 200,
             "body": {
@@ -1646,6 +1672,8 @@
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:01:00Z",
               "owner": "user@example.com",
+              "created_by": "user@example.com",
+              "threat_model_framework": "STRIDE",
               "authorization": [
                 {
                   "subject": "user@example.com",
@@ -1675,6 +1703,7 @@
         }
       },
       "delete": {
+        "tags": ["Threat Models"],
         "summary": "Delete a threat model",
         "description": "Deletes a threat model; restricted to owner role",
         "security": [
@@ -1692,7 +1721,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model to delete"
+            "description": "Unique identifier of the threat model to delete (UUID)"
           }
         ],
         "responses": {
@@ -1719,6 +1748,7 @@
     },
     "/threat_models/{threat_model_id}/diagrams": {
       "get": {
+        "tags": ["Diagrams"],
         "summary": "List diagrams for a threat model",
         "description": "Returns a list of diagrams associated with the specified threat model",
         "security": [
@@ -1736,7 +1766,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "limit",
@@ -1827,6 +1857,7 @@
         }
       },
       "post": {
+        "tags": ["Diagrams"],
         "summary": "Create a diagram for a threat model",
         "description": "Creates a new diagram associated with the specified threat model",
         "security": [
@@ -1844,7 +1875,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           }
         ],
         "requestBody": {
@@ -1909,6 +1940,7 @@
             "body": {
               "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "New Diagram",
+              "type": "DFD",
               "description": "A test diagram",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:00:00Z",
@@ -1922,6 +1954,7 @@
     },
     "/threat_models/{threat_model_id}/diagrams/{diagram_id}": {
       "get": {
+        "tags": ["Diagrams"],
         "summary": "Retrieve a diagram",
         "description": "Retrieves the full details of a specific diagram within a threat model",
         "security": [
@@ -1939,7 +1972,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -1950,7 +1983,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram to retrieve"
+            "description": "Unique identifier of the diagram to retrieve (UUID)"
           }
         ],
         "responses": {
@@ -1981,6 +2014,7 @@
             "body": {
               "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Workflow Diagram",
+              "type": "DFD",
               "description": "A process workflow",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:30:00Z",
@@ -1992,6 +2026,7 @@
         }
       },
       "put": {
+        "tags": ["Diagrams"],
         "summary": "Update a diagram",
         "description": "Fully updates a diagram within a threat model; restricted to writer/owner roles",
         "security": [
@@ -2009,7 +2044,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -2020,7 +2055,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram to update"
+            "description": "Unique identifier of the diagram to update (UUID)"
           }
         ],
         "requestBody": {
@@ -2057,12 +2092,13 @@
           }
         },
         "example": {
-          "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"name\": \"Updated Diagram\", \"description\": \"Updated description\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"owner\": \"user@example.com\", \"authorization\": [{\"subject\": \"user@example.com\", \"role\": \"owner\"}], \"metadata\": [], \"components\": []}",
+          "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"name\": \"Updated Diagram\", \"type\": \"DFD\", \"description\": \"Updated description\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"metadata\": [], \"graphData\": [], \"version\": \"1.0\"}",
           "response": {
             "status": 200,
             "body": {
               "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Updated Diagram",
+              "type": "DFD",
               "description": "Updated description",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:45:00Z",
@@ -2074,6 +2110,7 @@
         }
       },
       "patch": {
+        "tags": ["Diagrams"],
         "summary": "Partially update a diagram",
         "description": "Applies JSON Patch operations to a diagram within a threat model; restricted to writer/owner roles",
         "security": [
@@ -2091,7 +2128,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -2102,7 +2139,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram to update"
+            "description": "Unique identifier of the diagram to update (UUID)"
           }
         ],
         "requestBody": {
@@ -2163,6 +2200,7 @@
             "body": {
               "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Patched Diagram",
+              "type": "DFD",
               "description": "A process workflow",
               "created_at": "2025-04-06T12:00:00Z",
               "modified_at": "2025-04-06T12:45:00Z",
@@ -2174,6 +2212,7 @@
         }
       },
       "delete": {
+        "tags": ["Diagrams"],
         "summary": "Delete a diagram",
         "description": "Deletes a diagram within a threat model; restricted to owner role",
         "security": [
@@ -2191,7 +2230,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -2202,7 +2241,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram to delete"
+            "description": "Unique identifier of the diagram to delete (UUID)"
           }
         ],
         "responses": {
@@ -2229,6 +2268,7 @@
     },
     "/threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate": {
       "get": {
+        "tags": ["Collaboration"],
         "summary": "Get collaboration session status",
         "description": "Returns details of an active collaboration session for a diagram within a threat model",
         "security": [
@@ -2246,7 +2286,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -2257,7 +2297,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram"
+            "description": "Unique identifier of the diagram (UUID)"
           }
         ],
         "responses": {
@@ -2287,6 +2327,7 @@
             "status": 200,
             "body": {
               "session_id": "abc123-session-uuid",
+              "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
               "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
               "participants": [
                 {
@@ -2300,6 +2341,7 @@
         }
       },
       "post": {
+        "tags": ["Collaboration"],
         "summary": "Join or start collaboration session",
         "description": "Joins an existing session or starts a new one for a diagram within a threat model; writers/owners can start, readers can only join",
         "security": [
@@ -2317,7 +2359,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -2328,7 +2370,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram"
+            "description": "Unique identifier of the diagram (UUID)"
           }
         ],
         "responses": {
@@ -2358,6 +2400,7 @@
             "status": 200,
             "body": {
               "session_id": "abc123-session-uuid",
+              "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
               "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
               "participants": [
                 {
@@ -2371,6 +2414,7 @@
         }
       },
       "delete": {
+        "tags": ["Collaboration"],
         "summary": "Leave collaboration session",
         "description": "Removes the user from an active collaboration session for a diagram within a threat model",
         "security": [
@@ -2388,7 +2432,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the threat model"
+            "description": "Unique identifier of the threat model (UUID)"
           },
           {
             "name": "diagram_id",
@@ -2399,7 +2443,7 @@
               "format": "uuid",
               "maxLength": 36
             },
-            "description": "UUID of the diagram"
+            "description": "Unique identifier of the diagram (UUID)"
           }
         ],
         "responses": {
