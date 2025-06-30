@@ -50,7 +50,8 @@
               },
               "build": {
                 "type": "string",
-                "description": "Current build number"
+                "description": "Current build number",
+                "maxLength": 256
               }
             },
             "required": ["name", "build"]
@@ -65,7 +66,8 @@
               "specification": {
                 "type": "string",
                 "format": "uri",
-                "description": "URL to the API specification"
+                "description": "URL to the API specification",
+                "maxLength": 1024
               }
             },
             "required": ["version", "specification"]
@@ -75,11 +77,13 @@
             "properties": {
               "name": {
                 "type": "string",
-                "description": "Operator name from environment variables"
+                "description": "Operator name from environment variables",
+                "maxLength": 256
               },
               "contact": {
                 "type": "string",
-                "description": "Operator contact information from environment variables"
+                "description": "Operator contact information from environment variables",
+                "maxLength": 1024
               }
             },
             "required": ["name", "contact"]
@@ -111,20 +115,24 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the document"
+            "description": "Unique identifier for the document",
+            "maxLength": 36
           },
           "name": {
             "type": "string",
-            "description": "Document name"
+            "description": "Document name",
+            "maxLength": 256
           },
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "URL location of the document"
+            "description": "URL location of the document",
+            "maxLength": 1024
           },
           "description": {
             "type": "string",
-            "description": "Description of document purpose or content"
+            "description": "Description of document purpose or content",
+            "maxLength": 1024
           }
         },
         "required": ["name", "url"],
@@ -141,24 +149,29 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the source code reference"
+            "description": "Unique identifier for the source code reference",
+            "maxLength": 36
           },
           "name": {
             "type": "string",
-            "description": "Name for the source code reference"
+            "description": "Name for the source code reference",
+            "maxLength": 256
           },
           "description": {
             "type": "string",
-            "description": "Description of the referenced source code"
+            "description": "Description of the referenced source code",
+            "maxLength": 1024
           },
           "type": {
             "type": "string",
-            "description": "Source code repository type (git, svn, mercurial, other)"
+            "description": "Source code repository type (git, svn, mercurial, other)",
+            "maxLength": 16
           },
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "URL to retrieve the referenced source code"
+            "description": "URL to retrieve the referenced source code",
+            "maxLength": 1024
           },
           "parameters": {
             "type": "object",
@@ -166,15 +179,19 @@
             "properties": {
               "refType": {
                 "type": "string",
-                "description": "Reference type (branch, tag, or commit)"
+                "enum": ["branch", "tag", "commit"],
+                "description": "Reference type (branch, tag, or commit)",
+                "maxLength": 6
               },
               "refValue": {
                 "type": "string",
-                "description": "Reference value (branch name, tag value, or commit id)"
+                "description": "Reference value (branch name, tag value, or commit id)",
+                "maxLength": 256
               },
               "subPath": {
                 "type": "string",
-                "description": "Sub-path within the repository"
+                "description": "Sub-path within the repository",
+                "maxLength": 256
               }
             },
             "required": ["refType", "refValue"]
@@ -200,25 +217,30 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the diagram"
+            "description": "Unique identifier for the diagram",
+            "maxLength": 36
           },
           "name": {
             "type": "string",
-            "description": "Name of the diagram"
+            "description": "Name of the diagram",
+            "maxLength": 256
           },
           "description": {
             "type": "string",
-            "description": "Description of the diagram"
+            "description": "Description of the diagram",
+            "maxLength": 1024
           },
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Creation timestamp (ISO8601)"
+            "description": "Creation timestamp (ISO3339)",
+            "maxLength": 36
           },
           "modified_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Last modification timestamp (ISO8601)"
+            "description": "Last modification timestamp (ISO3339)",
+            "maxLength": 36
           },
           "metadata": {
             "type": "array",
@@ -238,7 +260,7 @@
         },
         "required": ["id", "name", "created_at", "modified_at"],
         "example": {
-          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "id": "359314D9-B6A3-460B-805F-B82190D7290F",
           "type": "DFD",
           "version": "1.0",
           "name": "Workflow Diagram",
@@ -248,7 +270,7 @@
           "metadata": [],
           "graphData": [
             {
-              "id": "987fcdeb-12d3-4567-a890-426614174000",
+              "id": "233598D2-8C6D-4A73-AFE1-647081C4F7AA",
               "value": "Process",
               "geometry": {
                 "x": 100,
@@ -270,13 +292,16 @@
           "id": {
             "type": "string",
             "description": "Unique identifier of the cell (node or edge).",
-            "example": "v1"
+            "format": "uuid",
+            "example": "37EAEDFA-BF37-4996-8665-242FEC34BBFF",
+            "maxLength": 36
           },
           "value": {
             "type": "string",
             "description": "The label or value associated with the cell (optional for edges).",
             "example": "node 1",
-            "nullable": true
+            "nullable": true,
+            "maxLength": 1024
           },
           "geometry": {
             "type": "object",
@@ -332,20 +357,25 @@
           "parent": {
             "type": "string",
             "description": "ID of the parent cell (for grouping); null if no parent.",
+            "format": "uuid",
             "nullable": true,
-            "example": null
+            "example": "7054CCF4-BE1F-4E3F-B025-4840DD6C1124",
+            "maxLength": 36
           },
           "source": {
             "type": "string",
             "description": "ID of the source node (for edges); null for vertices.",
+            "format": "uuid",
             "nullable": true,
-            "example": "v1"
+            "example": "93A01A72-D250-4A8A-A36D-35C0A7FD86B4",
+            "maxLength": 36
           },
           "target": {
             "type": "string",
             "description": "ID of the target node (for edges); null for vertices.",
             "nullable": true,
-            "example": "v2"
+            "example": "FBC06D9C-11A4-4A77-9C44-A0BCE370DC9D",
+            "maxLength": 36
           }
         }
       },
@@ -356,25 +386,30 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the threat model"
+            "description": "Unique identifier for the threat model",
+            "maxLength": 36
           },
           "name": {
             "type": "string",
-            "description": "Name of the threat model"
+            "description": "Name of the threat model",
+            "maxLength": 256
           },
           "description": {
             "type": "string",
-            "description": "Description of the threat model"
+            "description": "Description of the threat model",
+            "maxLength": 1024
           },
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Creation timestamp (RFC3339)"
+            "description": "Creation timestamp (RFC3339)",
+            "maxLength": 36
           },
           "modified_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Last modification timestamp (RFC3339)"
+            "description": "Last modification timestamp (RFC3339)",
+            "maxLength": 36
           },
           "owner": {
             "type": "string",
@@ -382,7 +417,8 @@
           },
           "created_by": {
             "type": "string",
-            "description": "Username or identifier of the creator of the threat model"
+            "description": "Username or identifier of the creator of the threat model",
+            "maxLength": 256
           },
           "threat_model_framework": {
             "type": "string",
@@ -392,7 +428,8 @@
           "issue_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL to an issue in an issue tracking system for this threat model"
+            "description": "URL to an issue in an issue tracking system for this threat model",
+            "maxLength": 1024
           },
           "authorization": {
             "type": "array",
@@ -427,7 +464,8 @@
             "items": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of a related diagram"
+              "description": "UUID of a related diagram",
+              "maxLength": 36
             },
             "description": "List of diagram UUIDs associated with this threat model"
           },
@@ -450,7 +488,7 @@
           "threat_model_framework"
         ],
         "example": {
-          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "id": "F898D276-DE86-4837-9B5E-C46E1A08EAB6",
           "name": "System Threat Model",
           "description": "Threats for system X",
           "created_at": "2025-04-06T12:00:00Z",
@@ -466,18 +504,18 @@
             }
           ],
           "metadata": [],
-          "diagrams": ["123e4567-e89b-12d3-a456-426614174000"],
+          "diagrams": ["22DB9004-435D-4765-9E41-0291AA8FE15A"],
           "threats": [
             {
-              "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-              "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+              "id": "EC464A19-D1CA-4B72-AD8D-055AD2073C2B",
+              "threat_model_id": "B7946A3A-5581-42C6-91BF-F41A1E1DD535",
               "name": "Data Breach",
               "description": "Unauthorized data access",
-              "mitigation": "Recommended: implement least privilege authorization policy",
+              "mitigation": "Recommendation: implement least privilege authorization policy",
               "created_at": "2025-04-06T12:01:00Z",
               "modified_at": "2025-04-06T12:01:00Z",
-              "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
-              "cell_id": "c7d10424-3c10-43d0-8ac6-47d61dee3f88",
+              "diagram_id": "",
+              "cell_id": "",
               "severity": "High",
               "score": 7.5,
               "priority": "High",
@@ -497,24 +535,29 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for the threat"
+            "description": "Unique identifier for the threat",
+            "maxLength": 36
           },
           "threat_model_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the parent threat model"
+            "description": "UUID of the parent threat model",
+            "maxLength": 36
           },
           "name": {
             "type": "string",
-            "description": "Name of the threat"
+            "description": "Name of the threat",
+            "maxLength": 256
           },
           "description": {
             "type": "string",
-            "description": "Description of the threat and risk to the organization"
+            "description": "Description of the threat and risk to the organization",
+            "maxLength": 1024
           },
           "mitigation": {
             "type": "string",
-            "description": "Recommended or planned mitigation(s) for the threat"
+            "description": "Recommended or planned mitigation(s) for the threat",
+            "maxLength": 1024
           },
           "created_at": {
             "type": "string",
@@ -529,12 +572,14 @@
           "diagram_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated diagram (if applicable)"
+            "description": "UUID of the associated diagram (if applicable)",
+            "maxLength": 36
           },
           "cell_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated cell (if applicable)"
+            "description": "UUID of the associated cell (if applicable)",
+            "maxLength": 36
           },
           "severity": {
             "type": "string",
@@ -543,11 +588,14 @@
           },
           "score": {
             "type": "number",
-            "description": "Numeric score representing the risk or impact of the threat"
+            "description": "Numeric score representing the risk or impact of the threat",
+            "minimum": 0.0,
+            "maximum": 10.0
           },
           "priority": {
             "type": "string",
-            "description": "Priority level for addressing the threat"
+            "description": "Priority level for addressing the threat",
+            "maxLength": 16
           },
           "mitigated": {
             "type": "boolean",
@@ -555,16 +603,19 @@
           },
           "status": {
             "type": "string",
-            "description": "Current status of the threat"
+            "description": "Current status of the threat",
+            "maxLength": 256
           },
           "threat_type": {
             "type": "string",
-            "description": "Type or category of the threat"
+            "description": "Type or category of the threat",
+            "maxLength": 256
           },
           "issue_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL to an issue in an issue tracking system for this threat"
+            "description": "URL to an issue in an issue tracking system for this threat",
+            "maxLength": 1024
           },
           "metadata": {
             "type": "array",
@@ -581,6 +632,9 @@
           "created_at",
           "modified_at",
           "severity",
+          "priority",
+          "mitigated",
+          "status",
           "threat_type"
         ]
       },
@@ -590,12 +644,14 @@
         "properties": {
           "subject": {
             "type": "string",
-            "description": "Username or identifier of the user (may be email address or other format)"
+            "description": "Username or identifier of the user (may be email address or other format)",
+            "maxLength": 256
           },
           "role": {
             "type": "string",
             "enum": ["reader", "writer", "owner"],
-            "description": "Role: reader (view), writer (edit), owner (full control)"
+            "description": "Role: reader (view), writer (edit), owner (full control)",
+            "maxLength": 6
           }
         },
         "required": ["subject", "role"]
@@ -606,11 +662,13 @@
         "properties": {
           "key": {
             "type": "string",
-            "description": "Metadata key"
+            "description": "Metadata key",
+            "maxLength": 256
           },
           "value": {
             "type": "string",
-            "description": "Metadata value"
+            "description": "Metadata value",
+            "maxLength": 1024
           }
         },
         "required": ["key", "value"]
@@ -640,17 +698,21 @@
         "properties": {
           "session_id": {
             "type": "string",
-            "description": "Unique identifier for the session"
+            "format": "uuid",
+            "description": "Unique identifier for the session",
+            "maxLength": 36
           },
           "threat_model_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated threat model"
+            "description": "UUID of the associated threat model",
+            "maxLength": 36
           },
           "diagram_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated diagram"
+            "description": "UUID of the associated diagram",
+            "maxLength": 36
           },
           "participants": {
             "type": "array",
@@ -660,12 +722,14 @@
               "properties": {
                 "user_id": {
                   "type": "string",
-                  "description": "Username or identifier of the participant (may be email address or other format)"
+                  "description": "Username or identifier of the participant (may be email address or other format)",
+                  "maxLength": 256
                 },
                 "joined_at": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Join timestamp"
+                  "description": "Join timestamp",
+                  "maxLength": 36
                 }
               }
             },
@@ -673,7 +737,8 @@
           },
           "websocket_url": {
             "type": "string",
-            "description": "WebSocket URL for real-time updates"
+            "description": "WebSocket URL for real-time updates",
+            "maxLength": 1024
           }
         },
         "required": [
@@ -684,16 +749,16 @@
           "websocket_url"
         ],
         "example": {
-          "session_id": "abc123-session-uuid",
-          "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
-          "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
+          "session_id": "D7744D3A-ED22-40AF-862B-29786CAD0007",
+          "threat_model_id": "5311D207-AFD5-4A1A-BA83-14C1445DC257",
+          "diagram_id": "DFF7F4A9-CBCE-4001-9198-2706C86F7EF3",
           "participants": [
             {
               "user_id": "user@example.com",
               "joined_at": "2025-04-06T12:02:00Z"
             }
           ],
-          "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
+          "websocket_url": "wss://api.example.com/threat_models/5311D207-AFD5-4A1A-BA83-14C1445DC257/diagrams/DFF7F4A9-CBCE-4001-9198-2706C86F7EF3/ws"
         }
       },
       "ListItem": {
@@ -702,12 +767,14 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Name of the resource"
+            "description": "Name of the resource",
+            "maxLength": 256
           },
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier of the resource"
+            "description": "Unique identifier of the resource",
+            "maxLength": 36
           }
         },
         "required": ["name", "id"]
@@ -1040,7 +1107,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model to retrieve"
           }
@@ -1105,7 +1173,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model to update"
           }
@@ -1182,7 +1251,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model to update"
           }
@@ -1287,7 +1357,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model to delete"
           }
@@ -1330,7 +1401,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1418,7 +1490,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           }
@@ -1518,7 +1591,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1528,7 +1602,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram to retrieve"
           }
@@ -1592,7 +1667,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1602,7 +1678,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram to update"
           }
@@ -1678,7 +1755,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1688,7 +1766,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram to update"
           }
@@ -1782,7 +1861,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1835,7 +1915,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1845,7 +1926,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram"
           }
@@ -1904,7 +1986,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1914,7 +1997,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram"
           }
@@ -1973,7 +2057,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the threat model"
           },
@@ -1983,7 +2068,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "maxLength": 36
             },
             "description": "UUID of the diagram"
           }
