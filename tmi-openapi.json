@@ -120,7 +120,8 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier for the document",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           },
           "name": {
             "type": "string",
@@ -154,7 +155,8 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier for the source code reference",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           },
           "name": {
             "type": "string",
@@ -222,7 +224,8 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier for the diagram",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           },
           "name": {
             "type": "string",
@@ -396,7 +399,8 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier for the threat model",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           },
           "name": {
             "type": "string",
@@ -545,7 +549,8 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier for the threat",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           },
           "threat_model_id": {
             "type": "string",
@@ -719,7 +724,8 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier for the session",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           },
           "threat_model_id": {
             "type": "string",
@@ -793,10 +799,48 @@
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier of the resource",
-            "maxLength": 36
+            "maxLength": 36,
+            "readOnly": true
           }
         },
         "required": ["name", "id"]
+      },
+      "PaginatedResponse": {
+        "type": "object",
+        "description": "Paginated response wrapper for list endpoints",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of items for the current page"
+          },
+          "pagination": {
+            "type": "object",
+            "description": "Pagination metadata",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total number of items across all pages",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Maximum number of items per page",
+                "minimum": 1
+              },
+              "offset": {
+                "type": "integer",
+                "description": "Number of items skipped from the beginning",
+                "minimum": 0
+              },
+              "has_more": {
+                "type": "boolean",
+                "description": "Whether there are more items available beyond this page"
+              }
+            },
+            "required": ["total", "limit", "offset", "has_more"]
+          }
+        },
+        "required": ["data", "pagination"]
       }
     },
     "responses": {
@@ -876,21 +920,19 @@
           "response": {
             "status": 200,
             "body": [
-                  {
-                    "id": "google",
-                    "name": "Google",
-                    "enabled": true,
-                    "icon": "google"
-                  },
-                  {
-                    "id": "github",
-                    "name": "GitHub",
-                    "enabled": true,
-                    "icon": "github"
-                  }
-                ]
+              {
+                "id": "google",
+                "name": "Google",
+                "enabled": true,
+                "icon": "google"
+              },
+              {
+                "id": "github",
+                "name": "GitHub",
+                "enabled": true,
+                "icon": "github"
               }
-            }
+            ]
           }
         }
       }
@@ -1280,21 +1322,40 @@
         ],
         "responses": {
           "200": {
-            "description": "List of threat models as name-ID pairs",
+            "description": "Paginated list of threat models as name-ID pairs",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ListItem"
-                  }
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ListItem"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 },
-                "example": [
-                  {
-                    "name": "System Threat Model",
-                    "id": "550e8400-e29b-41d4-a716-446655440000"
+                "example": {
+                  "data": [
+                    {
+                      "name": "System Threat Model",
+                      "id": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                  ],
+                  "pagination": {
+                    "total": 1,
+                    "limit": 20,
+                    "offset": 0,
+                    "has_more": false
                   }
-                ]
+                }
               }
             }
           },
@@ -1703,14 +1764,25 @@
         ],
         "responses": {
           "200": {
-            "description": "List of diagrams as name-ID pairs",
+            "description": "Paginated list of diagrams as name-ID pairs",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ListItem"
-                  }
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ListItem"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -1729,16 +1801,24 @@
           "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams?limit=2&offset=0\nAuthorization: Bearer <JWT>",
           "response": {
             "status": 200,
-            "body": [
-              {
-                "name": "Workflow Diagram",
-                "id": "123e4567-e89b-12d3-a456-426614174000"
-              },
-              {
-                "name": "System Overview",
-                "id": "456e7890-e12f-34d5-a678-426614174001"
+            "body": {
+              "data": [
+                {
+                  "name": "Workflow Diagram",
+                  "id": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                {
+                  "name": "System Overview",
+                  "id": "456e7890-e12f-34d5-a678-426614174001"
+                }
+              ],
+              "pagination": {
+                "total": 2,
+                "limit": 2,
+                "offset": 0,
+                "has_more": false
               }
-            ]
+            }
           }
         }
       },
