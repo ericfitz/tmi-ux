@@ -5,6 +5,10 @@
     "description": "A RESTful API for collaborative threat modeling.",
     "version": "1.0.0"
   },
+  "externalDocs": {
+    "description": "Find more information here",
+    "url": ""
+  },
   "servers": [
     {
       "url": "https://api.tmi.example.com",
