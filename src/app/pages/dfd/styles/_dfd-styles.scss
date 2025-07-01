@@ -277,3 +277,23 @@ circle.x6-port-body {
     filter: drop-shadow(0 0 8px rgb(49 208 198 / 40%));
   }
 }
+
+// =============================================================================
+// SNAPLINE STYLES
+// =============================================================================
+
+// Red snaplines for node alignment during movement
+// Enhanced specificity to override X6 plugin default styles
+// Ordered from least to most specific to satisfy linting rules
+.dfd-snapline-red,
+svg .dfd-snapline-red,
+.x6-graph .dfd-snapline-red,
+.x6-graph-svg .dfd-snapline-red,
+.x6-graph-svg-container .dfd-snapline-red,
+.dfd-container .x6-graph .dfd-snapline-red {
+  stroke: #f00 !important;
+  stroke-width: 1px !important;
+  fill: none !important;
+  pointer-events: none !important;
+  opacity: 0.8 !important;
+}

@@ -1266,10 +1266,23 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Double-click events for label editing
     this._graph.on('cell:dblclick', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
       this.logger.debugComponent('DFD', 'Cell double-click triggered', { cellId: cell.id });
-      // Stop event propagation to prevent interference with tools
-      e.stopPropagation();
-      e.preventDefault();
-      this._addLabelEditor(cell, e);
+
+      // Check if the double-click is on a tool element (like arrowhead)
+      const target = e.target as HTMLElement;
+      const isToolElement =
+        target &&
+        (target.classList.contains('x6-tool') ||
+          target.closest('.x6-tool') ||
+          target.getAttribute('data-tool-name') ||
+          target.closest('[data-tool-name]'));
+
+      // Only handle label editing if not clicking on a tool
+      if (!isToolElement) {
+        // Stop event propagation to prevent interference with tools
+        e.stopPropagation();
+        e.preventDefault();
+        this._addLabelEditor(cell, e);
+      }
     });
   }
 
@@ -2010,8 +2023,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           snapRadius: 10,
           // Reduce threshold to make vertices less sensitive to clicks
           threshold: 40,
-          // Configure vertex addition behavior
+          // Configure vertex addition behavior - don't stop propagation to allow arrowhead tools to work
           stopPropagation: false,
+          // Prevent interference with other tools
+          useCellGeometry: true,
         },
       },
       // Source arrowhead tool for dragging source endpoint
@@ -2030,6 +2045,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           // Enable dragging to reconnect source
           tagName: 'circle',
           resetOffset: true,
+          // Prevent interference with label editing
+          stopPropagation: false,
+          // Ensure the tool is interactive
+          useCellGeometry: true,
         },
       },
       // Target arrowhead tool for dragging target endpoint
@@ -2048,6 +2067,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           // Enable dragging to reconnect target
           tagName: 'circle',
           resetOffset: true,
+          // Prevent interference with label editing
+          stopPropagation: false,
+          // Ensure the tool is interactive
+          useCellGeometry: true,
         },
       },
       // Use X6's native button-remove tool for edges
