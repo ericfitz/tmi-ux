@@ -2034,21 +2034,16 @@ export class X6GraphAdapter implements IGraphAdapter {
         name: 'source-arrowhead',
         args: {
           attrs: {
-            body: {
-              fill: '#31d0c6',
-              stroke: '#31d0c6',
-              'stroke-width': 2,
-              r: 6,
-              cursor: 'move',
-            },
+            fill: '#31d0c6',
+            stroke: '#31d0c6',
+            'stroke-width': 2,
+            r: 6,
+            cursor: 'move',
           },
           // Enable dragging to reconnect source
           tagName: 'circle',
-          resetOffset: true,
           // Prevent interference with label editing
           stopPropagation: false,
-          // Ensure the tool is interactive
-          useCellGeometry: true,
         },
       },
       // Target arrowhead tool for dragging target endpoint
@@ -2056,21 +2051,16 @@ export class X6GraphAdapter implements IGraphAdapter {
         name: 'target-arrowhead',
         args: {
           attrs: {
-            body: {
-              fill: '#fe854f',
-              stroke: '#fe854f',
-              'stroke-width': 2,
-              r: 6,
-              cursor: 'move',
-            },
+            fill: '#fe854f',
+            stroke: '#fe854f',
+            'stroke-width': 2,
+            r: 6,
+            cursor: 'move',
           },
           // Enable dragging to reconnect target
           tagName: 'circle',
-          resetOffset: true,
           // Prevent interference with label editing
           stopPropagation: false,
-          // Ensure the tool is interactive
-          useCellGeometry: true,
         },
       },
       // Use X6's native button-remove tool for edges
