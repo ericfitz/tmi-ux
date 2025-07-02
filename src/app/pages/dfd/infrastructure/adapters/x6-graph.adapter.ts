@@ -385,10 +385,13 @@ export class X6GraphAdapter implements IGraphAdapter {
             zIndex: 1,
           });
 
+          this.logger.debugComponent('DFD', '[Edge Creation] createEdge - Initial labels config:', {
+            labels: edge.labels,
+          });
           this.logger.debugComponent(
             'DFD',
             '[Edge Creation] Edge created with UUID type 4 and explicit dual-path markup',
-            { edgeId },
+            { edgeId, labels: edge.getLabels() },
           );
           return edge;
         },
@@ -506,6 +509,14 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Add an edge to the graph
    */
   addEdge(edge: DiagramEdge): Edge {
+    this.logger.debugComponent('DFD', '[Edge Add] addEdge called', {
+      diagramEdgeId: edge.id,
+      diagramEdgeLabel: edge.data.label,
+      diagramEdgeSourceNodeId: edge.sourceNodeId,
+      diagramEdgeTargetNodeId: edge.targetNodeId,
+      diagramEdgeSourcePortId: edge.data.sourcePortId,
+      diagramEdgeTargetPortId: edge.data.targetPortId,
+    });
     const graph = this.getGraph();
 
     // Prepare source and target with port information if available
@@ -521,7 +532,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       id: edge.id,
       source: sourceConfig,
       target: targetConfig,
-      label: (edge.data.label as string) || 'Flow', // Add label for mock compatibility
+      // Remove the 'label' property here, as the 'labels' array below already handles it.
+      // This prevents duplicate labels when an edge is created via addEdge.
       shape: 'edge',
       markup: [
         {
@@ -592,6 +604,21 @@ export class X6GraphAdapter implements IGraphAdapter {
         domainEdgeId: edge.id,
       },
       zIndex: 1,
+    });
+
+    // Set edge z-order to the higher of source or target node z-orders
+    this.logger.debugComponent('DFD', '[Edge Add] X6 Edge created', {
+      x6EdgeId: x6Edge.id,
+      x6EdgeLabel: x6Edge.getLabels(),
+      x6EdgeDataLabel: (() => {
+        const data: unknown = x6Edge.getData();
+        if (data && typeof data === 'object' && 'label' in data) {
+          return (data as Record<string, unknown>)['label'];
+        }
+        return undefined;
+      })(),
+      x6EdgeSource: x6Edge.getSource(),
+      x6EdgeTarget: x6Edge.getTarget(),
     });
 
     // Set edge z-order to the higher of source or target node z-orders
@@ -905,6 +932,13 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Set the standardized label text for a cell
    */
   setCellLabel(cell: Cell, text: string): void {
+    this.logger.debugComponent('DFD', '[Set Cell Label] Attempting to set label', {
+      cellId: cell.id,
+      isNode: cell.isNode(),
+      currentLabel: this.getCellLabel(cell),
+      newText: text,
+      existingLabelsCount: (cell as Edge).getLabels ? (cell as Edge).getLabels().length : 0,
+    });
     if (cell.isNode()) {
       cell.attr('text/text', text);
       // Also update the data for consistency
@@ -932,6 +966,11 @@ export class X6GraphAdapter implements IGraphAdapter {
             },
           },
         });
+        this.logger.debugComponent('DFD', '[Set Cell Label] Updated existing label', {
+          cellId: cell.id,
+          newText: text,
+          labelsAfterUpdate: edge.getLabels().length,
+        });
       } else {
         // Create a new label if none exists
         edge.appendLabel({
@@ -949,6 +988,11 @@ export class X6GraphAdapter implements IGraphAdapter {
               stroke: 'none',
             },
           },
+        });
+        this.logger.debugComponent('DFD', '[Set Cell Label] Appended new label', {
+          cellId: cell.id,
+          newText: text,
+          labelsAfterAppend: edge.getLabels().length,
         });
       }
       // Also update the data for consistency
