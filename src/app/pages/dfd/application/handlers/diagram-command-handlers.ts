@@ -16,6 +16,10 @@ import {
 import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
 import { BaseDomainEvent } from '../../domain/events/domain-event';
 import { DiagramSnapshot } from '../../domain/aggregates/diagram-aggregate';
+import { OperationStateTracker } from '../../infrastructure/services/operation-state-tracker.service';
+import { OperationType } from '../../domain/history/history.types';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 
 /**
  * Command execution result interface
@@ -94,6 +98,9 @@ export class CreateDiagramCommandHandler implements ICommandHandler<CreateDiagra
 export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _operationTracker: OperationStateTracker,
+    private readonly _logger: LoggerService,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
   ) {}
 
   getCommandType(): string {
@@ -101,20 +108,63 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
   }
 
   handle(command: AddNodeCommand): Observable<CommandResult> {
+    const operationId = command.commandId; // Use command ID as operation ID for direct commands
+    this._logger.info('DIAGNOSTIC: AddNodeCommand - Starting operation tracking', {
+      operationId,
+      commandId: command.commandId,
+      nodeId: command.nodeId,
+      operationType: OperationType.ADD_NODE,
+    });
+    this._operationTracker.startOperation(operationId, OperationType.ADD_NODE, {
+      entityId: command.nodeId,
+      entityType: 'node',
+    });
+
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
-      switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error =>
-        throwError(
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            this._logger.info('DIAGNOSTIC: AddNodeCommand - Completing operation', {
+              operationId,
+              commandId: command.commandId,
+            });
+            this._operationTracker.completeOperation(operationId);
+
+            // Re-add the node to the X6 graph after successful domain model update
+            const node = diagram.getNode(command.nodeId);
+            if (node) {
+              this._logger.info('DIAGNOSTIC: AddNodeCommand - Adding node to X6 graph', {
+                nodeId: node.id,
+                shapeType: node.data.type,
+              });
+              this._x6GraphAdapter.addNode(node);
+            } else {
+              this._logger.warn('DIAGNOSTIC: AddNodeCommand - Node not found in domain after add', {
+                nodeId: command.nodeId,
+              });
+            }
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) => {
+        this._logger.error('DIAGNOSTIC: AddNodeCommand - Cancelling operation due to error', {
+          operationId,
+          commandId: command.commandId,
+          error: error,
+        });
+        this._operationTracker.cancelOperation(operationId);
+        return throwError(
           () =>
             new Error(
               `Failed to add node: ${error instanceof Error ? error.message : String(error)}`,
             ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -273,6 +323,8 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
 export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
+    private readonly _logger: LoggerService,
   ) {}
 
   getCommandType(): string {
@@ -280,20 +332,41 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
   }
 
   handle(command: RemoveNodeCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: RemoveNodeCommand - Handling command', {
+      commandId: command.commandId,
+      nodeId: command.nodeId,
+    });
+
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
-      switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error =>
-        throwError(
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            // After successful removal from domain model, remove from X6 graph
+            this._logger.info('DIAGNOSTIC: RemoveNodeCommand - Removing node from X6 graph', {
+              nodeId: command.nodeId,
+            });
+            this._x6GraphAdapter.removeNode(command.nodeId);
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) => {
+        this._logger.error('DIAGNOSTIC: RemoveNodeCommand - Failed to remove node', {
+          commandId: command.commandId,
+          nodeId: command.nodeId,
+          error: error,
+        });
+        return throwError(
           () =>
             new Error(
               `Failed to remove node: ${error instanceof Error ? error.message : String(error)}`,
             ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -332,6 +405,8 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
 export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _operationTracker: OperationStateTracker,
+    private readonly _logger: LoggerService,
   ) {}
 
   getCommandType(): string {
@@ -339,20 +414,49 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
   }
 
   handle(command: AddEdgeCommand): Observable<CommandResult> {
+    const operationId = command.commandId; // Use command ID as operation ID for direct commands
+    this._logger.info('DIAGNOSTIC: AddEdgeCommand - Starting operation tracking', {
+      operationId,
+      commandId: command.commandId,
+      edgeId: command.edgeId,
+      operationType: OperationType.ADD_EDGE,
+    });
+    this._operationTracker.startOperation(operationId, OperationType.ADD_EDGE, {
+      entityId: command.edgeId,
+      entityType: 'edge',
+    });
+
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
-      switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error =>
-        throwError(
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            this._logger.info('DIAGNOSTIC: AddEdgeCommand - Completing operation', {
+              operationId,
+              commandId: command.commandId,
+            });
+            this._operationTracker.completeOperation(operationId);
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) => {
+        this._logger.error('DIAGNOSTIC: AddEdgeCommand - Cancelling operation due to error', {
+          operationId,
+          commandId: command.commandId,
+          error: error,
+        });
+        this._operationTracker.cancelOperation(operationId);
+        return throwError(
           () =>
             new Error(
               `Failed to add edge: ${error instanceof Error ? error.message : String(error)}`,
             ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -450,6 +554,8 @@ export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeD
 export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
+    private readonly _logger: LoggerService,
   ) {}
 
   getCommandType(): string {
@@ -457,20 +563,41 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
   }
 
   handle(command: RemoveEdgeCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: RemoveEdgeCommand - Handling command', {
+      commandId: command.commandId,
+      edgeId: command.edgeId,
+    });
+
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
-      switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error =>
-        throwError(
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            // After successful removal from domain model, remove from X6 graph
+            this._logger.info('DIAGNOSTIC: RemoveEdgeCommand - Removing edge from X6 graph', {
+              edgeId: command.edgeId,
+            });
+            this._x6GraphAdapter.removeEdge(command.edgeId);
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) => {
+        this._logger.error('DIAGNOSTIC: RemoveEdgeCommand - Failed to remove edge', {
+          commandId: command.commandId,
+          edgeId: command.edgeId,
+          error: error,
+        });
+        return throwError(
           () =>
             new Error(
               `Failed to remove edge: ${error instanceof Error ? error.message : String(error)}`,
             ),
-        ),
-      ),
+        );
+      }),
     );
   }
 

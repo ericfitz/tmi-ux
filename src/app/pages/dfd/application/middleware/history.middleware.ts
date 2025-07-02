@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ICommandMiddleware } from '../interfaces/command-bus.interface';
 import { AnyDiagramCommand } from '../../domain/commands/diagram-commands';
@@ -36,12 +36,12 @@ export class HistoryMiddleware implements ICommandMiddleware {
     command: AnyDiagramCommand,
     next: (command: AnyDiagramCommand) => Observable<T>,
   ): Observable<T> {
-    // Check if this command should be recorded in history
-    if (!this._shouldRecordCommand(command)) {
+    // Do basic checks before execution (but not final state check)
+    if (!this._shouldRecordCommandBasic(command)) {
       this._logger.debug('Command will not be recorded in history', {
         commandType: command.type,
         isLocalUserInitiated: command.isLocalUserInitiated,
-        reason: 'not in final state, not recordable, or not local user initiated',
+        reason: 'not recordable or not local user initiated',
       });
       return next(command);
     }
@@ -49,14 +49,49 @@ export class HistoryMiddleware implements ICommandMiddleware {
     // Capture state before execution
     const beforeState = this._captureCurrentState();
 
-    this._logger.debug('Recording command in history', {
-      commandType: command.type,
-      commandId: command.commandId,
-    });
+    this._logger.debug(
+      'Command eligible for history recording, checking final state after execution',
+      {
+        commandType: command.type,
+        commandId: command.commandId,
+      },
+    );
 
     return next(command).pipe(
-      tap(() => {
+      catchError((error: unknown) => {
+        this._logger.error('Command execution failed, not recording in history', {
+          error,
+          commandType: command.type,
+          commandId: command.commandId,
+        });
+        return throwError(() => error);
+      }),
+      finalize(() => {
         try {
+          // CRITICAL FIX: Use finalize() to ensure this runs AFTER all other subscriptions
+          // This guarantees the History Integration Service has completed the operation
+          const operationId = this._getOperationId(command);
+          const isFinalState = operationId
+            ? this._operationTracker.isFinalState(operationId)
+            : false;
+
+          this._logger.info('DIAGNOSTIC: Checking operation final state in finalize()', {
+            commandType: command.type,
+            commandId: command.commandId,
+            operationId,
+            isFinalState,
+          });
+
+          // Only record if operation is in final state
+          if (!operationId || !isFinalState) {
+            this._logger.debug('Operation not in final state in finalize(), not recording', {
+              commandType: command.type,
+              operationId,
+              isFinalState,
+            });
+            return;
+          }
+
           // Create inverse command
           if (this._inverseFactory.canCreateInverse(command)) {
             const inverse = this._inverseFactory.createInverse(command, beforeState);
@@ -64,14 +99,15 @@ export class HistoryMiddleware implements ICommandMiddleware {
             // Validate the inverse
             if (this._inverseFactory.validateInverse(command, inverse)) {
               // Record in history
-              this._historyService.recordCommand(command, inverse, this._getOperationId(command));
+              this._historyService.recordCommand(command, inverse, operationId);
 
               // Clear redo stack since we're executing a new command
               this._historyService.clearRedoStack();
 
-              this._logger.debug('Command successfully recorded in history', {
+              this._logger.info('Command successfully recorded in history', {
                 commandType: command.type,
                 inverseType: inverse.type,
+                operationId,
               });
             } else {
               this._logger.warn('Invalid inverse command generated, not recording in history', {
@@ -92,34 +128,74 @@ export class HistoryMiddleware implements ICommandMiddleware {
           // Don't throw the error - history recording failure shouldn't break command execution
         }
       }),
-      catchError((error: unknown) => {
-        this._logger.error('Command execution failed, not recording in history', {
-          error,
-          commandType: command.type,
-          commandId: command.commandId,
-        });
-        return throwError(() => error);
-      }),
     );
   }
 
   /**
-   * Determines if a command should be recorded in history
+   * Determines if a command should be recorded in history (basic checks only)
+   * Does not check final state - that's done after command execution
    */
-  private _shouldRecordCommand(command: AnyDiagramCommand): boolean {
+  private _shouldRecordCommandBasic(command: AnyDiagramCommand): boolean {
     // Only record commands that are initiated by local user interactions
     if (!command.isLocalUserInitiated) {
+      this._logger.debug('Command not local user initiated', {
+        commandType: command.type,
+        isLocalUserInitiated: command.isLocalUserInitiated,
+      });
       return false;
     }
 
     // Check if the command type is recordable
     if (!this._isRecordableCommandType(command.type)) {
+      this._logger.debug('Command type not recordable', {
+        commandType: command.type,
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Determines if a command should be recorded in history (legacy method - kept for compatibility)
+   * @deprecated Use _shouldRecordCommandBasic instead
+   */
+  private _shouldRecordCommand(command: AnyDiagramCommand): boolean {
+    // Only record commands that are initiated by local user interactions
+    if (!command.isLocalUserInitiated) {
+      this._logger.debug('Command not local user initiated', {
+        commandType: command.type,
+        isLocalUserInitiated: command.isLocalUserInitiated,
+      });
+      return false;
+    }
+
+    // Check if the command type is recordable
+    if (!this._isRecordableCommandType(command.type)) {
+      this._logger.debug('Command type not recordable', {
+        commandType: command.type,
+      });
       return false;
     }
 
     // Check if the operation is in final state
     const operationId = this._getOperationId(command);
-    if (operationId && !this._operationTracker.isFinalState(operationId)) {
+    const isFinalState = operationId ? this._operationTracker.isFinalState(operationId) : false;
+
+    // DIAGNOSTIC LOGGING - Add detailed logging to diagnose the ID mismatch
+    this._logger.info('DIAGNOSTIC: Checking operation final state', {
+      commandType: command.type,
+      commandId: command.commandId,
+      operationId,
+      isFinalState,
+    });
+
+    if (operationId && !isFinalState) {
+      this._logger.debug('Operation not in final state', {
+        commandType: command.type,
+        operationId,
+        isFinalState,
+      });
       return false;
     }
 
@@ -146,10 +222,21 @@ export class HistoryMiddleware implements ICommandMiddleware {
 
   /**
    * Gets the operation ID from a command
+   * First checks for an attached operation ID from the history integration service,
+   * then falls back to the command ID for other commands
    */
   private _getOperationId(command: AnyDiagramCommand): string {
-    // For now, use the command ID as the operation ID
-    // In the future, this might be a separate field for tracking multi-command operations
+    // Check if the command has an attached operation ID from history integration
+    // Using type-safe property access with bracket notation
+    const commandWithOperationId = command as unknown as Record<string, unknown>;
+    if (
+      'operationId' in commandWithOperationId &&
+      typeof commandWithOperationId['operationId'] === 'string'
+    ) {
+      return commandWithOperationId['operationId'];
+    }
+
+    // Fallback to command ID for commands not created by history integration
     return command.commandId;
   }
 
@@ -174,11 +261,14 @@ export class HistoryMiddleware implements ICommandMiddleware {
       }
 
       // Capture all nodes with their essential state for history
-      const nodes = graph.getNodes().map(node => ({
-        id: node.id,
-        position: new Point(node.position().x, node.position().y),
-        data: node.getData(),
-      }));
+      const nodes = graph.getNodes().map(node => {
+        const nodeData: unknown = node.getData();
+        return {
+          id: node.id,
+          position: new Point(node.position().x, node.position().y),
+          data: nodeData as Record<string, unknown>,
+        };
+      });
 
       // Capture all edges with their essential state for history
       const edges = graph.getEdges().map(edge => {
@@ -190,11 +280,12 @@ export class HistoryMiddleware implements ICommandMiddleware {
         const sourceNodeId = this._extractNodeIdFromTerminal(source);
         const targetNodeId = this._extractNodeIdFromTerminal(target);
 
+        const edgeData: unknown = edge.getData();
         return {
           id: edge.id,
           sourceNodeId,
           targetNodeId,
-          data: edge.getData(),
+          data: edgeData as Record<string, unknown>,
         };
       });
 

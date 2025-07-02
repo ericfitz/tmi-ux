@@ -335,7 +335,13 @@ export class DiagramAggregate {
    */
   private handleRemoveNode(command: RemoveNodeCommand): void {
     if (!this._nodes.has(command.nodeId)) {
-      throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
+      // If the node is not found, it might have already been removed by another operation
+      // or this is a redundant inverse command. Log a warning and proceed.
+      // This makes the operation idempotent for undo/redo purposes.
+      console.warn(
+        `Node with ID ${command.nodeId} not found during REMOVE_NODE. Assuming already removed.`,
+      );
+      return;
     }
 
     // Get the node before deleting it

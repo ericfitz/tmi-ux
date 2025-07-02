@@ -92,7 +92,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   }>();
   private _nodeMovementTimers = new Map<string, number>();
   private _edgeVertexTimers = new Map<string, number>();
-  private readonly _debounceDelay = 200; // 200ms debounce delay
+  private readonly _debounceDelay = 500; // 500ms debounce delay
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -2879,14 +2879,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       // Redraw the grid with the new size
       this._graph.drawGrid();
     }
-
-    this.logger.debugComponent('DFD', '[Snap to Grid] Updated grid size', {
-      isShiftPressed: this._isShiftPressed,
-      isDragging: this._isDragging,
-      shouldDisableSnap,
-      newGridSize,
-      originalGridSize: this._originalGridSize,
-    });
   }
 
   /**

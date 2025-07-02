@@ -62,6 +62,7 @@ import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memo
 import { InverseCommandFactory } from './domain/commands/inverse-command-factory';
 import { OperationStateTracker } from './infrastructure/services/operation-state-tracker.service';
 import { HistoryMiddleware } from './application/middleware/history.middleware';
+import { HistoryIntegrationService } from './application/services/history-integration.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -115,6 +116,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     HistoryService,
     InverseCommandFactory,
     OperationStateTracker,
+    HistoryIntegrationService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -154,6 +156,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private x6GraphAdapter: X6GraphAdapter,
     private commandBus: CommandBusService,
     private historyService: HistoryService,
+    private historyIntegrationService: HistoryIntegrationService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -483,6 +486,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Set up port tooltips
       this.setupPortTooltips();
 
+      // Initialize history integration service
+      this.initializeHistoryIntegration();
+
       this.logger.info('Graph initialization complete');
 
       // Force change detection after initialization
@@ -602,6 +608,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
       tooltipEl.style.display = 'none';
     });
+  }
+
+  /**
+   * Initialize the history integration service
+   */
+  private initializeHistoryIntegration(): void {
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    this.logger.info('Initializing history integration', { diagramId, userId });
+
+    try {
+      this.historyIntegrationService.initialize(diagramId, userId);
+      this.logger.info('History integration initialized successfully');
+    } catch (error) {
+      this.logger.error('Failed to initialize history integration', error);
+    }
   }
 
   /**
