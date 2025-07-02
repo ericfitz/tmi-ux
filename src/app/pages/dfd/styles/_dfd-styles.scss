@@ -1,6 +1,4 @@
 // Consolidated DFD Styles
-// This file combines _graph-components.scss, _graph-styles.scss, and _shape-styles.scss
-// with redundancy eliminated and organized logically
 
 // =============================================================================
 // MIXINS AND VARIABLES
@@ -19,36 +17,6 @@
 // =============================================================================
 // BASE GRAPH CONTAINER STYLES
 // =============================================================================
-
-// Security Boundary shape styles - must come before nested selector
-// .security-boundary-shape {
-//  fill: #fff;
-//  stroke: #333;
-//  stroke-width: 2;
-//  stroke-dasharray: 5, 5;
-//  rx: 10;
-//  ry: 10;
-//  opacity: 1;
-// }
-
-// Base node styles - must come before more specific selectors
-// .x6-node {
-//  transition: all 0.2s ease-in-out;
-
-//  &.is-selected {
-//    .body {
-//      stroke: #47c769;
-//      stroke-width: 2.5;
-//    }
-//  }
-
-// &.is-hovered {
-//  .body {
-//    stroke-width: 2;
-//    filter: brightness(1.05);
-//  }
-// }
-// }
 
 // =============================================================================
 // FONT STYLES - CONSOLIDATED
@@ -74,9 +42,6 @@ svg text[font-family] {
   font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
 }
-
-// Edge styling is now handled entirely by X6 configuration
-// No CSS edge styling needed - X6 manages all edge appearance
 
 .x6-graph {
   width: 100%;
@@ -232,59 +197,6 @@ circle.x6-port-body {
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: none;
 }
-
-// =============================================================================
-// SELECTION AND INTERACTION STYLES - CONSOLIDATED
-// =============================================================================
-
-// Base transform widget styles
-// .x6-widget-transform {
-//  border: 2px dashed #47c769;
-//  pointer-events: none;
-// }
-
-// Selection box styles
-// .x6-cell-tool-boundary {
-//  fill: #47c769;
-//  stroke: none;
-//  fill-opacity: 0.2;
-// }
-
-/*
-// Selected cell styles
-[selected='true'] {
-  .x6-graph-svg {
-    filter: none;
-  }
-
-  .x6-cell-tool-boundary {
-    fill: #47c769;
-    stroke: none;
-    fill-opacity: 0.2;
-  }
-}
-*/
-
-// =============================================================================
-// HIGHLIGHT STYLES
-// =============================================================================
-
-/*
-.x6-highlight-magnetAvailable {
-  stroke: #d0d000;
-  stroke-width: 2;
-  fill: transparent;
-}
-
-// Node available for connection highlighting
-.x6-node.available {
-  .body {
-    stroke: #d0d000;
-    stroke-width: 3px;
-    filter: drop-shadow(0 0 8px rgba(232, 218, 58, 0.803));
-  }
-}
-*/
 
 // =============================================================================
 // SNAPLINE STYLES

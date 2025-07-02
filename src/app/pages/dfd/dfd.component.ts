@@ -22,9 +22,7 @@ import { Node, Cell, Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { NodeType } from './domain/value-objects/node-data';
-import { DfdApplicationService } from './application/services/dfd-application.service';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
-import { PerformanceTestingService } from './infrastructure/services/performance-testing.service';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import {
@@ -109,12 +107,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     // Infrastructure adapters
     X6GraphAdapter,
 
-    // Application services
-    DfdApplicationService,
-
-    // Performance testing
-    PerformanceTestingService,
-
     // History services
     {
       provide: 'ICommandBus',
@@ -159,11 +151,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
-    private dfdApplicationService: DfdApplicationService,
     private x6GraphAdapter: X6GraphAdapter,
     private commandBus: CommandBusService,
     private historyService: HistoryService,
-    private performanceTestingService: PerformanceTestingService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -1269,21 +1259,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.error('Error updating edge vertices in domain model', error);
         },
       });
-  }
-
-  /**
-   * Run performance tests
-   */
-  runPerformanceTests(): void {
-    this.logger.info('Starting performance tests');
-    this.performanceTestingService.runPerformanceTestSuite().subscribe({
-      next: results => {
-        this.logger.info('Performance tests completed', { results });
-      },
-      error: error => {
-        this.logger.error('Performance tests failed', error);
-      },
-    });
   }
 
   /**
