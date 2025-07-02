@@ -75,6 +75,11 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _selectedCells = new Set<string>();
   private _currentEditor: HTMLInputElement | HTMLTextAreaElement | null = null;
 
+  // Shift key and drag state tracking for snap to grid control
+  private _isShiftPressed = false;
+  private _isDragging = false;
+  private _originalGridSize = 10;
+
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
   private readonly _nodeRemoved$ = new Subject<{ nodeId: string; node: Node }>();
@@ -436,6 +441,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._setupPlugins();
     this._setupEventListeners();
     this._setupPortVisibility();
+    this._setupShiftKeyHandling();
   }
 
   /**
@@ -828,6 +834,9 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Clean up any existing editor
     this._removeExistingEditor();
+
+    // Clean up shift key event listeners
+    this._cleanupShiftKeyHandling();
 
     if (this._graph) {
       this._graph.dispose();
@@ -1938,8 +1947,8 @@ export class X6GraphAdapter implements IGraphAdapter {
             enabled: true,
             minWidth: 40,
             minHeight: 30,
-            maxWidth: 400,
-            maxHeight: 300,
+            // maxWidth: 400,
+            // maxHeight: 300,
             orthogonal: false,
             restrict: false,
             preserveAspectRatio: false,
@@ -2702,6 +2711,138 @@ export class X6GraphAdapter implements IGraphAdapter {
       sourceZIndex,
       targetZIndex,
       edgeZIndex,
+    });
+  }
+
+  /**
+   * Setup shift key handling for temporary snap to grid disable
+   */
+  private _setupShiftKeyHandling(): void {
+    if (!this._graph) return;
+
+    // Listen for shift key events on the document
+    document.addEventListener('keydown', this._handleKeyDown);
+    document.addEventListener('keyup', this._handleKeyUp);
+
+    // Listen for drag start/end events on nodes
+    this._graph.on('node:mousedown', this._handleNodeMouseDown);
+    this._graph.on('node:mousemove', this._handleNodeMouseMove);
+    this._graph.on('node:mouseup', this._handleNodeMouseUp);
+
+    // Also listen for global mouse up to handle cases where mouse is released outside the graph
+    document.addEventListener('mouseup', this._handleDocumentMouseUp);
+
+    // Handle window blur to reset state if user switches windows while dragging
+    window.addEventListener('blur', this._handleWindowBlur);
+
+    this.logger.info('Shift key handling for snap to grid control initialized');
+  }
+
+  /**
+   * Clean up shift key event listeners
+   */
+  private _cleanupShiftKeyHandling(): void {
+    document.removeEventListener('keydown', this._handleKeyDown);
+    document.removeEventListener('keyup', this._handleKeyUp);
+    document.removeEventListener('mouseup', this._handleDocumentMouseUp);
+    window.removeEventListener('blur', this._handleWindowBlur);
+  }
+
+  /**
+   * Handle keydown events to track shift key state
+   */
+  private _handleKeyDown = (event: KeyboardEvent): void => {
+    if (event.key === 'Shift' && !this._isShiftPressed) {
+      this._isShiftPressed = true;
+      this._updateSnapToGrid();
+    }
+  };
+
+  /**
+   * Handle keyup events to track shift key state
+   */
+  private _handleKeyUp = (event: KeyboardEvent): void => {
+    if (event.key === 'Shift' && this._isShiftPressed) {
+      this._isShiftPressed = false;
+      this._updateSnapToGrid();
+    }
+  };
+
+  /**
+   * Handle node mouse down to track drag start
+   */
+  private _handleNodeMouseDown = (): void => {
+    this._isDragging = true;
+    this._updateSnapToGrid();
+  };
+
+  /**
+   * Handle node mouse move during drag
+   */
+  private _handleNodeMouseMove = (): void => {
+    // Update snap to grid in case shift state changed during drag
+    if (this._isDragging) {
+      this._updateSnapToGrid();
+    }
+  };
+
+  /**
+   * Handle node mouse up to track drag end
+   */
+  private _handleNodeMouseUp = (): void => {
+    if (this._isDragging) {
+      this._isDragging = false;
+      this._updateSnapToGrid();
+    }
+  };
+
+  /**
+   * Handle document mouse up to ensure drag state is reset
+   */
+  private _handleDocumentMouseUp = (): void => {
+    if (this._isDragging) {
+      this._isDragging = false;
+      this._updateSnapToGrid();
+    }
+  };
+
+  /**
+   * Handle window blur to reset state
+   */
+  private _handleWindowBlur = (): void => {
+    this._isShiftPressed = false;
+    this._isDragging = false;
+    this._updateSnapToGrid();
+  };
+
+  /**
+   * Update snap to grid based on current shift and drag state
+   */
+  private _updateSnapToGrid(): void {
+    if (!this._graph) return;
+
+    // Disable snap to grid (set to 1) if shift is pressed during drag
+    const shouldDisableSnap = this._isShiftPressed && this._isDragging;
+    const newGridSize = shouldDisableSnap ? 1 : this._originalGridSize;
+
+    // Update the grid size by modifying the graph options
+    // We need to access the internal grid configuration and update it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    const graphOptions = (this._graph as any).options as {
+      grid?: { size: number; visible: boolean };
+    };
+    if (graphOptions?.grid) {
+      graphOptions.grid.size = newGridSize;
+      // Redraw the grid with the new size
+      this._graph.drawGrid();
+    }
+
+    this.logger.debugComponent('DFD', '[Snap to Grid] Updated grid size', {
+      isShiftPressed: this._isShiftPressed,
+      isDragging: this._isDragging,
+      shouldDisableSnap,
+      newGridSize,
+      originalGridSize: this._originalGridSize,
     });
   }
 }
