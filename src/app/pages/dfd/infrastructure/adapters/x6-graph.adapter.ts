@@ -189,6 +189,16 @@ export class X6GraphAdapter implements IGraphAdapter {
           const parentType = this._getNodeType(args.parent);
           const childType = this._getNodeType(args.child);
 
+          // Textbox shapes cannot be embedded into other shapes
+          if (childType === 'textbox') {
+            return false;
+          }
+
+          // Other shapes cannot be embedded into textbox shapes
+          if (parentType === 'textbox') {
+            return false;
+          }
+
           // Security boundaries can only be embedded into other security boundaries
           if (childType === 'security-boundary') {
             return parentType === 'security-boundary';
@@ -351,9 +361,8 @@ export class X6GraphAdapter implements IGraphAdapter {
                 strokeWidth: 2,
                 fill: 'none',
                 targetMarker: {
-                  name: 'block',
-                  width: 12,
-                  height: 8,
+                  name: 'classic',
+                  size: 8,
                   fill: '#000000',
                   stroke: '#000000',
                 },
@@ -379,9 +388,6 @@ export class X6GraphAdapter implements IGraphAdapter {
                 },
               },
             ],
-            data: {
-              label: 'Flow',
-            },
             zIndex: 1,
           });
 
@@ -453,6 +459,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     let zIndex = 10; // Default z-index for regular nodes
     if (nodeType === 'security-boundary') {
       zIndex = 1; // Lower z-index for security boundaries to appear behind other nodes
+    } else if (nodeType === 'textbox') {
+      zIndex = 20; // Higher z-index for textbox shapes to appear above all other shapes
     }
 
     const x6Node = graph.addNode({
@@ -570,9 +578,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           strokeWidth: 2,
           fill: 'none',
           targetMarker: {
-            name: 'block',
-            width: 12,
-            height: 8,
+            name: 'classic',
+            size: 8,
             fill: '#000000',
             stroke: '#000000',
           },
@@ -611,14 +618,17 @@ export class X6GraphAdapter implements IGraphAdapter {
       x6EdgeId: x6Edge.id,
       x6EdgeLabel: x6Edge.getLabels(),
       x6EdgeDataLabel: (() => {
-        const data: unknown = x6Edge.getData();
-        if (data && typeof data === 'object' && 'label' in data) {
-          return (data as Record<string, unknown>)['label'];
+        // Safety check for test environment where getData might not exist
+        if (typeof x6Edge.getData === 'function') {
+          const data: unknown = x6Edge.getData();
+          if (data && typeof data === 'object' && 'label' in data) {
+            return (data as Record<string, unknown>)['label'];
+          }
         }
         return undefined;
       })(),
-      x6EdgeSource: x6Edge.getSource(),
-      x6EdgeTarget: x6Edge.getTarget(),
+      x6EdgeSource: typeof x6Edge.getSource === 'function' ? x6Edge.getSource() : 'unknown',
+      x6EdgeTarget: typeof x6Edge.getTarget === 'function' ? x6Edge.getTarget() : 'unknown',
     });
 
     // Set edge z-order to the higher of source or target node z-orders
@@ -1211,7 +1221,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
 
     // Handle node movement without embedding - restore z-index when drag ends
-    this._graph.on('node:change:position', ({ node }: { node: Node }) => {
+    // We'll use a more reliable approach by listening to the node:moved event
+    // which fires after the drag operation is complete
+    this._graph.on('node:moved', ({ node }: { node: Node }) => {
       // Check if this node has a stored original z-index from embedding attempt
       // Safety check for test environment where getData might not exist
       if (typeof node.getData !== 'function') {
@@ -1228,25 +1240,32 @@ export class X6GraphAdapter implements IGraphAdapter {
       // If we have an original z-index stored and the node is not currently embedded,
       // restore the original z-index (this handles the case where dragging was just for movement)
       if (typeof originalZIndex === 'number' && !node.getParent()) {
-        // Use a small timeout to ensure this runs after any embedding events
+        // Use a longer timeout to ensure this runs after all embedding events have completed
         setTimeout(() => {
-          // Double-check that the node still doesn't have a parent
-          if (!node.getParent()) {
-            node.setZIndex(originalZIndex);
-            // Clean up the temporary data
-            if (typeof node.getData === 'function') {
-              const currentNodeData: unknown = node.getData();
-              const safeNodeData =
-                currentNodeData && typeof currentNodeData === 'object'
-                  ? (currentNodeData as Record<string, unknown>)
-                  : {};
-              if (safeNodeData && '_originalZIndex' in safeNodeData) {
-                delete safeNodeData['_originalZIndex'];
-                node.setData(safeNodeData);
-              }
+          // Double-check that the node still doesn't have a parent and still has the stored z-index
+          if (!node.getParent() && typeof node.getData === 'function') {
+            const currentNodeData: unknown = node.getData();
+            const safeNodeData =
+              currentNodeData && typeof currentNodeData === 'object'
+                ? (currentNodeData as Record<string, unknown>)
+                : {};
+
+            // Only restore if we still have the original z-index stored (not cleaned up by embedding)
+            if (safeNodeData && '_originalZIndex' in safeNodeData) {
+              node.setZIndex(originalZIndex);
+              // Update z-order for connected edges to match the restored node z-order
+              this._updateConnectedEdgesZOrder(node, originalZIndex);
+              // Clean up the temporary data
+              delete safeNodeData['_originalZIndex'];
+              node.setData(safeNodeData);
+
+              this.logger.info('Restored original z-index after drag without embedding', {
+                nodeId: node.id,
+                restoredZIndex: originalZIndex,
+              });
             }
           }
-        }, 50);
+        }, 100);
       }
     });
 
@@ -1327,8 +1346,15 @@ export class X6GraphAdapter implements IGraphAdapter {
         added.forEach((cell: Cell) => {
           this._selectedCells.add(cell.id);
           if (cell.isNode()) {
-            cell.attr('body/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
-            cell.attr('body/strokeWidth', 3);
+            const nodeType = this._getNodeType(cell);
+            if (nodeType === 'textbox') {
+              // For textbox shapes, apply glow to text element since body is transparent
+              cell.attr('text/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
+            } else {
+              // For all other node types, apply glow to body element
+              cell.attr('body/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
+              cell.attr('body/strokeWidth', 3);
+            }
             // Add tools for selected nodes
             this._addNodeTools(cell);
           } else if (cell.isEdge()) {
@@ -1343,8 +1369,15 @@ export class X6GraphAdapter implements IGraphAdapter {
         removed.forEach((cell: Cell) => {
           this._selectedCells.delete(cell.id);
           if (cell.isNode()) {
-            cell.attr('body/filter', 'none');
-            cell.attr('body/strokeWidth', 2);
+            const nodeType = this._getNodeType(cell);
+            if (nodeType === 'textbox') {
+              // For textbox shapes, remove glow from text element
+              cell.attr('text/filter', 'none');
+            } else {
+              // For all other node types, remove glow from body element
+              cell.attr('body/filter', 'none');
+              cell.attr('body/strokeWidth', 2);
+            }
           } else if (cell.isEdge()) {
             cell.attr('line/filter', 'none');
             cell.attr('line/strokeWidth', 2);
@@ -1489,7 +1522,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           },
           text: {
             ...baseAttrs.text,
-            fontSize: 11,
+            fontSize: 12,
           },
         };
       default:
@@ -1506,9 +1539,8 @@ export class X6GraphAdapter implements IGraphAdapter {
         stroke: '#000000',
         strokeWidth: 2,
         targetMarker: {
-          name: 'block',
-          width: 12,
-          height: 8,
+          name: 'classic',
+          size: 8,
           fill: '#000000',
           stroke: '#000000',
         },
@@ -1935,14 +1967,20 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     });
 
-    // Add hover effects with subtle yellow glow
+    // Add hover effects with subtle red glow
     this._graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
       if (!this._selectedCells.has(cell.id)) {
         if (cell.isNode()) {
-          // Add subtle yellow glow for node hover
-          cell.attr('body/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
+          const nodeType = this._getNodeType(cell);
+          if (nodeType === 'textbox') {
+            // For textbox shapes, apply hover glow to text element since body is transparent
+            cell.attr('text/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
+          } else {
+            // For all other node types, apply hover glow to body element
+            cell.attr('body/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
+          }
         } else if (cell.isEdge()) {
-          // Add subtle yellow glow for edge hover
+          // Add subtle red glow for edge hover
           cell.attr('line/filter', 'drop-shadow(0 0 3px rgba(255, 0, 0, 0.6))');
         }
       }
@@ -1951,8 +1989,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('cell:mouseleave', ({ cell }: { cell: Cell }) => {
       if (!this._selectedCells.has(cell.id)) {
         if (cell.isNode()) {
-          // Remove hover glow
-          cell.attr('body/filter', 'none');
+          const nodeType = this._getNodeType(cell);
+          if (nodeType === 'textbox') {
+            // For textbox shapes, remove hover glow from text element
+            cell.attr('text/filter', 'none');
+          } else {
+            // For all other node types, remove hover glow from body element
+            cell.attr('body/filter', 'none');
+          }
         } else if (cell.isEdge()) {
           // Remove hover glow
           cell.attr('line/filter', 'none');

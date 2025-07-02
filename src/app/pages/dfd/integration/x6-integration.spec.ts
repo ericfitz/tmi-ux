@@ -38,6 +38,7 @@ interface MockEdgeConfig {
   source: string;
   target: string;
   label?: string;
+  labels?: Array<{ attrs: { text: { text: string } } }>;
 }
 
 interface MockPosition {
@@ -221,7 +222,27 @@ vi.mock('@antv/x6', () => {
           return node;
         }),
         addEdge: vi.fn((config: MockEdgeConfig) => {
-          const edge = createMockEdge(config);
+          // Extract label from the config if it exists in the labels array
+          let edgeLabel = config.label;
+          if (
+            !edgeLabel &&
+            config.labels &&
+            Array.isArray(config.labels) &&
+            config.labels.length > 0
+          ) {
+            const firstLabel = config.labels[0];
+            if (
+              firstLabel &&
+              firstLabel.attrs &&
+              firstLabel.attrs.text &&
+              firstLabel.attrs.text.text
+            ) {
+              edgeLabel = firstLabel.attrs.text.text;
+            }
+          }
+
+          const edgeConfigWithLabel = { ...config, label: edgeLabel };
+          const edge = createMockEdge(edgeConfigWithLabel);
           mockEdges.set(config.id, edge);
           // Trigger edge:added event
           mockGraph.on.mock.calls.forEach((call: unknown[]) => {

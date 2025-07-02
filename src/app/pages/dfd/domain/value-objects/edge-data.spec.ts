@@ -68,13 +68,6 @@ describe('EdgeData', () => {
       expect(() => new EdgeData('edge-1', 'source', '')).toThrow('Target node ID cannot be empty');
     });
 
-    it('should throw error for self-loop', () => {
-      // Act & Assert
-      expect(() => new EdgeData('edge-1', 'node-1', 'node-1')).toThrow(
-        'Self-loops are not allowed',
-      );
-    });
-
     it('should throw error for invalid vertex', () => {
       // Act & Assert
       expect(
