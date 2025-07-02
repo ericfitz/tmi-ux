@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DfdComponent } from './dfd.component';
-import { DfdHighlighterService } from './services/dfd-highlighter.service';
 import { DfdStateStore } from './state/dfd.state';
 
 // New architecture services
@@ -38,7 +37,6 @@ import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
   exports: [],
   providers: [
     // Legacy services
-    DfdHighlighterService,
     DfdStateStore,
 
     // Command Bus and middleware

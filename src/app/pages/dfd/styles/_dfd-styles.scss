@@ -111,6 +111,10 @@ svg text[font-family] {
   }
 }
 
+.x6-snapline {
+  stroke: #f00;
+}
+
 // Shape-specific styling using data.type
 .x6-node[data-type='process'] {
   aspect-ratio: 1 / 1;
@@ -181,7 +185,7 @@ circle.x6-port-body {
 
   &:hover {
     stroke-width: 3px !important;
-    filter: drop-shadow(0 0 4px rgb(49 208 198 / 80%));
+    filter: drop-shadow(0 0 4px rgb(49 208 110 / 80%));
   }
 }
 
@@ -234,18 +238,19 @@ circle.x6-port-body {
 // =============================================================================
 
 // Base transform widget styles
-.x6-widget-transform {
-  border: 2px dashed #47c769;
-  pointer-events: none;
-}
+// .x6-widget-transform {
+//  border: 2px dashed #47c769;
+//  pointer-events: none;
+// }
 
 // Selection box styles
-.x6-cell-tool-boundary {
-  fill: #47c769;
-  stroke: none;
-  fill-opacity: 0.2;
-}
+// .x6-cell-tool-boundary {
+//  fill: #47c769;
+//  stroke: none;
+//  fill-opacity: 0.2;
+// }
 
+/*
 // Selected cell styles
 [selected='true'] {
   .x6-graph-svg {
@@ -258,13 +263,15 @@ circle.x6-port-body {
     fill-opacity: 0.2;
   }
 }
+*/
 
 // =============================================================================
 // HIGHLIGHT STYLES
 // =============================================================================
 
+/*
 .x6-highlight-magnetAvailable {
-  stroke: #73d13d;
+  stroke: #d0d000;
   stroke-width: 2;
   fill: transparent;
 }
@@ -272,11 +279,12 @@ circle.x6-port-body {
 // Node available for connection highlighting
 .x6-node.available {
   .body {
-    stroke: #31d0c6 !important;
-    stroke-width: 3px !important;
-    filter: drop-shadow(0 0 8px rgb(49 208 198 / 40%));
+    stroke: #d0d000;
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 8px rgba(232, 218, 58, 0.803));
   }
 }
+*/
 
 // =============================================================================
 // SNAPLINE STYLES
@@ -291,9 +299,9 @@ svg .dfd-snapline-red,
 .x6-graph-svg .dfd-snapline-red,
 .x6-graph-svg-container .dfd-snapline-red,
 .dfd-container .x6-graph .dfd-snapline-red {
-  stroke: #f00 !important;
-  stroke-width: 1px !important;
-  fill: none !important;
-  pointer-events: none !important;
-  opacity: 0.8 !important;
+  stroke: #f00;
+  stroke-width: 1px;
+  fill: none;
+  pointer-events: none;
+  opacity: 0.8;
 }
