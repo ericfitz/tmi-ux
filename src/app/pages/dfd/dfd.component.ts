@@ -414,6 +414,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       nodeId,
       new Point(position.x, position.y),
       nodeData,
+      true, // isLocalUserInitiated
     );
 
     this.commandBus
@@ -767,7 +768,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Delete nodes first (this will also remove connected edges automatically)
     selectedNodes.forEach(node => {
-      const command = DiagramCommandFactory.removeNode(diagramId, userId, node.id);
+      const command = DiagramCommandFactory.removeNode(diagramId, userId, node.id, true); // isLocalUserInitiated
 
       this.commandBus
         .execute<void>(command)
@@ -797,7 +798,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Only delete the edge if it's not connected to a node being deleted
       // (since deleting the node will automatically delete connected edges)
       if (!isConnectedToDeletedNode) {
-        const command = DiagramCommandFactory.removeEdge(diagramId, userId, edge.id);
+        const command = DiagramCommandFactory.removeEdge(diagramId, userId, edge.id, true); // isLocalUserInitiated
 
         this.commandBus
           .execute<void>(command)
@@ -1116,6 +1117,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       sourceNodeId,
       targetNodeId,
       domainEdgeData,
+      true, // isLocalUserInitiated
     );
 
     this.commandBus
@@ -1242,6 +1244,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       edgeId,
       updatedEdgeData,
       oldEdgeData,
+      true, // isLocalUserInitiated
     );
 
     this.commandBus
@@ -1409,6 +1412,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       targetNodeId, // New source (original target)
       sourceNodeId, // New target (original source)
       inverseEdgeData,
+      true, // isLocalUserInitiated
     );
 
     this.commandBus

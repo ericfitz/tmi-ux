@@ -8,6 +8,8 @@ import { HistoryService } from '../services/history.service';
 import { OperationStateTracker } from '../../infrastructure/services/operation-state-tracker.service';
 import { InverseCommandFactory } from '../../domain/commands/inverse-command-factory';
 import { DiagramState } from '../../domain/history/history.types';
+import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
+import { Point } from '../../domain/value-objects/point';
 
 /**
  * Middleware that handles history recording for diagram commands
@@ -24,6 +26,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
     private readonly _historyService: HistoryService,
     private readonly _operationTracker: OperationStateTracker,
     private readonly _inverseFactory: InverseCommandFactory,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
   ) {}
 
   /**
@@ -37,7 +40,8 @@ export class HistoryMiddleware implements ICommandMiddleware {
     if (!this._shouldRecordCommand(command)) {
       this._logger.debug('Command will not be recorded in history', {
         commandType: command.type,
-        reason: 'not in final state or not recordable',
+        isLocalUserInitiated: command.isLocalUserInitiated,
+        reason: 'not in final state, not recordable, or not local user initiated',
       });
       return next(command);
     }
@@ -103,6 +107,11 @@ export class HistoryMiddleware implements ICommandMiddleware {
    * Determines if a command should be recorded in history
    */
   private _shouldRecordCommand(command: AnyDiagramCommand): boolean {
+    // Only record commands that are initiated by local user interactions
+    if (!command.isLocalUserInitiated) {
+      return false;
+    }
+
     // Check if the command type is recordable
     if (!this._isRecordableCommandType(command.type)) {
       return false;
@@ -150,13 +159,71 @@ export class HistoryMiddleware implements ICommandMiddleware {
   private _captureCurrentState(): DiagramState {
     this._logger.debug('Capturing current diagram state');
 
-    // TODO: This will be properly implemented when we integrate with the DFD state store
-    // For now, we'll return a basic state structure that can be extended
-    // In Phase 3, this will connect to the actual DfdStateStore
-
     try {
-      // Placeholder implementation - will be replaced with actual state capture
-      // from DfdStateStore or X6GraphAdapter in Phase 3
+      const graph = this._x6GraphAdapter.getGraph();
+      if (!graph) {
+        this._logger.warn('No graph available for state capture');
+        return {
+          nodes: [],
+          edges: [],
+          metadata: {
+            capturedAt: new Date().toISOString(),
+            version: '1.0.0',
+          },
+        };
+      }
+
+      // Capture all nodes with their essential state for history
+      const nodes = graph.getNodes().map(node => ({
+        id: node.id,
+        position: new Point(node.position().x, node.position().y),
+        data: node.getData(),
+      }));
+
+      // Capture all edges with their essential state for history
+      const edges = graph.getEdges().map(edge => {
+        const source = edge.getSource();
+        const target = edge.getTarget();
+
+        // Extract node IDs from source and target terminals
+        // X6 TerminalData can have a 'cell' property for node connections
+        const sourceNodeId = this._extractNodeIdFromTerminal(source);
+        const targetNodeId = this._extractNodeIdFromTerminal(target);
+
+        return {
+          id: edge.id,
+          sourceNodeId,
+          targetNodeId,
+          data: edge.getData(),
+        };
+      });
+
+      // Capture diagram metadata including graph state
+      const translate = graph.translate();
+      const metadata = {
+        capturedAt: new Date().toISOString(),
+        version: '1.0.0',
+        zoom: graph.zoom(),
+        translateX: translate.tx,
+        translateY: translate.ty,
+        gridSize: graph.getGridSize(),
+        // Store background as unknown since we don't know the exact type
+        background: graph.background as unknown,
+      };
+
+      this._logger.debug('Successfully captured diagram state', {
+        nodeCount: nodes.length,
+        edgeCount: edges.length,
+      });
+
+      return {
+        nodes,
+        edges,
+        metadata,
+      };
+    } catch (error) {
+      this._logger.error('Failed to capture diagram state', { error });
+      // Return empty state as fallback
       return {
         nodes: [],
         edges: [],
@@ -165,14 +232,19 @@ export class HistoryMiddleware implements ICommandMiddleware {
           version: '1.0.0',
         },
       };
-    } catch (error) {
-      this._logger.error('Failed to capture diagram state', { error });
-      // Return empty state as fallback
-      return {
-        nodes: [],
-        edges: [],
-        metadata: {},
-      };
     }
+  }
+
+  /**
+   * Extracts node ID from X6 terminal data
+   * Handles the type-unsafe access to X6's terminal structure
+   */
+  private _extractNodeIdFromTerminal(terminal: unknown): string {
+    // X6 terminal data structure varies, but typically has a 'cell' property for node connections
+    if (terminal && typeof terminal === 'object' && 'cell' in terminal) {
+      const cellValue = (terminal as { cell: unknown }).cell;
+      return typeof cellValue === 'string' ? cellValue : '';
+    }
+    return '';
   }
 }

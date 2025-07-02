@@ -80,6 +80,20 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _isDragging = false;
   private _originalGridSize = 10;
 
+  // Debouncing for history service integration
+  private readonly _debouncedNodeMoved$ = new Subject<{
+    nodeId: string;
+    position: Point;
+    previous: Point;
+  }>();
+  private readonly _debouncedEdgeVerticesChanged$ = new Subject<{
+    edgeId: string;
+    vertices: Array<{ x: number; y: number }>;
+  }>();
+  private _nodeMovementTimers = new Map<string, number>();
+  private _edgeVertexTimers = new Map<string, number>();
+  private readonly _debounceDelay = 200; // 200ms debounce delay
+
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
   private readonly _nodeRemoved$ = new Subject<{ nodeId: string; node: Node }>();
@@ -114,10 +128,17 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Observable for node movement events
+   * Observable for node movement events (immediate, non-debounced)
    */
   get nodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
     return this._nodeMoved$.asObservable();
+  }
+
+  /**
+   * Observable for debounced node movement events (for history service)
+   */
+  get debouncedNodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
+    return this._debouncedNodeMoved$.asObservable();
   }
 
   /**
@@ -149,13 +170,23 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Observable for edge vertex changes
+   * Observable for edge vertex changes (immediate, non-debounced)
    */
   get edgeVerticesChanged$(): Observable<{
     edgeId: string;
     vertices: Array<{ x: number; y: number }>;
   }> {
     return this._edgeVerticesChanged$.asObservable();
+  }
+
+  /**
+   * Observable for debounced edge vertex changes (for history service)
+   */
+  get debouncedEdgeVerticesChanged$(): Observable<{
+    edgeId: string;
+    vertices: Array<{ x: number; y: number }>;
+  }> {
+    return this._debouncedEdgeVerticesChanged$.asObservable();
   }
 
   /**
@@ -838,6 +869,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Clean up shift key event listeners
     this._cleanupShiftKeyHandling();
 
+    // Clean up debouncing timers
+    this._cleanupDebouncingTimers();
+
     if (this._graph) {
       this._graph.dispose();
       this._graph = null;
@@ -1061,11 +1095,15 @@ export class X6GraphAdapter implements IGraphAdapter {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
 
+          // Emit immediate event for UI responsiveness
           this._nodeMoved$.next({
             nodeId: node.id,
             position: currentPos,
             previous: previousPos,
           });
+
+          // Handle debounced event for history service
+          this._handleDebouncedNodeMovement(node.id, currentPos, previousPos);
         }
       },
     );
@@ -2273,12 +2311,17 @@ export class X6GraphAdapter implements IGraphAdapter {
           vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
         });
 
-        // Emit vertex change event for domain model updates
-        // This could be handled by the DFD component to update the domain model
+        // Emit immediate vertex change event for UI responsiveness
         this._edgeVerticesChanged$.next({
           edgeId: edge.id,
           vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
         });
+
+        // Handle debounced event for history service
+        this._handleDebouncedEdgeVertexChange(
+          edge.id,
+          vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
+        );
       }
     };
 
@@ -2844,5 +2887,88 @@ export class X6GraphAdapter implements IGraphAdapter {
       newGridSize,
       originalGridSize: this._originalGridSize,
     });
+  }
+
+  /**
+   * Handle debounced node movement for history service integration
+   */
+  private _handleDebouncedNodeMovement(nodeId: string, position: Point, previous: Point): void {
+    // Clear existing timer for this node
+    const existingTimer = this._nodeMovementTimers.get(nodeId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Set new timer
+    const timer = setTimeout(() => {
+      this.logger.debugComponent('DFD', '[Debounced] Node movement finalized', {
+        nodeId,
+        position: { x: position.x, y: position.y },
+        previous: { x: previous.x, y: previous.y },
+        debounceDelay: this._debounceDelay,
+      });
+
+      // Emit debounced event for history service
+      this._debouncedNodeMoved$.next({
+        nodeId,
+        position,
+        previous,
+      });
+
+      // Clean up timer
+      this._nodeMovementTimers.delete(nodeId);
+    }, this._debounceDelay) as unknown as number;
+
+    this._nodeMovementTimers.set(nodeId, timer);
+  }
+
+  /**
+   * Handle debounced edge vertex changes for history service integration
+   */
+  private _handleDebouncedEdgeVertexChange(
+    edgeId: string,
+    vertices: Array<{ x: number; y: number }>,
+  ): void {
+    // Clear existing timer for this edge
+    const existingTimer = this._edgeVertexTimers.get(edgeId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Set new timer
+    const timer = setTimeout(() => {
+      this.logger.debugComponent('DFD', '[Debounced] Edge vertex change finalized', {
+        edgeId,
+        vertexCount: vertices.length,
+        vertices,
+        debounceDelay: this._debounceDelay,
+      });
+
+      // Emit debounced event for history service
+      this._debouncedEdgeVerticesChanged$.next({
+        edgeId,
+        vertices,
+      });
+
+      // Clean up timer
+      this._edgeVertexTimers.delete(edgeId);
+    }, this._debounceDelay) as unknown as number;
+
+    this._edgeVertexTimers.set(edgeId, timer);
+  }
+
+  /**
+   * Clean up all debouncing timers
+   */
+  private _cleanupDebouncingTimers(): void {
+    // Clear all node movement timers
+    this._nodeMovementTimers.forEach(timer => clearTimeout(timer));
+    this._nodeMovementTimers.clear();
+
+    // Clear all edge vertex timers
+    this._edgeVertexTimers.forEach(timer => clearTimeout(timer));
+    this._edgeVertexTimers.clear();
+
+    this.logger.debugComponent('DFD', '[Debouncing] All timers cleaned up');
   }
 }

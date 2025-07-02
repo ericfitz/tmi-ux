@@ -11,6 +11,7 @@ export interface DiagramCommand {
   readonly timestamp: Date;
   readonly userId: string;
   readonly commandId: string;
+  readonly isLocalUserInitiated?: boolean;
 }
 
 /**
@@ -124,6 +125,7 @@ export class DiagramCommandFactory {
     userId: string,
     name: string,
     description?: string,
+    isLocalUserInitiated?: boolean,
   ): CreateDiagramCommand {
     return {
       type: 'CREATE_DIAGRAM',
@@ -133,6 +135,7 @@ export class DiagramCommandFactory {
       timestamp: new Date(),
       name,
       description,
+      isLocalUserInitiated,
     };
   }
 
@@ -145,6 +148,7 @@ export class DiagramCommandFactory {
     nodeId: string,
     position: Point,
     data: NodeData,
+    isLocalUserInitiated?: boolean,
   ): AddNodeCommand {
     return {
       type: 'ADD_NODE',
@@ -155,6 +159,7 @@ export class DiagramCommandFactory {
       nodeId,
       position,
       data,
+      isLocalUserInitiated,
     };
   }
 
@@ -167,6 +172,7 @@ export class DiagramCommandFactory {
     nodeId: string,
     newPosition: Point,
     oldPosition: Point,
+    isLocalUserInitiated?: boolean,
   ): UpdateNodePositionCommand {
     return {
       type: 'UPDATE_NODE_POSITION',
@@ -177,6 +183,7 @@ export class DiagramCommandFactory {
       nodeId,
       newPosition,
       oldPosition,
+      isLocalUserInitiated,
     };
   }
 
@@ -189,6 +196,7 @@ export class DiagramCommandFactory {
     nodeId: string,
     newData: NodeData,
     oldData: NodeData,
+    isLocalUserInitiated?: boolean,
   ): UpdateNodeDataCommand {
     return {
       type: 'UPDATE_NODE_DATA',
@@ -199,13 +207,19 @@ export class DiagramCommandFactory {
       nodeId,
       newData,
       oldData,
+      isLocalUserInitiated,
     };
   }
 
   /**
    * Creates a command to remove a node
    */
-  static removeNode(diagramId: string, userId: string, nodeId: string): RemoveNodeCommand {
+  static removeNode(
+    diagramId: string,
+    userId: string,
+    nodeId: string,
+    isLocalUserInitiated?: boolean,
+  ): RemoveNodeCommand {
     return {
       type: 'REMOVE_NODE',
       diagramId,
@@ -213,6 +227,7 @@ export class DiagramCommandFactory {
       commandId: this.generateCommandId(),
       timestamp: new Date(),
       nodeId,
+      isLocalUserInitiated,
     };
   }
 
@@ -226,6 +241,7 @@ export class DiagramCommandFactory {
     sourceNodeId: string,
     targetNodeId: string,
     data: EdgeData,
+    isLocalUserInitiated?: boolean,
   ): AddEdgeCommand {
     return {
       type: 'ADD_EDGE',
@@ -237,6 +253,7 @@ export class DiagramCommandFactory {
       sourceNodeId,
       targetNodeId,
       data,
+      isLocalUserInitiated,
     };
   }
 
@@ -249,6 +266,7 @@ export class DiagramCommandFactory {
     edgeId: string,
     newData: EdgeData,
     oldData: EdgeData,
+    isLocalUserInitiated?: boolean,
   ): UpdateEdgeDataCommand {
     return {
       type: 'UPDATE_EDGE_DATA',
@@ -259,13 +277,19 @@ export class DiagramCommandFactory {
       edgeId,
       newData,
       oldData,
+      isLocalUserInitiated,
     };
   }
 
   /**
    * Creates a command to remove an edge
    */
-  static removeEdge(diagramId: string, userId: string, edgeId: string): RemoveEdgeCommand {
+  static removeEdge(
+    diagramId: string,
+    userId: string,
+    edgeId: string,
+    isLocalUserInitiated?: boolean,
+  ): RemoveEdgeCommand {
     return {
       type: 'REMOVE_EDGE',
       diagramId,
@@ -273,6 +297,7 @@ export class DiagramCommandFactory {
       commandId: this.generateCommandId(),
       timestamp: new Date(),
       edgeId,
+      isLocalUserInitiated,
     };
   }
 
@@ -284,6 +309,7 @@ export class DiagramCommandFactory {
     userId: string,
     name?: string,
     description?: string,
+    isLocalUserInitiated?: boolean,
   ): UpdateDiagramMetadataCommand {
     return {
       type: 'UPDATE_DIAGRAM_METADATA',
@@ -293,6 +319,7 @@ export class DiagramCommandFactory {
       timestamp: new Date(),
       name,
       description,
+      isLocalUserInitiated,
     };
   }
 
