@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Graph, Node, Edge } from '@antv/x6';
+import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
@@ -113,4 +113,9 @@ export interface IGraphAdapter {
    * Dispose of the graph and clean up resources
    */
   dispose(): void;
+
+  /**
+   * Start label editing for a cell (public method to access private _addLabelEditor)
+   */
+  startLabelEditing(cell: Cell, event: MouseEvent): void;
 }

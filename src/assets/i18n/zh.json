@@ -1,4 +1,13 @@
 {
+  "contextMenu": {
+    "editText": "编辑文本",
+    "copyDefinitionToClipboard": "复制定义到剪贴板",
+    "moveForward": "向前移动",
+    "moveBackward": "向后移动",
+    "moveToFront": "移到最前",
+    "moveToBack": "移到最后",
+    "addInverseConnection": "添加反向连接"
+  },
   "common": {
     "save": "保存",
     "cancel": "取消"
@@ -202,13 +211,6 @@
       "textbox": "文本",
       "node": "节点"
     }
-  },
-  "contextMenu": {
-    "copyDefinitionToClipboard": "复制定义到剪贴板",
-    "moveForward": "向前移动",
-    "moveBackward": "向后移动",
-    "moveToFront": "移到最前",
-    "moveToBack": "移到最后"
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",

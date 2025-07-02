@@ -1,4 +1,13 @@
 {
+  "contextMenu": {
+    "editText": "تحرير النص",
+    "copyDefinitionToClipboard": "نسخ التعريف إلى الحافظة",
+    "moveForward": "تحريك للأمام",
+    "moveBackward": "تحريك للخلف",
+    "moveToFront": "نقل إلى المقدمة",
+    "moveToBack": "نقل إلى الخلف",
+    "addInverseConnection": "إضافة اتصال عكسي"
+  },
   "collaboration": {
     "title": "التعاون",
     "availableCollaborationSessions": "جلسات التعاون المتاحة",
@@ -222,13 +231,6 @@
       "textbox": "نص",
       "node": "عقدة"
     }
-  },
-  "contextMenu": {
-    "copyDefinitionToClipboard": "نسخ التعريف إلى الحافظة",
-    "moveForward": "تحريك للأمام",
-    "moveBackward": "تحريك للخلف",
-    "moveToFront": "نقل إلى المقدمة",
-    "moveToBack": "نقل إلى الخلف"
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",

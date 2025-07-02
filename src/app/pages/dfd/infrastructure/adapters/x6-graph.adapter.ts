@@ -508,12 +508,67 @@ export class X6GraphAdapter implements IGraphAdapter {
   addEdge(edge: DiagramEdge): Edge {
     const graph = this.getGraph();
 
+    // Prepare source and target with port information if available
+    const sourceConfig = edge.data.sourcePortId
+      ? { cell: edge.sourceNodeId, port: edge.data.sourcePortId }
+      : edge.sourceNodeId;
+
+    const targetConfig = edge.data.targetPortId
+      ? { cell: edge.targetNodeId, port: edge.data.targetPortId }
+      : edge.targetNodeId;
+
     const x6Edge = graph.addEdge({
       id: edge.id,
-      source: edge.sourceNodeId,
-      target: edge.targetNodeId,
+      source: sourceConfig,
+      target: targetConfig,
       label: (edge.data.label as string) || 'Flow', // Add label for mock compatibility
-      attrs: this._getEdgeAttrs('data-flow'),
+      shape: 'edge',
+      markup: [
+        {
+          tagName: 'path',
+          selector: 'wrap',
+          attrs: {
+            fill: 'none',
+            cursor: 'pointer',
+            stroke: 'transparent',
+            strokeLinecap: 'round',
+          },
+        },
+        {
+          tagName: 'path',
+          selector: 'line',
+          attrs: {
+            fill: 'none',
+            pointerEvents: 'none',
+          },
+        },
+      ],
+      attrs: {
+        wrap: {
+          connection: true,
+          strokeWidth: 10,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          stroke: 'transparent',
+          fill: 'none',
+        },
+        line: {
+          connection: true,
+          stroke: '#000000',
+          strokeWidth: 2,
+          fill: 'none',
+          targetMarker: {
+            name: 'block',
+            width: 12,
+            height: 8,
+            fill: '#000000',
+            stroke: '#000000',
+          },
+        },
+      },
+      // Add vertices if they exist in the edge data
+      vertices: edge.data.vertices ? edge.data.vertices.map(v => ({ x: v.x, y: v.y })) : [],
+      // Only add one label with the edge's label text
       labels: [
         {
           position: 0.5,
@@ -536,6 +591,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         ...edge.data,
         domainEdgeId: edge.id,
       },
+      zIndex: 1,
     });
 
     // Set edge z-order to the higher of source or target node z-orders
@@ -903,6 +959,13 @@ export class X6GraphAdapter implements IGraphAdapter {
       >;
       edge.setData({ ...currentData, label: text });
     }
+  }
+
+  /**
+   * Start label editing for a cell (public method to access private _addLabelEditor)
+   */
+  startLabelEditing(cell: Cell, event: MouseEvent): void {
+    this._addLabelEditor(cell, event);
   }
 
   /**

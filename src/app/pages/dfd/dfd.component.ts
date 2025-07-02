@@ -39,6 +39,7 @@ import { NodeData } from './domain/value-objects/node-data';
 import { EdgeData } from './domain/value-objects/edge-data';
 import { Point } from './domain/value-objects/point';
 import { DiagramNode } from './domain/value-objects/diagram-node';
+import { DiagramEdge } from './domain/value-objects/diagram-edge';
 
 // Import providers needed for standalone component
 import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
@@ -1335,5 +1336,128 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.logger.info('Moving cell to back', { cellId: this._rightClickedCell.id });
     this.x6GraphAdapter.moveSelectedCellsToBack();
+  }
+
+  /**
+   * Check if the right-clicked cell is an edge
+   */
+  isRightClickedCellEdge(): boolean {
+    return this._rightClickedCell?.isEdge() ?? false;
+  }
+
+  /**
+   * Edit the text/label of the right-clicked cell by invoking the label editor
+   */
+  editCellText(): void {
+    if (!this._rightClickedCell) {
+      this.logger.warn('No cell selected for text editing');
+      return;
+    }
+
+    this.logger.info('Invoking label editor for cell', { cellId: this._rightClickedCell.id });
+
+    // Use the X6 graph adapter's label editing functionality
+    // We need to simulate a double-click event to trigger the existing label editor
+    const mockEvent = new MouseEvent('dblclick', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 0,
+      clientY: 0,
+    });
+
+    // Access the private method through the adapter to add the label editor
+    // Since _addLabelEditor is private, we'll call it through a public method we'll add
+    this.x6GraphAdapter.startLabelEditing(this._rightClickedCell, mockEvent);
+  }
+
+  /**
+   * Add an inverse connection for the right-clicked edge
+   */
+  addInverseConnection(): void {
+    if (!this._rightClickedCell || !this._rightClickedCell.isEdge()) {
+      this.logger.warn('No edge selected for inverse connection');
+      return;
+    }
+
+    const edge = this._rightClickedCell;
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Cannot create inverse connection: edge missing source or target', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+      });
+      return;
+    }
+
+    this.logger.info('Creating inverse connection for edge', {
+      originalEdgeId: edge.id,
+      originalSource: sourceNodeId,
+      originalTarget: targetNodeId,
+      originalSourcePort: sourcePortId,
+      originalTargetPort: targetPortId,
+    });
+
+    // Generate a new UUID for the inverse edge
+    const inverseEdgeId = uuidv4();
+    const diagramId = this.dfdId || 'default-diagram';
+    const userId = 'current-user'; // TODO: Get from auth service
+
+    // Create domain edge data for the inverse connection
+    // Swap source and target, and swap source and target ports
+    const inverseEdgeData =
+      sourcePortId && targetPortId
+        ? EdgeData.createWithPorts(
+            inverseEdgeId,
+            targetNodeId, // Swap: original target becomes new source
+            sourceNodeId, // Swap: original source becomes new target
+            targetPortId, // Swap: original target port becomes new source port
+            sourcePortId, // Swap: original source port becomes new target port
+            'Flow', // Default label
+          )
+        : EdgeData.createSimple(
+            inverseEdgeId,
+            targetNodeId, // Swap: original target becomes new source
+            sourceNodeId, // Swap: original source becomes new target
+            'Flow', // Default label
+          );
+
+    // Create and execute AddEdgeCommand for the inverse edge
+    const command = DiagramCommandFactory.addEdge(
+      diagramId,
+      userId,
+      inverseEdgeId,
+      targetNodeId, // New source (original target)
+      sourceNodeId, // New target (original source)
+      inverseEdgeData,
+    );
+
+    this.commandBus
+      .execute<void>(command)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.logger.info('Inverse edge created successfully in domain model', {
+            originalEdgeId: edge.id,
+            inverseEdgeId,
+            newSource: targetNodeId,
+            newTarget: sourceNodeId,
+          });
+
+          // Add the inverse edge to the visual graph
+          // Create a DiagramEdge from the EdgeData
+          const diagramEdge = new DiagramEdge(inverseEdgeData);
+
+          this.x6GraphAdapter.addEdge(diagramEdge);
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Error creating inverse edge in domain model', error);
+        },
+      });
   }
 }

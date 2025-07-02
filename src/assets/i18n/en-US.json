@@ -239,11 +239,13 @@
     }
   },
   "contextMenu": {
+    "editText": "Edit text",
     "copyDefinitionToClipboard": "Copy definition to clipboard",
     "moveForward": "Move forward",
     "moveBackward": "Move backward",
     "moveToFront": "Move to front",
-    "moveToBack": "Move to back"
+    "moveToBack": "Move to back",
+    "addInverseConnection": "Add inverse connection"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",

@@ -181,9 +181,9 @@
       ></button>
     </div>
     <mat-menu #cellContextMenu="matMenu">
-      <button mat-menu-item (click)="copyCellDefinition()">
-        <mat-icon>content_copy</mat-icon>
-        <span>{{ 'contextMenu.copyDefinitionToClipboard' | transloco }}</span>
+      <button mat-menu-item (click)="editCellText()">
+        <mat-icon>edit</mat-icon>
+        <span>{{ 'contextMenu.editText' | transloco }}</span>
       </button>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="moveForward()">
@@ -201,6 +201,15 @@
       <button mat-menu-item (click)="moveToBack()">
         <mat-icon>vertical_align_bottom</mat-icon>
         <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="addInverseConnection()" *ngIf="isRightClickedCellEdge()">
+        <mat-icon>swap_horiz</mat-icon>
+        <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="copyCellDefinition()">
+        <mat-icon>content_copy</mat-icon>
+        <span>{{ 'contextMenu.copyDefinitionToClipboard' | transloco }}</span>
       </button>
     </mat-menu>
   </div>

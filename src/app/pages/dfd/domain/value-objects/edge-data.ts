@@ -273,8 +273,8 @@ export class EdgeData {
       throw new Error('Target node ID cannot be empty');
     }
 
-    if (this.sourceNodeId === this.targetNodeId) {
-      throw new Error('Self-loops are not allowed');
+    if (this.sourceNodeId === this.targetNodeId && this.sourcePortId === this.targetPortId) {
+      throw new Error('Self-loops to the same port are not allowed');
     }
 
     // Validate vertices are valid points

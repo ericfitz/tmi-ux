@@ -1,4 +1,13 @@
 {
+  "contextMenu": {
+    "editText": "แก้ไขข้อความ",
+    "copyDefinitionToClipboard": "คัดลอกคำจำกัดความไปยังคลิปบอร์ด",
+    "moveForward": "เลื่อนไปข้างหน้า",
+    "moveBackward": "เลื่อนไปข้างหลัง",
+    "moveToFront": "เลื่อนไปด้านหน้า",
+    "moveToBack": "เลื่อนไปด้านหลัง",
+    "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน"
+  },
   "collaboration": {
     "title": "การทำงานร่วมกัน",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
@@ -225,13 +234,6 @@
       "textbox": "ข้อความ",
       "node": "โหนด"
     }
-  },
-  "contextMenu": {
-    "copyDefinitionToClipboard": "คัดลอกคำจำกัดความไปยังคลิปบอร์ด",
-    "moveForward": "เลื่อนไปข้างหน้า",
-    "moveBackward": "เลื่อนไปข้างหลัง",
-    "moveToFront": "ย้ายไปด้านหน้า",
-    "moveToBack": "ย้ายไปด้านหลัง"
   },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",

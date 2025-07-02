@@ -224,11 +224,13 @@
     }
   },
   "contextMenu": {
+    "editText": "Text bearbeiten",
     "copyDefinitionToClipboard": "Definition in Zwischenablage kopieren",
     "moveForward": "Nach vorne bewegen",
     "moveBackward": "Nach hinten bewegen",
     "moveToFront": "In den Vordergrund",
-    "moveToBack": "In den Hintergrund"
+    "moveToBack": "In den Hintergrund",
+    "addInverseConnection": "Umgekehrte Verbindung hinzufügen"
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
