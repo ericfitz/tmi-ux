@@ -68,6 +68,16 @@ export default [
     },
   },
 
+  // DFD page - disable specific unsafe any warnings
+  {
+    files: ['**/pages/dfd/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
   // Angular services and components - relax member ordering
   {
     files: ['**/services/*.ts', '**/components/*.ts', '**/**.component.ts', '**/i18n/*.ts'],

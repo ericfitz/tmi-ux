@@ -3202,7 +3202,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Update the grid size by modifying the graph options
     // We need to access the internal grid configuration and update it
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+     
     const graphOptions = (this._graph as any).options as {
       grid?: { size: number; visible: boolean };
     };
