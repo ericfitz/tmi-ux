@@ -577,7 +577,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           id?: string;
           attrs?: Record<string, { text?: string }>;
         };
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+         
         const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
         if (!portObj) {
           return;
