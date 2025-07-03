@@ -21,7 +21,9 @@
   },
   "common": {
     "save": "Speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "actions": "Aktionen",
+    "delete": "Löschen"
   },
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
@@ -158,7 +160,16 @@
     "description": "Beschreibung",
     "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
     "metadata": "Metadaten",
+    "metadataButton": "Metadaten verwalten",
+    "metadataTooltip": "Metadaten verwalten",
+    "sourceCodeButton": "Quellcode",
+    "sourceCodeTooltip": "Quellcode",
+    "threatsButton": "Bedrohungen",
+    "threatsTooltip": "Bedrohungen",
+    "reportButton": "Bericht",
+    "reportTooltip": "Bericht",
     "noMetadata": "Keine Metadaten verfügbar",
+    "addMetadata": "Metadaten hinzufügen",
     "threats": "Bedrohungen",
     "noThreats": "Noch keine Bedrohungen definiert",
     "diagrams": "Diagramme",
@@ -170,6 +181,8 @@
     "metadataKey": "Schlüssel",
     "metadataValue": "Wert",
     "permissions": "Berechtigungen",
+    "permissionsButton": "Berechtigungen",
+    "permissionsTooltip": "Berechtigungen verwalten",
     "permissionsUser": "Benutzer",
     "permissionsRole": "Rolle",
     "noPermissions": "Keine Berechtigungen definiert",

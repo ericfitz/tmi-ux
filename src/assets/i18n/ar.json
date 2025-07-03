@@ -30,7 +30,9 @@
   },
   "common": {
     "save": "حفظ",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "actions": "الإجراءات",
+    "delete": "حذف"
   },
   "navbar": {
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
@@ -167,7 +169,16 @@
     "description": "الوصف",
     "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
     "metadata": "البيانات الوصفية",
+    "metadataButton": "إدارة البيانات الوصفية",
+    "metadataTooltip": "إدارة البيانات الوصفية",
+    "sourceCodeButton": "الكود المصدري",
+    "sourceCodeTooltip": "الكود المصدري",
+    "threatsButton": "التهديدات",
+    "threatsTooltip": "التهديدات",
+    "reportButton": "تقرير",
+    "reportTooltip": "تقرير",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
+    "addMetadata": "إضافة بيانات وصفية",
     "threats": "التهديدات",
     "noThreats": "لم يتم تحديد أي تهديدات بعد",
     "diagrams": "المخططات",
@@ -179,6 +190,8 @@
     "metadataKey": "المفتاح",
     "metadataValue": "القيمة",
     "permissions": "الأذونات",
+    "permissionsButton": "الأذونات",
+    "permissionsTooltip": "إدارة الأذونات",
     "permissionsUser": "المستخدم",
     "permissionsRole": "الدور",
     "noPermissions": "لم يتم تحديد أي أذونات",

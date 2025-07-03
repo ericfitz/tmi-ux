@@ -2,7 +2,9 @@
   "common": {
     "save": "Save",
     "cancel": "Cancel",
-    "ok": "OK"
+    "ok": "OK",
+    "actions": "Actions",
+    "delete": "Delete"
   },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
@@ -139,10 +141,21 @@
     "description": "Description",
     "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
     "metadata": "Metadata",
+    "metadataButton": "Manage metadata",
+    "metadataTooltip": "Manage metadata",
+    "sourceCodeButton": "Source code",
+    "sourceCodeTooltip": "Source code",
+    "threatsButton": "Threats",
+    "threatsTooltip": "Threats",
+    "reportButton": "Report",
+    "reportTooltip": "Report",
     "metadataKey": "Key",
     "metadataValue": "Value",
     "noMetadata": "No metadata available",
+    "addMetadata": "Add metadata",
     "permissions": "Permissions",
+    "permissionsButton": "Permissions",
+    "permissionsTooltip": "Manage permissions",
     "permissionsUser": "User",
     "permissionsRole": "Role",
     "noPermissions": "No permissions defined",
@@ -200,7 +213,6 @@
     "close": "Close",
     "actions": "Actions",
     "delete": "Delete",
-    "addMetadata": "Add Metadata",
     "validation": {
       "required": "This field is required",
       "maxLength": "Maximum length is {{max}} characters"

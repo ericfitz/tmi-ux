@@ -1,0 +1,83 @@
+<div class="metadata-dialog">
+  <h2 mat-dialog-title>{{ 'threatModels.metadata' | transloco }}</h2>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="metadata-table" matSort>
+        <!-- Key Column -->
+        <ng-container matColumnDef="key">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'threatModels.metadataKey' | transloco }}
+          </th>
+          <td mat-cell *matCellDef="let item; let i = index">
+            <mat-form-field class="table-field" appearance="outline">
+              <input
+                matInput
+                [value]="item.key"
+                (blur)="updateKey(i, $event)"
+                [placeholder]="'threatModels.metadataKey' | transloco"
+                [readonly]="data.isReadOnly"
+              />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Value Column -->
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'threatModels.metadataValue' | transloco }}
+          </th>
+          <td mat-cell *matCellDef="let item; let i = index">
+            <mat-form-field class="table-field" appearance="outline">
+              <input
+                matInput
+                [value]="item.value"
+                (blur)="updateValue(i, $event)"
+                [placeholder]="'threatModels.metadataValue' | transloco"
+                [readonly]="data.isReadOnly"
+              />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ 'common.actions' | transloco }}
+          </th>
+          <td mat-cell *matCellDef="let item; let i = index">
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteItem(i)"
+              [matTooltip]="'common.delete' | transloco"
+              [disabled]="data.isReadOnly"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <div *ngIf="!dataSource.data.length" class="no-items-message">
+      {{ 'threatModels.noMetadata' | transloco }}
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button color="primary" (click)="addItem()" [disabled]="data.isReadOnly">
+      <mat-icon>add</mat-icon>
+      {{ 'threatModels.addMetadata' | transloco }}
+    </button>
+    <button mat-button (click)="cancel()">
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="data.isReadOnly">
+      {{ 'common.save' | transloco }}
+    </button>
+  </mat-dialog-actions>
+</div>

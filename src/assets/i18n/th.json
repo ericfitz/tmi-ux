@@ -30,7 +30,9 @@
   },
   "common": {
     "save": "บันทึก",
-    "cancel": "ยกเลิก"
+    "cancel": "ยกเลิก",
+    "actions": "การกระทำ",
+    "delete": "ลบ"
   },
   "navbar": {
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
@@ -170,7 +172,16 @@
     "description": "คำอธิบาย",
     "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
     "metadata": "ข้อมูลเมตา",
+    "metadataButton": "จัดการข้อมูลเมตา",
+    "metadataTooltip": "จัดการข้อมูลเมตา",
+    "sourceCodeButton": "ซอร์สโค้ด",
+    "sourceCodeTooltip": "ซอร์สโค้ด",
+    "threatsButton": "ภัยคุกคาม",
+    "threatsTooltip": "ภัยคุกคาม",
+    "reportButton": "รายงาน",
+    "reportTooltip": "รายงาน",
     "noMetadata": "ไม่มีข้อมูลเมตาที่พร้อมใช้งาน",
+    "addMetadata": "เพิ่มข้อมูลเมตา",
     "threats": "ภัยคุกคาม",
     "noThreats": "ยังไม่มีการกำหนดภัยคุกคาม",
     "diagrams": "แผนภาพ",
@@ -182,6 +193,8 @@
     "metadataKey": "คีย์",
     "metadataValue": "ค่า",
     "permissions": "สิทธิ์การเข้าถึง",
+    "permissionsButton": "สิทธิ์การเข้าถึง",
+    "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
     "permissionsUser": "ผู้ใช้",
     "permissionsRole": "บทบาท",
     "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",

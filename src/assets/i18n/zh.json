@@ -10,7 +10,9 @@
   },
   "common": {
     "save": "保存",
-    "cancel": "取消"
+    "cancel": "取消",
+    "actions": "操作",
+    "delete": "删除"
   },
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
@@ -147,7 +149,16 @@
     "description": "描述",
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
     "metadata": "元数据",
+    "metadataButton": "管理元数据",
+    "metadataTooltip": "管理元数据",
+    "sourceCodeButton": "源代码",
+    "sourceCodeTooltip": "源代码",
+    "threatsButton": "威胁",
+    "threatsTooltip": "威胁",
+    "reportButton": "报告",
+    "reportTooltip": "报告",
     "noMetadata": "没有可用的元数据",
+    "addMetadata": "添加元数据",
     "threats": "威胁",
     "noThreats": "尚未定义威胁",
     "diagrams": "图表",
@@ -159,6 +170,8 @@
     "metadataKey": "键",
     "metadataValue": "值",
     "permissions": "权限",
+    "permissionsButton": "权限",
+    "permissionsTooltip": "管理权限",
     "permissionsUser": "用户",
     "permissionsRole": "角色",
     "noPermissions": "未定义权限",

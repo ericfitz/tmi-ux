@@ -18,6 +18,14 @@
 .header-actions {
   display: flex;
   gap: 12px;
+
+  // Ensure Material Symbols Outlined icons are properly centered
+  .mat-icon[fontSet='material-symbols-outlined'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
 }
 
 .content-container {
@@ -41,12 +49,7 @@
   }
 }
 
-.metadata-permissions-row {
-  display: contents;
-}
-
-.metadata-card,
-.permissions-card {
+.metadata-card {
   @media (width >= 768px) {
     grid-column: auto;
   }
@@ -192,20 +195,12 @@ mat-card-header {
   }
 }
 
-// Make the role column in permissions table only as wide as needed
-.permissions-table {
-  .mat-column-role {
-    width: 100px; // Just enough for "Owner", "Writer", or "Reader"
-  }
-}
-
 .table-container {
   width: 100%;
   overflow-x: auto;
 }
 
-.metadata-table,
-.permissions-table {
+.metadata-table {
   width: 100%;
 
   input,

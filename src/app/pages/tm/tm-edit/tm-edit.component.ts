@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
-import { MatSort } from '@angular/material/sort';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -16,6 +14,14 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { MaterialModule } from '../../../shared/material/material.module';
 import { SharedModule } from '../../../shared/shared.module';
 import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
+import {
+  PermissionsDialogComponent,
+  PermissionsDialogData,
+} from '../components/permissions-dialog/permissions-dialog.component';
+import {
+  MetadataDialogComponent,
+  MetadataDialogData,
+} from '../components/metadata-dialog/metadata-dialog.component';
 import { RenameDiagramDialogComponent } from '../components/rename-diagram-dialog/rename-diagram-dialog.component';
 import {
   ThreatEditorDialogComponent,
@@ -56,20 +62,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
   diagrams: Diagram[] = [];
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
-
-  // Data sources for tables
-  metadataDataSource = new MatTableDataSource<Metadata>([]);
-  permissionsDataSource = new MatTableDataSource<Authorization>([]);
-
-  // Column definitions
-  metadataColumns: string[] = ['key', 'value', 'actions'];
-  permissionsColumns: string[] = ['subject', 'role', 'actions'];
-
-  // ViewChild references for tables and sorting
-  @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
-  @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
-  @ViewChild('metadataSort') metadataSort!: MatSort;
-  @ViewChild('permissionsSort') permissionsSort!: MatSort;
 
   private _subscriptions = new Subscription();
 
@@ -154,9 +146,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
                 modified_at: new Date().toISOString(),
               };
             }) || [];
-
-          // Initialize table data sources
-          this.updateTableDataSources();
         } else {
           // Handle case where threat model is not found
           this.isNewThreatModel = true;
@@ -185,9 +174,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
             threat_model_framework: this.threatModel.threat_model_framework,
             issue_url: this.threatModel.issue_url || '',
           });
-
-          // Initialize table data sources for new threat model
-          this.updateTableDataSources();
         }
       }),
     );
@@ -195,28 +181,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
-  }
-
-  /**
-   * Updates the data sources for the metadata and permissions tables
-   */
-  updateTableDataSources(): void {
-    if (this.threatModel) {
-      // Update metadata data source
-      this.metadataDataSource.data = this.threatModel.metadata || [];
-
-      // Update permissions data source
-      this.permissionsDataSource.data = this.threatModel.authorization || [];
-
-      // Refresh tables if they exist
-      if (this.metadataTable) {
-        this.metadataTable.renderRows();
-      }
-
-      if (this.permissionsTable) {
-        this.permissionsTable.renderRows();
-      }
-    }
   }
 
   saveThreatModel(): void {
@@ -545,155 +509,106 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Adds a new metadata item to the threat model
+   * Opens the permissions dialog to manage threat model permissions
    */
-  addMetadataItem(): void {
+  openPermissionsDialog(): void {
     if (!this.threatModel) {
       return;
     }
 
-    // Initialize metadata array if it doesn't exist
-    if (!this.threatModel.metadata) {
-      this.threatModel.metadata = [];
-    }
+    const dialogData: PermissionsDialogData = {
+      permissions: this.threatModel.authorization || [],
+      isReadOnly: false, // You can add logic here to determine if user has edit permissions
+    };
 
-    // Add a new empty metadata item
-    this.threatModel.metadata.push({
-      key: '',
-      value: '',
+    const dialogRef = this.dialog.open(PermissionsDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
     });
 
-    // Update the data source
-    this.updateTableDataSources();
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Authorization[] | undefined) => {
+        if (result && this.threatModel) {
+          this.threatModel.authorization = result;
+          this.threatModel.modified_at = new Date().toISOString();
+
+          // Update the threat model
+          this._subscriptions.add(
+            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+              if (updatedModel) {
+                this.threatModel = updatedModel;
+              }
+            }),
+          );
+        }
+      }),
+    );
   }
 
   /**
-   * Updates the key of a metadata item
-   * @param index The index of the metadata item to update
-   * @param event The blur event containing the new key value
+   * Opens the metadata dialog to manage threat model metadata
    */
-  updateMetadataKey(index: number, event: Event): void {
-    if (!this.threatModel || !this.threatModel.metadata) {
-      return;
-    }
-
-    const input = event.target as HTMLInputElement;
-    if (index >= 0 && index < this.threatModel.metadata.length) {
-      this.threatModel.metadata[index].key = input.value;
-      this.threatModel.modified_at = new Date().toISOString();
-      this.updateTableDataSources();
-    }
-  }
-
-  /**
-   * Updates the value of a metadata item
-   * @param index The index of the metadata item to update
-   * @param event The blur event containing the new value
-   */
-  updateMetadataValue(index: number, event: Event): void {
-    if (!this.threatModel || !this.threatModel.metadata) {
-      return;
-    }
-
-    const input = event.target as HTMLInputElement;
-    if (index >= 0 && index < this.threatModel.metadata.length) {
-      this.threatModel.metadata[index].value = input.value;
-      this.threatModel.modified_at = new Date().toISOString();
-      this.updateTableDataSources();
-    }
-  }
-
-  /**
-   * Deletes a metadata item from the threat model
-   * @param index The index of the metadata item to delete
-   */
-  deleteMetadataItem(index: number): void {
-    if (!this.threatModel || !this.threatModel.metadata) {
-      return;
-    }
-
-    if (index >= 0 && index < this.threatModel.metadata.length) {
-      this.threatModel.metadata.splice(index, 1);
-      this.threatModel.modified_at = new Date().toISOString();
-      this.updateTableDataSources();
-    }
-  }
-
-  /**
-   * Adds a new permission to the threat model
-   */
-  addPermission(): void {
+  openMetadataDialog(): void {
     if (!this.threatModel) {
       return;
     }
 
-    // Initialize authorization array if it doesn't exist
-    if (!this.threatModel.authorization) {
-      this.threatModel.authorization = [];
-    }
+    const dialogData: MetadataDialogData = {
+      metadata: this.threatModel.metadata || [],
+      isReadOnly: false, // You can add logic here to determine if user has edit permissions
+    };
 
-    // Add a new empty permission item
-    this.threatModel.authorization.push({
-      subject: '',
-      role: 'reader',
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
     });
 
-    // Update the modified timestamp
-    this.threatModel.modified_at = new Date().toISOString();
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && this.threatModel) {
+          this.threatModel.metadata = result;
+          this.threatModel.modified_at = new Date().toISOString();
 
-    // Update the data source
-    this.updateTableDataSources();
+          // Update the threat model
+          this._subscriptions.add(
+            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+              if (updatedModel) {
+                this.threatModel = updatedModel;
+              }
+            }),
+          );
+        }
+      }),
+    );
   }
 
   /**
-   * Updates the subject (user) of a permission
-   * @param index The index of the permission to update
-   * @param event The blur event containing the new subject value
+   * Opens the threats view (placeholder for future functionality)
    */
-  updatePermissionSubject(index: number, event: Event): void {
-    if (!this.threatModel || !this.threatModel.authorization) {
-      return;
-    }
-
-    const input = event.target as HTMLInputElement;
-    if (index >= 0 && index < this.threatModel.authorization.length) {
-      this.threatModel.authorization[index].subject = input.value;
-      this.threatModel.modified_at = new Date().toISOString();
-      this.updateTableDataSources();
-    }
+  openThreatsView(): void {
+    // TODO: Implement threats view functionality
+    this.logger.info('Threats view clicked - functionality to be implemented');
   }
 
   /**
-   * Updates the role of a permission
-   * @param index The index of the permission to update
-   * @param event The selection change event containing the new role value
+   * Opens the source code view (placeholder for future functionality)
    */
-  updatePermissionRole(index: number, event: { value: 'reader' | 'writer' | 'owner' }): void {
-    if (!this.threatModel || !this.threatModel.authorization) {
-      return;
-    }
-
-    if (index >= 0 && index < this.threatModel.authorization.length) {
-      this.threatModel.authorization[index].role = event.value;
-      this.threatModel.modified_at = new Date().toISOString();
-      this.updateTableDataSources();
-    }
+  openSourceCodeView(): void {
+    // TODO: Implement source code view functionality
+    this.logger.info('Source code view clicked - functionality to be implemented');
   }
 
   /**
-   * Deletes a permission from the threat model
-   * @param index The index of the permission to delete
+   * Opens the report view (placeholder for future functionality)
    */
-  deletePermission(index: number): void {
-    if (!this.threatModel || !this.threatModel.authorization) {
-      return;
-    }
-
-    // Don't allow deleting the first permission (owner)
-    if (index > 0 && index < this.threatModel.authorization.length) {
-      this.threatModel.authorization.splice(index, 1);
-      this.threatModel.modified_at = new Date().toISOString();
-      this.updateTableDataSources();
-    }
+  openReport(): void {
+    // TODO: Implement report functionality
+    this.logger.info('Report clicked - functionality to be implemented');
   }
 }
