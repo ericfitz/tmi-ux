@@ -121,6 +121,7 @@ mat-card-content {
   color: rgb(0 0 0 / 80%);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
