@@ -145,7 +145,7 @@ export class DiagramNode {
    * Resizes the node
    */
   resize(width: number, height: number): void {
-    this._data = this._data.withDimensions(width, height);
+    this._data = this._data.withWidth(width).withHeight(height);
   }
 
   /**

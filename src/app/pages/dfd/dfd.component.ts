@@ -57,12 +57,14 @@ import {
   UpdateEdgeDataCommandHandler,
   RemoveEdgeCommandHandler,
   UpdateDiagramMetadataCommandHandler,
+  CompositeCommandHandler,
 } from './application/handlers/diagram-command-handlers';
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
 import { InverseCommandFactory } from './domain/commands/inverse-command-factory';
 import { OperationStateTracker } from './infrastructure/services/operation-state-tracker.service';
 import { HistoryMiddleware } from './application/middleware/history.middleware';
 import { HistoryIntegrationService } from './application/services/history-integration.service';
+import { OperationType } from './domain/history/history.types';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -101,6 +103,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     UpdateEdgeDataCommandHandler,
     RemoveEdgeCommandHandler,
     UpdateDiagramMetadataCommandHandler,
+    CompositeCommandHandler,
 
     // CommandBus initializer
     CommandBusInitializerService,
@@ -157,6 +160,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private commandBus: CommandBusService,
     private historyService: HistoryService,
     private historyIntegrationService: HistoryIntegrationService,
+    private operationStateTracker: OperationStateTracker,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -791,19 +795,60 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Delete nodes first (this will also remove connected edges automatically)
     selectedNodes.forEach(node => {
+      // DIAGNOSTIC: Check for connected edges before deletion
+      // Note: We'll capture this information from the domain model after deletion
+      this.logger.info('DIAGNOSTIC: Node deletion will cascade to connected edges', {
+        nodeId: node.id,
+        note: 'Connected edges will be automatically deleted by domain logic',
+      });
+
+      // CRITICAL FIX: Start operation tracking for delete operations
+      const operationId = `delete_node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      this.operationStateTracker.startOperation(operationId, OperationType.DELETE, {
+        entityId: node.id,
+        entityType: 'node',
+        metadata: {
+          operationType: 'DELETE_NODE',
+          source: 'keyboard_shortcut',
+          note: 'Will cascade delete connected edges',
+        },
+      });
+
+      this.logger.info('DIAGNOSTIC: Started operation tracking for delete (keyboard)', {
+        operationId,
+        nodeId: node.id,
+        note: 'Connected edges will be automatically deleted by domain logic',
+      });
+
       const command = DiagramCommandFactory.removeNode(diagramId, userId, node.id, true); // isLocalUserInitiated
+
+      // Attach operation ID to command for history middleware
+      const commandWithOperationId = command as unknown as Record<string, unknown>;
+      commandWithOperationId['operationId'] = operationId;
 
       this.commandBus
         .execute<void>(command)
         .pipe(take(1))
         .subscribe({
           next: () => {
-            this.logger.info('Node deleted successfully', { nodeId: node.id });
+            this.logger.info('Node deleted successfully', { nodeId: node.id, operationId });
+
+            // CRITICAL FIX: Complete operation tracking
+            this.operationStateTracker.completeOperation(operationId);
+            this.logger.info('DIAGNOSTIC: Completed operation tracking for delete (keyboard)', {
+              operationId,
+              nodeId: node.id,
+            });
+
             // Remove from visual graph
             this.x6GraphAdapter.removeNode(node.id);
           },
           error: error => {
             this.logger.error('Error deleting node', error);
+
+            // Cancel operation tracking on error
+            this.operationStateTracker.cancelOperation(operationId);
           },
         });
     });
@@ -821,19 +866,51 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Only delete the edge if it's not connected to a node being deleted
       // (since deleting the node will automatically delete connected edges)
       if (!isConnectedToDeletedNode) {
+        // CRITICAL FIX: Start operation tracking for edge delete operations
+        const operationId = `delete_edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        this.operationStateTracker.startOperation(operationId, OperationType.DELETE, {
+          entityId: edge.id,
+          entityType: 'edge',
+          metadata: { operationType: 'DELETE_EDGE', source: 'keyboard_shortcut' },
+        });
+
+        this.logger.info('DIAGNOSTIC: Started operation tracking for edge delete (keyboard)', {
+          operationId,
+          edgeId: edge.id,
+        });
+
         const command = DiagramCommandFactory.removeEdge(diagramId, userId, edge.id, true); // isLocalUserInitiated
+
+        // Attach operation ID to command for history middleware
+        const commandWithOperationId = command as unknown as Record<string, unknown>;
+        commandWithOperationId['operationId'] = operationId;
 
         this.commandBus
           .execute<void>(command)
           .pipe(take(1))
           .subscribe({
             next: () => {
-              this.logger.info('Edge deleted successfully', { edgeId: edge.id });
+              this.logger.info('Edge deleted successfully', { edgeId: edge.id, operationId });
+
+              // CRITICAL FIX: Complete operation tracking
+              this.operationStateTracker.completeOperation(operationId);
+              this.logger.info(
+                'DIAGNOSTIC: Completed operation tracking for edge delete (keyboard)',
+                {
+                  operationId,
+                  edgeId: edge.id,
+                },
+              );
+
               // Remove from visual graph
               this.x6GraphAdapter.removeEdge(edge.id);
             },
             error: error => {
               this.logger.error('Error deleting edge', error);
+
+              // Cancel operation tracking on error
+              this.operationStateTracker.cancelOperation(operationId);
             },
           });
       }

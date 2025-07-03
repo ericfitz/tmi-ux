@@ -100,6 +100,15 @@ export interface UpdateDiagramMetadataCommand extends DiagramCommand {
 }
 
 /**
+ * Composite command that executes multiple commands as a single atomic operation
+ */
+export interface CompositeCommand extends DiagramCommand {
+  readonly type: 'COMPOSITE';
+  readonly commands: AnyDiagramCommand[];
+  readonly description: string;
+}
+
+/**
  * Union type of all diagram commands
  */
 export type AnyDiagramCommand =
@@ -111,7 +120,8 @@ export type AnyDiagramCommand =
   | AddEdgeCommand
   | UpdateEdgeDataCommand
   | RemoveEdgeCommand
-  | UpdateDiagramMetadataCommand;
+  | UpdateDiagramMetadataCommand
+  | CompositeCommand;
 
 /**
  * Command factory for creating diagram commands with proper metadata
@@ -320,6 +330,28 @@ export class DiagramCommandFactory {
       name,
       description,
       isLocalUserInitiated,
+    };
+  }
+
+  /**
+   * Creates a composite command that executes multiple commands atomically
+   */
+  static createComposite(
+    diagramId: string,
+    userId: string,
+    commands: AnyDiagramCommand[],
+    description: string,
+    isLocalUserInitiated?: boolean,
+  ): CompositeCommand {
+    return {
+      type: 'COMPOSITE',
+      diagramId,
+      userId,
+      commandId: this.generateCommandId(),
+      timestamp: new Date(),
+      isLocalUserInitiated: isLocalUserInitiated ?? true,
+      commands,
+      description,
     };
   }
 

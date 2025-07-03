@@ -10,6 +10,8 @@ import { InverseCommandFactory } from '../../domain/commands/inverse-command-fac
 import { DiagramState } from '../../domain/history/history.types';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 import { Point } from '../../domain/value-objects/point';
+import { NodeData } from '../../domain/value-objects/node-data';
+import { EdgeData } from '../../domain/value-objects/edge-data';
 
 /**
  * Middleware that handles history recording for diagram commands
@@ -262,11 +264,12 @@ export class HistoryMiddleware implements ICommandMiddleware {
 
       // Capture all nodes with their essential state for history
       const nodes = graph.getNodes().map(node => {
-        const nodeData: unknown = node.getData();
+        // Convert raw node data from X6 to NodeData instance, then to JSON
+        const nodeData = NodeData.fromJSON(node.getData()); // Use 'any' for now
         return {
           id: node.id,
           position: new Point(node.position().x, node.position().y),
-          data: nodeData as Record<string, unknown>,
+          data: nodeData.toJSON(), // Store the JSON representation
         };
       });
 
@@ -280,12 +283,53 @@ export class HistoryMiddleware implements ICommandMiddleware {
         const sourceNodeId = this._extractNodeIdFromTerminal(source);
         const targetNodeId = this._extractNodeIdFromTerminal(target);
 
-        const edgeData: unknown = edge.getData();
+        // Get raw edge data from X6
+        const x6EdgeData: unknown = edge.getData();
+
+        // Extract properties needed for EdgeData.fromJSON, providing fallbacks
+        let label: string;
+        const rawLabel = edge.attr('line/text/text');
+        if (typeof rawLabel === 'string') {
+          label = rawLabel;
+        } else if (
+          rawLabel &&
+          typeof rawLabel === 'object' &&
+          'text' in rawLabel &&
+          typeof rawLabel.text === 'string'
+        ) {
+          label = rawLabel.text;
+        } else {
+          label = 'Data Flow'; // Default label
+        }
+
+        const vertices = edge.getVertices().map(v => ({ x: v.x, y: v.y }));
+        const sourcePortId = edge.getSourcePortId();
+        const targetPortId = edge.getTargetPortId();
+        const metadata =
+          x6EdgeData && typeof x6EdgeData === 'object' && 'metadata' in x6EdgeData
+            ? (x6EdgeData as { metadata: Record<string, string> }).metadata
+            : {};
+
+        // Construct the object that EdgeData.fromJSON expects
+        const edgeDataForDomain = {
+          id: edge.id,
+          sourceNodeId,
+          targetNodeId,
+          sourcePortId,
+          targetPortId,
+          label,
+          vertices,
+          metadata,
+        };
+
+        // Create EdgeData instance and then its JSON representation
+        const domainEdgeData = EdgeData.fromJSON(edgeDataForDomain);
+
         return {
           id: edge.id,
           sourceNodeId,
           targetNodeId,
-          data: edgeData as Record<string, unknown>,
+          data: domainEdgeData.toJSON(), // Store the JSON representation of the EdgeData
         };
       });
 

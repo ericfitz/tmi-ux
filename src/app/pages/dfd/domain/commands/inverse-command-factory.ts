@@ -9,11 +9,12 @@ import {
   AddEdgeCommand,
   RemoveEdgeCommand,
   UpdateEdgeDataCommand,
+  CompositeCommand,
   DiagramCommandFactory,
 } from '../commands/diagram-commands';
 import type { DiagramState } from '../history/history.types';
-import type { NodeData } from '../value-objects/node-data';
-import type { EdgeData } from '../value-objects/edge-data';
+import { NodeData } from '../value-objects/node-data';
+import { EdgeData } from '../value-objects/edge-data';
 
 /**
  * Factory for creating inverse commands that can undo the effects of original commands.
@@ -51,6 +52,8 @@ export class InverseCommandFactory {
           return this._createAddEdgeInverse(command, beforeState);
         case 'UPDATE_EDGE_DATA':
           return this._createUpdateEdgeDataInverse(command, beforeState);
+        case 'COMPOSITE':
+          return this._createCompositeInverse(command, beforeState);
         default:
           throw new Error(`Unsupported command type for inverse: ${command.type}`);
       }
@@ -74,6 +77,7 @@ export class InverseCommandFactory {
       'ADD_EDGE',
       'REMOVE_EDGE',
       'UPDATE_EDGE_DATA',
+      'COMPOSITE',
     ];
     return supportedTypes.includes(command.type);
   }
@@ -92,12 +96,13 @@ export class InverseCommandFactory {
 
       const validPairs = new Map([
         ['ADD_NODE', 'REMOVE_NODE'],
-        ['REMOVE_NODE', 'ADD_NODE'],
+        ['REMOVE_NODE', 'COMPOSITE'], // Node removal inverse is composite (node + edges)
         ['ADD_EDGE', 'REMOVE_EDGE'],
         ['REMOVE_EDGE', 'ADD_EDGE'],
         ['UPDATE_NODE_POSITION', 'UPDATE_NODE_POSITION'],
         ['UPDATE_NODE_DATA', 'UPDATE_NODE_DATA'],
         ['UPDATE_EDGE_DATA', 'UPDATE_EDGE_DATA'],
+        ['COMPOSITE', 'COMPOSITE'],
       ]);
 
       return validPairs.get(commandType) === inverseType;
@@ -118,19 +123,56 @@ export class InverseCommandFactory {
   private _createAddNodeInverse(
     command: RemoveNodeCommand,
     beforeState: DiagramState,
-  ): AddNodeCommand {
-    // For RemoveNodeCommand, create AddNodeCommand
+  ): CompositeCommand {
+    // For RemoveNodeCommand, create CompositeCommand that restores node + connected edges
     const nodeToRestore = beforeState.nodes.find(node => node.id === command.nodeId);
     if (!nodeToRestore) {
       throw new Error(`Cannot create inverse: node ${command.nodeId} not found in before state`);
     }
 
-    return DiagramCommandFactory.addNode(
+    // Find all edges that were connected to this node
+    const connectedEdges = beforeState.edges.filter(
+      edge => edge.sourceNodeId === command.nodeId || edge.targetNodeId === command.nodeId,
+    );
+
+    this._logger.info('DIAGNOSTIC: Creating composite inverse for node deletion', {
+      nodeId: command.nodeId,
+      connectedEdgeCount: connectedEdges.length,
+      connectedEdgeIds: connectedEdges.map(edge => edge.id),
+    });
+
+    // Create commands to restore the node and all connected edges
+    const restoreCommands: AnyDiagramCommand[] = [];
+
+    // First, restore the node
+    const addNodeCommand = DiagramCommandFactory.addNode(
       command.diagramId,
       command.userId,
       command.nodeId,
       nodeToRestore.position,
-      nodeToRestore.data as NodeData,
+      nodeToRestore.data as NodeData, // Restore original type assertion
+    );
+    restoreCommands.push(addNodeCommand);
+
+    // Then, restore all connected edges
+    for (const edge of connectedEdges) {
+      const addEdgeCommand = DiagramCommandFactory.addEdge(
+        command.diagramId,
+        command.userId,
+        edge.id,
+        edge.sourceNodeId,
+        edge.targetNodeId,
+        edge.data as EdgeData, // Restore original type assertion
+      );
+      restoreCommands.push(addEdgeCommand);
+    }
+
+    // Create composite command
+    return DiagramCommandFactory.createComposite(
+      command.diagramId,
+      command.userId,
+      restoreCommands,
+      `Restore node ${command.nodeId} and ${connectedEdges.length} connected edges`,
     );
   }
 
@@ -186,7 +228,7 @@ export class InverseCommandFactory {
       command.edgeId,
       edgeToRestore.sourceNodeId,
       edgeToRestore.targetNodeId,
-      edgeToRestore.data as EdgeData,
+      edgeToRestore.data as EdgeData, // Restore original type assertion
     );
   }
 
@@ -201,6 +243,28 @@ export class InverseCommandFactory {
       command.edgeId,
       command.oldData, // Restore old data
       command.newData, // Current data becomes old
+    );
+  }
+
+  private _createCompositeInverse(
+    command: CompositeCommand,
+    beforeState: DiagramState,
+  ): CompositeCommand {
+    // For CompositeCommand, create inverse commands for each sub-command in reverse order
+    const inverseCommands: AnyDiagramCommand[] = [];
+
+    // Process commands in reverse order for proper undo
+    for (let i = command.commands.length - 1; i >= 0; i--) {
+      const subCommand = command.commands[i];
+      const inverseCommand = this.createInverse(subCommand, beforeState);
+      inverseCommands.push(inverseCommand);
+    }
+
+    return DiagramCommandFactory.createComposite(
+      command.diagramId,
+      command.userId,
+      inverseCommands,
+      `Inverse of: ${command.description}`,
     );
   }
 }

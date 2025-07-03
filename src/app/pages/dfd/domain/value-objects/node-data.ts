@@ -45,6 +45,30 @@ export class NodeData {
   }
 
   /**
+   * Creates a new NodeData instance from a plain object.
+   * This is a factory method for creating new instances, similar to fromJSON but for new data.
+   */
+  static create(data: {
+    id: string;
+    type: NodeType;
+    label: string;
+    position: { x: number; y: number };
+    width: number;
+    height: number;
+    metadata?: Record<string, string>;
+  }): NodeData {
+    return new NodeData(
+      data.id,
+      data.type,
+      data.label,
+      Point.fromJSON(data.position),
+      data.width,
+      data.height,
+      data.metadata || {},
+    );
+  }
+
+  /**
    * Creates a default NodeData for the given type
    */
   static createDefault(
@@ -156,15 +180,30 @@ export class NodeData {
   }
 
   /**
-   * Creates a new NodeData with updated dimensions
+   * Creates a new NodeData with updated width
    */
-  withDimensions(width: number, height: number): NodeData {
+  withWidth(width: number): NodeData {
     return new NodeData(
       this.id,
       this.type,
       this.label,
       this.position,
       width,
+      this.height,
+      this.metadata,
+    );
+  }
+
+  /**
+   * Creates a new NodeData with updated height
+   */
+  withHeight(height: number): NodeData {
+    return new NodeData(
+      this.id,
+      this.type,
+      this.label,
+      this.position,
+      this.width,
       height,
       this.metadata,
     );

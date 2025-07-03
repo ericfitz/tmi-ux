@@ -8,6 +8,7 @@ import { OperationStateTracker } from '../../infrastructure/services/operation-s
 import { OperationType } from '../../domain/history/history.types';
 import { Point } from '../../domain/value-objects/point';
 import { EdgeData } from '../../domain/value-objects/edge-data';
+import { NodeData, NodeType } from '../../domain/value-objects/node-data';
 
 /**
  * Service that integrates debounced X6 graph events with the history system.
@@ -38,6 +39,14 @@ export class HistoryIntegrationService implements OnDestroy {
 
     this._logger.info('Initializing history integration service', { diagramId, userId });
 
+    // Set command context on X6 adapter for delete operations
+    this._x6GraphAdapter.setCommandContext(
+      diagramId,
+      userId,
+      this._commandBus,
+      this._operationTracker,
+    );
+
     // Subscribe to debounced node movement events
     this._x6GraphAdapter.debouncedNodeMoved$.pipe(takeUntil(this._destroy$)).subscribe({
       next: event => this._handleDebouncedNodeMovement(event, diagramId, userId),
@@ -50,6 +59,34 @@ export class HistoryIntegrationService implements OnDestroy {
       next: event => this._handleDebouncedEdgeVertexChange(event, diagramId, userId),
       error: (error: unknown) =>
         this._logger.error('Error in debounced edge vertex subscription', { error }),
+    });
+
+    // Subscribe to debounced node resize events
+    this._x6GraphAdapter.debouncedNodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => this._handleDebouncedNodeResize(event, diagramId, userId),
+      error: (error: unknown) =>
+        this._logger.error('Error in debounced node resize subscription', { error }),
+    });
+
+    // Subscribe to debounced node data change events (for label edits, etc.)
+    this._x6GraphAdapter.debouncedNodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => this._handleDebouncedNodeDataChange(event, diagramId, userId),
+      error: (error: unknown) =>
+        this._logger.error('Error in debounced node data change subscription', { error }),
+    });
+
+    // Subscribe to debounced node resize events
+    this._x6GraphAdapter.debouncedNodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => this._handleDebouncedNodeResize(event, diagramId, userId),
+      error: (error: unknown) =>
+        this._logger.error('Error in debounced node resize subscription', { error }),
+    });
+
+    // Subscribe to debounced node data change events (for label edits, etc.)
+    this._x6GraphAdapter.debouncedNodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => this._handleDebouncedNodeDataChange(event, diagramId, userId),
+      error: (error: unknown) =>
+        this._logger.error('Error in debounced node data change subscription', { error }),
     });
 
     this._isInitialized = true;
@@ -85,9 +122,26 @@ export class HistoryIntegrationService implements OnDestroy {
         oldPosition: event.previous,
       });
 
+      // FIX: Get the initial position from the X6 adapter instead of using intermediate position
+      const initialPosition = this._x6GraphAdapter.getInitialNodePosition(event.nodeId);
+      const actualPreviousPosition =
+        initialPosition || new Point(event.previous.x, event.previous.y);
+
+      this._logger.info('FIXED: Using initial position for move operation', {
+        nodeId: event.nodeId,
+        currentPosition: event.position,
+        x6PreviousPosition: event.previous,
+        initialPosition: initialPosition ? { x: initialPosition.x, y: initialPosition.y } : null,
+        actualPreviousPosition: { x: actualPreviousPosition.x, y: actualPreviousPosition.y },
+        positionDelta: {
+          x: event.position.x - actualPreviousPosition.x,
+          y: event.position.y - actualPreviousPosition.y,
+        },
+      });
+
       // Start operation tracking
       const operationId = this._generateOperationId('node_move', event.nodeId);
-      this._logger.info('DIAGNOSTIC: Starting operation tracking', {
+      this._logger.info('Starting operation tracking for move', {
         operationId,
         nodeId: event.nodeId,
         operationType: OperationType.UPDATE_POSITION,
@@ -95,31 +149,31 @@ export class HistoryIntegrationService implements OnDestroy {
       this._operationTracker.startOperation(operationId, OperationType.UPDATE_POSITION, {
         entityId: event.nodeId,
         entityType: 'node',
-        startPosition: event.previous,
+        startPosition: { x: actualPreviousPosition.x, y: actualPreviousPosition.y },
         currentPosition: event.position,
       });
 
-      // Create and dispatch the update position command
+      // Create and dispatch the update position command with the correct initial position
       const command = DiagramCommandFactory.updateNodePosition(
         diagramId,
         userId,
         event.nodeId,
         new Point(event.position.x, event.position.y),
-        new Point(event.previous.x, event.previous.y),
+        actualPreviousPosition,
         true, // isLocalUserInitiated = true for history recording
       );
 
-      // CRITICAL FIX: Attach the operation ID to the command so the history middleware can find it
+      // Attach the operation ID to the command so the history middleware can find it
       const commandWithOperationId = command as unknown as Record<string, unknown>;
       commandWithOperationId['operationId'] = operationId;
 
-      // DIAGNOSTIC LOGGING - Show the command ID vs operation ID mismatch
-      this._logger.info('DIAGNOSTIC: Command created with attached operation ID', {
+      this._logger.info('Move command created with correct initial position', {
         operationId,
         commandId: command.commandId,
         commandType: command.type,
         nodeId: event.nodeId,
-        attachedOperationId: commandWithOperationId['operationId'],
+        newPosition: event.position,
+        previousPosition: { x: actualPreviousPosition.x, y: actualPreviousPosition.y },
       });
 
       // Dispatch the command through the command bus
@@ -150,6 +204,157 @@ export class HistoryIntegrationService implements OnDestroy {
   }
 
   /**
+   * Handles debounced node resize events by dispatching UpdateNodeDataCommand
+   */
+  private _handleDebouncedNodeResize(
+    event: {
+      nodeId: string;
+      width: number;
+      height: number;
+      oldWidth: number;
+      oldHeight: number;
+    },
+    diagramId: string,
+    userId: string,
+  ): void {
+    try {
+      this._logger.info('Processing debounced node resize for history', {
+        nodeId: event.nodeId,
+        newSize: { width: event.width, height: event.height },
+        oldSize: { width: event.oldWidth, height: event.oldHeight },
+      });
+
+      // Start operation tracking
+      const operationId = this._generateOperationId('node_resize', event.nodeId);
+      this._operationTracker.startOperation(operationId, OperationType.UPDATE_DATA, {
+        entityId: event.nodeId,
+        entityType: 'node',
+        oldData: { width: event.oldWidth, height: event.oldHeight },
+        newData: { width: event.width, height: event.height },
+      });
+
+      // Get current node data to preserve other properties
+      const currentNodeData = this._getCurrentNodeData(event.nodeId);
+      const newNodeData = currentNodeData.withWidth(event.width).withHeight(event.height);
+
+      // Create and dispatch the update node data command
+      const command = DiagramCommandFactory.updateNodeData(
+        diagramId,
+        userId,
+        event.nodeId,
+        newNodeData,
+        currentNodeData,
+        true, // isLocalUserInitiated = true for history recording
+      );
+
+      // Attach the operation ID to the command
+      const commandWithOperationId = command as unknown as Record<string, unknown>;
+      commandWithOperationId['operationId'] = operationId;
+
+      // Dispatch the command through the command bus
+      this._commandBus.execute(command).subscribe({
+        next: () => {
+          this._logger.info('Node resize update command executed successfully', {
+            nodeId: event.nodeId,
+            operationId,
+          });
+          this._operationTracker.completeOperation(operationId);
+        },
+        error: (error: unknown) => {
+          this._logger.error('Failed to execute node resize update command', {
+            nodeId: event.nodeId,
+            operationId,
+            error,
+          });
+          this._operationTracker.cancelOperation(operationId);
+        },
+      });
+    } catch (error) {
+      this._logger.error('Failed to handle debounced node resize', {
+        nodeId: event.nodeId,
+        error,
+      });
+    }
+  }
+
+  /**
+   * Handles debounced node data change events by dispatching UpdateNodeDataCommand
+   */
+  private _handleDebouncedNodeDataChange(
+    event: {
+      nodeId: string;
+      newData: Record<string, unknown>;
+      oldData: Record<string, unknown>;
+    },
+    diagramId: string,
+    userId: string,
+  ): void {
+    try {
+      this._logger.info('Processing debounced node data change for history', {
+        nodeId: event.nodeId,
+        newData: event.newData,
+        oldData: event.oldData,
+      });
+
+      // Start operation tracking
+      const operationId = this._generateOperationId('node_data_change', event.nodeId);
+      this._operationTracker.startOperation(operationId, OperationType.UPDATE_DATA, {
+        entityId: event.nodeId,
+        entityType: 'node',
+        oldData: event.oldData,
+        newData: event.newData,
+      });
+
+      // Get current node data to preserve other properties
+      const currentNodeData = this._getCurrentNodeData(event.nodeId);
+      // Merge new data with existing data, ensuring label is updated if present
+      const newNodeData = NodeData.fromJSON({
+        ...currentNodeData.toJSON(),
+        ...event.newData,
+        position: currentNodeData.position.toJSON(), // Ensure position is always present
+      });
+
+      // Create and dispatch the update node data command
+      const command = DiagramCommandFactory.updateNodeData(
+        diagramId,
+        userId,
+        event.nodeId,
+        newNodeData,
+        currentNodeData,
+        true, // isLocalUserInitiated = true for history recording
+      );
+
+      // Attach the operation ID to the command
+      const commandWithOperationId = command as unknown as Record<string, unknown>;
+      commandWithOperationId['operationId'] = operationId;
+
+      // Dispatch the command through the command bus
+      this._commandBus.execute(command).subscribe({
+        next: () => {
+          this._logger.info('Node data update command executed successfully', {
+            nodeId: event.nodeId,
+            operationId,
+          });
+          this._operationTracker.completeOperation(operationId);
+        },
+        error: (error: unknown) => {
+          this._logger.error('Failed to execute node data update command', {
+            nodeId: event.nodeId,
+            operationId,
+            error,
+          });
+          this._operationTracker.cancelOperation(operationId);
+        },
+      });
+    } catch (error) {
+      this._logger.error('Failed to handle debounced node data change', {
+        nodeId: event.nodeId,
+        error,
+      });
+    }
+  }
+
+  /**
    * Handles debounced edge vertex changes by dispatching UpdateEdgeDataCommand
    */
   private _handleDebouncedEdgeVertexChange(
@@ -168,7 +373,7 @@ export class HistoryIntegrationService implements OnDestroy {
       this._operationTracker.startOperation(operationId, OperationType.EDIT_VERTICES, {
         entityId: event.edgeId,
         entityType: 'edge',
-        currentData: { vertices: event.vertices },
+        newData: { vertices: event.vertices },
       });
 
       // Get current edge data to preserve other properties
@@ -215,6 +420,70 @@ export class HistoryIntegrationService implements OnDestroy {
         error,
       });
     }
+  }
+
+  /**
+   * Gets current node data from the graph
+   */
+  private _getCurrentNodeData(nodeId: string): NodeData {
+    try {
+      const graph = this._x6GraphAdapter.getGraph();
+      if (!graph) {
+        this._logger.warn('No graph available to get node data', { nodeId });
+        return this._createDefaultNodeData(nodeId);
+      }
+
+      const node = graph.getCellById(nodeId);
+      if (!node || !node.isNode()) {
+        this._logger.warn('Node not found in graph', { nodeId });
+        return this._createDefaultNodeData(nodeId);
+      }
+
+      // Extract data directly from the X6 Node object
+      const id = node.id;
+      const position = node.position();
+      const size = node.size();
+      const labelAttr = node.attr('text/text');
+      const label = typeof labelAttr === 'string' ? labelAttr : ''; // Ensure label is always a string
+      const rawData: unknown = node.getData();
+      const metadata =
+        rawData && typeof rawData === 'object' && 'metadata' in rawData
+          ? (rawData as { metadata: Record<string, string> }).metadata
+          : {};
+      const type =
+        rawData && typeof rawData === 'object' && 'type' in rawData
+          ? (rawData as { type: NodeType }).type
+          : ('unknown' as NodeType); // Fallback type
+
+      return NodeData.fromJSON({
+        id,
+        type,
+        label,
+        position: { x: position.x, y: position.y },
+        width: size.width,
+        height: size.height,
+        metadata,
+      });
+    } catch (error) {
+      this._logger.error('Failed to get current node data', { nodeId, error });
+      return this._createDefaultNodeData(nodeId);
+    }
+  }
+
+  /**
+   * Creates a default NodeData instance for fallback scenarios
+   */
+  private _createDefaultNodeData(nodeId: string): NodeData {
+    this._logger.warn('Creating default node data for missing node', { nodeId });
+    // Provide sensible defaults for a node
+    return NodeData.create({
+      id: nodeId,
+      type: 'unknown' as NodeType,
+      label: 'Unknown Node',
+      position: new Point(0, 0), // Default position for fallback
+      width: 120,
+      height: 60,
+    });
   }
 
   /**

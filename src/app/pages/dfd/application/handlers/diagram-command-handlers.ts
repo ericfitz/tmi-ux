@@ -1,7 +1,7 @@
 import { Injectable, InjectionToken, Inject } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
-import { ICommandHandler } from '../interfaces/command-bus.interface';
+import { Observable, throwError, from } from 'rxjs';
+import { map, catchError, switchMap, concatMap, reduce } from 'rxjs/operators';
+import { ICommandHandler, ICommandBus } from '../interfaces/command-bus.interface';
 import {
   AddNodeCommand,
   UpdateNodePositionCommand,
@@ -12,6 +12,8 @@ import {
   RemoveEdgeCommand,
   UpdateDiagramMetadataCommand,
   CreateDiagramCommand,
+  CompositeCommand,
+  AnyDiagramCommand,
 } from '../../domain/commands/diagram-commands';
 import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
 import { BaseDomainEvent } from '../../domain/events/domain-event';
@@ -205,6 +207,8 @@ export class UpdateNodePositionCommandHandler
 {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
+    private readonly _logger: LoggerService,
   ) {}
 
   getCommandType(): string {
@@ -212,13 +216,41 @@ export class UpdateNodePositionCommandHandler
   }
 
   handle(command: UpdateNodePositionCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: UpdateNodePositionCommand - Handling command', {
+      commandId: command.commandId,
+      nodeId: command.nodeId,
+      newPosition: command.newPosition,
+    });
+
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
-      switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error =>
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            // After successful update in domain model, update X6 graph
+            const node = diagram.getNode(command.nodeId);
+            if (node) {
+              this._logger.info('DIAGNOSTIC: UpdateNodePositionCommand - Moving node in X6 graph', {
+                nodeId: node.id,
+                newPosition: node.position,
+              });
+              this._x6GraphAdapter.moveNode(node.id, node.position);
+            } else {
+              this._logger.warn(
+                'DIAGNOSTIC: UpdateNodePositionCommand - Node not found in domain after update',
+                {
+                  nodeId: command.nodeId,
+                },
+              );
+            }
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) =>
         throwError(
           () =>
             new Error(
@@ -264,6 +296,8 @@ export class UpdateNodePositionCommandHandler
 export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeDataCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
+    private readonly _logger: LoggerService,
   ) {}
 
   getCommandType(): string {
@@ -271,13 +305,57 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
   }
 
   handle(command: UpdateNodeDataCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: UpdateNodeDataCommand - Handling command', {
+      commandId: command.commandId,
+      nodeId: command.nodeId,
+      newData: command.newData,
+    });
+
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
         return diagram;
       }),
-      switchMap(diagram => this.saveDiagram(diagram)),
-      catchError(error =>
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            // After successful update in domain model, update X6 graph
+            const node = diagram.getNode(command.nodeId);
+            if (node) {
+              this._logger.info(
+                'DIAGNOSTIC: UpdateNodeDataCommand - Updating node data in X6 graph',
+                {
+                  nodeId: node.id,
+                  newData: node.data,
+                },
+              );
+              // Update label
+              if (node.data.label !== undefined) {
+                const x6Node = this._x6GraphAdapter.getNode(node.id);
+                if (x6Node) {
+                  this._x6GraphAdapter.setCellLabel(x6Node, node.data.label);
+                }
+              }
+              // Update size
+              if (node.data.width !== undefined && node.data.height !== undefined) {
+                const x6Node = this._x6GraphAdapter.getNode(node.id);
+                if (x6Node) {
+                  x6Node.setSize(node.data.width, node.data.height);
+                }
+              }
+            } else {
+              this._logger.warn(
+                'DIAGNOSTIC: UpdateNodeDataCommand - Node not found in domain after update',
+                {
+                  nodeId: command.nodeId,
+                },
+              );
+            }
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) =>
         throwError(
           () =>
             new Error(
@@ -407,6 +485,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
     private readonly _operationTracker: OperationStateTracker,
     private readonly _logger: LoggerService,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
   ) {}
 
   getCommandType(): string {
@@ -439,6 +518,21 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
               commandId: command.commandId,
             });
             this._operationTracker.completeOperation(operationId);
+
+            // Re-add the edge to the X6 graph after successful domain model update
+            const edge = diagram.getEdge(command.edgeId);
+            if (edge) {
+              this._logger.info('DIAGNOSTIC: AddEdgeCommand - Adding edge to X6 graph', {
+                edgeId: edge.id,
+                sourceNodeId: edge.sourceNodeId,
+                targetNodeId: edge.targetNodeId,
+              });
+              this._x6GraphAdapter.addEdge(edge);
+            } else {
+              this._logger.warn('DIAGNOSTIC: AddEdgeCommand - Edge not found in domain after add', {
+                edgeId: command.edgeId,
+              });
+            }
             return result;
           }),
         ),
@@ -691,6 +785,126 @@ export class UpdateDiagramMetadataCommandHandler
 }
 
 /**
+ * Handler for CompositeCommand
+ */
+@Injectable()
+export class CompositeCommandHandler implements ICommandHandler<CompositeCommand> {
+  constructor(
+    @Inject('ICommandBus') private readonly _commandBus: ICommandBus,
+    private readonly _logger: LoggerService,
+  ) {}
+
+  getCommandType(): string {
+    return 'COMPOSITE';
+  }
+
+  handle(command: CompositeCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: CompositeCommand - Starting execution', {
+      commandId: command.commandId,
+      description: command.description,
+      subCommandCount: command.commands.length,
+      subCommands: command.commands.map(cmd => ({ type: cmd.type, id: cmd.commandId })),
+    });
+
+    // Validate sub-commands before execution
+    if (!command.commands || command.commands.length === 0) {
+      this._logger.error('DIAGNOSTIC: CompositeCommand - No sub-commands to execute', {
+        commandId: command.commandId,
+      });
+      return throwError(() => new Error('CompositeCommand has no sub-commands to execute'));
+    }
+
+    // Execute all sub-commands sequentially
+    return from(command.commands).pipe(
+      concatMap((subCommand: AnyDiagramCommand, index: number) => {
+        this._logger.info('DIAGNOSTIC: CompositeCommand - About to execute sub-command', {
+          compositeCommandId: command.commandId,
+          subCommandIndex: index,
+          subCommandType: subCommand.type,
+          subCommandId: subCommand.commandId,
+          subCommandData: subCommand,
+        });
+
+        return this._commandBus.execute(subCommand).pipe(
+          map((result: unknown) => {
+            const commandResult = result as CommandResult;
+            this._logger.info('DIAGNOSTIC: CompositeCommand - Sub-command completed successfully', {
+              compositeCommandId: command.commandId,
+              subCommandIndex: index,
+              subCommandType: subCommand.type,
+              subCommandId: subCommand.commandId,
+              resultSuccess: commandResult.success,
+              resultType: typeof result,
+            });
+            return commandResult;
+          }),
+          catchError((error: unknown) => {
+            this._logger.error('DIAGNOSTIC: CompositeCommand - Sub-command execution failed', {
+              compositeCommandId: command.commandId,
+              subCommandIndex: index,
+              subCommandType: subCommand.type,
+              subCommandId: subCommand.commandId,
+              error: error,
+              errorMessage: error instanceof Error ? error.message : String(error),
+              errorStack: error instanceof Error ? error.stack : undefined,
+            });
+            // Re-throw the error to stop composite execution
+            throw error;
+          }),
+        );
+      }),
+      reduce((acc: CommandResult[], result: CommandResult) => {
+        this._logger.info('DIAGNOSTIC: CompositeCommand - Accumulating result', {
+          commandId: command.commandId,
+          accumulatedCount: acc.length,
+          currentResultSuccess: result.success,
+        });
+        acc.push(result);
+        return acc;
+      }, [] as CommandResult[]),
+      map((results: CommandResult[]) => {
+        this._logger.info(
+          'DIAGNOSTIC: CompositeCommand - All sub-commands completed successfully',
+          {
+            commandId: command.commandId,
+            description: command.description,
+            totalResults: results.length,
+            allSuccessful: results.every(r => r.success),
+          },
+        );
+
+        // Use the last result's diagram snapshot and combine events
+        const lastResult = results[results.length - 1];
+        const allEvents = results.flatMap(r => r.events);
+
+        return {
+          success: true,
+          diagramId: command.diagramId,
+          events: allEvents,
+          diagramSnapshot: lastResult?.diagramSnapshot || ({} as DiagramSnapshot),
+        } as CommandResult;
+      }),
+      catchError((error: unknown) => {
+        this._logger.error('DIAGNOSTIC: CompositeCommand - Composite execution failed completely', {
+          commandId: command.commandId,
+          description: command.description,
+          error: error,
+          errorMessage: error instanceof Error ? error.message : String(error),
+          errorStack: error instanceof Error ? error.stack : undefined,
+        });
+        // Re-throw the error instead of returning a failed result
+        return throwError(
+          () =>
+            new Error(
+              `CompositeCommand execution failed: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        );
+      }),
+    );
+  }
+}
+
+/**
  * Command handler registry service
  */
 @Injectable()
@@ -707,6 +921,7 @@ export class CommandHandlerRegistry {
     private readonly updateEdgeDataHandler: UpdateEdgeDataCommandHandler,
     private readonly removeEdgeHandler: RemoveEdgeCommandHandler,
     private readonly updateDiagramMetadataHandler: UpdateDiagramMetadataCommandHandler,
+    private readonly compositeHandler: CompositeCommandHandler,
   ) {
     this.registerHandlers();
   }
@@ -732,6 +947,7 @@ export class CommandHandlerRegistry {
       this.updateEdgeDataHandler,
       this.removeEdgeHandler,
       this.updateDiagramMetadataHandler,
+      this.compositeHandler,
     );
   }
 }

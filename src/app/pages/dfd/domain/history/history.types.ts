@@ -62,8 +62,10 @@ export interface OperationData {
   readonly entityType?: 'node' | 'edge' | 'diagram';
   readonly startPosition?: { x: number; y: number };
   readonly currentPosition?: { x: number; y: number };
-  readonly originalData?: unknown;
-  readonly currentData?: unknown;
+  readonly startSize?: { width: number; height: number };
+  readonly currentSize?: { width: number; height: number };
+  readonly oldData?: Record<string, unknown>;
+  readonly newData?: Record<string, unknown>;
   readonly metadata?: Record<string, unknown>;
 }
 
@@ -144,13 +146,13 @@ export interface DiagramState {
   readonly nodes: ReadonlyArray<{
     readonly id: string;
     readonly position: Point;
-    readonly data: unknown;
+    readonly data: ReturnType<import('../value-objects/node-data').NodeData['toJSON']>;
   }>;
   readonly edges: ReadonlyArray<{
     readonly id: string;
     readonly sourceNodeId: string;
     readonly targetNodeId: string;
-    readonly data: unknown;
+    readonly data: ReturnType<import('../value-objects/edge-data').EdgeData['toJSON']>;
   }>;
   readonly metadata: Record<string, unknown>;
 }

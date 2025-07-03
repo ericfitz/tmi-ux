@@ -461,6 +461,6 @@ export interface DiagramSnapshot {
   readonly updatedAt: Date;
   readonly createdBy: string;
   readonly version: number;
-  readonly nodes: Record<string, unknown>[];
-  readonly edges: Record<string, unknown>[];
+  readonly nodes: ReturnType<DiagramNode['toJSON']>[];
+  readonly edges: ReturnType<DiagramEdge['toJSON']>[];
 }

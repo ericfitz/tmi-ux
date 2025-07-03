@@ -16,6 +16,7 @@ import {
   UpdateEdgeDataCommandHandler,
   RemoveEdgeCommandHandler,
   UpdateDiagramMetadataCommandHandler,
+  CompositeCommandHandler,
 } from '../handlers/diagram-command-handlers';
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -41,6 +42,7 @@ export class CommandBusInitializerService {
     private readonly _updateEdgeDataHandler: UpdateEdgeDataCommandHandler,
     private readonly _removeEdgeHandler: RemoveEdgeCommandHandler,
     private readonly _updateDiagramMetadataHandler: UpdateDiagramMetadataCommandHandler,
+    private readonly _compositeHandler: CompositeCommandHandler,
     private readonly _logger: LoggerService,
   ) {}
 
@@ -74,7 +76,7 @@ export class CommandBusInitializerService {
     this._initialized = true;
     this._logger.info('Command bus initialization completed', {
       middlewareCount: 4,
-      handlerCount: 9,
+      handlerCount: 10,
     });
   }
 
@@ -113,6 +115,10 @@ export class CommandBusInitializerService {
       this._updateDiagramMetadataHandler.getCommandType(),
       this._updateDiagramMetadataHandler,
     );
+    this._commandBus.registerHandler(
+      this._compositeHandler.getCommandType(),
+      this._compositeHandler,
+    );
 
     this._logger.debug('Registered all command handlers', {
       handlers: [
@@ -125,6 +131,7 @@ export class CommandBusInitializerService {
         this._updateEdgeDataHandler.getCommandType(),
         this._removeEdgeHandler.getCommandType(),
         this._updateDiagramMetadataHandler.getCommandType(),
+        this._compositeHandler.getCommandType(),
       ],
     });
   }

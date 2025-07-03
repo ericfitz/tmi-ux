@@ -12,6 +12,10 @@ import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
+import { ICommandBus } from '../../application/interfaces/command-bus.interface';
+import { OperationStateTracker } from '../services/operation-state-tracker.service';
+import { OperationType } from '../../domain/history/history.types';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -75,10 +79,19 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _selectedCells = new Set<string>();
   private _currentEditor: HTMLInputElement | HTMLTextAreaElement | null = null;
 
+  // Context for command pattern operations
+  private _diagramId: string | null = null;
+  private _userId: string | null = null;
+  private _commandBus: ICommandBus | null = null;
+  private _operationStateTracker: OperationStateTracker | null = null;
+
   // Shift key and drag state tracking for snap to grid control
   private _isShiftPressed = false;
   private _isDragging = false;
   private _originalGridSize = 10;
+
+  // Store initial position of node when drag starts
+  private _initialNodePositions = new Map<string, Point>();
 
   // Debouncing for history service integration
   private readonly _debouncedNodeMoved$ = new Subject<{
@@ -86,11 +99,25 @@ export class X6GraphAdapter implements IGraphAdapter {
     position: Point;
     previous: Point;
   }>();
+  private readonly _debouncedNodeResized$ = new Subject<{
+    nodeId: string;
+    width: number;
+    height: number;
+    oldWidth: number;
+    oldHeight: number;
+  }>();
+  private readonly _debouncedNodeDataChanged$ = new Subject<{
+    nodeId: string;
+    newData: Record<string, unknown>;
+    oldData: Record<string, unknown>;
+  }>();
   private readonly _debouncedEdgeVerticesChanged$ = new Subject<{
     edgeId: string;
     vertices: Array<{ x: number; y: number }>;
   }>();
   private _nodeMovementTimers = new Map<string, number>();
+  private _nodeResizeTimers = new Map<string, number>();
+  private _nodeDataChangeTimers = new Map<string, number>();
   private _edgeVertexTimers = new Map<string, number>();
   private readonly _debounceDelay = 500; // 500ms debounce delay
 
@@ -101,6 +128,18 @@ export class X6GraphAdapter implements IGraphAdapter {
     nodeId: string;
     position: Point;
     previous: Point;
+  }>();
+  private readonly _nodeResized$ = new Subject<{
+    nodeId: string;
+    width: number;
+    height: number;
+    oldWidth: number;
+    oldHeight: number;
+  }>();
+  private readonly _nodeDataChanged$ = new Subject<{
+    nodeId: string;
+    newData: Record<string, unknown>;
+    oldData: Record<string, unknown>;
   }>();
   private readonly _edgeAdded$ = new Subject<Edge>();
   private readonly _edgeRemoved$ = new Subject<{ edgeId: string; edge: Edge }>();
@@ -139,6 +178,54 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   get debouncedNodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
     return this._debouncedNodeMoved$.asObservable();
+  }
+
+  /**
+   * Observable for node resize events (immediate, non-debounced)
+   */
+  get nodeResized$(): Observable<{
+    nodeId: string;
+    width: number;
+    height: number;
+    oldWidth: number;
+    oldHeight: number;
+  }> {
+    return this._nodeResized$.asObservable();
+  }
+
+  /**
+   * Observable for debounced node resize events (for history service)
+   */
+  get debouncedNodeResized$(): Observable<{
+    nodeId: string;
+    width: number;
+    height: number;
+    oldWidth: number;
+    oldHeight: number;
+  }> {
+    return this._debouncedNodeResized$.asObservable();
+  }
+
+  /**
+   * Observable for node data change events (immediate, non-debounced)
+   */
+  get nodeDataChanged$(): Observable<{
+    nodeId: string;
+    newData: Record<string, unknown>;
+    oldData: Record<string, unknown>;
+  }> {
+    return this._nodeDataChanged$.asObservable();
+  }
+
+  /**
+   * Observable for debounced node data change events (for history service)
+   */
+  get debouncedNodeDataChanged$(): Observable<{
+    nodeId: string;
+    newData: Record<string, unknown>;
+    oldData: Record<string, unknown>;
+  }> {
+    return this._debouncedNodeDataChanged$.asObservable();
   }
 
   /**
@@ -561,6 +648,13 @@ export class X6GraphAdapter implements IGraphAdapter {
       diagramEdgeTargetNodeId: edge.targetNodeId,
       diagramEdgeSourcePortId: edge.data.sourcePortId,
       diagramEdgeTargetPortId: edge.data.targetPortId,
+    });
+    this.logger.info('DIAGNOSTIC: AddEdgeCommand - Inspecting edge.data before X6 add', {
+      edgeId: edge.id,
+      edgeData: edge.data,
+      isEdgeDataInstance: edge.data instanceof DiagramEdge, // This will be false, as edge.data is EdgeData, not DiagramEdge
+      hasToJSONMethod: typeof (edge.data as any).toJSON === 'function',
+      edgeDataKeys: Object.keys(edge.data),
     });
     const graph = this.getGraph();
 
@@ -985,12 +1079,22 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Set the standardized label text for a cell
    */
   setCellLabel(cell: Cell, text: string): void {
+    const oldLabel = this.getCellLabel(cell);
     this.logger.debugComponent('DFD', '[Set Cell Label] Attempting to set label', {
       cellId: cell.id,
       isNode: cell.isNode(),
-      currentLabel: this.getCellLabel(cell),
+      currentLabel: oldLabel,
       newText: text,
       existingLabelsCount: (cell as Edge).getLabels ? (cell as Edge).getLabels().length : 0,
+    });
+
+    // DIAGNOSTIC: Log label change for history debugging
+    this.logger.info('DIAGNOSTIC: Label change detected', {
+      cellId: cell.id,
+      cellType: cell.isNode() ? 'node' : 'edge',
+      oldLabel,
+      newLabel: text,
+      willTriggerDataChange: oldLabel !== text,
     });
     if (cell.isNode()) {
       cell.attr('text/text', text);
@@ -1066,6 +1170,33 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Get the initial position of a node when drag started (for history tracking)
+   */
+  getInitialNodePosition(nodeId: string): Point | null {
+    return this._initialNodePositions.get(nodeId) || null;
+  }
+
+  /**
+   * Set the context for command pattern operations (diagram ID, user ID, command bus, and operation state tracker)
+   */
+  setCommandContext(
+    diagramId: string,
+    userId: string,
+    commandBus: ICommandBus,
+    operationStateTracker?: OperationStateTracker,
+  ): void {
+    this._diagramId = diagramId;
+    this._userId = userId;
+    this._commandBus = commandBus;
+    this._operationStateTracker = operationStateTracker || null;
+    this.logger.info('Command context set for X6 adapter', {
+      diagramId,
+      userId,
+      hasOperationTracker: !!operationStateTracker,
+    });
+  }
+
+  /**
    * Setup event listeners for X6 graph events
    */
   private _setupEventListeners(): void {
@@ -1080,6 +1211,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._nodeRemoved$.next({ nodeId: node.id, node });
     });
 
+    // Node position changes
     this._graph.on(
       'node:change:position',
       ({
@@ -1104,6 +1236,66 @@ export class X6GraphAdapter implements IGraphAdapter {
 
           // Handle debounced event for history service
           this._handleDebouncedNodeMovement(node.id, currentPos, previousPos);
+        }
+      },
+    );
+
+    // Node size changes (for resizing)
+    this._graph.on(
+      'node:change:size',
+      ({
+        node,
+        current,
+        previous,
+      }: {
+        node: Node;
+        current?: { width: number; height: number };
+        previous?: { width: number; height: number };
+      }) => {
+        if (current && previous) {
+          // Emit immediate event for UI responsiveness
+          this._nodeResized$.next({
+            nodeId: node.id,
+            width: current.width,
+            height: current.height,
+            oldWidth: previous.width,
+            oldHeight: previous.height,
+          });
+
+          // Handle debounced event for history service
+          this._handleDebouncedNodeResize(
+            node.id,
+            current.width,
+            current.height,
+            previous.width,
+            previous.height,
+          );
+        }
+      },
+    );
+
+    // Node data changes (for label edits, etc.)
+    this._graph.on(
+      'cell:change:data',
+      ({
+        cell,
+        current,
+        previous,
+      }: {
+        cell: Cell;
+        current?: Record<string, unknown>;
+        previous?: Record<string, unknown>;
+      }) => {
+        if (cell.isNode() && current && previous) {
+          // Emit immediate event for UI responsiveness
+          this._nodeDataChanged$.next({
+            nodeId: cell.id,
+            newData: current,
+            oldData: previous,
+          });
+
+          // Handle debounced event for history service
+          this._handleDebouncedNodeDataChange(cell.id, current, previous);
         }
       },
     );
@@ -2167,9 +2359,90 @@ export class X6GraphAdapter implements IGraphAdapter {
           offset: { x: -10, y: 10 },
           onClick: ({ cell }: { cell: Cell }) => {
             this.logger.info('Delete tool clicked for node', { nodeId: cell.id });
-            // Remove the cell directly using X6's native functionality
-            if (this._graph) {
-              this._graph.removeCell(cell);
+
+            // FIX: Use command pattern for delete operations to enable history tracking
+            if (this._diagramId && this._userId && this._commandBus) {
+              this.logger.info('FIXED: Using command pattern for node deletion', {
+                cellId: cell.id,
+                cellType: 'node',
+                diagramId: this._diagramId,
+                userId: this._userId,
+              });
+
+              // CRITICAL FIX: Start operation tracking for delete operations
+              const operationId = `delete_node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+              if (this._operationStateTracker) {
+                this._operationStateTracker.startOperation(operationId, OperationType.DELETE, {
+                  entityId: cell.id,
+                  entityType: 'node',
+                  metadata: { operationType: 'DELETE_NODE' },
+                });
+
+                this.logger.info('DIAGNOSTIC: Started operation tracking for delete', {
+                  operationId,
+                  nodeId: cell.id,
+                });
+              }
+
+              const command = DiagramCommandFactory.removeNode(
+                this._diagramId,
+                this._userId,
+                cell.id,
+                true, // isLocalUserInitiated = true for history recording
+              );
+
+              // Attach operation ID to command for history middleware
+              const commandWithOperationId = command as unknown as Record<string, unknown>;
+              commandWithOperationId['operationId'] = operationId;
+
+              this._commandBus.execute(command).subscribe({
+                next: () => {
+                  this.logger.info('Node deletion command executed successfully', {
+                    nodeId: cell.id,
+                    operationId,
+                  });
+
+                  // CRITICAL FIX: Complete operation tracking
+                  if (this._operationStateTracker) {
+                    this._operationStateTracker.completeOperation(operationId);
+                    this.logger.info('DIAGNOSTIC: Completed operation tracking for delete', {
+                      operationId,
+                      nodeId: cell.id,
+                    });
+                  }
+                },
+                error: (error: unknown) => {
+                  this.logger.error('Failed to execute node deletion command', {
+                    nodeId: cell.id,
+                    error,
+                    operationId,
+                  });
+
+                  // Cancel operation tracking on error
+                  if (this._operationStateTracker) {
+                    this._operationStateTracker.cancelOperation(operationId);
+                  }
+
+                  // Fallback to direct removal if command fails
+                  if (this._graph) {
+                    this._graph.removeCell(cell);
+                  }
+                },
+              });
+            } else {
+              this.logger.warn('Command context not set, falling back to direct removal', {
+                cellId: cell.id,
+                hasContext: {
+                  diagramId: !!this._diagramId,
+                  userId: !!this._userId,
+                  commandBus: !!this._commandBus,
+                },
+              });
+              // Fallback to direct removal if context is not set
+              if (this._graph) {
+                this._graph.removeCell(cell);
+              }
             }
           },
         },
@@ -2269,9 +2542,53 @@ export class X6GraphAdapter implements IGraphAdapter {
           offset: { x: 10, y: -10 },
           onClick: ({ cell }: { cell: Cell }) => {
             this.logger.info('Delete tool clicked for edge', { edgeId: cell.id });
-            // Remove the cell directly using X6's native functionality
-            if (this._graph) {
-              this._graph.removeCell(cell);
+
+            // FIX: Use command pattern for delete operations to enable history tracking
+            if (this._diagramId && this._userId && this._commandBus) {
+              this.logger.info('FIXED: Using command pattern for edge deletion', {
+                cellId: cell.id,
+                cellType: 'edge',
+                diagramId: this._diagramId,
+                userId: this._userId,
+              });
+
+              const command = DiagramCommandFactory.removeEdge(
+                this._diagramId,
+                this._userId,
+                cell.id,
+                true, // isLocalUserInitiated = true for history recording
+              );
+
+              this._commandBus.execute(command).subscribe({
+                next: () => {
+                  this.logger.info('Edge deletion command executed successfully', {
+                    edgeId: cell.id,
+                  });
+                },
+                error: (error: unknown) => {
+                  this.logger.error('Failed to execute edge deletion command', {
+                    edgeId: cell.id,
+                    error,
+                  });
+                  // Fallback to direct removal if command fails
+                  if (this._graph) {
+                    this._graph.removeCell(cell);
+                  }
+                },
+              });
+            } else {
+              this.logger.warn('Command context not set, falling back to direct removal', {
+                cellId: cell.id,
+                hasContext: {
+                  diagramId: !!this._diagramId,
+                  userId: !!this._userId,
+                  commandBus: !!this._commandBus,
+                },
+              });
+              // Fallback to direct removal if context is not set
+              if (this._graph) {
+                this._graph.removeCell(cell);
+              }
             }
           },
         },
@@ -2812,11 +3129,21 @@ export class X6GraphAdapter implements IGraphAdapter {
   };
 
   /**
-   * Handle node mouse down to track drag start
+   * Handle node mouse down to track drag start and store initial position
    */
-  private _handleNodeMouseDown = (): void => {
+  private _handleNodeMouseDown = ({ node }: { node: Node }): void => {
     this._isDragging = true;
     this._updateSnapToGrid();
+    // Store the initial position of the node when the drag starts
+    const initialPosition = new Point(node.position().x, node.position().y);
+    this._initialNodePositions.set(node.id, initialPosition);
+
+    // DIAGNOSTIC: Log initial position capture for history debugging
+    this.logger.info('DIAGNOSTIC: Node drag started - capturing initial position', {
+      nodeId: node.id,
+      initialPosition: { x: initialPosition.x, y: initialPosition.y },
+      storedInMap: this._initialNodePositions.has(node.id),
+    });
   };
 
   /**
@@ -2832,10 +3159,12 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Handle node mouse up to track drag end
    */
-  private _handleNodeMouseUp = (): void => {
+  private _handleNodeMouseUp = ({ node }: { node: Node }): void => {
     if (this._isDragging) {
       this._isDragging = false;
       this._updateSnapToGrid();
+      // Clear the initial position after drag ends
+      this._initialNodePositions.delete(node.id);
     }
   };
 
@@ -2846,6 +3175,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (this._isDragging) {
       this._isDragging = false;
       this._updateSnapToGrid();
+      // Clear all initial positions if mouse up happens outside a node
+      this._initialNodePositions.clear();
     }
   };
 
@@ -2856,6 +3187,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._isShiftPressed = false;
     this._isDragging = false;
     this._updateSnapToGrid();
+    this._initialNodePositions.clear();
   };
 
   /**
@@ -2915,6 +3247,86 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Handle debounced node resize for history service integration
+   */
+  private _handleDebouncedNodeResize(
+    nodeId: string,
+    width: number,
+    height: number,
+    oldWidth: number,
+    oldHeight: number,
+  ): void {
+    // Clear existing timer for this node
+    const existingTimer = this._nodeResizeTimers.get(nodeId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Set new timer
+    const timer = setTimeout(() => {
+      this.logger.debugComponent('DFD', '[Debounced] Node resize finalized', {
+        nodeId,
+        width,
+        height,
+        oldWidth,
+        oldHeight,
+        debounceDelay: this._debounceDelay,
+      });
+
+      // Emit debounced event for history service
+      this._debouncedNodeResized$.next({
+        nodeId,
+        width,
+        height,
+        oldWidth,
+        oldHeight,
+      });
+
+      // Clean up timer
+      this._nodeResizeTimers.delete(nodeId);
+    }, this._debounceDelay) as unknown as number;
+
+    this._nodeResizeTimers.set(nodeId, timer);
+  }
+
+  /**
+   * Handle debounced node data change for history service integration
+   */
+  private _handleDebouncedNodeDataChange(
+    nodeId: string,
+    newData: Record<string, unknown>,
+    oldData: Record<string, unknown>,
+  ): void {
+    // Clear existing timer for this node
+    const existingTimer = this._nodeDataChangeTimers.get(nodeId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Set new timer
+    const timer = setTimeout(() => {
+      this.logger.debugComponent('DFD', '[Debounced] Node data change finalized', {
+        nodeId,
+        newData,
+        oldData,
+        debounceDelay: this._debounceDelay,
+      });
+
+      // Emit debounced event for history service
+      this._debouncedNodeDataChanged$.next({
+        nodeId,
+        newData,
+        oldData,
+      });
+
+      // Clean up timer
+      this._nodeDataChangeTimers.delete(nodeId);
+    }, this._debounceDelay) as unknown as number;
+
+    this._nodeDataChangeTimers.set(nodeId, timer);
+  }
+
+  /**
    * Handle debounced edge vertex changes for history service integration
    */
   private _handleDebouncedEdgeVertexChange(
@@ -2956,6 +3368,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Clear all node movement timers
     this._nodeMovementTimers.forEach(timer => clearTimeout(timer));
     this._nodeMovementTimers.clear();
+
+    // Clear all node resize timers
+    this._nodeResizeTimers.forEach(timer => clearTimeout(timer));
+    this._nodeResizeTimers.clear();
+
+    // Clear all node data change timers
+    this._nodeDataChangeTimers.forEach(timer => clearTimeout(timer));
+    this._nodeDataChangeTimers.clear();
 
     // Clear all edge vertex timers
     this._edgeVertexTimers.forEach(timer => clearTimeout(timer));

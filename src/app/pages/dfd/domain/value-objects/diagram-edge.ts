@@ -9,8 +9,12 @@ export class DiagramEdge {
   private _isSelected: boolean = false;
   private _isHighlighted: boolean = false;
 
-  constructor(data: EdgeData) {
-    this._data = data;
+  constructor(data: EdgeData | Parameters<typeof EdgeData.fromJSON>[0]) {
+    if (data instanceof EdgeData) {
+      this._data = data;
+    } else {
+      this._data = EdgeData.fromJSON(data);
+    }
   }
 
   /**
@@ -98,7 +102,7 @@ export class DiagramEdge {
     isSelected?: boolean;
     isHighlighted?: boolean;
   }): DiagramEdge {
-    const edge = new DiagramEdge(EdgeData.fromJSON(data.data));
+    const edge = new DiagramEdge(data.data);
 
     if (data.isSelected) {
       edge.select();
