@@ -43,7 +43,13 @@
                 {{ 'threatModels.diagramsCount' | transloco }}
               </span>
               <span class="stat">
-                <mat-icon>warning</mat-icon>
+                <mat-icon
+                  fontSet="material-symbols-outlined"
+                  fontWeight="100"
+                  style="font-variation-settings: 'FILL' 0"
+                  class="skull-icon"
+                  >skull</mat-icon
+                >
                 {{ threatModel.threats?.length || 0 }} {{ 'threatModels.threatsCount' | transloco }}
               </span>
             </div>
