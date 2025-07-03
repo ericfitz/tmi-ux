@@ -589,14 +589,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the threats view (placeholder for future functionality)
-   */
-  openThreatsView(): void {
-    // TODO: Implement threats view functionality
-    this.logger.info('Threats view clicked - functionality to be implemented');
-  }
-
-  /**
    * Opens the source code view (placeholder for future functionality)
    */
   openSourceCodeView(): void {

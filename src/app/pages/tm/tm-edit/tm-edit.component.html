@@ -47,20 +47,6 @@
           <button
             mat-icon-button
             color="primary"
-            (click)="openThreatsView()"
-            [matTooltip]="'threatModels.threatsTooltip' | transloco"
-            [attr.aria-label]="'threatModels.threatsButton' | transloco"
-          >
-            <mat-icon
-              fontSet="material-symbols-outlined"
-              fontWeight="100"
-              style="font-variation-settings: 'FILL' 0"
-              >skull</mat-icon
-            >
-          </button>
-          <button
-            mat-icon-button
-            color="primary"
             (click)="openSourceCodeView()"
             [matTooltip]="'threatModels.sourceCodeTooltip' | transloco"
             [attr.aria-label]="'threatModels.sourceCodeButton' | transloco"
@@ -184,6 +170,73 @@
       </mat-card-content>
     </mat-card>
 
+    <div class="cards-row">
+      <mat-card class="diagrams-card">
+        <mat-card-header>
+          <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="addDiagram()"
+            [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item
+              *ngFor="let diagram of diagrams"
+              class="diagram-item"
+              [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
+            >
+              <mat-icon matListItemIcon class="material-symbols-outlined">graph_3</mat-icon>
+              <div matListItemTitle>{{ diagram.name }}</div>
+              <div matListItemMeta>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="renameDiagram(diagram, $event)"
+                  [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteDiagram(diagram, $event)"
+                  [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div *ngIf="!threatModel.diagrams?.length" class="no-items-message">
+            {{ 'threatModels.noDiagrams' | transloco }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="documents-card">
+        <mat-card-header>
+          <mat-card-title [transloco]="'threatModels.documents'">Documents</mat-card-title>
+          <button
+            mat-icon-button
+            color="primary"
+            [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="no-items-message">
+            {{ 'threatModels.noDocuments' | transloco }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
     <mat-card class="threats-card">
       <mat-card-header>
         <mat-card-title [transloco]="'threatModels.threats'">Threats</mat-card-title>
@@ -203,7 +256,13 @@
             (click)="openThreatEditor(threat)"
             class="clickable-item"
           >
-            <mat-icon matListItemIcon>warning</mat-icon>
+            <mat-icon
+              matListItemIcon
+              fontSet="material-symbols-outlined"
+              fontWeight="100"
+              style="font-variation-settings: 'FILL' 0"
+              >skull</mat-icon
+            >
             <div matListItemTitle>{{ threat.name }}</div>
             <div matListItemLine>{{ threat.description }}</div>
             <div matListItemMeta>
@@ -220,53 +279,6 @@
         </mat-list>
         <div *ngIf="!threatModel.threats?.length" class="no-items-message">
           {{ 'threatModels.noThreats' | transloco }}
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="diagrams-card">
-      <mat-card-header>
-        <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
-        <button
-          mat-icon-button
-          color="primary"
-          (click)="addDiagram()"
-          [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
-        >
-          <mat-icon>add</mat-icon>
-        </button>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item
-            *ngFor="let diagram of diagrams"
-            class="diagram-item"
-            [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
-          >
-            <mat-icon matListItemIcon class="material-symbols-outlined">graph_3</mat-icon>
-            <div matListItemTitle>{{ diagram.name }}</div>
-            <div matListItemMeta>
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="renameDiagram(diagram, $event)"
-                [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteDiagram(diagram, $event)"
-                [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </mat-list-item>
-        </mat-list>
-        <div *ngIf="!threatModel.diagrams?.length" class="no-items-message">
-          {{ 'threatModels.noDiagrams' | transloco }}
         </div>
       </mat-card-content>
     </mat-card>

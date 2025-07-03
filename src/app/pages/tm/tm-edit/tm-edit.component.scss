@@ -29,6 +29,16 @@
 }
 
 .content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.details-card {
+  width: 100%;
+}
+
+.cards-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
@@ -38,15 +48,13 @@
   }
 }
 
-.details-card {
-  grid-column: 1 / -1;
+.diagrams-card,
+.documents-card {
+  width: 100%;
 }
 
-.threats-card,
-.diagrams-card {
-  @media (width >= 768px) {
-    grid-column: auto;
-  }
+.threats-card {
+  width: 100%;
 }
 
 .metadata-card {
