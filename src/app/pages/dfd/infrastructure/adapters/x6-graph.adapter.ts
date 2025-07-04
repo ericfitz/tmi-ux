@@ -647,22 +647,26 @@ export class X6GraphAdapter implements IGraphAdapter {
   addNodeFromSnapshot(snapshot: X6NodeSnapshot): Node {
     const graph = this.getGraph();
 
-    this.logger.info('Adding node from X6 snapshot with preserved ports', {
+    this.logger.info('Adding node from X6 snapshot with complete port configuration', {
       nodeId: snapshot.id,
       shape: snapshot.shape,
+      hasSnapshotGroups: !!(snapshot.ports as any)?.groups,
+      hasSnapshotItems: !!(snapshot.ports as any)?.items,
       portCount: (snapshot.ports as any)?.items?.length || 0,
       portIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
     });
 
-    // Get the node type from metadata to ensure proper port groups are set
-    const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
+    // Use the complete snapshot port configuration without any merging
+    // This preserves both port IDs and positioning information from the snapshot
+    const snapshotPorts = snapshot.ports;
 
-    this.logger.info('DIAGNOSTIC: Port configuration for snapshot restoration', {
+    this.logger.info('DIAGNOSTIC: Using complete snapshot port configuration', {
       nodeId: snapshot.id,
-      nodeType,
-      snapshotPorts: snapshot.ports,
-      snapshotPortItems: (snapshot.ports as any)?.items?.length || 0,
-      snapshotPortIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+      snapshotPortConfig: snapshotPorts,
+      hasGroups: !!(snapshotPorts as any)?.groups,
+      hasItems: !!(snapshotPorts as any)?.items,
+      groupKeys: Object.keys((snapshotPorts as any)?.groups || {}),
+      itemCount: (snapshotPorts as any)?.items?.length || 0,
     });
 
     const x6Node = graph.addNode({
@@ -673,7 +677,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       height: snapshot.size.height,
       shape: snapshot.shape,
       attrs: snapshot.attrs,
-      ports: snapshot.ports, // Use exact snapshot ports to preserve port IDs
+      ports: snapshotPorts, // Use complete snapshot port configuration
       zIndex: snapshot.zIndex,
       visible: snapshot.visible,
     });
@@ -684,7 +688,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     // Cache the original snapshot instead of re-caching the node
-    // This preserves the original port IDs in the cache
+    // This preserves the original port configuration in the cache
     this._nodeSnapshots.set(snapshot.id, snapshot);
 
     return x6Node;
@@ -1318,13 +1322,34 @@ export class X6GraphAdapter implements IGraphAdapter {
     const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
     const nodeType = metadata.find((m: any) => m.key === 'type')?.value || 'process';
 
+    // Get complete port configuration including both groups and items
+    // X6 doesn't store groups on the node instance, so we need to get them from base config
+    const basePortConfig = this._getNodePorts(nodeType);
+    const currentPortItems = node.getPorts() || [];
+
+    // Combine base groups with current port items to preserve both positioning and IDs
+    const completePortConfig = {
+      groups: (basePortConfig as any).groups || {}, // Get groups from base config
+      items: currentPortItems, // Use current port items to preserve IDs and state
+    };
+
+    this.logger.debug('Caching node snapshot with complete port configuration', {
+      nodeId: node.id,
+      nodeType,
+      hasGroups: !!(completePortConfig.groups && Object.keys(completePortConfig.groups).length > 0),
+      hasItems: !!(completePortConfig.items && completePortConfig.items.length > 0),
+      groupKeys: Object.keys(completePortConfig.groups || {}),
+      itemCount: completePortConfig.items?.length || 0,
+      portIds: completePortConfig.items?.map((item: any) => item.id) || [],
+    });
+
     const snapshot: X6NodeSnapshot = {
       id: node.id,
       position: { x: position.x, y: position.y },
       size: { width: size.width, height: size.height },
       shape: node.shape,
       attrs: node.getAttrs(),
-      ports: node.getPorts(),
+      ports: completePortConfig, // Use complete port config with both groups and items
       zIndex: node.getZIndex() || 1,
       visible: node.isVisible(),
       type: nodeType,
