@@ -420,7 +420,10 @@ export class AuthService {
    * @deprecated Use loginWithGoogle instead
    */
   demoLogin(email: string = 'demo.user@example.com'): void {
-    this.logger.warn('Using deprecated demoLogin method');
+    // Only show deprecation warning in production builds
+    if (environment.production) {
+      this.logger.warn('Using deprecated demoLogin method');
+    }
 
     // Create a mock token
     const expiresAt = new Date();

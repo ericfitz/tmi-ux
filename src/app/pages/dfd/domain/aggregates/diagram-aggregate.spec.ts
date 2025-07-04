@@ -1,7 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { DiagramAggregate, DiagramDomainError } from './diagram-aggregate';
-import { NodeData } from '../value-objects/node-data';
-import { EdgeData } from '../value-objects/edge-data';
 import { Point } from '../value-objects/point';
 import {
   NodeAddedEvent,
@@ -11,11 +9,62 @@ import {
   EdgeRemovedEvent,
 } from '../events/diagram-events';
 import { DiagramCommandFactory } from '../commands/diagram-commands';
+import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 
 describe('DiagramAggregate', () => {
   let diagram: DiagramAggregate;
   const userId = 'test-user-id';
   const diagramId = 'test-diagram-id';
+
+  // Helper function to create X6NodeSnapshot
+  const createNodeSnapshot = (
+    id: string,
+    shape: string,
+    label: string,
+    position: Point,
+    width: number = 140,
+    height: number = 80,
+    metadata: Record<string, string> = {},
+  ): X6NodeSnapshot => ({
+    id,
+    shape,
+    position: { x: position.x, y: position.y },
+    size: { width, height },
+    attrs: {
+      text: {
+        text: label,
+      },
+    },
+    ports: {},
+    zIndex: 1,
+    visible: true,
+    type: shape,
+    metadata: Object.entries(metadata).map(([key, value]) => ({ key, value })),
+  });
+
+  // Helper function to create X6EdgeSnapshot
+  const createEdgeSnapshot = (
+    id: string,
+    sourceNodeId: string,
+    targetNodeId: string,
+    label: string = '',
+    metadata: Record<string, string> = {},
+  ): X6EdgeSnapshot => ({
+    id,
+    shape: 'edge',
+    source: { cell: sourceNodeId },
+    target: { cell: targetNodeId },
+    attrs: {
+      text: {
+        text: label,
+      },
+    },
+    labels: [],
+    vertices: [],
+    zIndex: 1,
+    visible: true,
+    metadata: Object.entries(metadata).map(([key, value]) => ({ key, value })),
+  });
 
   beforeEach(() => {
     const createCommand = DiagramCommandFactory.createDiagram(
@@ -57,15 +106,23 @@ describe('DiagramAggregate', () => {
       // Arrange
       const nodeId = 'node-1';
       const position = new Point(100, 200);
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {
-        color: '#blue',
-      });
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {
+          color: '#blue',
+        },
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
 
       // Act
@@ -89,7 +146,7 @@ describe('DiagramAggregate', () => {
       const newPosition = new Point(150, 250);
 
       // First add a node
-      const nodeData = new NodeData(
+      const nodeSnapshot = createNodeSnapshot(
         nodeId,
         'process',
         'Test Process',
@@ -103,7 +160,7 @@ describe('DiagramAggregate', () => {
         userId,
         nodeId,
         initialPosition,
-        nodeData,
+        nodeSnapshot,
       );
       diagram.processCommand(addNodeCommand);
       diagram.markEventsAsCommitted();
@@ -135,13 +192,21 @@ describe('DiagramAggregate', () => {
       const position = new Point(100, 200);
 
       // First add a node
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {});
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {},
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
       diagram.processCommand(addNodeCommand);
       diagram.markEventsAsCommitted();
@@ -164,13 +229,21 @@ describe('DiagramAggregate', () => {
       // Arrange
       const nodeId = 'node-1';
       const position = new Point(100, 200);
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {});
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {},
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
       diagram.processCommand(addNodeCommand);
 
@@ -198,22 +271,23 @@ describe('DiagramAggregate', () => {
       );
     });
 
-    it('should throw error when trying to remove non-existent node', () => {
+    it('should handle removing non-existent node gracefully', () => {
       // Arrange
       const removeCommand = DiagramCommandFactory.removeNode(diagramId, userId, 'non-existent');
 
-      // Act & Assert
-      expect(() => diagram.processCommand(removeCommand)).toThrow(DiagramDomainError);
-      expect(() => diagram.processCommand(removeCommand)).toThrow(
-        'Node with ID non-existent not found',
-      );
+      // Act & Assert - should not throw error (idempotent operation)
+      expect(() => diagram.processCommand(removeCommand)).not.toThrow();
+
+      // Should not emit any events since node doesn't exist
+      const events = diagram.getUncommittedEvents();
+      expect(events).toHaveLength(0);
     });
   });
 
   describe('Edge Management', () => {
     beforeEach(() => {
       // Add source and target nodes for edge tests
-      const sourceData = new NodeData(
+      const sourceSnapshot = createNodeSnapshot(
         'source',
         'process',
         'Source',
@@ -222,7 +296,7 @@ describe('DiagramAggregate', () => {
         80,
         {},
       );
-      const targetData = new NodeData(
+      const targetSnapshot = createNodeSnapshot(
         'target',
         'store',
         'Target',
@@ -237,7 +311,7 @@ describe('DiagramAggregate', () => {
         userId,
         'source',
         new Point(100, 100),
-        sourceData,
+        sourceSnapshot,
       );
 
       const targetCommand = DiagramCommandFactory.addNode(
@@ -245,7 +319,7 @@ describe('DiagramAggregate', () => {
         userId,
         'target',
         new Point(200, 200),
-        targetData,
+        targetSnapshot,
       );
 
       diagram.processCommand(sourceCommand);
@@ -256,23 +330,16 @@ describe('DiagramAggregate', () => {
     it('should add an edge and emit EdgeAddedEvent', () => {
       // Arrange
       const edgeId = 'edge-1';
-      const edgeData = new EdgeData(
-        edgeId,
-        'source',
-        'target',
-        undefined,
-        undefined,
-        'Data Flow',
-        [],
-        { style: 'solid' },
-      );
+      const edgeSnapshot = createEdgeSnapshot(edgeId, 'source', 'target', 'Data Flow', {
+        style: 'solid',
+      });
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         diagramId,
         userId,
         edgeId,
         'source',
         'target',
-        edgeData,
+        edgeSnapshot,
       );
 
       // Act
@@ -291,23 +358,16 @@ describe('DiagramAggregate', () => {
     it('should remove an edge and emit EdgeRemovedEvent', () => {
       // Arrange
       const edgeId = 'edge-1';
-      const edgeData = new EdgeData(
-        edgeId,
-        'source',
-        'target',
-        undefined,
-        undefined,
-        'Data Flow',
-        [],
-        { style: 'solid' },
-      );
+      const edgeSnapshot = createEdgeSnapshot(edgeId, 'source', 'target', 'Data Flow', {
+        style: 'solid',
+      });
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         diagramId,
         userId,
         edgeId,
         'source',
         'target',
-        edgeData,
+        edgeSnapshot,
       );
       diagram.processCommand(addEdgeCommand);
       diagram.markEventsAsCommitted();
@@ -328,23 +388,16 @@ describe('DiagramAggregate', () => {
 
     it('should throw error when adding edge with non-existent source node', () => {
       // Arrange
-      const edgeData = new EdgeData(
-        'edge-1',
-        'non-existent',
-        'target',
-        undefined,
-        undefined,
-        'Data Flow',
-        [],
-        { style: 'solid' },
-      );
+      const edgeSnapshot = createEdgeSnapshot('edge-1', 'non-existent', 'target', 'Data Flow', {
+        style: 'solid',
+      });
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         diagramId,
         userId,
         'edge-1',
         'non-existent',
         'target',
-        edgeData,
+        edgeSnapshot,
       );
 
       // Act & Assert
@@ -356,23 +409,16 @@ describe('DiagramAggregate', () => {
 
     it('should throw error when adding edge with non-existent target node', () => {
       // Arrange
-      const edgeData = new EdgeData(
-        'edge-1',
-        'source',
-        'non-existent',
-        undefined,
-        undefined,
-        'Data Flow',
-        [],
-        { style: 'solid' },
-      );
+      const edgeSnapshot = createEdgeSnapshot('edge-1', 'source', 'non-existent', 'Data Flow', {
+        style: 'solid',
+      });
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         diagramId,
         userId,
         'edge-1',
         'source',
         'non-existent',
-        edgeData,
+        edgeSnapshot,
       );
 
       // Act & Assert
@@ -385,23 +431,16 @@ describe('DiagramAggregate', () => {
     it('should remove connected edges when removing a node', () => {
       // Arrange
       const edgeId = 'edge-1';
-      const edgeData = new EdgeData(
-        edgeId,
-        'source',
-        'target',
-        undefined,
-        undefined,
-        'Data Flow',
-        [],
-        { style: 'solid' },
-      );
+      const edgeSnapshot = createEdgeSnapshot(edgeId, 'source', 'target', 'Data Flow', {
+        style: 'solid',
+      });
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         diagramId,
         userId,
         edgeId,
         'source',
         'target',
-        edgeData,
+        edgeSnapshot,
       );
       diagram.processCommand(addEdgeCommand);
       diagram.markEventsAsCommitted();
@@ -425,13 +464,21 @@ describe('DiagramAggregate', () => {
       // Arrange
       const nodeId = 'node-1';
       const position = new Point(100, 200);
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {});
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {},
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
 
       // Act
@@ -445,13 +492,21 @@ describe('DiagramAggregate', () => {
       // Arrange
       const nodeId = 'node-1';
       const position = new Point(100, 200);
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {});
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {},
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
       diagram.processCommand(addNodeCommand);
 
@@ -466,13 +521,21 @@ describe('DiagramAggregate', () => {
       // Arrange
       const nodeId = 'node-1';
       const position = new Point(100, 200);
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {});
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {},
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
       diagram.processCommand(addNodeCommand);
 
@@ -494,13 +557,21 @@ describe('DiagramAggregate', () => {
       // Arrange
       const nodeId = 'node-1';
       const position = new Point(100, 200);
-      const nodeData = new NodeData(nodeId, 'process', 'Test Process', position, 140, 80, {});
+      const nodeSnapshot = createNodeSnapshot(
+        nodeId,
+        'process',
+        'Test Process',
+        position,
+        140,
+        80,
+        {},
+      );
       const addNodeCommand = DiagramCommandFactory.addNode(
         diagramId,
         userId,
         nodeId,
         position,
-        nodeData,
+        nodeSnapshot,
       );
       diagram.processCommand(addNodeCommand);
 
@@ -526,7 +597,7 @@ describe('DiagramAggregate', () => {
   describe('Command Validation', () => {
     it('should throw error for command with wrong diagram ID', () => {
       // Arrange
-      const nodeData = new NodeData(
+      const nodeSnapshot = createNodeSnapshot(
         'node-1',
         'process',
         'Test Process',
@@ -540,7 +611,7 @@ describe('DiagramAggregate', () => {
         userId,
         'node-1',
         new Point(100, 200),
-        nodeData,
+        nodeSnapshot,
       );
 
       // Act & Assert
