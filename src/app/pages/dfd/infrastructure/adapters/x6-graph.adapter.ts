@@ -647,29 +647,83 @@ export class X6GraphAdapter implements IGraphAdapter {
   addNodeFromSnapshot(snapshot: X6NodeSnapshot): Node {
     const graph = this.getGraph();
 
-    this.logger.info('Adding node from X6 snapshot with complete port configuration', {
+    // DIAGNOSTIC: Log the incoming snapshot in detail
+    this.logger.info('DIAGNOSTIC: Starting node restoration from snapshot', {
       nodeId: snapshot.id,
       shape: snapshot.shape,
+      position: snapshot.position,
+      size: snapshot.size,
       hasSnapshotGroups: !!(snapshot.ports as any)?.groups,
       hasSnapshotItems: !!(snapshot.ports as any)?.items,
       portCount: (snapshot.ports as any)?.items?.length || 0,
       portIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+      fullSnapshotPorts: snapshot.ports,
     });
 
-    // Use the complete snapshot port configuration without any merging
-    // This preserves both port IDs and positioning information from the snapshot
-    const snapshotPorts = snapshot.ports;
+    // CRITICAL FIX: The snapshot ports need to be in the correct format for X6
+    // X6 expects either a port configuration object with groups/items OR just the items array
+    let portsForX6;
 
-    this.logger.info('DIAGNOSTIC: Using complete snapshot port configuration', {
+    if ((snapshot.ports as any)?.groups && (snapshot.ports as any)?.items) {
+      // If snapshot has the complete structure, use it directly
+      portsForX6 = snapshot.ports;
+      this.logger.info('DIAGNOSTIC: Using complete port structure from snapshot', {
+        nodeId: snapshot.id,
+        hasGroups: true,
+        hasItems: true,
+        groupKeys: Object.keys((snapshot.ports as any).groups),
+        itemCount: (snapshot.ports as any).items.length,
+      });
+    } else if (Array.isArray(snapshot.ports)) {
+      // If snapshot ports is an array (legacy format), reconstruct the complete structure
+      const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
+      const basePortConfig = this._getNodePorts(nodeType);
+
+      portsForX6 = {
+        groups: (basePortConfig as any).groups || {},
+        items: snapshot.ports, // Use the snapshot port items to preserve IDs
+      };
+
+      this.logger.info('DIAGNOSTIC: FIXED - Reconstructed port structure from array format', {
+        nodeId: snapshot.id,
+        nodeType,
+        originalFormat: 'array',
+        reconstructedHasGroups: !!(basePortConfig as any).groups,
+        reconstructedItemCount: (snapshot.ports as any).length,
+        reconstructedPortIds: (snapshot.ports as any).map((item: any) => item.id),
+      });
+    } else {
+      // Fallback: create from base configuration
+      const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
+      portsForX6 = this._getNodePorts(nodeType);
+
+      this.logger.warn('DIAGNOSTIC: Fallback - Using base port configuration', {
+        nodeId: snapshot.id,
+        nodeType,
+        snapshotPortsType: typeof snapshot.ports,
+        snapshotPorts: snapshot.ports,
+      });
+    }
+
+    // DIAGNOSTIC: Detailed analysis of the port configuration being used
+    this.logger.info('DIAGNOSTIC: Final port configuration for X6 restoration', {
       nodeId: snapshot.id,
-      snapshotPortConfig: snapshotPorts,
-      hasGroups: !!(snapshotPorts as any)?.groups,
-      hasItems: !!(snapshotPorts as any)?.items,
-      groupKeys: Object.keys((snapshotPorts as any)?.groups || {}),
-      itemCount: (snapshotPorts as any)?.items?.length || 0,
+      portsForX6,
+      hasGroups: !!(portsForX6 as any)?.groups,
+      hasItems: !!(portsForX6 as any)?.items,
+      groupKeys: Object.keys((portsForX6 as any)?.groups || {}),
+      itemCount: (portsForX6 as any)?.items?.length || 0,
+      portDetails:
+        (portsForX6 as any)?.items?.map((item: any) => ({
+          id: item.id,
+          group: item.group,
+          hasAttrs: !!item.attrs,
+          visibility: item.attrs?.circle?.style?.visibility,
+        })) || [],
     });
 
-    const x6Node = graph.addNode({
+    // DIAGNOSTIC: Log the exact parameters being passed to addNode
+    const nodeParams = {
       id: snapshot.id,
       x: snapshot.position.x,
       y: snapshot.position.y,
@@ -677,9 +731,35 @@ export class X6GraphAdapter implements IGraphAdapter {
       height: snapshot.size.height,
       shape: snapshot.shape,
       attrs: snapshot.attrs,
-      ports: snapshotPorts, // Use complete snapshot port configuration
+      ports: portsForX6, // Use properly formatted port configuration
       zIndex: snapshot.zIndex,
       visible: snapshot.visible,
+    };
+
+    this.logger.info('DIAGNOSTIC: Parameters being passed to graph.addNode()', {
+      nodeId: snapshot.id,
+      nodeParams,
+      portsParam: nodeParams.ports,
+    });
+
+    const x6Node = graph.addNode(nodeParams);
+
+    // DIAGNOSTIC: Verify the node was created with correct port configuration
+    const restoredPorts = x6Node.getPorts();
+    this.logger.info('DIAGNOSTIC: Node restored - verifying port configuration', {
+      nodeId: snapshot.id,
+      restoredPortCount: restoredPorts.length,
+      restoredPortIds: restoredPorts.map((item: any) => item.id),
+      restoredPortDetails: restoredPorts.map((item: any) => ({
+        id: item.id,
+        group: item.group,
+        hasAttrs: !!item.attrs,
+        visibility: item.attrs?.circle?.style?.visibility,
+      })),
+      originalPortIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+      portIdsMatch:
+        JSON.stringify(restoredPorts.map((item: any) => item.id).sort()) ===
+        JSON.stringify(((snapshot.ports as any)?.items?.map((item: any) => item.id) || []).sort()),
     });
 
     // Set metadata using X6 cell extensions
@@ -690,6 +770,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Cache the original snapshot instead of re-caching the node
     // This preserves the original port configuration in the cache
     this._nodeSnapshots.set(snapshot.id, snapshot);
+
+    // DIAGNOSTIC: Log final restoration status
+    this.logger.info('DIAGNOSTIC: Node restoration completed', {
+      nodeId: snapshot.id,
+      nodeCreated: !!x6Node,
+      metadataSet: !!(snapshot.metadata && (x6Node as any).setMetadata),
+      snapshotCached: this._nodeSnapshots.has(snapshot.id),
+    });
 
     return x6Node;
   }
@@ -724,15 +812,74 @@ export class X6GraphAdapter implements IGraphAdapter {
   addEdgeFromSnapshot(snapshot: X6EdgeSnapshot): Edge {
     const graph = this.getGraph();
 
-    this.logger.info('Adding edge from X6 snapshot with preserved port connections', {
+    // DIAGNOSTIC: Log detailed edge restoration information
+    this.logger.info('DIAGNOSTIC: Starting edge restoration from snapshot', {
       edgeId: snapshot.id,
       source: snapshot.source,
       target: snapshot.target,
       hasSourcePort: !!snapshot.source?.port,
       hasTargetPort: !!snapshot.target?.port,
+      sourceNodeId: snapshot.source?.cell,
+      targetNodeId: snapshot.target?.cell,
+      sourcePortId: snapshot.source?.port,
+      targetPortId: snapshot.target?.port,
+      fullSnapshot: snapshot,
     });
 
-    const x6Edge = graph.addEdge({
+    // DIAGNOSTIC: Verify that the source and target nodes exist before creating the edge
+    const sourceNodeId = snapshot.source?.cell;
+    const targetNodeId = snapshot.target?.cell;
+    const sourcePortId = snapshot.source?.port;
+    const targetPortId = snapshot.target?.port;
+
+    if (sourceNodeId) {
+      const sourceNode = graph.getCellById(sourceNodeId);
+      if (sourceNode && sourceNode.isNode()) {
+        const sourcePorts = (sourceNode as any).getPorts();
+        const sourcePortExists = sourcePorts.some((port: any) => port.id === sourcePortId);
+        this.logger.info('DIAGNOSTIC: Source node verification', {
+          edgeId: snapshot.id,
+          sourceNodeId,
+          sourcePortId,
+          sourceNodeExists: true,
+          sourcePortExists,
+          sourceNodePorts: sourcePorts.map((port: any) => ({ id: port.id, group: port.group })),
+        });
+      } else {
+        this.logger.warn('DIAGNOSTIC: Source node not found or not a node', {
+          edgeId: snapshot.id,
+          sourceNodeId,
+          sourceNodeExists: !!sourceNode,
+          isNode: sourceNode?.isNode(),
+        });
+      }
+    }
+
+    if (targetNodeId) {
+      const targetNode = graph.getCellById(targetNodeId);
+      if (targetNode && targetNode.isNode()) {
+        const targetPorts = (targetNode as any).getPorts();
+        const targetPortExists = targetPorts.some((port: any) => port.id === targetPortId);
+        this.logger.info('DIAGNOSTIC: Target node verification', {
+          edgeId: snapshot.id,
+          targetNodeId,
+          targetPortId,
+          targetNodeExists: true,
+          targetPortExists,
+          targetNodePorts: targetPorts.map((port: any) => ({ id: port.id, group: port.group })),
+        });
+      } else {
+        this.logger.warn('DIAGNOSTIC: Target node not found or not a node', {
+          edgeId: snapshot.id,
+          targetNodeId,
+          targetNodeExists: !!targetNode,
+          isNode: targetNode?.isNode(),
+        });
+      }
+    }
+
+    // DIAGNOSTIC: Log the exact parameters being passed to addEdge
+    const edgeParams = {
       id: snapshot.id,
       source: snapshot.source, // Use exact source from snapshot to preserve port connections
       target: snapshot.target, // Use exact target from snapshot to preserve port connections
@@ -742,6 +889,41 @@ export class X6GraphAdapter implements IGraphAdapter {
       vertices: snapshot.vertices,
       zIndex: snapshot.zIndex,
       visible: snapshot.visible,
+    };
+
+    this.logger.info('DIAGNOSTIC: Parameters being passed to graph.addEdge()', {
+      edgeId: snapshot.id,
+      edgeParams,
+    });
+
+    const x6Edge = graph.addEdge(edgeParams);
+
+    // DIAGNOSTIC: Verify the edge was created with correct connections
+    const actualSource = x6Edge.getSource();
+    const actualTarget = x6Edge.getTarget();
+    const actualSourceNodeId = x6Edge.getSourceCellId();
+    const actualTargetNodeId = x6Edge.getTargetCellId();
+    const actualSourcePortId = x6Edge.getSourcePortId();
+    const actualTargetPortId = x6Edge.getTargetPortId();
+
+    this.logger.info('DIAGNOSTIC: Edge created - verifying connections', {
+      edgeId: snapshot.id,
+      expectedSource: snapshot.source,
+      actualSource,
+      expectedTarget: snapshot.target,
+      actualTarget,
+      expectedSourceNodeId: sourceNodeId,
+      actualSourceNodeId,
+      expectedTargetNodeId: targetNodeId,
+      actualTargetNodeId,
+      expectedSourcePortId: sourcePortId,
+      actualSourcePortId,
+      expectedTargetPortId: targetPortId,
+      actualTargetPortId,
+      sourceConnectionCorrect:
+        actualSourceNodeId === sourceNodeId && actualSourcePortId === sourcePortId,
+      targetConnectionCorrect:
+        actualTargetNodeId === targetNodeId && actualTargetPortId === targetPortId,
     });
 
     // Set metadata using X6 cell extensions
@@ -754,6 +936,42 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Set edge z-order to the higher of source or target node z-orders
     this._setEdgeZOrderFromConnectedNodes(x6Edge);
+
+    // CRITICAL FIX: Update port visibility for connected nodes after edge restoration
+    // This ensures that connected ports remain visible and unconnected ports are hidden
+    const restoredSourceNodeId = x6Edge.getSourceCellId();
+    const restoredTargetNodeId = x6Edge.getTargetCellId();
+
+    if (restoredSourceNodeId) {
+      const sourceNode = graph.getCellById(restoredSourceNodeId);
+      if (sourceNode && sourceNode.isNode()) {
+        this._updateNodePortVisibility(sourceNode);
+        this.logger.info('Updated source node port visibility after edge restoration', {
+          edgeId: snapshot.id,
+          sourceNodeId: restoredSourceNodeId,
+        });
+      }
+    }
+
+    if (restoredTargetNodeId) {
+      const targetNode = graph.getCellById(restoredTargetNodeId);
+      if (targetNode && targetNode.isNode()) {
+        this._updateNodePortVisibility(targetNode);
+        this.logger.info('Updated target node port visibility after edge restoration', {
+          edgeId: snapshot.id,
+          targetNodeId: restoredTargetNodeId,
+        });
+      }
+    }
+
+    // DIAGNOSTIC: Log final edge restoration status
+    this.logger.info('DIAGNOSTIC: Edge restoration completed', {
+      edgeId: snapshot.id,
+      edgeCreated: !!x6Edge,
+      metadataSet: !!(snapshot.metadata && (x6Edge as any).setMetadata),
+      edgeCached: this._edgeSnapshots.has(snapshot.id),
+      portVisibilityUpdated: true,
+    });
 
     return x6Edge;
   }
@@ -1322,25 +1540,80 @@ export class X6GraphAdapter implements IGraphAdapter {
     const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
     const nodeType = metadata.find((m: any) => m.key === 'type')?.value || 'process';
 
-    // Get complete port configuration including both groups and items
-    // X6 doesn't store groups on the node instance, so we need to get them from base config
-    const basePortConfig = this._getNodePorts(nodeType);
-    const currentPortItems = node.getPorts() || [];
+    // DIAGNOSTIC: Log initial node state before caching
+    this.logger.info('DIAGNOSTIC: Starting node snapshot caching', {
+      nodeId: node.id,
+      nodeType,
+      position: { x: position.x, y: position.y },
+      size: { width: size.width, height: size.height },
+    });
 
-    // Combine base groups with current port items to preserve both positioning and IDs
+    // CRITICAL FIX: Get the complete port configuration directly from the node
+    // This preserves both the group definitions AND the current port state (IDs, visibility, etc.)
+    // CRITICAL FIX: Get the complete port configuration from the node's properties
+    // X6 stores the complete port config in the node's properties under 'ports'
+    // DIAGNOSTIC: Log the raw port config from toJSON for debugging
+    if (typeof node.toJSON === 'function') {
+      const nodeProps = node.toJSON();
+      const nodePortConfig = nodeProps.ports;
+
+      this.logger.info('DIAGNOSTIC: Port config from node.toJSON()', {
+        nodeId: node.id,
+        hasPortConfig: !!nodePortConfig,
+        portConfigType: typeof nodePortConfig,
+        hasGroups: !!(nodePortConfig as any)?.groups,
+        hasItems: !!(nodePortConfig as any)?.items,
+        rawPortConfig: nodePortConfig,
+      });
+    } else {
+      // Fallback for test environment - node doesn't have toJSON method
+      this.logger.warn('DIAGNOSTIC: Node does not have toJSON method', { nodeId: node.id });
+    }
+
+    // Get current port items for comparison
+    const currentPortItems = node.getPorts() || [];
+    this.logger.info('DIAGNOSTIC: Current port items from node.getPorts()', {
+      nodeId: node.id,
+      itemCount: currentPortItems.length,
+      portItems: currentPortItems.map((item: any) => ({
+        id: item.id,
+        group: item.group,
+        hasAttrs: !!item.attrs,
+      })),
+    });
+
+    // CRITICAL FIX: Always reconstruct the complete port configuration
+    // The issue was that node.toJSON() doesn't always return the complete port structure
+    // We need to ensure we have both groups AND items with the correct structure
+    const basePortConfig = this._getNodePorts(nodeType);
+
     const completePortConfig = {
       groups: (basePortConfig as any).groups || {}, // Get groups from base config
       items: currentPortItems, // Use current port items to preserve IDs and state
     };
 
-    this.logger.debug('Caching node snapshot with complete port configuration', {
+    this.logger.info('DIAGNOSTIC: FIXED - Always using reconstructed complete port config', {
       nodeId: node.id,
       nodeType,
-      hasGroups: !!(completePortConfig.groups && Object.keys(completePortConfig.groups).length > 0),
-      hasItems: !!(completePortConfig.items && completePortConfig.items.length > 0),
-      groupKeys: Object.keys(completePortConfig.groups || {}),
-      itemCount: completePortConfig.items?.length || 0,
-      portIds: completePortConfig.items?.map((item: any) => item.id) || [],
+      hasBaseGroups: !!(basePortConfig as any).groups,
+      currentItemCount: currentPortItems.length,
+      basePortConfig,
+      reconstructedConfig: completePortConfig,
+      fixApplied: 'Always reconstruct to ensure groups + items structure',
+    });
+
+    // DIAGNOSTIC: Log final port configuration being cached
+    this.logger.info('DIAGNOSTIC: Final port configuration being cached', {
+      nodeId: node.id,
+      nodeType,
+      hasGroups:
+        !!(completePortConfig as any).groups &&
+        Object.keys((completePortConfig as any).groups).length > 0,
+      hasItems: !!(completePortConfig as any).items && (completePortConfig as any).items.length > 0,
+      groupKeys: Object.keys((completePortConfig as any).groups || {}),
+      itemCount: (completePortConfig as any).items?.length || 0,
+      portIds: (completePortConfig as any).items?.map((item: any) => item.id) || [],
+      finalPortConfig: completePortConfig,
     });
 
     const snapshot: X6NodeSnapshot = {
@@ -1356,6 +1629,13 @@ export class X6GraphAdapter implements IGraphAdapter {
       metadata,
     };
     this._nodeSnapshots.set(node.id, snapshot);
+
+    // DIAGNOSTIC: Log the final cached snapshot
+    this.logger.info('DIAGNOSTIC: Node snapshot cached successfully', {
+      nodeId: node.id,
+      snapshotPortConfig: snapshot.ports,
+      cacheSize: this._nodeSnapshots.size,
+    });
   }
 
   /**
