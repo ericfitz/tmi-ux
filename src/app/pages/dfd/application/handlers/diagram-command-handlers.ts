@@ -308,7 +308,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
     this._logger.info('DIAGNOSTIC: UpdateNodeDataCommand - Handling command', {
       commandId: command.commandId,
       nodeId: command.nodeId,
-      newData: command.newData,
+      newSnapshot: command.newSnapshot,
     });
 
     return this.loadDiagram(command.diagramId).pipe(

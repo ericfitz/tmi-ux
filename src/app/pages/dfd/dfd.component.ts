@@ -24,6 +24,7 @@ import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { NodeType } from './domain/value-objects/node-data';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
+import { X6NodeSnapshot, X6EdgeSnapshot } from './types/x6-cell.types';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import {
@@ -403,6 +404,86 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Convert NodeData to X6NodeSnapshot
+   */
+  private convertNodeDataToSnapshot(nodeData: NodeData): X6NodeSnapshot {
+    return {
+      id: nodeData.id,
+      shape: nodeData.type, // Use node type as shape
+      position: { x: nodeData.position.x, y: nodeData.position.y },
+      size: { width: nodeData.width, height: nodeData.height },
+      attrs: {
+        // Basic attrs structure for X6 nodes
+        body: {
+          fill: '#ffffff',
+          stroke: '#333333',
+          strokeWidth: 2,
+        },
+        text: {
+          text: nodeData.label,
+          fontSize: 14,
+          fill: '#333333',
+        },
+      },
+      ports: {
+        // Default ports configuration
+        groups: {
+          top: { position: 'top' },
+          right: { position: 'right' },
+          bottom: { position: 'bottom' },
+          left: { position: 'left' },
+        },
+        items: [],
+      },
+      zIndex: 1,
+      visible: true,
+      type: nodeData.type,
+      metadata: Object.entries(nodeData.metadata).map(([key, value]) => ({ key, value })),
+    };
+  }
+
+  /**
+   * Convert EdgeData to X6EdgeSnapshot
+   */
+  private convertEdgeDataToSnapshot(edgeData: EdgeData): X6EdgeSnapshot {
+    return {
+      id: edgeData.id,
+      shape: 'edge', // Default edge shape
+      source: {
+        cell: edgeData.sourceNodeId,
+        port: edgeData.sourcePortId,
+      },
+      target: {
+        cell: edgeData.targetNodeId,
+        port: edgeData.targetPortId,
+      },
+      attrs: {
+        line: {
+          stroke: '#333333',
+          strokeWidth: 2,
+        },
+      },
+      labels: edgeData.label
+        ? [
+            {
+              attrs: {
+                text: {
+                  text: edgeData.label,
+                  fontSize: 12,
+                  fill: '#333333',
+                },
+              },
+            },
+          ]
+        : [],
+      vertices: edgeData.vertices.map(vertex => ({ x: vertex.x, y: vertex.y })),
+      zIndex: 1,
+      visible: true,
+      metadata: Object.entries(edgeData.metadata).map(([key, value]) => ({ key, value })),
+    };
+  }
+
+  /**
    * Create a node with the specified type and position
    */
   private createNode(shapeType: NodeType, position: { x: number; y: number }): void {
@@ -425,7 +506,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       userId,
       nodeId,
       new Point(position.x, position.y),
-      nodeData,
+      this.convertNodeDataToSnapshot(nodeData),
       true, // isLocalUserInitiated
     );
 
@@ -1221,7 +1302,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       edge.id,
       sourceNodeId,
       targetNodeId,
-      domainEdgeData,
+      this.convertEdgeDataToSnapshot(domainEdgeData),
       true, // isLocalUserInitiated
     );
 
@@ -1347,8 +1428,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       diagramId,
       userId,
       edgeId,
-      updatedEdgeData,
-      oldEdgeData,
+      this.convertEdgeDataToSnapshot(updatedEdgeData),
+      this.convertEdgeDataToSnapshot(oldEdgeData),
       true, // isLocalUserInitiated
     );
 
@@ -1516,7 +1597,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       inverseEdgeId,
       targetNodeId, // New source (original target)
       sourceNodeId, // New target (original source)
-      inverseEdgeData,
+      this.convertEdgeDataToSnapshot(inverseEdgeData),
       true, // isLocalUserInitiated
     );
 

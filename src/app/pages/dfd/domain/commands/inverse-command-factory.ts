@@ -144,25 +144,57 @@ export class InverseCommandFactory {
     // Create commands to restore the node and all connected edges
     const restoreCommands: AnyDiagramCommand[] = [];
 
-    // First, restore the node
+    // First, restore the node - convert NodeData to X6NodeSnapshot
+    const nodeData = nodeToRestore.data as NodeData;
+    const nodeSnapshot = {
+      id: command.nodeId,
+      shape: nodeData.type as string,
+      position: nodeToRestore.position,
+      size: { width: nodeData.width, height: nodeData.height },
+      attrs: { text: { text: nodeData.label } },
+      metadata: Object.entries(nodeData.metadata || {}).map(([key, value]) => ({ key, value })),
+      ports: [],
+      zIndex: 1,
+      visible: true,
+      type: 'node',
+    };
+
     const addNodeCommand = DiagramCommandFactory.addNode(
       command.diagramId,
       command.userId,
       command.nodeId,
       nodeToRestore.position,
-      nodeToRestore.data as NodeData, // Restore original type assertion
+      nodeSnapshot,
     );
     restoreCommands.push(addNodeCommand);
 
     // Then, restore all connected edges
     for (const edge of connectedEdges) {
+      // Convert EdgeData to X6EdgeSnapshot
+      const edgeData = edge.data as EdgeData;
+      const edgeSnapshot = {
+        id: edge.id,
+        shape: 'edge',
+        source: { cell: edge.sourceNodeId },
+        target: { cell: edge.targetNodeId },
+        attrs: { text: { text: edgeData.label || '' } },
+        metadata: edgeData.metadata
+          ? Object.entries(edgeData.metadata).map(([key, value]) => ({ key, value }))
+          : [],
+        labels: [],
+        vertices: [],
+        zIndex: 1,
+        visible: true,
+        type: 'edge',
+      };
+
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         command.diagramId,
         command.userId,
         edge.id,
         edge.sourceNodeId,
         edge.targetNodeId,
-        edge.data as EdgeData, // Restore original type assertion
+        edgeSnapshot,
       );
       restoreCommands.push(addEdgeCommand);
     }
@@ -199,8 +231,8 @@ export class InverseCommandFactory {
       command.diagramId,
       command.userId,
       command.nodeId,
-      command.oldData, // Restore old data
-      command.newData, // Current data becomes old
+      command.oldSnapshot, // Restore old snapshot
+      command.newSnapshot, // Current snapshot becomes old
     );
   }
 
@@ -222,13 +254,31 @@ export class InverseCommandFactory {
       throw new Error(`Cannot create inverse: edge ${command.edgeId} not found in before state`);
     }
 
+    // Convert EdgeData to X6EdgeSnapshot
+    const edgeData = edgeToRestore.data as EdgeData;
+    const edgeSnapshot = {
+      id: command.edgeId,
+      shape: 'edge',
+      source: { cell: edgeToRestore.sourceNodeId },
+      target: { cell: edgeToRestore.targetNodeId },
+      attrs: { text: { text: edgeData.label || '' } },
+      metadata: edgeData.metadata
+        ? Object.entries(edgeData.metadata).map(([key, value]) => ({ key, value }))
+        : [],
+      labels: [],
+      vertices: [],
+      zIndex: 1,
+      visible: true,
+      type: 'edge',
+    };
+
     return DiagramCommandFactory.addEdge(
       command.diagramId,
       command.userId,
       command.edgeId,
       edgeToRestore.sourceNodeId,
       edgeToRestore.targetNodeId,
-      edgeToRestore.data as EdgeData, // Restore original type assertion
+      edgeSnapshot,
     );
   }
 
@@ -241,8 +291,8 @@ export class InverseCommandFactory {
       command.diagramId,
       command.userId,
       command.edgeId,
-      command.oldData, // Restore old data
-      command.newData, // Current data becomes old
+      command.oldSnapshot, // Restore old snapshot
+      command.newSnapshot, // Current snapshot becomes old
     );
   }
 

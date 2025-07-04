@@ -237,13 +237,17 @@ export class HistoryIntegrationService implements OnDestroy {
       const currentNodeData = this._getCurrentNodeData(event.nodeId);
       const newNodeData = currentNodeData.withWidth(event.width).withHeight(event.height);
 
+      // Convert NodeData to X6NodeSnapshot
+      const currentSnapshot = this._convertNodeDataToSnapshot(currentNodeData);
+      const newSnapshot = this._convertNodeDataToSnapshot(newNodeData);
+
       // Create and dispatch the update node data command
       const command = DiagramCommandFactory.updateNodeData(
         diagramId,
         userId,
         event.nodeId,
-        newNodeData,
-        currentNodeData,
+        newSnapshot,
+        currentSnapshot,
         true, // isLocalUserInitiated = true for history recording
       );
 
@@ -314,13 +318,17 @@ export class HistoryIntegrationService implements OnDestroy {
         position: currentNodeData.position.toJSON(), // Ensure position is always present
       });
 
+      // Convert NodeData to X6NodeSnapshot
+      const currentSnapshot = this._convertNodeDataToSnapshot(currentNodeData);
+      const newSnapshot = this._convertNodeDataToSnapshot(newNodeData);
+
       // Create and dispatch the update node data command
       const command = DiagramCommandFactory.updateNodeData(
         diagramId,
         userId,
         event.nodeId,
-        newNodeData,
-        currentNodeData,
+        newSnapshot,
+        currentSnapshot,
         true, // isLocalUserInitiated = true for history recording
       );
 
@@ -381,13 +389,17 @@ export class HistoryIntegrationService implements OnDestroy {
       const newVertices = event.vertices.map(vertex => new Point(vertex.x, vertex.y));
       const newEdgeData = currentEdgeData.withVertices(newVertices);
 
+      // Convert EdgeData to X6EdgeSnapshot
+      const currentSnapshot = this._convertEdgeDataToSnapshot(currentEdgeData);
+      const newSnapshot = this._convertEdgeDataToSnapshot(newEdgeData);
+
       // Create and dispatch the update edge data command
       const command = DiagramCommandFactory.updateEdgeData(
         diagramId,
         userId,
         event.edgeId,
-        newEdgeData,
-        currentEdgeData,
+        newSnapshot,
+        currentSnapshot,
         true, // isLocalUserInitiated = true for history recording
       );
 
@@ -574,5 +586,42 @@ export class HistoryIntegrationService implements OnDestroy {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substr(2, 6);
     return `${type}_${entityId}_${timestamp}_${random}`;
+  }
+
+  /**
+   * Converts NodeData to X6NodeSnapshot
+   */
+  private _convertNodeDataToSnapshot(nodeData: NodeData): any {
+    return {
+      id: nodeData.id,
+      shape: nodeData.type,
+      position: { x: nodeData.position.x, y: nodeData.position.y },
+      size: { width: nodeData.width, height: nodeData.height },
+      attrs: { text: { text: nodeData.label } },
+      metadata: Object.entries(nodeData.metadata || {}).map(([key, value]) => ({ key, value })),
+      ports: [],
+      zIndex: 1,
+      visible: true,
+      type: 'node',
+    };
+  }
+
+  /**
+   * Converts EdgeData to X6EdgeSnapshot
+   */
+  private _convertEdgeDataToSnapshot(edgeData: EdgeData): any {
+    return {
+      id: edgeData.id,
+      shape: 'edge',
+      source: { cell: edgeData.sourceNodeId },
+      target: { cell: edgeData.targetNodeId },
+      attrs: { text: { text: edgeData.label } },
+      metadata: Object.entries(edgeData.metadata || {}).map(([key, value]) => ({ key, value })),
+      labels: [],
+      vertices: edgeData.vertices.map(v => ({ x: v.x, y: v.y })),
+      zIndex: 1,
+      visible: true,
+      type: 'edge',
+    };
   }
 }

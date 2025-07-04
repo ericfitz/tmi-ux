@@ -252,15 +252,26 @@ export class DiagramAggregate {
       );
     }
 
-    // Create NodeData with the position and other data
+    // Create NodeData from the X6 snapshot
+    const labelValue = command.nodeSnapshot.attrs?.['text']?.['text'];
+    const label = typeof labelValue === 'string' ? labelValue : '';
+
+    // Convert metadata array to Record format
+    const metadata: Record<string, string> = {};
+    if (command.nodeSnapshot.metadata) {
+      for (const item of command.nodeSnapshot.metadata) {
+        metadata[item.key] = item.value;
+      }
+    }
+
     const nodeData = new NodeData(
       command.nodeId,
-      command.data.type,
-      command.data.label,
+      command.nodeSnapshot.shape as any, // X6 shape maps to type - will fix type mapping later
+      label,
       command.position,
-      command.data.width,
-      command.data.height,
-      command.data.metadata,
+      command.nodeSnapshot.size?.width || 100,
+      command.nodeSnapshot.size?.height || 60,
+      metadata,
     );
 
     const node = new DiagramNode(nodeData);
@@ -314,18 +325,37 @@ export class DiagramAggregate {
       throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
     }
 
-    const updatedNode = new DiagramNode(command.newData);
+    // Convert new snapshot to NodeData
+    const newLabelValue = command.newSnapshot.attrs?.['text']?.['text'];
+    const newLabel = typeof newLabelValue === 'string' ? newLabelValue : '';
+
+    const newMetadata: Record<string, string> = {};
+    if (command.newSnapshot.metadata) {
+      for (const item of command.newSnapshot.metadata) {
+        newMetadata[item.key] = item.value;
+      }
+    }
+
+    const newNodeData = new NodeData(
+      command.nodeId,
+      command.newSnapshot.shape as any,
+      newLabel,
+      node.position, // Keep existing position
+      command.newSnapshot.size?.width || 100,
+      command.newSnapshot.size?.height || 60,
+      newMetadata,
+    );
+
+    // Convert old snapshot to get old label
+    const oldLabelValue = command.oldSnapshot.attrs?.['text']?.['text'];
+    const oldLabel = typeof oldLabelValue === 'string' ? oldLabelValue : '';
+
+    const updatedNode = new DiagramNode(newNodeData);
     this._nodes.set(command.nodeId, updatedNode);
 
-    if (command.newData.label !== command.oldData.label) {
+    if (newLabel !== oldLabel) {
       this.addEvent(
-        new NodeLabelUpdatedEvent(
-          this._id,
-          this._version,
-          command.nodeId,
-          command.oldData.label,
-          command.newData.label,
-        ),
+        new NodeLabelUpdatedEvent(this._id, this._version, command.nodeId, oldLabel, newLabel),
       );
     }
   }
@@ -382,10 +412,23 @@ export class DiagramAggregate {
       );
     }
 
-    const edge = new DiagramEdge(command.data);
+    // Convert X6 edge snapshot to EdgeData
+    const labelValue = command.edgeSnapshot.attrs?.['text']?.['text'];
+    const label = typeof labelValue === 'string' ? labelValue : '';
+
+    // For now, create a minimal EdgeData - this will need proper conversion logic
+    const edgeData = {
+      id: command.edgeId,
+      sourceNodeId: command.sourceNodeId,
+      targetNodeId: command.targetNodeId,
+      label,
+      metadata: command.edgeSnapshot.metadata || [],
+    } as any; // Temporary type assertion
+
+    const edge = new DiagramEdge(edgeData);
     this._edges.set(command.edgeId, edge);
 
-    this.addEvent(new EdgeAddedEvent(this._id, this._version, command.data));
+    this.addEvent(new EdgeAddedEvent(this._id, this._version, edgeData));
   }
 
   /**
@@ -397,7 +440,19 @@ export class DiagramAggregate {
       throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');
     }
 
-    const updatedEdge = new DiagramEdge(command.newData);
+    // Convert new snapshot to EdgeData
+    const newLabelValue = command.newSnapshot.attrs?.['text']?.['text'];
+    const newLabel = typeof newLabelValue === 'string' ? newLabelValue : '';
+
+    const newEdgeData = {
+      id: command.edgeId,
+      sourceNodeId: edge.sourceNodeId,
+      targetNodeId: edge.targetNodeId,
+      label: newLabel,
+      metadata: command.newSnapshot.metadata || [],
+    } as any; // Temporary type assertion
+
+    const updatedEdge = new DiagramEdge(newEdgeData);
     this._edges.set(command.edgeId, updatedEdge);
 
     // Emit appropriate events based on what changed

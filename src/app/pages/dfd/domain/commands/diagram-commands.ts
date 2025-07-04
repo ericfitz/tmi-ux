@@ -1,6 +1,5 @@
 import { Point } from '../value-objects/point';
-import { NodeData } from '../value-objects/node-data';
-import { EdgeData } from '../value-objects/edge-data';
+import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 
 /**
  * Base interface for all diagram commands
@@ -30,7 +29,7 @@ export interface AddNodeCommand extends DiagramCommand {
   readonly type: 'ADD_NODE';
   readonly nodeId: string;
   readonly position: Point;
-  readonly data: NodeData;
+  readonly nodeSnapshot: X6NodeSnapshot;
 }
 
 /**
@@ -49,8 +48,8 @@ export interface UpdateNodePositionCommand extends DiagramCommand {
 export interface UpdateNodeDataCommand extends DiagramCommand {
   readonly type: 'UPDATE_NODE_DATA';
   readonly nodeId: string;
-  readonly newData: NodeData;
-  readonly oldData: NodeData;
+  readonly newSnapshot: X6NodeSnapshot;
+  readonly oldSnapshot: X6NodeSnapshot;
 }
 
 /**
@@ -69,7 +68,7 @@ export interface AddEdgeCommand extends DiagramCommand {
   readonly edgeId: string;
   readonly sourceNodeId: string;
   readonly targetNodeId: string;
-  readonly data: EdgeData;
+  readonly edgeSnapshot: X6EdgeSnapshot;
 }
 
 /**
@@ -78,8 +77,8 @@ export interface AddEdgeCommand extends DiagramCommand {
 export interface UpdateEdgeDataCommand extends DiagramCommand {
   readonly type: 'UPDATE_EDGE_DATA';
   readonly edgeId: string;
-  readonly newData: EdgeData;
-  readonly oldData: EdgeData;
+  readonly newSnapshot: X6EdgeSnapshot;
+  readonly oldSnapshot: X6EdgeSnapshot;
 }
 
 /**
@@ -157,7 +156,7 @@ export class DiagramCommandFactory {
     userId: string,
     nodeId: string,
     position: Point,
-    data: NodeData,
+    nodeSnapshot: X6NodeSnapshot,
     isLocalUserInitiated?: boolean,
   ): AddNodeCommand {
     return {
@@ -168,7 +167,7 @@ export class DiagramCommandFactory {
       timestamp: new Date(),
       nodeId,
       position,
-      data,
+      nodeSnapshot,
       isLocalUserInitiated,
     };
   }
@@ -204,8 +203,8 @@ export class DiagramCommandFactory {
     diagramId: string,
     userId: string,
     nodeId: string,
-    newData: NodeData,
-    oldData: NodeData,
+    newSnapshot: X6NodeSnapshot,
+    oldSnapshot: X6NodeSnapshot,
     isLocalUserInitiated?: boolean,
   ): UpdateNodeDataCommand {
     return {
@@ -215,8 +214,8 @@ export class DiagramCommandFactory {
       commandId: this.generateCommandId(),
       timestamp: new Date(),
       nodeId,
-      newData,
-      oldData,
+      newSnapshot,
+      oldSnapshot,
       isLocalUserInitiated,
     };
   }
@@ -250,7 +249,7 @@ export class DiagramCommandFactory {
     edgeId: string,
     sourceNodeId: string,
     targetNodeId: string,
-    data: EdgeData,
+    edgeSnapshot: X6EdgeSnapshot,
     isLocalUserInitiated?: boolean,
   ): AddEdgeCommand {
     return {
@@ -262,7 +261,7 @@ export class DiagramCommandFactory {
       edgeId,
       sourceNodeId,
       targetNodeId,
-      data,
+      edgeSnapshot,
       isLocalUserInitiated,
     };
   }
@@ -274,8 +273,8 @@ export class DiagramCommandFactory {
     diagramId: string,
     userId: string,
     edgeId: string,
-    newData: EdgeData,
-    oldData: EdgeData,
+    newSnapshot: X6EdgeSnapshot,
+    oldSnapshot: X6EdgeSnapshot,
     isLocalUserInitiated?: boolean,
   ): UpdateEdgeDataCommand {
     return {
@@ -285,8 +284,8 @@ export class DiagramCommandFactory {
       commandId: this.generateCommandId(),
       timestamp: new Date(),
       edgeId,
-      newData,
-      oldData,
+      newSnapshot,
+      oldSnapshot,
       isLocalUserInitiated,
     };
   }
@@ -405,8 +404,8 @@ export class DiagramCommandValidator {
         if (!addNodeCmd.position) {
           errors.push('Node position is required');
         }
-        if (!addNodeCmd.data) {
-          errors.push('Node data is required');
+        if (!addNodeCmd.nodeSnapshot) {
+          errors.push('Node snapshot is required');
         }
         break;
       }
@@ -434,8 +433,8 @@ export class DiagramCommandValidator {
         if (!addEdgeCmd.targetNodeId) {
           errors.push('Target node ID is required');
         }
-        if (!addEdgeCmd.data) {
-          errors.push('Edge data is required');
+        if (!addEdgeCmd.edgeSnapshot) {
+          errors.push('Edge snapshot is required');
         }
         break;
       }
