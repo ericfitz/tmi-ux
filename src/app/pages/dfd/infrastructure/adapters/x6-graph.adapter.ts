@@ -16,6 +16,7 @@ import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
 import { ICommandBus } from '../../application/interfaces/command-bus.interface';
 import { OperationStateTracker } from '../services/operation-state-tracker.service';
 import { OperationType } from '../../domain/history/history.types';
+import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -84,6 +85,10 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _userId: string | null = null;
   private _commandBus: ICommandBus | null = null;
   private _operationStateTracker: OperationStateTracker | null = null;
+
+  // Cell caching for undo/server operations
+  private _nodeSnapshots = new Map<string, X6NodeSnapshot>();
+  private _edgeSnapshots = new Map<string, X6EdgeSnapshot>();
 
   // Shift key and drag state tracking for snap to grid control
   private _isShiftPressed = false;
@@ -603,12 +608,20 @@ export class X6GraphAdapter implements IGraphAdapter {
         },
       },
       ports: this._getNodePorts(nodeType),
-      data: {
-        ...node.data,
-        domainNodeId: node.id,
-      },
       zIndex,
     });
+
+    // Set metadata using X6 cell extensions
+    (x6Node as any).setMetadata([
+      { key: 'type', value: nodeType },
+      { key: 'domainNodeId', value: node.id },
+      { key: 'width', value: String(node.data.width || 120) },
+      { key: 'height', value: String(node.data.height || 60) },
+      { key: 'label', value: node.data.label || '' },
+    ]);
+
+    // Cache node snapshot for undo/server operations
+    this._cacheNodeSnapshot(x6Node);
 
     return x6Node;
   }
@@ -649,13 +662,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       diagramEdgeSourcePortId: edge.data.sourcePortId,
       diagramEdgeTargetPortId: edge.data.targetPortId,
     });
-    this.logger.info('DIAGNOSTIC: AddEdgeCommand - Inspecting edge.data before X6 add', {
-      edgeId: edge.id,
-      edgeData: edge.data,
-      isEdgeDataInstance: edge.data instanceof DiagramEdge, // This will be false, as edge.data is EdgeData, not DiagramEdge
-      hasToJSONMethod: typeof (edge.data as any).toJSON === 'function',
-      edgeDataKeys: Object.keys(edge.data),
-    });
     const graph = this.getGraph();
 
     // Prepare source and target with port information if available
@@ -671,8 +677,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       id: edge.id,
       source: sourceConfig,
       target: targetConfig,
-      // Remove the 'label' property here, as the 'labels' array below already handles it.
-      // This prevents duplicate labels when an edge is created via addEdge.
       shape: 'edge',
       markup: [
         {
@@ -737,30 +741,20 @@ export class X6GraphAdapter implements IGraphAdapter {
           },
         },
       ],
-      data: {
-        ...edge.data,
-        domainEdgeId: edge.id,
-      },
       zIndex: 1,
     });
 
-    // Set edge z-order to the higher of source or target node z-orders
-    this.logger.debugComponent('DFD', '[Edge Add] X6 Edge created', {
-      x6EdgeId: x6Edge.id,
-      x6EdgeLabel: x6Edge.getLabels(),
-      x6EdgeDataLabel: (() => {
-        // Safety check for test environment where getData might not exist
-        if (typeof x6Edge.getData === 'function') {
-          const data: unknown = x6Edge.getData();
-          if (data && typeof data === 'object' && 'label' in data) {
-            return (data as Record<string, unknown>)['label'];
-          }
-        }
-        return undefined;
-      })(),
-      x6EdgeSource: typeof x6Edge.getSource === 'function' ? x6Edge.getSource() : 'unknown',
-      x6EdgeTarget: typeof x6Edge.getTarget === 'function' ? x6Edge.getTarget() : 'unknown',
-    });
+    // Set metadata using X6 cell extensions
+    (x6Edge as any).setMetadata([
+      { key: 'type', value: 'data-flow' },
+      { key: 'domainEdgeId', value: edge.id },
+      { key: 'sourcePortId', value: edge.data.sourcePortId || '' },
+      { key: 'targetPortId', value: edge.data.targetPortId || '' },
+      { key: 'label', value: (edge.data.label as string) || 'Flow' },
+    ]);
+
+    // Cache edge snapshot for undo/server operations
+    this._cacheEdgeSnapshot(x6Edge);
 
     // Set edge z-order to the higher of source or target node z-orders
     this._setEdgeZOrderFromConnectedNodes(x6Edge);
@@ -1060,19 +1054,8 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Get the standardized label text from a cell
    */
   getCellLabel(cell: Cell): string {
-    if (cell.isNode()) {
-      const textAttr = cell.attr('text/text');
-      return typeof textAttr === 'string' ? textAttr : '';
-    } else {
-      const edge = cell as Edge;
-      const labels = edge.getLabels();
-      if (labels.length > 0 && labels[0].attrs && labels[0].attrs['text']) {
-        const textAttr = labels[0].attrs['text'] as Record<string, unknown>;
-        const textValue = textAttr['text'];
-        return typeof textValue === 'string' ? textValue : '';
-      }
-      return '';
-    }
+    // Use X6 cell extensions for unified label handling
+    return (cell as any).getUnifiedLabel ? (cell as any).getUnifiedLabel() : '';
   }
 
   /**
@@ -1085,7 +1068,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       isNode: cell.isNode(),
       currentLabel: oldLabel,
       newText: text,
-      existingLabelsCount: (cell as Edge).getLabels ? (cell as Edge).getLabels().length : 0,
     });
 
     // DIAGNOSTIC: Log label change for history debugging
@@ -1096,69 +1078,25 @@ export class X6GraphAdapter implements IGraphAdapter {
       newLabel: text,
       willTriggerDataChange: oldLabel !== text,
     });
-    if (cell.isNode()) {
-      cell.attr('text/text', text);
-      // Also update the data for consistency
-      const rawData: unknown = cell.getData();
-      const currentData = (rawData && typeof rawData === 'object' ? rawData : {}) as Record<
-        string,
-        unknown
-      >;
-      cell.setData({ ...currentData, label: text });
-    } else {
-      const edge = cell as Edge;
-      const labels = edge.getLabels();
-      if (labels.length > 0) {
-        const currentLabel = labels[0];
-        const currentAttrs = currentLabel.attrs || {};
-        const currentTextAttrs = (currentAttrs['text'] as Record<string, unknown>) || {};
 
-        edge.setLabelAt(0, {
-          ...currentLabel,
-          attrs: {
-            ...currentAttrs,
-            text: {
-              ...currentTextAttrs,
-              text,
-            },
-          },
-        });
-        this.logger.debugComponent('DFD', '[Set Cell Label] Updated existing label', {
-          cellId: cell.id,
-          newText: text,
-          labelsAfterUpdate: edge.getLabels().length,
-        });
-      } else {
-        // Create a new label if none exists
-        edge.appendLabel({
-          position: 0.5,
-          attrs: {
-            text: {
-              text,
-              fontSize: 12,
-              fill: '#333',
-              textAnchor: 'middle',
-              dominantBaseline: 'middle',
-            },
-            rect: {
-              fill: '#ffffff',
-              stroke: 'none',
-            },
-          },
-        });
-        this.logger.debugComponent('DFD', '[Set Cell Label] Appended new label', {
-          cellId: cell.id,
-          newText: text,
-          labelsAfterAppend: edge.getLabels().length,
-        });
-      }
-      // Also update the data for consistency
-      const rawData: unknown = edge.getData();
-      const currentData = (rawData && typeof rawData === 'object' ? rawData : {}) as Record<
-        string,
-        unknown
-      >;
-      edge.setData({ ...currentData, label: text });
+    // Use X6 cell extensions for unified label handling
+    if ((cell as any).setUnifiedLabel) {
+      (cell as any).setUnifiedLabel(text);
+    }
+
+    // Update metadata
+    const metadata = (cell as any).getMetadata ? (cell as any).getMetadata() : [];
+    const updatedMetadata = metadata.filter((m: any) => m.key !== 'label');
+    updatedMetadata.push({ key: 'label', value: text });
+    if ((cell as any).setMetadata) {
+      (cell as any).setMetadata(updatedMetadata);
+    }
+
+    // Update cache
+    if (cell.isNode()) {
+      this._cacheNodeSnapshot(cell);
+    } else {
+      this._cacheEdgeSnapshot(cell as Edge);
     }
   }
 
@@ -1194,6 +1132,73 @@ export class X6GraphAdapter implements IGraphAdapter {
       userId,
       hasOperationTracker: !!operationStateTracker,
     });
+  }
+
+  /**
+   * Get cached node snapshot
+   */
+  getNodeSnapshot(nodeId: string): X6NodeSnapshot | undefined {
+    return this._nodeSnapshots.get(nodeId);
+  }
+
+  /**
+   * Get cached edge snapshot
+   */
+  getEdgeSnapshot(edgeId: string): X6EdgeSnapshot | undefined {
+    return this._edgeSnapshots.get(edgeId);
+  }
+
+  /**
+   * Clear cached snapshots
+   */
+  clearSnapshots(): void {
+    this._nodeSnapshots.clear();
+    this._edgeSnapshots.clear();
+  }
+
+  /**
+   * Cache a node snapshot for undo/server operations
+   */
+  private _cacheNodeSnapshot(node: Node): void {
+    const position = node.position();
+    const size = node.size();
+    const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
+    const nodeType = metadata.find((m: any) => m.key === 'type')?.value || 'process';
+
+    const snapshot: X6NodeSnapshot = {
+      id: node.id,
+      position: { x: position.x, y: position.y },
+      size: { width: size.width, height: size.height },
+      shape: node.shape,
+      attrs: node.getAttrs(),
+      ports: node.getPorts(),
+      zIndex: node.getZIndex() || 1,
+      visible: node.isVisible(),
+      type: nodeType,
+      metadata,
+    };
+    this._nodeSnapshots.set(node.id, snapshot);
+  }
+
+  /**
+   * Cache an edge snapshot for undo/server operations
+   */
+  private _cacheEdgeSnapshot(edge: Edge): void {
+    const metadata = (edge as any).getMetadata ? (edge as any).getMetadata() : [];
+
+    const snapshot: X6EdgeSnapshot = {
+      id: edge.id,
+      source: edge.getSource(),
+      target: edge.getTarget(),
+      shape: edge.shape,
+      attrs: edge.getAttrs(),
+      vertices: edge.getVertices(),
+      labels: edge.getLabels(),
+      zIndex: edge.getZIndex() || 1,
+      visible: edge.isVisible(),
+      metadata,
+    };
+    this._edgeSnapshots.set(edge.id, snapshot);
   }
 
   /**
@@ -1353,12 +1358,14 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Node embedding events
     this._graph.on('node:embedding', ({ node }: { node: Node }) => {
-      // Store the original z-index before temporarily changing it
+      // Store the original z-index before temporarily changing it using metadata
       const originalZIndex = node.getZIndex();
-      node.setData({
-        ...node.getData(),
-        _originalZIndex: originalZIndex,
-      });
+      const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
+      const updatedMetadata = metadata.filter((m: any) => m.key !== '_originalZIndex');
+      updatedMetadata.push({ key: '_originalZIndex', value: String(originalZIndex) });
+      if ((node as any).setMetadata) {
+        (node as any).setMetadata(updatedMetadata);
+      }
 
       // When a node is being embedded, ensure it appears in front temporarily
       // But respect the node type - security boundaries should stay behind regular nodes
@@ -1377,14 +1384,13 @@ export class X6GraphAdapter implements IGraphAdapter {
       ({ node, currentParent }: { node: Node; currentParent: Node }) => {
         // Only adjust z-indices if the node was actually embedded (has a parent)
         if (!currentParent) {
-          // If embedding was cancelled, restore original z-index
-          const rawNodeData: unknown = node.getData();
-          const nodeData =
-            rawNodeData && typeof rawNodeData === 'object'
-              ? (rawNodeData as Record<string, unknown>)
-              : {};
-          const originalZIndex = nodeData['_originalZIndex'];
-          if (typeof originalZIndex === 'number') {
+          // If embedding was cancelled, restore original z-index from metadata
+          const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
+          const originalZIndexMetadata = metadata.find((m: any) => m.key === '_originalZIndex');
+          const originalZIndex = originalZIndexMetadata
+            ? Number(originalZIndexMetadata.value)
+            : null;
+          if (typeof originalZIndex === 'number' && !isNaN(originalZIndex)) {
             node.setZIndex(originalZIndex);
             // Also restore z-order for connected edges
             this._updateConnectedEdgesZOrder(node, originalZIndex);
@@ -1423,15 +1429,11 @@ export class X6GraphAdapter implements IGraphAdapter {
         // Update fill color based on embedding depth
         this._updateEmbeddedNodeColor(node);
 
-        // Clean up the temporary data
-        const rawNodeData: unknown = node.getData();
-        const nodeData =
-          rawNodeData && typeof rawNodeData === 'object'
-            ? (rawNodeData as Record<string, unknown>)
-            : {};
-        if (nodeData && '_originalZIndex' in nodeData) {
-          delete nodeData['_originalZIndex'];
-          node.setData(nodeData);
+        // Clean up the temporary metadata
+        const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
+        const cleanedMetadata = metadata.filter((m: any) => m.key !== '_originalZIndex');
+        if ((node as any).setMetadata) {
+          (node as any).setMetadata(cleanedMetadata);
         }
       },
     );
@@ -1469,34 +1471,34 @@ export class X6GraphAdapter implements IGraphAdapter {
         return;
       }
 
-      const rawNodeData: unknown = node.getData();
-      const nodeData =
-        rawNodeData && typeof rawNodeData === 'object'
-          ? (rawNodeData as Record<string, unknown>)
-          : {};
-      const originalZIndex = nodeData['_originalZIndex'];
+      const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
+      const originalZIndexMetadata = metadata.find((m: any) => m.key === '_originalZIndex');
+      const originalZIndex = originalZIndexMetadata ? Number(originalZIndexMetadata.value) : null;
 
       // If we have an original z-index stored and the node is not currently embedded,
       // restore the original z-index (this handles the case where dragging was just for movement)
-      if (typeof originalZIndex === 'number' && !node.getParent()) {
+      if (typeof originalZIndex === 'number' && !isNaN(originalZIndex) && !node.getParent()) {
         // Use a longer timeout to ensure this runs after all embedding events have completed
         setTimeout(() => {
           // Double-check that the node still doesn't have a parent and still has the stored z-index
-          if (!node.getParent() && typeof node.getData === 'function') {
-            const currentNodeData: unknown = node.getData();
-            const safeNodeData =
-              currentNodeData && typeof currentNodeData === 'object'
-                ? (currentNodeData as Record<string, unknown>)
-                : {};
+          if (!node.getParent() && (node as any).getMetadata) {
+            const currentMetadata = (node as any).getMetadata();
+            const stillHasOriginalZIndex = currentMetadata.some(
+              (m: any) => m.key === '_originalZIndex',
+            );
 
             // Only restore if we still have the original z-index stored (not cleaned up by embedding)
-            if (safeNodeData && '_originalZIndex' in safeNodeData) {
+            if (stillHasOriginalZIndex) {
               node.setZIndex(originalZIndex);
               // Update z-order for connected edges to match the restored node z-order
               this._updateConnectedEdgesZOrder(node, originalZIndex);
-              // Clean up the temporary data
-              delete safeNodeData['_originalZIndex'];
-              node.setData(safeNodeData);
+              // Clean up the temporary metadata
+              const cleanedMetadata = currentMetadata.filter(
+                (m: any) => m.key !== '_originalZIndex',
+              );
+              if ((node as any).setMetadata) {
+                (node as any).setMetadata(cleanedMetadata);
+              }
 
               this.logger.info('Restored original z-index after drag without embedding', {
                 nodeId: node.id,
@@ -2249,14 +2251,11 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   private _getNodeType(node: Node | null | undefined): string | undefined {
     if (!node) return undefined;
-    // Use unknown first to avoid direct any assignment
-    const rawData: unknown = node.getData();
-    // Type guard to check if it's an object with a type property
-    if (rawData && typeof rawData === 'object' && 'type' in rawData) {
-      const data = rawData as { type?: string };
-      return data.type;
-    }
-    return undefined;
+
+    // Use X6 cell extensions to get metadata
+    const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
+    const typeMetadata = metadata.find((m: any) => m.key === 'type');
+    return typeMetadata?.value || 'process';
   }
 
   /**
@@ -2620,13 +2619,18 @@ export class X6GraphAdapter implements IGraphAdapter {
           vertices,
         });
 
-        // Update the edge data with new vertices
-        const currentData: unknown = edge.getData();
-        const safeCurrentData = currentData && typeof currentData === 'object' ? currentData : {};
-        edge.setData({
-          ...safeCurrentData,
-          vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
+        // Update the edge metadata with new vertices
+        const metadata = (edge as any).getMetadata ? (edge as any).getMetadata() : [];
+        const updatedMetadata = metadata.filter((m: any) => m.key !== 'vertices');
+        updatedMetadata.push({
+          key: 'vertices',
+          value: JSON.stringify(
+            vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
+          ),
         });
+        if ((edge as any).setMetadata) {
+          (edge as any).setMetadata(updatedMetadata);
+        }
 
         // Emit immediate vertex change event for UI responsiveness
         this._edgeVerticesChanged$.next({
@@ -2645,14 +2649,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Add the event listener
     this._graph.on('edge:change:vertices', vertexChangeHandler);
 
-    // Store the handler reference for cleanup
-    if (!edge.getData()) {
-      edge.setData({});
-    }
-    const edgeData: unknown = edge.getData();
-    if (edgeData && typeof edgeData === 'object') {
-      (edgeData as Record<string, unknown>)['_vertexChangeHandler'] = vertexChangeHandler;
-    }
+    // Note: Event handlers are managed by X6 graph event system
+    // No need to store handler references in metadata
   }
 
   /**
@@ -2697,15 +2695,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:change:source', sourceChangeHandler);
     this._graph.on('edge:change:target', targetChangeHandler);
 
-    // Store the handler references for cleanup
-    if (!edge.getData()) {
-      edge.setData({});
-    }
-    const edgeData: unknown = edge.getData();
-    if (edgeData && typeof edgeData === 'object') {
-      (edgeData as Record<string, unknown>)['_sourceChangeHandler'] = sourceChangeHandler;
-      (edgeData as Record<string, unknown>)['_targetChangeHandler'] = targetChangeHandler;
-    }
+    // Note: Event handlers are managed by X6 graph event system
+    // No need to store handler references in metadata
   }
 
   /**
@@ -3202,7 +3193,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Update the grid size by modifying the graph options
     // We need to access the internal grid configuration and update it
-     
+
     const graphOptions = (this._graph as any).options as {
       grid?: { size: number; visible: boolean };
     };

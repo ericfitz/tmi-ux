@@ -20,6 +20,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Node, Cell, Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
+import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { NodeType } from './domain/value-objects/node-data';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
@@ -169,6 +170,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private transloco: TranslocoService,
   ) {
     this.logger.info('DfdComponent constructor called');
+
+    // Initialize X6 cell extensions first
+    this.logger.info('Initializing X6 cell extensions');
+    initializeX6CellExtensions();
 
     // Initialize command bus immediately in constructor
     this.logger.info('Initializing command bus in constructor');
@@ -577,7 +582,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           id?: string;
           attrs?: Record<string, { text?: string }>;
         };
-         
+
         const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
         if (!portObj) {
           return;
