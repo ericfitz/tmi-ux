@@ -54,6 +54,13 @@ export class HistoryIntegrationService implements OnDestroy {
         this._logger.error('Error in debounced node movement subscription', { error }),
     });
 
+    // Subscribe to drag completion events for clean history recording
+    this._x6GraphAdapter.dragCompleted$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => this._handleDragCompletion(event, diagramId, userId),
+      error: (error: unknown) =>
+        this._logger.error('Error in drag completion subscription', { error }),
+    });
+
     // Subscribe to debounced edge vertex changes
     this._x6GraphAdapter.debouncedEdgeVerticesChanged$.pipe(takeUntil(this._destroy$)).subscribe({
       next: event => this._handleDebouncedEdgeVertexChange(event, diagramId, userId),
@@ -429,6 +436,118 @@ export class HistoryIntegrationService implements OnDestroy {
     } catch (error) {
       this._logger.error('Failed to handle debounced edge vertex change', {
         edgeId: event.edgeId,
+        error,
+      });
+    }
+  }
+
+  /**
+   * Handles drag completion events by dispatching UpdateNodePositionCommand with clean before/after state
+   */
+  private _handleDragCompletion(
+    event: {
+      nodeId: string;
+      initialPosition: Point;
+      finalPosition: Point;
+      dragDuration: number;
+      dragId: string;
+    },
+    diagramId: string,
+    userId: string,
+  ): void {
+    try {
+      // Only record history if the position actually changed
+      if (event.initialPosition.equals(event.finalPosition)) {
+        this._logger.debug('Drag completed with no position change - skipping history', {
+          nodeId: event.nodeId,
+          dragId: event.dragId,
+          dragDuration: event.dragDuration,
+        });
+        return;
+      }
+
+      this._logger.info('Processing drag completion for clean history recording', {
+        nodeId: event.nodeId,
+        dragId: event.dragId,
+        initialPosition: { x: event.initialPosition.x, y: event.initialPosition.y },
+        finalPosition: { x: event.finalPosition.x, y: event.finalPosition.y },
+        dragDuration: event.dragDuration,
+        positionDelta: {
+          dx: event.finalPosition.x - event.initialPosition.x,
+          dy: event.finalPosition.y - event.initialPosition.y,
+        },
+      });
+
+      // Start operation tracking for the completed drag
+      const operationId = this._generateOperationId('drag_complete', event.nodeId);
+      this._logger.info('Starting operation tracking for drag completion', {
+        operationId,
+        nodeId: event.nodeId,
+        dragId: event.dragId,
+        operationType: OperationType.UPDATE_POSITION,
+      });
+
+      this._operationTracker.startOperation(operationId, OperationType.UPDATE_POSITION, {
+        entityId: event.nodeId,
+        entityType: 'node',
+        startPosition: { x: event.initialPosition.x, y: event.initialPosition.y },
+        currentPosition: { x: event.finalPosition.x, y: event.finalPosition.y },
+        metadata: {
+          dragId: event.dragId,
+          dragDuration: event.dragDuration.toString(),
+        },
+      });
+
+      // Create and dispatch the update position command with clean initial/final positions
+      const command = DiagramCommandFactory.updateNodePosition(
+        diagramId,
+        userId,
+        event.nodeId,
+        event.finalPosition,
+        event.initialPosition,
+        true, // isLocalUserInitiated = true for history recording
+      );
+
+      // Attach the operation ID to the command so the history middleware can find it
+      const commandWithOperationId = command as unknown as Record<string, unknown>;
+      commandWithOperationId['operationId'] = operationId;
+      commandWithOperationId['dragId'] = event.dragId; // Include drag ID for correlation
+
+      this._logger.info('Drag completion command created with clean positions', {
+        operationId,
+        dragId: event.dragId,
+        commandId: command.commandId,
+        commandType: command.type,
+        nodeId: event.nodeId,
+        initialPosition: { x: event.initialPosition.x, y: event.initialPosition.y },
+        finalPosition: { x: event.finalPosition.x, y: event.finalPosition.y },
+      });
+
+      // Dispatch the command through the command bus
+      this._commandBus.execute(command).subscribe({
+        next: () => {
+          this._logger.info('Drag completion command executed successfully', {
+            nodeId: event.nodeId,
+            dragId: event.dragId,
+            operationId,
+          });
+          // Complete the operation AFTER successful execution
+          this._operationTracker.completeOperation(operationId);
+        },
+        error: (error: unknown) => {
+          this._logger.error('Failed to execute drag completion command', {
+            nodeId: event.nodeId,
+            dragId: event.dragId,
+            operationId,
+            error,
+          });
+          this._operationTracker.cancelOperation(operationId);
+        },
+      });
+    } catch (error) {
+      this._logger.error('Failed to handle drag completion', {
+        nodeId: event.nodeId,
+        dragId: event.dragId,
         error,
       });
     }

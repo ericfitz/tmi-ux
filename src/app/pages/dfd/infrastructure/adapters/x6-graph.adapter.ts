@@ -18,6 +18,7 @@ import { OperationStateTracker } from '../services/operation-state-tracker.servi
 import { OperationType } from '../../domain/history/history.types';
 import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { DragStateManagerService } from '../services/drag-state-manager.service';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -105,6 +106,13 @@ export class X6GraphAdapter implements IGraphAdapter {
     position: Point;
     previous: Point;
   }>();
+  private readonly _dragCompleted$ = new Subject<{
+    nodeId: string;
+    initialPosition: Point;
+    finalPosition: Point;
+    dragDuration: number;
+    dragId: string;
+  }>();
   private readonly _debouncedNodeResized$ = new Subject<{
     nodeId: string;
     width: number;
@@ -156,7 +164,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     vertices: Array<{ x: number; y: number }>;
   }>();
 
-  constructor(private logger: LoggerService) {
+  constructor(
+    private logger: LoggerService,
+    private readonly _dragStateManager: DragStateManagerService,
+  ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
   }
@@ -187,6 +198,19 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   get debouncedNodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
     return this._debouncedNodeMoved$.asObservable();
+  }
+
+  /**
+   * Observable for drag completion events (for clean history recording)
+   */
+  get dragCompleted$(): Observable<{
+    nodeId: string;
+    initialPosition: Point;
+    finalPosition: Point;
+    dragDuration: number;
+    dragId: string;
+  }> {
+    return this._dragCompleted$.asObservable();
   }
 
   /**
@@ -1236,6 +1260,39 @@ export class X6GraphAdapter implements IGraphAdapter {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
 
+          // Update drag state if node is being dragged
+          if (this._dragStateManager.isDragging(node.id)) {
+            this._dragStateManager.updateDragPosition(node.id, currentPos);
+            // Reduce logging during drag - only log significant position changes
+            const dragState = this._dragStateManager.getDragState(node.id);
+            if (dragState) {
+              const deltaFromStart = Math.sqrt(
+                Math.pow(currentPos.x - dragState.initialPosition.x, 2) +
+                  Math.pow(currentPos.y - dragState.initialPosition.y, 2),
+              );
+              // Only log every 50 pixels of movement to reduce noise
+              if (
+                deltaFromStart > 0 &&
+                Math.floor(deltaFromStart / 50) >
+                  Math.floor(
+                    dragState.currentPosition
+                      ? Math.sqrt(
+                          Math.pow(dragState.currentPosition.x - dragState.initialPosition.x, 2) +
+                            Math.pow(dragState.currentPosition.y - dragState.initialPosition.y, 2),
+                        ) / 50
+                      : 0,
+                  )
+              ) {
+                this.logger.debug('DRAG_PROGRESS', {
+                  nodeId: node.id,
+                  dragId: dragState.dragId,
+                  currentPosition: { x: currentPos.x, y: currentPos.y },
+                  deltaFromStart: Math.round(deltaFromStart),
+                });
+              }
+            }
+          }
+
           // Emit immediate event for UI responsiveness
           this._nodeMoved$.next({
             nodeId: node.id,
@@ -1243,7 +1300,7 @@ export class X6GraphAdapter implements IGraphAdapter {
             previous: previousPos,
           });
 
-          // Handle debounced event for history service
+          // Handle debounced event for history service (will be suppressed during drag)
           this._handleDebouncedNodeMovement(node.id, currentPos, previousPos);
         }
       },
@@ -3129,15 +3186,20 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _handleNodeMouseDown = ({ node }: { node: Node }): void => {
     this._isDragging = true;
     this._updateSnapToGrid();
-    // Store the initial position of the node when the drag starts
+
+    // Get the initial position of the node when the drag starts
     const initialPosition = new Point(node.position().x, node.position().y);
+
+    // Start drag tracking with the drag state manager
+    const dragId = this._dragStateManager.startDrag(node.id, initialPosition);
+
+    // Store the initial position for backward compatibility
     this._initialNodePositions.set(node.id, initialPosition);
 
-    // DIAGNOSTIC: Log initial position capture for history debugging
-    this.logger.info('DIAGNOSTIC: Node drag started - capturing initial position', {
+    this.logger.debug('Node drag started', {
       nodeId: node.id,
+      dragId,
       initialPosition: { x: initialPosition.x, y: initialPosition.y },
-      storedInMap: this._initialNodePositions.has(node.id),
     });
   };
 
@@ -3158,7 +3220,23 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (this._isDragging) {
       this._isDragging = false;
       this._updateSnapToGrid();
-      // Clear the initial position after drag ends
+
+      // Complete drag tracking with the drag state manager
+      const finalPosition = new Point(node.position().x, node.position().y);
+      const dragState = this._dragStateManager.completeDrag(node.id, finalPosition);
+
+      if (dragState) {
+        // Emit drag completion event for history service
+        this._dragCompleted$.next({
+          nodeId: node.id,
+          initialPosition: dragState.initialPosition,
+          finalPosition,
+          dragDuration: Date.now() - dragState.dragStartTime,
+          dragId: dragState.dragId,
+        });
+      }
+
+      // Clear the initial position for backward compatibility
       this._initialNodePositions.delete(node.id);
     }
   };
@@ -3212,6 +3290,15 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Handle debounced node movement for history service integration
    */
   private _handleDebouncedNodeMovement(nodeId: string, position: Point, previous: Point): void {
+    // Check if this node is currently being dragged - if so, suppress debounced events
+    if (this._dragStateManager.shouldSuppressHistory(nodeId)) {
+      this.logger.debug('Suppressing debounced movement during drag', {
+        nodeId,
+        isDragging: this._dragStateManager.isDragging(nodeId),
+      });
+      return;
+    }
+
     // Clear existing timer for this node
     const existingTimer = this._nodeMovementTimers.get(nodeId);
     if (existingTimer) {
@@ -3220,6 +3307,15 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Set new timer
     const timer = setTimeout(() => {
+      // Double-check drag state before emitting (in case drag started during debounce delay)
+      if (this._dragStateManager.shouldSuppressHistory(nodeId)) {
+        this.logger.debug('Suppressing debounced movement - drag started during delay', {
+          nodeId,
+        });
+        this._nodeMovementTimers.delete(nodeId);
+        return;
+      }
+
       this.logger.debugComponent('DFD', '[Debounced] Node movement finalized', {
         nodeId,
         position: { x: position.x, y: position.y },
