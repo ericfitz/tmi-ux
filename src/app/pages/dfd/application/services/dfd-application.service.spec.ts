@@ -1,4 +1,3 @@
- 
 // Import Angular compiler
 import '@angular/compiler';
 
@@ -329,7 +328,7 @@ describe('DfdApplicationService', () => {
             next: () => {
               expect(mockCommandBus.execute).toHaveBeenCalledWith(
                 expect.objectContaining({
-                  type: 'UPDATE_NODE_DATA',
+                  type: 'UPDATE_NODE_SNAPSHOT',
                   diagramId: testDiagramId,
                   userId: testUserId,
                   nodeId: testNodeId,
@@ -407,7 +406,7 @@ describe('DfdApplicationService', () => {
             next: () => {
               expect(mockCommandBus.execute).toHaveBeenCalledWith(
                 expect.objectContaining({
-                  type: 'UPDATE_EDGE_DATA',
+                  type: 'UPDATE_EDGE_SNAPSHOT',
                   diagramId: testDiagramId,
                   userId: testUserId,
                   edgeId: testEdgeId,

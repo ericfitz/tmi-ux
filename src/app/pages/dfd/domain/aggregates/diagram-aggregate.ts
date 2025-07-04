@@ -16,10 +16,10 @@ import {
   CreateDiagramCommand,
   AddNodeCommand,
   UpdateNodePositionCommand,
-  UpdateNodeDataCommand,
+  UpdateNodeSnapshotCommand,
   RemoveNodeCommand,
   AddEdgeCommand,
-  UpdateEdgeDataCommand,
+  UpdateEdgeSnapshotCommand,
   RemoveEdgeCommand,
   UpdateDiagramMetadataCommand,
 } from '../commands/diagram-commands';
@@ -129,8 +129,8 @@ export class DiagramAggregate {
       case 'UPDATE_NODE_POSITION':
         this.handleUpdateNodePosition(command);
         break;
-      case 'UPDATE_NODE_DATA':
-        this.handleUpdateNodeData(command);
+      case 'UPDATE_NODE_SNAPSHOT':
+        this.handleUpdateNodeSnapshot(command);
         break;
       case 'REMOVE_NODE':
         this.handleRemoveNode(command);
@@ -138,8 +138,8 @@ export class DiagramAggregate {
       case 'ADD_EDGE':
         this.handleAddEdge(command);
         break;
-      case 'UPDATE_EDGE_DATA':
-        this.handleUpdateEdgeData(command);
+      case 'UPDATE_EDGE_SNAPSHOT':
+        this.handleUpdateEdgeSnapshot(command);
         break;
       case 'REMOVE_EDGE':
         this.handleRemoveEdge(command);
@@ -319,7 +319,7 @@ export class DiagramAggregate {
   /**
    * Updates node data
    */
-  private handleUpdateNodeData(command: UpdateNodeDataCommand): void {
+  private handleUpdateNodeSnapshot(command: UpdateNodeSnapshotCommand): void {
     const node = this._nodes.get(command.nodeId);
     if (!node) {
       throw new DiagramDomainError(`Node with ID ${command.nodeId} not found`, 'NODE_NOT_FOUND');
@@ -434,7 +434,7 @@ export class DiagramAggregate {
   /**
    * Updates edge data
    */
-  private handleUpdateEdgeData(command: UpdateEdgeDataCommand): void {
+  private handleUpdateEdgeSnapshot(command: UpdateEdgeSnapshotCommand): void {
     const edge = this._edges.get(command.edgeId);
     if (!edge) {
       throw new DiagramDomainError(`Edge with ID ${command.edgeId} not found`, 'EDGE_NOT_FOUND');

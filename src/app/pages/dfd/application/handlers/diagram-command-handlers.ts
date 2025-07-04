@@ -5,10 +5,10 @@ import { ICommandHandler, ICommandBus } from '../interfaces/command-bus.interfac
 import {
   AddNodeCommand,
   UpdateNodePositionCommand,
-  UpdateNodeDataCommand,
+  UpdateNodeSnapshotCommand,
   RemoveNodeCommand,
   AddEdgeCommand,
-  UpdateEdgeDataCommand,
+  UpdateEdgeSnapshotCommand,
   RemoveEdgeCommand,
   UpdateDiagramMetadataCommand,
   CreateDiagramCommand,
@@ -290,10 +290,12 @@ export class UpdateNodePositionCommandHandler
 }
 
 /**
- * Handler for UpdateNodeDataCommand
+ * Handler for UpdateNodeSnapshotCommand
  */
 @Injectable()
-export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeDataCommand> {
+export class UpdateNodeSnapshotCommandHandler
+  implements ICommandHandler<UpdateNodeSnapshotCommand>
+{
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
     private readonly _x6GraphAdapter: X6GraphAdapter,
@@ -301,11 +303,11 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
   ) {}
 
   getCommandType(): string {
-    return 'UPDATE_NODE_DATA';
+    return 'UPDATE_NODE_SNAPSHOT';
   }
 
-  handle(command: UpdateNodeDataCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: UpdateNodeDataCommand - Handling command', {
+  handle(command: UpdateNodeSnapshotCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: UpdateNodeSnapshotCommand - Handling command', {
       commandId: command.commandId,
       nodeId: command.nodeId,
       newSnapshot: command.newSnapshot,
@@ -323,7 +325,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
             const node = diagram.getNode(command.nodeId);
             if (node) {
               this._logger.info(
-                'DIAGNOSTIC: UpdateNodeDataCommand - Updating node data in X6 graph',
+                'DIAGNOSTIC: UpdateNodeSnapshotCommand - Updating node snapshot in X6 graph',
                 {
                   nodeId: node.id,
                   newData: node.data,
@@ -345,7 +347,7 @@ export class UpdateNodeDataCommandHandler implements ICommandHandler<UpdateNodeD
               }
             } else {
               this._logger.warn(
-                'DIAGNOSTIC: UpdateNodeDataCommand - Node not found in domain after update',
+                'DIAGNOSTIC: UpdateNodeSnapshotCommand - Node not found in domain after update',
                 {
                   nodeId: command.nodeId,
                 },
@@ -583,19 +585,21 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
 }
 
 /**
- * Handler for UpdateEdgeDataCommand
+ * Handler for UpdateEdgeSnapshotCommand
  */
 @Injectable()
-export class UpdateEdgeDataCommandHandler implements ICommandHandler<UpdateEdgeDataCommand> {
+export class UpdateEdgeSnapshotCommandHandler
+  implements ICommandHandler<UpdateEdgeSnapshotCommand>
+{
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
   ) {}
 
   getCommandType(): string {
-    return 'UPDATE_EDGE_DATA';
+    return 'UPDATE_EDGE_SNAPSHOT';
   }
 
-  handle(command: UpdateEdgeDataCommand): Observable<CommandResult> {
+  handle(command: UpdateEdgeSnapshotCommand): Observable<CommandResult> {
     return this.loadDiagram(command.diagramId).pipe(
       map(diagram => {
         diagram.processCommand(command);
@@ -915,10 +919,10 @@ export class CommandHandlerRegistry {
     private readonly createDiagramHandler: CreateDiagramCommandHandler,
     private readonly addNodeHandler: AddNodeCommandHandler,
     private readonly updateNodePositionHandler: UpdateNodePositionCommandHandler,
-    private readonly updateNodeDataHandler: UpdateNodeDataCommandHandler,
+    private readonly updateNodeSnapshotHandler: UpdateNodeSnapshotCommandHandler,
     private readonly removeNodeHandler: RemoveNodeCommandHandler,
     private readonly addEdgeHandler: AddEdgeCommandHandler,
-    private readonly updateEdgeDataHandler: UpdateEdgeDataCommandHandler,
+    private readonly updateEdgeSnapshotHandler: UpdateEdgeSnapshotCommandHandler,
     private readonly removeEdgeHandler: RemoveEdgeCommandHandler,
     private readonly updateDiagramMetadataHandler: UpdateDiagramMetadataCommandHandler,
     private readonly compositeHandler: CompositeCommandHandler,
@@ -941,10 +945,10 @@ export class CommandHandlerRegistry {
       this.createDiagramHandler,
       this.addNodeHandler,
       this.updateNodePositionHandler,
-      this.updateNodeDataHandler,
+      this.updateNodeSnapshotHandler,
       this.removeNodeHandler,
       this.addEdgeHandler,
-      this.updateEdgeDataHandler,
+      this.updateEdgeSnapshotHandler,
       this.removeEdgeHandler,
       this.updateDiagramMetadataHandler,
       this.compositeHandler,

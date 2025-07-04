@@ -10,8 +10,7 @@ import { InverseCommandFactory } from '../../domain/commands/inverse-command-fac
 import { DiagramState } from '../../domain/history/history.types';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 import { Point } from '../../domain/value-objects/point';
-import { NodeData } from '../../domain/value-objects/node-data';
-import { EdgeData } from '../../domain/value-objects/edge-data';
+import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 
 /**
  * Middleware that handles history recording for diagram commands
@@ -212,10 +211,10 @@ export class HistoryMiddleware implements ICommandMiddleware {
       'ADD_NODE',
       'REMOVE_NODE',
       'UPDATE_NODE_POSITION',
-      'UPDATE_NODE_DATA',
+      'UPDATE_NODE_SNAPSHOT',
       'ADD_EDGE',
       'REMOVE_EDGE',
-      'UPDATE_EDGE_DATA',
+      'UPDATE_EDGE_SNAPSHOT',
       'UPDATE_DIAGRAM_METADATA',
     ];
 
@@ -264,12 +263,24 @@ export class HistoryMiddleware implements ICommandMiddleware {
 
       // Capture all nodes with their essential state for history
       const nodes = graph.getNodes().map(node => {
-        // Convert raw node data from X6 to NodeData instance, then to JSON
-        const nodeData = NodeData.fromJSON(node.getData()); // Use 'any' for now
+        // Get the X6 snapshot data directly from the node
+        const nodeSnapshot: X6NodeSnapshot = {
+          id: node.id,
+          shape: node.shape,
+          position: { x: node.position().x, y: node.position().y },
+          size: { width: node.size().width, height: node.size().height },
+          attrs: node.getAttrs(),
+          ports: node.getPorts(),
+          zIndex: node.getZIndex() ?? 1, // Default to 1 if undefined
+          visible: node.isVisible(),
+          type: node.shape, // Use shape as type
+          metadata: node.getMetadata(),
+        };
+
         return {
           id: node.id,
           position: new Point(node.position().x, node.position().y),
-          data: nodeData.toJSON(), // Store the JSON representation
+          data: nodeSnapshot, // Store the X6 snapshot directly
         };
       });
 
@@ -279,57 +290,28 @@ export class HistoryMiddleware implements ICommandMiddleware {
         const target = edge.getTarget();
 
         // Extract node IDs from source and target terminals
-        // X6 TerminalData can have a 'cell' property for node connections
         const sourceNodeId = this._extractNodeIdFromTerminal(source);
         const targetNodeId = this._extractNodeIdFromTerminal(target);
 
-        // Get raw edge data from X6
-        const x6EdgeData: unknown = edge.getData();
-
-        // Extract properties needed for EdgeData.fromJSON, providing fallbacks
-        let label: string;
-        const rawLabel = edge.attr('line/text/text');
-        if (typeof rawLabel === 'string') {
-          label = rawLabel;
-        } else if (
-          rawLabel &&
-          typeof rawLabel === 'object' &&
-          'text' in rawLabel &&
-          typeof rawLabel.text === 'string'
-        ) {
-          label = rawLabel.text;
-        } else {
-          label = 'Data Flow'; // Default label
-        }
-
-        const vertices = edge.getVertices().map(v => ({ x: v.x, y: v.y }));
-        const sourcePortId = edge.getSourcePortId();
-        const targetPortId = edge.getTargetPortId();
-        const metadata =
-          x6EdgeData && typeof x6EdgeData === 'object' && 'metadata' in x6EdgeData
-            ? (x6EdgeData as { metadata: Record<string, string> }).metadata
-            : {};
-
-        // Construct the object that EdgeData.fromJSON expects
-        const edgeDataForDomain = {
+        // Get the X6 snapshot data directly from the edge
+        const edgeSnapshot: X6EdgeSnapshot = {
           id: edge.id,
-          sourceNodeId,
-          targetNodeId,
-          sourcePortId,
-          targetPortId,
-          label,
-          vertices,
-          metadata,
+          shape: edge.shape,
+          source: edge.getSource(),
+          target: edge.getTarget(),
+          attrs: edge.getAttrs(),
+          labels: edge.getLabels(),
+          vertices: edge.getVertices().map(v => ({ x: v.x, y: v.y })),
+          zIndex: edge.getZIndex() ?? 1, // Default to 1 if undefined
+          visible: edge.isVisible(),
+          metadata: edge.getMetadata(),
         };
-
-        // Create EdgeData instance and then its JSON representation
-        const domainEdgeData = EdgeData.fromJSON(edgeDataForDomain);
 
         return {
           id: edge.id,
           sourceNodeId,
           targetNodeId,
-          data: domainEdgeData.toJSON(), // Store the JSON representation of the EdgeData
+          data: edgeSnapshot, // Store the X6 snapshot directly
         };
       });
 

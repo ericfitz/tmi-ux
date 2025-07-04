@@ -53,10 +53,10 @@ import {
   CreateDiagramCommandHandler,
   AddNodeCommandHandler,
   UpdateNodePositionCommandHandler,
-  UpdateNodeDataCommandHandler,
+  UpdateNodeSnapshotCommandHandler,
   RemoveNodeCommandHandler,
   AddEdgeCommandHandler,
-  UpdateEdgeDataCommandHandler,
+  UpdateEdgeSnapshotCommandHandler,
   RemoveEdgeCommandHandler,
   UpdateDiagramMetadataCommandHandler,
   CompositeCommandHandler,
@@ -99,10 +99,10 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     CreateDiagramCommandHandler,
     AddNodeCommandHandler,
     UpdateNodePositionCommandHandler,
-    UpdateNodeDataCommandHandler,
+    UpdateNodeSnapshotCommandHandler,
     RemoveNodeCommandHandler,
     AddEdgeCommandHandler,
-    UpdateEdgeDataCommandHandler,
+    UpdateEdgeSnapshotCommandHandler,
     RemoveEdgeCommandHandler,
     UpdateDiagramMetadataCommandHandler,
     CompositeCommandHandler,
@@ -1354,7 +1354,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Convert vertices to domain Points
     const domainVertices = vertices.map(v => new Point(v.x, v.y));
 
-    // Create and execute UpdateEdgeDataCommand to update the domain model
+    // Create and execute UpdateEdgeSnapshotCommand to update the domain model
     const diagramId = this.dfdId || 'default-diagram';
     const userId = 'current-user'; // TODO: Get from auth service
 
@@ -1423,7 +1423,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       {}, // metadata
     );
 
-    // Create and execute UpdateEdgeDataCommand
+    // Create and execute UpdateEdgeSnapshotCommand
     const command = DiagramCommandFactory.updateEdgeData(
       diagramId,
       userId,

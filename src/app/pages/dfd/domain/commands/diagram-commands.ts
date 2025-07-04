@@ -45,8 +45,8 @@ export interface UpdateNodePositionCommand extends DiagramCommand {
 /**
  * Command to update a node's data
  */
-export interface UpdateNodeDataCommand extends DiagramCommand {
-  readonly type: 'UPDATE_NODE_DATA';
+export interface UpdateNodeSnapshotCommand extends DiagramCommand {
+  readonly type: 'UPDATE_NODE_SNAPSHOT';
   readonly nodeId: string;
   readonly newSnapshot: X6NodeSnapshot;
   readonly oldSnapshot: X6NodeSnapshot;
@@ -74,8 +74,8 @@ export interface AddEdgeCommand extends DiagramCommand {
 /**
  * Command to update an edge's data
  */
-export interface UpdateEdgeDataCommand extends DiagramCommand {
-  readonly type: 'UPDATE_EDGE_DATA';
+export interface UpdateEdgeSnapshotCommand extends DiagramCommand {
+  readonly type: 'UPDATE_EDGE_SNAPSHOT';
   readonly edgeId: string;
   readonly newSnapshot: X6EdgeSnapshot;
   readonly oldSnapshot: X6EdgeSnapshot;
@@ -114,10 +114,10 @@ export type AnyDiagramCommand =
   | CreateDiagramCommand
   | AddNodeCommand
   | UpdateNodePositionCommand
-  | UpdateNodeDataCommand
+  | UpdateNodeSnapshotCommand
   | RemoveNodeCommand
   | AddEdgeCommand
-  | UpdateEdgeDataCommand
+  | UpdateEdgeSnapshotCommand
   | RemoveEdgeCommand
   | UpdateDiagramMetadataCommand
   | CompositeCommand;
@@ -206,9 +206,9 @@ export class DiagramCommandFactory {
     newSnapshot: X6NodeSnapshot,
     oldSnapshot: X6NodeSnapshot,
     isLocalUserInitiated?: boolean,
-  ): UpdateNodeDataCommand {
+  ): UpdateNodeSnapshotCommand {
     return {
-      type: 'UPDATE_NODE_DATA',
+      type: 'UPDATE_NODE_SNAPSHOT',
       diagramId,
       userId,
       commandId: this.generateCommandId(),
@@ -276,9 +276,9 @@ export class DiagramCommandFactory {
     newSnapshot: X6EdgeSnapshot,
     oldSnapshot: X6EdgeSnapshot,
     isLocalUserInitiated?: boolean,
-  ): UpdateEdgeDataCommand {
+  ): UpdateEdgeSnapshotCommand {
     return {
-      type: 'UPDATE_EDGE_DATA',
+      type: 'UPDATE_EDGE_SNAPSHOT',
       diagramId,
       userId,
       commandId: this.generateCommandId(),

@@ -8,8 +8,7 @@ import {
   SerializedDiagramState,
 } from '../interfaces/serialization.interface';
 import { Point } from '../../domain/value-objects/point';
-import { NodeData } from '../../domain/value-objects/node-data';
-import { EdgeData } from '../../domain/value-objects/edge-data';
+import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 
 /**
  * Service that handles serialization and deserialization of domain objects
@@ -245,7 +244,7 @@ export class SerializationService implements ISerializationService {
           ...baseData,
           nodeId: command.nodeId,
           position: command.position,
-          data: command.data,
+          nodeSnapshot: command.nodeSnapshot,
         };
       case 'UPDATE_NODE_POSITION':
         return {
@@ -254,12 +253,12 @@ export class SerializationService implements ISerializationService {
           newPosition: command.newPosition,
           oldPosition: command.oldPosition,
         };
-      case 'UPDATE_NODE_DATA':
+      case 'UPDATE_NODE_SNAPSHOT':
         return {
           ...baseData,
           nodeId: command.nodeId,
-          newData: command.newData,
-          oldData: command.oldData,
+          newSnapshot: command.newSnapshot,
+          oldSnapshot: command.oldSnapshot,
         };
       case 'REMOVE_NODE':
         return {
@@ -272,14 +271,14 @@ export class SerializationService implements ISerializationService {
           edgeId: command.edgeId,
           sourceNodeId: command.sourceNodeId,
           targetNodeId: command.targetNodeId,
-          data: command.data,
+          edgeSnapshot: command.edgeSnapshot,
         };
-      case 'UPDATE_EDGE_DATA':
+      case 'UPDATE_EDGE_SNAPSHOT':
         return {
           ...baseData,
           edgeId: command.edgeId,
-          newData: command.newData,
-          oldData: command.oldData,
+          newSnapshot: command.newSnapshot,
+          oldSnapshot: command.oldSnapshot,
         };
       case 'REMOVE_EDGE':
         return {
@@ -320,7 +319,7 @@ export class SerializationService implements ISerializationService {
           userId,
           commandData['nodeId'] as string,
           commandData['position'] as Point,
-          commandData['data'] as NodeData,
+          commandData['nodeSnapshot'] as X6NodeSnapshot,
         );
       case 'UPDATE_NODE_POSITION':
         return DiagramCommandFactory.updateNodePosition(
@@ -330,13 +329,13 @@ export class SerializationService implements ISerializationService {
           commandData['newPosition'] as Point,
           commandData['oldPosition'] as Point,
         );
-      case 'UPDATE_NODE_DATA':
+      case 'UPDATE_NODE_SNAPSHOT':
         return DiagramCommandFactory.updateNodeData(
           diagramId,
           userId,
           commandData['nodeId'] as string,
-          commandData['newData'] as NodeData,
-          commandData['oldData'] as NodeData,
+          commandData['newSnapshot'] as X6NodeSnapshot,
+          commandData['oldSnapshot'] as X6NodeSnapshot,
         );
       case 'REMOVE_NODE':
         return DiagramCommandFactory.removeNode(diagramId, userId, commandData['nodeId'] as string);
@@ -347,15 +346,15 @@ export class SerializationService implements ISerializationService {
           commandData['edgeId'] as string,
           commandData['sourceNodeId'] as string,
           commandData['targetNodeId'] as string,
-          commandData['data'] as EdgeData,
+          commandData['edgeSnapshot'] as X6EdgeSnapshot,
         );
-      case 'UPDATE_EDGE_DATA':
+      case 'UPDATE_EDGE_SNAPSHOT':
         return DiagramCommandFactory.updateEdgeData(
           diagramId,
           userId,
           commandData['edgeId'] as string,
-          commandData['newData'] as EdgeData,
-          commandData['oldData'] as EdgeData,
+          commandData['newSnapshot'] as X6EdgeSnapshot,
+          commandData['oldSnapshot'] as X6EdgeSnapshot,
         );
       case 'REMOVE_EDGE':
         return DiagramCommandFactory.removeEdge(diagramId, userId, commandData['edgeId'] as string);

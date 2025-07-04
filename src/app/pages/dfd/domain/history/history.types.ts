@@ -146,13 +146,13 @@ export interface DiagramState {
   readonly nodes: ReadonlyArray<{
     readonly id: string;
     readonly position: Point;
-    readonly data: ReturnType<import('../value-objects/node-data').NodeData['toJSON']>;
+    readonly data: import('../../types/x6-cell.types').X6NodeSnapshot;
   }>;
   readonly edges: ReadonlyArray<{
     readonly id: string;
     readonly sourceNodeId: string;
     readonly targetNodeId: string;
-    readonly data: ReturnType<import('../value-objects/edge-data').EdgeData['toJSON']>;
+    readonly data: import('../../types/x6-cell.types').X6EdgeSnapshot;
   }>;
   readonly metadata: Record<string, unknown>;
 }

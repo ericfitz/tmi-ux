@@ -9,9 +9,17 @@ declare module '@antv/x6' {
     removeMetadataKey(key: string): void;
     getMetadataAsObject(): Record<string, string>;
 
+    // Array-based metadata methods (for compatibility with existing code)
+    getMetadata(): Array<{ key: string; value: string }>;
+    setMetadata(metadata: Array<{ key: string; value: string }>): void;
+
     // Unified label handling methods
     getLabel(): string;
     setLabel(label: string): void;
+
+    // Unified label handling methods (for compatibility with existing code)
+    getUnifiedLabel(): string;
+    setUnifiedLabel(label: string): void;
   }
 }
 
@@ -75,6 +83,16 @@ export function initializeX6CellExtensions(): void {
     );
   };
 
+  // Array-based metadata methods (for compatibility with existing code)
+  Cell.prototype.getMetadata = function (): Array<{ key: string; value: string }> {
+    const metadata = this.prop('metadata') as Array<{ key: string; value: string }> | undefined;
+    return metadata || [];
+  };
+
+  Cell.prototype.setMetadata = function (metadata: Array<{ key: string; value: string }>): void {
+    this.prop('metadata', metadata);
+  };
+
   // Unified label handling methods
   Cell.prototype.getLabel = function (): string {
     if (this.isNode()) {
@@ -120,5 +138,14 @@ export function initializeX6CellExtensions(): void {
         });
       }
     }
+  };
+
+  // Unified label handling methods (for compatibility with existing code)
+  Cell.prototype.getUnifiedLabel = function (): string {
+    return this.getLabel();
+  };
+
+  Cell.prototype.setUnifiedLabel = function (label: string): void {
+    this.setLabel(label);
   };
 }

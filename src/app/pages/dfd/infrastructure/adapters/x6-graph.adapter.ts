@@ -17,6 +17,7 @@ import { ICommandBus } from '../../application/interfaces/command-bus.interface'
 import { OperationStateTracker } from '../services/operation-state-tracker.service';
 import { OperationType } from '../../domain/history/history.types';
 import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -155,7 +156,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     vertices: Array<{ x: number; y: number }>;
   }>();
 
-  constructor(private logger: LoggerService) {}
+  constructor(private logger: LoggerService) {
+    // Initialize X6 cell extensions once when the adapter is created
+    initializeX6CellExtensions();
+  }
 
   /**
    * Observable for node addition events

@@ -10,10 +10,10 @@ import {
   CreateDiagramCommandHandler,
   AddNodeCommandHandler,
   UpdateNodePositionCommandHandler,
-  UpdateNodeDataCommandHandler,
+  UpdateNodeSnapshotCommandHandler,
   RemoveNodeCommandHandler,
   AddEdgeCommandHandler,
-  UpdateEdgeDataCommandHandler,
+  UpdateEdgeSnapshotCommandHandler,
   RemoveEdgeCommandHandler,
   UpdateDiagramMetadataCommandHandler,
   CompositeCommandHandler,
@@ -36,10 +36,10 @@ export class CommandBusInitializerService {
     private readonly _createDiagramHandler: CreateDiagramCommandHandler,
     private readonly _addNodeHandler: AddNodeCommandHandler,
     private readonly _updateNodePositionHandler: UpdateNodePositionCommandHandler,
-    private readonly _updateNodeDataHandler: UpdateNodeDataCommandHandler,
+    private readonly _updateNodeSnapshotHandler: UpdateNodeSnapshotCommandHandler,
     private readonly _removeNodeHandler: RemoveNodeCommandHandler,
     private readonly _addEdgeHandler: AddEdgeCommandHandler,
-    private readonly _updateEdgeDataHandler: UpdateEdgeDataCommandHandler,
+    private readonly _updateEdgeSnapshotHandler: UpdateEdgeSnapshotCommandHandler,
     private readonly _removeEdgeHandler: RemoveEdgeCommandHandler,
     private readonly _updateDiagramMetadataHandler: UpdateDiagramMetadataCommandHandler,
     private readonly _compositeHandler: CompositeCommandHandler,
@@ -95,8 +95,8 @@ export class CommandBusInitializerService {
       this._updateNodePositionHandler,
     );
     this._commandBus.registerHandler(
-      this._updateNodeDataHandler.getCommandType(),
-      this._updateNodeDataHandler,
+      this._updateNodeSnapshotHandler.getCommandType(),
+      this._updateNodeSnapshotHandler,
     );
     this._commandBus.registerHandler(
       this._removeNodeHandler.getCommandType(),
@@ -104,8 +104,8 @@ export class CommandBusInitializerService {
     );
     this._commandBus.registerHandler(this._addEdgeHandler.getCommandType(), this._addEdgeHandler);
     this._commandBus.registerHandler(
-      this._updateEdgeDataHandler.getCommandType(),
-      this._updateEdgeDataHandler,
+      this._updateEdgeSnapshotHandler.getCommandType(),
+      this._updateEdgeSnapshotHandler,
     );
     this._commandBus.registerHandler(
       this._removeEdgeHandler.getCommandType(),
@@ -125,10 +125,10 @@ export class CommandBusInitializerService {
         this._createDiagramHandler.getCommandType(),
         this._addNodeHandler.getCommandType(),
         this._updateNodePositionHandler.getCommandType(),
-        this._updateNodeDataHandler.getCommandType(),
+        this._updateNodeSnapshotHandler.getCommandType(),
         this._removeNodeHandler.getCommandType(),
         this._addEdgeHandler.getCommandType(),
-        this._updateEdgeDataHandler.getCommandType(),
+        this._updateEdgeSnapshotHandler.getCommandType(),
         this._removeEdgeHandler.getCommandType(),
         this._updateDiagramMetadataHandler.getCommandType(),
         this._compositeHandler.getCommandType(),

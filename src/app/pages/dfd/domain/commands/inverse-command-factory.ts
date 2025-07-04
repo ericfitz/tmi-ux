@@ -5,16 +5,14 @@ import {
   AddNodeCommand,
   RemoveNodeCommand,
   UpdateNodePositionCommand,
-  UpdateNodeDataCommand,
+  UpdateNodeSnapshotCommand,
   AddEdgeCommand,
   RemoveEdgeCommand,
-  UpdateEdgeDataCommand,
+  UpdateEdgeSnapshotCommand,
   CompositeCommand,
   DiagramCommandFactory,
 } from '../commands/diagram-commands';
 import type { DiagramState } from '../history/history.types';
-import { NodeData } from '../value-objects/node-data';
-import { EdgeData } from '../value-objects/edge-data';
 
 /**
  * Factory for creating inverse commands that can undo the effects of original commands.
@@ -44,14 +42,14 @@ export class InverseCommandFactory {
           return this._createAddNodeInverse(command, beforeState);
         case 'UPDATE_NODE_POSITION':
           return this._createUpdatePositionInverse(command, beforeState);
-        case 'UPDATE_NODE_DATA':
-          return this._createUpdateNodeDataInverse(command, beforeState);
+        case 'UPDATE_NODE_SNAPSHOT':
+          return this._createUpdateNodeSnapshotInverse(command, beforeState);
         case 'ADD_EDGE':
           return this._createRemoveEdgeInverse(command, beforeState);
         case 'REMOVE_EDGE':
           return this._createAddEdgeInverse(command, beforeState);
-        case 'UPDATE_EDGE_DATA':
-          return this._createUpdateEdgeDataInverse(command, beforeState);
+        case 'UPDATE_EDGE_SNAPSHOT':
+          return this._createUpdateEdgeSnapshotInverse(command, beforeState);
         case 'COMPOSITE':
           return this._createCompositeInverse(command, beforeState);
         default:
@@ -73,10 +71,10 @@ export class InverseCommandFactory {
       'ADD_NODE',
       'REMOVE_NODE',
       'UPDATE_NODE_POSITION',
-      'UPDATE_NODE_DATA',
+      'UPDATE_NODE_SNAPSHOT',
       'ADD_EDGE',
       'REMOVE_EDGE',
-      'UPDATE_EDGE_DATA',
+      'UPDATE_EDGE_SNAPSHOT',
       'COMPOSITE',
     ];
     return supportedTypes.includes(command.type);
@@ -100,8 +98,8 @@ export class InverseCommandFactory {
         ['ADD_EDGE', 'REMOVE_EDGE'],
         ['REMOVE_EDGE', 'ADD_EDGE'],
         ['UPDATE_NODE_POSITION', 'UPDATE_NODE_POSITION'],
-        ['UPDATE_NODE_DATA', 'UPDATE_NODE_DATA'],
-        ['UPDATE_EDGE_DATA', 'UPDATE_EDGE_DATA'],
+        ['UPDATE_NODE_SNAPSHOT', 'UPDATE_NODE_SNAPSHOT'],
+        ['UPDATE_EDGE_SNAPSHOT', 'UPDATE_EDGE_SNAPSHOT'],
         ['COMPOSITE', 'COMPOSITE'],
       ]);
 
@@ -144,20 +142,8 @@ export class InverseCommandFactory {
     // Create commands to restore the node and all connected edges
     const restoreCommands: AnyDiagramCommand[] = [];
 
-    // First, restore the node - convert NodeData to X6NodeSnapshot
-    const nodeData = nodeToRestore.data as NodeData;
-    const nodeSnapshot = {
-      id: command.nodeId,
-      shape: nodeData.type as string,
-      position: nodeToRestore.position,
-      size: { width: nodeData.width, height: nodeData.height },
-      attrs: { text: { text: nodeData.label } },
-      metadata: Object.entries(nodeData.metadata || {}).map(([key, value]) => ({ key, value })),
-      ports: [],
-      zIndex: 1,
-      visible: true,
-      type: 'node',
-    };
+    // First, restore the node - use X6NodeSnapshot directly
+    const nodeSnapshot = nodeToRestore.data;
 
     const addNodeCommand = DiagramCommandFactory.addNode(
       command.diagramId,
@@ -170,23 +156,8 @@ export class InverseCommandFactory {
 
     // Then, restore all connected edges
     for (const edge of connectedEdges) {
-      // Convert EdgeData to X6EdgeSnapshot
-      const edgeData = edge.data as EdgeData;
-      const edgeSnapshot = {
-        id: edge.id,
-        shape: 'edge',
-        source: { cell: edge.sourceNodeId },
-        target: { cell: edge.targetNodeId },
-        attrs: { text: { text: edgeData.label || '' } },
-        metadata: edgeData.metadata
-          ? Object.entries(edgeData.metadata).map(([key, value]) => ({ key, value }))
-          : [],
-        labels: [],
-        vertices: [],
-        zIndex: 1,
-        visible: true,
-        type: 'edge',
-      };
+      // Use X6EdgeSnapshot directly
+      const edgeSnapshot = edge.data;
 
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         command.diagramId,
@@ -222,11 +193,11 @@ export class InverseCommandFactory {
     );
   }
 
-  private _createUpdateNodeDataInverse(
-    command: UpdateNodeDataCommand,
+  private _createUpdateNodeSnapshotInverse(
+    command: UpdateNodeSnapshotCommand,
     _beforeState: DiagramState,
-  ): UpdateNodeDataCommand {
-    // For UpdateNodeDataCommand, create another UpdateNodeDataCommand with old data
+  ): UpdateNodeSnapshotCommand {
+    // For UpdateNodeSnapshotCommand, create another UpdateNodeSnapshotCommand with old snapshot
     return DiagramCommandFactory.updateNodeData(
       command.diagramId,
       command.userId,
@@ -254,23 +225,8 @@ export class InverseCommandFactory {
       throw new Error(`Cannot create inverse: edge ${command.edgeId} not found in before state`);
     }
 
-    // Convert EdgeData to X6EdgeSnapshot
-    const edgeData = edgeToRestore.data as EdgeData;
-    const edgeSnapshot = {
-      id: command.edgeId,
-      shape: 'edge',
-      source: { cell: edgeToRestore.sourceNodeId },
-      target: { cell: edgeToRestore.targetNodeId },
-      attrs: { text: { text: edgeData.label || '' } },
-      metadata: edgeData.metadata
-        ? Object.entries(edgeData.metadata).map(([key, value]) => ({ key, value }))
-        : [],
-      labels: [],
-      vertices: [],
-      zIndex: 1,
-      visible: true,
-      type: 'edge',
-    };
+    // Use X6EdgeSnapshot directly
+    const edgeSnapshot = edgeToRestore.data;
 
     return DiagramCommandFactory.addEdge(
       command.diagramId,
@@ -282,11 +238,11 @@ export class InverseCommandFactory {
     );
   }
 
-  private _createUpdateEdgeDataInverse(
-    command: UpdateEdgeDataCommand,
+  private _createUpdateEdgeSnapshotInverse(
+    command: UpdateEdgeSnapshotCommand,
     _beforeState: DiagramState,
-  ): UpdateEdgeDataCommand {
-    // For UpdateEdgeDataCommand, create another UpdateEdgeDataCommand with old data
+  ): UpdateEdgeSnapshotCommand {
+    // For UpdateEdgeSnapshotCommand, create another UpdateEdgeSnapshotCommand with old snapshot
     return DiagramCommandFactory.updateEdgeData(
       command.diagramId,
       command.userId,
