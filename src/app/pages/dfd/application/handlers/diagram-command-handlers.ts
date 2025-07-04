@@ -142,8 +142,30 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
               this._logger.info('DIAGNOSTIC: AddNodeCommand - Adding node to X6 graph', {
                 nodeId: node.id,
                 shapeType: node.data.type,
+                hasSnapshot: !!command.nodeSnapshot,
               });
-              this._x6GraphAdapter.addNode(node);
+
+              // Use isLocalUserInitiated flag to distinguish between new creation vs restoration
+              // - true: user-initiated command (new creation) → use regular addNode()
+              // - false/undefined: system-generated command (undo/redo) → use addNodeFromSnapshot()
+              if (!command.isLocalUserInitiated && command.nodeSnapshot) {
+                this._logger.info(
+                  'DIAGNOSTIC: AddNodeCommand - Using snapshot-based restoration for undo/redo',
+                  {
+                    nodeId: node.id,
+                    snapshotPorts: command.nodeSnapshot.ports,
+                    isLocalUserInitiated: command.isLocalUserInitiated,
+                  },
+                );
+                this._x6GraphAdapter.addNodeFromSnapshot(command.nodeSnapshot);
+              } else {
+                this._logger.info('DIAGNOSTIC: AddNodeCommand - Using regular node creation', {
+                  nodeId: node.id,
+                  isLocalUserInitiated: command.isLocalUserInitiated,
+                  hasSnapshot: !!command.nodeSnapshot,
+                });
+                this._x6GraphAdapter.addNode(node);
+              }
             } else {
               this._logger.warn('DIAGNOSTIC: AddNodeCommand - Node not found in domain after add', {
                 nodeId: command.nodeId,
@@ -528,8 +550,31 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
                 edgeId: edge.id,
                 sourceNodeId: edge.sourceNodeId,
                 targetNodeId: edge.targetNodeId,
+                hasSnapshot: !!command.edgeSnapshot,
               });
-              this._x6GraphAdapter.addEdge(edge);
+
+              // Use isLocalUserInitiated flag to distinguish between new creation vs restoration
+              // - true: user-initiated command (new creation) → use regular addEdge()
+              // - false/undefined: system-generated command (undo/redo) → use addEdgeFromSnapshot()
+              if (!command.isLocalUserInitiated && command.edgeSnapshot) {
+                this._logger.info(
+                  'DIAGNOSTIC: AddEdgeCommand - Using snapshot-based restoration for undo/redo',
+                  {
+                    edgeId: edge.id,
+                    snapshotSource: command.edgeSnapshot.source,
+                    snapshotTarget: command.edgeSnapshot.target,
+                    isLocalUserInitiated: command.isLocalUserInitiated,
+                  },
+                );
+                this._x6GraphAdapter.addEdgeFromSnapshot(command.edgeSnapshot);
+              } else {
+                this._logger.info('DIAGNOSTIC: AddEdgeCommand - Using regular edge creation', {
+                  edgeId: edge.id,
+                  isLocalUserInitiated: command.isLocalUserInitiated,
+                  hasSnapshot: !!command.edgeSnapshot,
+                });
+                this._x6GraphAdapter.addEdge(edge);
+              }
             } else {
               this._logger.warn('DIAGNOSTIC: AddEdgeCommand - Edge not found in domain after add', {
                 edgeId: command.edgeId,

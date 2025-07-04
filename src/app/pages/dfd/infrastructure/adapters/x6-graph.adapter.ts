@@ -642,6 +642,55 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Add a node to the graph from a complete X6 snapshot (preserves exact port structure)
+   */
+  addNodeFromSnapshot(snapshot: X6NodeSnapshot): Node {
+    const graph = this.getGraph();
+
+    this.logger.info('Adding node from X6 snapshot with preserved ports', {
+      nodeId: snapshot.id,
+      shape: snapshot.shape,
+      portCount: (snapshot.ports as any)?.items?.length || 0,
+      portIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+    });
+
+    // Get the node type from metadata to ensure proper port groups are set
+    const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
+
+    this.logger.info('DIAGNOSTIC: Port configuration for snapshot restoration', {
+      nodeId: snapshot.id,
+      nodeType,
+      snapshotPorts: snapshot.ports,
+      snapshotPortItems: (snapshot.ports as any)?.items?.length || 0,
+      snapshotPortIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+    });
+
+    const x6Node = graph.addNode({
+      id: snapshot.id,
+      x: snapshot.position.x,
+      y: snapshot.position.y,
+      width: snapshot.size.width,
+      height: snapshot.size.height,
+      shape: snapshot.shape,
+      attrs: snapshot.attrs,
+      ports: snapshot.ports, // Use exact snapshot ports to preserve port IDs
+      zIndex: snapshot.zIndex,
+      visible: snapshot.visible,
+    });
+
+    // Set metadata using X6 cell extensions
+    if (snapshot.metadata && (x6Node as any).setMetadata) {
+      (x6Node as any).setMetadata(snapshot.metadata);
+    }
+
+    // Cache the original snapshot instead of re-caching the node
+    // This preserves the original port IDs in the cache
+    this._nodeSnapshots.set(snapshot.id, snapshot);
+
+    return x6Node;
+  }
+
+  /**
    * Remove a node from the graph
    */
   removeNode(nodeId: string): void {
@@ -663,6 +712,46 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (node && node.isNode()) {
       node.setPosition(position.x, position.y);
     }
+  }
+
+  /**
+   * Add an edge to the graph from a complete X6 snapshot (preserves exact port connections)
+   */
+  addEdgeFromSnapshot(snapshot: X6EdgeSnapshot): Edge {
+    const graph = this.getGraph();
+
+    this.logger.info('Adding edge from X6 snapshot with preserved port connections', {
+      edgeId: snapshot.id,
+      source: snapshot.source,
+      target: snapshot.target,
+      hasSourcePort: !!snapshot.source?.port,
+      hasTargetPort: !!snapshot.target?.port,
+    });
+
+    const x6Edge = graph.addEdge({
+      id: snapshot.id,
+      source: snapshot.source, // Use exact source from snapshot to preserve port connections
+      target: snapshot.target, // Use exact target from snapshot to preserve port connections
+      shape: snapshot.shape,
+      attrs: snapshot.attrs,
+      labels: snapshot.labels,
+      vertices: snapshot.vertices,
+      zIndex: snapshot.zIndex,
+      visible: snapshot.visible,
+    });
+
+    // Set metadata using X6 cell extensions
+    if (snapshot.metadata && (x6Edge as any).setMetadata) {
+      (x6Edge as any).setMetadata(snapshot.metadata);
+    }
+
+    // Cache edge snapshot for undo/server operations
+    this._cacheEdgeSnapshot(x6Edge);
+
+    // Set edge z-order to the higher of source or target node z-orders
+    this._setEdgeZOrderFromConnectedNodes(x6Edge);
+
+    return x6Edge;
   }
 
   /**
