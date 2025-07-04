@@ -137,6 +137,15 @@ export class HistoryMiddleware implements ICommandMiddleware {
    * Does not check final state - that's done after command execution
    */
   private _shouldRecordCommandBasic(command: AnyDiagramCommand): boolean {
+    // Skip recording if undo/redo operation is in progress
+    if (this._historyService.isUndoRedoInProgress()) {
+      this._logger.debug('Skipping history recording during undo/redo operation', {
+        commandType: command.type,
+        commandId: command.commandId,
+      });
+      return false;
+    }
+
     // Only record commands that are initiated by local user interactions
     if (!command.isLocalUserInitiated) {
       this._logger.debug('Command not local user initiated', {
@@ -162,6 +171,15 @@ export class HistoryMiddleware implements ICommandMiddleware {
    * @deprecated Use _shouldRecordCommandBasic instead
    */
   private _shouldRecordCommand(command: AnyDiagramCommand): boolean {
+    // Skip recording if undo/redo operation is in progress
+    if (this._historyService.isUndoRedoInProgress()) {
+      this._logger.debug('Skipping history recording during undo/redo operation', {
+        commandType: command.type,
+        commandId: command.commandId,
+      });
+      return false;
+    }
+
     // Only record commands that are initiated by local user interactions
     if (!command.isLocalUserInitiated) {
       this._logger.debug('Command not local user initiated', {

@@ -22,6 +22,7 @@ import { NodeData } from '../domain/value-objects/node-data';
 import { EdgeData } from '../domain/value-objects/edge-data';
 import { Point } from '../domain/value-objects/point';
 import { LoggerService } from '../../../core/services/logger.service';
+import { DragStateManagerService } from '../infrastructure/services/drag-state-manager.service';
 
 // Type definitions for X6 mocks
 interface MockNodeConfig {
@@ -74,6 +75,22 @@ interface MockNode {
   setLabel: (label: string) => void;
   getPorts: () => MockPort[];
   setPortProp: (portId: string, path: string, value: unknown) => void;
+  // X6 native methods that the adapter expects
+  position: () => MockPosition;
+  size: () => MockSize;
+  getZIndex: () => number;
+  isVisible: () => boolean;
+  // X6 cell extension methods
+  getMetadata: () => Array<{ key: string; value: string }>;
+  setMetadata: (metadata: Array<{ key: string; value: string }>) => void;
+  getMetadataValue: (key: string) => string | undefined;
+  setMetadataValue: (key: string, value: string) => void;
+  removeMetadataKey: (key: string) => void;
+  getMetadataAsObject: () => Record<string, string>;
+  getUnifiedLabel: () => string;
+  setUnifiedLabel: (label: string) => void;
+  getLabel: () => string;
+  prop: (key: string, value?: unknown) => unknown;
 }
 
 interface MockEdge {
@@ -86,6 +103,24 @@ interface MockEdge {
   getLabels: () => MockLabel[];
   setLabel: (label: string) => void;
   attr: (path?: string) => unknown;
+  // X6 native methods that the adapter expects
+  getSource: () => { cell: string; port?: string };
+  getTarget: () => { cell: string; port?: string };
+  getAttrs: () => Record<string, unknown>;
+  getVertices: () => Array<{ x: number; y: number }>;
+  getZIndex: () => number;
+  isVisible: () => boolean;
+  // X6 cell extension methods
+  getMetadata: () => Array<{ key: string; value: string }>;
+  setMetadata: (metadata: Array<{ key: string; value: string }>) => void;
+  getMetadataValue: (key: string) => string | undefined;
+  setMetadataValue: (key: string, value: string) => void;
+  removeMetadataKey: (key: string) => void;
+  getMetadataAsObject: () => Record<string, string>;
+  getUnifiedLabel: () => string;
+  setUnifiedLabel: (label: string) => void;
+  getLabel: () => string;
+  prop: (key: string, value?: unknown) => unknown;
 }
 
 interface MockEventHandler {
@@ -123,12 +158,15 @@ vi.mock('@antv/x6', () => {
 
   const createMockNode = (config: MockNodeConfig, mockGraph?: MockGraph): MockNode => {
     let currentPosition: MockPosition = { x: config.x || 0, y: config.y || 0 };
+    const currentSize = { width: config.width || 120, height: config.height || 60 };
+    let metadata: Array<{ key: string; value: string }> = [];
+    const properties: Record<string, unknown> = {};
 
     return {
       id: config.id,
       isNode: vi.fn(() => true),
       getPosition: vi.fn(() => currentPosition),
-      getSize: vi.fn(() => ({ width: config.width || 120, height: config.height || 60 })),
+      getSize: vi.fn(() => currentSize),
       getAttrs: vi.fn(() => ({ text: { text: config.label || '' } })),
       setPosition: vi.fn((x: number, y: number) => {
         const previous = { ...currentPosition };
@@ -156,36 +194,65 @@ vi.mock('@antv/x6', () => {
         { id: 'left', group: 'left' },
       ]),
       setPortProp: vi.fn(),
+      // X6 native methods that the adapter expects
+      position: vi.fn(() => currentPosition),
+      size: vi.fn(() => currentSize),
+      getZIndex: vi.fn(() => 10),
+      isVisible: vi.fn(() => true),
+      // X6 cell extension methods
+      getMetadata: vi.fn(() => metadata),
+      setMetadata: vi.fn((newMetadata: Array<{ key: string; value: string }>) => {
+        metadata = newMetadata;
+      }),
+      getMetadataValue: vi.fn((key: string) => metadata.find(item => item.key === key)?.value),
+      setMetadataValue: vi.fn((key: string, value: string) => {
+        const existingIndex = metadata.findIndex(item => item.key === key);
+        if (existingIndex >= 0) {
+          metadata[existingIndex] = { key, value };
+        } else {
+          metadata.push({ key, value });
+        }
+      }),
+      removeMetadataKey: vi.fn((key: string) => {
+        metadata = metadata.filter(item => item.key !== key);
+      }),
+      getMetadataAsObject: vi.fn(() => {
+        return metadata.reduce(
+          (obj, item) => {
+            obj[item.key] = item.value;
+            return obj;
+          },
+          {} as Record<string, string>,
+        );
+      }),
+      getUnifiedLabel: vi.fn(() => config.label || ''),
+      setUnifiedLabel: vi.fn(),
+      getLabel: vi.fn(() => config.label || ''),
+      prop: vi.fn((key: string, value?: unknown) => {
+        if (value !== undefined) {
+          properties[key] = value;
+        }
+        return properties[key];
+      }),
     };
   };
 
-  const createMockEdge = (config: MockEdgeConfig): MockEdge => ({
-    id: config.id,
-    isEdge: vi.fn(() => true),
-    getSourceCellId: vi.fn(() => config.source),
-    getTargetCellId: vi.fn(() => config.target),
-    getSourcePortId: vi.fn(() => undefined), // Mock edges don't use specific ports
-    getTargetPortId: vi.fn(() => undefined), // Mock edges don't use specific ports
-    getLabels: vi.fn(() => (config.label ? [{ attrs: { text: { text: config.label } } }] : [])),
-    setLabel: vi.fn(),
-    attr: vi.fn((path?: string) => {
-      if (path === 'line') {
-        return {
-          stroke: '#000000',
-          strokeWidth: 2,
-          targetMarker: {
-            name: 'block',
-            width: 12,
-            height: 8,
-            fill: '#000000',
-            stroke: '#000000',
-          },
-        };
-      }
-      if (!path) {
-        // Return all attributes when no path is specified
-        return {
-          line: {
+  const createMockEdge = (config: MockEdgeConfig): MockEdge => {
+    let metadata: Array<{ key: string; value: string }> = [];
+    const properties: Record<string, unknown> = {};
+
+    return {
+      id: config.id,
+      isEdge: vi.fn(() => true),
+      getSourceCellId: vi.fn(() => config.source),
+      getTargetCellId: vi.fn(() => config.target),
+      getSourcePortId: vi.fn(() => undefined), // Mock edges don't use specific ports
+      getTargetPortId: vi.fn(() => undefined), // Mock edges don't use specific ports
+      getLabels: vi.fn(() => (config.label ? [{ attrs: { text: { text: config.label } } }] : [])),
+      setLabel: vi.fn(),
+      attr: vi.fn((path?: string) => {
+        if (path === 'line') {
+          return {
             stroke: '#000000',
             strokeWidth: 2,
             targetMarker: {
@@ -195,12 +262,70 @@ vi.mock('@antv/x6', () => {
               fill: '#000000',
               stroke: '#000000',
             },
+          };
+        }
+        if (!path) {
+          // Return all attributes when no path is specified
+          return {
+            line: {
+              stroke: '#000000',
+              strokeWidth: 2,
+              targetMarker: {
+                name: 'block',
+                width: 12,
+                height: 8,
+                fill: '#000000',
+                stroke: '#000000',
+              },
+            },
+          };
+        }
+        return undefined;
+      }),
+      // X6 native methods that the adapter expects
+      getSource: vi.fn(() => ({ cell: config.source })),
+      getTarget: vi.fn(() => ({ cell: config.target })),
+      getAttrs: vi.fn(() => ({})),
+      getVertices: vi.fn(() => []),
+      getZIndex: vi.fn(() => 1),
+      isVisible: vi.fn(() => true),
+      // X6 cell extension methods
+      getMetadata: vi.fn(() => metadata),
+      setMetadata: vi.fn((newMetadata: Array<{ key: string; value: string }>) => {
+        metadata = newMetadata;
+      }),
+      getMetadataValue: vi.fn((key: string) => metadata.find(item => item.key === key)?.value),
+      setMetadataValue: vi.fn((key: string, value: string) => {
+        const existingIndex = metadata.findIndex(item => item.key === key);
+        if (existingIndex >= 0) {
+          metadata[existingIndex] = { key, value };
+        } else {
+          metadata.push({ key, value });
+        }
+      }),
+      removeMetadataKey: vi.fn((key: string) => {
+        metadata = metadata.filter(item => item.key !== key);
+      }),
+      getMetadataAsObject: vi.fn(() => {
+        return metadata.reduce(
+          (obj, item) => {
+            obj[item.key] = item.value;
+            return obj;
           },
-        };
-      }
-      return undefined;
-    }),
-  });
+          {} as Record<string, string>,
+        );
+      }),
+      getUnifiedLabel: vi.fn(() => config.label || ''),
+      setUnifiedLabel: vi.fn(),
+      getLabel: vi.fn(() => config.label || ''),
+      prop: vi.fn((key: string, value?: unknown) => {
+        if (value !== undefined) {
+          properties[key] = value;
+        }
+        return properties[key];
+      }),
+    };
+  };
 
   return {
     Graph: vi.fn().mockImplementation(() => {
@@ -326,6 +451,7 @@ describe('X6 Integration Tests', () => {
   let adapter: X6GraphAdapter;
   let container: HTMLElement;
   let mockLogger: LoggerService;
+  let mockDragStateManager: DragStateManagerService;
 
   beforeEach(() => {
     // Create mock container
@@ -345,8 +471,25 @@ describe('X6 Integration Tests', () => {
       shouldLogComponent: vi.fn(() => true),
     } as unknown as LoggerService;
 
+    // Create mock drag state manager
+    mockDragStateManager = {
+      startDrag: vi.fn(() => 'mock-drag-id'),
+      updateDragPosition: vi.fn(),
+      completeDrag: vi.fn(() => ({
+        dragId: 'mock-drag-id',
+        nodeId: 'test-node',
+        initialPosition: { x: 0, y: 0 },
+        currentPosition: { x: 100, y: 100 },
+        dragStartTime: Date.now() - 1000,
+      })),
+      cancelDrag: vi.fn(),
+      isDragging: vi.fn(() => false),
+      getDragState: vi.fn(() => null),
+      shouldSuppressHistory: vi.fn(() => false),
+    } as unknown as DragStateManagerService;
+
     // Create fresh adapter instance
-    adapter = new X6GraphAdapter(mockLogger);
+    adapter = new X6GraphAdapter(mockLogger, mockDragStateManager);
     adapter.initialize(container);
   });
 

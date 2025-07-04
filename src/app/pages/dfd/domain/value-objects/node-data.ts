@@ -210,6 +210,21 @@ export class NodeData {
   }
 
   /**
+   * Creates a new NodeData with updated dimensions (width and height)
+   */
+  withDimensions(width: number, height: number): NodeData {
+    return new NodeData(
+      this.id,
+      this.type,
+      this.label,
+      this.position,
+      width,
+      height,
+      this.metadata,
+    );
+  }
+
+  /**
    * Creates a new NodeData with updated metadata
    */
   withMetadata(metadata: Record<string, string>): NodeData {

@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { HistoryService } from './history.service';
 import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
-import { NodeData } from '../../domain/value-objects/node-data';
 import { Point } from '../../domain/value-objects/point';
+import { X6NodeSnapshot } from '../../types/x6-cell.types';
 
 describe('HistoryService', () => {
   let service: HistoryService;
@@ -13,6 +13,31 @@ describe('HistoryService', () => {
     warn: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
   };
+
+  // Helper function to create X6NodeSnapshot
+  const createNodeSnapshot = (
+    id: string,
+    shape: string,
+    label: string,
+    position: Point,
+    width: number = 140,
+    height: number = 80,
+  ): X6NodeSnapshot => ({
+    id,
+    shape,
+    position: { x: position.x, y: position.y },
+    size: { width, height },
+    attrs: {
+      text: {
+        text: label,
+      },
+    },
+    ports: {},
+    zIndex: 1,
+    visible: true,
+    type: shape,
+    metadata: [],
+  });
 
   beforeEach(() => {
     mockLogger = {
@@ -56,14 +81,13 @@ describe('HistoryService', () => {
   });
 
   it('should record commands in history', () => {
-    const nodeData = new NodeData(
+    const nodeSnapshot = createNodeSnapshot(
       'test-node',
       'actor',
       'Test Actor',
       new Point(100, 100),
       120,
       80,
-      {},
     );
 
     const command = DiagramCommandFactory.addNode(
@@ -71,7 +95,7 @@ describe('HistoryService', () => {
       'test-user',
       'test-node',
       new Point(100, 100),
-      nodeData,
+      nodeSnapshot,
     );
 
     const inverseCommand = DiagramCommandFactory.removeNode(
@@ -91,14 +115,13 @@ describe('HistoryService', () => {
 
   it('should update canUndo$ when commands are recorded', () => {
     return new Promise<void>(resolve => {
-      const nodeData = new NodeData(
+      const nodeSnapshot = createNodeSnapshot(
         'test-node',
         'actor',
         'Test Actor',
         new Point(100, 100),
         120,
         80,
-        {},
       );
 
       const command = DiagramCommandFactory.addNode(
@@ -106,7 +129,7 @@ describe('HistoryService', () => {
         'test-user',
         'test-node',
         new Point(100, 100),
-        nodeData,
+        nodeSnapshot,
       );
 
       const inverseCommand = DiagramCommandFactory.removeNode(
@@ -131,14 +154,13 @@ describe('HistoryService', () => {
   });
 
   it('should clear history', () => {
-    const nodeData = new NodeData(
+    const nodeSnapshot = createNodeSnapshot(
       'test-node',
       'actor',
       'Test Actor',
       new Point(100, 100),
       120,
       80,
-      {},
     );
 
     const command = DiagramCommandFactory.addNode(
@@ -146,7 +168,7 @@ describe('HistoryService', () => {
       'test-user',
       'test-node',
       new Point(100, 100),
-      nodeData,
+      nodeSnapshot,
     );
 
     const inverseCommand = DiagramCommandFactory.removeNode(
@@ -163,14 +185,13 @@ describe('HistoryService', () => {
   });
 
   it('should clear redo stack when new command is recorded', () => {
-    const nodeData = new NodeData(
+    const nodeSnapshot = createNodeSnapshot(
       'test-node',
       'actor',
       'Test Actor',
       new Point(100, 100),
       120,
       80,
-      {},
     );
 
     const command = DiagramCommandFactory.addNode(
@@ -178,7 +199,7 @@ describe('HistoryService', () => {
       'test-user',
       'test-node',
       new Point(100, 100),
-      nodeData,
+      nodeSnapshot,
     );
 
     const inverseCommand = DiagramCommandFactory.removeNode(
@@ -207,5 +228,147 @@ describe('HistoryService', () => {
   it('should enable local-only mode', () => {
     service.enableLocalOnlyMode();
     expect(mockLogger.info).toHaveBeenCalledWith('Local-only mode enabled');
+  });
+
+  it('should track undo/redo in progress state', () => {
+    expect(service.isUndoRedoInProgress()).toBe(false);
+  });
+
+  it('should set undo/redo in progress during undo operation', async () => {
+    const nodeSnapshot = createNodeSnapshot(
+      'test-node',
+      'actor',
+      'Test Actor',
+      new Point(100, 100),
+      120,
+      80,
+    );
+
+    const command = DiagramCommandFactory.addNode(
+      'test-diagram',
+      'test-user',
+      'test-node',
+      new Point(100, 100),
+      nodeSnapshot,
+    );
+
+    const inverseCommand = DiagramCommandFactory.removeNode(
+      'test-diagram',
+      'test-user',
+      'test-node',
+    );
+
+    service.recordCommand(command, inverseCommand, 'test-operation');
+
+    // Mock command bus to track when isUndoRedoInProgress is checked
+    let undoRedoStateChecked = false;
+    const mockCommandBus = {
+      execute: vi.fn().mockImplementation(() => {
+        undoRedoStateChecked = service.isUndoRedoInProgress();
+        return {
+          toPromise: () => Promise.resolve(),
+        };
+      }),
+    };
+
+    // Replace the command bus
+    (service as any)._commandBus = mockCommandBus;
+
+    await service.undo();
+
+    expect(undoRedoStateChecked).toBe(true);
+    expect(service.isUndoRedoInProgress()).toBe(false); // Should be reset after operation
+  });
+
+  it('should set undo/redo in progress during redo operation', async () => {
+    const nodeSnapshot = createNodeSnapshot(
+      'test-node',
+      'actor',
+      'Test Actor',
+      new Point(100, 100),
+      120,
+      80,
+    );
+
+    const command = DiagramCommandFactory.addNode(
+      'test-diagram',
+      'test-user',
+      'test-node',
+      new Point(100, 100),
+      nodeSnapshot,
+    );
+
+    const inverseCommand = DiagramCommandFactory.removeNode(
+      'test-diagram',
+      'test-user',
+      'test-node',
+    );
+
+    service.recordCommand(command, inverseCommand, 'test-operation');
+
+    // Mock command bus
+    const mockCommandBus = {
+      execute: vi.fn().mockReturnValue({
+        toPromise: () => Promise.resolve(),
+      }),
+    };
+    (service as any)._commandBus = mockCommandBus;
+
+    // First undo to populate redo stack
+    await service.undo();
+
+    // Now test redo
+    let undoRedoStateChecked = false;
+    mockCommandBus.execute = vi.fn().mockImplementation(() => {
+      undoRedoStateChecked = service.isUndoRedoInProgress();
+      return {
+        toPromise: () => Promise.resolve(),
+      };
+    });
+
+    await service.redo();
+
+    expect(undoRedoStateChecked).toBe(true);
+    expect(service.isUndoRedoInProgress()).toBe(false); // Should be reset after operation
+  });
+
+  it('should reset undo/redo flag even if operation fails', async () => {
+    const nodeSnapshot = createNodeSnapshot(
+      'test-node',
+      'actor',
+      'Test Actor',
+      new Point(100, 100),
+      120,
+      80,
+    );
+
+    const command = DiagramCommandFactory.addNode(
+      'test-diagram',
+      'test-user',
+      'test-node',
+      new Point(100, 100),
+      nodeSnapshot,
+    );
+
+    const inverseCommand = DiagramCommandFactory.removeNode(
+      'test-diagram',
+      'test-user',
+      'test-node',
+    );
+
+    service.recordCommand(command, inverseCommand, 'test-operation');
+
+    // Mock command bus to throw error
+    const mockCommandBus = {
+      execute: vi.fn().mockReturnValue({
+        toPromise: () => Promise.reject(new Error('Command execution failed')),
+      }),
+    };
+    (service as any)._commandBus = mockCommandBus;
+
+    const result = await service.undo();
+
+    expect(result).toBe(false);
+    expect(service.isUndoRedoInProgress()).toBe(false); // Should be reset even after error
   });
 });

@@ -1185,6 +1185,70 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Cancel pending debounced timers for a specific node (used during undo/redo to prevent unwanted history entries)
+   */
+  cancelPendingNodeTimers(nodeId: string): void {
+    // Cancel node movement timer
+    const movementTimer = this._nodeMovementTimers.get(nodeId);
+    if (movementTimer) {
+      clearTimeout(movementTimer);
+      this._nodeMovementTimers.delete(nodeId);
+      this.logger.debug('Canceled pending node movement timer during undo/redo', { nodeId });
+    }
+
+    // Cancel node resize timer
+    const resizeTimer = this._nodeResizeTimers.get(nodeId);
+    if (resizeTimer) {
+      clearTimeout(resizeTimer);
+      this._nodeResizeTimers.delete(nodeId);
+      this.logger.debug('Canceled pending node resize timer during undo/redo', { nodeId });
+    }
+
+    // Cancel node data change timer
+    const dataChangeTimer = this._nodeDataChangeTimers.get(nodeId);
+    if (dataChangeTimer) {
+      clearTimeout(dataChangeTimer);
+      this._nodeDataChangeTimers.delete(nodeId);
+      this.logger.debug('Canceled pending node data change timer during undo/redo', { nodeId });
+    }
+  }
+
+  /**
+   * Cancel all pending debounced timers (used during undo/redo to prevent unwanted history entries)
+   */
+  cancelAllPendingTimers(): void {
+    // Cancel all node movement timers
+    this._nodeMovementTimers.forEach((timer, nodeId) => {
+      clearTimeout(timer);
+      this.logger.debug('Canceled pending node movement timer during undo/redo', { nodeId });
+    });
+    this._nodeMovementTimers.clear();
+
+    // Cancel all node resize timers
+    this._nodeResizeTimers.forEach((timer, nodeId) => {
+      clearTimeout(timer);
+      this.logger.debug('Canceled pending node resize timer during undo/redo', { nodeId });
+    });
+    this._nodeResizeTimers.clear();
+
+    // Cancel all node data change timers
+    this._nodeDataChangeTimers.forEach((timer, nodeId) => {
+      clearTimeout(timer);
+      this.logger.debug('Canceled pending node data change timer during undo/redo', { nodeId });
+    });
+    this._nodeDataChangeTimers.clear();
+
+    // Cancel all edge vertex timers
+    this._edgeVertexTimers.forEach((timer, edgeId) => {
+      clearTimeout(timer);
+      this.logger.debug('Canceled pending edge vertex timer during undo/redo', { edgeId });
+    });
+    this._edgeVertexTimers.clear();
+
+    this.logger.info('Canceled all pending debounced timers during undo/redo operation');
+  }
+
+  /**
    * Cache a node snapshot for undo/server operations
    */
   private _cacheNodeSnapshot(node: Node): void {

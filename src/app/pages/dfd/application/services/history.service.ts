@@ -1,9 +1,10 @@
-import { Injectable, OnDestroy, Inject, forwardRef } from '@angular/core';
+import { Injectable, OnDestroy, Inject, forwardRef, Optional } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AnyDiagramCommand } from '../../domain/commands/diagram-commands';
 import { IHistoryService, HistoryEntry, HistoryConfig } from '../../domain/history/history.types';
 import { ICommandBus } from '../interfaces/command-bus.interface';
+import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 
 /**
  * Default configuration for history service
@@ -37,9 +38,13 @@ export class HistoryService implements IHistoryService, OnDestroy {
   // Collaboration mode
   private _collaborativeMode = false;
 
+  // Undo/Redo operation tracking
+  private _isUndoRedoInProgress = false;
+
   constructor(
     private readonly _logger: LoggerService,
     @Inject(forwardRef(() => 'ICommandBus')) private readonly _commandBus?: ICommandBus,
+    @Optional() private readonly _x6GraphAdapter?: X6GraphAdapter,
   ) {
     this._config = { ...DEFAULT_CONFIG };
     this._logger.info('History service initialized', { config: this._config });
@@ -67,6 +72,13 @@ export class HistoryService implements IHistoryService, OnDestroy {
   }
 
   /**
+   * Checks if an undo or redo operation is currently in progress
+   */
+  isUndoRedoInProgress(): boolean {
+    return this._isUndoRedoInProgress;
+  }
+
+  /**
    * Performs an undo operation
    */
   async undo(): Promise<boolean> {
@@ -85,6 +97,14 @@ export class HistoryService implements IHistoryService, OnDestroy {
         commandType: entry.command.type,
         commandId: entry.command.commandId,
       });
+
+      // Set flag to suppress history recording during undo
+      this._isUndoRedoInProgress = true;
+
+      // Cancel any pending debounced timers to prevent unwanted history entries
+      if (this._x6GraphAdapter) {
+        this._x6GraphAdapter.cancelAllPendingTimers();
+      }
 
       // Execute the inverse command
       await this._executeInverseCommand(entry.inverse);
@@ -112,6 +132,9 @@ export class HistoryService implements IHistoryService, OnDestroy {
       // Put the entry back on the undo stack
       this._undoStack.push(entry);
       return false;
+    } finally {
+      // Always clear the flag, even if an error occurred
+      this._isUndoRedoInProgress = false;
     }
   }
 
@@ -134,6 +157,14 @@ export class HistoryService implements IHistoryService, OnDestroy {
         commandType: entry.command.type,
         commandId: entry.command.commandId,
       });
+
+      // Set flag to suppress history recording during redo
+      this._isUndoRedoInProgress = true;
+
+      // Cancel any pending debounced timers to prevent unwanted history entries
+      if (this._x6GraphAdapter) {
+        this._x6GraphAdapter.cancelAllPendingTimers();
+      }
 
       // Execute the original command
       await this._executeOriginalCommand(entry.command);
@@ -161,6 +192,9 @@ export class HistoryService implements IHistoryService, OnDestroy {
       // Put the entry back on the redo stack
       this._redoStack.push(entry);
       return false;
+    } finally {
+      // Always clear the flag, even if an error occurred
+      this._isUndoRedoInProgress = false;
     }
   }
 
