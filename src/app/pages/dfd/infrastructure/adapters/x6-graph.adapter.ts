@@ -101,11 +101,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _initialNodePositions = new Map<string, Point>();
 
   // Debouncing for history service integration
-  private readonly _debouncedNodeMoved$ = new Subject<{
-    nodeId: string;
-    position: Point;
-    previous: Point;
-  }>();
   private readonly _dragCompleted$ = new Subject<{
     nodeId: string;
     initialPosition: Point;
@@ -129,7 +124,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     edgeId: string;
     vertices: Array<{ x: number; y: number }>;
   }>();
-  private _nodeMovementTimers = new Map<string, number>();
   private _nodeResizeTimers = new Map<string, number>();
   private _nodeDataChangeTimers = new Map<string, number>();
   private _edgeVertexTimers = new Map<string, number>();
@@ -191,13 +185,6 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   get nodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
     return this._nodeMoved$.asObservable();
-  }
-
-  /**
-   * Observable for debounced node movement events (for history service)
-   */
-  get debouncedNodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
-    return this._debouncedNodeMoved$.asObservable();
   }
 
   /**
@@ -1188,14 +1175,6 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Cancel pending debounced timers for a specific node (used during undo/redo to prevent unwanted history entries)
    */
   cancelPendingNodeTimers(nodeId: string): void {
-    // Cancel node movement timer
-    const movementTimer = this._nodeMovementTimers.get(nodeId);
-    if (movementTimer) {
-      clearTimeout(movementTimer);
-      this._nodeMovementTimers.delete(nodeId);
-      this.logger.debug('Canceled pending node movement timer during undo/redo', { nodeId });
-    }
-
     // Cancel node resize timer
     const resizeTimer = this._nodeResizeTimers.get(nodeId);
     if (resizeTimer) {
@@ -1217,13 +1196,6 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Cancel all pending debounced timers (used during undo/redo to prevent unwanted history entries)
    */
   cancelAllPendingTimers(): void {
-    // Cancel all node movement timers
-    this._nodeMovementTimers.forEach((timer, nodeId) => {
-      clearTimeout(timer);
-      this.logger.debug('Canceled pending node movement timer during undo/redo', { nodeId });
-    });
-    this._nodeMovementTimers.clear();
-
     // Cancel all node resize timers
     this._nodeResizeTimers.forEach((timer, nodeId) => {
       clearTimeout(timer);
@@ -1364,8 +1336,7 @@ export class X6GraphAdapter implements IGraphAdapter {
             previous: previousPos,
           });
 
-          // Handle debounced event for history service (will be suppressed during drag)
-          this._handleDebouncedNodeMovement(node.id, currentPos, previousPos);
+          // Note: Debounced node movement removed - drag completion provides superior tracking
         }
       },
     );
@@ -3351,57 +3322,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Handle debounced node movement for history service integration
-   */
-  private _handleDebouncedNodeMovement(nodeId: string, position: Point, previous: Point): void {
-    // Check if this node is currently being dragged - if so, suppress debounced events
-    if (this._dragStateManager.shouldSuppressHistory(nodeId)) {
-      this.logger.debug('Suppressing debounced movement during drag', {
-        nodeId,
-        isDragging: this._dragStateManager.isDragging(nodeId),
-      });
-      return;
-    }
-
-    // Clear existing timer for this node
-    const existingTimer = this._nodeMovementTimers.get(nodeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-    }
-
-    // Set new timer
-    const timer = setTimeout(() => {
-      // Double-check drag state before emitting (in case drag started during debounce delay)
-      if (this._dragStateManager.shouldSuppressHistory(nodeId)) {
-        this.logger.debug('Suppressing debounced movement - drag started during delay', {
-          nodeId,
-        });
-        this._nodeMovementTimers.delete(nodeId);
-        return;
-      }
-
-      this.logger.debugComponent('DFD', '[Debounced] Node movement finalized', {
-        nodeId,
-        position: { x: position.x, y: position.y },
-        previous: { x: previous.x, y: previous.y },
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedNodeMoved$.next({
-        nodeId,
-        position,
-        previous,
-      });
-
-      // Clean up timer
-      this._nodeMovementTimers.delete(nodeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._nodeMovementTimers.set(nodeId, timer);
-  }
-
-  /**
    * Handle debounced node resize for history service integration
    */
   private _handleDebouncedNodeResize(
@@ -3520,10 +3440,6 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Clean up all debouncing timers
    */
   private _cleanupDebouncingTimers(): void {
-    // Clear all node movement timers
-    this._nodeMovementTimers.forEach(timer => clearTimeout(timer));
-    this._nodeMovementTimers.clear();
-
     // Clear all node resize timers
     this._nodeResizeTimers.forEach(timer => clearTimeout(timer));
     this._nodeResizeTimers.clear();

@@ -105,7 +105,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
               // Clear redo stack since we're executing a new command
               this._historyService.clearRedoStack();
 
-              this._logger.info('Command successfully recorded in history', {
+              this._logger.debug('Command successfully recorded in history', {
                 commandType: command.type,
                 inverseType: inverse.type,
                 operationId,

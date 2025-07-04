@@ -1,3 +1,9 @@
+// This project uses vitest for all unit tests, with native vitest syntax
+// Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
+// Execute all tests using: "pnpm run test"
+// Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
+// Do not disable or skip failing tests, ask the user what to do
+
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { MockFactories } from './test-utils/mock-factories';

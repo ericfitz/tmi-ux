@@ -1,11 +1,8 @@
-/*
- * unit test for auth integration with tmi server
- *
- * additional context:
- *     run this test only: pnpm run test "src/app/auth/auth-integration.spec.ts"
- *     unit tests only use vitest syntax; no jasmine or jest
- *     do not disable or skip failing tests, ask the user what to do
- */
+// This project uses vitest for all unit tests, with native vitest syntax
+// Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
+// Execute all tests using: "pnpm run test"
+// Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
+// Do not disable or skip failing tests, ask the user what to do
 
 import '@angular/compiler';
 

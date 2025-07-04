@@ -9,6 +9,7 @@ import { OperationType } from '../../domain/history/history.types';
 import { Point } from '../../domain/value-objects/point';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { NodeData, NodeType } from '../../domain/value-objects/node-data';
+import { HistoryService } from './history.service';
 
 /**
  * Service that integrates debounced X6 graph events with the history system.
@@ -26,6 +27,7 @@ export class HistoryIntegrationService implements OnDestroy {
     private readonly _x6GraphAdapter: X6GraphAdapter,
     @Inject('ICommandBus') private readonly _commandBus: ICommandBus,
     private readonly _operationTracker: OperationStateTracker,
+    private readonly _historyService: HistoryService,
   ) {}
 
   /**
@@ -46,13 +48,6 @@ export class HistoryIntegrationService implements OnDestroy {
       this._commandBus,
       this._operationTracker,
     );
-
-    // Subscribe to debounced node movement events
-    this._x6GraphAdapter.debouncedNodeMoved$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDebouncedNodeMovement(event, diagramId, userId),
-      error: (error: unknown) =>
-        this._logger.error('Error in debounced node movement subscription', { error }),
-    });
 
     // Subscribe to drag completion events for clean history recording
     this._x6GraphAdapter.dragCompleted$.pipe(takeUntil(this._destroy$)).subscribe({
@@ -82,19 +77,7 @@ export class HistoryIntegrationService implements OnDestroy {
         this._logger.error('Error in debounced node data change subscription', { error }),
     });
 
-    // Subscribe to debounced node resize events
-    this._x6GraphAdapter.debouncedNodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDebouncedNodeResize(event, diagramId, userId),
-      error: (error: unknown) =>
-        this._logger.error('Error in debounced node resize subscription', { error }),
-    });
-
-    // Subscribe to debounced node data change events (for label edits, etc.)
-    this._x6GraphAdapter.debouncedNodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDebouncedNodeDataChange(event, diagramId, userId),
-      error: (error: unknown) =>
-        this._logger.error('Error in debounced node data change subscription', { error }),
-    });
+    // Note: Duplicate subscriptions removed - already subscribed above
 
     this._isInitialized = true;
     this._logger.info('History integration service initialized successfully');
@@ -110,105 +93,7 @@ export class HistoryIntegrationService implements OnDestroy {
     this._isInitialized = false;
   }
 
-  /**
-   * Handles debounced node movement events by dispatching UpdateNodePositionCommand
-   */
-  private _handleDebouncedNodeMovement(
-    event: {
-      nodeId: string;
-      position: { x: number; y: number };
-      previous: { x: number; y: number };
-    },
-    diagramId: string,
-    userId: string,
-  ): void {
-    try {
-      this._logger.info('Processing debounced node movement for history', {
-        nodeId: event.nodeId,
-        newPosition: event.position,
-        oldPosition: event.previous,
-      });
-
-      // FIX: Get the initial position from the X6 adapter instead of using intermediate position
-      const initialPosition = this._x6GraphAdapter.getInitialNodePosition(event.nodeId);
-      const actualPreviousPosition =
-        initialPosition || new Point(event.previous.x, event.previous.y);
-
-      this._logger.info('FIXED: Using initial position for move operation', {
-        nodeId: event.nodeId,
-        currentPosition: event.position,
-        x6PreviousPosition: event.previous,
-        initialPosition: initialPosition ? { x: initialPosition.x, y: initialPosition.y } : null,
-        actualPreviousPosition: { x: actualPreviousPosition.x, y: actualPreviousPosition.y },
-        positionDelta: {
-          x: event.position.x - actualPreviousPosition.x,
-          y: event.position.y - actualPreviousPosition.y,
-        },
-      });
-
-      // Start operation tracking
-      const operationId = this._generateOperationId('node_move', event.nodeId);
-      this._logger.info('Starting operation tracking for move', {
-        operationId,
-        nodeId: event.nodeId,
-        operationType: OperationType.UPDATE_POSITION,
-      });
-      this._operationTracker.startOperation(operationId, OperationType.UPDATE_POSITION, {
-        entityId: event.nodeId,
-        entityType: 'node',
-        startPosition: { x: actualPreviousPosition.x, y: actualPreviousPosition.y },
-        currentPosition: event.position,
-      });
-
-      // Create and dispatch the update position command with the correct initial position
-      const command = DiagramCommandFactory.updateNodePosition(
-        diagramId,
-        userId,
-        event.nodeId,
-        new Point(event.position.x, event.position.y),
-        actualPreviousPosition,
-        true, // isLocalUserInitiated = true for history recording
-      );
-
-      // Attach the operation ID to the command so the history middleware can find it
-      const commandWithOperationId = command as unknown as Record<string, unknown>;
-      commandWithOperationId['operationId'] = operationId;
-
-      this._logger.info('Move command created with correct initial position', {
-        operationId,
-        commandId: command.commandId,
-        commandType: command.type,
-        nodeId: event.nodeId,
-        newPosition: event.position,
-        previousPosition: { x: actualPreviousPosition.x, y: actualPreviousPosition.y },
-      });
-
-      // Dispatch the command through the command bus
-      this._commandBus.execute(command).subscribe({
-        next: () => {
-          this._logger.info('Node position update command executed successfully', {
-            nodeId: event.nodeId,
-            operationId,
-          });
-          // Complete the operation AFTER successful execution
-          this._operationTracker.completeOperation(operationId);
-        },
-        error: (error: unknown) => {
-          this._logger.error('Failed to execute node position update command', {
-            nodeId: event.nodeId,
-            operationId,
-            error,
-          });
-          this._operationTracker.cancelOperation(operationId);
-        },
-      });
-    } catch (error) {
-      this._logger.error('Failed to handle debounced node movement', {
-        nodeId: event.nodeId,
-        error,
-      });
-    }
-  }
+  // Note: _handleDebouncedNodeMovement removed - drag completion provides superior tracking
 
   /**
    * Handles debounced node resize events by dispatching UpdateNodeDataCommand
@@ -225,6 +110,16 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      if (this._historyService.isUndoRedoInProgress()) {
+        this._logger.info('Skipping debounced node resize during undo/redo operation', {
+          nodeId: event.nodeId,
+          newSize: { width: event.width, height: event.height },
+          oldSize: { width: event.oldWidth, height: event.oldHeight },
+        });
+        return;
+      }
+
       this._logger.info('Processing debounced node resize for history', {
         nodeId: event.nodeId,
         newSize: { width: event.width, height: event.height },
@@ -301,6 +196,16 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      if (this._historyService.isUndoRedoInProgress()) {
+        this._logger.info('Skipping debounced node data change during undo/redo operation', {
+          nodeId: event.nodeId,
+          newData: event.newData,
+          oldData: event.oldData,
+        });
+        return;
+      }
+
       this._logger.info('Processing debounced node data change for history', {
         nodeId: event.nodeId,
         newData: event.newData,
@@ -378,6 +283,15 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      if (this._historyService.isUndoRedoInProgress()) {
+        this._logger.info('Skipping debounced edge vertex change during undo/redo operation', {
+          edgeId: event.edgeId,
+          vertexCount: event.vertices.length,
+        });
+        return;
+      }
+
       this._logger.info('Processing debounced edge vertex change for history', {
         edgeId: event.edgeId,
         vertexCount: event.vertices.length,
