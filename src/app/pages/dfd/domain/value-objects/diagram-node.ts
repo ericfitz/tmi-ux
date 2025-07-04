@@ -46,7 +46,7 @@ export class DiagramNode {
    * Gets the node position
    */
   get position(): Point {
-    return this._data.position;
+    return new Point(this._data.position.x, this._data.position.y);
   }
 
   /**
@@ -67,7 +67,7 @@ export class DiagramNode {
    * Gets the node metadata
    */
   get metadata(): Record<string, string> {
-    return this._data.metadata;
+    return this._data.getMetadataAsRecord();
   }
 
   /**

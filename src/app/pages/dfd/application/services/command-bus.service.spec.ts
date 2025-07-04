@@ -55,7 +55,14 @@ describe('CommandBusService', () => {
         'user-1',
         'node-1',
         new Point(100, 200),
-        new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+        NodeData.create({
+          id: 'node-1',
+          type: 'process',
+          label: 'Test',
+          position: { x: 100, y: 200 },
+          width: 140,
+          height: 80,
+        }),
       );
 
       // Act
@@ -85,7 +92,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -129,7 +143,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -185,7 +206,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -221,7 +249,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -256,7 +291,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -290,7 +332,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -320,7 +369,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -350,7 +406,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -388,7 +451,14 @@ describe('CommandBusService', () => {
           'user-1',
           'node-1',
           new Point(100, 200),
-          new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+          NodeData.create({
+            id: 'node-1',
+            type: 'process',
+            label: 'Test',
+            position: { x: 100, y: 200 },
+            width: 140,
+            height: 80,
+          }),
         );
 
         // Act
@@ -427,7 +497,14 @@ describe('CommandValidationMiddleware', () => {
         'user-1',
         'node-1',
         new Point(100, 200),
-        new NodeData('node-1', 'process', 'Test', new Point(100, 200), 140, 80),
+        NodeData.create({
+          id: 'node-1',
+          type: 'process',
+          label: 'Test',
+          position: { x: 100, y: 200 },
+          width: 140,
+          height: 80,
+        }),
       );
 
       const next = vi.fn(() => of({ success: true }));

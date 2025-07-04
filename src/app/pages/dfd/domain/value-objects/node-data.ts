@@ -1,4 +1,5 @@
 import { Point } from './point';
+import { Node } from '@antv/x6';
 
 /**
  * Node types supported in the DFD diagram
@@ -6,25 +7,109 @@ import { Point } from './point';
 export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'textbox';
 
 /**
- * Node data value object containing all properties of a diagram node
+ * Metadata entry structure aligned with X6NodeSnapshot
+ */
+export interface MetadataEntry {
+  key: string;
+  value: string;
+}
+
+/**
+ * Node data value object aligned with X6NodeSnapshot structure
+ * This represents the domain model for diagram nodes with X6-compatible structure
  */
 export class NodeData {
   constructor(
     public readonly id: string,
-    public readonly type: NodeType,
-    public readonly label: string,
-    public readonly position: Point,
-    public readonly width: number,
-    public readonly height: number,
-    public readonly metadata: Record<string, string> = {},
+    public readonly shape: string, // X6 shape identifier
+    public readonly type: NodeType, // Domain type for business logic
+    public readonly position: { x: number; y: number },
+    public readonly size: { width: number; height: number },
+    public readonly attrs: Node.Properties['attrs'] = { text: { text: '' } },
+    public readonly ports: Node.Properties['ports'] = {},
+    public readonly zIndex: number = 1,
+    public readonly visible: boolean = true,
+    public readonly metadata: MetadataEntry[] = [],
   ) {
     this.validate();
   }
 
   /**
-   * Creates NodeData from a plain object
+   * Gets the label from attrs.text.text for backward compatibility
+   */
+  get label(): string {
+    const textAttr = this.attrs?.['text'];
+    if (textAttr && typeof textAttr === 'object' && 'text' in textAttr) {
+      const text = (textAttr as { text?: unknown }).text;
+      return typeof text === 'string' ? text : '';
+    }
+    return '';
+  }
+
+  /**
+   * Gets width from size for backward compatibility
+   */
+  get width(): number {
+    return this.size.width;
+  }
+
+  /**
+   * Gets height from size for backward compatibility
+   */
+  get height(): number {
+    return this.size.height;
+  }
+
+  /**
+   * Creates NodeData from a plain object (supports both new and legacy formats)
    */
   static fromJSON(data: {
+    id: string;
+    shape?: string;
+    type: NodeType;
+    position: { x: number; y: number };
+    size?: { width: number; height: number };
+    width?: number;
+    height?: number;
+    label?: string;
+    attrs?: Node.Properties['attrs'];
+    ports?: Node.Properties['ports'];
+    zIndex?: number;
+    visible?: boolean;
+    metadata?: MetadataEntry[] | Record<string, string>;
+  }): NodeData {
+    // Handle legacy format
+    const size = data.size || { width: data.width || 120, height: data.height || 60 };
+    const attrs = data.attrs || { text: { text: data.label || '' } };
+
+    // Convert metadata if it's in legacy Record format
+    let metadata: MetadataEntry[] = [];
+    if (data.metadata) {
+      if (Array.isArray(data.metadata)) {
+        metadata = data.metadata;
+      } else {
+        metadata = Object.entries(data.metadata).map(([key, value]) => ({ key, value }));
+      }
+    }
+
+    return new NodeData(
+      data.id,
+      data.shape || data.type, // Use shape if provided, fallback to type
+      data.type,
+      data.position,
+      size,
+      attrs,
+      data.ports || {},
+      data.zIndex || 1,
+      data.visible !== false, // Default to true
+      metadata,
+    );
+  }
+
+  /**
+   * Creates NodeData from legacy format for backward compatibility
+   */
+  static fromLegacyJSON(data: {
     id: string;
     type: NodeType;
     label: string;
@@ -33,14 +118,21 @@ export class NodeData {
     height: number;
     metadata?: Record<string, string>;
   }): NodeData {
+    const metadataEntries = data.metadata
+      ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
+      : [];
+
     return new NodeData(
       data.id,
+      data.type, // Use type as shape for legacy data
       data.type,
-      data.label,
-      Point.fromJSON(data.position),
-      data.width,
-      data.height,
-      data.metadata || {},
+      data.position,
+      { width: data.width, height: data.height },
+      { text: { text: data.label } },
+      {},
+      1,
+      true,
+      metadataEntries,
     );
   }
 
@@ -57,15 +149,7 @@ export class NodeData {
     height: number;
     metadata?: Record<string, string>;
   }): NodeData {
-    return new NodeData(
-      data.id,
-      data.type,
-      data.label,
-      Point.fromJSON(data.position),
-      data.width,
-      data.height,
-      data.metadata || {},
-    );
+    return NodeData.fromLegacyJSON(data);
   }
 
   /**
@@ -82,11 +166,15 @@ export class NodeData {
 
     return new NodeData(
       id,
+      type, // Use type as shape for default nodes
       type,
-      defaultLabel,
-      position,
-      defaultDimensions.width,
-      defaultDimensions.height,
+      { x: position.x, y: position.y },
+      { width: defaultDimensions.width, height: defaultDimensions.height },
+      { text: { text: defaultLabel } },
+      {},
+      1,
+      true,
+      [],
     );
   }
 
@@ -152,14 +240,18 @@ export class NodeData {
   /**
    * Creates a new NodeData with updated position
    */
-  withPosition(position: Point): NodeData {
+  withPosition(position: Point | { x: number; y: number }): NodeData {
+    const pos = position instanceof Point ? { x: position.x, y: position.y } : position;
     return new NodeData(
       this.id,
+      this.shape,
       this.type,
-      this.label,
-      position,
-      this.width,
-      this.height,
+      pos,
+      this.size,
+      this.attrs,
+      this.ports,
+      this.zIndex,
+      this.visible,
       this.metadata,
     );
   }
@@ -168,13 +260,24 @@ export class NodeData {
    * Creates a new NodeData with updated label
    */
   withLabel(label: string): NodeData {
+    const currentTextAttr = this.attrs?.['text'];
+    const newAttrs = {
+      ...this.attrs,
+      text: {
+        ...(currentTextAttr && typeof currentTextAttr === 'object' ? currentTextAttr : {}),
+        text: label,
+      },
+    };
     return new NodeData(
       this.id,
+      this.shape,
       this.type,
-      label,
       this.position,
-      this.width,
-      this.height,
+      this.size,
+      newAttrs,
+      this.ports,
+      this.zIndex,
+      this.visible,
       this.metadata,
     );
   }
@@ -185,11 +288,14 @@ export class NodeData {
   withWidth(width: number): NodeData {
     return new NodeData(
       this.id,
+      this.shape,
       this.type,
-      this.label,
       this.position,
-      width,
-      this.height,
+      { ...this.size, width },
+      this.attrs,
+      this.ports,
+      this.zIndex,
+      this.visible,
       this.metadata,
     );
   }
@@ -200,11 +306,14 @@ export class NodeData {
   withHeight(height: number): NodeData {
     return new NodeData(
       this.id,
+      this.shape,
       this.type,
-      this.label,
       this.position,
-      this.width,
-      height,
+      { ...this.size, height },
+      this.attrs,
+      this.ports,
+      this.zIndex,
+      this.visible,
       this.metadata,
     );
   }
@@ -215,30 +324,70 @@ export class NodeData {
   withDimensions(width: number, height: number): NodeData {
     return new NodeData(
       this.id,
+      this.shape,
       this.type,
-      this.label,
       this.position,
-      width,
-      height,
+      { width, height },
+      this.attrs,
+      this.ports,
+      this.zIndex,
+      this.visible,
       this.metadata,
     );
   }
 
   /**
-   * Creates a new NodeData with updated metadata
+   * Creates a new NodeData with updated metadata (accepts both formats)
    */
-  withMetadata(metadata: Record<string, string>): NodeData {
-    return new NodeData(this.id, this.type, this.label, this.position, this.width, this.height, {
-      ...this.metadata,
-      ...metadata,
-    });
+  withMetadata(metadata: Record<string, string> | MetadataEntry[]): NodeData {
+    let newMetadata: MetadataEntry[];
+
+    if (Array.isArray(metadata)) {
+      // Already in correct format
+      newMetadata = [...this.metadata, ...metadata];
+    } else {
+      // Convert from legacy Record format
+      const additionalEntries = Object.entries(metadata).map(([key, value]) => ({ key, value }));
+      newMetadata = [...this.metadata, ...additionalEntries];
+    }
+
+    return new NodeData(
+      this.id,
+      this.shape,
+      this.type,
+      this.position,
+      this.size,
+      this.attrs,
+      this.ports,
+      this.zIndex,
+      this.visible,
+      newMetadata,
+    );
+  }
+
+  /**
+   * Creates a new NodeData with updated attrs
+   */
+  withAttrs(attrs: Node.Properties['attrs']): NodeData {
+    return new NodeData(
+      this.id,
+      this.shape,
+      this.type,
+      this.position,
+      this.size,
+      { ...this.attrs, ...attrs },
+      this.ports,
+      this.zIndex,
+      this.visible,
+      this.metadata,
+    );
   }
 
   /**
    * Gets the center point of the node
    */
   getCenter(): Point {
-    return new Point(this.position.x + this.width / 2, this.position.y + this.height / 2);
+    return new Point(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
   }
 
   /**
@@ -246,9 +395,22 @@ export class NodeData {
    */
   getBounds(): { topLeft: Point; bottomRight: Point } {
     return {
-      topLeft: this.position,
-      bottomRight: new Point(this.position.x + this.width, this.position.y + this.height),
+      topLeft: new Point(this.position.x, this.position.y),
+      bottomRight: new Point(this.position.x + this.size.width, this.position.y + this.size.height),
     };
+  }
+
+  /**
+   * Gets metadata as Record for backward compatibility
+   */
+  getMetadataAsRecord(): Record<string, string> {
+    return this.metadata.reduce(
+      (acc, entry) => {
+        acc[entry.key] = entry.value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
   }
 
   /**
@@ -257,11 +419,15 @@ export class NodeData {
   equals(other: NodeData): boolean {
     return (
       this.id === other.id &&
+      this.shape === other.shape &&
       this.type === other.type &&
       this.label === other.label &&
-      this.position.equals(other.position) &&
-      this.width === other.width &&
-      this.height === other.height &&
+      this.position.x === other.position.x &&
+      this.position.y === other.position.y &&
+      this.size.width === other.size.width &&
+      this.size.height === other.size.height &&
+      this.zIndex === other.zIndex &&
+      this.visible === other.visible &&
       this.metadataEquals(other.metadata)
     );
   }
@@ -274,7 +440,36 @@ export class NodeData {
   }
 
   /**
-   * Converts the node data to a plain object
+   * Converts the node data to X6NodeSnapshot format
+   */
+  toX6Snapshot(): {
+    id: string;
+    shape: string;
+    position: { x: number; y: number };
+    size: { width: number; height: number };
+    attrs: Node.Properties['attrs'];
+    ports: Node.Properties['ports'];
+    zIndex: number;
+    visible: boolean;
+    type: string;
+    metadata: MetadataEntry[];
+  } {
+    return {
+      id: this.id,
+      shape: this.shape,
+      position: this.position,
+      size: this.size,
+      attrs: this.attrs,
+      ports: this.ports,
+      zIndex: this.zIndex,
+      visible: this.visible,
+      type: this.type,
+      metadata: this.metadata,
+    };
+  }
+
+  /**
+   * Converts the node data to legacy JSON format for backward compatibility
    */
   toJSON(): {
     id: string;
@@ -289,10 +484,10 @@ export class NodeData {
       id: this.id,
       type: this.type,
       label: this.label,
-      position: this.position.toJSON(),
-      width: this.width,
-      height: this.height,
-      metadata: { ...this.metadata },
+      position: this.position,
+      width: this.size.width,
+      height: this.size.height,
+      metadata: this.getMetadataAsRecord(),
     };
   }
 
@@ -316,11 +511,11 @@ export class NodeData {
       throw new Error('Node label cannot be empty');
     }
 
-    if (this.width <= 0 || this.height <= 0) {
+    if (this.size.width <= 0 || this.size.height <= 0) {
       throw new Error('Node dimensions must be positive');
     }
 
-    if (!Number.isFinite(this.width) || !Number.isFinite(this.height)) {
+    if (!Number.isFinite(this.size.width) || !Number.isFinite(this.size.height)) {
       throw new Error('Node dimensions must be finite numbers');
     }
   }
@@ -333,16 +528,20 @@ export class NodeData {
   }
 
   /**
-   * Checks if metadata objects are equal
+   * Checks if metadata arrays are equal
    */
-  private metadataEquals(other: Record<string, string>): boolean {
-    const thisKeys = Object.keys(this.metadata).sort();
-    const otherKeys = Object.keys(other).sort();
-
-    if (thisKeys.length !== otherKeys.length) {
+  private metadataEquals(other: MetadataEntry[]): boolean {
+    if (this.metadata.length !== other.length) {
       return false;
     }
 
-    return thisKeys.every(key => this.metadata[key] === other[key]);
+    // Sort both arrays by key for comparison
+    const thisSorted = [...this.metadata].sort((a, b) => a.key.localeCompare(b.key));
+    const otherSorted = [...other].sort((a, b) => a.key.localeCompare(b.key));
+
+    return thisSorted.every((entry, index) => {
+      const otherEntry = otherSorted[index];
+      return entry.key === otherEntry.key && entry.value === otherEntry.value;
+    });
   }
 }

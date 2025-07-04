@@ -227,7 +227,7 @@ export class HistoryIntegrationService implements OnDestroy {
       const newNodeData = NodeData.fromJSON({
         ...currentNodeData.toJSON(),
         ...event.newData,
-        position: currentNodeData.position.toJSON(), // Ensure position is always present
+        position: currentNodeData.position, // Position is already in correct format
       });
 
       // Convert NodeData to X6NodeSnapshot
@@ -507,7 +507,7 @@ export class HistoryIntegrationService implements OnDestroy {
         position: { x: position.x, y: position.y },
         width: size.width,
         height: size.height,
-        metadata,
+        metadata: Object.entries(metadata || {}).map(([key, value]) => ({ key, value })),
       });
     } catch (error) {
       this._logger.error('Failed to get current node data', { nodeId, error });

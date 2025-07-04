@@ -67,17 +67,17 @@ export class DiagramEdge {
   }
 
   /**
-   * Gets the edge vertices
+   * Gets the edge vertices (converted to Point objects for backward compatibility)
    */
   get vertices(): Point[] {
-    return this._data.vertices;
+    return this._data.vertices.map(v => new Point(v.x, v.y));
   }
 
   /**
-   * Gets the edge metadata
+   * Gets the edge metadata (converted to Record format for backward compatibility)
    */
   get metadata(): Record<string, string> {
-    return this._data.metadata;
+    return this._data.getMetadataAsRecord();
   }
 
   /**
@@ -136,14 +136,16 @@ export class DiagramEdge {
    * Updates the edge vertices
    */
   updateVertices(vertices: Point[]): void {
-    this._data = this._data.withVertices(vertices);
+    const vertexCoords = vertices.map(v => ({ x: v.x, y: v.y }));
+    this._data = this._data.withVertices(vertexCoords);
   }
 
   /**
    * Adds a vertex to the edge
    */
   addVertex(vertex: Point, index?: number): void {
-    this._data = this._data.withAddedVertex(vertex, index);
+    const vertexCoord = { x: vertex.x, y: vertex.y };
+    this._data = this._data.withAddedVertex(vertexCoord, index);
   }
 
   /**

@@ -142,8 +142,8 @@ export class InverseCommandFactory {
     // Create commands to restore the node and all connected edges
     const restoreCommands: AnyDiagramCommand[] = [];
 
-    // First, restore the node - use X6NodeSnapshot directly
-    const nodeSnapshot = nodeToRestore.data;
+    // First, restore the node - convert X6NodeSnapshot to proper domain data
+    const nodeSnapshot = this._convertX6SnapshotToDomainSnapshot(nodeToRestore.data);
 
     const addNodeCommand = DiagramCommandFactory.addNode(
       command.diagramId,
@@ -272,5 +272,52 @@ export class InverseCommandFactory {
       inverseCommands,
       `Inverse of: ${command.description}`,
     );
+  }
+
+  /**
+   * Convert X6NodeSnapshot to domain-compatible snapshot by mapping X6 shape types to domain NodeTypes
+   */
+  private _convertX6SnapshotToDomainSnapshot(x6Snapshot: any): any {
+    // Create a copy of the snapshot to avoid mutating the original
+    const domainSnapshot = { ...x6Snapshot };
+
+    // Map X6 shape types back to domain NodeTypes
+    const shapeToNodeTypeMap: Record<string, string> = {
+      rect: this._getNodeTypeFromMetadata(x6Snapshot) || 'actor', // Default to actor for rect shapes
+      ellipse: 'process',
+      'store-shape': 'store',
+    };
+
+    // If the snapshot has a shape, map it to the correct domain type
+    if (domainSnapshot.shape && shapeToNodeTypeMap[domainSnapshot.shape]) {
+      domainSnapshot.type = shapeToNodeTypeMap[domainSnapshot.shape];
+    }
+
+    // If we have metadata, extract the actual node type from there (most reliable)
+    const actualNodeType = this._getNodeTypeFromMetadata(x6Snapshot);
+    if (actualNodeType) {
+      domainSnapshot.type = actualNodeType;
+    }
+
+    this._logger.debug('Converted X6 snapshot to domain snapshot', {
+      originalShape: x6Snapshot.shape,
+      originalType: x6Snapshot.type,
+      convertedType: domainSnapshot.type,
+      hasMetadata: !!x6Snapshot.metadata,
+    });
+
+    return domainSnapshot;
+  }
+
+  /**
+   * Extract the actual node type from X6 snapshot metadata
+   */
+  private _getNodeTypeFromMetadata(x6Snapshot: any): string | null {
+    if (!x6Snapshot.metadata || !Array.isArray(x6Snapshot.metadata)) {
+      return null;
+    }
+
+    const typeMetadata = x6Snapshot.metadata.find((m: any) => m.key === 'type');
+    return typeMetadata?.value || null;
   }
 }

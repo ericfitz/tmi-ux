@@ -264,15 +264,15 @@ export class DiagramAggregate {
       }
     }
 
-    const nodeData = new NodeData(
-      command.nodeId,
-      command.nodeSnapshot.shape as any, // X6 shape maps to type - will fix type mapping later
+    const nodeData = NodeData.fromLegacyJSON({
+      id: command.nodeId,
+      type: command.nodeSnapshot.type || (command.nodeSnapshot.shape as any),
       label,
-      command.position,
-      command.nodeSnapshot.size?.width || 100,
-      command.nodeSnapshot.size?.height || 60,
+      position: { x: command.position.x, y: command.position.y },
+      width: command.nodeSnapshot.size?.width || 100,
+      height: command.nodeSnapshot.size?.height || 60,
       metadata,
-    );
+    });
 
     const node = new DiagramNode(nodeData);
     this._nodes.set(command.nodeId, node);
@@ -336,15 +336,15 @@ export class DiagramAggregate {
       }
     }
 
-    const newNodeData = new NodeData(
-      command.nodeId,
-      command.newSnapshot.shape as any,
-      newLabel,
-      node.position, // Keep existing position
-      command.newSnapshot.size?.width || 100,
-      command.newSnapshot.size?.height || 60,
-      newMetadata,
-    );
+    const newNodeData = NodeData.fromLegacyJSON({
+      id: command.nodeId,
+      type: command.newSnapshot.type || (command.newSnapshot.shape as any),
+      label: newLabel,
+      position: { x: node.position.x, y: node.position.y },
+      width: command.newSnapshot.size?.width || 100,
+      height: command.newSnapshot.size?.height || 60,
+      metadata: newMetadata,
+    });
 
     // Convert old snapshot to get old label
     const oldLabelValue = command.oldSnapshot.attrs?.['text']?.['text'];

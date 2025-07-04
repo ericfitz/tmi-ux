@@ -45,17 +45,15 @@ describe('DfdApplicationService', () => {
   const testNodeId = 'test-node-id';
   const testEdgeId = 'test-edge-id';
   const testPosition = new Point(100, 200);
-  const testNodeData = new NodeData(testNodeId, 'actor', 'Test Actor', testPosition, 120, 80, {});
-  const testEdgeData = new EdgeData(
-    testEdgeId,
-    'source-id',
-    'target-id',
-    undefined,
-    undefined,
-    'Test Edge',
-    [],
-    {},
+  const testNodeData = new NodeData(
+    testNodeId,
+    'actor',
+    'actor',
+    { x: testPosition.x, y: testPosition.y },
+    { width: 120, height: 80 },
+    { text: { text: 'Test Actor' } },
   );
+  const testEdgeData = EdgeData.createSimple(testEdgeId, 'source-id', 'target-id', 'Test Edge');
 
   const mockDiagramSnapshot: DiagramSnapshot = {
     id: testDiagramId,
@@ -321,11 +319,10 @@ describe('DfdApplicationService', () => {
         const newData = new NodeData(
           testNodeId,
           'store',
-          'Updated Label',
-          testPosition,
-          140,
-          90,
-          {},
+          'store',
+          { x: testPosition.x, y: testPosition.y },
+          { width: 140, height: 90 },
+          { text: { text: 'Updated Label' } },
         );
 
         service
@@ -395,16 +392,7 @@ describe('DfdApplicationService', () => {
 
     it('should update edge data', waitForAsync(() => {
       return new Promise<void>((resolve, reject) => {
-        const newData = new EdgeData(
-          testEdgeId,
-          'source-id',
-          'target-id',
-          undefined,
-          undefined,
-          'Updated Edge',
-          [],
-          {},
-        );
+        const newData = EdgeData.createSimple(testEdgeId, 'source-id', 'target-id', 'Updated Edge');
 
         service
           .updateEdgeData(testDiagramId, testEdgeId, newData, testEdgeData, testUserId)
@@ -671,13 +659,41 @@ describe('DfdApplicationServiceExtended', () => {
         const updates = [
           {
             nodeId: 'node1',
-            newData: new NodeData('node1', 'actor', 'Updated 1', new Point(100, 100), 120, 80, {}),
-            oldData: new NodeData('node1', 'actor', 'Original 1', new Point(50, 50), 120, 80, {}),
+            newData: new NodeData(
+              'node1',
+              'actor',
+              'actor',
+              { x: 100, y: 100 },
+              { width: 120, height: 80 },
+              { text: { text: 'Updated 1' } },
+            ),
+            oldData: new NodeData(
+              'node1',
+              'actor',
+              'actor',
+              { x: 50, y: 50 },
+              { width: 120, height: 80 },
+              { text: { text: 'Original 1' } },
+            ),
           },
           {
             nodeId: 'node2',
-            newData: new NodeData('node2', 'store', 'Updated 2', new Point(200, 200), 120, 80, {}),
-            oldData: new NodeData('node2', 'store', 'Original 2', new Point(150, 150), 120, 80, {}),
+            newData: new NodeData(
+              'node2',
+              'store',
+              'store',
+              { x: 200, y: 200 },
+              { width: 120, height: 80 },
+              { text: { text: 'Updated 2' } },
+            ),
+            oldData: new NodeData(
+              'node2',
+              'store',
+              'store',
+              { x: 150, y: 150 },
+              { width: 120, height: 80 },
+              { text: { text: 'Original 2' } },
+            ),
           },
         ];
 

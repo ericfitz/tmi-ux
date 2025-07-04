@@ -505,10 +505,10 @@ describe('X6 Integration Tests', () => {
       const nodeData = new NodeData(
         'node-1',
         'process',
-        'Test Process',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Process' } },
       );
       const node = new DiagramNode(nodeData);
 
@@ -532,10 +532,10 @@ describe('X6 Integration Tests', () => {
       const nodeData = new NodeData(
         'node-1',
         'process',
-        'Test Process',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Process' } },
       );
       const node = new DiagramNode(nodeData);
       adapter.addNode(node);
@@ -556,10 +556,10 @@ describe('X6 Integration Tests', () => {
       const nodeData = new NodeData(
         'node-1',
         'process',
-        'Test Process',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Process' } },
       );
       const node = new DiagramNode(nodeData);
       adapter.addNode(node);
@@ -584,18 +584,18 @@ describe('X6 Integration Tests', () => {
       const sourceNodeData = new NodeData(
         'source-node',
         'process',
-        'Source Process',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Source Process' } },
       );
       const targetNodeData = new NodeData(
         'target-node',
         'store',
-        'Target Store',
-        new Point(300, 100),
-        120,
-        60,
+        'store',
+        { x: 300, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Target Store' } },
       );
       const sourceNode = new DiagramNode(sourceNodeData);
       const targetNode = new DiagramNode(targetNodeData);
@@ -606,12 +606,10 @@ describe('X6 Integration Tests', () => {
 
     it('should add an edge and verify X6 graph state', () => {
       // Arrange
-      const edgeData = new EdgeData(
+      const edgeData = EdgeData.createSimple(
         'edge-1',
         'source-node',
         'target-node',
-        undefined,
-        undefined,
         'Test Data Flow',
       );
       const edge = new DiagramEdge(edgeData);
@@ -637,12 +635,10 @@ describe('X6 Integration Tests', () => {
 
     it('should remove an edge and verify X6 graph state', () => {
       // Arrange
-      const edgeData = new EdgeData(
+      const edgeData = EdgeData.createSimple(
         'edge-1',
         'source-node',
         'target-node',
-        undefined,
-        undefined,
         'Test Data Flow',
       );
       const edge = new DiagramEdge(edgeData);
@@ -668,13 +664,27 @@ describe('X6 Integration Tests', () => {
       const node1Data = new NodeData(
         'node-1',
         'process',
-        'Process 1',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Process 1' } },
       );
-      const node2Data = new NodeData('node-2', 'store', 'Store 1', new Point(300, 100), 120, 60);
-      const node3Data = new NodeData('node-3', 'actor', 'Actor 1', new Point(200, 200), 120, 60);
+      const node2Data = new NodeData(
+        'node-2',
+        'store',
+        'store',
+        { x: 300, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Store 1' } },
+      );
+      const node3Data = new NodeData(
+        'node-3',
+        'actor',
+        'actor',
+        { x: 200, y: 200 },
+        { width: 120, height: 60 },
+        { text: { text: 'Actor 1' } },
+      );
 
       const node1 = new DiagramNode(node1Data);
       const node2 = new DiagramNode(node2Data);
@@ -686,8 +696,8 @@ describe('X6 Integration Tests', () => {
       adapter.addNode(node3);
 
       // Add edges
-      const edge1Data = new EdgeData('edge-1', 'node-1', 'node-2', undefined, undefined, 'Flow 1');
-      const edge2Data = new EdgeData('edge-2', 'node-2', 'node-3', undefined, undefined, 'Flow 2');
+      const edge1Data = EdgeData.createSimple('edge-1', 'node-1', 'node-2', 'Flow 1');
+      const edge2Data = EdgeData.createSimple('edge-2', 'node-2', 'node-3', 'Flow 2');
 
       const edge1 = new DiagramEdge(edge1Data);
       const edge2 = new DiagramEdge(edge2Data);
@@ -715,12 +725,19 @@ describe('X6 Integration Tests', () => {
       const node1Data = new NodeData(
         'node-1',
         'process',
-        'Process 1',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Process 1' } },
       );
-      const node2Data = new NodeData('node-2', 'store', 'Store 1', new Point(300, 100), 120, 60);
+      const node2Data = new NodeData(
+        'node-2',
+        'store',
+        'store',
+        { x: 300, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Store 1' } },
+      );
 
       const node1 = new DiagramNode(node1Data);
       const node2 = new DiagramNode(node2Data);
@@ -728,7 +745,7 @@ describe('X6 Integration Tests', () => {
       adapter.addNode(node1);
       adapter.addNode(node2);
 
-      const edgeData = new EdgeData('edge-1', 'node-1', 'node-2', undefined, undefined, 'Flow 1');
+      const edgeData = EdgeData.createSimple('edge-1', 'node-1', 'node-2', 'Flow 1');
       const edge = new DiagramEdge(edgeData);
       adapter.addEdge(edge);
 
@@ -758,10 +775,10 @@ describe('X6 Integration Tests', () => {
       const nodeData = new NodeData(
         'node-1',
         'process',
-        'Test Process',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Process' } },
       );
       const node = new DiagramNode(nodeData);
       adapter.addNode(node);
@@ -770,18 +787,18 @@ describe('X6 Integration Tests', () => {
       adapter.moveNode('node-1', new Point(200, 150));
 
       // Add another node and edge
-      const node2Data = new NodeData('node-2', 'store', 'Test Store', new Point(300, 100), 120, 60);
+      const node2Data = new NodeData(
+        'node-2',
+        'store',
+        'store',
+        { x: 300, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Store' } },
+      );
       const node2 = new DiagramNode(node2Data);
       adapter.addNode(node2);
 
-      const edgeData = new EdgeData(
-        'edge-1',
-        'node-1',
-        'node-2',
-        undefined,
-        undefined,
-        'Test Flow',
-      );
+      const edgeData = EdgeData.createSimple('edge-1', 'node-1', 'node-2', 'Test Flow');
       const edge = new DiagramEdge(edgeData);
       adapter.addEdge(edge);
 
@@ -813,12 +830,10 @@ describe('X6 Integration Tests', () => {
     it('should handle invalid edge operations gracefully', () => {
       // Act & Assert - Adding edge with non-existent nodes should not throw
       expect(() => {
-        const edgeData = new EdgeData(
+        const edgeData = EdgeData.createSimple(
           'edge-1',
           'non-existent-1',
           'non-existent-2',
-          undefined,
-          undefined,
           'Invalid Flow',
         );
         const edge = new DiagramEdge(edgeData);
@@ -841,10 +856,10 @@ describe('X6 Integration Tests', () => {
         const nodeData = new NodeData(
           `node-${i}`,
           'process',
-          `Process ${i}`,
-          new Point(100 + (i % 10) * 150, 100 + Math.floor(i / 10) * 100),
-          120,
-          60,
+          'process',
+          { x: 100 + (i % 10) * 150, y: 100 + Math.floor(i / 10) * 100 },
+          { width: 120, height: 60 },
+          { text: { text: `Process ${i}` } },
         );
         const node = new DiagramNode(nodeData);
         adapter.addNode(node);
@@ -852,12 +867,10 @@ describe('X6 Integration Tests', () => {
 
       // Add 50 edges
       for (let i = 0; i < 50; i++) {
-        const edgeData = new EdgeData(
+        const edgeData = EdgeData.createSimple(
           `edge-${i}`,
           `node-${i}`,
           `node-${i + 1}`,
-          undefined,
-          undefined,
           `Flow ${i}`,
         );
         const edge = new DiagramEdge(edgeData);
@@ -881,10 +894,10 @@ describe('X6 Integration Tests', () => {
       const nodeData = new NodeData(
         'node-1',
         'process',
-        'Test Process',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Process' } },
       );
       const node = new DiagramNode(nodeData);
       adapter.addNode(node);
@@ -902,10 +915,10 @@ describe('X6 Integration Tests', () => {
       const nodeData = new NodeData(
         'node-1',
         'process',
-        'Test Process',
-        new Point(1000, 1000),
-        120,
-        60,
+        'process',
+        { x: 1000, y: 1000 },
+        { width: 120, height: 60 },
+        { text: { text: 'Test Process' } },
       );
       const node = new DiagramNode(nodeData);
       adapter.addNode(node);
@@ -931,12 +944,19 @@ describe('X6 Integration Tests', () => {
       const node1Data = new NodeData(
         'node-1',
         'process',
-        'Process 1',
-        new Point(100, 100),
-        120,
-        60,
+        'process',
+        { x: 100, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Process 1' } },
       );
-      const node2Data = new NodeData('node-2', 'store', 'Store 1', new Point(300, 100), 120, 60);
+      const node2Data = new NodeData(
+        'node-2',
+        'store',
+        'store',
+        { x: 300, y: 100 },
+        { width: 120, height: 60 },
+        { text: { text: 'Store 1' } },
+      );
 
       const node1 = new DiagramNode(node1Data);
       const node2 = new DiagramNode(node2Data);
@@ -944,7 +964,7 @@ describe('X6 Integration Tests', () => {
       adapter.addNode(node1);
       adapter.addNode(node2);
 
-      const edgeData = new EdgeData('edge-1', 'node-1', 'node-2', undefined, undefined, 'Flow 1');
+      const edgeData = EdgeData.createSimple('edge-1', 'node-1', 'node-2', 'Flow 1');
       const edge = new DiagramEdge(edgeData);
       adapter.addEdge(edge);
     });

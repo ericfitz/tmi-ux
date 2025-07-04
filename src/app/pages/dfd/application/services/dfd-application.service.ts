@@ -119,7 +119,18 @@ export class DfdApplicationService {
     height: number = 80,
     metadata: Record<string, string> = {},
   ): Observable<void> {
-    const nodeData = new NodeData(nodeId, nodeType, label, position, width, height, metadata);
+    const nodeData = new NodeData(
+      nodeId,
+      nodeType,
+      nodeType,
+      { x: position.x, y: position.y },
+      { width, height },
+      { text: { text: label } },
+      {},
+      1,
+      true,
+      Object.entries(metadata).map(([key, value]) => ({ key, value })),
+    );
     const command = DiagramCommandFactory.addNode(diagramId, userId, nodeId, position, nodeData);
 
     return this.executeCommand(command);
@@ -188,19 +199,10 @@ export class DfdApplicationService {
     label?: string,
     sourcePortId?: string,
     targetPortId?: string,
-    vertices: Point[] = [],
-    metadata: Record<string, string> = {},
+    _vertices: Point[] = [],
+    _metadata: Record<string, string> = {},
   ): Observable<void> {
-    const edgeData = new EdgeData(
-      edgeId,
-      sourceNodeId,
-      targetNodeId,
-      sourcePortId,
-      targetPortId,
-      label,
-      vertices,
-      metadata,
-    );
+    const edgeData = EdgeData.createSimple(edgeId, sourceNodeId, targetNodeId, label);
     const command = DiagramCommandFactory.addEdge(
       diagramId,
       userId,

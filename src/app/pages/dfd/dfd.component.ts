@@ -438,7 +438,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       zIndex: 1,
       visible: true,
       type: nodeData.type,
-      metadata: Object.entries(nodeData.metadata).map(([key, value]) => ({ key, value })),
+      metadata: nodeData.metadata,
     };
   }
 
@@ -479,7 +479,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       vertices: edgeData.vertices.map(vertex => ({ x: vertex.x, y: vertex.y })),
       zIndex: 1,
       visible: true,
-      metadata: Object.entries(edgeData.metadata).map(([key, value]) => ({ key, value })),
+      metadata: edgeData.metadata,
     };
   }
 
@@ -493,12 +493,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const nodeData = new NodeData(
       nodeId,
-      shapeType,
-      this.getDefaultLabelForType(shapeType),
-      new Point(position.x, position.y),
-      120, // default width
-      80, // default height
-      {}, // empty metadata
+      shapeType, // shape
+      shapeType, // type
+      { x: position.x, y: position.y }, // position
+      { width: 120, height: 80 }, // size
+      { text: { text: this.getDefaultLabelForType(shapeType) } }, // attrs
+      {}, // ports
+      1, // zIndex
+      true, // visible
+      [], // metadata
     );
 
     const command = DiagramCommandFactory.addNode(
@@ -1391,15 +1394,22 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         : 'Data Flow';
 
     // Create a new EdgeData instance with updated vertices
+    const source = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
+    const target = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
+    const attrs = currentLabel ? { text: { text: currentLabel } } : undefined;
+    const vertexCoords = domainVertices.map(v => ({ x: v.x, y: v.y }));
+
     const updatedEdgeData = new EdgeData(
       edgeId,
-      sourceNodeId,
-      targetNodeId,
-      sourcePortId,
-      targetPortId,
-      currentLabel,
-      domainVertices,
-      {}, // metadata - could be preserved from current data if needed
+      'edge', // shape
+      source,
+      target,
+      attrs,
+      [], // labels
+      vertexCoords,
+      1, // zIndex
+      true, // visible
+      [], // metadata - could be preserved from current data if needed
     );
 
     // We need the old data for the command, so let's create it from current state
@@ -1412,15 +1422,22 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         : [];
     const oldDomainVertices = oldVerticesData.map(v => new Point(v.x, v.y));
 
+    const oldSource = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
+    const oldTarget = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
+    const oldAttrs = currentLabel ? { text: { text: currentLabel || 'Data Flow' } } : undefined;
+    const oldVertexCoords = oldDomainVertices.map(v => ({ x: v.x, y: v.y }));
+
     const oldEdgeData = new EdgeData(
       edgeId,
-      sourceNodeId,
-      targetNodeId,
-      sourcePortId,
-      targetPortId,
-      currentLabel || 'Data Flow',
-      oldDomainVertices,
-      {}, // metadata
+      'edge', // shape
+      oldSource,
+      oldTarget,
+      oldAttrs,
+      [], // labels
+      oldVertexCoords,
+      1, // zIndex
+      true, // visible
+      [], // metadata
     );
 
     // Create and execute UpdateEdgeSnapshotCommand
