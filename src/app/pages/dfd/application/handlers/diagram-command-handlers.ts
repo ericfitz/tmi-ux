@@ -112,7 +112,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
 
   handle(command: AddNodeCommand): Observable<CommandResult> {
     const operationId = command.commandId; // Use command ID as operation ID for direct commands
-    this._logger.info('DIAGNOSTIC: AddNodeCommand - Starting operation tracking', {
+    this._logger.info(' AddNodeCommand - Starting operation tracking', {
       operationId,
       commandId: command.commandId,
       nodeId: command.nodeId,
@@ -131,7 +131,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
       switchMap(diagram =>
         this.saveDiagram(diagram).pipe(
           map(result => {
-            this._logger.info('DIAGNOSTIC: AddNodeCommand - Completing operation', {
+            this._logger.info(' AddNodeCommand - Completing operation', {
               operationId,
               commandId: command.commandId,
             });
@@ -140,7 +140,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
             // Re-add the node to the X6 graph after successful domain model update
             const node = diagram.getNode(command.nodeId);
             if (node) {
-              this._logger.info('DIAGNOSTIC: AddNodeCommand - Adding node to X6 graph', {
+              this._logger.info(' AddNodeCommand - Adding node to X6 graph', {
                 nodeId: node.id,
                 shapeType: node.data.type,
                 hasSnapshot: !!command.nodeSnapshot,
@@ -151,7 +151,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
               // - false/undefined: system-generated command (undo/redo) → use addNodeFromSnapshot()
               if (!command.isLocalUserInitiated && command.nodeSnapshot) {
                 this._logger.info(
-                  'DIAGNOSTIC: AddNodeCommand - Using snapshot-based restoration for undo/redo',
+                  ' AddNodeCommand - Using snapshot-based restoration for undo/redo',
                   {
                     nodeId: node.id,
                     snapshotPorts: command.nodeSnapshot.ports,
@@ -160,7 +160,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
                 );
                 this._x6GraphAdapter.addNodeFromSnapshot(command.nodeSnapshot);
               } else {
-                this._logger.info('DIAGNOSTIC: AddNodeCommand - Using regular node creation', {
+                this._logger.info(' AddNodeCommand - Using regular node creation', {
                   nodeId: node.id,
                   isLocalUserInitiated: command.isLocalUserInitiated,
                   hasSnapshot: !!command.nodeSnapshot,
@@ -168,7 +168,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
                 this._x6GraphAdapter.addNode(node);
               }
             } else {
-              this._logger.warn('DIAGNOSTIC: AddNodeCommand - Node not found in domain after add', {
+              this._logger.warn(' AddNodeCommand - Node not found in domain after add', {
                 nodeId: command.nodeId,
               });
             }
@@ -177,7 +177,7 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error('DIAGNOSTIC: AddNodeCommand - Cancelling operation due to error', {
+        this._logger.error(' AddNodeCommand - Cancelling operation due to error', {
           operationId,
           commandId: command.commandId,
           error: error,
@@ -239,7 +239,7 @@ export class UpdateNodePositionCommandHandler
   }
 
   handle(command: UpdateNodePositionCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: UpdateNodePositionCommand - Handling command', {
+    this._logger.info(' UpdateNodePositionCommand - Handling command', {
       commandId: command.commandId,
       nodeId: command.nodeId,
       newPosition: command.newPosition,
@@ -256,14 +256,14 @@ export class UpdateNodePositionCommandHandler
             // After successful update in domain model, update X6 graph
             const node = diagram.getNode(command.nodeId);
             if (node) {
-              this._logger.info('DIAGNOSTIC: UpdateNodePositionCommand - Moving node in X6 graph', {
+              this._logger.info(' UpdateNodePositionCommand - Moving node in X6 graph', {
                 nodeId: node.id,
                 newPosition: node.position,
               });
               this._x6GraphAdapter.moveNode(node.id, node.position);
             } else {
               this._logger.warn(
-                'DIAGNOSTIC: UpdateNodePositionCommand - Node not found in domain after update',
+                ' UpdateNodePositionCommand - Node not found in domain after update',
                 {
                   nodeId: command.nodeId,
                 },
@@ -330,7 +330,7 @@ export class UpdateNodeSnapshotCommandHandler
   }
 
   handle(command: UpdateNodeSnapshotCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: UpdateNodeSnapshotCommand - Handling command', {
+    this._logger.info(' UpdateNodeSnapshotCommand - Handling command', {
       commandId: command.commandId,
       nodeId: command.nodeId,
       newSnapshot: command.newSnapshot,
@@ -347,13 +347,10 @@ export class UpdateNodeSnapshotCommandHandler
             // After successful update in domain model, update X6 graph
             const node = diagram.getNode(command.nodeId);
             if (node) {
-              this._logger.info(
-                'DIAGNOSTIC: UpdateNodeSnapshotCommand - Updating node snapshot in X6 graph',
-                {
-                  nodeId: node.id,
-                  newData: node.data,
-                },
-              );
+              this._logger.info(' UpdateNodeSnapshotCommand - Updating node snapshot in X6 graph', {
+                nodeId: node.id,
+                newData: node.data,
+              });
               // Update label
               if (node.data.label !== undefined) {
                 const x6Node = this._x6GraphAdapter.getNode(node.id);
@@ -370,7 +367,7 @@ export class UpdateNodeSnapshotCommandHandler
               }
             } else {
               this._logger.warn(
-                'DIAGNOSTIC: UpdateNodeSnapshotCommand - Node not found in domain after update',
+                ' UpdateNodeSnapshotCommand - Node not found in domain after update',
                 {
                   nodeId: command.nodeId,
                 },
@@ -435,7 +432,7 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
   }
 
   handle(command: RemoveNodeCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: RemoveNodeCommand - Handling command', {
+    this._logger.info(' RemoveNodeCommand - Handling command', {
       commandId: command.commandId,
       nodeId: command.nodeId,
     });
@@ -449,7 +446,7 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
         this.saveDiagram(diagram).pipe(
           map(result => {
             // After successful removal from domain model, remove from X6 graph
-            this._logger.info('DIAGNOSTIC: RemoveNodeCommand - Removing node from X6 graph', {
+            this._logger.info(' RemoveNodeCommand - Removing node from X6 graph', {
               nodeId: command.nodeId,
             });
             this._x6GraphAdapter.removeNode(command.nodeId);
@@ -458,7 +455,7 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error('DIAGNOSTIC: RemoveNodeCommand - Failed to remove node', {
+        this._logger.error(' RemoveNodeCommand - Failed to remove node', {
           commandId: command.commandId,
           nodeId: command.nodeId,
           error: error,
@@ -519,7 +516,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
 
   handle(command: AddEdgeCommand): Observable<CommandResult> {
     const operationId = command.commandId; // Use command ID as operation ID for direct commands
-    this._logger.info('DIAGNOSTIC: AddEdgeCommand - Starting operation tracking', {
+    this._logger.info(' AddEdgeCommand - Starting operation tracking', {
       operationId,
       commandId: command.commandId,
       edgeId: command.edgeId,
@@ -538,7 +535,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
       switchMap(diagram =>
         this.saveDiagram(diagram).pipe(
           map(result => {
-            this._logger.info('DIAGNOSTIC: AddEdgeCommand - Completing operation', {
+            this._logger.info(' AddEdgeCommand - Completing operation', {
               operationId,
               commandId: command.commandId,
             });
@@ -547,7 +544,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
             // Re-add the edge to the X6 graph after successful domain model update
             const edge = diagram.getEdge(command.edgeId);
             if (edge) {
-              this._logger.info('DIAGNOSTIC: AddEdgeCommand - Adding edge to X6 graph', {
+              this._logger.info(' AddEdgeCommand - Adding edge to X6 graph', {
                 edgeId: edge.id,
                 sourceNodeId: edge.sourceNodeId,
                 targetNodeId: edge.targetNodeId,
@@ -559,7 +556,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
               // - false/undefined: system-generated command (undo/redo) → use addEdgeFromSnapshot()
               if (!command.isLocalUserInitiated && command.edgeSnapshot) {
                 this._logger.info(
-                  'DIAGNOSTIC: AddEdgeCommand - Using snapshot-based restoration for undo/redo',
+                  ' AddEdgeCommand - Using snapshot-based restoration for undo/redo',
                   {
                     edgeId: edge.id,
                     snapshotSource: command.edgeSnapshot.source,
@@ -569,7 +566,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
                 );
                 this._x6GraphAdapter.addEdgeFromSnapshot(command.edgeSnapshot);
               } else {
-                this._logger.info('DIAGNOSTIC: AddEdgeCommand - Using regular edge creation', {
+                this._logger.info(' AddEdgeCommand - Using regular edge creation', {
                   edgeId: edge.id,
                   isLocalUserInitiated: command.isLocalUserInitiated,
                   hasSnapshot: !!command.edgeSnapshot,
@@ -577,7 +574,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
                 this._x6GraphAdapter.addEdge(edge);
               }
             } else {
-              this._logger.warn('DIAGNOSTIC: AddEdgeCommand - Edge not found in domain after add', {
+              this._logger.warn(' AddEdgeCommand - Edge not found in domain after add', {
                 edgeId: command.edgeId,
               });
             }
@@ -586,7 +583,7 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error('DIAGNOSTIC: AddEdgeCommand - Cancelling operation due to error', {
+        this._logger.error(' AddEdgeCommand - Cancelling operation due to error', {
           operationId,
           commandId: command.commandId,
           error: error,
@@ -707,7 +704,7 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
   }
 
   handle(command: RemoveEdgeCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: RemoveEdgeCommand - Handling command', {
+    this._logger.info(' RemoveEdgeCommand - Handling command', {
       commandId: command.commandId,
       edgeId: command.edgeId,
     });
@@ -721,7 +718,7 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
         this.saveDiagram(diagram).pipe(
           map(result => {
             // After successful removal from domain model, remove from X6 graph
-            this._logger.info('DIAGNOSTIC: RemoveEdgeCommand - Removing edge from X6 graph', {
+            this._logger.info(' RemoveEdgeCommand - Removing edge from X6 graph', {
               edgeId: command.edgeId,
             });
             this._x6GraphAdapter.removeEdge(command.edgeId);
@@ -730,7 +727,7 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error('DIAGNOSTIC: RemoveEdgeCommand - Failed to remove edge', {
+        this._logger.error(' RemoveEdgeCommand - Failed to remove edge', {
           commandId: command.commandId,
           edgeId: command.edgeId,
           error: error,
@@ -850,7 +847,7 @@ export class RestoreEmbeddingCommandHandler implements ICommandHandler<RestoreEm
   }
 
   handle(command: RestoreEmbeddingCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: RestoreEmbeddingCommand - Handling command', {
+    this._logger.info(' RestoreEmbeddingCommand - Handling command', {
       commandId: command.commandId,
       embeddingRelationships: command.embeddingRelationships,
     });
@@ -865,7 +862,7 @@ export class RestoreEmbeddingCommandHandler implements ICommandHandler<RestoreEm
           map(result => {
             // Apply embedding relationships to X6 graph
             this._logger.info(
-              'DIAGNOSTIC: RestoreEmbeddingCommand - Applying embedding relationships to X6 graph',
+              ' RestoreEmbeddingCommand - Applying embedding relationships to X6 graph',
               {
                 relationshipCount: command.embeddingRelationships.length,
                 relationships: command.embeddingRelationships,
@@ -877,17 +874,14 @@ export class RestoreEmbeddingCommandHandler implements ICommandHandler<RestoreEm
               const childNode = this._x6GraphAdapter.getNode(relationship.childId);
 
               if (parentNode && childNode) {
-                this._logger.info(
-                  'DIAGNOSTIC: RestoreEmbeddingCommand - Restoring embedding relationship',
-                  {
-                    parentId: relationship.parentId,
-                    childId: relationship.childId,
-                  },
-                );
+                this._logger.info(' RestoreEmbeddingCommand - Restoring embedding relationship', {
+                  parentId: relationship.parentId,
+                  childId: relationship.childId,
+                });
                 parentNode.addChild(childNode);
               } else {
                 this._logger.warn(
-                  'DIAGNOSTIC: RestoreEmbeddingCommand - Missing nodes for embedding relationship',
+                  ' RestoreEmbeddingCommand - Missing nodes for embedding relationship',
                   {
                     parentId: relationship.parentId,
                     childId: relationship.childId,
@@ -903,13 +897,10 @@ export class RestoreEmbeddingCommandHandler implements ICommandHandler<RestoreEm
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error(
-          'DIAGNOSTIC: RestoreEmbeddingCommand - Failed to restore embedding relationships',
-          {
-            commandId: command.commandId,
-            error: error,
-          },
-        );
+        this._logger.error(' RestoreEmbeddingCommand - Failed to restore embedding relationships', {
+          commandId: command.commandId,
+          error: error,
+        });
         return throwError(
           () =>
             new Error(
@@ -963,7 +954,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
   }
 
   handle(command: CompositeCommand): Observable<CommandResult> {
-    this._logger.info('DIAGNOSTIC: CompositeCommand - Starting execution', {
+    this._logger.info(' CompositeCommand - Starting execution', {
       commandId: command.commandId,
       description: command.description,
       subCommandCount: command.commands.length,
@@ -972,7 +963,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
 
     // Validate sub-commands before execution
     if (!command.commands || command.commands.length === 0) {
-      this._logger.error('DIAGNOSTIC: CompositeCommand - No sub-commands to execute', {
+      this._logger.error(' CompositeCommand - No sub-commands to execute', {
         commandId: command.commandId,
       });
       return throwError(() => new Error('CompositeCommand has no sub-commands to execute'));
@@ -981,7 +972,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
     // Execute all sub-commands sequentially
     return from(command.commands).pipe(
       concatMap((subCommand: AnyDiagramCommand, index: number) => {
-        this._logger.info('DIAGNOSTIC: CompositeCommand - About to execute sub-command', {
+        this._logger.info(' CompositeCommand - About to execute sub-command', {
           compositeCommandId: command.commandId,
           subCommandIndex: index,
           subCommandType: subCommand.type,
@@ -992,7 +983,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
         return this._commandBus.execute(subCommand).pipe(
           map((result: unknown) => {
             const commandResult = result as CommandResult;
-            this._logger.info('DIAGNOSTIC: CompositeCommand - Sub-command completed successfully', {
+            this._logger.info(' CompositeCommand - Sub-command completed successfully', {
               compositeCommandId: command.commandId,
               subCommandIndex: index,
               subCommandType: subCommand.type,
@@ -1003,7 +994,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
             return commandResult;
           }),
           catchError((error: unknown) => {
-            this._logger.error('DIAGNOSTIC: CompositeCommand - Sub-command execution failed', {
+            this._logger.error(' CompositeCommand - Sub-command execution failed', {
               compositeCommandId: command.commandId,
               subCommandIndex: index,
               subCommandType: subCommand.type,
@@ -1018,7 +1009,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
         );
       }),
       reduce((acc: CommandResult[], result: CommandResult) => {
-        this._logger.info('DIAGNOSTIC: CompositeCommand - Accumulating result', {
+        this._logger.info(' CompositeCommand - Accumulating result', {
           commandId: command.commandId,
           accumulatedCount: acc.length,
           currentResultSuccess: result.success,
@@ -1027,15 +1018,12 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
         return acc;
       }, [] as CommandResult[]),
       map((results: CommandResult[]) => {
-        this._logger.info(
-          'DIAGNOSTIC: CompositeCommand - All sub-commands completed successfully',
-          {
-            commandId: command.commandId,
-            description: command.description,
-            totalResults: results.length,
-            allSuccessful: results.every(r => r.success),
-          },
-        );
+        this._logger.info(' CompositeCommand - All sub-commands completed successfully', {
+          commandId: command.commandId,
+          description: command.description,
+          totalResults: results.length,
+          allSuccessful: results.every(r => r.success),
+        });
 
         // Use the last result's diagram snapshot and combine events
         const lastResult = results[results.length - 1];
@@ -1049,7 +1037,7 @@ export class CompositeCommandHandler implements ICommandHandler<CompositeCommand
         } as CommandResult;
       }),
       catchError((error: unknown) => {
-        this._logger.error('DIAGNOSTIC: CompositeCommand - Composite execution failed completely', {
+        this._logger.error(' CompositeCommand - Composite execution failed completely', {
           commandId: command.commandId,
           description: command.description,
           error: error,

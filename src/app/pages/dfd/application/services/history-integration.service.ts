@@ -70,11 +70,12 @@ export class HistoryIntegrationService implements OnDestroy {
         this._logger.error('Error in debounced node resize subscription', { error }),
     });
 
-    // Subscribe to debounced node data change events (for label edits, etc.)
-    this._x6GraphAdapter.debouncedNodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
+    // Subscribe to immediate node data change events (for label edits, etc.)
+    // Text editing only updates when complete, so no debouncing needed
+    this._x6GraphAdapter.nodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
       next: event => this._handleDebouncedNodeDataChange(event, diagramId, userId),
       error: (error: unknown) =>
-        this._logger.error('Error in debounced node data change subscription', { error }),
+        this._logger.error('Error in node data change subscription', { error }),
     });
 
     // Note: Duplicate subscriptions removed - already subscribed above
@@ -196,17 +197,7 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
-      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
-      if (this._historyService.isUndoRedoInProgress()) {
-        this._logger.info('Skipping debounced node data change during undo/redo operation', {
-          nodeId: event.nodeId,
-          newData: event.newData,
-          oldData: event.oldData,
-        });
-        return;
-      }
-
-      this._logger.info('Processing debounced node data change for history', {
+      this._logger.info('Processing immediate node data change for history', {
         nodeId: event.nodeId,
         newData: event.newData,
         oldData: event.oldData,
@@ -244,8 +235,8 @@ export class HistoryIntegrationService implements OnDestroy {
       const currentSnapshot = cachedSnapshot;
       const newSnapshot = this._convertNodeDataToSnapshot(newNodeData);
 
-      // DIAGNOSTIC: Log snapshot comparison to debug undo issues
-      this._logger.info('DIAGNOSTIC: FIXED - Using pre-change cached snapshot for history', {
+      //  Log snapshot comparison to debug undo issues
+      this._logger.info(' FIXED - Using pre-change cached snapshot for history', {
         nodeId: event.nodeId,
         cachedLabel: cachedSnapshot.attrs?.['text']?.['text'],
         newLabel: newNodeData.label,
@@ -699,7 +690,21 @@ export class HistoryIntegrationService implements OnDestroy {
    */
   private _createDefaultEdgeData(edgeId: string): EdgeData {
     this._logger.warn('Creating default edge data for missing edge', { edgeId });
-    return EdgeData.createSimple(edgeId, 'unknown-source', 'unknown-target', 'Data Flow');
+    // Create domain edge data using the current domain model constructor
+    const attrs = { text: { text: 'Data Flow' } };
+
+    return new EdgeData(
+      edgeId,
+      'edge', // shape
+      'unknown-source', // source
+      'unknown-target', // target
+      attrs,
+      [], // labels (empty, using attrs for label)
+      [], // vertices (empty for new edge)
+      1, // zIndex
+      true, // visible
+      [], // metadata (empty for new edge)
+    );
   }
 
   /**

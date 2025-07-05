@@ -647,8 +647,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   addNodeFromSnapshot(snapshot: X6NodeSnapshot): Node {
     const graph = this.getGraph();
 
-    // DIAGNOSTIC: Log the incoming snapshot in detail
-    this.logger.info('DIAGNOSTIC: Starting node restoration from snapshot', {
+    this.logger.info('Starting node restoration from snapshot', {
       nodeId: snapshot.id,
       shape: snapshot.shape,
       position: snapshot.position,
@@ -667,7 +666,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if ((snapshot.ports as any)?.groups && (snapshot.ports as any)?.items) {
       // If snapshot has the complete structure, use it directly
       portsForX6 = snapshot.ports;
-      this.logger.info('DIAGNOSTIC: Using complete port structure from snapshot', {
+      this.logger.info(' Using complete port structure from snapshot', {
         nodeId: snapshot.id,
         hasGroups: true,
         hasItems: true,
@@ -684,7 +683,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         items: snapshot.ports, // Use the snapshot port items to preserve IDs
       };
 
-      this.logger.info('DIAGNOSTIC: FIXED - Reconstructed port structure from array format', {
+      this.logger.info(' FIXED - Reconstructed port structure from array format', {
         nodeId: snapshot.id,
         nodeType,
         originalFormat: 'array',
@@ -697,7 +696,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
       portsForX6 = this._getNodePorts(nodeType);
 
-      this.logger.warn('DIAGNOSTIC: Fallback - Using base port configuration', {
+      this.logger.warn(' Fallback - Using base port configuration', {
         nodeId: snapshot.id,
         nodeType,
         snapshotPortsType: typeof snapshot.ports,
@@ -705,8 +704,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       });
     }
 
-    // DIAGNOSTIC: Detailed analysis of the port configuration being used
-    this.logger.info('DIAGNOSTIC: Final port configuration for X6 restoration', {
+    //  Detailed analysis of the port configuration being used
+    this.logger.info(' Final port configuration for X6 restoration', {
       nodeId: snapshot.id,
       portsForX6,
       hasGroups: !!(portsForX6 as any)?.groups,
@@ -722,7 +721,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         })) || [],
     });
 
-    // DIAGNOSTIC: Log the exact parameters being passed to addNode
+    //  Log the exact parameters being passed to addNode
     const nodeParams = {
       id: snapshot.id,
       x: snapshot.position.x,
@@ -736,7 +735,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       visible: snapshot.visible,
     };
 
-    this.logger.info('DIAGNOSTIC: Parameters being passed to graph.addNode()', {
+    this.logger.info(' Parameters being passed to graph.addNode()', {
       nodeId: snapshot.id,
       nodeParams,
       portsParam: nodeParams.ports,
@@ -744,9 +743,9 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     const x6Node = graph.addNode(nodeParams);
 
-    // DIAGNOSTIC: Verify the node was created with correct port configuration
+    //  Verify the node was created with correct port configuration
     const restoredPorts = x6Node.getPorts();
-    this.logger.info('DIAGNOSTIC: Node restored - verifying port configuration', {
+    this.logger.info(' Node restored - verifying port configuration', {
       nodeId: snapshot.id,
       restoredPortCount: restoredPorts.length,
       restoredPortIds: restoredPorts.map((item: any) => item.id),
@@ -771,8 +770,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     // This preserves the original port configuration in the cache
     this._nodeSnapshots.set(snapshot.id, snapshot);
 
-    // DIAGNOSTIC: Log final restoration status
-    this.logger.info('DIAGNOSTIC: Node restoration completed', {
+    //  Log final restoration status
+    this.logger.info(' Node restoration completed', {
       nodeId: snapshot.id,
       nodeCreated: !!x6Node,
       metadataSet: !!(snapshot.metadata && (x6Node as any).setMetadata),
@@ -812,8 +811,8 @@ export class X6GraphAdapter implements IGraphAdapter {
   addEdgeFromSnapshot(snapshot: X6EdgeSnapshot): Edge {
     const graph = this.getGraph();
 
-    // DIAGNOSTIC: Log detailed edge restoration information
-    this.logger.info('DIAGNOSTIC: Starting edge restoration from snapshot', {
+    //  Log detailed edge restoration information
+    this.logger.info(' Starting edge restoration from snapshot', {
       edgeId: snapshot.id,
       source: snapshot.source,
       target: snapshot.target,
@@ -826,7 +825,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       fullSnapshot: snapshot,
     });
 
-    // DIAGNOSTIC: Verify that the source and target nodes exist before creating the edge
+    //  Verify that the source and target nodes exist before creating the edge
     const sourceNodeId = snapshot.source?.cell;
     const targetNodeId = snapshot.target?.cell;
     const sourcePortId = snapshot.source?.port;
@@ -837,7 +836,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (sourceNode && sourceNode.isNode()) {
         const sourcePorts = (sourceNode as any).getPorts();
         const sourcePortExists = sourcePorts.some((port: any) => port.id === sourcePortId);
-        this.logger.info('DIAGNOSTIC: Source node verification', {
+        this.logger.info(' Source node verification', {
           edgeId: snapshot.id,
           sourceNodeId,
           sourcePortId,
@@ -846,7 +845,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           sourceNodePorts: sourcePorts.map((port: any) => ({ id: port.id, group: port.group })),
         });
       } else {
-        this.logger.warn('DIAGNOSTIC: Source node not found or not a node', {
+        this.logger.warn(' Source node not found or not a node', {
           edgeId: snapshot.id,
           sourceNodeId,
           sourceNodeExists: !!sourceNode,
@@ -860,7 +859,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (targetNode && targetNode.isNode()) {
         const targetPorts = (targetNode as any).getPorts();
         const targetPortExists = targetPorts.some((port: any) => port.id === targetPortId);
-        this.logger.info('DIAGNOSTIC: Target node verification', {
+        this.logger.info(' Target node verification', {
           edgeId: snapshot.id,
           targetNodeId,
           targetPortId,
@@ -869,7 +868,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           targetNodePorts: targetPorts.map((port: any) => ({ id: port.id, group: port.group })),
         });
       } else {
-        this.logger.warn('DIAGNOSTIC: Target node not found or not a node', {
+        this.logger.warn(' Target node not found or not a node', {
           edgeId: snapshot.id,
           targetNodeId,
           targetNodeExists: !!targetNode,
@@ -878,7 +877,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     }
 
-    // DIAGNOSTIC: Log the exact parameters being passed to addEdge
+    //  Log the exact parameters being passed to addEdge
     const edgeParams = {
       id: snapshot.id,
       source: snapshot.source, // Use exact source from snapshot to preserve port connections
@@ -891,14 +890,14 @@ export class X6GraphAdapter implements IGraphAdapter {
       visible: snapshot.visible,
     };
 
-    this.logger.debug('DIAGNOSTIC: Parameters being passed to graph.addEdge()', {
+    this.logger.debug(' Parameters being passed to graph.addEdge()', {
       edgeId: snapshot.id,
       edgeParams,
     });
 
     const x6Edge = graph.addEdge(edgeParams);
 
-    // DIAGNOSTIC: Verify the edge was created with correct connections
+    //  Verify the edge was created with correct connections
     const actualSource = x6Edge.getSource();
     const actualTarget = x6Edge.getTarget();
     const actualSourceNodeId = x6Edge.getSourceCellId();
@@ -906,7 +905,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const actualSourcePortId = x6Edge.getSourcePortId();
     const actualTargetPortId = x6Edge.getTargetPortId();
 
-    this.logger.debug('DIAGNOSTIC: Edge created - verifying connections', {
+    this.logger.debug(' Edge created - verifying connections', {
       edgeId: snapshot.id,
       expectedSource: snapshot.source,
       actualSource,
@@ -964,8 +963,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     }
 
-    // DIAGNOSTIC: Log final edge restoration status
-    this.logger.debug('DIAGNOSTIC: Edge restoration completed', {
+    //  Log final edge restoration status
+    this.logger.debug(' Edge restoration completed', {
       edgeId: snapshot.id,
       edgeCreated: !!x6Edge,
       metadataSet: !!(snapshot.metadata && (x6Edge as any).setMetadata),
@@ -1413,8 +1412,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._cacheEdgeSnapshot(cell as Edge);
     }
 
-    // DIAGNOSTIC: Log label change for history debugging
-    this.logger.info('DIAGNOSTIC: Label change detected', {
+    //  Log label change for history debugging
+    this.logger.info(' Label change detected', {
       cellId: cell.id,
       cellType: cell.isNode() ? 'node' : 'edge',
       oldLabel,
@@ -1450,15 +1449,13 @@ export class X6GraphAdapter implements IGraphAdapter {
         eventType: 'cell:change:data',
       });
 
-      // Manually trigger the event that would normally be fired by X6
-      // This ensures the label change flows through the debounced event system
-      if (this._graph) {
-        void this._graph.trigger('cell:change:data', {
-          cell,
-          current: newData,
-          previous: oldData,
-        });
-      }
+      // CRITICAL FIX: Emit immediate event for text changes since text editing
+      // only updates when editing is complete - no need for debouncing
+      this._nodeDataChanged$.next({
+        nodeId: cell.id,
+        newData,
+        oldData,
+      });
     }
 
     // Note: We don't update cache here anymore since we cached before the change
@@ -1579,8 +1576,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     const metadata = (node as any).getMetadata ? (node as any).getMetadata() : [];
     const nodeType = metadata.find((m: any) => m.key === 'type')?.value || 'process';
 
-    // DIAGNOSTIC: Log initial node state before caching
-    this.logger.info('DIAGNOSTIC: Starting node snapshot caching', {
+    //  Log initial node state before caching
+    this.logger.info(' Starting node snapshot caching', {
       nodeId: node.id,
       nodeType,
       position: { x: position.x, y: position.y },
@@ -1591,12 +1588,12 @@ export class X6GraphAdapter implements IGraphAdapter {
     // This preserves both the group definitions AND the current port state (IDs, visibility, etc.)
     // CRITICAL FIX: Get the complete port configuration from the node's properties
     // X6 stores the complete port config in the node's properties under 'ports'
-    // DIAGNOSTIC: Log the raw port config from toJSON for debugging
+    //  Log the raw port config from toJSON for debugging
     if (typeof node.toJSON === 'function') {
       const nodeProps = node.toJSON();
       const nodePortConfig = nodeProps.ports;
 
-      this.logger.info('DIAGNOSTIC: Port config from node.toJSON()', {
+      this.logger.info(' Port config from node.toJSON()', {
         nodeId: node.id,
         hasPortConfig: !!nodePortConfig,
         portConfigType: typeof nodePortConfig,
@@ -1606,12 +1603,12 @@ export class X6GraphAdapter implements IGraphAdapter {
       });
     } else {
       // Fallback for test environment - node doesn't have toJSON method
-      this.logger.warn('DIAGNOSTIC: Node does not have toJSON method', { nodeId: node.id });
+      this.logger.warn(' Node does not have toJSON method', { nodeId: node.id });
     }
 
     // Get current port items for comparison
     const currentPortItems = node.getPorts() || [];
-    this.logger.info('DIAGNOSTIC: Current port items from node.getPorts()', {
+    this.logger.info(' Current port items from node.getPorts()', {
       nodeId: node.id,
       itemCount: currentPortItems.length,
       portItems: currentPortItems.map((item: any) => ({
@@ -1631,7 +1628,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       items: currentPortItems, // Use current port items to preserve IDs and state
     };
 
-    this.logger.info('DIAGNOSTIC: FIXED - Always using reconstructed complete port config', {
+    this.logger.info(' FIXED - Always using reconstructed complete port config', {
       nodeId: node.id,
       nodeType,
       hasBaseGroups: !!(basePortConfig as any).groups,
@@ -1641,8 +1638,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       fixApplied: 'Always reconstruct to ensure groups + items structure',
     });
 
-    // DIAGNOSTIC: Log final port configuration being cached
-    this.logger.info('DIAGNOSTIC: Final port configuration being cached', {
+    //  Log final port configuration being cached
+    this.logger.info(' Final port configuration being cached', {
       nodeId: node.id,
       nodeType,
       hasGroups:
@@ -1669,8 +1666,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     };
     this._nodeSnapshots.set(node.id, snapshot);
 
-    // DIAGNOSTIC: Log the final cached snapshot
-    this.logger.info('DIAGNOSTIC: Node snapshot cached successfully', {
+    //  Log the final cached snapshot
+    this.logger.info(' Node snapshot cached successfully', {
       nodeId: node.id,
       snapshotPortConfig: snapshot.ports,
       cacheSize: this._nodeSnapshots.size,
@@ -2907,7 +2904,7 @@ export class X6GraphAdapter implements IGraphAdapter {
                   metadata: { operationType: 'DELETE_NODE' },
                 });
 
-                this.logger.info('DIAGNOSTIC: Started operation tracking for delete', {
+                this.logger.info(' Started operation tracking for delete', {
                   operationId,
                   nodeId: cell.id,
                 });
@@ -2934,7 +2931,7 @@ export class X6GraphAdapter implements IGraphAdapter {
                   // CRITICAL FIX: Complete operation tracking
                   if (this._operationStateTracker) {
                     this._operationStateTracker.completeOperation(operationId);
-                    this.logger.info('DIAGNOSTIC: Completed operation tracking for delete', {
+                    this.logger.info(' Completed operation tracking for delete', {
                       operationId,
                       nodeId: cell.id,
                     });
@@ -3813,6 +3810,16 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Set new timer
     const timer = setTimeout(() => {
+      //  Log timing information for undo/redo debugging
+      this.logger.info(' Debounced node data change timer fired', {
+        nodeId,
+        newData,
+        oldData,
+        debounceDelay: this._debounceDelay,
+        timerFiredAt: new Date().toISOString(),
+        willTriggerHistoryIntegration: true,
+      });
+
       this.logger.debugComponent('DFD', '[Debounced] Node data change finalized', {
         nodeId,
         newData,

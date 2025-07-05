@@ -336,7 +336,7 @@ export class DiagramAggregate {
       }
     }
 
-    // DIAGNOSTIC: Use the existing node's type if the snapshot doesn't have a valid type
+    //  Use the existing node's type if the snapshot doesn't have a valid type
     const extractedType = command.newSnapshot.type || (command.newSnapshot.shape as any);
     const finalType = extractedType === 'node' ? node.data.type : extractedType;
 

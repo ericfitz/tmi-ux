@@ -76,7 +76,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
             ? this._operationTracker.isFinalState(operationId)
             : false;
 
-          this._logger.info('DIAGNOSTIC: Checking operation final state in finalize()', {
+          this._logger.info(' Checking operation final state in finalize()', {
             commandType: command.type,
             commandId: command.commandId,
             operationId,
@@ -201,8 +201,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
     const operationId = this._getOperationId(command);
     const isFinalState = operationId ? this._operationTracker.isFinalState(operationId) : false;
 
-    // DIAGNOSTIC LOGGING - Add detailed logging to diagnose the ID mismatch
-    this._logger.info('DIAGNOSTIC: Checking operation final state', {
+    this._logger.info('Checking operation final state', {
       commandType: command.type,
       commandId: command.commandId,
       operationId,

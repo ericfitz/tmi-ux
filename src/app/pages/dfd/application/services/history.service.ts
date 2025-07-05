@@ -101,6 +101,14 @@ export class HistoryService implements IHistoryService, OnDestroy {
       // Set flag to suppress history recording during undo
       this._isUndoRedoInProgress = true;
 
+      //  Log undo operation timing
+      this._logger.info(' Undo operation started', {
+        commandType: entry.command.type,
+        commandId: entry.command.commandId,
+        undoStartedAt: new Date().toISOString(),
+        isUndoRedoInProgress: this._isUndoRedoInProgress,
+      });
+
       // Cancel any pending debounced timers to prevent unwanted history entries
       if (this._x6GraphAdapter) {
         this._x6GraphAdapter.cancelAllPendingTimers();

@@ -443,44 +443,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Convert EdgeData to X6EdgeSnapshot
+   * Convert EdgeData to X6EdgeSnapshot using the domain model's built-in method
    */
   private convertEdgeDataToSnapshot(edgeData: EdgeData): X6EdgeSnapshot {
-    return {
-      id: edgeData.id,
-      shape: 'edge', // Default edge shape
-      source: {
-        cell: edgeData.sourceNodeId,
-        port: edgeData.sourcePortId,
-      },
-      target: {
-        cell: edgeData.targetNodeId,
-        port: edgeData.targetPortId,
-      },
-      attrs: {
-        line: {
-          stroke: '#333333',
-          strokeWidth: 2,
-        },
-      },
-      labels: edgeData.label
-        ? [
-            {
-              attrs: {
-                text: {
-                  text: edgeData.label,
-                  fontSize: 12,
-                  fill: '#333333',
-                },
-              },
-            },
-          ]
-        : [],
-      vertices: edgeData.vertices.map(vertex => ({ x: vertex.x, y: vertex.y })),
-      zIndex: 1,
-      visible: true,
-      metadata: edgeData.metadata,
-    };
+    return edgeData.toX6Snapshot();
   }
 
   /**
@@ -884,9 +850,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Delete nodes first (this will also remove connected edges automatically)
     selectedNodes.forEach(node => {
-      // DIAGNOSTIC: Check for connected edges before deletion
+      //  Check for connected edges before deletion
       // Note: We'll capture this information from the domain model after deletion
-      this.logger.info('DIAGNOSTIC: Node deletion will cascade to connected edges', {
+      this.logger.info(' Node deletion will cascade to connected edges', {
         nodeId: node.id,
         note: 'Connected edges will be automatically deleted by domain logic',
       });
@@ -904,7 +870,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         },
       });
 
-      this.logger.info('DIAGNOSTIC: Started operation tracking for delete (keyboard)', {
+      this.logger.info(' Started operation tracking for delete (keyboard)', {
         operationId,
         nodeId: node.id,
         note: 'Connected edges will be automatically deleted by domain logic',
@@ -925,7 +891,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
             // CRITICAL FIX: Complete operation tracking
             this.operationStateTracker.completeOperation(operationId);
-            this.logger.info('DIAGNOSTIC: Completed operation tracking for delete (keyboard)', {
+            this.logger.info(' Completed operation tracking for delete (keyboard)', {
               operationId,
               nodeId: node.id,
             });
@@ -964,7 +930,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           metadata: { operationType: 'DELETE_EDGE', source: 'keyboard_shortcut' },
         });
 
-        this.logger.info('DIAGNOSTIC: Started operation tracking for edge delete (keyboard)', {
+        this.logger.info(' Started operation tracking for edge delete (keyboard)', {
           operationId,
           edgeId: edge.id,
         });
@@ -984,13 +950,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
               // CRITICAL FIX: Complete operation tracking
               this.operationStateTracker.completeOperation(operationId);
-              this.logger.info(
-                'DIAGNOSTIC: Completed operation tracking for edge delete (keyboard)',
-                {
-                  operationId,
-                  edgeId: edge.id,
-                },
-              );
+              this.logger.info(' Completed operation tracking for edge delete (keyboard)', {
+                operationId,
+                edgeId: edge.id,
+              });
 
               // Remove from visual graph
               this.x6GraphAdapter.removeEdge(edge.id);
@@ -1277,23 +1240,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const sourcePortId = edge.getSourcePortId();
     const targetPortId = edge.getTargetPortId();
 
-    // Create domain edge data
-    const domainEdgeData =
-      sourcePortId && targetPortId
-        ? EdgeData.createWithPorts(
-            edge.id,
-            sourceNodeId,
-            targetNodeId,
-            sourcePortId,
-            targetPortId,
-            'Data Flow', // Default label
-          )
-        : EdgeData.createSimple(
-            edge.id,
-            sourceNodeId,
-            targetNodeId,
-            'Data Flow', // Default label
-          );
+    // Create domain edge data using the current domain model constructor
+    const source = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
+    const target = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
+    const attrs = { text: { text: 'Data Flow' } }; // Default label
+
+    const domainEdgeData = new EdgeData(
+      edge.id,
+      'edge', // shape
+      source,
+      target,
+      attrs,
+      [], // labels (empty, using attrs for label)
+      [], // vertices (empty for new edge)
+      1, // zIndex
+      true, // visible
+      [], // metadata (empty for new edge)
+    );
 
     // Create and execute AddEdgeCommand
     const diagramId = this.dfdId || 'default-diagram';
@@ -1588,24 +1551,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const diagramId = this.dfdId || 'default-diagram';
     const userId = 'current-user'; // TODO: Get from auth service
 
-    // Create domain edge data for the inverse connection
+    // Get the original edge's label for consistency
+    const originalLabel = edge.getLabelAt(0)?.attrs?.['text']?.['text'] || 'Flow';
+
+    // Create domain edge data for the inverse connection using the current domain model
     // Swap source and target, and swap source and target ports
-    const inverseEdgeData =
-      sourcePortId && targetPortId
-        ? EdgeData.createWithPorts(
-            inverseEdgeId,
-            targetNodeId, // Swap: original target becomes new source
-            sourceNodeId, // Swap: original source becomes new target
-            targetPortId, // Swap: original target port becomes new source port
-            sourcePortId, // Swap: original source port becomes new target port
-            'Flow', // Default label
-          )
-        : EdgeData.createSimple(
-            inverseEdgeId,
-            targetNodeId, // Swap: original target becomes new source
-            sourceNodeId, // Swap: original source becomes new target
-            'Flow', // Default label
-          );
+    const inverseSource = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
+    const inverseTarget = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
+    const inverseAttrs = { text: { text: originalLabel } };
+
+    const inverseEdgeData = new EdgeData(
+      inverseEdgeId,
+      'edge', // shape
+      inverseSource, // Swapped source
+      inverseTarget, // Swapped target
+      inverseAttrs, // attrs with label
+      [], // labels (empty, using attrs for label)
+      [], // vertices (empty for new edge)
+      1, // zIndex
+      true, // visible
+      [], // metadata (empty for new edge)
+    );
 
     // Create and execute AddEdgeCommand for the inverse edge
     const command = DiagramCommandFactory.addEdge(
@@ -1628,12 +1594,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             inverseEdgeId,
             newSource: targetNodeId,
             newTarget: sourceNodeId,
+            newSourcePort: targetPortId,
+            newTargetPort: sourcePortId,
           });
 
-          // Add the inverse edge to the visual graph
-          // Create a DiagramEdge from the EdgeData
+          // Add the inverse edge to the visual graph using the current domain model
           const diagramEdge = new DiagramEdge(inverseEdgeData);
-
           this.x6GraphAdapter.addEdge(diagramEdge);
           this.cdr.markForCheck();
         },

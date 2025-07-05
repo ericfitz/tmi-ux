@@ -202,7 +202,23 @@ export class DfdApplicationService {
     _vertices: Point[] = [],
     _metadata: Record<string, string> = {},
   ): Observable<void> {
-    const edgeData = EdgeData.createSimple(edgeId, sourceNodeId, targetNodeId, label);
+    // Create domain edge data using the current domain model constructor
+    const source = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
+    const target = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
+    const attrs = label ? { text: { text: label } } : { text: { text: 'Data Flow' } };
+
+    const edgeData = new EdgeData(
+      edgeId,
+      'edge', // shape
+      source,
+      target,
+      attrs,
+      [], // labels (empty, using attrs for label)
+      [], // vertices (empty for new edge)
+      1, // zIndex
+      true, // visible
+      [], // metadata (empty for new edge)
+    );
     const command = DiagramCommandFactory.addEdge(
       diagramId,
       userId,
