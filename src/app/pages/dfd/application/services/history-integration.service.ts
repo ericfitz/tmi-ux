@@ -224,32 +224,12 @@ export class HistoryIntegrationService implements OnDestroy {
 
       // CRITICAL FIX: Use cached snapshot for "current" state instead of reading from domain
       // The domain already has the updated data, but we need the pre-update state for undo
-      let cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
+      const cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
       if (!cachedSnapshot) {
-        this._logger.info('No cached snapshot found, creating snapshot for newly created node', {
+        this._logger.warn('No cached snapshot found for node history recording', {
           nodeId: event.nodeId,
         });
-
-        // For newly created nodes, we need to create a snapshot based on the old data
-        // since the cached snapshot doesn't exist yet
-        const currentNodeData = this._getCurrentNodeData(event.nodeId);
-
-        // Create a snapshot representing the state before this change using old data
-        const nodeDataWithOldValues = NodeData.fromJSON({
-          ...currentNodeData.toJSON(),
-          ...event.oldData, // Apply the old data values
-          position: currentNodeData.position, // Keep position in correct format
-        });
-
-        cachedSnapshot = this._convertNodeDataToSnapshot(nodeDataWithOldValues);
-      }
-
-      // At this point cachedSnapshot is guaranteed to exist
-      if (!cachedSnapshot) {
-        this._logger.error('Failed to create or retrieve cached snapshot for node', {
-          nodeId: event.nodeId,
-        });
-        return;
+        return; // Skip history recording for nodes without cached snapshots
       }
 
       // Log the successful snapshot creation/retrieval
