@@ -25,10 +25,12 @@ describe('HistoryIntegrationService', () => {
     setCommandContext: ReturnType<typeof vi.fn>;
     getInitialNodePosition: ReturnType<typeof vi.fn>;
     getGraph: ReturnType<typeof vi.fn>;
+    getNodeSnapshot: ReturnType<typeof vi.fn>;
     dragCompleted$: Subject<any>;
     debouncedEdgeVerticesChanged$: Subject<any>;
     debouncedNodeResized$: Subject<any>;
     debouncedNodeDataChanged$: Subject<any>;
+    nodeDataChanged$: Subject<any>;
   };
   let mockCommandBus: {
     execute: ReturnType<typeof vi.fn>;
@@ -54,10 +56,12 @@ describe('HistoryIntegrationService', () => {
       setCommandContext: vi.fn(),
       getInitialNodePosition: vi.fn(),
       getGraph: vi.fn(),
+      getNodeSnapshot: vi.fn(),
       dragCompleted$: new Subject(),
       debouncedEdgeVerticesChanged$: new Subject(),
       debouncedNodeResized$: new Subject(),
       debouncedNodeDataChanged$: new Subject(),
+      nodeDataChanged$: new Subject(),
     };
 
     mockCommandBus = {
@@ -73,6 +77,13 @@ describe('HistoryIntegrationService', () => {
     mockHistoryService = {
       isUndoRedoInProgress: vi.fn(),
     };
+
+    // Setup default mock return values
+    mockX6GraphAdapter.getNodeSnapshot.mockReturnValue({
+      id: 'test-node',
+      attrs: { text: { text: 'Test Node' } },
+      type: 'process',
+    });
 
     // Create the service directly without TestBed
     service = new HistoryIntegrationService(
@@ -136,7 +147,7 @@ describe('HistoryIntegrationService', () => {
         oldData: { label: 'Old Label' },
       };
 
-      mockX6GraphAdapter.debouncedNodeDataChanged$.next(nodeDataChangeEvent);
+      mockX6GraphAdapter.nodeDataChanged$.next(nodeDataChangeEvent);
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
@@ -249,7 +260,7 @@ describe('HistoryIntegrationService', () => {
 
       // Act - Test remaining debounced events (node movement removed)
       mockX6GraphAdapter.debouncedNodeResized$.next(nodeResizeEvent);
-      mockX6GraphAdapter.debouncedNodeDataChanged$.next(nodeDataChangeEvent);
+      mockX6GraphAdapter.nodeDataChanged$.next(nodeDataChangeEvent);
       mockX6GraphAdapter.debouncedEdgeVerticesChanged$.next(edgeVertexEvent);
 
       // Assert
@@ -260,7 +271,7 @@ describe('HistoryIntegrationService', () => {
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Processing debounced node data change for history',
+        'Processing immediate node data change for history',
         {
           nodeId: 'test-node',
           newData: { label: 'Updated Label' },

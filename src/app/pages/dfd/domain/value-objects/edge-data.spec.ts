@@ -195,8 +195,8 @@ describe('EdgeData', () => {
       expect(edgeData.sourceNodeId).toBe('source');
       expect(edgeData.targetNodeId).toBe('target');
       expect(edgeData.label).toBe('Data Flow');
-      expect(edgeData.sourcePortId).toBeUndefined();
-      expect(edgeData.targetPortId).toBeUndefined();
+      expect(edgeData.sourcePortId).toBe('right');
+      expect(edgeData.targetPortId).toBe('left');
     });
 
     it('should create EdgeData with ports', () => {

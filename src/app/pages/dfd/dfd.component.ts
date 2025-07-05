@@ -40,6 +40,7 @@ import { EdgeData } from './domain/value-objects/edge-data';
 import { Point } from './domain/value-objects/point';
 import { DiagramNode } from './domain/value-objects/diagram-node';
 import { DiagramEdge } from './domain/value-objects/diagram-edge';
+import { EdgeDataFactory } from './domain/factories/edge-data.factory';
 
 // Import providers needed for standalone component
 import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
@@ -113,6 +114,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     // Infrastructure adapters
     X6GraphAdapter,
 
+    // Domain factories
+    EdgeDataFactory,
+
     // History services
     {
       provide: 'ICommandBus',
@@ -169,6 +173,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     private commandBusInitializer: CommandBusInitializerService,
     private transloco: TranslocoService,
+    private edgeDataFactory: EdgeDataFactory,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -1240,23 +1245,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const sourcePortId = edge.getSourcePortId();
     const targetPortId = edge.getTargetPortId();
 
-    // Create domain edge data using the current domain model constructor
-    const source = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
-    const target = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
-    const attrs = { text: { text: 'Data Flow' } }; // Default label
-
-    const domainEdgeData = new EdgeData(
-      edge.id,
-      'edge', // shape
-      source,
-      target,
-      attrs,
-      [], // labels (empty, using attrs for label)
-      [], // vertices (empty for new edge)
-      1, // zIndex
-      true, // visible
-      [], // metadata (empty for new edge)
-    );
+    // Create domain edge data using EdgeDataFactory
+    const domainEdgeData = this.edgeDataFactory.createFromNodes({
+      id: edge.id,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      label: 'Data Flow',
+    });
 
     // Create and execute AddEdgeCommand
     const diagramId = this.dfdId || 'default-diagram';
@@ -1356,24 +1353,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         ? currentEdgeData.label
         : 'Data Flow';
 
-    // Create a new EdgeData instance with updated vertices
-    const source = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
-    const target = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
-    const attrs = currentLabel ? { text: { text: currentLabel } } : undefined;
+    // Create a new EdgeData instance with updated vertices using EdgeDataFactory
     const vertexCoords = domainVertices.map(v => ({ x: v.x, y: v.y }));
-
-    const updatedEdgeData = new EdgeData(
-      edgeId,
-      'edge', // shape
-      source,
-      target,
-      attrs,
-      [], // labels
-      vertexCoords,
-      1, // zIndex
-      true, // visible
-      [], // metadata - could be preserved from current data if needed
-    );
+    const updatedEdgeData = this.edgeDataFactory.createFromNodes({
+      id: edgeId,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      label: currentLabel,
+      vertices: vertexCoords,
+    });
 
     // We need the old data for the command, so let's create it from current state
     const oldVerticesData =
@@ -1383,25 +1373,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       Array.isArray(currentEdgeData.vertices)
         ? (currentEdgeData.vertices as Array<{ x: number; y: number }>)
         : [];
-    const oldDomainVertices = oldVerticesData.map(v => new Point(v.x, v.y));
 
-    const oldSource = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
-    const oldTarget = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
-    const oldAttrs = currentLabel ? { text: { text: currentLabel || 'Data Flow' } } : undefined;
-    const oldVertexCoords = oldDomainVertices.map(v => ({ x: v.x, y: v.y }));
-
-    const oldEdgeData = new EdgeData(
-      edgeId,
-      'edge', // shape
-      oldSource,
-      oldTarget,
-      oldAttrs,
-      [], // labels
-      oldVertexCoords,
-      1, // zIndex
-      true, // visible
-      [], // metadata
-    );
+    const oldEdgeData = this.edgeDataFactory.createFromNodes({
+      id: edgeId,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      label: currentLabel || 'Data Flow',
+      vertices: oldVerticesData,
+    });
 
     // Create and execute UpdateEdgeSnapshotCommand
     const command = DiagramCommandFactory.updateEdgeData(
@@ -1552,25 +1533,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const userId = 'current-user'; // TODO: Get from auth service
 
     // Get the original edge's label for consistency
-    const originalLabel = edge.getLabelAt(0)?.attrs?.['text']?.['text'] || 'Flow';
+    const originalLabelRaw = edge.getLabelAt(0)?.attrs?.['text']?.['text'];
+    const originalLabel = typeof originalLabelRaw === 'string' ? originalLabelRaw : 'Flow';
 
-    // Create domain edge data for the inverse connection using the current domain model
-    // Swap source and target, and swap source and target ports
-    const inverseSource = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
-    const inverseTarget = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
-    const inverseAttrs = { text: { text: originalLabel } };
+    // First create the original edge data, then create the inverse
+    const originalEdgeData = this.edgeDataFactory.createFromNodes({
+      id: edge.id,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      label: originalLabel,
+    });
 
-    const inverseEdgeData = new EdgeData(
+    // Create inverse edge data using EdgeDataFactory
+    const inverseEdgeData = this.edgeDataFactory.createInverse(
+      originalEdgeData,
       inverseEdgeId,
-      'edge', // shape
-      inverseSource, // Swapped source
-      inverseTarget, // Swapped target
-      inverseAttrs, // attrs with label
-      [], // labels (empty, using attrs for label)
-      [], // vertices (empty for new edge)
-      1, // zIndex
-      true, // visible
-      [], // metadata (empty for new edge)
+      originalLabel,
     );
 
     // Create and execute AddEdgeCommand for the inverse edge

@@ -228,11 +228,20 @@ export class EdgeData {
     vertices?: Array<{ x: number; y: number }>;
     metadata?: Record<string, string>;
   }): EdgeData {
-    return EdgeData.fromLegacyJSON(data);
+    // Assign default ports if not specified
+    const sourcePortId = data.sourcePortId || 'right';
+    const targetPortId = data.targetPortId || 'left';
+
+    return EdgeData.fromLegacyJSON({
+      ...data,
+      sourcePortId,
+      targetPortId,
+    });
   }
 
   /**
    * Creates a simple edge between two nodes
+   * @deprecated Use EdgeDataFactory.createFromNodes() instead for centralized edge creation
    */
   static createSimple(
     id: string,
@@ -241,11 +250,15 @@ export class EdgeData {
     label?: string,
   ): EdgeData {
     const attrs = label ? { text: { text: label } } : undefined;
-    return new EdgeData(id, 'edge', sourceNodeId, targetNodeId, attrs);
+    // Assign default ports for simple edges
+    const source = { cell: sourceNodeId, port: 'right' };
+    const target = { cell: targetNodeId, port: 'left' };
+    return new EdgeData(id, 'edge', source, target, attrs);
   }
 
   /**
    * Creates an edge with port connections
+   * @deprecated Use EdgeDataFactory.createFromNodes() instead for centralized edge creation
    */
   static createWithPorts(
     id: string,
@@ -415,6 +428,51 @@ export class EdgeData {
   }
 
   /**
+   * Creates a new EdgeData with updated properties (partial update)
+   * This is the consolidated method for all edge updates
+   */
+  update(updates: {
+    source?: Edge.Properties['source'];
+    target?: Edge.Properties['target'];
+    attrs?: Edge.Properties['attrs'];
+    labels?: Edge.Properties['labels'];
+    vertices?: Array<{ x: number; y: number }>;
+    zIndex?: number;
+    visible?: boolean;
+    metadata?: MetadataEntry[] | Record<string, string>;
+    label?: string; // Convenience property that updates attrs.text.text
+  }): EdgeData {
+    // Handle label convenience property
+    let newAttrs = updates.attrs ? { ...this.attrs, ...updates.attrs } : this.attrs;
+    if (updates.label !== undefined) {
+      newAttrs = { ...newAttrs, text: { text: updates.label } };
+    }
+
+    // Handle metadata format conversion
+    let newMetadata = this.metadata;
+    if (updates.metadata !== undefined) {
+      if (Array.isArray(updates.metadata)) {
+        newMetadata = updates.metadata;
+      } else {
+        newMetadata = Object.entries(updates.metadata).map(([key, value]) => ({ key, value }));
+      }
+    }
+
+    return new EdgeData(
+      this.id,
+      this.shape,
+      updates.source ?? this.source,
+      updates.target ?? this.target,
+      newAttrs,
+      updates.labels ?? this.labels,
+      updates.vertices ?? this.vertices,
+      updates.zIndex ?? this.zIndex,
+      updates.visible ?? this.visible,
+      newMetadata,
+    );
+  }
+
+  /**
    * Checks if this edge connects to the specified node
    */
   connectsToNode(nodeId: string): boolean {
@@ -521,6 +579,9 @@ export class EdgeData {
 
   /**
    * Converts metadata array to Record format for backward compatibility
+   * @deprecated Use the metadata property directly instead of converting to Record format.
+   * Normal edge properties should be stored in their dedicated properties (labels, vertices, etc.)
+   * rather than in metadata.
    */
   getMetadataAsRecord(): Record<string, string> {
     const record: Record<string, string> = {};

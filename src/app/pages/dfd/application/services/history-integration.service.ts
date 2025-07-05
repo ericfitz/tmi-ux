@@ -197,6 +197,16 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      if (this._historyService.isUndoRedoInProgress()) {
+        this._logger.info('Skipping debounced node data change during undo/redo operation', {
+          nodeId: event.nodeId,
+          newData: event.newData,
+          oldData: event.oldData,
+        });
+        return;
+      }
+
       this._logger.info('Processing immediate node data change for history', {
         nodeId: event.nodeId,
         newData: event.newData,
@@ -214,13 +224,44 @@ export class HistoryIntegrationService implements OnDestroy {
 
       // CRITICAL FIX: Use cached snapshot for "current" state instead of reading from domain
       // The domain already has the updated data, but we need the pre-update state for undo
-      const cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
+      let cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
       if (!cachedSnapshot) {
-        this._logger.warn('No cached snapshot found for node history recording', {
+        this._logger.info('No cached snapshot found, creating snapshot for newly created node', {
+          nodeId: event.nodeId,
+        });
+
+        // For newly created nodes, we need to create a snapshot based on the old data
+        // since the cached snapshot doesn't exist yet
+        const currentNodeData = this._getCurrentNodeData(event.nodeId);
+
+        // Create a snapshot representing the state before this change using old data
+        const nodeDataWithOldValues = NodeData.fromJSON({
+          ...currentNodeData.toJSON(),
+          ...event.oldData, // Apply the old data values
+          position: currentNodeData.position, // Keep position in correct format
+        });
+
+        cachedSnapshot = this._convertNodeDataToSnapshot(nodeDataWithOldValues);
+      }
+
+      // At this point cachedSnapshot is guaranteed to exist
+      if (!cachedSnapshot) {
+        this._logger.error('Failed to create or retrieve cached snapshot for node', {
           nodeId: event.nodeId,
         });
         return;
       }
+
+      // Log the successful snapshot creation/retrieval
+      this._logger.info('Using snapshot for node history recording', {
+        nodeId: event.nodeId,
+        oldData: event.oldData,
+        snapshotInfo: {
+          id: cachedSnapshot.id,
+          type: cachedSnapshot.type,
+          label: cachedSnapshot.attrs?.['text']?.['text'],
+        },
+      });
 
       // Get current node data to preserve other properties for the new snapshot
       const currentNodeData = this._getCurrentNodeData(event.nodeId);

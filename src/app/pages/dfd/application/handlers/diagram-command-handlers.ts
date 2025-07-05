@@ -551,28 +551,14 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
                 hasSnapshot: !!command.edgeSnapshot,
               });
 
-              // Use isLocalUserInitiated flag to distinguish between new creation vs restoration
-              // - true: user-initiated command (new creation) → use regular addEdge()
-              // - false/undefined: system-generated command (undo/redo) → use addEdgeFromSnapshot()
-              if (!command.isLocalUserInitiated && command.edgeSnapshot) {
-                this._logger.info(
-                  ' AddEdgeCommand - Using snapshot-based restoration for undo/redo',
-                  {
-                    edgeId: edge.id,
-                    snapshotSource: command.edgeSnapshot.source,
-                    snapshotTarget: command.edgeSnapshot.target,
-                    isLocalUserInitiated: command.isLocalUserInitiated,
-                  },
-                );
-                this._x6GraphAdapter.addEdgeFromSnapshot(command.edgeSnapshot);
-              } else {
-                this._logger.info(' AddEdgeCommand - Using regular edge creation', {
-                  edgeId: edge.id,
-                  isLocalUserInitiated: command.isLocalUserInitiated,
-                  hasSnapshot: !!command.edgeSnapshot,
-                });
-                this._x6GraphAdapter.addEdge(edge);
-              }
+              // Use X6GraphAdapter which now uses consolidated EdgeService internally
+              this._logger.info(' AddEdgeCommand - Adding edge via X6GraphAdapter', {
+                edgeId: edge.id,
+                isLocalUserInitiated: command.isLocalUserInitiated,
+                hasSnapshot: !!command.edgeSnapshot,
+                isRestoration: !command.isLocalUserInitiated,
+              });
+              this._x6GraphAdapter.addEdge(edge);
             } else {
               this._logger.warn(' AddEdgeCommand - Edge not found in domain after add', {
                 edgeId: command.edgeId,
@@ -718,9 +704,12 @@ export class RemoveEdgeCommandHandler implements ICommandHandler<RemoveEdgeComma
         this.saveDiagram(diagram).pipe(
           map(result => {
             // After successful removal from domain model, remove from X6 graph
-            this._logger.info(' RemoveEdgeCommand - Removing edge from X6 graph', {
-              edgeId: command.edgeId,
-            });
+            this._logger.info(
+              ' RemoveEdgeCommand - Removing edge from X6 graph via consolidated service',
+              {
+                edgeId: command.edgeId,
+              },
+            );
             this._x6GraphAdapter.removeEdge(command.edgeId);
             return result;
           }),

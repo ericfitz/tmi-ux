@@ -11,6 +11,7 @@ import { DiagramState } from '../../domain/history/history.types';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 import { Point } from '../../domain/value-objects/point';
 import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
+import { CellUtils } from '../../utils/x6-cell-extensions';
 
 /**
  * Middleware that handles history recording for diagram commands
@@ -292,7 +293,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
           zIndex: node.getZIndex() ?? 1, // Default to 1 if undefined
           visible: node.isVisible(),
           type: node.shape, // Use shape as type
-          metadata: node.getMetadata(),
+          metadata: this._convertMetadataToArray(CellUtils.getCleanMetadata(node)),
         };
 
         return {
@@ -322,7 +323,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
           vertices: edge.getVertices().map(v => ({ x: v.x, y: v.y })),
           zIndex: edge.getZIndex() ?? 1, // Default to 1 if undefined
           visible: edge.isVisible(),
-          metadata: edge.getMetadata(),
+          metadata: this._convertMetadataToArray(CellUtils.getCleanMetadata(edge)),
         };
 
         return {
@@ -424,5 +425,14 @@ export class HistoryMiddleware implements ICommandMiddleware {
       return typeof cellValue === 'string' ? cellValue : '';
     }
     return '';
+  }
+
+  /**
+   * Converts a metadata record to the array format expected by X6 snapshots
+   */
+  private _convertMetadataToArray(
+    metadata: Record<string, string>,
+  ): Array<{ key: string; value: string }> {
+    return Object.entries(metadata).map(([key, value]) => ({ key, value }));
   }
 }

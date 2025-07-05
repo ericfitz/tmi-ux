@@ -22,6 +22,8 @@ import { Point } from '../../domain/value-objects/point';
 import { NodeData } from '../../domain/value-objects/node-data';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { BaseDomainEvent } from '../../domain/events/domain-event';
+import { EdgeDataFactory } from '../../domain/factories/edge-data.factory';
+import { EdgeOperationService } from './edge-operation.service';
 
 // Import testing utilities
 import { waitForAsync } from '../../../../../testing/async-utils';
@@ -37,6 +39,15 @@ describe('DfdApplicationService', () => {
     findById: ReturnType<typeof vi.fn>;
     save: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
+  };
+  let mockEdgeDataFactory: {
+    createSimple: ReturnType<typeof vi.fn>;
+    createWithPorts: ReturnType<typeof vi.fn>;
+  };
+  let mockEdgeOperationService: {
+    createEdge: ReturnType<typeof vi.fn>;
+    updateEdge: ReturnType<typeof vi.fn>;
+    deleteEdge: ReturnType<typeof vi.fn>;
   };
 
   // Test data
@@ -93,10 +104,28 @@ describe('DfdApplicationService', () => {
       delete: vi.fn(),
     };
 
+    mockEdgeDataFactory = {
+      createSimple: vi.fn(),
+      createWithPorts: vi.fn(),
+    };
+
+    mockEdgeOperationService = {
+      createEdge: vi.fn(),
+      updateEdge: vi.fn(),
+      deleteEdge: vi.fn(),
+    };
+
+    // Setup default return values
+    mockEdgeOperationService.createEdge.mockReturnValue(of({ success: true }));
+    mockEdgeOperationService.updateEdge.mockReturnValue(of({ success: true }));
+    mockEdgeOperationService.deleteEdge.mockReturnValue(of({ success: true }));
+
     // Create the service directly without TestBed
     service = new DfdApplicationService(
       mockCommandBus as unknown as CommandBusService,
       mockRepository as unknown as IDiagramRepository,
+      mockEdgeDataFactory as unknown as EdgeDataFactory,
+      mockEdgeOperationService as unknown as EdgeOperationService,
     );
   });
 
@@ -375,12 +404,14 @@ describe('DfdApplicationService', () => {
           .addEdge(testDiagramId, testEdgeId, 'source-id', 'target-id', testUserId, 'Test Edge')
           .subscribe({
             next: () => {
-              expect(mockCommandBus.execute).toHaveBeenCalledWith(
+              expect(mockEdgeOperationService.createEdge).toHaveBeenCalledWith(
                 expect.objectContaining({
-                  type: 'ADD_EDGE',
                   diagramId: testDiagramId,
-                  userId: testUserId,
                   edgeId: testEdgeId,
+                  sourceNodeId: 'source-id',
+                  targetNodeId: 'target-id',
+                  userId: testUserId,
+                  label: 'Test Edge',
                 }),
               );
               resolve();
@@ -398,12 +429,13 @@ describe('DfdApplicationService', () => {
           .updateEdgeData(testDiagramId, testEdgeId, newData, testEdgeData, testUserId)
           .subscribe({
             next: () => {
-              expect(mockCommandBus.execute).toHaveBeenCalledWith(
+              expect(mockEdgeOperationService.updateEdge).toHaveBeenCalledWith(
                 expect.objectContaining({
-                  type: 'UPDATE_EDGE_SNAPSHOT',
                   diagramId: testDiagramId,
-                  userId: testUserId,
                   edgeId: testEdgeId,
+                  userId: testUserId,
+                  newData: newData,
+                  oldData: testEdgeData,
                 }),
               );
               resolve();
@@ -417,12 +449,11 @@ describe('DfdApplicationService', () => {
       return new Promise<void>((resolve, reject) => {
         service.removeEdge(testDiagramId, testEdgeId, testUserId).subscribe({
           next: () => {
-            expect(mockCommandBus.execute).toHaveBeenCalledWith(
+            expect(mockEdgeOperationService.deleteEdge).toHaveBeenCalledWith(
               expect.objectContaining({
-                type: 'REMOVE_EDGE',
                 diagramId: testDiagramId,
-                userId: testUserId,
                 edgeId: testEdgeId,
+                userId: testUserId,
               }),
             );
             resolve();
@@ -578,10 +609,28 @@ describe('DfdApplicationServiceExtended', () => {
       delete: vi.fn(),
     };
 
+    const mockEdgeDataFactory = {
+      createSimple: vi.fn(),
+      createWithPorts: vi.fn(),
+    };
+
+    const mockEdgeOperationService = {
+      createEdge: vi.fn(),
+      updateEdge: vi.fn(),
+      deleteEdge: vi.fn(),
+    };
+
+    // Setup default return values
+    mockEdgeOperationService.createEdge.mockReturnValue(of({ success: true }));
+    mockEdgeOperationService.updateEdge.mockReturnValue(of({ success: true }));
+    mockEdgeOperationService.deleteEdge.mockReturnValue(of({ success: true }));
+
     // Create the service directly without TestBed
     service = new DfdApplicationServiceExtended(
       mockCommandBus as unknown as CommandBusService,
       mockRepository as unknown as IDiagramRepository,
+      mockEdgeDataFactory as unknown as EdgeDataFactory,
+      mockEdgeOperationService as unknown as EdgeOperationService,
     );
   });
 
@@ -622,8 +671,8 @@ describe('DfdApplicationServiceExtended', () => {
         service.createDiagramWithContent(options).subscribe({
           next: diagramId => {
             expect(diagramId).toBe('test-diagram-id');
-            // Should be called for create + node + edge = 3 times
-            expect(mockCommandBus.execute).toHaveBeenCalledTimes(3);
+            // Should be called for create + node = 2 times (edge goes through EdgeOperationService)
+            expect(mockCommandBus.execute).toHaveBeenCalledTimes(2);
             resolve();
           },
           error: reject,

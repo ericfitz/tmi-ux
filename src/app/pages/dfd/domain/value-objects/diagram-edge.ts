@@ -75,6 +75,9 @@ export class DiagramEdge {
 
   /**
    * Gets the edge metadata (converted to Record format for backward compatibility)
+   * @deprecated Use this._data.metadata directly instead of converting to Record format.
+   * Normal edge properties should be stored in their dedicated properties (labels, vertices, etc.)
+   * rather than in metadata.
    */
   get metadata(): Record<string, string> {
     return this._data.getMetadataAsRecord();

@@ -390,6 +390,147 @@ export class DiagramCommandFactory {
   }
 
   /**
+   * Creates a composite command for adding an edge with node port state preservation
+   * This ensures that when edges are undone/redone, the port visibility is properly restored
+   */
+  static addEdgeWithPortState(
+    diagramId: string,
+    userId: string,
+    edgeId: string,
+    sourceNodeId: string,
+    targetNodeId: string,
+    edgeSnapshot: X6EdgeSnapshot,
+    sourceNodeSnapshotBefore: X6NodeSnapshot,
+    targetNodeSnapshotBefore: X6NodeSnapshot,
+    sourceNodeSnapshotAfter: X6NodeSnapshot,
+    targetNodeSnapshotAfter: X6NodeSnapshot,
+    isLocalUserInitiated?: boolean,
+  ): CompositeCommand {
+    const commands: AnyDiagramCommand[] = [
+      // 1. Update source node snapshot to capture port state before edge addition
+      this.updateNodeData(
+        diagramId,
+        userId,
+        sourceNodeId,
+        sourceNodeSnapshotBefore,
+        sourceNodeSnapshotBefore, // Same snapshot for before/after since this is just for history
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+      // 2. Update target node snapshot to capture port state before edge addition
+      this.updateNodeData(
+        diagramId,
+        userId,
+        targetNodeId,
+        targetNodeSnapshotBefore,
+        targetNodeSnapshotBefore, // Same snapshot for before/after since this is just for history
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+      // 3. Add the edge
+      this.addEdge(
+        diagramId,
+        userId,
+        edgeId,
+        sourceNodeId,
+        targetNodeId,
+        edgeSnapshot,
+        isLocalUserInitiated,
+      ),
+      // 4. Update source node snapshot to capture port state after edge addition
+      this.updateNodeData(
+        diagramId,
+        userId,
+        sourceNodeId,
+        sourceNodeSnapshotAfter,
+        sourceNodeSnapshotBefore, // Use before snapshot as old state
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+      // 5. Update target node snapshot to capture port state after edge addition
+      this.updateNodeData(
+        diagramId,
+        userId,
+        targetNodeId,
+        targetNodeSnapshotAfter,
+        targetNodeSnapshotBefore, // Use before snapshot as old state
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+    ];
+
+    return this.createComposite(
+      diagramId,
+      userId,
+      commands,
+      `Add edge ${edgeId} with port state preservation`,
+      isLocalUserInitiated,
+    );
+  }
+
+  /**
+   * Creates a composite command for removing an edge with node port state preservation
+   * This ensures that when edges are undone/redone, the port visibility is properly restored
+   */
+  static removeEdgeWithPortState(
+    diagramId: string,
+    userId: string,
+    edgeId: string,
+    sourceNodeId: string,
+    targetNodeId: string,
+    sourceNodeSnapshotBefore: X6NodeSnapshot,
+    targetNodeSnapshotBefore: X6NodeSnapshot,
+    sourceNodeSnapshotAfter: X6NodeSnapshot,
+    targetNodeSnapshotAfter: X6NodeSnapshot,
+    isLocalUserInitiated?: boolean,
+  ): CompositeCommand {
+    const commands: AnyDiagramCommand[] = [
+      // 1. Update source node snapshot to capture port state before edge removal
+      this.updateNodeData(
+        diagramId,
+        userId,
+        sourceNodeId,
+        sourceNodeSnapshotBefore,
+        sourceNodeSnapshotBefore, // Same snapshot for before/after since this is just for history
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+      // 2. Update target node snapshot to capture port state before edge removal
+      this.updateNodeData(
+        diagramId,
+        userId,
+        targetNodeId,
+        targetNodeSnapshotBefore,
+        targetNodeSnapshotBefore, // Same snapshot for before/after since this is just for history
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+      // 3. Remove the edge
+      this.removeEdge(diagramId, userId, edgeId, isLocalUserInitiated),
+      // 4. Update source node snapshot to capture port state after edge removal
+      this.updateNodeData(
+        diagramId,
+        userId,
+        sourceNodeId,
+        sourceNodeSnapshotAfter,
+        sourceNodeSnapshotBefore, // Use before snapshot as old state
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+      // 5. Update target node snapshot to capture port state after edge removal
+      this.updateNodeData(
+        diagramId,
+        userId,
+        targetNodeId,
+        targetNodeSnapshotAfter,
+        targetNodeSnapshotBefore, // Use before snapshot as old state
+        false, // Not user-initiated, this is system-generated for port state
+      ),
+    ];
+
+    return this.createComposite(
+      diagramId,
+      userId,
+      commands,
+      `Remove edge ${edgeId} with port state preservation`,
+      isLocalUserInitiated,
+    );
+  }
+
+  /**
    * Generates a unique command ID
    */
   private static generateCommandId(): string {

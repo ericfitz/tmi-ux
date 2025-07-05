@@ -51,3 +51,6 @@ CLAUDE.md
 # Local environment files
 src/environments/environment.local.ts
 context/*.json
+unused/*
+unused
+

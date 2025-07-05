@@ -9,6 +9,8 @@ import { Point } from '../../domain/value-objects/point';
 import { NodeData } from '../../domain/value-objects/node-data';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { IDiagramRepository, DIAGRAM_REPOSITORY_TOKEN } from '../handlers/diagram-command-handlers';
+import { EdgeDataFactory } from '../../domain/factories/edge-data.factory';
+import { EdgeOperationService } from './edge-operation.service';
 
 /**
  * Application service for DFD diagram operations
@@ -26,6 +28,8 @@ export class DfdApplicationService {
   constructor(
     private readonly commandBus: CommandBusService,
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly edgeDataFactory: EdgeDataFactory,
+    private readonly edgeOperationService: EdgeOperationService,
   ) {}
 
   /**
@@ -189,6 +193,7 @@ export class DfdApplicationService {
 
   /**
    * Adds an edge to the diagram
+   * @deprecated Use EdgeOperationService.createEdge() instead
    */
   addEdge(
     diagramId: string,
@@ -202,37 +207,26 @@ export class DfdApplicationService {
     _vertices: Point[] = [],
     _metadata: Record<string, string> = {},
   ): Observable<void> {
-    // Create domain edge data using the current domain model constructor
-    const source = sourcePortId ? { cell: sourceNodeId, port: sourcePortId } : sourceNodeId;
-    const target = targetPortId ? { cell: targetNodeId, port: targetPortId } : targetNodeId;
-    const attrs = label ? { text: { text: label } } : { text: { text: 'Data Flow' } };
-
-    const edgeData = new EdgeData(
-      edgeId,
-      'edge', // shape
-      source,
-      target,
-      attrs,
-      [], // labels (empty, using attrs for label)
-      [], // vertices (empty for new edge)
-      1, // zIndex
-      true, // visible
-      [], // metadata (empty for new edge)
-    );
-    const command = DiagramCommandFactory.addEdge(
-      diagramId,
-      userId,
-      edgeId,
-      sourceNodeId,
-      targetNodeId,
-      edgeData,
-    );
-
-    return this.executeCommand(command);
+    // CONSOLIDATED: Now uses EdgeOperationService for unified edge operations
+    return this.edgeOperationService
+      .createEdge({
+        diagramId,
+        edgeId,
+        sourceNodeId,
+        targetNodeId,
+        userId,
+        label,
+        sourcePortId,
+        targetPortId,
+        vertices: _vertices,
+        metadata: _metadata,
+      })
+      .pipe(map(() => void 0)); // Convert CommandResult to void for backward compatibility
   }
 
   /**
    * Updates an edge's data
+   * @deprecated Use EdgeOperationService.updateEdge() instead
    */
   updateEdgeData(
     diagramId: string,
@@ -241,24 +235,31 @@ export class DfdApplicationService {
     oldData: EdgeData,
     userId: string,
   ): Observable<void> {
-    const command = DiagramCommandFactory.updateEdgeData(
-      diagramId,
-      userId,
-      edgeId,
-      newData,
-      oldData,
-    );
-
-    return this.executeCommand(command);
+    // CONSOLIDATED: Now uses EdgeOperationService for unified edge operations
+    return this.edgeOperationService
+      .updateEdge({
+        diagramId,
+        edgeId,
+        userId,
+        newData,
+        oldData,
+      })
+      .pipe(map(() => void 0)); // Convert CommandResult to void for backward compatibility
   }
 
   /**
    * Removes an edge from the diagram
+   * @deprecated Use EdgeOperationService.deleteEdge() instead
    */
   removeEdge(diagramId: string, edgeId: string, userId: string): Observable<void> {
-    const command = DiagramCommandFactory.removeEdge(diagramId, userId, edgeId);
-
-    return this.executeCommand(command);
+    // CONSOLIDATED: Now uses EdgeOperationService for unified edge operations
+    return this.edgeOperationService
+      .deleteEdge({
+        diagramId,
+        edgeId,
+        userId,
+      })
+      .pipe(map(() => void 0)); // Convert CommandResult to void for backward compatibility
   }
 
   /**
