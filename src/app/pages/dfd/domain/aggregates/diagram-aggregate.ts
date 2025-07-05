@@ -336,9 +336,13 @@ export class DiagramAggregate {
       }
     }
 
+    // DIAGNOSTIC: Use the existing node's type if the snapshot doesn't have a valid type
+    const extractedType = command.newSnapshot.type || (command.newSnapshot.shape as any);
+    const finalType = extractedType === 'node' ? node.data.type : extractedType;
+
     const newNodeData = NodeData.fromLegacyJSON({
       id: command.nodeId,
-      type: command.newSnapshot.type || (command.newSnapshot.shape as any),
+      type: finalType,
       label: newLabel,
       position: { x: node.position.x, y: node.position.y },
       width: command.newSnapshot.size?.width || 100,

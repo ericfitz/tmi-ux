@@ -99,6 +99,17 @@ export interface UpdateDiagramMetadataCommand extends DiagramCommand {
 }
 
 /**
+ * Command to restore embedding relationships between nodes
+ */
+export interface RestoreEmbeddingCommand extends DiagramCommand {
+  readonly type: 'RESTORE_EMBEDDING';
+  readonly embeddingRelationships: Array<{
+    readonly parentId: string;
+    readonly childId: string;
+  }>;
+}
+
+/**
  * Composite command that executes multiple commands as a single atomic operation
  */
 export interface CompositeCommand extends DiagramCommand {
@@ -120,6 +131,7 @@ export type AnyDiagramCommand =
   | UpdateEdgeSnapshotCommand
   | RemoveEdgeCommand
   | UpdateDiagramMetadataCommand
+  | RestoreEmbeddingCommand
   | CompositeCommand;
 
 /**
@@ -328,6 +340,29 @@ export class DiagramCommandFactory {
       timestamp: new Date(),
       name,
       description,
+      isLocalUserInitiated,
+    };
+  }
+
+  /**
+   * Creates a command to restore embedding relationships
+   */
+  static restoreEmbedding(
+    diagramId: string,
+    userId: string,
+    embeddingRelationships: Array<{
+      readonly parentId: string;
+      readonly childId: string;
+    }>,
+    isLocalUserInitiated?: boolean,
+  ): RestoreEmbeddingCommand {
+    return {
+      type: 'RESTORE_EMBEDDING',
+      diagramId,
+      userId,
+      commandId: this.generateCommandId(),
+      timestamp: new Date(),
+      embeddingRelationships,
       isLocalUserInitiated,
     };
   }

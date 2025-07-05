@@ -127,7 +127,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _nodeResizeTimers = new Map<string, number>();
   private _nodeDataChangeTimers = new Map<string, number>();
   private _edgeVertexTimers = new Map<string, number>();
-  private readonly _debounceDelay = 500; // 500ms debounce delay
+  private readonly _debounceDelay = 200; // 200ms debounce delay
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -891,7 +891,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       visible: snapshot.visible,
     };
 
-    this.logger.info('DIAGNOSTIC: Parameters being passed to graph.addEdge()', {
+    this.logger.debug('DIAGNOSTIC: Parameters being passed to graph.addEdge()', {
       edgeId: snapshot.id,
       edgeParams,
     });
@@ -906,7 +906,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const actualSourcePortId = x6Edge.getSourcePortId();
     const actualTargetPortId = x6Edge.getTargetPortId();
 
-    this.logger.info('DIAGNOSTIC: Edge created - verifying connections', {
+    this.logger.debug('DIAGNOSTIC: Edge created - verifying connections', {
       edgeId: snapshot.id,
       expectedSource: snapshot.source,
       actualSource,
@@ -965,7 +965,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     // DIAGNOSTIC: Log final edge restoration status
-    this.logger.info('DIAGNOSTIC: Edge restoration completed', {
+    this.logger.debug('DIAGNOSTIC: Edge restoration completed', {
       edgeId: snapshot.id,
       edgeCreated: !!x6Edge,
       metadataSet: !!(snapshot.metadata && (x6Edge as any).setMetadata),
@@ -1396,13 +1396,30 @@ export class X6GraphAdapter implements IGraphAdapter {
       newText: text,
     });
 
+    // Only proceed if the label actually changed
+    if (oldLabel === text) {
+      this.logger.debugComponent('DFD', '[Set Cell Label] Label unchanged, skipping update', {
+        cellId: cell.id,
+        label: text,
+      });
+      return;
+    }
+
+    // CRITICAL FIX: Cache the snapshot BEFORE making changes for history
+    // This preserves the original state for undo operations
+    if (cell.isNode()) {
+      this._cacheNodeSnapshot(cell);
+    } else {
+      this._cacheEdgeSnapshot(cell as Edge);
+    }
+
     // DIAGNOSTIC: Log label change for history debugging
     this.logger.info('DIAGNOSTIC: Label change detected', {
       cellId: cell.id,
       cellType: cell.isNode() ? 'node' : 'edge',
       oldLabel,
       newLabel: text,
-      willTriggerDataChange: oldLabel !== text,
+      willTriggerDataChange: true,
     });
 
     // Use X6 cell extensions for unified label handling
@@ -1418,12 +1435,34 @@ export class X6GraphAdapter implements IGraphAdapter {
       (cell as any).setMetadata(updatedMetadata);
     }
 
-    // Update cache
+    // CRITICAL FIX: Trigger cell:change:data event for history integration
+    // This ensures that label changes flow through the normal event chain
+    // and are captured by the history system via debouncedNodeDataChanged$
     if (cell.isNode()) {
-      this._cacheNodeSnapshot(cell);
-    } else {
-      this._cacheEdgeSnapshot(cell as Edge);
+      // For nodes, trigger the data change event that the history system monitors
+      const oldData = { label: oldLabel };
+      const newData = { label: text };
+
+      this.logger.info('FIXED: Triggering cell:change:data event for label change', {
+        cellId: cell.id,
+        oldData,
+        newData,
+        eventType: 'cell:change:data',
+      });
+
+      // Manually trigger the event that would normally be fired by X6
+      // This ensures the label change flows through the debounced event system
+      if (this._graph) {
+        void this._graph.trigger('cell:change:data', {
+          cell,
+          current: newData,
+          previous: oldData,
+        });
+      }
     }
+
+    // Note: We don't update cache here anymore since we cached before the change
+    // The cache now contains the original state needed for undo operations
   }
 
   /**

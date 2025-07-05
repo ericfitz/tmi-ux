@@ -183,6 +183,42 @@ describe('HistoryIntegrationService', () => {
       // Initialize the service
       service.initialize('test-diagram', 'test-user');
       mockHistoryService.isUndoRedoInProgress.mockReturnValue(false);
+
+      // Mock the graph and node/edge data for _getCurrentNodeData and _getCurrentEdgeData
+      const mockNode = {
+        id: 'test-node',
+        position: () => ({ x: 100, y: 100 }),
+        size: () => ({ width: 200, height: 150 }),
+        attr: (path: string) => (path === 'text/text' ? 'Test Node' : undefined),
+        getData: () => ({ type: 'process' }),
+        getMetadata: () => [{ key: 'type', value: 'process' }],
+        shape: 'ellipse',
+        isNode: () => true,
+      };
+
+      const mockEdge = {
+        id: 'test-edge',
+        getSourceCellId: () => 'source-node',
+        getTargetCellId: () => 'target-node',
+        getSourcePortId: () => 'source-port',
+        getTargetPortId: () => 'target-port',
+        getVertices: () => [
+          { x: 150, y: 150 },
+          { x: 250, y: 250 },
+        ],
+        getData: () => ({ label: 'Test Edge' }),
+        isEdge: () => true,
+      };
+
+      const mockGraph = {
+        getCellById: (id: string) => {
+          if (id === 'test-node') return mockNode;
+          if (id === 'test-edge') return mockEdge;
+          return null;
+        },
+      };
+
+      mockX6GraphAdapter.getGraph.mockReturnValue(mockGraph);
     });
 
     it('should process remaining debounced events normally when undo/redo is not in progress', () => {
@@ -240,7 +276,9 @@ describe('HistoryIntegrationService', () => {
         },
       );
 
-      expect(mockCommandBus.execute).toHaveBeenCalledTimes(1);
+      // FIXED: The test should expect 3 calls since we're triggering 3 different debounced events
+      // Each event type (node resize, node data change, edge vertex change) should trigger a command
+      expect(mockCommandBus.execute).toHaveBeenCalledTimes(3);
     });
   });
 });

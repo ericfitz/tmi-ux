@@ -10,9 +10,10 @@ import {
   RemoveEdgeCommand,
   UpdateEdgeSnapshotCommand,
   CompositeCommand,
+  RestoreEmbeddingCommand,
   DiagramCommandFactory,
 } from '../commands/diagram-commands';
-import type { DiagramState } from '../history/history.types';
+import type { DiagramState, EmbeddingRelationship } from '../history/history.types';
 
 /**
  * Factory for creating inverse commands that can undo the effects of original commands.
@@ -50,6 +51,8 @@ export class InverseCommandFactory {
           return this._createAddEdgeInverse(command, beforeState);
         case 'UPDATE_EDGE_SNAPSHOT':
           return this._createUpdateEdgeSnapshotInverse(command, beforeState);
+        case 'RESTORE_EMBEDDING':
+          return this._createRestoreEmbeddingInverse(command, beforeState);
         case 'COMPOSITE':
           return this._createCompositeInverse(command, beforeState);
         default:
@@ -75,6 +78,7 @@ export class InverseCommandFactory {
       'ADD_EDGE',
       'REMOVE_EDGE',
       'UPDATE_EDGE_SNAPSHOT',
+      'RESTORE_EMBEDDING',
       'COMPOSITE',
     ];
     return supportedTypes.includes(command.type);
@@ -94,12 +98,13 @@ export class InverseCommandFactory {
 
       const validPairs = new Map([
         ['ADD_NODE', 'REMOVE_NODE'],
-        ['REMOVE_NODE', 'COMPOSITE'], // Node removal inverse is composite (node + edges)
+        ['REMOVE_NODE', 'COMPOSITE'], // Node removal inverse is composite (node + edges + embedding)
         ['ADD_EDGE', 'REMOVE_EDGE'],
         ['REMOVE_EDGE', 'ADD_EDGE'],
         ['UPDATE_NODE_POSITION', 'UPDATE_NODE_POSITION'],
         ['UPDATE_NODE_SNAPSHOT', 'UPDATE_NODE_SNAPSHOT'],
         ['UPDATE_EDGE_SNAPSHOT', 'UPDATE_EDGE_SNAPSHOT'],
+        ['RESTORE_EMBEDDING', 'RESTORE_EMBEDDING'],
         ['COMPOSITE', 'COMPOSITE'],
       ]);
 
@@ -122,7 +127,7 @@ export class InverseCommandFactory {
     command: RemoveNodeCommand,
     beforeState: DiagramState,
   ): CompositeCommand {
-    // For RemoveNodeCommand, create CompositeCommand that restores node + connected edges
+    // For RemoveNodeCommand, create CompositeCommand that restores node + connected edges + embedding relationships
     const nodeToRestore = beforeState.nodes.find(node => node.id === command.nodeId);
     if (!nodeToRestore) {
       throw new Error(`Cannot create inverse: node ${command.nodeId} not found in before state`);
@@ -133,18 +138,48 @@ export class InverseCommandFactory {
       edge => edge.sourceNodeId === command.nodeId || edge.targetNodeId === command.nodeId,
     );
 
-    this._logger.info('DIAGNOSTIC: Creating composite inverse for node deletion', {
-      nodeId: command.nodeId,
-      connectedEdgeCount: connectedEdges.length,
-      connectedEdgeIds: connectedEdges.map(edge => edge.id),
-    });
+    // CRITICAL FIX: Find all embedding relationships involving this node
+    const embeddingRelationships = beforeState.embeddingRelationships.filter(
+      rel => rel.parentId === command.nodeId || rel.childId === command.nodeId,
+    );
 
-    // Create commands to restore the node and all connected edges
+    // Find all nodes that were embedded in the deleted node (children that need to be restored)
+    const embeddedChildNodes = embeddingRelationships
+      .filter(rel => rel.parentId === command.nodeId)
+      .map(rel => beforeState.nodes.find(node => node.id === rel.childId))
+      .filter(node => node !== undefined);
+
+    // Find all edges connected to embedded children
+    const embeddedChildEdges = embeddedChildNodes.flatMap(childNode =>
+      beforeState.edges.filter(
+        edge => edge.sourceNodeId === childNode.id || edge.targetNodeId === childNode.id,
+      ),
+    );
+
+    // Remove duplicates from connected edges (in case embedded child edges are already included)
+    const allEdgesToRestore = Array.from(
+      new Map([...connectedEdges, ...embeddedChildEdges].map(edge => [edge.id, edge])).values(),
+    );
+
+    this._logger.info(
+      'FIXED: Creating composite inverse for node deletion with embedding support',
+      {
+        nodeId: command.nodeId,
+        connectedEdgeCount: connectedEdges.length,
+        embeddingRelationshipCount: embeddingRelationships.length,
+        embeddedChildCount: embeddedChildNodes.length,
+        totalEdgesToRestore: allEdgesToRestore.length,
+        embeddingRelationships: embeddingRelationships.map(
+          rel => `${rel.parentId} -> ${rel.childId}`,
+        ),
+      },
+    );
+
+    // Create commands to restore everything in the correct order
     const restoreCommands: AnyDiagramCommand[] = [];
 
-    // First, restore the node - convert X6NodeSnapshot to proper domain data
+    // Step 1: Restore the main node
     const nodeSnapshot = this._convertX6SnapshotToDomainSnapshot(nodeToRestore.data);
-
     const addNodeCommand = DiagramCommandFactory.addNode(
       command.diagramId,
       command.userId,
@@ -154,11 +189,22 @@ export class InverseCommandFactory {
     );
     restoreCommands.push(addNodeCommand);
 
-    // Then, restore all connected edges
-    for (const edge of connectedEdges) {
-      // Use X6EdgeSnapshot directly
-      const edgeSnapshot = edge.data;
+    // Step 2: Restore all embedded child nodes
+    for (const childNode of embeddedChildNodes) {
+      const childSnapshot = this._convertX6SnapshotToDomainSnapshot(childNode.data);
+      const addChildCommand = DiagramCommandFactory.addNode(
+        command.diagramId,
+        command.userId,
+        childNode.id,
+        childNode.position,
+        childSnapshot,
+      );
+      restoreCommands.push(addChildCommand);
+    }
 
+    // Step 3: Restore all connected edges (including edges to embedded children)
+    for (const edge of allEdgesToRestore) {
+      const edgeSnapshot = edge.data;
       const addEdgeCommand = DiagramCommandFactory.addEdge(
         command.diagramId,
         command.userId,
@@ -170,12 +216,23 @@ export class InverseCommandFactory {
       restoreCommands.push(addEdgeCommand);
     }
 
+    // Step 4: CRITICAL FIX - Add a special command to restore embedding relationships
+    // This needs to happen after all nodes are restored
+    if (embeddingRelationships.length > 0) {
+      const restoreEmbeddingCommand = this._createRestoreEmbeddingCommand(
+        command.diagramId,
+        command.userId,
+        embeddingRelationships,
+      );
+      restoreCommands.push(restoreEmbeddingCommand);
+    }
+
     // Create composite command
     return DiagramCommandFactory.createComposite(
       command.diagramId,
       command.userId,
       restoreCommands,
-      `Restore node ${command.nodeId} and ${connectedEdges.length} connected edges`,
+      `Restore node ${command.nodeId}, ${embeddedChildNodes.length} embedded children, ${allEdgesToRestore.length} edges, and ${embeddingRelationships.length} embedding relationships`,
     );
   }
 
@@ -319,5 +376,40 @@ export class InverseCommandFactory {
 
     const typeMetadata = x6Snapshot.metadata.find((m: any) => m.key === 'type');
     return typeMetadata?.value || null;
+  }
+
+  /**
+   * Creates an inverse for RestoreEmbeddingCommand (which is a no-op since embedding restoration is idempotent)
+   */
+  private _createRestoreEmbeddingInverse(
+    command: RestoreEmbeddingCommand,
+    _beforeState: DiagramState,
+  ): RestoreEmbeddingCommand {
+    // For RestoreEmbeddingCommand, the inverse is typically a no-op or the same command
+    // since embedding restoration is part of a larger composite operation
+    // In practice, this should rarely be called directly as RestoreEmbedding commands
+    // are usually part of composite commands that handle their own inverses
+    return DiagramCommandFactory.restoreEmbedding(
+      command.diagramId,
+      command.userId,
+      [], // Empty relationships to effectively "undo" the embedding restoration
+      false,
+    );
+  }
+
+  /**
+   * Creates a command to restore embedding relationships
+   */
+  private _createRestoreEmbeddingCommand(
+    diagramId: string,
+    userId: string,
+    embeddingRelationships: EmbeddingRelationship[],
+  ): RestoreEmbeddingCommand {
+    return DiagramCommandFactory.restoreEmbedding(
+      diagramId,
+      userId,
+      embeddingRelationships,
+      false, // Not user-initiated, this is part of undo/redo
+    );
   }
 }

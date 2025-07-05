@@ -272,6 +272,7 @@ export class HistoryMiddleware implements ICommandMiddleware {
         return {
           nodes: [],
           edges: [],
+          embeddingRelationships: [],
           metadata: {
             capturedAt: new Date().toISOString(),
             version: '1.0.0',
@@ -333,6 +334,9 @@ export class HistoryMiddleware implements ICommandMiddleware {
         };
       });
 
+      // CRITICAL FIX: Capture embedding relationships using X6's embedding API
+      const embeddingRelationships = this._captureEmbeddingRelationships(graph);
+
       // Capture diagram metadata including graph state
       const translate = graph.translate();
       const metadata = {
@@ -349,11 +353,13 @@ export class HistoryMiddleware implements ICommandMiddleware {
       this._logger.debug('Successfully captured diagram state', {
         nodeCount: nodes.length,
         edgeCount: edges.length,
+        embeddingRelationshipCount: embeddingRelationships.length,
       });
 
       return {
         nodes,
         edges,
+        embeddingRelationships,
         metadata,
       };
     } catch (error) {
@@ -362,11 +368,49 @@ export class HistoryMiddleware implements ICommandMiddleware {
       return {
         nodes: [],
         edges: [],
+        embeddingRelationships: [],
         metadata: {
           capturedAt: new Date().toISOString(),
           version: '1.0.0',
         },
       };
+    }
+  }
+
+  /**
+   * Captures all embedding relationships in the graph using X6's embedding API
+   */
+  private _captureEmbeddingRelationships(graph: any): Array<{ parentId: string; childId: string }> {
+    const relationships: Array<{ parentId: string; childId: string }> = [];
+
+    try {
+      const nodes = graph.getNodes();
+
+      for (const node of nodes) {
+        // Check if this node has a parent (is embedded in another node)
+        const parent = node.getParent();
+        if (parent && parent.isNode()) {
+          relationships.push({
+            parentId: parent.id,
+            childId: node.id,
+          });
+
+          this._logger.debug('Captured embedding relationship', {
+            parentId: parent.id,
+            childId: node.id,
+          });
+        }
+      }
+
+      this._logger.info('FIXED: Captured embedding relationships for history', {
+        relationshipCount: relationships.length,
+        relationships: relationships.map(r => `${r.parentId} -> ${r.childId}`),
+      });
+
+      return relationships;
+    } catch (error) {
+      this._logger.error('Failed to capture embedding relationships', { error });
+      return [];
     }
   }
 

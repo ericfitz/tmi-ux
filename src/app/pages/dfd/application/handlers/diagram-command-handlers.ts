@@ -13,6 +13,7 @@ import {
   UpdateDiagramMetadataCommand,
   CreateDiagramCommand,
   CompositeCommand,
+  RestoreEmbeddingCommand,
   AnyDiagramCommand,
 } from '../../domain/commands/diagram-commands';
 import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
@@ -834,6 +835,120 @@ export class UpdateDiagramMetadataCommandHandler
 }
 
 /**
+ * Handler for RestoreEmbeddingCommand
+ */
+@Injectable()
+export class RestoreEmbeddingCommandHandler implements ICommandHandler<RestoreEmbeddingCommand> {
+  constructor(
+    @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
+    private readonly _x6GraphAdapter: X6GraphAdapter,
+    private readonly _logger: LoggerService,
+  ) {}
+
+  getCommandType(): string {
+    return 'RESTORE_EMBEDDING';
+  }
+
+  handle(command: RestoreEmbeddingCommand): Observable<CommandResult> {
+    this._logger.info('DIAGNOSTIC: RestoreEmbeddingCommand - Handling command', {
+      commandId: command.commandId,
+      embeddingRelationships: command.embeddingRelationships,
+    });
+
+    return this.loadDiagram(command.diagramId).pipe(
+      map(diagram => {
+        // No domain model changes needed - this is purely an X6 graph operation
+        return diagram;
+      }),
+      switchMap(diagram =>
+        this.saveDiagram(diagram).pipe(
+          map(result => {
+            // Apply embedding relationships to X6 graph
+            this._logger.info(
+              'DIAGNOSTIC: RestoreEmbeddingCommand - Applying embedding relationships to X6 graph',
+              {
+                relationshipCount: command.embeddingRelationships.length,
+                relationships: command.embeddingRelationships,
+              },
+            );
+
+            for (const relationship of command.embeddingRelationships) {
+              const parentNode = this._x6GraphAdapter.getNode(relationship.parentId);
+              const childNode = this._x6GraphAdapter.getNode(relationship.childId);
+
+              if (parentNode && childNode) {
+                this._logger.info(
+                  'DIAGNOSTIC: RestoreEmbeddingCommand - Restoring embedding relationship',
+                  {
+                    parentId: relationship.parentId,
+                    childId: relationship.childId,
+                  },
+                );
+                parentNode.addChild(childNode);
+              } else {
+                this._logger.warn(
+                  'DIAGNOSTIC: RestoreEmbeddingCommand - Missing nodes for embedding relationship',
+                  {
+                    parentId: relationship.parentId,
+                    childId: relationship.childId,
+                    parentExists: !!parentNode,
+                    childExists: !!childNode,
+                  },
+                );
+              }
+            }
+
+            return result;
+          }),
+        ),
+      ),
+      catchError((error: unknown) => {
+        this._logger.error(
+          'DIAGNOSTIC: RestoreEmbeddingCommand - Failed to restore embedding relationships',
+          {
+            commandId: command.commandId,
+            error: error,
+          },
+        );
+        return throwError(
+          () =>
+            new Error(
+              `Failed to restore embedding relationships: ${error instanceof Error ? error.message : String(error)}`,
+            ),
+        );
+      }),
+    );
+  }
+
+  private loadDiagram(diagramId: string): Observable<DiagramAggregate> {
+    return this.diagramRepository.findById(diagramId).pipe(
+      map(diagram => {
+        if (!diagram) {
+          throw new Error(`Diagram with ID ${diagramId} not found`);
+        }
+        return diagram;
+      }),
+    );
+  }
+
+  private saveDiagram(diagram: DiagramAggregate): Observable<CommandResult> {
+    const events = diagram.getUncommittedEvents();
+
+    return this.diagramRepository.save(diagram).pipe(
+      map(() => {
+        diagram.markEventsAsCommitted();
+        return {
+          success: true,
+          diagramId: diagram.id,
+          events,
+          diagramSnapshot: diagram.toSnapshot(),
+        };
+      }),
+    );
+  }
+}
+
+/**
  * Handler for CompositeCommand
  */
 @Injectable()
@@ -970,6 +1085,7 @@ export class CommandHandlerRegistry {
     private readonly updateEdgeSnapshotHandler: UpdateEdgeSnapshotCommandHandler,
     private readonly removeEdgeHandler: RemoveEdgeCommandHandler,
     private readonly updateDiagramMetadataHandler: UpdateDiagramMetadataCommandHandler,
+    private readonly restoreEmbeddingHandler: RestoreEmbeddingCommandHandler,
     private readonly compositeHandler: CompositeCommandHandler,
   ) {
     this.registerHandlers();
@@ -996,6 +1112,7 @@ export class CommandHandlerRegistry {
       this.updateEdgeSnapshotHandler,
       this.removeEdgeHandler,
       this.updateDiagramMetadataHandler,
+      this.restoreEmbeddingHandler,
       this.compositeHandler,
     );
   }

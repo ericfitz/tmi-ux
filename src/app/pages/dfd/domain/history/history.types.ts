@@ -140,6 +140,14 @@ export interface IInverseCommandFactory {
 }
 
 /**
+ * Embedding relationship for capturing parent-child node relationships
+ */
+export interface EmbeddingRelationship {
+  readonly parentId: string;
+  readonly childId: string;
+}
+
+/**
  * Diagram state interface for capturing state before command execution
  */
 export interface DiagramState {
@@ -154,5 +162,6 @@ export interface DiagramState {
     readonly targetNodeId: string;
     readonly data: import('../../types/x6-cell.types').X6EdgeSnapshot;
   }>;
+  readonly embeddingRelationships: ReadonlyArray<EmbeddingRelationship>;
   readonly metadata: Record<string, unknown>;
 }

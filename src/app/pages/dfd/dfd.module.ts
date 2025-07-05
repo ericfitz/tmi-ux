@@ -24,6 +24,7 @@ import {
   UpdateEdgeSnapshotCommandHandler,
   RemoveEdgeCommandHandler,
   UpdateDiagramMetadataCommandHandler,
+  RestoreEmbeddingCommandHandler,
 } from './application/handlers/diagram-command-handlers';
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
@@ -61,6 +62,7 @@ import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
     UpdateEdgeSnapshotCommandHandler,
     RemoveEdgeCommandHandler,
     UpdateDiagramMetadataCommandHandler,
+    RestoreEmbeddingCommandHandler,
 
     // CommandBus initializer
     CommandBusInitializerService,

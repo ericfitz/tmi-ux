@@ -221,7 +221,17 @@ export class HistoryIntegrationService implements OnDestroy {
         newData: event.newData,
       });
 
-      // Get current node data to preserve other properties
+      // CRITICAL FIX: Use cached snapshot for "current" state instead of reading from domain
+      // The domain already has the updated data, but we need the pre-update state for undo
+      const cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
+      if (!cachedSnapshot) {
+        this._logger.warn('No cached snapshot found for node history recording', {
+          nodeId: event.nodeId,
+        });
+        return;
+      }
+
+      // Get current node data to preserve other properties for the new snapshot
       const currentNodeData = this._getCurrentNodeData(event.nodeId);
       // Merge new data with existing data, ensuring label is updated if present
       const newNodeData = NodeData.fromJSON({
@@ -230,9 +240,22 @@ export class HistoryIntegrationService implements OnDestroy {
         position: currentNodeData.position, // Position is already in correct format
       });
 
-      // Convert NodeData to X6NodeSnapshot
-      const currentSnapshot = this._convertNodeDataToSnapshot(currentNodeData);
+      // Use cached snapshot as "current" and convert new data to snapshot
+      const currentSnapshot = cachedSnapshot;
       const newSnapshot = this._convertNodeDataToSnapshot(newNodeData);
+
+      // DIAGNOSTIC: Log snapshot comparison to debug undo issues
+      this._logger.info('DIAGNOSTIC: FIXED - Using pre-change cached snapshot for history', {
+        nodeId: event.nodeId,
+        cachedLabel: cachedSnapshot.attrs?.['text']?.['text'],
+        newLabel: newNodeData.label,
+        currentSnapshotLabel: currentSnapshot.attrs?.['text']?.['text'],
+        newSnapshotLabel: newSnapshot.attrs?.['text']?.['text'],
+        currentSnapshotType: currentSnapshot.type,
+        newSnapshotType: newSnapshot.type,
+        usingPreChangeCachedSnapshot: true,
+        shouldShowDifferentLabels: true,
+      });
 
       // Create and dispatch the update node data command
       const command = DiagramCommandFactory.updateNodeData(
@@ -490,19 +513,61 @@ export class HistoryIntegrationService implements OnDestroy {
       const size = node.size();
       const labelAttr = node.attr('text/text');
       const label = typeof labelAttr === 'string' ? labelAttr : ''; // Ensure label is always a string
+
+      // CRITICAL FIX: Improved type detection from X6 cell data
+      // Try multiple sources to determine the actual node type
+      let detectedType: NodeType | null = null;
+
+      // 1. Try to get type from X6 cell metadata (most reliable)
+      if ((node as any).getMetadata) {
+        const metadata = (node as any).getMetadata();
+        const typeMetadata = metadata.find((m: any) => m.key === 'type');
+        if (typeMetadata?.value && this._isValidNodeType(typeMetadata.value)) {
+          detectedType = typeMetadata.value as NodeType;
+          this._logger.debug('Node type detected from metadata', { nodeId, type: detectedType });
+        }
+      }
+
+      // 2. Try to get type from node data if metadata didn't work
+      if (!detectedType) {
+        const rawData: unknown = node.getData();
+        if (rawData && typeof rawData === 'object' && 'type' in rawData) {
+          const dataType = (rawData as { type: string }).type;
+          if (this._isValidNodeType(dataType)) {
+            detectedType = dataType;
+            this._logger.debug('Node type detected from node data', { nodeId, type: detectedType });
+          }
+        }
+      }
+
+      // 3. Try to infer type from X6 shape as last resort
+      if (!detectedType) {
+        const shape = node.shape;
+        detectedType = this._inferNodeTypeFromShape(shape);
+        this._logger.debug('Node type inferred from shape', { nodeId, shape, type: detectedType });
+      }
+
+      // 4. Use process as final fallback (guaranteed to be valid)
+      const finalType = detectedType || 'process';
+
+      if (!detectedType) {
+        this._logger.warn('Could not detect node type, using fallback', {
+          nodeId,
+          fallbackType: finalType,
+          shape: node.shape,
+        });
+      }
+
+      // Get metadata for the NodeData
       const rawData: unknown = node.getData();
       const metadata =
         rawData && typeof rawData === 'object' && 'metadata' in rawData
           ? (rawData as { metadata: Record<string, string> }).metadata
           : {};
-      const type =
-        rawData && typeof rawData === 'object' && 'type' in rawData
-          ? (rawData as { type: NodeType }).type
-          : ('unknown' as NodeType); // Fallback type
 
       return NodeData.fromJSON({
         id,
-        type,
+        type: finalType,
         label,
         position: { x: position.x, y: position.y },
         width: size.width,
@@ -520,15 +585,40 @@ export class HistoryIntegrationService implements OnDestroy {
    */
   private _createDefaultNodeData(nodeId: string): NodeData {
     this._logger.warn('Creating default node data for missing node', { nodeId });
-    // Provide sensible defaults for a node
+    // CRITICAL FIX: Use 'process' as fallback type instead of 'unknown'
+    // 'process' is a valid NodeType that will pass validation
     return NodeData.create({
       id: nodeId,
-      type: 'unknown' as NodeType,
-      label: 'Unknown Node',
+      type: 'process', // Use valid NodeType instead of 'unknown'
+      label: 'Process', // Use appropriate default label
       position: new Point(0, 0), // Default position for fallback
       width: 120,
       height: 60,
     });
+  }
+
+  /**
+   * Checks if the given type is a valid node type
+   */
+  private _isValidNodeType(type: string): type is NodeType {
+    return ['actor', 'process', 'store', 'security-boundary', 'textbox'].includes(type);
+  }
+
+  /**
+   * Infers node type from X6 shape as a fallback mechanism
+   */
+  private _inferNodeTypeFromShape(shape: string): NodeType {
+    switch (shape) {
+      case 'ellipse':
+        return 'process';
+      case 'store-shape':
+        return 'store';
+      case 'rect':
+        // Could be actor, security-boundary, or textbox - default to process
+        return 'process';
+      default:
+        return 'process'; // Safe fallback
+    }
   }
 
   /**
@@ -631,11 +721,14 @@ export class HistoryIntegrationService implements OnDestroy {
       position: { x: nodeData.position.x, y: nodeData.position.y },
       size: { width: nodeData.width, height: nodeData.height },
       attrs: { text: { text: nodeData.label } },
-      metadata: Object.entries(nodeData.metadata || {}).map(([key, value]) => ({ key, value })),
+      metadata: [
+        ...Object.entries(nodeData.metadata || {}).map(([key, value]) => ({ key, value })),
+        { key: 'type', value: nodeData.type }, // Ensure type is preserved in metadata
+      ],
       ports: [],
       zIndex: 1,
       visible: true,
-      type: 'node',
+      type: nodeData.type, // Use actual node type instead of hardcoded 'node'
     };
   }
 
