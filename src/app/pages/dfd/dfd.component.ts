@@ -388,9 +388,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Method to add a node at a random position
+   * Method to add a node at a predictable position
    */
-  addRandomNode(shapeType: NodeType = 'actor'): void {
+  addGraphNode(shapeType: NodeType = 'actor'): void {
     if (!this._isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       return;
@@ -400,12 +400,71 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // Calculate a random position with some padding
-    const padding = 100;
-    const x = Math.floor(Math.random() * (width - 2 * padding)) + padding;
-    const y = Math.floor(Math.random() * (height - 2 * padding)) + padding;
+    // Calculate a predictable position using a grid-based algorithm
+    const position = this.calculateNextNodePosition(width, height);
 
-    this.createNode(shapeType, { x, y });
+    this.createNode(shapeType, position);
+  }
+
+  /**
+   * Calculate the next predictable position for a new node using a grid-based algorithm
+   * that ensures nodes are always placed in the viewable area
+   */
+  private calculateNextNodePosition(
+    containerWidth: number,
+    containerHeight: number,
+  ): { x: number; y: number } {
+    const nodeWidth = 120; // Default node width
+    const nodeHeight = 80; // Default node height
+    const padding = 50; // Padding from edges and between nodes
+    const gridSpacingX = nodeWidth + padding;
+    const gridSpacingY = nodeHeight + padding;
+    const offsetIncrement = 25; // Offset increment for layered placement
+
+    // Calculate available grid dimensions
+    const availableWidth = containerWidth - 2 * padding;
+    const availableHeight = containerHeight - 2 * padding;
+    const maxColumns = Math.floor(availableWidth / gridSpacingX);
+    const maxRows = Math.floor(availableHeight / gridSpacingY);
+    const totalGridPositions = maxColumns * maxRows;
+
+    // Get existing nodes to determine occupied positions
+    const existingNodes = this.x6GraphAdapter.getNodes();
+
+    // Calculate which layer we're on based on existing node count
+    const currentLayer = Math.floor(existingNodes.length / totalGridPositions);
+    const positionInLayer = existingNodes.length % totalGridPositions;
+
+    // Calculate the offset for this layer to create a staggered effect
+    const layerOffsetX = (currentLayer * offsetIncrement) % (gridSpacingX / 2);
+    const layerOffsetY = (currentLayer * offsetIncrement) % (gridSpacingY / 2);
+
+    // Calculate row and column for this position in the current layer
+    const row = Math.floor(positionInLayer / maxColumns);
+    const col = positionInLayer % maxColumns;
+
+    // Calculate the actual position with layer offset
+    const baseX = padding + col * gridSpacingX;
+    const baseY = padding + row * gridSpacingY;
+    const x = baseX + layerOffsetX;
+    const y = baseY + layerOffsetY;
+
+    // Ensure the position stays within the viewable area
+    const clampedX = Math.min(Math.max(x, padding), containerWidth - nodeWidth - padding);
+    const clampedY = Math.min(Math.max(y, padding), containerHeight - nodeHeight - padding);
+
+    this.logger.info('Calculated predictable node position with layering', {
+      layer: currentLayer,
+      positionInLayer,
+      gridPosition: { col, row },
+      layerOffset: { x: layerOffsetX, y: layerOffsetY },
+      calculatedPosition: { x, y },
+      finalPosition: { x: clampedX, y: clampedY },
+      totalGridPositions,
+      existingNodeCount: existingNodes.length,
+    });
+
+    return { x: clampedX, y: clampedY };
   }
 
   /**

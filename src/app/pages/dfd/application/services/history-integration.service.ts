@@ -51,21 +51,27 @@ export class HistoryIntegrationService implements OnDestroy {
 
     // Subscribe to drag completion events for clean history recording
     this._x6GraphAdapter.dragCompleted$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDragCompletion(event, diagramId, userId),
+      next: event => {
+        this._handleDragCompletion(event, diagramId, userId);
+      },
       error: (error: unknown) =>
         this._logger.error('Error in drag completion subscription', { error }),
     });
 
     // Subscribe to debounced edge vertex changes
     this._x6GraphAdapter.debouncedEdgeVerticesChanged$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDebouncedEdgeVertexChange(event, diagramId, userId),
+      next: event => {
+        this._handleDebouncedEdgeVertexChange(event, diagramId, userId);
+      },
       error: (error: unknown) =>
         this._logger.error('Error in debounced edge vertex subscription', { error }),
     });
 
     // Subscribe to debounced node resize events
     this._x6GraphAdapter.debouncedNodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDebouncedNodeResize(event, diagramId, userId),
+      next: event => {
+        this._handleDebouncedNodeResize(event, diagramId, userId);
+      },
       error: (error: unknown) =>
         this._logger.error('Error in debounced node resize subscription', { error }),
     });
@@ -73,7 +79,9 @@ export class HistoryIntegrationService implements OnDestroy {
     // Subscribe to immediate node data change events (for label edits, etc.)
     // Text editing only updates when complete, so no debouncing needed
     this._x6GraphAdapter.nodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => this._handleDebouncedNodeDataChange(event, diagramId, userId),
+      next: event => {
+        this._handleDebouncedNodeDataChange(event, diagramId, userId);
+      },
       error: (error: unknown) =>
         this._logger.error('Error in node data change subscription', { error }),
     });
@@ -226,9 +234,13 @@ export class HistoryIntegrationService implements OnDestroy {
       // The domain already has the updated data, but we need the pre-update state for undo
       const cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
       if (!cachedSnapshot) {
-        this._logger.warn('No cached snapshot found for node history recording', {
+        this._logger.debug('No cached snapshot found during node creation, cancelling operation', {
           nodeId: event.nodeId,
+          operationId,
+          reason: 'Expected during rapid node creation events before snapshot caching completes',
         });
+        // CRITICAL FIX: Cancel the operation instead of just returning
+        this._operationTracker.cancelOperation(operationId);
         return; // Skip history recording for nodes without cached snapshots
       }
 

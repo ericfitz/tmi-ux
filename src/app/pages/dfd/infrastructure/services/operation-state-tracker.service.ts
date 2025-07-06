@@ -21,8 +21,11 @@ export class OperationStateTracker implements IOperationStateTracker {
     maxHistorySize: 100,
     cleanupThreshold: 80,
     enableCollaboration: false,
-    operationTimeout: 5000, // 5 seconds
+    operationTimeout: 5000, // 5 seconds for expiration
   };
+
+  // CRITICAL FIX: Shorter cleanup time for completed operations to reduce log spam
+  private readonly _completedOperationCleanupTime = 1000; // 1 second instead of 5
 
   constructor(private readonly _logger: LoggerService) {
     // Start cleanup timer
@@ -34,6 +37,12 @@ export class OperationStateTracker implements IOperationStateTracker {
    */
   startOperation(operationId: string, type: OperationType, data?: OperationData): void {
     try {
+      // CRITICAL FIX: Prevent duplicate operations
+      if (this._operations.has(operationId)) {
+        this._logger.debug('Operation already exists, skipping duplicate', { operationId, type });
+        return;
+      }
+
       const operation: OperationState = {
         id: operationId,
         type,
@@ -44,7 +53,25 @@ export class OperationStateTracker implements IOperationStateTracker {
       };
 
       this._operations.set(operationId, operation);
-      this._logger.debug('Operation started', { operationId, type });
+
+      // DIAGNOSTIC: Log operation creation with current operation count
+      this._logger.debug('DIAGNOSTIC: Operation started', {
+        operationId,
+        type,
+        totalActiveOperations: this._operations.size,
+        operationData: data,
+        allActiveOperations: Array.from(this._operations.keys()),
+      });
+
+      // DIAGNOSTIC: Log warning if too many operations are active
+      if (this._operations.size > 10) {
+        this._logger.warn('High number of active operations detected', {
+          activeOperationCount: this._operations.size,
+          operationTypes: Array.from(this._operations.values()).map(op => op.type),
+          newOperationType: type,
+          newOperationId: operationId,
+        });
+      }
     } catch (error) {
       this._logger.error('Failed to start operation', { operationId, type, error });
     }
@@ -97,13 +124,27 @@ export class OperationStateTracker implements IOperationStateTracker {
       };
 
       this._operations.set(operationId, completedOperation);
-      this._logger.debug('Operation completed', { operationId, isFinal });
+      this._logger.debug('DIAGNOSTIC: Operation completed', {
+        operationId,
+        isFinal,
+        totalActiveOperations: this._operations.size,
+        allActiveOperations: Array.from(this._operations.keys()),
+      });
 
       // Schedule cleanup for completed operation
       setTimeout(() => {
         this._operations.delete(operationId);
-        this._logger.debug('Operation cleaned up', { operationId });
-      }, this._config.operationTimeout);
+
+        // DIAGNOSTIC: Enhanced cleanup logging with operation details
+        this._logger.debug('DIAGNOSTIC: Operation cleaned up after completion', {
+          operationId,
+          operationType: operation.type,
+          operationDuration: Date.now() - operation.startTime,
+          remainingOperations: this._operations.size,
+          wasCompleted: true,
+          allRemainingOperations: Array.from(this._operations.keys()),
+        });
+      }, this._completedOperationCleanupTime);
     } catch (error) {
       this._logger.error('Failed to complete operation', { operationId, error });
     }
@@ -127,7 +168,11 @@ export class OperationStateTracker implements IOperationStateTracker {
       };
 
       this._operations.set(operationId, cancelledOperation);
-      this._logger.debug('Operation cancelled', { operationId });
+      this._logger.debug('DIAGNOSTIC: Operation cancelled', {
+        operationId,
+        totalActiveOperations: this._operations.size,
+        allActiveOperations: Array.from(this._operations.keys()),
+      });
 
       // Schedule cleanup for cancelled operation
       setTimeout(() => {
@@ -248,6 +293,14 @@ export class OperationStateTracker implements IOperationStateTracker {
    */
   private _startCleanupTimer(): void {
     setInterval(() => {
+      // DIAGNOSTIC: Log cleanup timer execution
+      const operationCount = this._operations.size;
+      if (operationCount > 0) {
+        this._logger.debug('Cleanup timer executing', {
+          activeOperations: operationCount,
+          operationTypes: Array.from(this._operations.values()).map(op => op.type),
+        });
+      }
       this.cleanupExpiredOperations();
     }, this._config.operationTimeout);
   }
