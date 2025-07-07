@@ -54,17 +54,8 @@ export class OperationStateTracker implements IOperationStateTracker {
 
       this._operations.set(operationId, operation);
 
-      // DIAGNOSTIC: Log operation creation with current operation count
-      this._logger.debug('DIAGNOSTIC: Operation started', {
-        operationId,
-        type,
-        totalActiveOperations: this._operations.size,
-        operationData: data,
-        allActiveOperations: Array.from(this._operations.keys()),
-      });
-
-      // DIAGNOSTIC: Log warning if too many operations are active
-      if (this._operations.size > 10) {
+      // Only log if there are too many operations (potential issue)
+      if (this._operations.size > 20) {
         this._logger.warn('High number of active operations detected', {
           activeOperationCount: this._operations.size,
           operationTypes: Array.from(this._operations.values()).map(op => op.type),
@@ -124,26 +115,19 @@ export class OperationStateTracker implements IOperationStateTracker {
       };
 
       this._operations.set(operationId, completedOperation);
-      this._logger.debug('DIAGNOSTIC: Operation completed', {
-        operationId,
-        isFinal,
-        totalActiveOperations: this._operations.size,
-        allActiveOperations: Array.from(this._operations.keys()),
-      });
+      // Reduced logging for operation completion
+      if (this._operations.size > 20) {
+        this._logger.debug('Operation completed (high operation count)', {
+          operationId,
+          isFinal,
+          totalActiveOperations: this._operations.size,
+        });
+      }
 
       // Schedule cleanup for completed operation
       setTimeout(() => {
         this._operations.delete(operationId);
-
-        // DIAGNOSTIC: Enhanced cleanup logging with operation details
-        this._logger.debug('DIAGNOSTIC: Operation cleaned up after completion', {
-          operationId,
-          operationType: operation.type,
-          operationDuration: Date.now() - operation.startTime,
-          remainingOperations: this._operations.size,
-          wasCompleted: true,
-          allRemainingOperations: Array.from(this._operations.keys()),
-        });
+        // Removed excessive cleanup logging
       }, this._completedOperationCleanupTime);
     } catch (error) {
       this._logger.error('Failed to complete operation', { operationId, error });
@@ -168,16 +152,18 @@ export class OperationStateTracker implements IOperationStateTracker {
       };
 
       this._operations.set(operationId, cancelledOperation);
-      this._logger.debug('DIAGNOSTIC: Operation cancelled', {
-        operationId,
-        totalActiveOperations: this._operations.size,
-        allActiveOperations: Array.from(this._operations.keys()),
-      });
+      // Reduced logging for cancelled operations
+      if (this._operations.size > 20) {
+        this._logger.debug('Operation cancelled (high operation count)', {
+          operationId,
+          totalActiveOperations: this._operations.size,
+        });
+      }
 
       // Schedule cleanup for cancelled operation
       setTimeout(() => {
         this._operations.delete(operationId);
-        this._logger.debug('Cancelled operation cleaned up', { operationId });
+        // Removed excessive cleanup logging
       }, 1000); // Shorter cleanup time for cancelled operations
     } catch (error) {
       this._logger.error('Failed to cancel operation', { operationId, error });
@@ -293,10 +279,10 @@ export class OperationStateTracker implements IOperationStateTracker {
    */
   private _startCleanupTimer(): void {
     setInterval(() => {
-      // DIAGNOSTIC: Log cleanup timer execution
+      // Only log cleanup timer if there are many operations
       const operationCount = this._operations.size;
-      if (operationCount > 0) {
-        this._logger.debug('Cleanup timer executing', {
+      if (operationCount > 20) {
+        this._logger.debug('Cleanup timer executing (high operation count)', {
           activeOperations: operationCount,
           operationTypes: Array.from(this._operations.values()).map(op => op.type),
         });

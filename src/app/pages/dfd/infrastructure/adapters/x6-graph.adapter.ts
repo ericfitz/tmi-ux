@@ -23,6 +23,11 @@ import { EdgeService } from '../services/edge.service';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { PortStateManagerService } from '../services/port-state-manager.service';
+import { EventFilterService } from '../services/event-filter.service';
+import {
+  OperationCoordinatorService,
+  OperationCompletedEvent,
+} from '../services/operation-coordinator.service';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -104,7 +109,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   // Store initial position of node when drag starts
   private _initialNodePositions = new Map<string, Point>();
 
-  // Debouncing for history service integration
+  // Operation-aware event coordination (replaces timer-based debouncing)
   private readonly _dragCompleted$ = new Subject<{
     nodeId: string;
     initialPosition: Point;
@@ -112,26 +117,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     dragDuration: number;
     dragId: string;
   }>();
-  private readonly _debouncedNodeResized$ = new Subject<{
-    nodeId: string;
-    width: number;
-    height: number;
-    oldWidth: number;
-    oldHeight: number;
-  }>();
-  private readonly _debouncedNodeDataChanged$ = new Subject<{
-    nodeId: string;
-    newData: Record<string, unknown>;
-    oldData: Record<string, unknown>;
-  }>();
-  private readonly _debouncedEdgeVerticesChanged$ = new Subject<{
-    edgeId: string;
-    vertices: Array<{ x: number; y: number }>;
-  }>();
-  private _nodeResizeTimers = new Map<string, number>();
-  private _nodeDataChangeTimers = new Map<string, number>();
-  private _edgeVertexTimers = new Map<string, number>();
-  private readonly _debounceDelay = 200; // 200ms debounce delay
+  private readonly _operationCompleted$ = new Subject<OperationCompletedEvent>();
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -169,6 +155,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _edgeQueryService: EdgeQueryService,
     private readonly _nodeConfigurationService: NodeConfigurationService,
     private readonly _portStateManager: PortStateManagerService,
+    private readonly _eventFilter: EventFilterService,
+    private readonly _operationCoordinator: OperationCoordinatorService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -222,16 +210,10 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Observable for debounced node resize events (for history service)
+   * Observable for operation completion events (replaces debounced events)
    */
-  get debouncedNodeResized$(): Observable<{
-    nodeId: string;
-    width: number;
-    height: number;
-    oldWidth: number;
-    oldHeight: number;
-  }> {
-    return this._debouncedNodeResized$.asObservable();
+  get operationCompleted$(): Observable<OperationCompletedEvent> {
+    return this._operationCompleted$.asObservable();
   }
 
   /**
@@ -243,17 +225,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     oldData: Record<string, unknown>;
   }> {
     return this._nodeDataChanged$.asObservable();
-  }
-
-  /**
-   * Observable for debounced node data change events (for history service)
-   */
-  get debouncedNodeDataChanged$(): Observable<{
-    nodeId: string;
-    newData: Record<string, unknown>;
-    oldData: Record<string, unknown>;
-  }> {
-    return this._debouncedNodeDataChanged$.asObservable();
   }
 
   /**
@@ -292,16 +263,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     vertices: Array<{ x: number; y: number }>;
   }> {
     return this._edgeVerticesChanged$.asObservable();
-  }
-
-  /**
-   * Observable for debounced edge vertex changes (for history service)
-   */
-  get debouncedEdgeVerticesChanged$(): Observable<{
-    edgeId: string;
-    vertices: Array<{ x: number; y: number }>;
-  }> {
-    return this._debouncedEdgeVerticesChanged$.asObservable();
   }
 
   /**
@@ -1037,7 +998,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._cleanupShiftKeyHandling();
 
     // Clean up debouncing timers
-    this._cleanupDebouncingTimers();
 
     if (this._graph) {
       this._graph.dispose();
@@ -1268,55 +1228,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   clearSnapshots(): void {
     this._nodeSnapshots.clear();
     this._edgeSnapshots.clear();
-  }
-
-  /**
-   * Cancel pending debounced timers for a specific node (used during undo/redo to prevent unwanted history entries)
-   */
-  cancelPendingNodeTimers(nodeId: string): void {
-    // Cancel node resize timer
-    const resizeTimer = this._nodeResizeTimers.get(nodeId);
-    if (resizeTimer) {
-      clearTimeout(resizeTimer);
-      this._nodeResizeTimers.delete(nodeId);
-      this.logger.debug('Canceled pending node resize timer during undo/redo', { nodeId });
-    }
-
-    // Cancel node data change timer
-    const dataChangeTimer = this._nodeDataChangeTimers.get(nodeId);
-    if (dataChangeTimer) {
-      clearTimeout(dataChangeTimer);
-      this._nodeDataChangeTimers.delete(nodeId);
-      this.logger.debug('Canceled pending node data change timer during undo/redo', { nodeId });
-    }
-  }
-
-  /**
-   * Cancel all pending debounced timers (used during undo/redo to prevent unwanted history entries)
-   */
-  cancelAllPendingTimers(): void {
-    // Cancel all node resize timers
-    this._nodeResizeTimers.forEach((timer, nodeId) => {
-      clearTimeout(timer);
-      this.logger.debug('Canceled pending node resize timer during undo/redo', { nodeId });
-    });
-    this._nodeResizeTimers.clear();
-
-    // Cancel all node data change timers
-    this._nodeDataChangeTimers.forEach((timer, nodeId) => {
-      clearTimeout(timer);
-      this.logger.debug('Canceled pending node data change timer during undo/redo', { nodeId });
-    });
-    this._nodeDataChangeTimers.clear();
-
-    // Cancel all edge vertex timers
-    this._edgeVertexTimers.forEach((timer, edgeId) => {
-      clearTimeout(timer);
-      this.logger.debug('Canceled pending edge vertex timer during undo/redo', { edgeId });
-    });
-    this._edgeVertexTimers.clear();
-
-    this.logger.info('Canceled all pending debounced timers during undo/redo operation');
   }
 
   /**
@@ -1561,14 +1472,41 @@ export class X6GraphAdapter implements IGraphAdapter {
             oldHeight: previous.height,
           });
 
-          // Handle debounced event for history service
-          this._handleDebouncedNodeResize(
-            node.id,
-            current.width,
-            current.height,
-            previous.width,
-            previous.height,
-          );
+          // Use EventFilterService to filter resize events
+          if (
+            this._eventFilter.shouldProcessNodeResize(
+              node.id,
+              current.width,
+              current.height,
+              previous.width,
+              previous.height,
+            )
+          ) {
+            // Start operation for resize tracking
+            const operationId = this._operationCoordinator.startOperation(
+              node.id,
+              'node',
+              OperationType.RESIZE,
+              {
+                type: 'resize',
+                oldWidth: previous.width,
+                oldHeight: previous.height,
+                newWidth: current.width,
+                newHeight: current.height,
+              },
+            );
+
+            if (operationId) {
+              // Complete operation immediately for resize events
+              this._operationCoordinator.completeOperation(operationId, {
+                type: 'resize',
+                oldWidth: previous.width,
+                oldHeight: previous.height,
+                newWidth: current.width,
+                newHeight: current.height,
+              });
+            }
+          }
         }
       },
     );
@@ -1593,8 +1531,29 @@ export class X6GraphAdapter implements IGraphAdapter {
             oldData: previous,
           });
 
-          // Handle debounced event for history service
-          this._handleDebouncedNodeDataChange(cell.id, current, previous);
+          // Use EventFilterService to filter data change events
+          if (this._eventFilter.shouldProcessNodeDataChange(cell.id, current, previous)) {
+            // Start operation for data change tracking
+            const operationId = this._operationCoordinator.startOperation(
+              cell.id,
+              'node',
+              OperationType.UPDATE_DATA,
+              {
+                type: 'data',
+                oldData: previous,
+                newData: current,
+              },
+            );
+
+            if (operationId) {
+              // Complete operation immediately for data change events
+              this._operationCoordinator.completeOperation(operationId, {
+                type: 'data',
+                oldData: previous,
+                newData: current,
+              });
+            }
+          }
         }
       },
     );
@@ -2772,11 +2731,9 @@ export class X6GraphAdapter implements IGraphAdapter {
           vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
         });
 
-        // Handle debounced event for history service
-        this._handleDebouncedEdgeVertexChange(
-          edge.id,
-          vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
-        );
+        // Vertex changes ARE drag operations - but we need to debounce them properly
+        // For now, emit the immediate event and let the drag completion handle history
+        // TODO: Implement proper vertex drag completion tracking
       }
     };
 
@@ -3359,150 +3316,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       // Redraw the grid with the new size
       this._graph.drawGrid();
     }
-  }
-
-  /**
-   * Handle debounced node resize for history service integration
-   */
-  private _handleDebouncedNodeResize(
-    nodeId: string,
-    width: number,
-    height: number,
-    oldWidth: number,
-    oldHeight: number,
-  ): void {
-    // Clear existing timer for this node
-    const existingTimer = this._nodeResizeTimers.get(nodeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-    }
-
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.logger.debugComponent('DFD', '[Debounced] Node resize finalized', {
-        nodeId,
-        width,
-        height,
-        oldWidth,
-        oldHeight,
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedNodeResized$.next({
-        nodeId,
-        width,
-        height,
-        oldWidth,
-        oldHeight,
-      });
-
-      // Clean up timer
-      this._nodeResizeTimers.delete(nodeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._nodeResizeTimers.set(nodeId, timer);
-  }
-
-  /**
-   * Handle debounced node data change for history service integration
-   */
-  private _handleDebouncedNodeDataChange(
-    nodeId: string,
-    newData: Record<string, unknown>,
-    oldData: Record<string, unknown>,
-  ): void {
-    // Clear existing timer for this node
-    const existingTimer = this._nodeDataChangeTimers.get(nodeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-    }
-
-    // Set new timer
-    const timer = setTimeout(() => {
-      //  Log timing information for undo/redo debugging
-      this.logger.info(' Debounced node data change timer fired', {
-        nodeId,
-        newData,
-        oldData,
-        debounceDelay: this._debounceDelay,
-        timerFiredAt: new Date().toISOString(),
-        willTriggerHistoryIntegration: true,
-      });
-
-      this.logger.debugComponent('DFD', '[Debounced] Node data change finalized', {
-        nodeId,
-        newData,
-        oldData,
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedNodeDataChanged$.next({
-        nodeId,
-        newData,
-        oldData,
-      });
-
-      // Clean up timer
-      this._nodeDataChangeTimers.delete(nodeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._nodeDataChangeTimers.set(nodeId, timer);
-  }
-
-  /**
-   * Handle debounced edge vertex changes for history service integration
-   */
-  private _handleDebouncedEdgeVertexChange(
-    edgeId: string,
-    vertices: Array<{ x: number; y: number }>,
-  ): void {
-    // Clear existing timer for this edge
-    const existingTimer = this._edgeVertexTimers.get(edgeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-    }
-
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.logger.debugComponent('DFD', '[Debounced] Edge vertex change finalized', {
-        edgeId,
-        vertexCount: vertices.length,
-        vertices,
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedEdgeVerticesChanged$.next({
-        edgeId,
-        vertices,
-      });
-
-      // Clean up timer
-      this._edgeVertexTimers.delete(edgeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._edgeVertexTimers.set(edgeId, timer);
-  }
-
-  /**
-   * Clean up all debouncing timers
-   */
-  private _cleanupDebouncingTimers(): void {
-    // Clear all node resize timers
-    this._nodeResizeTimers.forEach(timer => clearTimeout(timer));
-    this._nodeResizeTimers.clear();
-
-    // Clear all node data change timers
-    this._nodeDataChangeTimers.forEach(timer => clearTimeout(timer));
-    this._nodeDataChangeTimers.clear();
-
-    // Clear all edge vertex timers
-    this._edgeVertexTimers.forEach(timer => clearTimeout(timer));
-    this._edgeVertexTimers.clear();
-
-    this.logger.debugComponent('DFD', '[Debouncing] All timers cleaned up');
   }
 
   /**

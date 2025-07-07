@@ -58,24 +58,6 @@ export class HistoryIntegrationService implements OnDestroy {
         this._logger.error('Error in drag completion subscription', { error }),
     });
 
-    // Subscribe to debounced edge vertex changes
-    this._x6GraphAdapter.debouncedEdgeVerticesChanged$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => {
-        this._handleDebouncedEdgeVertexChange(event, diagramId, userId);
-      },
-      error: (error: unknown) =>
-        this._logger.error('Error in debounced edge vertex subscription', { error }),
-    });
-
-    // Subscribe to debounced node resize events
-    this._x6GraphAdapter.debouncedNodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
-      next: event => {
-        this._handleDebouncedNodeResize(event, diagramId, userId);
-      },
-      error: (error: unknown) =>
-        this._logger.error('Error in debounced node resize subscription', { error }),
-    });
-
     // Subscribe to immediate node data change events (for label edits, etc.)
     // Text editing only updates when complete, so no debouncing needed
     this._x6GraphAdapter.nodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
@@ -84,6 +66,23 @@ export class HistoryIntegrationService implements OnDestroy {
       },
       error: (error: unknown) =>
         this._logger.error('Error in node data change subscription', { error }),
+    });
+
+    // Subscribe to immediate node resize events (not drag operations)
+    this._x6GraphAdapter.nodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => {
+        this._handleDebouncedNodeResize(event, diagramId, userId);
+      },
+      error: (error: unknown) => this._logger.error('Error in node resize subscription', { error }),
+    });
+
+    // Subscribe to immediate edge vertex change events (these ARE drag operations but handled directly)
+    this._x6GraphAdapter.edgeVerticesChanged$.pipe(takeUntil(this._destroy$)).subscribe({
+      next: event => {
+        this._handleDebouncedEdgeVertexChange(event, diagramId, userId);
+      },
+      error: (error: unknown) =>
+        this._logger.error('Error in edge vertex change subscription', { error }),
     });
 
     // Note: Duplicate subscriptions removed - already subscribed above
@@ -103,6 +102,9 @@ export class HistoryIntegrationService implements OnDestroy {
   }
 
   // Note: _handleDebouncedNodeMovement removed - drag completion provides superior tracking
+
+  // Operation completion handlers removed - we now handle events directly from X6 observables
+  // Only drag completion uses operation coordination for clean before/after state tracking
 
   /**
    * Handles debounced node resize events by dispatching UpdateNodeDataCommand
