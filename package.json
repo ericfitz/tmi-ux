@@ -73,7 +73,7 @@
     "@angular/cli": "^20.0.4",
     "@angular/compiler-cli": "^20.0.5",
     "@eslint/js": "^9.30.0",
-    "@rollup/rollup-darwin-arm64": "^4.44.1",
+    "@rollup/rollup-darwin-arm64": "^4.44.2",
     "@testing-library/angular": "^17.4.0",
     "@types/cypress-image-snapshot": "^3.1.9",
     "@types/jasmine": "~5.1.8",
