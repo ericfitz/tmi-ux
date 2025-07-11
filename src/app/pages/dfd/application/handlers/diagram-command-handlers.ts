@@ -19,8 +19,6 @@ import {
 import { DiagramAggregate } from '../../domain/aggregates/diagram-aggregate';
 import { BaseDomainEvent } from '../../domain/events/domain-event';
 import { DiagramSnapshot } from '../../domain/aggregates/diagram-aggregate';
-import { OperationStateTracker } from '../../infrastructure/services/operation-state-tracker.service';
-import { OperationType } from '../../domain/history/history.types';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 
@@ -101,7 +99,6 @@ export class CreateDiagramCommandHandler implements ICommandHandler<CreateDiagra
 export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
-    private readonly _operationTracker: OperationStateTracker,
     private readonly _logger: LoggerService,
     private readonly _x6GraphAdapter: X6GraphAdapter,
   ) {}
@@ -111,16 +108,9 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
   }
 
   handle(command: AddNodeCommand): Observable<CommandResult> {
-    const operationId = command.commandId; // Use command ID as operation ID for direct commands
-    this._logger.info(' AddNodeCommand - Starting operation tracking', {
-      operationId,
+    this._logger.info(' AddNodeCommand - Handling command', {
       commandId: command.commandId,
       nodeId: command.nodeId,
-      operationType: OperationType.ADD_NODE,
-    });
-    this._operationTracker.startOperation(operationId, OperationType.ADD_NODE, {
-      entityId: command.nodeId,
-      entityType: 'node',
     });
 
     return this.loadDiagram(command.diagramId).pipe(
@@ -131,12 +121,6 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
       switchMap(diagram =>
         this.saveDiagram(diagram).pipe(
           map(result => {
-            this._logger.info(' AddNodeCommand - Completing operation', {
-              operationId,
-              commandId: command.commandId,
-            });
-            this._operationTracker.completeOperation(operationId);
-
             // Re-add the node to the X6 graph after successful domain model update
             const node = diagram.getNode(command.nodeId);
             if (node) {
@@ -177,12 +161,10 @@ export class AddNodeCommandHandler implements ICommandHandler<AddNodeCommand> {
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error(' AddNodeCommand - Cancelling operation due to error', {
-          operationId,
+        this._logger.error(' AddNodeCommand - Error handling command', {
           commandId: command.commandId,
           error: error,
         });
-        this._operationTracker.cancelOperation(operationId);
         return throwError(
           () =>
             new Error(
@@ -334,6 +316,7 @@ export class UpdateNodeSnapshotCommandHandler
       commandId: command.commandId,
       nodeId: command.nodeId,
       newSnapshot: command.newSnapshot,
+      isLocalUserInitiated: command.isLocalUserInitiated,
     });
 
     return this.loadDiagram(command.diagramId).pipe(
@@ -344,32 +327,48 @@ export class UpdateNodeSnapshotCommandHandler
       switchMap(diagram =>
         this.saveDiagram(diagram).pipe(
           map(result => {
-            // After successful update in domain model, update X6 graph
-            const node = diagram.getNode(command.nodeId);
-            if (node) {
-              this._logger.info(' UpdateNodeSnapshotCommand - Updating node snapshot in X6 graph', {
-                nodeId: node.id,
-                newData: node.data,
-              });
-              // Update label
-              if (node.data.label !== undefined) {
-                const x6Node = this._x6GraphAdapter.getNode(node.id);
-                if (x6Node) {
-                  this._x6GraphAdapter.setCellLabel(x6Node, node.data.label);
+            // Only update X6 graph if this is NOT a local user-initiated command
+            // Local user-initiated commands come from X6 graph events, so we shouldn't update the graph again
+            if (!command.isLocalUserInitiated) {
+              const node = diagram.getNode(command.nodeId);
+              if (node) {
+                this._logger.info(
+                  ' UpdateNodeSnapshotCommand - Updating node snapshot in X6 graph (undo/redo)',
+                  {
+                    nodeId: node.id,
+                    newData: node.data,
+                    isLocalUserInitiated: command.isLocalUserInitiated,
+                  },
+                );
+                // Update label
+                if (node.data.label !== undefined) {
+                  const x6Node = this._x6GraphAdapter.getNode(node.id);
+                  if (x6Node) {
+                    this._x6GraphAdapter.setCellLabel(x6Node, node.data.label);
+                  }
                 }
-              }
-              // Update size
-              if (node.data.width !== undefined && node.data.height !== undefined) {
-                const x6Node = this._x6GraphAdapter.getNode(node.id);
-                if (x6Node) {
-                  x6Node.setSize(node.data.width, node.data.height);
+                // Update size
+                if (node.data.width !== undefined && node.data.height !== undefined) {
+                  const x6Node = this._x6GraphAdapter.getNode(node.id);
+                  if (x6Node) {
+                    x6Node.setSize(node.data.width, node.data.height);
+                  }
                 }
+              } else {
+                this._logger.warn(
+                  ' UpdateNodeSnapshotCommand - Node not found in domain after update',
+                  {
+                    nodeId: command.nodeId,
+                  },
+                );
               }
             } else {
-              this._logger.warn(
-                ' UpdateNodeSnapshotCommand - Node not found in domain after update',
+              this._logger.info(
+                ' UpdateNodeSnapshotCommand - Skipping X6 graph update for local user-initiated command',
                 {
                   nodeId: command.nodeId,
+                  isLocalUserInitiated: command.isLocalUserInitiated,
+                  reason: 'Command originated from X6 graph event, avoiding circular update',
                 },
               );
             }
@@ -505,7 +504,6 @@ export class RemoveNodeCommandHandler implements ICommandHandler<RemoveNodeComma
 export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
   constructor(
     @Inject(DIAGRAM_REPOSITORY_TOKEN) private readonly diagramRepository: IDiagramRepository,
-    private readonly _operationTracker: OperationStateTracker,
     private readonly _logger: LoggerService,
     private readonly _x6GraphAdapter: X6GraphAdapter,
   ) {}
@@ -515,16 +513,9 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
   }
 
   handle(command: AddEdgeCommand): Observable<CommandResult> {
-    const operationId = command.commandId; // Use command ID as operation ID for direct commands
-    this._logger.info(' AddEdgeCommand - Starting operation tracking', {
-      operationId,
+    this._logger.info(' AddEdgeCommand - Handling command', {
       commandId: command.commandId,
       edgeId: command.edgeId,
-      operationType: OperationType.ADD_EDGE,
-    });
-    this._operationTracker.startOperation(operationId, OperationType.ADD_EDGE, {
-      entityId: command.edgeId,
-      entityType: 'edge',
     });
 
     return this.loadDiagram(command.diagramId).pipe(
@@ -535,12 +526,6 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
       switchMap(diagram =>
         this.saveDiagram(diagram).pipe(
           map(result => {
-            this._logger.info(' AddEdgeCommand - Completing operation', {
-              operationId,
-              commandId: command.commandId,
-            });
-            this._operationTracker.completeOperation(operationId);
-
             // Re-add the edge to the X6 graph after successful domain model update
             const edge = diagram.getEdge(command.edgeId);
             if (edge) {
@@ -569,12 +554,10 @@ export class AddEdgeCommandHandler implements ICommandHandler<AddEdgeCommand> {
         ),
       ),
       catchError((error: unknown) => {
-        this._logger.error(' AddEdgeCommand - Cancelling operation due to error', {
-          operationId,
+        this._logger.error(' AddEdgeCommand - Error handling command', {
           commandId: command.commandId,
           error: error,
         });
-        this._operationTracker.cancelOperation(operationId);
         return throwError(
           () =>
             new Error(

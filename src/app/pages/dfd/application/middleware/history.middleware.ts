@@ -5,7 +5,6 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { ICommandMiddleware } from '../interfaces/command-bus.interface';
 import { AnyDiagramCommand } from '../../domain/commands/diagram-commands';
 import { HistoryService } from '../services/history.service';
-import { OperationStateTracker } from '../../infrastructure/services/operation-state-tracker.service';
 import { InverseCommandFactory } from '../../domain/commands/inverse-command-factory';
 import { DiagramState } from '../../domain/history/history.types';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
@@ -26,7 +25,6 @@ export class HistoryMiddleware implements ICommandMiddleware {
   constructor(
     private readonly _logger: LoggerService,
     private readonly _historyService: HistoryService,
-    private readonly _operationTracker: OperationStateTracker,
     private readonly _inverseFactory: InverseCommandFactory,
     private readonly _x6GraphAdapter: X6GraphAdapter,
   ) {}
@@ -70,29 +68,13 @@ export class HistoryMiddleware implements ICommandMiddleware {
       }),
       finalize(() => {
         try {
-          // CRITICAL FIX: Use finalize() to ensure this runs AFTER all other subscriptions
-          // This guarantees the History Integration Service has completed the operation
           const operationId = this._getOperationId(command);
-          const isFinalState = operationId
-            ? this._operationTracker.isFinalState(operationId)
-            : false;
 
-          this._logger.info(' Checking operation final state in finalize()', {
+          this._logger.debug('Recording command in history after execution', {
             commandType: command.type,
             commandId: command.commandId,
             operationId,
-            isFinalState,
           });
-
-          // Only record if operation is in final state
-          if (!operationId || !isFinalState) {
-            this._logger.debug('Operation not in final state in finalize(), not recording', {
-              commandType: command.type,
-              operationId,
-              isFinalState,
-            });
-            return;
-          }
 
           // Create inverse command
           if (this._inverseFactory.canCreateInverse(command)) {
@@ -194,26 +176,6 @@ export class HistoryMiddleware implements ICommandMiddleware {
     if (!this._isRecordableCommandType(command.type)) {
       this._logger.debug('Command type not recordable', {
         commandType: command.type,
-      });
-      return false;
-    }
-
-    // Check if the operation is in final state
-    const operationId = this._getOperationId(command);
-    const isFinalState = operationId ? this._operationTracker.isFinalState(operationId) : false;
-
-    this._logger.info('Checking operation final state', {
-      commandType: command.type,
-      commandId: command.commandId,
-      operationId,
-      isFinalState,
-    });
-
-    if (operationId && !isFinalState) {
-      this._logger.debug('Operation not in final state', {
-        commandType: command.type,
-        operationId,
-        isFinalState,
       });
       return false;
     }

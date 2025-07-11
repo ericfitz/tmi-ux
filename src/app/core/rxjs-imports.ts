@@ -21,7 +21,6 @@ export { tap } from 'rxjs/internal/operators/tap';
 export { catchError } from 'rxjs/internal/operators/catchError';
 export { switchMap } from 'rxjs/internal/operators/switchMap';
 export { mergeMap } from 'rxjs/internal/operators/mergeMap';
-export { debounceTime } from 'rxjs/internal/operators/debounceTime';
 export { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 export { takeUntil } from 'rxjs/internal/operators/takeUntil';
 export { take } from 'rxjs/internal/operators/take';

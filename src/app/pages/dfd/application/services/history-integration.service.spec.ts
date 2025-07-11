@@ -10,7 +10,6 @@ import { HistoryIntegrationService } from './history-integration.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 import { ICommandBus } from '../interfaces/command-bus.interface';
-import { OperationStateTracker } from '../../infrastructure/services/operation-state-tracker.service';
 import { HistoryService } from './history.service';
 
 describe('HistoryIntegrationService', () => {
@@ -27,18 +26,12 @@ describe('HistoryIntegrationService', () => {
     getGraph: ReturnType<typeof vi.fn>;
     getNodeSnapshot: ReturnType<typeof vi.fn>;
     dragCompleted$: Subject<any>;
-    debouncedEdgeVerticesChanged$: Subject<any>;
-    debouncedNodeResized$: Subject<any>;
-    debouncedNodeDataChanged$: Subject<any>;
+    edgeVerticesChanged$: Subject<any>;
+    nodeResized$: Subject<any>;
     nodeDataChanged$: Subject<any>;
   };
   let mockCommandBus: {
     execute: ReturnType<typeof vi.fn>;
-  };
-  let mockOperationTracker: {
-    startOperation: ReturnType<typeof vi.fn>;
-    completeOperation: ReturnType<typeof vi.fn>;
-    cancelOperation: ReturnType<typeof vi.fn>;
   };
   let mockHistoryService: {
     isUndoRedoInProgress: ReturnType<typeof vi.fn>;
@@ -58,20 +51,13 @@ describe('HistoryIntegrationService', () => {
       getGraph: vi.fn(),
       getNodeSnapshot: vi.fn(),
       dragCompleted$: new Subject(),
-      debouncedEdgeVerticesChanged$: new Subject(),
-      debouncedNodeResized$: new Subject(),
-      debouncedNodeDataChanged$: new Subject(),
+      edgeVerticesChanged$: new Subject(),
+      nodeResized$: new Subject(),
       nodeDataChanged$: new Subject(),
     };
 
     mockCommandBus = {
       execute: vi.fn(),
-    };
-
-    mockOperationTracker = {
-      startOperation: vi.fn(),
-      completeOperation: vi.fn(),
-      cancelOperation: vi.fn(),
     };
 
     mockHistoryService = {
@@ -90,7 +76,6 @@ describe('HistoryIntegrationService', () => {
       mockLogger as unknown as LoggerService,
       mockX6GraphAdapter as unknown as X6GraphAdapter,
       mockCommandBus as unknown as ICommandBus,
-      mockOperationTracker as unknown as OperationStateTracker,
       mockHistoryService as unknown as HistoryService,
     );
   });
@@ -107,7 +92,7 @@ describe('HistoryIntegrationService', () => {
 
     // Note: Debounced node movement tests removed - functionality replaced by drag completion
 
-    it('should skip debounced node resize during undo/redo operation', () => {
+    it('should skip immediate node resize during undo/redo operation', () => {
       // Arrange
       mockHistoryService.isUndoRedoInProgress.mockReturnValue(true);
       mockCommandBus.execute.mockReturnValue(of({}));
@@ -121,11 +106,11 @@ describe('HistoryIntegrationService', () => {
         oldHeight: 75,
       };
 
-      mockX6GraphAdapter.debouncedNodeResized$.next(nodeResizeEvent);
+      mockX6GraphAdapter.nodeResized$.next(nodeResizeEvent);
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Skipping debounced node resize during undo/redo operation',
+        'Skipping node resize during undo/redo operation',
         {
           nodeId: 'test-node',
           newSize: { width: 200, height: 150 },
@@ -135,7 +120,7 @@ describe('HistoryIntegrationService', () => {
       expect(mockCommandBus.execute).not.toHaveBeenCalled();
     });
 
-    it('should skip debounced node data change during undo/redo operation', () => {
+    it('should skip immediate node data change during undo/redo operation', () => {
       // Arrange
       mockHistoryService.isUndoRedoInProgress.mockReturnValue(true);
       mockCommandBus.execute.mockReturnValue(of({}));
@@ -151,7 +136,7 @@ describe('HistoryIntegrationService', () => {
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Skipping debounced node data change during undo/redo operation',
+        'Skipping node data change during undo/redo operation',
         {
           nodeId: 'test-node',
           newData: { label: 'New Label' },
@@ -161,7 +146,7 @@ describe('HistoryIntegrationService', () => {
       expect(mockCommandBus.execute).not.toHaveBeenCalled();
     });
 
-    it('should skip debounced edge vertex change during undo/redo operation', () => {
+    it('should skip immediate edge vertex change during undo/redo operation', () => {
       // Arrange
       mockHistoryService.isUndoRedoInProgress.mockReturnValue(true);
       mockCommandBus.execute.mockReturnValue(of({}));
@@ -175,11 +160,11 @@ describe('HistoryIntegrationService', () => {
         ],
       };
 
-      mockX6GraphAdapter.debouncedEdgeVerticesChanged$.next(edgeVertexChangeEvent);
+      mockX6GraphAdapter.edgeVerticesChanged$.next(edgeVertexChangeEvent);
 
       // Assert
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Skipping debounced edge vertex change during undo/redo operation',
+        'Skipping edge vertex change during undo/redo operation',
         {
           edgeId: 'test-edge',
           vertexCount: 2,
@@ -232,7 +217,7 @@ describe('HistoryIntegrationService', () => {
       mockX6GraphAdapter.getGraph.mockReturnValue(mockGraph);
     });
 
-    it('should process remaining debounced events normally when undo/redo is not in progress', () => {
+    it('should process immediate events normally when undo/redo is not in progress', () => {
       // Arrange
       mockCommandBus.execute.mockReturnValue(of({}));
 
@@ -258,13 +243,13 @@ describe('HistoryIntegrationService', () => {
         ],
       };
 
-      // Act - Test remaining debounced events (node movement removed)
-      mockX6GraphAdapter.debouncedNodeResized$.next(nodeResizeEvent);
+      // Act - Test immediate events (node movement removed)
+      mockX6GraphAdapter.nodeResized$.next(nodeResizeEvent);
       mockX6GraphAdapter.nodeDataChanged$.next(nodeDataChangeEvent);
-      mockX6GraphAdapter.debouncedEdgeVerticesChanged$.next(edgeVertexEvent);
+      mockX6GraphAdapter.edgeVerticesChanged$.next(edgeVertexEvent);
 
       // Assert
-      expect(mockLogger.info).toHaveBeenCalledWith('Processing debounced node resize for history', {
+      expect(mockLogger.info).toHaveBeenCalledWith('Processing node resize for history', {
         nodeId: 'test-node',
         newSize: { width: 200, height: 150 },
         oldSize: { width: 100, height: 75 },
@@ -279,15 +264,12 @@ describe('HistoryIntegrationService', () => {
         },
       );
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Processing debounced edge vertex change for history',
-        {
-          edgeId: 'test-edge',
-          vertexCount: 2,
-        },
-      );
+      expect(mockLogger.info).toHaveBeenCalledWith('Processing edge vertex change for history', {
+        edgeId: 'test-edge',
+        vertexCount: 2,
+      });
 
-      // FIXED: The test should expect 3 calls since we're triggering 3 different debounced events
+      // The test should expect 3 calls since we're triggering 3 different immediate events
       // Each event type (node resize, node data change, edge vertex change) should trigger a command
       expect(mockCommandBus.execute).toHaveBeenCalledTimes(3);
     });

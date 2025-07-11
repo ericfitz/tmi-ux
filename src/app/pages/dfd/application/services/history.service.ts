@@ -5,7 +5,6 @@ import { AnyDiagramCommand } from '../../domain/commands/diagram-commands';
 import { IHistoryService, HistoryEntry, HistoryConfig } from '../../domain/history/history.types';
 import { ICommandBus } from '../interfaces/command-bus.interface';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
-import { OperationCoordinatorService } from '../../infrastructure/services/operation-coordinator.service';
 
 /**
  * Default configuration for history service
@@ -46,7 +45,6 @@ export class HistoryService implements IHistoryService, OnDestroy {
     private readonly _logger: LoggerService,
     @Inject(forwardRef(() => 'ICommandBus')) private readonly _commandBus?: ICommandBus,
     @Optional() private readonly _x6GraphAdapter?: X6GraphAdapter,
-    @Optional() private readonly _operationCoordinator?: OperationCoordinatorService,
   ) {
     this._config = { ...DEFAULT_CONFIG };
     this._logger.info('History service initialized', { config: this._config });
@@ -111,11 +109,6 @@ export class HistoryService implements IHistoryService, OnDestroy {
         isUndoRedoInProgress: this._isUndoRedoInProgress,
       });
 
-      // Cancel any pending operations to prevent unwanted history entries
-      if (this._operationCoordinator) {
-        this._operationCoordinator.clearAllOperations();
-      }
-
       // Execute the inverse command
       await this._executeInverseCommand(entry.inverse);
 
@@ -170,11 +163,6 @@ export class HistoryService implements IHistoryService, OnDestroy {
 
       // Set flag to suppress history recording during redo
       this._isUndoRedoInProgress = true;
-
-      // Cancel any pending operations to prevent unwanted history entries
-      if (this._operationCoordinator) {
-        this._operationCoordinator.clearAllOperations();
-      }
 
       // Execute the original command
       await this._executeOriginalCommand(entry.command);

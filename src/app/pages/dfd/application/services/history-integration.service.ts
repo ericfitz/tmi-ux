@@ -4,16 +4,14 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 import { ICommandBus } from '../interfaces/command-bus.interface';
 import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
-import { OperationStateTracker } from '../../infrastructure/services/operation-state-tracker.service';
-import { OperationType } from '../../domain/history/history.types';
 import { Point } from '../../domain/value-objects/point';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { NodeData, NodeType } from '../../domain/value-objects/node-data';
 import { HistoryService } from './history.service';
 
 /**
- * Service that integrates debounced X6 graph events with the history system.
- * Subscribes to debounced observables and dispatches appropriate commands through the command bus.
+ * Service that integrates X6 graph events with the history system.
+ * Subscribes to immediate observables and dispatches appropriate commands through the command bus.
  */
 @Injectable({
   providedIn: 'root',
@@ -26,12 +24,11 @@ export class HistoryIntegrationService implements OnDestroy {
     private readonly _logger: LoggerService,
     private readonly _x6GraphAdapter: X6GraphAdapter,
     @Inject('ICommandBus') private readonly _commandBus: ICommandBus,
-    private readonly _operationTracker: OperationStateTracker,
     private readonly _historyService: HistoryService,
   ) {}
 
   /**
-   * Initializes the history integration by subscribing to debounced observables
+   * Initializes the history integration by subscribing to immediate observables
    */
   initialize(diagramId: string, userId: string): void {
     if (this._isInitialized) {
@@ -42,12 +39,7 @@ export class HistoryIntegrationService implements OnDestroy {
     this._logger.info('Initializing history integration service', { diagramId, userId });
 
     // Set command context on X6 adapter for delete operations
-    this._x6GraphAdapter.setCommandContext(
-      diagramId,
-      userId,
-      this._commandBus,
-      this._operationTracker,
-    );
+    this._x6GraphAdapter.setCommandContext(diagramId, userId, this._commandBus);
 
     // Subscribe to drag completion events for clean history recording
     this._x6GraphAdapter.dragCompleted$.pipe(takeUntil(this._destroy$)).subscribe({
@@ -62,7 +54,7 @@ export class HistoryIntegrationService implements OnDestroy {
     // Text editing only updates when complete, so no debouncing needed
     this._x6GraphAdapter.nodeDataChanged$.pipe(takeUntil(this._destroy$)).subscribe({
       next: event => {
-        this._handleDebouncedNodeDataChange(event, diagramId, userId);
+        this._handleNodeDataChange(event, diagramId, userId);
       },
       error: (error: unknown) =>
         this._logger.error('Error in node data change subscription', { error }),
@@ -71,7 +63,7 @@ export class HistoryIntegrationService implements OnDestroy {
     // Subscribe to immediate node resize events (not drag operations)
     this._x6GraphAdapter.nodeResized$.pipe(takeUntil(this._destroy$)).subscribe({
       next: event => {
-        this._handleDebouncedNodeResize(event, diagramId, userId);
+        this._handleNodeResize(event, diagramId, userId);
       },
       error: (error: unknown) => this._logger.error('Error in node resize subscription', { error }),
     });
@@ -79,7 +71,7 @@ export class HistoryIntegrationService implements OnDestroy {
     // Subscribe to immediate edge vertex change events (these ARE drag operations but handled directly)
     this._x6GraphAdapter.edgeVerticesChanged$.pipe(takeUntil(this._destroy$)).subscribe({
       next: event => {
-        this._handleDebouncedEdgeVertexChange(event, diagramId, userId);
+        this._handleEdgeVertexChange(event, diagramId, userId);
       },
       error: (error: unknown) =>
         this._logger.error('Error in edge vertex change subscription', { error }),
@@ -107,9 +99,9 @@ export class HistoryIntegrationService implements OnDestroy {
   // Only drag completion uses operation coordination for clean before/after state tracking
 
   /**
-   * Handles debounced node resize events by dispatching UpdateNodeDataCommand
+   * Handles node resize events by dispatching UpdateNodeDataCommand
    */
-  private _handleDebouncedNodeResize(
+  private _handleNodeResize(
     event: {
       nodeId: string;
       width: number;
@@ -121,9 +113,9 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
-      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing events
       if (this._historyService.isUndoRedoInProgress()) {
-        this._logger.info('Skipping debounced node resize during undo/redo operation', {
+        this._logger.info('Skipping node resize during undo/redo operation', {
           nodeId: event.nodeId,
           newSize: { width: event.width, height: event.height },
           oldSize: { width: event.oldWidth, height: event.oldHeight },
@@ -131,20 +123,13 @@ export class HistoryIntegrationService implements OnDestroy {
         return;
       }
 
-      this._logger.info('Processing debounced node resize for history', {
+      this._logger.info('Processing node resize for history', {
         nodeId: event.nodeId,
         newSize: { width: event.width, height: event.height },
         oldSize: { width: event.oldWidth, height: event.oldHeight },
       });
 
-      // Start operation tracking
       const operationId = this._generateOperationId('node_resize', event.nodeId);
-      this._operationTracker.startOperation(operationId, OperationType.UPDATE_DATA, {
-        entityId: event.nodeId,
-        entityType: 'node',
-        oldData: { width: event.oldWidth, height: event.oldHeight },
-        newData: { width: event.width, height: event.height },
-      });
 
       // Get current node data to preserve other properties
       const currentNodeData = this._getCurrentNodeData(event.nodeId);
@@ -175,7 +160,6 @@ export class HistoryIntegrationService implements OnDestroy {
             nodeId: event.nodeId,
             operationId,
           });
-          this._operationTracker.completeOperation(operationId);
         },
         error: (error: unknown) => {
           this._logger.error('Failed to execute node resize update command', {
@@ -183,11 +167,10 @@ export class HistoryIntegrationService implements OnDestroy {
             operationId,
             error,
           });
-          this._operationTracker.cancelOperation(operationId);
         },
       });
     } catch (error) {
-      this._logger.error('Failed to handle debounced node resize', {
+      this._logger.error('Failed to handle node resize', {
         nodeId: event.nodeId,
         error,
       });
@@ -195,9 +178,9 @@ export class HistoryIntegrationService implements OnDestroy {
   }
 
   /**
-   * Handles debounced node data change events by dispatching UpdateNodeDataCommand
+   * Handles node data change events by dispatching UpdateNodeDataCommand
    */
-  private _handleDebouncedNodeDataChange(
+  private _handleNodeDataChange(
     event: {
       nodeId: string;
       newData: Record<string, unknown>;
@@ -207,9 +190,9 @@ export class HistoryIntegrationService implements OnDestroy {
     userId: string,
   ): void {
     try {
-      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing events
       if (this._historyService.isUndoRedoInProgress()) {
-        this._logger.info('Skipping debounced node data change during undo/redo operation', {
+        this._logger.info('Skipping node data change during undo/redo operation', {
           nodeId: event.nodeId,
           newData: event.newData,
           oldData: event.oldData,
@@ -223,26 +206,17 @@ export class HistoryIntegrationService implements OnDestroy {
         oldData: event.oldData,
       });
 
-      // Start operation tracking
       const operationId = this._generateOperationId('node_data_change', event.nodeId);
-      this._operationTracker.startOperation(operationId, OperationType.UPDATE_DATA, {
-        entityId: event.nodeId,
-        entityType: 'node',
-        oldData: event.oldData,
-        newData: event.newData,
-      });
 
       // CRITICAL FIX: Use cached snapshot for "current" state instead of reading from domain
       // The domain already has the updated data, but we need the pre-update state for undo
       const cachedSnapshot = this._x6GraphAdapter.getNodeSnapshot(event.nodeId);
       if (!cachedSnapshot) {
-        this._logger.debug('No cached snapshot found during node creation, cancelling operation', {
+        this._logger.debug('No cached snapshot found during node creation, skipping', {
           nodeId: event.nodeId,
           operationId,
           reason: 'Expected during rapid node creation events before snapshot caching completes',
         });
-        // CRITICAL FIX: Cancel the operation instead of just returning
-        this._operationTracker.cancelOperation(operationId);
         return; // Skip history recording for nodes without cached snapshots
       }
 
@@ -304,7 +278,6 @@ export class HistoryIntegrationService implements OnDestroy {
             nodeId: event.nodeId,
             operationId,
           });
-          this._operationTracker.completeOperation(operationId);
         },
         error: (error: unknown) => {
           this._logger.error('Failed to execute node data update command', {
@@ -312,11 +285,10 @@ export class HistoryIntegrationService implements OnDestroy {
             operationId,
             error,
           });
-          this._operationTracker.cancelOperation(operationId);
         },
       });
     } catch (error) {
-      this._logger.error('Failed to handle debounced node data change', {
+      this._logger.error('Failed to handle node data change', {
         nodeId: event.nodeId,
         error,
       });
@@ -324,35 +296,29 @@ export class HistoryIntegrationService implements OnDestroy {
   }
 
   /**
-   * Handles debounced edge vertex changes by dispatching UpdateEdgeDataCommand
+   * Handles edge vertex changes by dispatching UpdateEdgeDataCommand
    */
-  private _handleDebouncedEdgeVertexChange(
+  private _handleEdgeVertexChange(
     event: { edgeId: string; vertices: Array<{ x: number; y: number }> },
     diagramId: string,
     userId: string,
   ): void {
     try {
-      // CRITICAL FIX: Check if undo/redo operation is in progress before processing debounced events
+      // CRITICAL FIX: Check if undo/redo operation is in progress before processing events
       if (this._historyService.isUndoRedoInProgress()) {
-        this._logger.info('Skipping debounced edge vertex change during undo/redo operation', {
+        this._logger.info('Skipping edge vertex change during undo/redo operation', {
           edgeId: event.edgeId,
           vertexCount: event.vertices.length,
         });
         return;
       }
 
-      this._logger.info('Processing debounced edge vertex change for history', {
+      this._logger.info('Processing edge vertex change for history', {
         edgeId: event.edgeId,
         vertexCount: event.vertices.length,
       });
 
-      // Start operation tracking
       const operationId = this._generateOperationId('edge_vertices', event.edgeId);
-      this._operationTracker.startOperation(operationId, OperationType.EDIT_VERTICES, {
-        entityId: event.edgeId,
-        entityType: 'edge',
-        newData: { vertices: event.vertices },
-      });
 
       // Get current edge data to preserve other properties
       const currentEdgeData = this._getCurrentEdgeData(event.edgeId);
@@ -384,8 +350,6 @@ export class HistoryIntegrationService implements OnDestroy {
             edgeId: event.edgeId,
             operationId,
           });
-          // Complete the operation AFTER successful execution
-          this._operationTracker.completeOperation(operationId);
         },
         error: (error: unknown) => {
           this._logger.error('Failed to execute edge vertex update command', {
@@ -393,11 +357,10 @@ export class HistoryIntegrationService implements OnDestroy {
             operationId,
             error,
           });
-          this._operationTracker.cancelOperation(operationId);
         },
       });
     } catch (error) {
-      this._logger.error('Failed to handle debounced edge vertex change', {
+      this._logger.error('Failed to handle edge vertex change', {
         edgeId: event.edgeId,
         error,
       });
@@ -441,25 +404,7 @@ export class HistoryIntegrationService implements OnDestroy {
         },
       });
 
-      // Start operation tracking for the completed drag
       const operationId = this._generateOperationId('drag_complete', event.nodeId);
-      this._logger.info('Starting operation tracking for drag completion', {
-        operationId,
-        nodeId: event.nodeId,
-        dragId: event.dragId,
-        operationType: OperationType.UPDATE_POSITION,
-      });
-
-      this._operationTracker.startOperation(operationId, OperationType.UPDATE_POSITION, {
-        entityId: event.nodeId,
-        entityType: 'node',
-        startPosition: { x: event.initialPosition.x, y: event.initialPosition.y },
-        currentPosition: { x: event.finalPosition.x, y: event.finalPosition.y },
-        metadata: {
-          dragId: event.dragId,
-          dragDuration: event.dragDuration.toString(),
-        },
-      });
 
       // Create and dispatch the update position command with clean initial/final positions
       const command = DiagramCommandFactory.updateNodePosition(
@@ -494,8 +439,6 @@ export class HistoryIntegrationService implements OnDestroy {
             dragId: event.dragId,
             operationId,
           });
-          // Complete the operation AFTER successful execution
-          this._operationTracker.completeOperation(operationId);
         },
         error: (error: unknown) => {
           this._logger.error('Failed to execute drag completion command', {
@@ -504,7 +447,6 @@ export class HistoryIntegrationService implements OnDestroy {
             operationId,
             error,
           });
-          this._operationTracker.cancelOperation(operationId);
         },
       });
     } catch (error) {

@@ -106,27 +106,6 @@ export interface IHistoryService {
 }
 
 /**
- * Operation state tracker interface
- */
-export interface IOperationStateTracker {
-  // Operation lifecycle
-  startOperation(operationId: string, type: OperationType, data?: OperationData): void;
-  updateOperation(operationId: string, data: Partial<OperationData>): void;
-  completeOperation(operationId: string): void;
-  cancelOperation(operationId: string): void;
-
-  // State queries
-  isOperationActive(operationId: string): boolean;
-  getOperationState(operationId: string): OperationState | null;
-
-  // Final state detection
-  isFinalState(operationId: string): boolean;
-
-  // Cleanup
-  cleanupExpiredOperations(): void;
-}
-
-/**
  * Inverse command factory interface
  */
 export interface IInverseCommandFactory {

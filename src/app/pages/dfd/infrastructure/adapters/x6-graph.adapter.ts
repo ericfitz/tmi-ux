@@ -14,8 +14,6 @@ import { Point } from '../../domain/value-objects/point';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
 import { ICommandBus } from '../../application/interfaces/command-bus.interface';
-import { OperationStateTracker } from '../services/operation-state-tracker.service';
-import { OperationType } from '../../domain/history/history.types';
 import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { DragStateManagerService } from '../services/drag-state-manager.service';
@@ -23,11 +21,6 @@ import { EdgeService } from '../services/edge.service';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { PortStateManagerService } from '../services/port-state-manager.service';
-import { EventFilterService } from '../services/event-filter.service';
-import {
-  OperationCoordinatorService,
-  OperationCompletedEvent,
-} from '../services/operation-coordinator.service';
 
 // Register custom store shape with only top and bottom borders
 Shape.Rect.define({
@@ -95,7 +88,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _diagramId: string | null = null;
   private _userId: string | null = null;
   private _commandBus: ICommandBus | null = null;
-  private _operationStateTracker: OperationStateTracker | null = null;
 
   // Cell caching for undo/server operations
   private _nodeSnapshots = new Map<string, X6NodeSnapshot>();
@@ -117,7 +109,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     dragDuration: number;
     dragId: string;
   }>();
-  private readonly _operationCompleted$ = new Subject<OperationCompletedEvent>();
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -155,8 +146,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _edgeQueryService: EdgeQueryService,
     private readonly _nodeConfigurationService: NodeConfigurationService,
     private readonly _portStateManager: PortStateManagerService,
-    private readonly _eventFilter: EventFilterService,
-    private readonly _operationCoordinator: OperationCoordinatorService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -207,13 +196,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     oldHeight: number;
   }> {
     return this._nodeResized$.asObservable();
-  }
-
-  /**
-   * Observable for operation completion events (replaces debounced events)
-   */
-  get operationCompleted$(): Observable<OperationCompletedEvent> {
-    return this._operationCompleted$.asObservable();
   }
 
   /**
@@ -997,8 +979,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Clean up shift key event listeners
     this._cleanupShiftKeyHandling();
 
-    // Clean up debouncing timers
-
     if (this._graph) {
       this._graph.dispose();
       this._graph = null;
@@ -1148,7 +1128,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // CRITICAL FIX: Trigger cell:change:data event for history integration
     // This ensures that label changes flow through the normal event chain
-    // and are captured by the history system via debouncedNodeDataChanged$
+    // and are captured by the history system via nodeDataChanged$
     if (cell.isNode()) {
       // For nodes, trigger the data change event that the history system monitors
       const oldData = { label: oldLabel };
@@ -1189,22 +1169,15 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Set the context for command pattern operations (diagram ID, user ID, command bus, and operation state tracker)
+   * Set the context for command pattern operations (diagram ID, user ID, and command bus)
    */
-  setCommandContext(
-    diagramId: string,
-    userId: string,
-    commandBus: ICommandBus,
-    operationStateTracker?: OperationStateTracker,
-  ): void {
+  setCommandContext(diagramId: string, userId: string, commandBus: ICommandBus): void {
     this._diagramId = diagramId;
     this._userId = userId;
     this._commandBus = commandBus;
-    this._operationStateTracker = operationStateTracker || null;
     this.logger.info('Command context set for X6 adapter', {
       diagramId,
       userId,
-      hasOperationTracker: !!operationStateTracker,
     });
   }
 
@@ -1401,6 +1374,16 @@ export class X6GraphAdapter implements IGraphAdapter {
         current?: { x: number; y: number };
         previous?: { x: number; y: number };
       }) => {
+        this.logger.debug('node:change:position event fired (raw)', {
+          nodeId: node.id,
+          current,
+          previous,
+        }); // Raw log
+        this.logger.debugComponent('DFD', 'node:change:position event fired', {
+          nodeId: node.id,
+          current: current,
+          previous: previous,
+        });
         if (current && previous) {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
@@ -1408,33 +1391,19 @@ export class X6GraphAdapter implements IGraphAdapter {
           // Update drag state if node is being dragged
           if (this._dragStateManager.isDragging(node.id)) {
             this._dragStateManager.updateDragPosition(node.id, currentPos);
-            // Reduce logging during drag - only log significant position changes
+            // Log every position change during drag for detailed tracing
             const dragState = this._dragStateManager.getDragState(node.id);
             if (dragState) {
               const deltaFromStart = Math.sqrt(
                 Math.pow(currentPos.x - dragState.initialPosition.x, 2) +
                   Math.pow(currentPos.y - dragState.initialPosition.y, 2),
               );
-              // Only log every 50 pixels of movement to reduce noise
-              if (
-                deltaFromStart > 0 &&
-                Math.floor(deltaFromStart / 50) >
-                  Math.floor(
-                    dragState.currentPosition
-                      ? Math.sqrt(
-                          Math.pow(dragState.currentPosition.x - dragState.initialPosition.x, 2) +
-                            Math.pow(dragState.currentPosition.y - dragState.initialPosition.y, 2),
-                        ) / 50
-                      : 0,
-                  )
-              ) {
-                this.logger.debug('DRAG_PROGRESS', {
-                  nodeId: node.id,
-                  dragId: dragState.dragId,
-                  currentPosition: { x: currentPos.x, y: currentPos.y },
-                  deltaFromStart: Math.round(deltaFromStart),
-                });
-              }
+              this.logger.debugComponent('DFD', 'DRAG_PROGRESS', {
+                nodeId: node.id,
+                dragId: dragState.dragId,
+                currentPosition: { x: currentPos.x, y: currentPos.y },
+                deltaFromStart: Math.round(deltaFromStart),
+              });
             }
           }
 
@@ -1471,42 +1440,6 @@ export class X6GraphAdapter implements IGraphAdapter {
             oldWidth: previous.width,
             oldHeight: previous.height,
           });
-
-          // Use EventFilterService to filter resize events
-          if (
-            this._eventFilter.shouldProcessNodeResize(
-              node.id,
-              current.width,
-              current.height,
-              previous.width,
-              previous.height,
-            )
-          ) {
-            // Start operation for resize tracking
-            const operationId = this._operationCoordinator.startOperation(
-              node.id,
-              'node',
-              OperationType.RESIZE,
-              {
-                type: 'resize',
-                oldWidth: previous.width,
-                oldHeight: previous.height,
-                newWidth: current.width,
-                newHeight: current.height,
-              },
-            );
-
-            if (operationId) {
-              // Complete operation immediately for resize events
-              this._operationCoordinator.completeOperation(operationId, {
-                type: 'resize',
-                oldWidth: previous.width,
-                oldHeight: previous.height,
-                newWidth: current.width,
-                newHeight: current.height,
-              });
-            }
-          }
         }
       },
     );
@@ -1530,30 +1463,6 @@ export class X6GraphAdapter implements IGraphAdapter {
             newData: current,
             oldData: previous,
           });
-
-          // Use EventFilterService to filter data change events
-          if (this._eventFilter.shouldProcessNodeDataChange(cell.id, current, previous)) {
-            // Start operation for data change tracking
-            const operationId = this._operationCoordinator.startOperation(
-              cell.id,
-              'node',
-              OperationType.UPDATE_DATA,
-              {
-                type: 'data',
-                oldData: previous,
-                newData: current,
-              },
-            );
-
-            if (operationId) {
-              // Complete operation immediately for data change events
-              this._operationCoordinator.completeOperation(operationId, {
-                type: 'data',
-                oldData: previous,
-                newData: current,
-              });
-            }
-          }
         }
       },
     );
@@ -2465,22 +2374,6 @@ export class X6GraphAdapter implements IGraphAdapter {
                 userId: this._userId,
               });
 
-              // CRITICAL FIX: Start operation tracking for delete operations
-              const operationId = `delete_node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-              if (this._operationStateTracker) {
-                this._operationStateTracker.startOperation(operationId, OperationType.DELETE, {
-                  entityId: cell.id,
-                  entityType: 'node',
-                  metadata: { operationType: 'DELETE_NODE' },
-                });
-
-                this.logger.info(' Started operation tracking for delete', {
-                  operationId,
-                  nodeId: cell.id,
-                });
-              }
-
               const command = DiagramCommandFactory.removeNode(
                 this._diagramId,
                 this._userId,
@@ -2488,37 +2381,17 @@ export class X6GraphAdapter implements IGraphAdapter {
                 true, // isLocalUserInitiated = true for history recording
               );
 
-              // Attach operation ID to command for history middleware
-              const commandWithOperationId = command as unknown as Record<string, unknown>;
-              commandWithOperationId['operationId'] = operationId;
-
               this._commandBus.execute(command).subscribe({
                 next: () => {
                   this.logger.info('Node deletion command executed successfully', {
                     nodeId: cell.id,
-                    operationId,
                   });
-
-                  // CRITICAL FIX: Complete operation tracking
-                  if (this._operationStateTracker) {
-                    this._operationStateTracker.completeOperation(operationId);
-                    this.logger.info(' Completed operation tracking for delete', {
-                      operationId,
-                      nodeId: cell.id,
-                    });
-                  }
                 },
                 error: (error: unknown) => {
                   this.logger.error('Failed to execute node deletion command', {
                     nodeId: cell.id,
                     error,
-                    operationId,
                   });
-
-                  // Cancel operation tracking on error
-                  if (this._operationStateTracker) {
-                    this._operationStateTracker.cancelOperation(operationId);
-                  }
 
                   // Fallback to direct removal if command fails
                   if (this._graph) {
@@ -2731,8 +2604,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
         });
 
-        // Vertex changes ARE drag operations - but we need to debounce them properly
-        // For now, emit the immediate event and let the drag completion handle history
+        // Vertex changes are drag operations - emit immediate event for UI responsiveness
+        // History tracking will be handled by drag completion events
         // TODO: Implement proper vertex drag completion tracking
       }
     };
@@ -3216,6 +3089,9 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Handle node mouse down to track drag start and store initial position
    */
   private _handleNodeMouseDown = ({ node }: { node: Node }): void => {
+    this.logger.debugComponent('DFD', 'Node drag started (handleNodeMouseDown)', {
+      nodeId: node.id,
+    });
     this._isDragging = true;
     this._updateSnapToGrid();
 
@@ -3249,6 +3125,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Handle node mouse up to track drag end
    */
   private _handleNodeMouseUp = ({ node }: { node: Node }): void => {
+    this.logger.debugComponent('DFD', 'Node drag ended (handleNodeMouseUp)', { nodeId: node.id });
     if (this._isDragging) {
       this._isDragging = false;
       this._updateSnapToGrid();
