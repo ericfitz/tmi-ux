@@ -5,6 +5,7 @@ import '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
+import { History } from '@antv/x6-plugin-history';
 import { v4 as uuidv4 } from 'uuid';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
@@ -2168,6 +2169,13 @@ export class X6GraphAdapter implements IGraphAdapter {
           enabled: true,
           sharp: true,
           className: 'dfd-snapline-red',
+        }),
+      );
+
+      // Enable history plugin
+      this._graph.use(
+        new History({
+          stackSize: 5,
         }),
       );
 

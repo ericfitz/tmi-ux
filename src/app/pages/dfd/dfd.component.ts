@@ -33,7 +33,6 @@ import {
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { v4 as uuidv4 } from 'uuid';
 import { CommandBusService } from './application/services/command-bus.service';
-import { HistoryService } from './application/services/history.service';
 import { DiagramCommandFactory } from './domain/commands/diagram-commands';
 import { NodeData } from './domain/value-objects/node-data';
 import { EdgeData } from './domain/value-objects/edge-data';
@@ -50,7 +49,6 @@ import {
   CommandSerializationMiddleware,
 } from './application/services/command-bus.service';
 import {
-  DIAGRAM_REPOSITORY_TOKEN,
   CreateDiagramCommandHandler,
   AddNodeCommandHandler,
   UpdateNodePositionCommandHandler,
@@ -62,10 +60,6 @@ import {
   UpdateDiagramMetadataCommandHandler,
   CompositeCommandHandler,
 } from './application/handlers/diagram-command-handlers';
-import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
-import { InverseCommandFactory } from './domain/commands/inverse-command-factory';
-import { HistoryMiddleware } from './application/middleware/history.middleware';
-import { HistoryIntegrationService } from './application/services/history-integration.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -86,13 +80,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     CommandValidationMiddleware,
     CommandLoggingMiddleware,
     CommandSerializationMiddleware,
-    HistoryMiddleware,
-
-    // Repository implementation
-    {
-      provide: DIAGRAM_REPOSITORY_TOKEN,
-      useClass: InMemoryDiagramRepository,
-    },
 
     // Command Handlers
     CreateDiagramCommandHandler,
@@ -115,14 +102,11 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     // Domain factories
     EdgeDataFactory,
 
-    // History services
+    // Command Bus token
     {
       provide: 'ICommandBus',
       useExisting: CommandBusService,
     },
-    HistoryService,
-    InverseCommandFactory,
-    HistoryIntegrationService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -150,19 +134,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   diagramName: string | null = null;
 
   // State properties - exposed as public properties for template binding
-  canUndo = false;
-  canRedo = false;
   hasSelectedCells = false;
   hasExactlyOneSelectedCell = false;
   selectedCellIsTextBox = false;
+
+  // Undo/redo state properties - placeholder for future X6 history addon integration
+  canUndo = false;
+  canRedo = false;
 
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private x6GraphAdapter: X6GraphAdapter,
     private commandBus: CommandBusService,
-    private historyService: HistoryService,
-    private historyIntegrationService: HistoryIntegrationService,
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -198,21 +182,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.dfdId) {
       this.loadDiagramData(this.dfdId);
     }
-
-    // Subscribe to history service observables
-    this._subscriptions.add(
-      this.historyService.canUndo$.subscribe(canUndo => {
-        this.canUndo = canUndo;
-        this.cdr.markForCheck();
-      }),
-    );
-
-    this._subscriptions.add(
-      this.historyService.canRedo$.subscribe(canRedo => {
-        this.canRedo = canRedo;
-        this.cdr.markForCheck();
-      }),
-    );
 
     // Subscribe to selection state changes
     this._subscriptions.add(
@@ -364,22 +333,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      // Handle undo/redo shortcuts
-      if (event.ctrlKey || event.metaKey) {
-        if (event.key === 'z' && !event.shiftKey) {
-          // Ctrl+Z or Cmd+Z for undo
-          event.preventDefault();
-          this.undo();
-          return;
-        }
-
-        if (event.key === 'y' || (event.key === 'z' && event.shiftKey)) {
-          // Ctrl+Y or Cmd+Y or Ctrl+Shift+Z or Cmd+Shift+Z for redo
-          event.preventDefault();
-          this.redo();
-          return;
-        }
-      }
+      // Note: Undo/redo functionality now handled by X6 history addon
     }
   }
 
@@ -605,9 +559,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Set up port tooltips
       this.setupPortTooltips();
 
-      // Initialize history integration service
-      this.initializeHistoryIntegration();
-
       this.logger.info('Graph initialization complete');
 
       // Force change detection after initialization
@@ -727,75 +678,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
       tooltipEl.style.display = 'none';
     });
-  }
-
-  /**
-   * Initialize the history integration service
-   */
-  private initializeHistoryIntegration(): void {
-    const diagramId = this.dfdId || 'default-diagram';
-    const userId = 'current-user'; // TODO: Get from auth service
-
-    this.logger.info('Initializing history integration', { diagramId, userId });
-
-    try {
-      this.historyIntegrationService.initialize(diagramId, userId);
-      this.logger.info('History integration initialized successfully');
-    } catch (error) {
-      this.logger.error('Failed to initialize history integration', error);
-    }
-  }
-
-  /**
-   * Undo the last action
-   */
-  undo(): void {
-    if (!this.canUndo) {
-      this.logger.debug('Undo requested but no operations available to undo');
-      return;
-    }
-
-    this.logger.info('Executing undo operation');
-
-    this.historyService
-      .undo()
-      .then(success => {
-        if (success) {
-          this.logger.info('Undo operation completed successfully');
-          this.cdr.markForCheck();
-        } else {
-          this.logger.warn('Undo operation failed');
-        }
-      })
-      .catch(error => {
-        this.logger.error('Undo operation failed with error', error);
-      });
-  }
-
-  /**
-   * Redo the last undone action
-   */
-  redo(): void {
-    if (!this.canRedo) {
-      this.logger.debug('Redo requested but no operations available to redo');
-      return;
-    }
-
-    this.logger.info('Executing redo operation');
-
-    this.historyService
-      .redo()
-      .then(success => {
-        if (success) {
-          this.logger.info('Redo operation completed successfully');
-          this.cdr.markForCheck();
-        } else {
-          this.logger.warn('Redo operation failed');
-        }
-      })
-      .catch(error => {
-        this.logger.error('Redo operation failed with error', error);
-      });
   }
 
   /**
@@ -1581,5 +1463,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.error('Error creating inverse edge in domain model', error);
         },
       });
+  }
+
+  /**
+   * Undo the last action - placeholder for future X6 history addon integration
+   */
+  undo(): void {
+    // TODO: Implement undo functionality using X6 history addon
+    this.logger.info('Undo requested - not yet implemented');
+  }
+
+  /**
+   * Redo the last undone action - placeholder for future X6 history addon integration
+   */
+  redo(): void {
+    // TODO: Implement redo functionality using X6 history addon
+    this.logger.info('Redo requested - not yet implemented');
   }
 }

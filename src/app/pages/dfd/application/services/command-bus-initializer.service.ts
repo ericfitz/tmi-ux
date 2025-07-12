@@ -5,7 +5,6 @@ import {
   CommandLoggingMiddleware,
   CommandSerializationMiddleware,
 } from './command-bus.service';
-import { HistoryMiddleware } from '../middleware/history.middleware';
 import {
   CreateDiagramCommandHandler,
   AddNodeCommandHandler,
@@ -32,7 +31,6 @@ export class CommandBusInitializerService {
     private readonly _validationMiddleware: CommandValidationMiddleware,
     private readonly _loggingMiddleware: CommandLoggingMiddleware,
     private readonly _serializationMiddleware: CommandSerializationMiddleware,
-    private readonly _historyMiddleware: HistoryMiddleware,
     private readonly _createDiagramHandler: CreateDiagramCommandHandler,
     private readonly _addNodeHandler: AddNodeCommandHandler,
     private readonly _updateNodePositionHandler: UpdateNodePositionCommandHandler,
@@ -67,15 +65,12 @@ export class CommandBusInitializerService {
     // 3. Serialization (priority 3)
     this._commandBus.addMiddleware(this._serializationMiddleware);
 
-    // 4. History (priority 10) - executes after validation and logging but before handlers
-    this._commandBus.addMiddleware(this._historyMiddleware);
-
     // Register all command handlers
     this.registerCommandHandlers();
 
     this._initialized = true;
     this._logger.info('Command bus initialization completed', {
-      middlewareCount: 4,
+      middlewareCount: 3,
       handlerCount: 10,
     });
   }
