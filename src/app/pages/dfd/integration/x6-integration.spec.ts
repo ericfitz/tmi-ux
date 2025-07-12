@@ -29,7 +29,6 @@ import { NodeData } from '../domain/value-objects/node-data';
 import { EdgeData } from '../domain/value-objects/edge-data';
 import { Point } from '../domain/value-objects/point';
 import { LoggerService } from '../../../core/services/logger.service';
-import { DragStateManagerService } from '../infrastructure/services/drag-state-manager.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
 import { EdgeQueryService } from '../infrastructure/services/edge-query.service';
 import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
@@ -526,7 +525,6 @@ describe('X6 Integration Tests', () => {
   let adapter: X6GraphAdapter;
   let container: HTMLElement;
   let mockLogger: LoggerService;
-  let mockDragStateManager: DragStateManagerService;
   let mockEdgeService: EdgeService;
   let mockEdgeQueryService: EdgeQueryService;
   let mockNodeConfigurationService: NodeConfigurationService;
@@ -549,23 +547,6 @@ describe('X6 Integration Tests', () => {
       debugComponent: vi.fn(),
       shouldLogComponent: vi.fn(() => true),
     } as unknown as LoggerService;
-
-    // Create mock drag state manager
-    mockDragStateManager = {
-      startDrag: vi.fn(() => 'mock-drag-id'),
-      updateDragPosition: vi.fn(),
-      completeDrag: vi.fn(() => ({
-        dragId: 'mock-drag-id',
-        nodeId: 'test-node',
-        initialPosition: { x: 0, y: 0 },
-        currentPosition: { x: 100, y: 100 },
-        dragStartTime: Date.now() - 1000,
-      })),
-      cancelDrag: vi.fn(),
-      isDragging: vi.fn(() => false),
-      getDragState: vi.fn(() => null),
-      shouldSuppressHistory: vi.fn(() => false),
-    } as unknown as DragStateManagerService;
 
     // Create mock edge service
     mockEdgeService = {
@@ -688,7 +669,6 @@ describe('X6 Integration Tests', () => {
     // Create fresh adapter instance with all required dependencies
     adapter = new X6GraphAdapter(
       mockLogger,
-      mockDragStateManager,
       mockEdgeService,
       mockEdgeQueryService,
       mockNodeConfigurationService,

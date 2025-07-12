@@ -59,7 +59,9 @@ import {
   RemoveEdgeCommandHandler,
   UpdateDiagramMetadataCommandHandler,
   CompositeCommandHandler,
+  DIAGRAM_REPOSITORY_TOKEN,
 } from './application/handlers/diagram-command-handlers';
+import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -102,10 +104,19 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     // Domain factories
     EdgeDataFactory,
 
+    // Repository
+    InMemoryDiagramRepository,
+
     // Command Bus token
     {
       provide: 'ICommandBus',
       useExisting: CommandBusService,
+    },
+
+    // Diagram Repository token
+    {
+      provide: DIAGRAM_REPOSITORY_TOKEN,
+      useExisting: InMemoryDiagramRepository,
     },
   ],
   templateUrl: './dfd.component.html',
@@ -138,9 +149,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   hasExactlyOneSelectedCell = false;
   selectedCellIsTextBox = false;
 
-  // Undo/redo state properties - placeholder for future X6 history addon integration
+  // Undo/redo state properties - updated by X6 history addon
   canUndo = false;
   canRedo = false;
+
+  // Private properties to track previous undo/redo states
+  private _previousCanUndo = false;
+  private _previousCanRedo = false;
 
   constructor(
     private logger: LoggerService,
@@ -201,6 +216,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         // Get selected cells directly from the adapter
         const selectedCells = this.x6GraphAdapter.getSelectedCells();
         this._selectedCells$.next(selectedCells);
+      }),
+    );
+
+    // Subscribe to history state changes for undo/redo button states
+    this._subscriptions.add(
+      this.x6GraphAdapter.historyChanged$.subscribe(({ canUndo, canRedo }) => {
+        // Only emit and log if the state has actually changed
+        if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
+          this.canUndo = canUndo;
+          this.canRedo = canRedo;
+
+          // Update previous state tracking
+          this._previousCanUndo = canUndo;
+          this._previousCanRedo = canRedo;
+
+          this.cdr.markForCheck();
+        }
       }),
     );
 
@@ -1466,18 +1498,28 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Undo the last action - placeholder for future X6 history addon integration
+   * Undo the last action using X6 history addon
    */
   undo(): void {
-    // TODO: Implement undo functionality using X6 history addon
-    this.logger.info('Undo requested - not yet implemented');
+    if (!this._isInitialized) {
+      this.logger.warn('Cannot undo: Graph is not initialized');
+      return;
+    }
+
+    this.logger.info('Undo requested');
+    this.x6GraphAdapter.undo();
   }
 
   /**
-   * Redo the last undone action - placeholder for future X6 history addon integration
+   * Redo the last undone action using X6 history addon
    */
   redo(): void {
-    // TODO: Implement redo functionality using X6 history addon
-    this.logger.info('Redo requested - not yet implemented');
+    if (!this._isInitialized) {
+      this.logger.warn('Cannot redo: Graph is not initialized');
+      return;
+    }
+
+    this.logger.info('Redo requested');
+    this.x6GraphAdapter.redo();
   }
 }

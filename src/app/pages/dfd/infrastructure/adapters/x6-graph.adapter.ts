@@ -17,7 +17,6 @@ import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
 import { ICommandBus } from '../../application/interfaces/command-bus.interface';
 import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
-import { DragStateManagerService } from '../services/drag-state-manager.service';
 import { EdgeService } from '../services/edge.service';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
@@ -90,7 +89,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _userId: string | null = null;
   private _commandBus: ICommandBus | null = null;
 
-  // Cell caching for undo/server operations
+  // Cell caching for server operations
   private _nodeSnapshots = new Map<string, X6NodeSnapshot>();
   private _edgeSnapshots = new Map<string, X6EdgeSnapshot>();
 
@@ -139,10 +138,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     edgeId: string;
     vertices: Array<{ x: number; y: number }>;
   }>();
+  private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
+
+  // Private properties to track previous undo/redo states
+  private _previousCanUndo = false;
+  private _previousCanRedo = false;
 
   constructor(
     private logger: LoggerService,
-    private readonly _dragStateManager: DragStateManagerService,
     private readonly _edgeService: EdgeService,
     private readonly _edgeQueryService: EdgeQueryService,
     private readonly _nodeConfigurationService: NodeConfigurationService,
@@ -246,6 +249,13 @@ export class X6GraphAdapter implements IGraphAdapter {
     vertices: Array<{ x: number; y: number }>;
   }> {
     return this._edgeVerticesChanged$.asObservable();
+  }
+
+  /**
+   * Observable for history state changes (undo/redo availability)
+   */
+  get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
+    return this._historyChanged$.asObservable();
   }
 
   /**
@@ -867,6 +877,70 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Undo the last action using X6 history plugin
+   */
+  undo(): void {
+    const graph = this.getGraph();
+    if (graph && typeof graph.undo === 'function') {
+      graph.undo();
+      this.logger.info('Undo action performed');
+      this._emitHistoryStateChange();
+    } else {
+      this.logger.warn('Undo not available - history plugin may not be enabled');
+    }
+  }
+
+  /**
+   * Redo the last undone action using X6 history plugin
+   */
+  redo(): void {
+    const graph = this.getGraph();
+    if (graph && typeof graph.redo === 'function') {
+      graph.redo();
+      this.logger.info('Redo action performed');
+      this._emitHistoryStateChange();
+    } else {
+      this.logger.warn('Redo not available - history plugin may not be enabled');
+    }
+  }
+
+  /**
+   * Check if undo is available
+   */
+  canUndo(): boolean {
+    const graph = this.getGraph();
+    if (graph && typeof graph.canUndo === 'function') {
+      return graph.canUndo();
+    }
+    return false;
+  }
+
+  /**
+   * Check if redo is available
+   */
+  canRedo(): boolean {
+    const graph = this.getGraph();
+    if (graph && typeof graph.canRedo === 'function') {
+      return graph.canRedo();
+    }
+    return false;
+  }
+
+  /**
+   * Clear the history stack
+   */
+  clearHistory(): void {
+    const graph = this.getGraph();
+    if (graph && typeof graph.cleanHistory === 'function') {
+      graph.cleanHistory();
+      this.logger.info('History cleared');
+      this._emitHistoryStateChange();
+    } else {
+      this.logger.warn('Clear history not available - history plugin may not be enabled');
+    }
+  }
+
+  /**
    * Debug method to manually inspect edge rendering
    * Call this from browser console: adapter.debugEdgeRendering()
    */
@@ -1389,24 +1463,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
 
-          // Update drag state if node is being dragged
-          if (this._dragStateManager.isDragging(node.id)) {
-            this._dragStateManager.updateDragPosition(node.id, currentPos);
-            // Log every position change during drag for detailed tracing
-            const dragState = this._dragStateManager.getDragState(node.id);
-            if (dragState) {
-              const deltaFromStart = Math.sqrt(
-                Math.pow(currentPos.x - dragState.initialPosition.x, 2) +
-                  Math.pow(currentPos.y - dragState.initialPosition.y, 2),
-              );
-              this.logger.debugComponent('DFD', 'DRAG_PROGRESS', {
-                nodeId: node.id,
-                dragId: dragState.dragId,
-                currentPosition: { x: currentPos.x, y: currentPos.y },
-                deltaFromStart: Math.round(deltaFromStart),
-              });
-            }
-          }
+          // Drag state tracking removed - using simpler approach with initial positions
 
           // Emit immediate event for UI responsiveness
           this._nodeMoved$.next({
@@ -1858,6 +1915,27 @@ export class X6GraphAdapter implements IGraphAdapter {
         e.preventDefault();
         this._addLabelEditor(cell, e);
       }
+    });
+
+    // History events for undo/redo state tracking
+    this._graph.on('history:undo', () => {
+      this.logger.info('History undo event fired');
+      this._emitHistoryStateChange();
+    });
+
+    this._graph.on('history:redo', () => {
+      this.logger.info('History redo event fired');
+      this._emitHistoryStateChange();
+    });
+
+    this._graph.on('history:change', () => {
+      this.logger.debug('History change event fired');
+      this._emitHistoryStateChange();
+    });
+
+    this._graph.on('history:clear', () => {
+      this.logger.info('History clear event fired');
+      this._emitHistoryStateChange();
     });
   }
 
@@ -3106,15 +3184,11 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Get the initial position of the node when the drag starts
     const initialPosition = new Point(node.position().x, node.position().y);
 
-    // Start drag tracking with the drag state manager
-    const dragId = this._dragStateManager.startDrag(node.id, initialPosition);
-
-    // Store the initial position for backward compatibility
+    // Store the initial position for drag completion tracking
     this._initialNodePositions.set(node.id, initialPosition);
 
     this.logger.debug('Node drag started', {
       nodeId: node.id,
-      dragId,
       initialPosition: { x: initialPosition.x, y: initialPosition.y },
     });
   };
@@ -3138,18 +3212,18 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._isDragging = false;
       this._updateSnapToGrid();
 
-      // Complete drag tracking with the drag state manager
+      // Complete drag tracking
       const finalPosition = new Point(node.position().x, node.position().y);
-      const dragState = this._dragStateManager.completeDrag(node.id, finalPosition);
+      const initialPosition = this._initialNodePositions.get(node.id);
 
-      if (dragState) {
+      if (initialPosition) {
         // Emit drag completion event for history service
         this._dragCompleted$.next({
           nodeId: node.id,
-          initialPosition: dragState.initialPosition,
+          initialPosition,
           finalPosition,
-          dragDuration: Date.now() - dragState.dragStartTime,
-          dragId: dragState.dragId,
+          dragDuration: 0, // Duration tracking removed with drag state manager
+          dragId: `drag_${node.id}_${Date.now()}`, // Simple drag ID generation
         });
       }
 
@@ -3508,5 +3582,23 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     return attrs;
+  }
+
+  /**
+   * Emit history state change event
+   */
+  private _emitHistoryStateChange(): void {
+    const canUndo = this.canUndo();
+    const canRedo = this.canRedo();
+
+    // Only emit and log if the state has actually changed
+    if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
+      this._historyChanged$.next({ canUndo, canRedo });
+      this.logger.debug('History state changed', { canUndo, canRedo });
+
+      // Update previous state tracking
+      this._previousCanUndo = canUndo;
+      this._previousCanRedo = canRedo;
+    }
   }
 }

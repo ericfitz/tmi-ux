@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:component": "vitest run \"src/app/pages/tm/tm.component.spec.ts\"",
+    "test:tm": "vitest run \"src/app/pages/tm/tm.component.spec.ts\"",
+    "test:dfd": "vitest run \"src/app/pages/dfd/dfd.component.spec.ts\"",
     "test:e2e": "node scripts/run-cypress-tests.js",
     "test:e2e:open": "node scripts/run-cypress-tests.js --open",
     "test:e2e:component": "node scripts/run-cypress-tests.js --component",
@@ -33,9 +34,7 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json,md}\"",
     "check": "pnpm run format:check && pnpm run lint:all",
-    "bump": "pnpm update && pnpm install",
-    "prepare": "husky",
-    "optimize-images": "node convert-images.js"
+    "bump": "pnpm update && pnpm install"
   },
   "private": true,
   "dependencies": {
