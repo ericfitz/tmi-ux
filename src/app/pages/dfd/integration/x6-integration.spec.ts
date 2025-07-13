@@ -29,10 +29,8 @@ import { NodeData } from '../domain/value-objects/node-data';
 import { EdgeData } from '../domain/value-objects/edge-data';
 import { Point } from '../domain/value-objects/point';
 import { LoggerService } from '../../../core/services/logger.service';
-import { EdgeService } from '../infrastructure/services/edge.service';
 import { EdgeQueryService } from '../infrastructure/services/edge-query.service';
 import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
-import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
 
 // Type definitions for X6 mocks
 interface MockNodeConfig {
@@ -525,10 +523,9 @@ describe('X6 Integration Tests', () => {
   let adapter: X6GraphAdapter;
   let container: HTMLElement;
   let mockLogger: LoggerService;
-  let mockEdgeService: EdgeService;
   let mockEdgeQueryService: EdgeQueryService;
   let mockNodeConfigurationService: NodeConfigurationService;
-  let mockPortStateManagerService: PortStateManagerService;
+  let mockKeyboardHandler: any;
 
   beforeEach(() => {
     // Create mock container
@@ -548,29 +545,12 @@ describe('X6 Integration Tests', () => {
       shouldLogComponent: vi.fn(() => true),
     } as unknown as LoggerService;
 
-    // Create mock edge service
-    mockEdgeService = {
-      createEdge: vi.fn((graph: any, edgeInput: any) => {
-        // Mock edge creation by calling graph.addEdge
-        const snapshot = edgeInput.toX6Snapshot ? edgeInput.toX6Snapshot() : edgeInput;
-        const edge = graph.addEdge(snapshot);
-
-        // Don't trigger events here - let the adapter handle it through its own logic
-        return edge;
-      }),
-      updateEdge: vi.fn(),
-      removeEdge: vi.fn((graph: any, edgeId: string) => {
-        const edge = graph.getCellById(edgeId);
-        if (edge) {
-          graph.removeEdge(edge);
-          return true;
-        }
-        return false;
-      }),
-      getEdge: vi.fn((graph: any, edgeId: string) => graph.getCellById(edgeId)),
-      getEdges: vi.fn((graph: any) => graph.getEdges()),
-      createEdgeSnapshot: vi.fn(),
-    } as unknown as EdgeService;
+    // Create mock keyboard handler
+    mockKeyboardHandler = {
+      setupKeyboardHandling: vi.fn(),
+      cleanup: vi.fn(),
+      getInitialNodePosition: vi.fn(() => null),
+    };
 
     // Create mock edge query service
     mockEdgeQueryService = {
@@ -653,26 +633,12 @@ describe('X6 Integration Tests', () => {
       ]),
     } as unknown as NodeConfigurationService;
 
-    // Create mock port state manager service
-    mockPortStateManagerService = {
-      updateNodePortVisibility: vi.fn(),
-      showAllPorts: vi.fn(),
-      hideUnconnectedPorts: vi.fn(),
-      ensureConnectedPortsVisible: vi.fn(),
-      isPortConnected: vi.fn(() => false),
-      getPortConnectionState: vi.fn(() => null),
-      onConnectionChange: vi.fn(),
-      clearPortStates: vi.fn(),
-      getAllPortStates: vi.fn(() => new Map()),
-    } as unknown as PortStateManagerService;
-
     // Create fresh adapter instance with all required dependencies
     adapter = new X6GraphAdapter(
       mockLogger,
-      mockEdgeService,
       mockEdgeQueryService,
       mockNodeConfigurationService,
-      mockPortStateManagerService,
+      mockKeyboardHandler,
     );
     adapter.initialize(container);
 

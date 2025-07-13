@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NodeTypeInfo } from '../../utils/x6-cell-extensions';
+import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
 
 /**
  * Node attributes configuration interface
@@ -205,20 +206,8 @@ export class NodeConfigurationService {
    * Get X6 shape name for a specific node type
    */
   getNodeShape(nodeType: string): string {
-    switch (nodeType) {
-      case 'process':
-        return 'ellipse';
-      case 'store':
-        return 'store-shape';
-      case 'actor':
-        return 'rect';
-      case 'security-boundary':
-        return 'rect';
-      case 'textbox':
-        return 'rect';
-      default:
-        return 'rect';
-    }
+    // Use centralized shape mapping from x6-shape-definitions
+    return getX6ShapeForNodeType(nodeType);
   }
 
   /**

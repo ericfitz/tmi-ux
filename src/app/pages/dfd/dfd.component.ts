@@ -48,6 +48,9 @@ import {
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
 import { CommandBusService } from './application/services/command-bus.service';
 import { EdgeDataFactory } from './domain/factories/edge-data.factory';
+import { EdgeQueryService } from './infrastructure/services/edge-query.service';
+import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
+import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
 
 // Import the new services
 import { DfdNodeManagerService } from './services/dfd-node-manager.service';
@@ -92,6 +95,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // Infrastructure adapters
     X6GraphAdapter,
+    EdgeQueryService,
+    NodeConfigurationService,
+    X6KeyboardHandler,
 
     // Domain factories
     EdgeDataFactory,
@@ -196,6 +202,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Initialize event handlers
     this.eventHandlers.initialize();
+
+    // Subscribe to context menu events from X6GraphAdapter
+    this._subscriptions.add(
+      this.x6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }) => {
+        this.eventHandlers.openCellContextMenu(cell, x, y, this.contextMenuTrigger, this.cdr);
+      }),
+    );
 
     // Subscribe to selection state changes from event handlers
     this._subscriptions.add(

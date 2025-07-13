@@ -28,6 +28,7 @@ import {
 } from './application/handlers/diagram-command-handlers';
 import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
+import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
 
 /**
  * Module for the DFD component and related services
@@ -69,6 +70,7 @@ import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 
     // Infrastructure adapters
     X6GraphAdapter,
+    X6KeyboardHandler,
   ],
 })
 export class DfdModule {}
