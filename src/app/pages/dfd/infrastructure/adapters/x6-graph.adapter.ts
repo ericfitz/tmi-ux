@@ -1181,24 +1181,9 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._cacheEdgeSnapshot(cell as Edge);
     }
 
-    //  Log label change for history debugging
-    this.logger.info(' Label change detected', {
-      cellId: cell.id,
-      cellType: cell.isNode() ? 'node' : 'edge',
-      oldLabel,
-      newLabel: text,
-      willTriggerDataChange: true,
-    });
-
     // Use X6 cell extensions for unified label handling
     if ((cell as any).setUnifiedLabel) {
       (cell as any).setUnifiedLabel(text);
-    }
-
-    // Update metadata
-    // @deprecated Storing labels in metadata is deprecated. Use proper attrs or labels properties instead.
-    if ((cell as any).setApplicationMetadata) {
-      (cell as any).setApplicationMetadata('label', text);
     }
 
     // CRITICAL FIX: Trigger cell:change:data event for history integration
@@ -1224,9 +1209,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         oldData,
       });
     }
-
-    // Note: We don't update cache here anymore since we cached before the change
-    // The cache now contains the original state needed for undo operations
   }
 
   /**
@@ -1984,12 +1966,12 @@ export class X6GraphAdapter implements IGraphAdapter {
           ...baseAttrs,
           line: {
             ...baseAttrs.line,
-            stroke: '#722ED1',
+            stroke: '#000000',
             strokeDasharray: '5 5',
             targetMarker: {
               ...baseAttrs.line.targetMarker,
               fill: '#722ED1',
-              stroke: '#722ED1',
+              stroke: '#000000',
             },
           },
         };
@@ -2253,7 +2235,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       // Enable history plugin
       this._graph.use(
         new History({
-          stackSize: 5,
+          stackSize: 10,
         }),
       );
 
