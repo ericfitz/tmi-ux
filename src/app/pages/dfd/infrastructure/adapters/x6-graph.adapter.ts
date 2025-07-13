@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Graph, Node, Edge, Cell, Shape } from '@antv/x6';
+import { Graph, Node, Edge, Cell } from '@antv/x6';
 import '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
@@ -22,55 +22,8 @@ import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { PortStateManagerService } from '../services/port-state-manager.service';
 
-// Register custom store shape with only top and bottom borders
-Shape.Rect.define({
-  shape: 'store-shape',
-  markup: [
-    {
-      tagName: 'rect',
-      selector: 'body',
-    },
-    {
-      tagName: 'text',
-      selector: 'text',
-    },
-    {
-      tagName: 'path',
-      selector: 'topLine',
-    },
-    {
-      tagName: 'path',
-      selector: 'bottomLine',
-    },
-  ],
-  attrs: {
-    topLine: {
-      stroke: '#333333',
-      strokeWidth: 2,
-      refD: 'M 0 0 l 200 0',
-    },
-    bottomLine: {
-      stroke: '#333333',
-      strokeWidth: 2,
-      refY: '100%',
-      refD: 'M 0 0 l 200 0',
-    },
-    body: {
-      fill: '#FFFFFF',
-      stroke: 'transparent',
-      strokeWidth: 0,
-    },
-    text: {
-      refX: '50%',
-      refY: '50%',
-      textAnchor: 'middle',
-      textVerticalAnchor: 'middle',
-      fontFamily: '"Roboto Condensed", Arial, sans-serif',
-      fontSize: 12,
-      fill: '#000000',
-    },
-  },
-});
+// Import the extracted shape definitions
+import { registerCustomShapes } from './x6-shape-definitions';
 
 /**
  * X6 Graph Adapter that provides abstraction over X6 Graph operations
@@ -153,6 +106,9 @@ export class X6GraphAdapter implements IGraphAdapter {
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
+
+    // Register custom shapes for DFD diagrams
+    registerCustomShapes();
   }
 
   /**
@@ -1919,65 +1875,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       this.logger.info('History clear event fired');
       this._emitHistoryStateChange();
     });
-  }
-
-  /**
-   * Get X6 shape name for domain node type
-   */
-  private _getX6ShapeForNodeType(nodeType: string): string {
-    switch (nodeType) {
-      case 'process':
-        return 'ellipse';
-      case 'store':
-        return 'store-shape'; // Use custom shape for store
-      case 'actor':
-        return 'rect';
-      case 'security-boundary':
-        return 'rect';
-      case 'textbox':
-        return 'rect';
-      default:
-        return 'rect';
-    }
-  }
-
-  /**
-   * Get X6 edge attributes for domain edge type
-   */
-  private _getEdgeAttrs(edgeType: string): Record<string, unknown> {
-    const baseAttrs = {
-      line: {
-        stroke: '#000000',
-        strokeWidth: 2,
-        targetMarker: {
-          name: 'classic',
-          size: 8,
-          fill: '#000000',
-          stroke: '#000000',
-        },
-      },
-    };
-
-    switch (edgeType) {
-      case 'data-flow':
-        return baseAttrs;
-      case 'trust-boundary':
-        return {
-          ...baseAttrs,
-          line: {
-            ...baseAttrs.line,
-            stroke: '#000000',
-            strokeDasharray: '5 5',
-            targetMarker: {
-              ...baseAttrs.line.targetMarker,
-              fill: '#722ED1',
-              stroke: '#000000',
-            },
-          },
-        };
-      default:
-        return baseAttrs;
-    }
   }
 
   /**
