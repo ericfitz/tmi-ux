@@ -69,8 +69,8 @@ export class EdgeService {
     const x6Edge = graph.addEdge(edgeParams);
 
     // Set metadata using X6 cell extensions
-    if (snapshot.metadata && x6Edge.setMetadata) {
-      x6Edge.setMetadata(snapshot.metadata);
+    if (snapshot.data && x6Edge.setMetadata) {
+      x6Edge.setMetadata(snapshot.data);
     }
 
     // Update port visibility if requested
@@ -81,7 +81,7 @@ export class EdgeService {
     this._logger.debug('Edge created successfully', {
       edgeId: snapshot.id,
       edgeCreated: !!x6Edge,
-      metadataSet: !!(snapshot.metadata && x6Edge.setMetadata),
+      metadataSet: !!(snapshot.data && x6Edge.setMetadata),
     });
 
     return x6Edge;
@@ -255,7 +255,7 @@ export class EdgeService {
       labels: edge.getLabels(),
       zIndex: edge.getZIndex() || 1,
       visible: edge.isVisible(),
-      metadata: metadataArray,
+      data: metadataArray,
     };
 
     this._logger.debug('Created edge snapshot with port information', {
