@@ -119,8 +119,8 @@ importers:
         specifier: ^9.30.0
         version: 9.30.0
       '@rollup/rollup-darwin-arm64':
-        specifier: ^4.44.2
-        version: 4.44.2
+        specifier: ^4.45.0
+        version: 4.45.0
       '@testing-library/angular':
         specifier: ^17.4.0
         version: 17.4.0(bdb8654eecbf3423077b94bcb6fb41f5)
@@ -2171,8 +2171,8 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@rollup/rollup-darwin-arm64@4.44.2':
-    resolution: {integrity: sha512-EsnFot9ZieM35YNA26nhbLTJBHD0jTwWpPwmRVDzjylQT6gkar+zenfb8mHxWpRrbn+WytRRjE0WKsfaxBkVUA==}
+  '@rollup/rollup-darwin-arm64@4.45.0':
+    resolution: {integrity: sha512-BA4yPIPssPB2aRAWzmqzQ3y2/KotkLyZukVB7j3psK/U3nVJdceo6qr9pLM2xN6iRP/wKfxEbOb1yrlZH6sYZg==}
     cpu: [arm64]
     os: [darwin]
 
@@ -8898,7 +8898,7 @@ snapshots:
   '@rollup/rollup-darwin-arm64@4.44.1':
     optional: true
 
-  '@rollup/rollup-darwin-arm64@4.44.2': {}
+  '@rollup/rollup-darwin-arm64@4.45.0': {}
 
   '@rollup/rollup-darwin-x64@4.40.2':
     optional: true
