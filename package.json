@@ -99,7 +99,7 @@
     "stylelint": "^16.21.1",
     "stylelint-config-standard-scss": "^15.0.1",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.0",
+    "typescript-eslint": "^8.36.0",
     "vitest": "^3.2.4",
     "webpack-bundle-analyzer": "^4.10.2"
   },
