@@ -646,7 +646,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       fullSnapshotPorts: snapshot.ports,
     });
 
-    // CRITICAL FIX: The snapshot ports need to be in the correct format for X6
     // X6 expects either a port configuration object with groups/items OR just the items array
     let portsForX6;
 
@@ -1138,7 +1137,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       (cell as any).setUnifiedLabel(text);
     }
 
-    // CRITICAL FIX: Trigger cell:change:data event for history integration
+    // Trigger cell:change:data event for history integration
     // This ensures that label changes flow through the normal event chain
     // and are captured by the history system via nodeDataChanged$
     if (cell.isNode()) {
@@ -1153,7 +1152,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         eventType: 'cell:change:data',
       });
 
-      // CRITICAL FIX: Emit immediate event for text changes since text editing
+      // Emit immediate event for text changes since text editing
       // only updates when editing is complete - no need for debouncing
       this._nodeDataChanged$.next({
         nodeId: cell.id,
@@ -1325,7 +1324,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         this._setEdgeZOrderFromConnectedNodes(edge);
 
         // CRITICAL FIX: Add a small delay to ensure X6 has fully established the connection
-        // before capturing the port information
+        // before capturing the port information - may need to revisit this implementation for reliability
         setTimeout(() => {
           this.logger.debugComponent(
             'DFD',
@@ -1728,10 +1727,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
   }
 
-  /**
-   * Ensure that the ports connected by a specific edge remain visible
-   * CRITICAL FIX: Enhanced for undo/redo operations to properly restore port visibility
-   */
+  // Ensure that the ports connected by a specific edge remain visible
   private _ensureConnectedPortsVisible(edge: Edge): void {
     if (!this._graph) return;
 
@@ -1752,7 +1748,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (sourceCellId && sourcePortId) {
       const sourceNode = this._graph.getCellById(sourceCellId) as Node;
       if (sourceNode && sourceNode.isNode()) {
-        // CRITICAL FIX: Verify port exists before setting visibility
+        // Verify port exists before setting visibility
         const ports = sourceNode.getPorts();
         const portExists = ports.some(port => port.id === sourcePortId);
 
@@ -1779,7 +1775,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (targetCellId && targetPortId) {
       const targetNode = this._graph.getCellById(targetCellId) as Node;
       if (targetNode && targetNode.isNode()) {
-        // CRITICAL FIX: Verify port exists before setting visibility
+        // Verify port exists before setting visibility
         const ports = targetNode.getPorts();
         const portExists = ports.some(port => port.id === targetPortId);
 
@@ -2613,7 +2609,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Set edge z-order to the higher of source or target node z-orders
     this._setEdgeZOrderFromConnectedNodes(edge);
 
-    // CRITICAL FIX: Ensure connected ports are visible after edge restoration
+    // Ensure connected ports are visible after edge restoration
     // This is essential for undo/redo operations where edges are restored from snapshots
     this._ensureConnectedPortsVisible(edge);
 
@@ -2645,7 +2641,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     }
 
-    // CRITICAL FIX: Double-check that the specific ports connected by this edge are visible
+    // Double-check that the specific ports connected by this edge are visible
     // This ensures that undo/redo operations properly restore port visibility
     const sourcePortId = edge.getSourcePortId();
     const targetPortId = edge.getTargetPortId();
@@ -2927,7 +2923,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     }
 
-    // CRITICAL: Always enforce z-order invariants after any node movement
+    // Always enforce z-order invariants after any node movement
     this._enforceZOrderInvariants();
   }
 

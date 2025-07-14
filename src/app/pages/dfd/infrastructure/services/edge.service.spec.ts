@@ -158,7 +158,7 @@ describe('EdgeService - X6 Integration Tests', () => {
         vertices: [{ x: 200, y: 50 }],
         zIndex: 2,
         visible: true,
-        metadata: [{ key: 'category', value: 'critical' }],
+        data: [{ key: 'category', value: 'critical' }],
       };
 
       const x6Edge = service.createEdge(graph, snapshot);
@@ -359,7 +359,7 @@ describe('EdgeService - X6 Integration Tests', () => {
         visible: true,
       });
 
-      expect(snapshot.metadata).toEqual([{ key: 'category', value: 'critical' }]);
+      expect(snapshot.data).toEqual([{ key: 'category', value: 'critical' }]);
     });
   });
 });
