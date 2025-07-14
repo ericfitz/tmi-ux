@@ -232,6 +232,7 @@ export class X6SelectionManager {
           text: 'Group',
           fontSize: 12,
           fill: '#666',
+          fontFamily: '"Roboto Condensed", Arial, sans-serif',
         },
       },
       zIndex: -1, // Place behind other nodes

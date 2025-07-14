@@ -33,88 +33,59 @@ export class NodeConfigurationService {
    * Get node attributes configuration for a specific node type
    */
   getNodeAttrs(nodeType: string): NodeAttrs {
-    const baseAttrs = {
-      body: {
-        strokeWidth: 2,
-        stroke: '#000000',
-        fill: '#FFFFFF',
-      },
-      text: {
-        fontFamily: '"Roboto Condensed", Arial, sans-serif',
-        fontSize: 12,
-        fill: '#000000',
-      },
+    // Since we now use custom shapes with their own predefined attributes,
+    // we only need to provide minimal overrides for dynamic content like text
+    const baseTextAttrs = {
+      fontFamily: '"Roboto Condensed", Arial, sans-serif',
+      fontSize: 12,
+      fill: '#000000',
+      refX: '50%',
+      refY: '50%',
+      textAnchor: 'middle',
+      textVerticalAnchor: 'middle',
     };
 
     switch (nodeType) {
       case 'process':
+        // Custom process-shape handles the ellipse styling
         return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-            rx: 30,
-            ry: 30,
-          },
+          text: baseTextAttrs,
         };
 
       case 'store':
+        // Custom store-shape handles the top/bottom line styling
         return {
-          body: {
-            fill: '#FFFFFF',
-            stroke: 'transparent',
-            strokeWidth: 0,
-          },
-          topLine: {
-            stroke: '#333333',
-            strokeWidth: 2,
-          },
-          bottomLine: {
-            stroke: '#333333',
-            strokeWidth: 2,
-          },
-          text: {
-            fontFamily: '"Roboto Condensed", Arial, sans-serif',
-            fontSize: 12,
-            fill: '#000000',
-          },
+          text: baseTextAttrs,
         };
 
       case 'actor':
+        // Custom actor-shape handles the rectangular styling
         return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-          },
+          text: baseTextAttrs,
         };
 
       case 'security-boundary':
+        // Custom security-boundary-shape handles the dashed border styling
         return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-            strokeDasharray: '5 5',
-            rx: 10,
-            ry: 10,
-          },
+          text: baseTextAttrs,
         };
 
       case 'textbox':
+        // Custom textbox-shape handles the transparent background
         return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-            stroke: 'none',
-            strokeWidth: 0,
-            fill: 'transparent',
-          },
-          text: {
-            ...baseAttrs.text,
-            fontSize: 12,
-          },
+          text: baseTextAttrs,
         };
 
       default:
-        return baseAttrs;
+        // Fallback for unknown node types
+        return {
+          body: {
+            strokeWidth: 2,
+            stroke: '#000000',
+            fill: '#FFFFFF',
+          },
+          text: baseTextAttrs,
+        };
     }
   }
 

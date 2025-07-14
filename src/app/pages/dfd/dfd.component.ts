@@ -26,35 +26,13 @@ import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 
 // Import providers needed for standalone component
-import { CommandBusInitializerService } from './application/services/command-bus-initializer.service';
-import {
-  CommandValidationMiddleware,
-  CommandLoggingMiddleware,
-  CommandSerializationMiddleware,
-} from './application/services/command-bus.service';
-import {
-  CreateDiagramCommandHandler,
-  AddNodeCommandHandler,
-  UpdateNodePositionCommandHandler,
-  UpdateNodeSnapshotCommandHandler,
-  RemoveNodeCommandHandler,
-  AddEdgeCommandHandler,
-  UpdateEdgeSnapshotCommandHandler,
-  RemoveEdgeCommandHandler,
-  UpdateDiagramMetadataCommandHandler,
-  CompositeCommandHandler,
-  DIAGRAM_REPOSITORY_TOKEN,
-} from './application/handlers/diagram-command-handlers';
-import { InMemoryDiagramRepository } from './infrastructure/repositories/in-memory-diagram.repository';
-import { CommandBusService } from './application/services/command-bus.service';
-import { EdgeDataFactory } from './domain/factories/edge-data.factory';
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
 import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
 
-// Import the new services
-import { DfdNodeManagerService } from './services/dfd-node-manager.service';
-import { DfdEdgeManagerService } from './services/dfd-edge-manager.service';
+// Import the new consolidated services
+import { DfdNodeService } from './services/dfd-node.service';
+import { DfdEdgeService } from './services/dfd-edge.service';
 import { DfdEventHandlersService } from './services/dfd-event-handlers.service';
 import { DfdExportService } from './services/dfd-export.service';
 
@@ -72,54 +50,15 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdCollaborationComponent,
   ],
   providers: [
-    // Command Bus and middleware
-    CommandBusService,
-    CommandValidationMiddleware,
-    CommandLoggingMiddleware,
-    CommandSerializationMiddleware,
-
-    // Command Handlers
-    CreateDiagramCommandHandler,
-    AddNodeCommandHandler,
-    UpdateNodePositionCommandHandler,
-    UpdateNodeSnapshotCommandHandler,
-    RemoveNodeCommandHandler,
-    AddEdgeCommandHandler,
-    UpdateEdgeSnapshotCommandHandler,
-    RemoveEdgeCommandHandler,
-    UpdateDiagramMetadataCommandHandler,
-    CompositeCommandHandler,
-
-    // CommandBus initializer
-    CommandBusInitializerService,
-
     // Infrastructure adapters
     X6GraphAdapter,
     EdgeQueryService,
     NodeConfigurationService,
     X6KeyboardHandler,
 
-    // Domain factories
-    EdgeDataFactory,
-
-    // Repository
-    InMemoryDiagramRepository,
-
-    // Command Bus token
-    {
-      provide: 'ICommandBus',
-      useExisting: CommandBusService,
-    },
-
-    // Diagram Repository token
-    {
-      provide: DIAGRAM_REPOSITORY_TOKEN,
-      useExisting: InMemoryDiagramRepository,
-    },
-
-    // New services
-    DfdNodeManagerService,
-    DfdEdgeManagerService,
+    // New consolidated services
+    DfdNodeService,
+    DfdEdgeService,
     DfdEventHandlersService,
     DfdExportService,
   ],
@@ -166,9 +105,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private x6GraphAdapter: X6GraphAdapter,
     private route: ActivatedRoute,
-    private commandBusInitializer: CommandBusInitializerService,
-    private nodeManager: DfdNodeManagerService,
-    private edgeManager: DfdEdgeManagerService,
+    private nodeManager: DfdNodeService,
+    private edgeManager: DfdEdgeService,
     private eventHandlers: DfdEventHandlersService,
     private exportService: DfdExportService,
   ) {
@@ -177,10 +115,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Initialize X6 cell extensions first
     this.logger.info('Initializing X6 cell extensions');
     initializeX6CellExtensions();
-
-    // Initialize command bus immediately in constructor
-    this.logger.info('Initializing command bus in constructor');
-    this.commandBusInitializer.initialize();
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -509,7 +443,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    this.eventHandlers.deleteSelected(this.dfdId || 'default-diagram', this._isInitialized);
+    this.eventHandlers.deleteSelected(this._isInitialized);
     this.cdr.markForCheck();
   }
 
@@ -619,7 +553,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Add an inverse connection for the right-clicked edge
+   * Add an inverse connection for the right-clicked edge using X6 native functionality
    */
   addInverseConnection(): void {
     const rightClickedCell = this.eventHandlers.getRightClickedCell();
@@ -628,17 +562,119 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.edgeManager
-      .addInverseConnection(rightClickedCell, this.dfdId || 'default-diagram')
-      .pipe(take(1))
-      .subscribe({
-        next: () => {
-          this.cdr.markForCheck();
-        },
-        error: error => {
-          this.logger.error('Error adding inverse connection', error);
-        },
+    const originalEdge = rightClickedCell;
+    const sourceNodeId = originalEdge.getSourceCellId();
+    const targetNodeId = originalEdge.getTargetCellId();
+    const sourcePortId = originalEdge.getSourcePortId();
+    const targetPortId = originalEdge.getTargetPortId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Cannot create inverse connection: edge missing source or target', {
+        edgeId: originalEdge.id,
+        sourceNodeId,
+        targetNodeId,
       });
+      return;
+    }
+
+    this.logger.info('Creating inverse connection using X6 native functionality', {
+      originalEdgeId: originalEdge.id,
+      originalSource: sourceNodeId,
+      originalTarget: targetNodeId,
+      originalSourcePort: sourcePortId,
+      originalTargetPort: targetPortId,
+    });
+
+    // Get the original edge's label for consistency
+    const originalLabel = this.x6GraphAdapter.getCellLabel(originalEdge) || 'Flow';
+
+    // Create inverse edge using X6GraphAdapter's addEdge method to ensure proper domain model integration
+    // This will trigger the normal edge creation flow and register the edge in the domain model
+    const graph = this.x6GraphAdapter.getGraph();
+
+    // Use X6's createEdge method to create the edge with proper configuration
+    const inverseEdge = graph.createEdge({
+      source: { cell: targetNodeId, port: targetPortId },
+      target: { cell: sourceNodeId, port: sourcePortId },
+      shape: 'edge',
+      markup: [
+        {
+          tagName: 'path',
+          selector: 'wrap',
+          attrs: {
+            fill: 'none',
+            cursor: 'pointer',
+            stroke: 'transparent',
+            strokeLinecap: 'round',
+          },
+        },
+        {
+          tagName: 'path',
+          selector: 'line',
+          attrs: {
+            fill: 'none',
+            pointerEvents: 'none',
+          },
+        },
+      ],
+      attrs: {
+        wrap: {
+          connection: true,
+          strokeWidth: 10,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          stroke: 'transparent',
+          fill: 'none',
+        },
+        line: {
+          connection: true,
+          stroke: '#000000',
+          strokeWidth: 2,
+          fill: 'none',
+          targetMarker: {
+            name: 'classic',
+            size: 8,
+            fill: '#000000',
+            stroke: '#000000',
+          },
+        },
+      },
+      vertices: [],
+      labels: [
+        {
+          position: 0.5,
+          attrs: {
+            text: {
+              text: originalLabel,
+              fontSize: 12,
+              fill: '#333',
+              fontFamily: '"Roboto Condensed", Arial, sans-serif',
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+            rect: {
+              fill: '#ffffff',
+              stroke: 'none',
+            },
+          },
+        },
+      ],
+      zIndex: 1,
+    });
+
+    // Add the edge to the graph, which will trigger the normal edge creation flow
+    graph.addCell(inverseEdge);
+
+    this.logger.info('Inverse edge created successfully using X6 native functionality', {
+      originalEdgeId: originalEdge.id,
+      inverseEdgeId: inverseEdge.id,
+      newSource: targetNodeId,
+      newTarget: sourceNodeId,
+      newSourcePort: targetPortId,
+      newTargetPort: sourcePortId,
+    });
+
+    this.cdr.markForCheck();
   }
 
   /**

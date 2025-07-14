@@ -6,9 +6,10 @@ import { Shape } from '@antv/x6';
  */
 
 /**
- * Register custom store shape with only top and bottom borders
+ * Register all custom shapes for DFD diagrams
  */
 export function registerCustomShapes(): void {
+  // Register custom store shape with only top and bottom borders
   Shape.Rect.define({
     shape: 'store-shape',
     markup: [
@@ -57,6 +58,137 @@ export function registerCustomShapes(): void {
       },
     },
   });
+
+  // Register custom actor shape (rectangular with standard styling)
+  Shape.Rect.define({
+    shape: 'actor-shape',
+    markup: [
+      {
+        tagName: 'rect',
+        selector: 'body',
+      },
+      {
+        tagName: 'text',
+        selector: 'text',
+      },
+    ],
+    attrs: {
+      body: {
+        strokeWidth: 2,
+        stroke: '#000000',
+        fill: '#FFFFFF',
+        rx: 0,
+        ry: 0,
+      },
+      text: {
+        refX: '50%',
+        refY: '50%',
+        textAnchor: 'middle',
+        textVerticalAnchor: 'middle',
+        fontFamily: '"Roboto Condensed", Arial, sans-serif',
+        fontSize: 12,
+        fill: '#000000',
+      },
+    },
+  });
+
+  // Register custom process shape (elliptical/circular)
+  Shape.Ellipse.define({
+    shape: 'process-shape',
+    markup: [
+      {
+        tagName: 'ellipse',
+        selector: 'body',
+      },
+      {
+        tagName: 'text',
+        selector: 'text',
+      },
+    ],
+    attrs: {
+      body: {
+        strokeWidth: 2,
+        stroke: '#000000',
+        fill: '#FFFFFF',
+        rx: 30,
+        ry: 30,
+      },
+      text: {
+        refX: '50%',
+        refY: '50%',
+        textAnchor: 'middle',
+        textVerticalAnchor: 'middle',
+        fontFamily: '"Roboto Condensed", Arial, sans-serif',
+        fontSize: 12,
+        fill: '#000000',
+      },
+    },
+  });
+
+  // Register custom security boundary shape (dashed rectangular border)
+  Shape.Rect.define({
+    shape: 'security-boundary-shape',
+    markup: [
+      {
+        tagName: 'rect',
+        selector: 'body',
+      },
+      {
+        tagName: 'text',
+        selector: 'text',
+      },
+    ],
+    attrs: {
+      body: {
+        strokeWidth: 2,
+        stroke: '#000000',
+        fill: '#FFFFFF',
+        strokeDasharray: '5 5',
+        rx: 10,
+        ry: 10,
+      },
+      text: {
+        refX: '50%',
+        refY: '50%',
+        textAnchor: 'middle',
+        textVerticalAnchor: 'middle',
+        fontFamily: '"Roboto Condensed", Arial, sans-serif',
+        fontSize: 12,
+        fill: '#000000',
+      },
+    },
+  });
+
+  // Register custom textbox shape (transparent background, text only)
+  Shape.Rect.define({
+    shape: 'textbox-shape',
+    markup: [
+      {
+        tagName: 'rect',
+        selector: 'body',
+      },
+      {
+        tagName: 'text',
+        selector: 'text',
+      },
+    ],
+    attrs: {
+      body: {
+        stroke: 'none',
+        strokeWidth: 0,
+        fill: 'transparent',
+      },
+      text: {
+        refX: '50%',
+        refY: '50%',
+        textAnchor: 'middle',
+        textVerticalAnchor: 'middle',
+        fontFamily: '"Roboto Condensed", Arial, sans-serif',
+        fontSize: 12,
+        fill: '#000000',
+      },
+    },
+  });
 }
 
 /**
@@ -65,15 +197,15 @@ export function registerCustomShapes(): void {
 export function getX6ShapeForNodeType(nodeType: string): string {
   switch (nodeType) {
     case 'process':
-      return 'ellipse';
+      return 'process-shape'; // Use custom shape for process
     case 'store':
       return 'store-shape'; // Use custom shape for store
     case 'actor':
-      return 'rect';
+      return 'actor-shape'; // Use custom shape for actor
     case 'security-boundary':
-      return 'rect';
+      return 'security-boundary-shape'; // Use custom shape for security boundary
     case 'textbox':
-      return 'rect';
+      return 'textbox-shape'; // Use custom shape for textbox
     default:
       return 'rect';
   }

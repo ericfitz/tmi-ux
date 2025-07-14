@@ -151,6 +151,7 @@ export class EdgeService {
                 text: updates.label,
                 fontSize: 12,
                 fill: '#333',
+                fontFamily: '"Roboto Condensed", Arial, sans-serif',
                 textAnchor: 'middle',
                 dominantBaseline: 'middle',
               },

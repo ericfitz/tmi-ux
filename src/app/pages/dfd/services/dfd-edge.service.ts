@@ -1,14 +1,241 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
+import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 
 /**
- * X6 Edge Operations
- * Handles edge creation, validation, and management for DFD diagrams
+ * Consolidated service for edge handling, operations, and management in DFD diagrams
+ * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
-@Injectable()
-export class X6EdgeOperations {
-  constructor(private logger: LoggerService) {}
+@Injectable({
+  providedIn: 'root',
+})
+export class DfdEdgeService {
+  constructor(
+    private logger: LoggerService,
+    private x6GraphAdapter: X6GraphAdapter,
+  ) {}
+
+  // ========================================
+  // High-level Edge Management Methods
+  // ========================================
+
+  /**
+   * Handle edge added events from the graph adapter
+   * Now simplified to just validate the edge without domain model sync
+   */
+  handleEdgeAdded(edge: Edge, diagramId: string, isInitialized: boolean): Observable<void> {
+    if (!isInitialized) {
+      this.logger.warn('Cannot handle edge added: Graph is not initialized');
+      throw new Error('Graph is not initialized');
+    }
+
+    // Check if this edge was created by user interaction (drag-connect)
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Edge added without valid source or target nodes', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+      });
+      // Remove the invalid edge from the graph
+      this.x6GraphAdapter.removeEdge(edge.id);
+      throw new Error('Edge added without valid source or target nodes');
+    }
+
+    // Verify that the source and target nodes actually exist in the graph
+    const sourceNode = this.x6GraphAdapter.getNode(sourceNodeId);
+    const targetNode = this.x6GraphAdapter.getNode(targetNodeId);
+
+    if (!sourceNode || !targetNode) {
+      this.logger.warn('Edge references non-existent nodes', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+        sourceNodeExists: !!sourceNode,
+        targetNodeExists: !!targetNode,
+      });
+      // Remove the invalid edge from the graph
+      this.x6GraphAdapter.removeEdge(edge.id);
+      throw new Error('Edge references non-existent nodes');
+    }
+
+    this.logger.info('Edge validated successfully', {
+      edgeId: edge.id,
+      sourceNodeId,
+      targetNodeId,
+    });
+
+    return of(void 0);
+  }
+
+  /**
+   * Handle edge vertices changes from the graph adapter
+   * Now simplified to just log the change without domain model sync
+   */
+  handleEdgeVerticesChanged(
+    edgeId: string,
+    vertices: Array<{ x: number; y: number }>,
+    diagramId: string,
+    isInitialized: boolean,
+  ): Observable<void> {
+    if (!isInitialized) {
+      this.logger.warn('Cannot handle edge vertices changed: Graph is not initialized');
+      throw new Error('Graph is not initialized');
+    }
+
+    this.logger.info('Edge vertices changed', {
+      edgeId,
+      vertexCount: vertices.length,
+      vertices,
+    });
+
+    // Verify the edge still exists
+    const edge = this.x6GraphAdapter.getEdge(edgeId);
+    if (!edge) {
+      this.logger.warn('Edge not found for vertices update', { edgeId });
+      throw new Error('Edge not found for vertices update');
+    }
+
+    this.logger.info('Edge vertices updated successfully', {
+      edgeId,
+      vertexCount: vertices.length,
+    });
+
+    return of(void 0);
+  }
+
+  /**
+   * Add an inverse connection for the specified edge
+   * Now works directly with X6 without domain model sync
+   */
+  addInverseConnection(edge: Edge, _diagramId: string): Observable<void> {
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
+
+    if (!sourceNodeId || !targetNodeId) {
+      this.logger.warn('Cannot create inverse connection: edge missing source or target', {
+        edgeId: edge.id,
+        sourceNodeId,
+        targetNodeId,
+      });
+      throw new Error('Cannot create inverse connection: edge missing source or target');
+    }
+
+    this.logger.info('Creating inverse connection for edge', {
+      originalEdgeId: edge.id,
+      originalSource: sourceNodeId,
+      originalTarget: targetNodeId,
+      originalSourcePort: sourcePortId,
+      originalTargetPort: targetPortId,
+    });
+
+    // Generate a new UUID for the inverse edge
+    const inverseEdgeId = uuidv4();
+
+    // Get the original edge's label for consistency
+    const originalLabelRaw = edge.getLabelAt(0)?.attrs?.['text']?.['text'];
+    const originalLabel = typeof originalLabelRaw === 'string' ? originalLabelRaw : 'Flow';
+
+    try {
+      // Create inverse edge directly in X6 graph
+      const graph = this.x6GraphAdapter.getGraph();
+
+      graph.addEdge({
+        id: inverseEdgeId,
+        source: { cell: targetNodeId, port: targetPortId },
+        target: { cell: sourceNodeId, port: sourcePortId },
+        shape: 'edge',
+        markup: [
+          {
+            tagName: 'path',
+            selector: 'wrap',
+            attrs: {
+              fill: 'none',
+              cursor: 'pointer',
+              stroke: 'transparent',
+              strokeLinecap: 'round',
+            },
+          },
+          {
+            tagName: 'path',
+            selector: 'line',
+            attrs: {
+              fill: 'none',
+              pointerEvents: 'none',
+            },
+          },
+        ],
+        attrs: {
+          wrap: {
+            connection: true,
+            strokeWidth: 10,
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            stroke: 'transparent',
+            fill: 'none',
+          },
+          line: {
+            connection: true,
+            stroke: '#000000',
+            strokeWidth: 2,
+            fill: 'none',
+            targetMarker: {
+              name: 'classic',
+              size: 8,
+              fill: '#000000',
+              stroke: '#000000',
+            },
+          },
+        },
+        vertices: [],
+        labels: [
+          {
+            position: 0.5,
+            attrs: {
+              text: {
+                text: originalLabel,
+                fontSize: 12,
+                fill: '#333',
+                fontFamily: '"Roboto Condensed", Arial, sans-serif',
+                textAnchor: 'middle',
+                dominantBaseline: 'middle',
+              },
+              rect: {
+                fill: '#ffffff',
+                stroke: 'none',
+              },
+            },
+          },
+        ],
+        zIndex: 1,
+      });
+
+      this.logger.info('Inverse edge created successfully directly in X6', {
+        originalEdgeId: edge.id,
+        inverseEdgeId,
+        newSource: targetNodeId,
+        newTarget: sourceNodeId,
+        newSourcePort: targetPortId,
+        newTargetPort: sourcePortId,
+      });
+
+      return of(void 0);
+    } catch (error) {
+      this.logger.error('Error creating inverse edge directly in X6', error);
+      throw error;
+    }
+  }
+
+  // ========================================
+  // Low-level X6 Edge Operations
+  // ========================================
 
   /**
    * Create an edge between two nodes
@@ -84,6 +311,7 @@ export class X6EdgeOperations {
                 text: label,
                 fontSize: 12,
                 fill: '#333',
+                fontFamily: '"Roboto Condensed", Arial, sans-serif',
               },
               rect: {
                 fill: 'white',
@@ -166,6 +394,7 @@ export class X6EdgeOperations {
               text: label,
               fontSize: 12,
               fill: '#333',
+              fontFamily: '"Roboto Condensed", Arial, sans-serif',
             },
             rect: {
               fill: 'white',

@@ -7,8 +7,6 @@ import { take } from 'rxjs/operators';
 import { Cell } from '@antv/x6';
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '../../../core/services/logger.service';
-import { CommandBusService } from '../application/services/command-bus.service';
-import { DiagramCommandFactory } from '../domain/commands/diagram-commands';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
 import {
@@ -18,6 +16,7 @@ import {
 
 /**
  * Service responsible for handling events in DFD diagrams
+ * Simplified to work directly with X6 without command bus
  */
 @Injectable({
   providedIn: 'root',
@@ -32,7 +31,6 @@ export class DfdEventHandlersService {
 
   constructor(
     private logger: LoggerService,
-    private commandBus: CommandBusService,
     private x6GraphAdapter: X6GraphAdapter,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
@@ -77,7 +75,7 @@ export class DfdEventHandlersService {
   /**
    * Handle keyboard events for delete functionality and undo/redo
    */
-  onKeyDown(event: KeyboardEvent, diagramId: string, isInitialized: boolean): void {
+  onKeyDown(event: KeyboardEvent, _diagramId: string, isInitialized: boolean): void {
     // Only handle keys if the graph container has focus or if no input elements are focused
     const activeElement = document.activeElement;
     const isInputFocused =
@@ -90,7 +88,7 @@ export class DfdEventHandlersService {
       // Handle delete/backspace
       if (event.key === 'Delete' || event.key === 'Backspace') {
         event.preventDefault();
-        this.deleteSelected(diagramId, isInitialized);
+        this.deleteSelected(isInitialized);
         return;
       }
 
@@ -127,9 +125,9 @@ export class DfdEventHandlersService {
   }
 
   /**
-   * Deletes the currently selected cell(s)
+   * Deletes the currently selected cell(s) - simplified without command bus
    */
-  deleteSelected(diagramId: string, isInitialized: boolean): void {
+  deleteSelected(isInitialized: boolean): void {
     if (!isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;
@@ -141,73 +139,19 @@ export class DfdEventHandlersService {
       return;
     }
 
-    this.logger.info('Deleting selected cells', {
+    this.logger.info('Deleting selected cells directly from X6', {
       count: selectedCells.length,
       cellIds: selectedCells.map(cell => cell.id),
     });
 
-    const userId = 'current-user'; // TODO: Get from auth service
-
-    // Separate nodes and edges for different command handling
-    const selectedNodes = selectedCells.filter(cell => cell.isNode());
-    const selectedEdges = selectedCells.filter(cell => cell.isEdge());
-
-    // Delete nodes first (this will also remove connected edges automatically)
-    selectedNodes.forEach(node => {
-      //  Check for connected edges before deletion
-      // Note: We'll capture this information from the domain model after deletion
-      this.logger.info(' Node deletion will cascade to connected edges', {
-        nodeId: node.id,
-        note: 'Connected edges will be automatically deleted by domain logic',
-      });
-
-      const command = DiagramCommandFactory.removeNode(diagramId, userId, node.id, true); // isLocalUserInitiated
-
-      this.commandBus
-        .execute<void>(command)
-        .pipe(take(1))
-        .subscribe({
-          next: () => {
-            this.logger.info('Node deleted successfully', { nodeId: node.id });
-
-            // Remove from visual graph
-            this.x6GraphAdapter.removeNode(node.id);
-          },
-          error: error => {
-            this.logger.error('Error deleting node', error);
-          },
-        });
-    });
-
-    // Delete standalone edges (edges not connected to deleted nodes)
-    selectedEdges.forEach(edge => {
-      const sourceNodeId = edge.getSourceCellId();
-      const targetNodeId = edge.getTargetCellId();
-
-      // Check if this edge is connected to any of the nodes being deleted
-      const isConnectedToDeletedNode = selectedNodes.some(
-        node => node.id === sourceNodeId || node.id === targetNodeId,
-      );
-
-      // Only delete the edge if it's not connected to a node being deleted
-      // (since deleting the node will automatically delete connected edges)
-      if (!isConnectedToDeletedNode) {
-        const command = DiagramCommandFactory.removeEdge(diagramId, userId, edge.id, true); // isLocalUserInitiated
-
-        this.commandBus
-          .execute<void>(command)
-          .pipe(take(1))
-          .subscribe({
-            next: () => {
-              this.logger.info('Edge deleted successfully', { edgeId: edge.id });
-
-              // Remove from visual graph
-              this.x6GraphAdapter.removeEdge(edge.id);
-            },
-            error: error => {
-              this.logger.error('Error deleting edge', error);
-            },
-          });
+    // Direct deletion from X6 graph without command bus
+    selectedCells.forEach(cell => {
+      if (cell.isNode()) {
+        this.x6GraphAdapter.removeNode(cell.id);
+        this.logger.info('Node deleted directly from X6', { nodeId: cell.id });
+      } else if (cell.isEdge()) {
+        this.x6GraphAdapter.removeEdge(cell.id);
+        this.logger.info('Edge deleted directly from X6', { edgeId: cell.id });
       }
     });
 
@@ -274,7 +218,7 @@ export class DfdEventHandlersService {
             cellId: this._rightClickedCell?.id,
           });
         })
-        .catch(error => {
+        .catch((error: unknown) => {
           this.logger.error('Failed to copy cell definition to clipboard', error);
           // Fallback for older browsers
           this._fallbackCopyToClipboard(jsonString);
@@ -412,8 +356,8 @@ export class DfdEventHandlersService {
   /**
    * Closes the diagram and navigates back to the threat model editor page
    */
-  closeDiagram(threatModelId: string | null, dfdId: string | null): void {
-    this.logger.info('Closing diagram', { diagramId: dfdId });
+  closeDiagram(threatModelId: string | null, _dfdId: string | null): void {
+    this.logger.info('Closing diagram');
 
     if (threatModelId) {
       // Navigate back to the threat model editor page

@@ -13,8 +13,6 @@ import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
-import { ICommandBus } from '../../application/interfaces/command-bus.interface';
 import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { EdgeQueryService } from '../services/edge-query.service';
@@ -120,11 +118,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _isConnecting = false;
   private _selectedCells = new Set<string>();
   private _currentEditor: HTMLInputElement | HTMLTextAreaElement | null = null;
-
-  // Context for command pattern operations
-  private _diagramId: string | null = null;
-  private _userId: string | null = null;
-  private _commandBus: ICommandBus | null = null;
 
   // Operation-aware event coordination (replaces timer-based debouncing)
   private readonly _dragCompleted$ = new Subject<{
@@ -382,8 +375,13 @@ export class X6GraphAdapter implements IGraphAdapter {
             return false;
           }
 
-          const isValid = magnet.getAttribute('magnet') === 'active';
-          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet result:', { isValid });
+          // FIXED: Check for magnet="true" instead of magnet="active" to match port configuration
+          const magnetAttr = magnet.getAttribute('magnet');
+          const isValid = magnetAttr === 'true' || magnetAttr === 'active';
+          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet result:', {
+            magnetAttr,
+            isValid,
+          });
           return isValid;
         },
         validateConnection: args => {
@@ -514,6 +512,7 @@ export class X6GraphAdapter implements IGraphAdapter {
                     text: 'Flow',
                     fontSize: 12,
                     fill: '#333',
+                    fontFamily: '"Roboto Condensed", Arial, sans-serif',
                     textAnchor: 'middle',
                     dominantBaseline: 'middle',
                   },
@@ -1179,16 +1178,10 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Set the context for command pattern operations (diagram ID, user ID, and command bus)
+   * Public method to validate and correct z-order - can be called externally
    */
-  setCommandContext(diagramId: string, userId: string, commandBus: ICommandBus): void {
-    this._diagramId = diagramId;
-    this._userId = userId;
-    this._commandBus = commandBus;
-    this.logger.info('Command context set for X6 adapter', {
-      diagramId,
-      userId,
-    });
+  validateAndCorrectZOrder(): void {
+    this._validateAndCorrectZOrder();
   }
 
   /**
@@ -1350,23 +1343,9 @@ export class X6GraphAdapter implements IGraphAdapter {
           this._hideUnconnectedPorts();
           this._ensureConnectedPortsVisible(edge);
 
-          // CRITICAL FIX: Use composite command for edge creation to capture port state
-          // But only if we have the necessary context - otherwise fall back to normal flow
-          if (this._diagramId && this._userId && this._commandBus) {
-            this._handleEdgeCreationWithPortState(edge, sourceId, targetId);
-            // Don't emit edgeAdded$ here - the composite command will handle the domain model update
-            this.logger.debugComponent(
-              'DFD',
-              '[Edge Creation] Using composite command, skipping normal edge emission',
-            );
-          } else {
-            // Fallback to normal flow when context is not available
-            this.logger.debugComponent(
-              'DFD',
-              '[Edge Creation] No command context, using normal edge emission',
-            );
-            this._edgeAdded$.next(edge);
-          }
+          // Simplified flow without command bus - just emit the edge added event
+          this.logger.debugComponent('DFD', '[Edge Creation] Emitting edge added event');
+          this._edgeAdded$.next(edge);
         }, 50); // Small delay to ensure connection is fully established
       } else {
         this.logger.debugComponent('DFD', '[Edge Creation] Invalid edge, removing', {
@@ -1471,6 +1450,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         if ((node as any).setApplicationMetadata) {
           (node as any).setApplicationMetadata('_originalZIndex', '');
         }
+
+        // Enforce z-order invariants after embedding operations
+        this._enforceZOrderInvariants();
       },
     );
 
@@ -1496,49 +1478,16 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Update fill color based on new embedding depth (or reset to white if fully unembedded)
         this._updateEmbeddedNodeColor(node);
+
+        // Enforce z-order invariants after parent change operations
+        this._enforceZOrderInvariants();
       }
     });
 
     // Handle node movement without embedding - restore z-index when drag ends
-    // We'll use a more reliable approach by listening to the node:moved event
-    // which fires after the drag operation is complete
+    // Use a more reliable approach that doesn't depend on timeouts
     this._graph.on('node:moved', ({ node }: { node: Node }) => {
-      // Check if this node has a stored original z-index from embedding attempt
-      // Safety check for test environment where getData might not exist
-      if (typeof node.getData !== 'function') {
-        return;
-      }
-      const originalZIndexValue = (node as any).getApplicationMetadata
-        ? (node as any).getApplicationMetadata('_originalZIndex')
-        : '';
-      const originalZIndex = originalZIndexValue ? Number(originalZIndexValue) : null;
-      // If we have an original z-index stored and the node is not currently embedded,
-      // restore the original z-index (this handles the case where dragging was just for movement)
-      if (typeof originalZIndex === 'number' && !isNaN(originalZIndex) && !node.getParent()) {
-        // Use a longer timeout to ensure this runs after all embedding events have completed
-        setTimeout(() => {
-          // Double-check that the node still doesn't have a parent and still has the stored z-index
-          if (!node.getParent() && (node as any).getApplicationMetadata) {
-            const stillHasOriginalZIndex = (node as any).getApplicationMetadata('_originalZIndex');
-
-            // Only restore if we still have the original z-index stored (not cleaned up by embedding)
-            if (stillHasOriginalZIndex) {
-              node.setZIndex(originalZIndex);
-              // Update z-order for connected edges to match the restored node z-order
-              this._updateConnectedEdgesZOrder(node, originalZIndex);
-              // Clean up the temporary metadata
-              if ((node as any).setApplicationMetadata) {
-                (node as any).setApplicationMetadata('_originalZIndex', '');
-              }
-
-              this.logger.info('Restored original z-index after drag without embedding', {
-                nodeId: node.id,
-                restoredZIndex: originalZIndex,
-              });
-            }
-          }
-        }, 100);
-      }
+      this._handleNodeMovedZOrderRestoration(node);
     });
 
     // Edge events - handle addition and removal
@@ -2177,54 +2126,18 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Centralized cell deletion handler using command pattern
+   * Centralized cell deletion handler - simplified without command pattern
    */
   private _handleCellDeletion(cell: Cell): void {
     const cellType = cell.isNode() ? 'node' : 'edge';
     this.logger.info(`Delete tool clicked for ${cellType}`, { cellId: cell.id });
 
-    if (this._diagramId && this._userId && this._commandBus) {
-      this.logger.info(`Using command pattern for ${cellType} deletion`, {
+    // Direct removal without command pattern
+    if (this._graph) {
+      this._graph.removeCell(cell);
+      this.logger.info(`${cellType} removed directly from graph`, {
         cellId: cell.id,
-        cellType,
-        diagramId: this._diagramId,
-        userId: this._userId,
       });
-
-      const command = cell.isNode()
-        ? DiagramCommandFactory.removeNode(this._diagramId, this._userId, cell.id, true)
-        : DiagramCommandFactory.removeEdge(this._diagramId, this._userId, cell.id, true);
-
-      this._commandBus.execute(command).subscribe({
-        next: () => {
-          this.logger.info(`${cellType} deletion command executed successfully`, {
-            cellId: cell.id,
-          });
-        },
-        error: (error: unknown) => {
-          this.logger.error(`Failed to execute ${cellType} deletion command`, {
-            cellId: cell.id,
-            error,
-          });
-          // Fallback to direct removal if command fails
-          if (this._graph) {
-            this._graph.removeCell(cell);
-          }
-        },
-      });
-    } else {
-      this.logger.warn('Command context not set, falling back to direct removal', {
-        cellId: cell.id,
-        hasContext: {
-          diagramId: !!this._diagramId,
-          userId: !!this._userId,
-          commandBus: !!this._commandBus,
-        },
-      });
-      // Fallback to direct removal if context is not set
-      if (this._graph) {
-        this._graph.removeCell(cell);
-      }
     }
   }
 
@@ -2370,6 +2283,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     } else {
       this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
     }
+
+    // Enforce z-order invariants after manual z-order changes
+    this._enforceZOrderInvariants();
   }
 
   /**
@@ -2412,6 +2328,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     } else {
       this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
     }
+
+    // Enforce z-order invariants after manual z-order changes
+    this._enforceZOrderInvariants();
   }
 
   /**
@@ -2685,103 +2604,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Handle edge creation with port state preservation using composite commands
-   * CRITICAL FIX: This ensures that port visibility changes are captured in history
-   */
-  private _handleEdgeCreationWithPortState(edge: Edge, sourceId: string, targetId: string): void {
-    // Only handle user-initiated edge creation (not programmatic restoration)
-    if (!this._diagramId || !this._userId || !this._commandBus) {
-      this.logger.info('FIXED: Skipping composite command - missing context', {
-        edgeId: edge.id,
-        hasContext: {
-          diagramId: !!this._diagramId,
-          userId: !!this._userId,
-          commandBus: !!this._commandBus,
-        },
-      });
-      return;
-    }
-
-    const sourceNode = this._graph?.getCellById(sourceId) as Node;
-    const targetNode = this._graph?.getCellById(targetId) as Node;
-
-    if (!sourceNode?.isNode() || !targetNode?.isNode()) {
-      this.logger.warn('FIXED: Cannot create composite command - invalid nodes', {
-        edgeId: edge.id,
-        sourceId,
-        targetId,
-        sourceIsNode: sourceNode?.isNode(),
-        targetIsNode: targetNode?.isNode(),
-      });
-      return;
-    }
-
-    try {
-      // CRITICAL FIX: Create edge snapshot directly from X6 edge to capture port information
-      // This ensures we get the actual port connections that were just established
-      const edgeSnapshot = this._createEdgeSnapshot(edge);
-
-      this.logger.info('FIXED: Creating simplified command for edge creation', {
-        edgeId: edge.id,
-        sourceId,
-        targetId,
-        edgeSource: edgeSnapshot.source,
-        edgeTarget: edgeSnapshot.target,
-        sourcePortId: edge.getSourcePortId(),
-        targetPortId: edge.getTargetPortId(),
-      });
-
-      // Create simplified command that relies on X6's native history for undo/redo
-      const command = DiagramCommandFactory.addEdge(
-        this._diagramId,
-        this._userId,
-        edge.id,
-        sourceId,
-        targetId,
-        edgeSnapshot,
-        true, // isLocalUserInitiated = true for user-created edges
-      );
-
-      // Execute the command
-      this._commandBus.execute(command).subscribe({
-        next: () => {
-          this.logger.info('FIXED: Edge creation command executed successfully', {
-            edgeId: edge.id,
-            commandId: command.commandId,
-          });
-
-          // CRITICAL FIX: Do NOT emit edgeAdded$ here - the command already handles
-          // the domain model update. Emitting here would cause duplicate edge creation.
-          this.logger.debugComponent(
-            'DFD',
-            '[Edge Creation] Command completed - domain model already updated',
-          );
-        },
-        error: (error: unknown) => {
-          this.logger.error('FIXED: Failed to execute edge creation command', {
-            edgeId: edge.id,
-            error,
-          });
-
-          // CRITICAL FIX: On command failure, remove the edge from X6 graph
-          // since the domain model update failed
-          this.logger.warn('FIXED: Removing edge from X6 graph due to command failure');
-          if (this._graph && this._graph.getCellById(edge.id)) {
-            this._graph.removeCell(edge);
-          }
-        },
-      });
-    } catch (error) {
-      this.logger.error('FIXED: Error creating command for edge creation', {
-        edgeId: edge.id,
-        sourceId,
-        targetId,
-        error,
-      });
-    }
-  }
-
-  /**
    * Update port visibility for connected nodes after edge creation
    * @deprecated This functionality is now handled by EdgeService.createEdge()
    */
@@ -3048,6 +2870,209 @@ export class X6GraphAdapter implements IGraphAdapter {
       // Update previous state tracking
       this._previousCanUndo = canUndo;
       this._previousCanRedo = canRedo;
+    }
+  }
+
+  /**
+   * Handle z-order restoration after node movement without embedding
+   * This is a more reliable approach than using timeouts
+   */
+  private _handleNodeMovedZOrderRestoration(node: Node): void {
+    // Safety check for test environment where getData might not exist
+    if (typeof node.getData !== 'function') {
+      return;
+    }
+
+    // Check if this node has a stored original z-index from embedding attempt
+    const originalZIndexValue = (node as any).getApplicationMetadata
+      ? (node as any).getApplicationMetadata('_originalZIndex')
+      : '';
+    const originalZIndex = originalZIndexValue ? Number(originalZIndexValue) : null;
+
+    // If we have an original z-index stored and the node is not currently embedded,
+    // restore the original z-index (this handles the case where dragging was just for movement)
+    if (typeof originalZIndex === 'number' && !isNaN(originalZIndex) && !node.getParent()) {
+      // Get the node type to determine the correct default z-index
+      const nodeType = (node as any).getNodeTypeInfo
+        ? (node as any).getNodeTypeInfo().type
+        : 'process';
+
+      // Determine the correct z-index based on node type
+      let correctZIndex: number;
+      if (nodeType === 'security-boundary') {
+        correctZIndex = 1; // Security boundaries should always be at the back
+      } else {
+        correctZIndex = originalZIndex; // Restore original z-index for other node types
+      }
+
+      // Only update if the current z-index is different from what it should be
+      const currentZIndex = node.getZIndex() ?? 1;
+      if (currentZIndex !== correctZIndex) {
+        node.setZIndex(correctZIndex);
+        // Update z-order for connected edges to match the restored node z-order
+        this._updateConnectedEdgesZOrder(node, correctZIndex);
+
+        this.logger.info('Restored correct z-index after drag without embedding', {
+          nodeId: node.id,
+          nodeType,
+          previousZIndex: currentZIndex,
+          restoredZIndex: correctZIndex,
+          wasSecurityBoundary: nodeType === 'security-boundary',
+        });
+      }
+
+      // Clean up the temporary metadata
+      if ((node as any).setApplicationMetadata) {
+        (node as any).setApplicationMetadata('_originalZIndex', '');
+      }
+    }
+
+    // CRITICAL: Always enforce z-order invariants after any node movement
+    this._enforceZOrderInvariants();
+  }
+
+  /**
+   * Enforce z-order invariants to ensure security boundaries are always behind other nodes
+   * This method should be called after any operation that might affect z-order
+   */
+  private _enforceZOrderInvariants(): void {
+    if (!this._graph) return;
+
+    const nodes = this._graph.getNodes();
+    const securityBoundaries: Node[] = [];
+    const regularNodes: Node[] = [];
+
+    // Categorize nodes by type
+    nodes.forEach(node => {
+      const nodeType = (node as any).getNodeTypeInfo
+        ? (node as any).getNodeTypeInfo().type
+        : 'process';
+
+      if (nodeType === 'security-boundary') {
+        securityBoundaries.push(node);
+      } else {
+        regularNodes.push(node);
+      }
+    });
+
+    // Find the minimum z-index among regular nodes
+    const regularNodeZIndices = regularNodes.map(node => node.getZIndex() ?? 10);
+    const minRegularZIndex = regularNodeZIndices.length > 0 ? Math.min(...regularNodeZIndices) : 10;
+
+    // Ensure all security boundaries have z-index lower than any regular node
+    const maxSecurityBoundaryZIndex = Math.max(1, minRegularZIndex - 1);
+
+    let correctionsMade = false;
+    securityBoundaries.forEach((boundary, index) => {
+      const currentZIndex = boundary.getZIndex() ?? 1;
+      const targetZIndex = Math.min(maxSecurityBoundaryZIndex - index, 1);
+
+      // Only correct if the security boundary is not embedded (embedded ones can have higher z-index)
+      if (!boundary.getParent() && currentZIndex >= minRegularZIndex) {
+        boundary.setZIndex(targetZIndex);
+        this._updateConnectedEdgesZOrder(boundary, targetZIndex);
+        correctionsMade = true;
+
+        this.logger.info('Corrected security boundary z-order to maintain invariant', {
+          nodeId: boundary.id,
+          previousZIndex: currentZIndex,
+          correctedZIndex: targetZIndex,
+          minRegularZIndex,
+          reason: 'security boundary was in front of regular nodes',
+        });
+      }
+    });
+
+    if (correctionsMade) {
+      this.logger.info('Z-order invariants enforced', {
+        securityBoundaryCount: securityBoundaries.length,
+        regularNodeCount: regularNodes.length,
+        minRegularZIndex,
+        maxSecurityBoundaryZIndex,
+      });
+    }
+  }
+
+  /**
+   * Validate and correct z-order for all nodes in the graph
+   * This is a comprehensive check that can be called periodically or after major operations
+   */
+  private _validateAndCorrectZOrder(): void {
+    if (!this._graph) return;
+
+    this.logger.info('Starting comprehensive z-order validation and correction');
+
+    const nodes = this._graph.getNodes();
+    const issues: string[] = [];
+
+    // Group nodes by type and embedding status
+    const nodeGroups = {
+      securityBoundariesUnembedded: [] as Node[],
+      securityBoundariesEmbedded: [] as Node[],
+      regularNodesUnembedded: [] as Node[],
+      regularNodesEmbedded: [] as Node[],
+    };
+
+    nodes.forEach(node => {
+      const nodeType = (node as any).getNodeTypeInfo
+        ? (node as any).getNodeTypeInfo().type
+        : 'process';
+      const isEmbedded = !!node.getParent();
+
+      if (nodeType === 'security-boundary') {
+        if (isEmbedded) {
+          nodeGroups.securityBoundariesEmbedded.push(node);
+        } else {
+          nodeGroups.securityBoundariesUnembedded.push(node);
+        }
+      } else {
+        if (isEmbedded) {
+          nodeGroups.regularNodesEmbedded.push(node);
+        } else {
+          nodeGroups.regularNodesUnembedded.push(node);
+        }
+      }
+    });
+
+    // Check invariant: unembedded security boundaries should be behind unembedded regular nodes
+    const unembeddedRegularZIndices = nodeGroups.regularNodesUnembedded.map(
+      n => n.getZIndex() ?? 10,
+    );
+    const minRegularZIndex =
+      unembeddedRegularZIndices.length > 0 ? Math.min(...unembeddedRegularZIndices) : 10;
+
+    nodeGroups.securityBoundariesUnembedded.forEach(boundary => {
+      const currentZIndex = boundary.getZIndex() ?? 1;
+      if (currentZIndex >= minRegularZIndex) {
+        const correctedZIndex = Math.max(1, minRegularZIndex - 1);
+        boundary.setZIndex(correctedZIndex);
+        this._updateConnectedEdgesZOrder(boundary, correctedZIndex);
+        issues.push(
+          `Security boundary ${boundary.id} corrected from z-index ${currentZIndex} to ${correctedZIndex}`,
+        );
+      }
+    });
+
+    if (issues.length > 0) {
+      this.logger.warn('Z-order violations found and corrected', {
+        issuesCount: issues.length,
+        issues,
+        nodeGroups: {
+          securityBoundariesUnembedded: nodeGroups.securityBoundariesUnembedded.length,
+          securityBoundariesEmbedded: nodeGroups.securityBoundariesEmbedded.length,
+          regularNodesUnembedded: nodeGroups.regularNodesUnembedded.length,
+          regularNodesEmbedded: nodeGroups.regularNodesEmbedded.length,
+        },
+      });
+    } else {
+      this.logger.info('Z-order validation completed - no violations found', {
+        nodeGroups: {
+          securityBoundariesUnembedded: nodeGroups.securityBoundariesUnembedded.length,
+          securityBoundariesEmbedded: nodeGroups.securityBoundariesEmbedded.length,
+          regularNodesUnembedded: nodeGroups.regularNodesUnembedded.length,
+          regularNodesEmbedded: nodeGroups.regularNodesEmbedded.length,
+        },
+      });
     }
   }
 }

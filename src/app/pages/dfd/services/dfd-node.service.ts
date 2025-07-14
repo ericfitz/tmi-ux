@@ -1,14 +1,274 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node } from '@antv/x6';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { TranslocoService } from '@jsverse/transloco';
+import { LoggerService } from '../../../core/services/logger.service';
+import { NodeType } from '../domain/value-objects/node-data';
+import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
 
 /**
- * X6 Node Operations
- * Handles node creation, manipulation, and management for DFD diagrams
+ * Consolidated service for node creation, management, and operations in DFD diagrams
+ * Combines the functionality of DfdNodeManagerService and X6NodeOperations
  */
-@Injectable()
-export class X6NodeOperations {
-  constructor(private logger: LoggerService) {}
+@Injectable({
+  providedIn: 'root',
+})
+export class DfdNodeService {
+  constructor(
+    private logger: LoggerService,
+    private transloco: TranslocoService,
+    private x6GraphAdapter: X6GraphAdapter,
+  ) {}
+
+  // ========================================
+  // High-level Node Management Methods
+  // ========================================
+
+  /**
+   * Add a node at a predictable position
+   */
+  addGraphNode(
+    shapeType: NodeType = 'actor',
+    containerWidth: number,
+    containerHeight: number,
+    diagramId: string,
+    isInitialized: boolean,
+  ): Observable<void> {
+    if (!isInitialized) {
+      this.logger.warn('Cannot add node: Graph is not initialized');
+      throw new Error('Graph is not initialized');
+    }
+
+    // Calculate a predictable position using a grid-based algorithm
+    const position = this.calculateNextNodePosition(containerWidth, containerHeight);
+
+    return this.createNode(shapeType, position);
+  }
+
+  /**
+   * Calculate the next predictable position for a new node using a grid-based algorithm
+   * that ensures nodes are always placed in the viewable area
+   */
+  private calculateNextNodePosition(
+    containerWidth: number,
+    containerHeight: number,
+  ): { x: number; y: number } {
+    const nodeWidth = 120; // Default node width
+    const nodeHeight = 80; // Default node height
+    const padding = 50; // Padding from edges and between nodes
+    const gridSpacingX = nodeWidth + padding;
+    const gridSpacingY = nodeHeight + padding;
+    const offsetIncrement = 25; // Offset increment for layered placement
+
+    // Calculate available grid dimensions
+    const availableWidth = containerWidth - 2 * padding;
+    const availableHeight = containerHeight - 2 * padding;
+    const maxColumns = Math.floor(availableWidth / gridSpacingX);
+    const maxRows = Math.floor(availableHeight / gridSpacingY);
+    const totalGridPositions = maxColumns * maxRows;
+
+    // Get existing nodes to determine occupied positions
+    const existingNodes = this.x6GraphAdapter.getNodes();
+
+    // Calculate which layer we're on based on existing node count
+    const currentLayer = Math.floor(existingNodes.length / totalGridPositions);
+    const positionInLayer = existingNodes.length % totalGridPositions;
+
+    // Calculate the offset for this layer to create a staggered effect
+    const layerOffsetX = (currentLayer * offsetIncrement) % (gridSpacingX / 2);
+    const layerOffsetY = (currentLayer * offsetIncrement) % (gridSpacingY / 2);
+
+    // Calculate row and column for this position in the current layer
+    const row = Math.floor(positionInLayer / maxColumns);
+    const col = positionInLayer % maxColumns;
+
+    // Calculate the actual position with layer offset
+    const baseX = padding + col * gridSpacingX;
+    const baseY = padding + row * gridSpacingY;
+    const x = baseX + layerOffsetX;
+    const y = baseY + layerOffsetY;
+
+    // Ensure the position stays within the viewable area
+    const clampedX = Math.min(Math.max(x, padding), containerWidth - nodeWidth - padding);
+    const clampedY = Math.min(Math.max(y, padding), containerHeight - nodeHeight - padding);
+
+    this.logger.info('Calculated predictable node position with layering', {
+      layer: currentLayer,
+      positionInLayer,
+      gridPosition: { col, row },
+      layerOffset: { x: layerOffsetX, y: layerOffsetY },
+      calculatedPosition: { x, y },
+      finalPosition: { x: clampedX, y: clampedY },
+      totalGridPositions,
+      existingNodeCount: existingNodes.length,
+    });
+
+    return { x: clampedX, y: clampedY };
+  }
+
+  /**
+   * Create a node with the specified type and position directly in X6
+   */
+  private createNode(shapeType: NodeType, position: { x: number; y: number }): Observable<void> {
+    const nodeId = uuidv4(); // Generate UUID type 4 for UX-created nodes
+
+    try {
+      // Add node directly to X6 graph using the graph instance
+      const graph = this.x6GraphAdapter.getGraph();
+
+      // Get node-specific configuration
+      const nodeConfig = this.getNodeConfigForType(shapeType, nodeId, position);
+
+      graph.addNode(nodeConfig);
+
+      this.logger.info('Node created successfully directly in X6', { nodeId, shapeType });
+      return of(void 0);
+    } catch (error) {
+      this.logger.error('Error creating node directly in X6', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get node configuration based on node type
+   * Uses the original CSS-based styling system instead of inline attrs
+   */
+  private getNodeConfigForType(
+    shapeType: NodeType,
+    nodeId: string,
+    position: { x: number; y: number },
+  ): any {
+    const x6Shape = getX6ShapeForNodeType(shapeType);
+    const label = this.getDefaultLabelForType(shapeType);
+
+    // Base configuration with minimal styling - let CSS handle the appearance
+    const baseConfig = {
+      id: nodeId,
+      shape: x6Shape,
+      x: position.x,
+      y: position.y,
+      width: 120,
+      height: 80,
+      label,
+      data: {
+        type: shapeType, // This allows CSS targeting via [data-type="..."]
+      },
+      zIndex: 1,
+    };
+
+    // Configure ports with proper magnet properties for edge creation
+    // but minimal styling - let the CSS handle the visual appearance
+    const portConfig = {
+      groups: {
+        top: {
+          position: 'top',
+          attrs: {
+            circle: {
+              r: 5,
+              magnet: true,
+              class: 'x6-port-body',
+            },
+          },
+        },
+        right: {
+          position: 'right',
+          attrs: {
+            circle: {
+              r: 5,
+              magnet: true,
+              class: 'x6-port-body',
+            },
+          },
+        },
+        bottom: {
+          position: 'bottom',
+          attrs: {
+            circle: {
+              r: 5,
+              magnet: true,
+              class: 'x6-port-body',
+            },
+          },
+        },
+        left: {
+          position: 'left',
+          attrs: {
+            circle: {
+              r: 5,
+              magnet: true,
+              class: 'x6-port-body',
+            },
+          },
+        },
+      },
+      items: [
+        { id: 'top', group: 'top' },
+        { id: 'right', group: 'right' },
+        { id: 'bottom', group: 'bottom' },
+        { id: 'left', group: 'left' },
+      ],
+    };
+
+    // Adjust dimensions based on node type to match original styling
+    switch (shapeType) {
+      case 'process':
+        return {
+          ...baseConfig,
+          width: 120,
+          height: 60,
+          ports: portConfig,
+        };
+
+      case 'store':
+        return {
+          ...baseConfig,
+          width: 140,
+          height: 40,
+          ports: portConfig,
+        };
+
+      case 'actor':
+        return {
+          ...baseConfig,
+          width: 100,
+          height: 80,
+          ports: portConfig,
+        };
+
+      default:
+        // Default configuration for security-boundary, textbox, etc.
+        return {
+          ...baseConfig,
+          ports: portConfig,
+        };
+    }
+  }
+
+  /**
+   * Get default label for a shape type
+   */
+  private getDefaultLabelForType(shapeType: NodeType): string {
+    switch (shapeType) {
+      case 'actor':
+        return this.transloco.translate('editor.nodeLabels.actor');
+      case 'process':
+        return this.transloco.translate('editor.nodeLabels.process');
+      case 'store':
+        return this.transloco.translate('editor.nodeLabels.store');
+      case 'security-boundary':
+        return this.transloco.translate('editor.nodeLabels.securityBoundary');
+      case 'textbox':
+        return this.transloco.translate('editor.nodeLabels.textbox');
+      default:
+        return this.transloco.translate('editor.nodeLabels.node');
+    }
+  }
+
+  // ========================================
+  // Low-level X6 Node Operations
+  // ========================================
 
   /**
    * Create a DFD process node
@@ -38,6 +298,7 @@ export class X6NodeOperations {
           text: label,
           fontSize: 12,
           fill: '#333',
+          fontFamily: '"Roboto Condensed", Arial, sans-serif',
         },
       },
       ports: {
@@ -114,6 +375,7 @@ export class X6NodeOperations {
           text: label,
           fontSize: 12,
           fill: '#333',
+          fontFamily: '"Roboto Condensed", Arial, sans-serif',
         },
       },
       ports: {
@@ -188,6 +450,7 @@ export class X6NodeOperations {
           text: label,
           fontSize: 12,
           fill: '#333',
+          fontFamily: '"Roboto Condensed", Arial, sans-serif',
         },
       },
       ports: {
