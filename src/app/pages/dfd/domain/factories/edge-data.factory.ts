@@ -89,7 +89,7 @@ export class EdgeDataFactory {
       snapshot.vertices || [],
       snapshot.zIndex || 1,
       snapshot.visible !== false,
-      snapshot.metadata || [],
+      snapshot.data || [],
     );
   }
 

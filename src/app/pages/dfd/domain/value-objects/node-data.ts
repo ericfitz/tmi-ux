@@ -1,5 +1,6 @@
 import { Point } from './point';
 import { Node } from '@antv/x6';
+import { X6NodeSnapshot } from '../../types/x6-cell.types';
 
 /**
  * Node types supported in the DFD diagram
@@ -21,17 +22,23 @@ export interface MetadataEntry {
 export class NodeData {
   constructor(
     public readonly id: string,
-    public readonly shape: string, // X6 shape identifier
-    public readonly type: NodeType, // Domain type for business logic
+    public readonly shape: string, // X6 shape identifier (now serves as both shape and type)
     public readonly position: { x: number; y: number },
     public readonly size: { width: number; height: number },
     public readonly attrs: Node.Properties['attrs'] = { text: { text: '' } },
     public readonly ports: Node.Properties['ports'] = {},
     public readonly zIndex: number = 1,
     public readonly visible: boolean = true,
-    public readonly metadata: MetadataEntry[] = [],
+    public readonly data: MetadataEntry[] = [],
   ) {
     this.validate();
+  }
+
+  /**
+   * Gets the node type (same as shape since X6 shapes now match domain types)
+   */
+  get type(): NodeType {
+    return this.shape as NodeType;
   }
 
   /**
@@ -94,8 +101,7 @@ export class NodeData {
 
     return new NodeData(
       data.id,
-      data.shape || data.type, // Use shape if provided, fallback to type
-      data.type,
+      data.shape || data.type, // Use shape if provided, fallback to type (now they should be the same)
       data.position,
       size,
       attrs,
@@ -124,8 +130,7 @@ export class NodeData {
 
     return new NodeData(
       data.id,
-      data.type, // Use type as shape for legacy data
-      data.type,
+      data.type, // Shape and type are now the same (X6 shapes renamed to match domain types)
       data.position,
       { width: data.width, height: data.height },
       { text: { text: data.label } },
@@ -166,8 +171,7 @@ export class NodeData {
 
     return new NodeData(
       id,
-      type, // Use type as shape for default nodes
-      type,
+      type, // Shape and type are now the same (X6 shapes renamed to match domain types)
       { x: position.x, y: position.y },
       { width: defaultDimensions.width, height: defaultDimensions.height },
       { text: { text: defaultLabel } },
@@ -245,14 +249,13 @@ export class NodeData {
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       pos,
       this.size,
       this.attrs,
       this.ports,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -271,14 +274,13 @@ export class NodeData {
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       this.position,
       this.size,
       newAttrs,
       this.ports,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -289,14 +291,13 @@ export class NodeData {
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       this.position,
       { ...this.size, width },
       this.attrs,
       this.ports,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -307,14 +308,13 @@ export class NodeData {
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       this.position,
       { ...this.size, height },
       this.attrs,
       this.ports,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -325,14 +325,13 @@ export class NodeData {
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       this.position,
       { width, height },
       this.attrs,
       this.ports,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -344,17 +343,16 @@ export class NodeData {
 
     if (Array.isArray(metadata)) {
       // Already in correct format
-      newMetadata = [...this.metadata, ...metadata];
+      newMetadata = [...this.data, ...metadata];
     } else {
       // Convert from legacy Record format
       const additionalEntries = Object.entries(metadata).map(([key, value]) => ({ key, value }));
-      newMetadata = [...this.metadata, ...additionalEntries];
+      newMetadata = [...this.data, ...additionalEntries];
     }
 
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       this.position,
       this.size,
       this.attrs,
@@ -372,14 +370,13 @@ export class NodeData {
     return new NodeData(
       this.id,
       this.shape,
-      this.type,
       this.position,
       this.size,
       { ...this.attrs, ...attrs },
       this.ports,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -404,7 +401,7 @@ export class NodeData {
    * Gets metadata as Record for backward compatibility
    */
   getMetadataAsRecord(): Record<string, string> {
-    return this.metadata.reduce(
+    return this.data.reduce(
       (acc, entry) => {
         acc[entry.key] = entry.value;
         return acc;
@@ -420,7 +417,6 @@ export class NodeData {
     return (
       this.id === other.id &&
       this.shape === other.shape &&
-      this.type === other.type &&
       this.label === other.label &&
       this.position.x === other.position.x &&
       this.position.y === other.position.y &&
@@ -428,7 +424,7 @@ export class NodeData {
       this.size.height === other.size.height &&
       this.zIndex === other.zIndex &&
       this.visible === other.visible &&
-      this.metadataEquals(other.metadata)
+      this.metadataEquals(other.data)
     );
   }
 
@@ -436,24 +432,13 @@ export class NodeData {
    * Returns a string representation of the node data
    */
   toString(): string {
-    return `NodeData(${this.id}, ${this.type}, "${this.label}")`;
+    return `NodeData(${this.id}, ${this.shape}, "${this.label}")`;
   }
 
   /**
    * Converts the node data to X6NodeSnapshot format
    */
-  toX6Snapshot(): {
-    id: string;
-    shape: string;
-    position: { x: number; y: number };
-    size: { width: number; height: number };
-    attrs: Node.Properties['attrs'];
-    ports: Node.Properties['ports'];
-    zIndex: number;
-    visible: boolean;
-    type: string;
-    metadata: MetadataEntry[];
-  } {
+  toX6Snapshot(): X6NodeSnapshot {
     return {
       id: this.id,
       shape: this.shape,
@@ -463,8 +448,7 @@ export class NodeData {
       ports: this.ports,
       zIndex: this.zIndex,
       visible: this.visible,
-      type: this.type,
-      metadata: this.metadata,
+      data: this.data,
     };
   }
 
@@ -482,7 +466,7 @@ export class NodeData {
   } {
     return {
       id: this.id,
-      type: this.type,
+      type: this.shape as NodeType, // shape and type are now the same
       label: this.label,
       position: this.position,
       width: this.size.width,
@@ -499,12 +483,12 @@ export class NodeData {
       throw new Error('Node ID cannot be empty');
     }
 
-    if (!this.type) {
-      throw new Error('Node type is required');
+    if (!this.shape) {
+      throw new Error('Node shape is required');
     }
 
-    if (!this.isValidNodeType(this.type)) {
-      throw new Error(`Invalid node type: ${String(this.type)}`);
+    if (!this.isValidNodeType(this.shape)) {
+      throw new Error(`Invalid node shape: ${String(this.shape)}`);
     }
 
     if (!this.label || this.label.trim().length === 0) {
@@ -521,22 +505,22 @@ export class NodeData {
   }
 
   /**
-   * Checks if the given type is a valid node type
+   * Checks if the given shape is a valid node type
    */
-  private isValidNodeType(type: string): type is NodeType {
-    return ['actor', 'process', 'store', 'security-boundary', 'textbox'].includes(type);
+  private isValidNodeType(shape: string): shape is NodeType {
+    return ['actor', 'process', 'store', 'security-boundary', 'textbox'].includes(shape);
   }
 
   /**
    * Checks if metadata arrays are equal
    */
   private metadataEquals(other: MetadataEntry[]): boolean {
-    if (this.metadata.length !== other.length) {
+    if (this.data.length !== other.length) {
       return false;
     }
 
     // Sort both arrays by key for comparison
-    const thisSorted = [...this.metadata].sort((a, b) => a.key.localeCompare(b.key));
+    const thisSorted = [...this.data].sort((a, b) => a.key.localeCompare(b.key));
     const otherSorted = [...other].sort((a, b) => a.key.localeCompare(b.key));
 
     return thisSorted.every((entry, index) => {

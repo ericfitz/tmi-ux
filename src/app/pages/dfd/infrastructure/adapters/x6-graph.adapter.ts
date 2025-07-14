@@ -591,7 +591,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   addNode(node: DiagramNode): Node {
     const graph = this.getGraph();
-    const nodeType = node.data.type as string;
+    const nodeType = node.data.shape;
 
     // Use NodeConfigurationService for all node configuration
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
@@ -662,7 +662,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       });
     } else if (Array.isArray(snapshot.ports)) {
       // If snapshot ports is an array (legacy format), reconstruct the complete structure
-      const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
+      const nodeType = snapshot.data?.find((m: any) => m.key === 'type')?.value || 'process';
       const basePortConfig = this._nodeConfigurationService.getNodePorts(nodeType);
 
       portsForX6 = {
@@ -680,7 +680,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       });
     } else {
       // Fallback: create from base configuration
-      const nodeType = snapshot.metadata?.find((m: any) => m.key === 'type')?.value || 'process';
+      const nodeType = snapshot.data?.find((m: any) => m.key === 'type')?.value || 'process';
       portsForX6 = this._nodeConfigurationService.getNodePorts(nodeType);
 
       this.logger.warn(' Fallback - Using base port configuration', {
@@ -749,8 +749,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
 
     // Set metadata using X6 cell extensions
-    if (snapshot.metadata) {
-      snapshot.metadata.forEach((entry: any) => {
+    if (snapshot.data) {
+      snapshot.data.forEach((entry: any) => {
         if ((x6Node as any).setApplicationMetadata) {
           (x6Node as any).setApplicationMetadata(entry.key, entry.value);
         }
@@ -761,7 +761,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     this.logger.info(' Node restoration completed', {
       nodeId: snapshot.id,
       nodeCreated: !!x6Node,
-      metadataSet: !!(snapshot.metadata && (x6Node as any).setApplicationMetadata),
+      metadataSet: !!(snapshot.data && (x6Node as any).setApplicationMetadata),
     });
 
     return x6Node;
@@ -818,8 +818,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     const x6Edge = graph.addEdge(edgeParams);
 
     // Set metadata using X6 cell extensions
-    if (snapshot.metadata && (x6Edge as any).setApplicationMetadata) {
-      snapshot.metadata.forEach((entry: any) => {
+    if (snapshot.data && (x6Edge as any).setApplicationMetadata) {
+      snapshot.data.forEach((entry: any) => {
         (x6Edge as any).setApplicationMetadata(entry.key, entry.value);
       });
     }
@@ -2851,7 +2851,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       labels: edge.getLabels(),
       zIndex: edge.getZIndex() || 1,
       visible: edge.isVisible(),
-      metadata: metadataArray,
+      data: metadataArray,
     };
   }
 

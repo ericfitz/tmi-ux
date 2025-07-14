@@ -149,9 +149,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.eventHandlers.selectedCells$.subscribe(selectedCells => {
         this.hasSelectedCells = selectedCells.length > 0;
         this.hasExactlyOneSelectedCell = selectedCells.length === 1;
-        this.selectedCellIsTextBox = selectedCells.some(
-          cell => (cell.data as { type?: string })?.type === 'textbox',
-        );
+        this.selectedCellIsTextBox = selectedCells.some(cell => cell.shape === 'textbox');
         this.cdr.markForCheck();
       }),
     );
@@ -448,10 +446,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Copies the complete definition of the right-clicked cell to the clipboard
+   * Shows the cell properties dialog with the serialized JSON object definition
    */
-  copyCellDefinition(): void {
-    this.eventHandlers.copyCellDefinition();
+  showCellProperties(): void {
+    this.eventHandlers.showCellProperties();
   }
 
   /**

@@ -109,7 +109,7 @@ export function initializeX6CellExtensions(): void {
   // Add setApplicationMetadata method to Cell prototype
   (Cell.prototype as any).setApplicationMetadata = function (key: string, value: string): void {
     // Get existing metadata array or create new one
-    const existingMetadata = this.getData()?.metadata || [];
+    const existingMetadata = this.getData()?.data || [];
 
     // Remove existing entry with same key
     const filteredMetadata = existingMetadata.filter((entry: any) => entry.key !== key);
@@ -119,14 +119,14 @@ export function initializeX6CellExtensions(): void {
 
     // Update the cell's data
     const currentData = this.getData() || {};
-    this.setData({ ...currentData, metadata: newMetadata });
+    this.setData({ ...currentData, data: newMetadata });
   };
 
   // Add getApplicationMetadata method to Cell prototype
   (Cell.prototype as any).getApplicationMetadata = function (
     key?: string,
   ): string | Record<string, string> {
-    const metadata = this.getData()?.metadata || [];
+    const metadata = this.getData()?.data || [];
 
     if (key) {
       // Return specific key value
@@ -144,16 +144,16 @@ export function initializeX6CellExtensions(): void {
 
   // Add removeApplicationMetadata method to Cell prototype
   (Cell.prototype as any).removeApplicationMetadata = function (key: string): void {
-    const existingMetadata = this.getData()?.metadata || [];
+    const existingMetadata = this.getData()?.data || [];
     const filteredMetadata = existingMetadata.filter((entry: any) => entry.key !== key);
 
     const currentData = this.getData() || {};
-    this.setData({ ...currentData, metadata: filteredMetadata });
+    this.setData({ ...currentData, data: filteredMetadata });
   };
 
   // Add hasApplicationMetadata method to Cell prototype
   (Cell.prototype as any).hasApplicationMetadata = function (key: string): boolean {
-    const metadata = this.getData()?.metadata || [];
+    const metadata = this.getData()?.data || [];
     return metadata.some((entry: any) => entry.key === key);
   };
 
@@ -182,7 +182,7 @@ export function initializeX6CellExtensions(): void {
         shape = 'ellipse';
         break;
       case 'store':
-        shape = 'store-shape';
+        shape = 'store';
         break;
       case 'actor':
       case 'security-boundary':
@@ -363,7 +363,7 @@ export class CellUtils {
    * Gets application metadata from a cell as a clean record
    */
   static getCleanMetadata(cell: Cell): Record<string, string> {
-    const metadata = cell.getData()?.metadata || [];
+    const metadata = cell.getData()?.data || [];
     const cleanMetadata = this.cleanMetadata(metadata);
 
     const record: Record<string, string> = {};

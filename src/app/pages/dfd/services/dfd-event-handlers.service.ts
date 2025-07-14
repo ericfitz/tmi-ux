@@ -13,6 +13,10 @@ import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
 } from '../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
+import {
+  CellPropertiesDialogComponent,
+  CellPropertiesDialogData,
+} from '../components/cell-properties-dialog/cell-properties-dialog.component';
 
 /**
  * Service responsible for handling events in DFD diagrams
@@ -195,73 +199,34 @@ export class DfdEventHandlersService {
   }
 
   /**
-   * Copies the complete definition of the right-clicked cell to the clipboard
+   * Shows the cell properties dialog with the serialized JSON object definition
    */
-  copyCellDefinition(): void {
+  showCellProperties(): void {
     if (!this._rightClickedCell) {
-      this.logger.warn('No cell selected for copying definition');
+      this.logger.warn('No cell selected for showing properties');
       return;
     }
 
-    try {
-      // Get the complete cell state including all properties
-      const cellDefinition = this._rightClickedCell.toJSON();
+    this.logger.info('Opening cell properties dialog', {
+      cellId: this._rightClickedCell.id,
+    });
 
-      // Convert to formatted JSON string
-      const jsonString = JSON.stringify(cellDefinition, null, 2);
+    const dialogData: CellPropertiesDialogData = {
+      cell: this._rightClickedCell,
+    };
 
-      // Copy to clipboard
-      navigator.clipboard
-        .writeText(jsonString)
-        .then(() => {
-          this.logger.info('Cell definition copied to clipboard', {
-            cellId: this._rightClickedCell?.id,
-          });
-        })
-        .catch((error: unknown) => {
-          this.logger.error('Failed to copy cell definition to clipboard', error);
-          // Fallback for older browsers
-          this._fallbackCopyToClipboard(jsonString);
-        });
-    } catch (error) {
-      this.logger.error('Error serializing cell definition', error);
-    }
-  }
+    const dialogRef = this.dialog.open(CellPropertiesDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
 
-  /**
-   * Fallback method to copy text to clipboard for older browsers
-   */
-  private _fallbackCopyToClipboard(text: string): void {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      // Use the Clipboard API if available as a fallback
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        void navigator.clipboard.writeText(text).then(
-          () => {
-            this.logger.info('Text copied to clipboard (Clipboard API fallback)');
-          },
-          (err: unknown) => {
-            this.logger.error('Clipboard API fallback failed', err);
-          },
-        );
-      } else {
-        // Last resort: show the text in an alert so user can manually copy
-        this.logger.warn('No clipboard API available, showing text for manual copy');
-        alert('Please manually copy this text:\n\n' + text);
-      }
-    } catch (error) {
-      this.logger.error('Fallback copy to clipboard failed', error);
-    }
-
-    document.body.removeChild(textArea);
+    // Log when dialog is closed (optional)
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe(() => {
+        this.logger.info('Cell properties dialog closed');
+      }),
+    );
   }
 
   /**

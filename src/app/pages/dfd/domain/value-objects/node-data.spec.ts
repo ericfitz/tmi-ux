@@ -13,8 +13,7 @@ describe('NodeData', () => {
     it('should create valid NodeData with all parameters', () => {
       // Arrange
       const id = 'node-1';
-      const shape = 'rect';
-      const type: NodeType = 'process';
+      const shape: NodeType = 'process';
       const position = { x: 100, y: 200 };
       const size = { width: 140, height: 80 };
       const attrs = { text: { text: 'Test Process' } };
@@ -24,16 +23,16 @@ describe('NodeData', () => {
       ];
 
       // Act
-      const nodeData = new NodeData(id, shape, type, position, size, attrs, {}, 1, true, metadata);
+      const nodeData = new NodeData(id, shape, position, size, attrs, {}, 1, true, metadata);
 
       // Assert
       expect(nodeData.id).toBe(id);
       expect(nodeData.shape).toBe(shape);
-      expect(nodeData.type).toBe(type);
+      expect(nodeData.type).toBe(shape);
       expect(nodeData.position).toEqual(position);
       expect(nodeData.size).toEqual(size);
       expect(nodeData.attrs).toEqual(attrs);
-      expect(nodeData.metadata).toEqual(metadata);
+      expect(nodeData.data).toEqual(metadata);
     });
 
     it('should create NodeData with default metadata', () => {
@@ -43,10 +42,10 @@ describe('NodeData', () => {
       const attrs = { text: { text: 'Test' } };
 
       // Act
-      const nodeData = new NodeData('node-1', 'rect', 'process', position, size, attrs);
+      const nodeData = new NodeData('node-1', 'process', position, size, attrs);
 
       // Assert
-      expect(nodeData.metadata).toEqual([]);
+      expect(nodeData.data).toEqual([]);
     });
 
     it('should throw error for empty ID', () => {
@@ -55,9 +54,7 @@ describe('NodeData', () => {
       const size = { width: 140, height: 80 };
 
       // Act & Assert
-      expect(() => new NodeData('', 'rect', 'process', position, size)).toThrow(
-        'Node ID cannot be empty',
-      );
+      expect(() => new NodeData('', 'process', position, size)).toThrow('Node ID cannot be empty');
     });
 
     it('should throw error for invalid node type', () => {
@@ -67,8 +64,8 @@ describe('NodeData', () => {
 
       // Act & Assert
       expect(
-        () => new NodeData('node-1', 'rect', 'invalid' as unknown as NodeType, position, size),
-      ).toThrow('Invalid node type: invalid');
+        () => new NodeData('node-1', 'invalid' as unknown as NodeType, position, size),
+      ).toThrow('Invalid node shape: invalid');
     });
 
     it('should throw error for empty label', () => {
@@ -78,7 +75,7 @@ describe('NodeData', () => {
       const attrs = { text: { text: '' } };
 
       // Act & Assert
-      expect(() => new NodeData('node-1', 'rect', 'process', position, size, attrs)).toThrow(
+      expect(() => new NodeData('node-1', 'process', position, size, attrs)).toThrow(
         'Node label cannot be empty',
       );
     });
@@ -90,12 +87,10 @@ describe('NodeData', () => {
 
       // Act & Assert
       expect(
-        () =>
-          new NodeData('node-1', 'rect', 'process', position, { width: -10, height: 80 }, attrs),
+        () => new NodeData('node-1', 'process', position, { width: -10, height: 80 }, attrs),
       ).toThrow('Node dimensions must be positive');
       expect(
-        () =>
-          new NodeData('node-1', 'rect', 'process', position, { width: 140, height: -10 }, attrs),
+        () => new NodeData('node-1', 'process', position, { width: 140, height: -10 }, attrs),
       ).toThrow('Node dimensions must be positive');
     });
 
@@ -106,19 +101,10 @@ describe('NodeData', () => {
 
       // Act & Assert
       expect(
-        () =>
-          new NodeData(
-            'node-1',
-            'rect',
-            'process',
-            position,
-            { width: Infinity, height: 80 },
-            attrs,
-          ),
+        () => new NodeData('node-1', 'process', position, { width: Infinity, height: 80 }, attrs),
       ).toThrow('Node dimensions must be finite numbers');
       expect(
-        () =>
-          new NodeData('node-1', 'rect', 'process', position, { width: 140, height: NaN }, attrs),
+        () => new NodeData('node-1', 'process', position, { width: 140, height: NaN }, attrs),
       ).toThrow('Node dimensions must be finite numbers');
     });
   });
@@ -147,7 +133,7 @@ describe('NodeData', () => {
       expect(nodeData.position.y).toBe(200);
       expect(nodeData.size.width).toBe(140);
       expect(nodeData.size.height).toBe(80);
-      expect(nodeData.metadata).toEqual([{ key: 'color', value: '#blue' }]);
+      expect(nodeData.data).toEqual([{ key: 'color', value: '#blue' }]);
     });
 
     it('should create default NodeData for each type', () => {
@@ -193,7 +179,6 @@ describe('NodeData', () => {
     beforeEach(() => {
       originalNodeData = new NodeData(
         'node-1',
-        'rect',
         'process',
         { x: 100, y: 200 },
         { width: 140, height: 80 },
@@ -263,12 +248,12 @@ describe('NodeData', () => {
 
       // Assert
       expect(updated).not.toBe(originalNodeData);
-      expect(updated.metadata).toEqual([
+      expect(updated.data).toEqual([
         { key: 'color', value: '#blue' },
         { key: 'category', value: 'technical' },
         { key: 'priority', value: 'high' },
       ]);
-      expect(originalNodeData.metadata).toEqual([{ key: 'color', value: '#blue' }]); // Original unchanged
+      expect(originalNodeData.data).toEqual([{ key: 'color', value: '#blue' }]); // Original unchanged
     });
   });
 
@@ -278,7 +263,6 @@ describe('NodeData', () => {
     beforeEach(() => {
       nodeData = new NodeData(
         'node-1',
-        'rect',
         'process',
         { x: 100, y: 200 },
         { width: 140, height: 80 },
@@ -314,7 +298,6 @@ describe('NodeData', () => {
       // Arrange
       const identical = new NodeData(
         'node-1',
-        'rect',
         'process',
         { x: 100, y: 200 },
         { width: 140, height: 80 },
@@ -326,7 +309,6 @@ describe('NodeData', () => {
       );
       const different = new NodeData(
         'node-2',
-        'rect',
         'process',
         { x: 100, y: 200 },
         { width: 140, height: 80 },
@@ -364,6 +346,19 @@ describe('NodeData', () => {
         height: 80,
         metadata: { color: '#blue' },
       });
+    });
+
+    it('should not include type property in X6 snapshot', () => {
+      // Act
+      const snapshot = nodeData.toX6Snapshot();
+
+      // Assert
+      expect(snapshot).not.toHaveProperty('type');
+      expect(snapshot.shape).toBe('process');
+      expect(snapshot.data).toEqual([{ key: 'color', value: '#blue' }]);
+      expect(snapshot.id).toBe('node-1');
+      expect(snapshot.position).toEqual({ x: 100, y: 200 });
+      expect(snapshot.size).toEqual({ width: 140, height: 80 });
     });
   });
 });

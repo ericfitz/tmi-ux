@@ -55,7 +55,7 @@ describe('EdgeData', () => {
       expect(edgeData.vertices).toBe(vertices);
       expect(edgeData.zIndex).toBe(zIndex);
       expect(edgeData.visible).toBe(visible);
-      expect(edgeData.metadata).toBe(metadata);
+      expect(edgeData.data).toBe(metadata);
     });
 
     it('should create EdgeData with minimal parameters', () => {
@@ -73,7 +73,7 @@ describe('EdgeData', () => {
       expect(edgeData.vertices).toEqual([]);
       expect(edgeData.zIndex).toBe(1);
       expect(edgeData.visible).toBe(true);
-      expect(edgeData.metadata).toEqual([]);
+      expect(edgeData.data).toEqual([]);
     });
 
     it('should throw error for empty ID', () => {
@@ -183,7 +183,7 @@ describe('EdgeData', () => {
       expect(edgeData.label).toBe('Data Flow');
       expect(edgeData.zIndex).toBe(2);
       expect(edgeData.visible).toBe(true);
-      expect(edgeData.metadata).toEqual([{ key: 'style', value: 'solid' }]);
+      expect(edgeData.data).toEqual([{ key: 'style', value: 'solid' }]);
     });
 
     it('should create simple EdgeData', () => {
@@ -350,7 +350,7 @@ describe('EdgeData', () => {
 
       // Assert
       expect(updated).not.toBe(originalEdgeData);
-      expect(updated.metadata).toHaveLength(3); // Original + 2 new entries
+      expect(updated.data).toHaveLength(3); // Original + 2 new entries
       expect(updated.getMetadataAsRecord()).toEqual({
         style: 'solid',
         color: '#blue',
@@ -540,7 +540,7 @@ describe('EdgeData', () => {
         ],
         zIndex: 1,
         visible: true,
-        metadata: [{ key: 'style', value: 'solid' }],
+        data: [{ key: 'style', value: 'solid' }],
       });
     });
 

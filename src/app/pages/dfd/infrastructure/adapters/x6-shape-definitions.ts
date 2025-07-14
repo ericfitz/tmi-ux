@@ -11,7 +11,7 @@ import { Shape } from '@antv/x6';
 export function registerCustomShapes(): void {
   // Register custom store shape with only top and bottom borders
   Shape.Rect.define({
-    shape: 'store-shape',
+    shape: 'store',
     markup: [
       {
         tagName: 'rect',
@@ -61,7 +61,7 @@ export function registerCustomShapes(): void {
 
   // Register custom actor shape (rectangular with standard styling)
   Shape.Rect.define({
-    shape: 'actor-shape',
+    shape: 'actor',
     markup: [
       {
         tagName: 'rect',
@@ -94,7 +94,7 @@ export function registerCustomShapes(): void {
 
   // Register custom process shape (elliptical/circular)
   Shape.Ellipse.define({
-    shape: 'process-shape',
+    shape: 'process',
     markup: [
       {
         tagName: 'ellipse',
@@ -127,7 +127,7 @@ export function registerCustomShapes(): void {
 
   // Register custom security boundary shape (dashed rectangular border)
   Shape.Rect.define({
-    shape: 'security-boundary-shape',
+    shape: 'security-boundary',
     markup: [
       {
         tagName: 'rect',
@@ -161,7 +161,7 @@ export function registerCustomShapes(): void {
 
   // Register custom textbox shape (transparent background, text only)
   Shape.Rect.define({
-    shape: 'textbox-shape',
+    shape: 'textbox',
     markup: [
       {
         tagName: 'rect',
@@ -197,15 +197,15 @@ export function registerCustomShapes(): void {
 export function getX6ShapeForNodeType(nodeType: string): string {
   switch (nodeType) {
     case 'process':
-      return 'process-shape'; // Use custom shape for process
+      return 'process'; // Use custom shape for process
     case 'store':
-      return 'store-shape'; // Use custom shape for store
+      return 'store'; // Use custom shape for store
     case 'actor':
-      return 'actor-shape'; // Use custom shape for actor
+      return 'actor'; // Use custom shape for actor
     case 'security-boundary':
-      return 'security-boundary-shape'; // Use custom shape for security boundary
+      return 'security-boundary'; // Use custom shape for security boundary
     case 'textbox':
-      return 'textbox-shape'; // Use custom shape for textbox
+      return 'textbox'; // Use custom shape for textbox
     default:
       return 'rect';
   }

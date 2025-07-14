@@ -47,31 +47,31 @@ export class NodeConfigurationService {
 
     switch (nodeType) {
       case 'process':
-        // Custom process-shape handles the ellipse styling
+        // Custom process shape handles the ellipse styling
         return {
           text: baseTextAttrs,
         };
 
       case 'store':
-        // Custom store-shape handles the top/bottom line styling
+        // Custom store shape handles the top/bottom line styling
         return {
           text: baseTextAttrs,
         };
 
       case 'actor':
-        // Custom actor-shape handles the rectangular styling
+        // Custom actor shape handles the rectangular styling
         return {
           text: baseTextAttrs,
         };
 
       case 'security-boundary':
-        // Custom security-boundary-shape handles the dashed border styling
+        // Custom security-boundary shape handles the dashed border styling
         return {
           text: baseTextAttrs,
         };
 
       case 'textbox':
-        // Custom textbox-shape handles the transparent background
+        // Custom textbox shape handles the transparent background
         return {
           text: baseTextAttrs,
         };

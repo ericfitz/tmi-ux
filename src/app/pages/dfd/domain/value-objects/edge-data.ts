@@ -24,7 +24,7 @@ export class EdgeData {
     public readonly vertices: Array<{ x: number; y: number }> = [],
     public readonly zIndex: number = 1,
     public readonly visible: boolean = true,
-    public readonly metadata: MetadataEntry[] = [],
+    public readonly data: MetadataEntry[] = [],
   ) {
     this.validate();
   }
@@ -292,7 +292,7 @@ export class EdgeData {
       this.vertices,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -310,7 +310,7 @@ export class EdgeData {
       vertices,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -350,11 +350,11 @@ export class EdgeData {
 
     if (Array.isArray(metadata)) {
       // Already in correct format
-      newMetadata = [...this.metadata, ...metadata];
+      newMetadata = [...this.data, ...metadata];
     } else {
       // Convert from legacy Record format
       const additionalEntries = Object.entries(metadata).map(([key, value]) => ({ key, value }));
-      newMetadata = [...this.metadata, ...additionalEntries];
+      newMetadata = [...this.data, ...additionalEntries];
     }
 
     return new EdgeData(
@@ -386,7 +386,7 @@ export class EdgeData {
       this.vertices,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -405,7 +405,7 @@ export class EdgeData {
       this.vertices,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -423,7 +423,7 @@ export class EdgeData {
       this.vertices,
       this.zIndex,
       this.visible,
-      this.metadata,
+      this.data,
     );
   }
 
@@ -449,7 +449,7 @@ export class EdgeData {
     }
 
     // Handle metadata format conversion
-    let newMetadata = this.metadata;
+    let newMetadata = this.data;
     if (updates.metadata !== undefined) {
       if (Array.isArray(updates.metadata)) {
         newMetadata = updates.metadata;
@@ -523,7 +523,7 @@ export class EdgeData {
       this.verticesEqual(other.vertices) &&
       this.zIndex === other.zIndex &&
       this.visible === other.visible &&
-      this.metadataEquals(other.metadata)
+      this.metadataEquals(other.data)
     );
   }
 
@@ -573,7 +573,7 @@ export class EdgeData {
       vertices: this.vertices,
       zIndex: this.zIndex,
       visible: this.visible,
-      metadata: this.metadata,
+      data: this.data,
     };
   }
 
@@ -585,7 +585,7 @@ export class EdgeData {
    */
   getMetadataAsRecord(): Record<string, string> {
     const record: Record<string, string> = {};
-    this.metadata.forEach(entry => {
+    this.data.forEach(entry => {
       record[entry.key] = entry.value;
     });
     return record;
@@ -680,11 +680,11 @@ export class EdgeData {
    * Checks if metadata objects are equal
    */
   private metadataEquals(other: MetadataEntry[]): boolean {
-    if (this.metadata.length !== other.length) {
+    if (this.data.length !== other.length) {
       return false;
     }
 
-    return this.metadata.every(
+    return this.data.every(
       (entry, index) => entry.key === other[index].key && entry.value === other[index].value,
     );
   }

@@ -10,8 +10,7 @@ export interface X6NodeSnapshot {
   ports: Node.Properties['ports'];
   zIndex: number;
   visible: boolean;
-  type: string; // Added back as a direct property
-  metadata: Array<{ key: string; value: string }>;
+  data: Array<{ key: string; value: string }>;
 }
 
 export interface X6EdgeSnapshot {
@@ -24,5 +23,5 @@ export interface X6EdgeSnapshot {
   vertices: Array<{ x: number; y: number }>;
   zIndex: number;
   visible: boolean;
-  metadata: Array<{ key: string; value: string }>;
+  data: Array<{ key: string; value: string }>;
 }
