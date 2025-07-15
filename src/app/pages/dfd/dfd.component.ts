@@ -29,6 +29,7 @@ import { DfdCollaborationComponent } from './components/collaboration/collaborat
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
 import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
+import { X6ZOrderAdapter } from './infrastructure/adapters/x6-z-order.adapter';
 
 // Import the new consolidated services
 import { DfdNodeService } from './services/dfd-node.service';
@@ -55,6 +56,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     EdgeQueryService,
     NodeConfigurationService,
     X6KeyboardHandler,
+    X6ZOrderAdapter,
 
     // New consolidated services
     DfdNodeService,

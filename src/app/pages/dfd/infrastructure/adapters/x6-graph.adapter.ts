@@ -18,6 +18,7 @@ import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { X6KeyboardHandler } from './x6-keyboard-handler';
+import { X6ZOrderAdapter } from './x6-z-order.adapter';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -167,6 +168,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _edgeQueryService: EdgeQueryService,
     private readonly _nodeConfigurationService: NodeConfigurationService,
     private readonly _keyboardHandler: X6KeyboardHandler,
+    private readonly _zOrderAdapter: X6ZOrderAdapter,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -1024,20 +1026,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsForward(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move forward operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells forward', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellForward(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsForward(graph);
   }
 
   /**
@@ -1045,20 +1034,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsBackward(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move backward operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells backward', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellBackward(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsBackward(graph);
   }
 
   /**
@@ -1066,20 +1042,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsToFront(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move to front operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells to front', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellToFront(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsToFront(graph);
   }
 
   /**
@@ -1087,20 +1050,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsToBack(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move to back operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells to back', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellToBack(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsToBack(graph);
   }
 
   /**
@@ -1180,7 +1130,8 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Public method to validate and correct z-order - can be called externally
    */
   validateAndCorrectZOrder(): void {
-    this._validateAndCorrectZOrder();
+    const graph = this.getGraph();
+    this._zOrderAdapter.validateAndCorrectZOrder(graph);
   }
 
   /**
@@ -1321,7 +1272,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       if (sourceId && targetId) {
         // Set edge z-order to the higher of source or target node z-orders
-        this._setEdgeZOrderFromConnectedNodes(edge);
+        this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
         // CRITICAL FIX: Add a small delay to ensure X6 has fully established the connection
         // before capturing the port information - may need to revisit this implementation for reliability
@@ -1405,7 +1356,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           if (typeof originalZIndex === 'number' && !isNaN(originalZIndex)) {
             node.setZIndex(originalZIndex);
             // Also restore z-order for connected edges
-            this._updateConnectedEdgesZOrder(node, originalZIndex);
+            this._zOrderAdapter.updateConnectedEdgesZOrder(this._graph!, node, originalZIndex);
           }
           return;
         }
@@ -1440,7 +1391,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
 
         // Update z-order for edges connected to the child node to match the child's z-order
-        this._updateConnectedEdgesZOrder(node, childZIndex);
+        this._zOrderAdapter.updateConnectedEdgesZOrder(this._graph!, node, childZIndex);
 
         // Update fill color based on embedding depth
         this._updateEmbeddedNodeColor(node);
@@ -1451,7 +1402,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
 
         // Enforce z-order invariants after embedding operations
-        this._enforceZOrderInvariants();
+        this._zOrderAdapter.enforceZOrderInvariants(this._graph!);
       },
     );
 
@@ -1473,20 +1424,20 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
 
         // Update z-order for edges connected to the node to match the node's z-order
-        this._updateConnectedEdgesZOrder(node, nodeZIndex);
+        this._zOrderAdapter.updateConnectedEdgesZOrder(this._graph!, node, nodeZIndex);
 
         // Update fill color based on new embedding depth (or reset to white if fully unembedded)
         this._updateEmbeddedNodeColor(node);
 
         // Enforce z-order invariants after parent change operations
-        this._enforceZOrderInvariants();
+        this._zOrderAdapter.enforceZOrderInvariants(this._graph!);
       }
     });
 
     // Handle node movement without embedding - restore z-index when drag ends
     // Use a more reliable approach that doesn't depend on timeouts
     this._graph.on('node:moved', ({ node }: { node: Node }) => {
-      this._handleNodeMovedZOrderRestoration(node);
+      this._zOrderAdapter.handleNodeMovedZOrderRestoration(this._graph!, node);
     });
 
     // Edge events - handle addition and removal
@@ -2240,164 +2191,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Move a single cell forward in z-order
-   */
-  private _moveCellForward(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryUnselectedCells = allCells.filter(
-      c =>
-        c.id !== cell.id &&
-        !graph.isSelected(c) &&
-        this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryUnselectedCells.length === 0) {
-      this.logger.info('No other cells to move forward relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-
-    // Find the next higher z-index among unselected cells of the same category
-    const higherZIndices = sameCategoryUnselectedCells
-      .map(c => c.getZIndex() ?? 1)
-      .filter(z => z > currentZIndex)
-      .sort((a, b) => a - b);
-
-    if (higherZIndices.length > 0) {
-      const nextHigherZIndex = higherZIndices[0];
-      cell.setZIndex(nextHigherZIndex + 1);
-      this.logger.info('Moved cell forward', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex: nextHigherZIndex + 1,
-      });
-    } else {
-      this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
-    }
-
-    // Enforce z-order invariants after manual z-order changes
-    this._enforceZOrderInvariants();
-  }
-
-  /**
-   * Move a single cell backward in z-order
-   */
-  private _moveCellBackward(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryUnselectedCells = allCells.filter(
-      c =>
-        c.id !== cell.id &&
-        !graph.isSelected(c) &&
-        this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryUnselectedCells.length === 0) {
-      this.logger.info('No other cells to move backward relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-
-    // Find the next lower z-index among unselected cells of the same category
-    const lowerZIndices = sameCategoryUnselectedCells
-      .map(c => c.getZIndex() ?? 1)
-      .filter(z => z < currentZIndex)
-      .sort((a, b) => b - a);
-
-    if (lowerZIndices.length > 0) {
-      const nextLowerZIndex = lowerZIndices[0];
-      cell.setZIndex(Math.max(nextLowerZIndex - 1, 1));
-      this.logger.info('Moved cell backward', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex: Math.max(nextLowerZIndex - 1, 1),
-      });
-    } else {
-      this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
-    }
-
-    // Enforce z-order invariants after manual z-order changes
-    this._enforceZOrderInvariants();
-  }
-
-  /**
-   * Move a single cell to the front (highest z-index among cells of the same type)
-   */
-  private _moveCellToFront(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryCells = allCells.filter(
-      c => c.id !== cell.id && this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryCells.length === 0) {
-      this.logger.info('No other cells to move to front relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-    const maxZIndex = Math.max(...sameCategoryCells.map(c => c.getZIndex() ?? 1));
-    const newZIndex = maxZIndex + 1;
-
-    if (newZIndex > currentZIndex) {
-      cell.setZIndex(newZIndex);
-      this.logger.info('Moved cell to front', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex,
-      });
-    } else {
-      this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
-    }
-  }
-
-  /**
-   * Move a single cell to the back (lowest z-index among cells of the same type)
-   */
-  private _moveCellToBack(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryCells = allCells.filter(
-      c => c.id !== cell.id && this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryCells.length === 0) {
-      this.logger.info('No other cells to move to back relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-    const minZIndex = Math.min(...sameCategoryCells.map(c => c.getZIndex() ?? 1));
-    const newZIndex = Math.max(minZIndex - 1, 1);
-
-    if (newZIndex < currentZIndex) {
-      cell.setZIndex(newZIndex);
-      this.logger.info('Moved cell to back', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex,
-      });
-    } else {
-      this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
-    }
-  }
-
-  /**
    * Add custom label editor to a cell for inline editing
    */
   private _addLabelEditor(cell: Cell, _e: MouseEvent): void {
@@ -2518,88 +2311,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Check if a cell is a security boundary
-   */
-  private _isSecurityBoundaryCell(cell: Cell): boolean {
-    if (cell.isNode()) {
-      const nodeType = (cell as any).getNodeTypeInfo
-        ? (cell as any).getNodeTypeInfo().type
-        : 'process';
-      return nodeType === 'security-boundary';
-    }
-    return false;
-  }
-
-  /**
-   * Update the z-order of all edges connected to a node to match the node's z-order
-   */
-  private _updateConnectedEdgesZOrder(node: Node, zIndex: number): void {
-    if (!this._graph) return;
-
-    const edges = this._graph.getConnectedEdges(node) || [];
-    edges.forEach(edge => {
-      edge.setZIndex(zIndex);
-      this.logger.info('Updated connected edge z-order', {
-        nodeId: node.id,
-        edgeId: edge.id,
-        newZIndex: zIndex,
-      });
-    });
-  }
-
-  /**
-   * Set the z-order of an edge to the higher of its source or target node z-orders
-   */
-  private _setEdgeZOrderFromConnectedNodes(edge: Edge): void {
-    if (!this._graph) return;
-
-    const sourceId = edge.getSourceCellId();
-    const targetId = edge.getTargetCellId();
-
-    if (!sourceId || !targetId) {
-      this.logger.warn('Cannot set edge z-order: missing source or target', {
-        edgeId: edge.id,
-        sourceId,
-        targetId,
-      });
-      return;
-    }
-
-    const sourceNode = this._graph.getCellById(sourceId) as Node;
-    const targetNode = this._graph.getCellById(targetId) as Node;
-
-    if (!sourceNode?.isNode() || !targetNode?.isNode()) {
-      this.logger.warn('Cannot set edge z-order: source or target is not a node', {
-        edgeId: edge.id,
-        sourceIsNode: sourceNode?.isNode(),
-        targetIsNode: targetNode?.isNode(),
-      });
-      return;
-    }
-
-    // Safety check for test environment where getZIndex might not exist
-    const sourceZIndex =
-      typeof sourceNode.getZIndex === 'function' ? (sourceNode.getZIndex() ?? 1) : 1;
-    const targetZIndex =
-      typeof targetNode.getZIndex === 'function' ? (targetNode.getZIndex() ?? 1) : 1;
-    const edgeZIndex = Math.max(sourceZIndex, targetZIndex);
-
-    // Safety check for test environment where setZIndex might not exist
-    if (typeof edge.setZIndex === 'function') {
-      edge.setZIndex(edgeZIndex);
-    }
-
-    this.logger.info('Set edge z-order from connected nodes', {
-      edgeId: edge.id,
-      sourceNodeId: sourceId,
-      targetNodeId: targetId,
-      sourceZIndex,
-      targetZIndex,
-      edgeZIndex,
-    });
-  }
-
-  /**
    * Update port visibility for connected nodes after edge creation
    * @deprecated This functionality is now handled by EdgeService.createEdge()
    */
@@ -2607,7 +2318,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const graph = this.getGraph();
 
     // Set edge z-order to the higher of source or target node z-orders
-    this._setEdgeZOrderFromConnectedNodes(edge);
+    this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
     // Ensure connected ports are visible after edge restoration
     // This is essential for undo/redo operations where edges are restored from snapshots
@@ -2866,209 +2577,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       // Update previous state tracking
       this._previousCanUndo = canUndo;
       this._previousCanRedo = canRedo;
-    }
-  }
-
-  /**
-   * Handle z-order restoration after node movement without embedding
-   * This is a more reliable approach than using timeouts
-   */
-  private _handleNodeMovedZOrderRestoration(node: Node): void {
-    // Safety check for test environment where getData might not exist
-    if (typeof node.getData !== 'function') {
-      return;
-    }
-
-    // Check if this node has a stored original z-index from embedding attempt
-    const originalZIndexValue = (node as any).getApplicationMetadata
-      ? (node as any).getApplicationMetadata('_originalZIndex')
-      : '';
-    const originalZIndex = originalZIndexValue ? Number(originalZIndexValue) : null;
-
-    // If we have an original z-index stored and the node is not currently embedded,
-    // restore the original z-index (this handles the case where dragging was just for movement)
-    if (typeof originalZIndex === 'number' && !isNaN(originalZIndex) && !node.getParent()) {
-      // Get the node type to determine the correct default z-index
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
-
-      // Determine the correct z-index based on node type
-      let correctZIndex: number;
-      if (nodeType === 'security-boundary') {
-        correctZIndex = 1; // Security boundaries should always be at the back
-      } else {
-        correctZIndex = originalZIndex; // Restore original z-index for other node types
-      }
-
-      // Only update if the current z-index is different from what it should be
-      const currentZIndex = node.getZIndex() ?? 1;
-      if (currentZIndex !== correctZIndex) {
-        node.setZIndex(correctZIndex);
-        // Update z-order for connected edges to match the restored node z-order
-        this._updateConnectedEdgesZOrder(node, correctZIndex);
-
-        this.logger.info('Restored correct z-index after drag without embedding', {
-          nodeId: node.id,
-          nodeType,
-          previousZIndex: currentZIndex,
-          restoredZIndex: correctZIndex,
-          wasSecurityBoundary: nodeType === 'security-boundary',
-        });
-      }
-
-      // Clean up the temporary metadata
-      if ((node as any).setApplicationMetadata) {
-        (node as any).setApplicationMetadata('_originalZIndex', '');
-      }
-    }
-
-    // Always enforce z-order invariants after any node movement
-    this._enforceZOrderInvariants();
-  }
-
-  /**
-   * Enforce z-order invariants to ensure security boundaries are always behind other nodes
-   * This method should be called after any operation that might affect z-order
-   */
-  private _enforceZOrderInvariants(): void {
-    if (!this._graph) return;
-
-    const nodes = this._graph.getNodes();
-    const securityBoundaries: Node[] = [];
-    const regularNodes: Node[] = [];
-
-    // Categorize nodes by type
-    nodes.forEach(node => {
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
-
-      if (nodeType === 'security-boundary') {
-        securityBoundaries.push(node);
-      } else {
-        regularNodes.push(node);
-      }
-    });
-
-    // Find the minimum z-index among regular nodes
-    const regularNodeZIndices = regularNodes.map(node => node.getZIndex() ?? 10);
-    const minRegularZIndex = regularNodeZIndices.length > 0 ? Math.min(...regularNodeZIndices) : 10;
-
-    // Ensure all security boundaries have z-index lower than any regular node
-    const maxSecurityBoundaryZIndex = Math.max(1, minRegularZIndex - 1);
-
-    let correctionsMade = false;
-    securityBoundaries.forEach((boundary, index) => {
-      const currentZIndex = boundary.getZIndex() ?? 1;
-      const targetZIndex = Math.min(maxSecurityBoundaryZIndex - index, 1);
-
-      // Only correct if the security boundary is not embedded (embedded ones can have higher z-index)
-      if (!boundary.getParent() && currentZIndex >= minRegularZIndex) {
-        boundary.setZIndex(targetZIndex);
-        this._updateConnectedEdgesZOrder(boundary, targetZIndex);
-        correctionsMade = true;
-
-        this.logger.info('Corrected security boundary z-order to maintain invariant', {
-          nodeId: boundary.id,
-          previousZIndex: currentZIndex,
-          correctedZIndex: targetZIndex,
-          minRegularZIndex,
-          reason: 'security boundary was in front of regular nodes',
-        });
-      }
-    });
-
-    if (correctionsMade) {
-      this.logger.info('Z-order invariants enforced', {
-        securityBoundaryCount: securityBoundaries.length,
-        regularNodeCount: regularNodes.length,
-        minRegularZIndex,
-        maxSecurityBoundaryZIndex,
-      });
-    }
-  }
-
-  /**
-   * Validate and correct z-order for all nodes in the graph
-   * This is a comprehensive check that can be called periodically or after major operations
-   */
-  private _validateAndCorrectZOrder(): void {
-    if (!this._graph) return;
-
-    this.logger.info('Starting comprehensive z-order validation and correction');
-
-    const nodes = this._graph.getNodes();
-    const issues: string[] = [];
-
-    // Group nodes by type and embedding status
-    const nodeGroups = {
-      securityBoundariesUnembedded: [] as Node[],
-      securityBoundariesEmbedded: [] as Node[],
-      regularNodesUnembedded: [] as Node[],
-      regularNodesEmbedded: [] as Node[],
-    };
-
-    nodes.forEach(node => {
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
-      const isEmbedded = !!node.getParent();
-
-      if (nodeType === 'security-boundary') {
-        if (isEmbedded) {
-          nodeGroups.securityBoundariesEmbedded.push(node);
-        } else {
-          nodeGroups.securityBoundariesUnembedded.push(node);
-        }
-      } else {
-        if (isEmbedded) {
-          nodeGroups.regularNodesEmbedded.push(node);
-        } else {
-          nodeGroups.regularNodesUnembedded.push(node);
-        }
-      }
-    });
-
-    // Check invariant: unembedded security boundaries should be behind unembedded regular nodes
-    const unembeddedRegularZIndices = nodeGroups.regularNodesUnembedded.map(
-      n => n.getZIndex() ?? 10,
-    );
-    const minRegularZIndex =
-      unembeddedRegularZIndices.length > 0 ? Math.min(...unembeddedRegularZIndices) : 10;
-
-    nodeGroups.securityBoundariesUnembedded.forEach(boundary => {
-      const currentZIndex = boundary.getZIndex() ?? 1;
-      if (currentZIndex >= minRegularZIndex) {
-        const correctedZIndex = Math.max(1, minRegularZIndex - 1);
-        boundary.setZIndex(correctedZIndex);
-        this._updateConnectedEdgesZOrder(boundary, correctedZIndex);
-        issues.push(
-          `Security boundary ${boundary.id} corrected from z-index ${currentZIndex} to ${correctedZIndex}`,
-        );
-      }
-    });
-
-    if (issues.length > 0) {
-      this.logger.warn('Z-order violations found and corrected', {
-        issuesCount: issues.length,
-        issues,
-        nodeGroups: {
-          securityBoundariesUnembedded: nodeGroups.securityBoundariesUnembedded.length,
-          securityBoundariesEmbedded: nodeGroups.securityBoundariesEmbedded.length,
-          regularNodesUnembedded: nodeGroups.regularNodesUnembedded.length,
-          regularNodesEmbedded: nodeGroups.regularNodesEmbedded.length,
-        },
-      });
-    } else {
-      this.logger.info('Z-order validation completed - no violations found', {
-        nodeGroups: {
-          securityBoundariesUnembedded: nodeGroups.securityBoundariesUnembedded.length,
-          securityBoundariesEmbedded: nodeGroups.securityBoundariesEmbedded.length,
-          regularNodesUnembedded: nodeGroups.regularNodesUnembedded.length,
-          regularNodesEmbedded: nodeGroups.regularNodesEmbedded.length,
-        },
-      });
     }
   }
 }
