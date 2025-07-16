@@ -2096,7 +2096,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     // Validate against known shape types
-    const validShapes = ['process', 'store', 'external-entity', 'text-box'];
+    const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     if (!validShapes.includes(nodeType)) {
       const error = `Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
       this.logger.error(error);
@@ -2124,7 +2124,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     // Ensure the shape property matches what we expect
-    const validShapes = ['process', 'store', 'external-entity', 'text-box'];
+    const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     if (!validShapes.includes(nodeShape)) {
       const error = `X6 node created with invalid shape: '${nodeShape}'. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
       this.logger.error(error);

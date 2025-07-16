@@ -48,11 +48,11 @@ This file provides guidance to Roo Code when working with code in this repositor
 
 ## User Preferences
 
-- When starting, use the list_files tool to list the files in the context directory and the docs directory.
-  - Read the README.md file in each of those directories to discover what information each file contains.
-  - Read any of context or docs files that are relevant to the current prompt.
+- The context directory and the docs directory contain documents that might be useful if additional context is needed for a particular task.  The README.md file in each of those directories contains a list of files in the directory and a short description of what information is available in the file.
+  - If additional context is needed for a task, then use the list_files tool against each of those directories, read the README.md file in each of those directories to discover what information each file contains, and then read any of context or docs files that contain information relevant to the current task.  It is ok to skip reading these directories if no additional context is needed.
 - When making changes to any file:
   - Always run lint with "pnpm run lint:all" and fix any lint errors related to changes you made
+    - Always run lint before running build
     - When fixing lint errors about unused items, remove the unused item rather than prefixing with an underscore, unless the item is commented as a placeholder for future functionality
 - When making a change to any file containing executable code:
   - Run a build with "pnpm run build" and fix any build errors
