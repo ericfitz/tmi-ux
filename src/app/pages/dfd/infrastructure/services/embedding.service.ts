@@ -84,8 +84,8 @@ export class EmbeddingService {
       ? (node as any).getNodeTypeInfo().type
       : 'process';
 
-    // Don't update color for textbox nodes (they should remain transparent)
-    const shouldUpdateColor = nodeType !== 'textbox';
+    // Don't update color for text-box nodes (they should remain transparent)
+    const shouldUpdateColor = nodeType !== 'text-box';
 
     this.logger.info('Calculated embedding configuration', {
       nodeId: node.id,
@@ -119,19 +119,19 @@ export class EmbeddingService {
       ? (child as any).getNodeTypeInfo().type
       : 'process';
 
-    // Textbox shapes cannot be embedded into other shapes
-    if (childType === 'textbox') {
+    // text-box shapes cannot be embedded into other shapes
+    if (childType === 'text-box') {
       return {
         isValid: false,
-        reason: 'Textbox shapes cannot be embedded into other shapes',
+        reason: 'text-box shapes cannot be embedded into other shapes',
       };
     }
 
-    // Other shapes cannot be embedded into textbox shapes
-    if (parentType === 'textbox') {
+    // Other shapes cannot be embedded into text-box shapes
+    if (parentType === 'text-box') {
       return {
         isValid: false,
-        reason: 'Other shapes cannot be embedded into textbox shapes',
+        reason: 'Other shapes cannot be embedded into text-box shapes',
       };
     }
 

@@ -155,8 +155,8 @@ export class X6LabelEditorAdapter {
 
     // All nodes and edges can have labels edited by default
     // Special handling for specific node types if needed
-    if (nodeTypeInfo?.type === 'textbox') {
-      return true; // Textbox nodes are specifically for text editing
+    if (nodeTypeInfo?.type === 'text-box') {
+      return true; // text-box nodes are specifically for text editing
     }
 
     return true; // Allow editing for all cells by default

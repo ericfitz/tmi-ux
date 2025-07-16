@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Cell, Node } from '@antv/x6';
+import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
@@ -33,7 +33,7 @@ export class ZOrderService {
     switch (nodeType) {
       case 'security-boundary':
         return 1; // Security boundaries stay behind other nodes
-      case 'textbox':
+      case 'text-box':
         return 20; // Textboxes appear above all other shapes
       default:
         return 10; // Default z-index for regular nodes
@@ -300,5 +300,203 @@ export class ZOrderService {
         regularNodesEmbedded: nodeGroups.regularNodesEmbedded.length,
       },
     };
+  }
+
+  /**
+   * Get z-index for new security boundary shapes (lower than default)
+   * Rule: New security boundary shapes are created with a lower zIndex than the default zIndex for nodes and edges
+   */
+  getNewSecurityBoundaryZIndex(): number {
+    return 1; // Security boundaries always start at the lowest z-index
+  }
+
+  /**
+   * Get z-index for new nodes (higher than security boundaries)
+   * Rule: New nodes (other than security boundaries) get a higher default zIndex than security boundary nodes
+   */
+  getNewNodeZIndex(nodeType: string): number {
+    if (nodeType === 'security-boundary') {
+      return this.getNewSecurityBoundaryZIndex();
+    }
+    return this.getDefaultZIndex(nodeType);
+  }
+
+  /**
+   * Get z-index for new edges based on connected nodes
+   * Rule: The zIndex of new edges gets set to the higher value of either the zIndex for the source node
+   * they connect to, or the zIndex for the target node they connect to
+   */
+  getNewEdgeZIndex(sourceNode: Node, targetNode: Node): number {
+    const sourceZIndex = sourceNode.getZIndex() ?? this.getDefaultZIndex('process');
+    const targetZIndex = targetNode.getZIndex() ?? this.getDefaultZIndex('process');
+    return Math.max(sourceZIndex, targetZIndex);
+  }
+
+  /**
+   * Update edge z-index on reconnection
+   * Rule: On reconnecting an edge, the zIndex of the edge is recalculated and set to the higher value
+   * of either the zIndex for the source node they connect to, or the zIndex for the target node they connect to
+   */
+  updateEdgeZIndexOnReconnection(edge: Edge, sourceNode: Node, targetNode: Node): number {
+    const newZIndex = this.getNewEdgeZIndex(sourceNode, targetNode);
+
+    this.logger.info('Updating edge z-index on reconnection', {
+      edgeId: edge.id,
+      sourceNodeId: sourceNode.id,
+      targetNodeId: targetNode.id,
+      sourceZIndex: sourceNode.getZIndex() ?? this.getDefaultZIndex('process'),
+      targetZIndex: targetNode.getZIndex() ?? this.getDefaultZIndex('process'),
+      newEdgeZIndex: newZIndex,
+    });
+
+    return newZIndex;
+  }
+
+  /**
+   * Get edges that need z-index updates when a node's z-index changes
+   * Rule: When the zIndex of a node is adjusted, every edge connected to that node has its zIndex
+   * recalculated and set to the higher value of either the zIndex for the source node they connect to,
+   * or the zIndex for the target node they connect to
+   */
+  getConnectedEdgesForZIndexUpdate(
+    node: Node,
+    allEdges: Edge[],
+  ): Array<{ edge: Edge; newZIndex: number }> {
+    const updates: Array<{ edge: Edge; newZIndex: number }> = [];
+    const nodeZIndex = node.getZIndex() ?? this.getDefaultZIndex('process');
+
+    allEdges.forEach(edge => {
+      const sourceId = edge.getSourceCellId();
+      const targetId = edge.getTargetCellId();
+
+      // Check if this edge is connected to the node
+      if (sourceId === node.id || targetId === node.id) {
+        // We need to get the other node to calculate the correct z-index
+        // This will be handled by the adapter which has access to the graph
+        updates.push({
+          edge,
+          newZIndex: nodeZIndex, // Placeholder - will be recalculated by adapter
+        });
+      }
+    });
+
+    this.logger.info('Found connected edges for z-index update', {
+      nodeId: node.id,
+      nodeZIndex,
+      connectedEdgesCount: updates.length,
+    });
+
+    return updates;
+  }
+
+  /**
+   * Calculate z-index for embedded node
+   * Rule: On embedding, the zIndex of the new child node is set to at least one higher than the zIndex
+   * of the new parent node. This is intended to trigger cascading recalculation of zIndex values for
+   * edges connected to the new child node, and then recursively to child nodes of that node and their
+   * connected edges, until there are no child nodes left
+   */
+  calculateEmbeddedNodeZIndex(parentNode: Node, childNode: Node): number {
+    const parentZIndex = parentNode.getZIndex() ?? this.getDefaultZIndex('process');
+    const childType = (childNode as any).getNodeTypeInfo
+      ? (childNode as any).getNodeTypeInfo().type
+      : 'process';
+
+    let baseChildZIndex: number;
+
+    // Security boundaries have special rules even when embedded
+    if (childType === 'security-boundary') {
+      // Embedded security boundaries should still be behind regular nodes but higher than unembedded ones
+      baseChildZIndex = Math.max(parentZIndex + 1, 2);
+    } else {
+      // Regular nodes get at least one higher than parent
+      baseChildZIndex = parentZIndex + 1;
+    }
+
+    this.logger.info('Calculated embedded node z-index', {
+      parentId: parentNode.id,
+      parentZIndex,
+      childId: childNode.id,
+      childType,
+      calculatedZIndex: baseChildZIndex,
+    });
+
+    return baseChildZIndex;
+  }
+
+  /**
+   * Get all descendant nodes for cascading z-index updates
+   * Helper method to support recursive z-index updates during embedding
+   */
+  getDescendantNodesForCascadingUpdate(node: Node): Node[] {
+    const descendants: Node[] = [];
+    const children = node.getChildren() || [];
+
+    children.forEach(child => {
+      if (child.isNode()) {
+        const childNode = child;
+        descendants.push(childNode);
+        // Recursively get descendants of this child
+        descendants.push(...this.getDescendantNodesForCascadingUpdate(childNode));
+      }
+    });
+
+    return descendants;
+  }
+
+  /**
+   * Validate that embedded nodes have higher z-index than their parents
+   * Business rule validation for embedding hierarchy
+   */
+  validateEmbeddingZOrderHierarchy(
+    nodes: Node[],
+  ): Array<{ node: Node; issue: string; correctedZIndex: number }> {
+    const violations: Array<{ node: Node; issue: string; correctedZIndex: number }> = [];
+
+    nodes.forEach(node => {
+      const parent = node.getParent();
+      if (parent && parent.isNode()) {
+        const parentNode = parent;
+        const nodeZIndex = node.getZIndex() ?? this.getDefaultZIndex('process');
+        const parentZIndex = parentNode.getZIndex() ?? this.getDefaultZIndex('process');
+
+        if (nodeZIndex <= parentZIndex) {
+          const correctedZIndex = this.calculateEmbeddedNodeZIndex(parentNode, node);
+          violations.push({
+            node,
+            issue: `Embedded node z-index ${nodeZIndex} <= parent z-index ${parentZIndex}`,
+            correctedZIndex,
+          });
+        }
+      }
+    });
+
+    return violations;
+  }
+
+  /**
+   * Calculate z-index for unembedded security boundary node
+   * Rule: When a security boundary node is unembedded and is no longer the child of any other object,
+   * its zIndex is set back to the default zIndex for security boundary nodes
+   */
+  calculateUnembeddedSecurityBoundaryZIndex(node: Node): number {
+    const nodeType = (node as any).getNodeTypeInfo
+      ? (node as any).getNodeTypeInfo().type
+      : 'process';
+
+    if (nodeType === 'security-boundary') {
+      const defaultZIndex = this.getDefaultZIndex('security-boundary');
+
+      this.logger.info('Calculated unembedded security boundary z-index', {
+        nodeId: node.id,
+        nodeType,
+        defaultZIndex,
+      });
+
+      return defaultZIndex;
+    }
+
+    // For non-security-boundary nodes, use regular unembedding logic
+    return this.getDefaultZIndex(nodeType);
   }
 }

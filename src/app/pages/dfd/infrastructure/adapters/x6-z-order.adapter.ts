@@ -92,17 +92,38 @@ export class X6ZOrderAdapter {
   }
 
   /**
-   * Update the z-order of all edges connected to a node to match the node's z-order
+   * Update the z-order of all edges connected to a node based on z-order rules
+   * Rule: When the zIndex of a node is adjusted, every edge connected to that node has its zIndex
+   * recalculated and set to the higher value of either the zIndex for the source node they connect to,
+   * or the zIndex for the target node they connect to
    */
-  updateConnectedEdgesZOrder(graph: Graph, node: Node, zIndex: number): void {
+  updateConnectedEdgesZOrder(graph: Graph, node: Node, _nodeZIndex: number): void {
     const edges = graph.getConnectedEdges(node) || [];
+
     edges.forEach(edge => {
-      edge.setZIndex(zIndex);
-      this.logger.info('Updated connected edge z-order', {
-        nodeId: node.id,
-        edgeId: edge.id,
-        newZIndex: zIndex,
-      });
+      // Get the source and target nodes to calculate proper z-index
+      const sourceId = edge.getSourceCellId();
+      const targetId = edge.getTargetCellId();
+
+      if (sourceId && targetId) {
+        const sourceNode = graph.getCellById(sourceId) as Node;
+        const targetNode = graph.getCellById(targetId) as Node;
+
+        if (sourceNode?.isNode() && targetNode?.isNode()) {
+          const newZIndex = this.zOrderService.getNewEdgeZIndex(sourceNode, targetNode);
+          edge.setZIndex(newZIndex);
+
+          this.logger.info('Updated connected edge z-order using z-order rules', {
+            nodeId: node.id,
+            edgeId: edge.id,
+            sourceNodeId: sourceId,
+            targetNodeId: targetId,
+            sourceZIndex: sourceNode.getZIndex() ?? 10,
+            targetZIndex: targetNode.getZIndex() ?? 10,
+            newZIndex,
+          });
+        }
+      }
     });
   }
 
@@ -353,6 +374,195 @@ export class X6ZOrderAdapter {
       nodeId: node.id,
       nodeType,
       nodeZIndex,
+    });
+  }
+
+  /**
+   * Apply z-index for unembedded security boundary node
+   * Rule: When a security boundary node is unembedded and is no longer the child of any other object,
+   * its zIndex is set back to the default zIndex for security boundary nodes
+   */
+  applyUnembeddedSecurityBoundaryZIndex(graph: Graph, node: Node): void {
+    const nodeZIndex = this.zOrderService.calculateUnembeddedSecurityBoundaryZIndex(node);
+    node.setZIndex(nodeZIndex);
+
+    // Update z-order for edges connected to the node to match the node's z-order
+    this.updateConnectedEdgesZOrder(graph, node, nodeZIndex);
+
+    this.logger.info('Applied unembedded security boundary z-index', {
+      nodeId: node.id,
+      nodeZIndex,
+    });
+  }
+
+  /**
+   * Apply proper z-index for newly created nodes based on node type and context
+   * Rule: New nodes get z-index based on their type - security boundaries (1), regular nodes (10), text-boxes (20)
+   */
+  applyNodeCreationZIndex(graph: Graph, node: Node): void {
+    // Get node type from data.type (set by DfdNodeService)
+    const nodeData = node.getData();
+    const nodeType = nodeData?.type || 'process';
+
+    // Use getDefaultZIndex for all node types
+    const zIndex = this.zOrderService.getDefaultZIndex(nodeType);
+
+    node.setZIndex(zIndex);
+    this.logger.info('Applied node creation z-index', {
+      nodeId: node.id,
+      nodeType,
+      zIndex,
+    });
+  }
+
+  /**
+   * Set z-index for new security boundary
+   * Rule: New security boundary shapes are created with a lower zIndex than the default zIndex for nodes and edges
+   */
+  setNewSecurityBoundaryZIndex(node: Node): void {
+    const zIndex = this.zOrderService.getDefaultZIndex('security-boundary');
+    node.setZIndex(zIndex);
+
+    this.logger.info('Set new security boundary z-index', {
+      nodeId: node.id,
+      zIndex,
+    });
+  }
+
+  /**
+   * Set z-index for new node
+   * Rule: New nodes (other than security boundaries) get a higher default zIndex than security boundary nodes
+   */
+  setNewNodeZIndex(node: Node, nodeType: string): void {
+    const zIndex = this.zOrderService.getDefaultZIndex(nodeType);
+    node.setZIndex(zIndex);
+
+    this.logger.info('Set new node z-index', {
+      nodeId: node.id,
+      nodeType,
+      zIndex,
+    });
+  }
+
+  /**
+   * Set z-index for new edge based on connected nodes
+   * Rule: The zIndex of new edges gets set to the higher value of either the zIndex for the source node
+   * they connect to, or the zIndex for the target node they connect to
+   */
+  setNewEdgeZIndex(edge: Edge, sourceNode: Node, targetNode: Node): void {
+    const zIndex = this.zOrderService.getNewEdgeZIndex(sourceNode, targetNode);
+    edge.setZIndex(zIndex);
+
+    this.logger.info('Set new edge z-index based on connected nodes', {
+      edgeId: edge.id,
+      sourceNodeId: sourceNode.id,
+      targetNodeId: targetNode.id,
+      sourceZIndex: sourceNode.getZIndex() ?? 10,
+      targetZIndex: targetNode.getZIndex() ?? 10,
+      edgeZIndex: zIndex,
+    });
+  }
+
+  /**
+   * Update edge z-index on reconnection
+   * Rule: On reconnecting an edge, the zIndex of the edge is recalculated and set to the higher value
+   * of either the zIndex for the source node they connect to, or the zIndex for the target node they connect to
+   */
+  updateEdgeZIndexOnReconnection(edge: Edge, sourceNode: Node, targetNode: Node): void {
+    const newZIndex = this.zOrderService.updateEdgeZIndexOnReconnection(
+      edge,
+      sourceNode,
+      targetNode,
+    );
+    edge.setZIndex(newZIndex);
+
+    this.logger.info('Updated edge z-index on reconnection', {
+      edgeId: edge.id,
+      sourceNodeId: sourceNode.id,
+      targetNodeId: targetNode.id,
+      newZIndex,
+    });
+  }
+
+  /**
+   * Apply embedding z-index with cascading updates
+   * Rule: On embedding, the zIndex of the new child node is set to at least one higher than the zIndex
+   * of the new parent node. This triggers cascading recalculation of zIndex values for edges connected
+   * to the new child node, and then recursively to child nodes of that node and their connected edges
+   */
+  applyEmbeddingZIndexWithCascading(graph: Graph, parent: Node, child: Node): void {
+    // Calculate and set the child's z-index
+    const childZIndex = this.zOrderService.calculateEmbeddedNodeZIndex(parent, child);
+    child.setZIndex(childZIndex);
+
+    // Update connected edges for the child
+    this.updateConnectedEdgesZOrder(graph, child, childZIndex);
+
+    // Recursively update descendant nodes and their edges
+    this.updateDescendantNodesZIndex(graph, child);
+
+    this.logger.info('Applied embedding z-index with cascading updates', {
+      parentId: parent.id,
+      childId: child.id,
+      childZIndex,
+    });
+  }
+
+  /**
+   * Validate and correct embedding z-order hierarchy
+   * Ensures embedded nodes have higher z-index than their parents
+   */
+  validateAndCorrectEmbeddingHierarchy(graph: Graph): void {
+    const nodes = graph.getNodes();
+    const violations = this.zOrderService.validateEmbeddingZOrderHierarchy(nodes);
+
+    violations.forEach(({ node, issue, correctedZIndex }) => {
+      const currentZIndex = node.getZIndex() ?? 10;
+      node.setZIndex(correctedZIndex);
+
+      // Update connected edges
+      this.updateConnectedEdgesZOrder(graph, node, correctedZIndex);
+
+      this.logger.warn('Corrected embedding hierarchy z-order violation', {
+        nodeId: node.id,
+        issue,
+        previousZIndex: currentZIndex,
+        correctedZIndex,
+      });
+    });
+
+    if (violations.length > 0) {
+      this.logger.warn('Embedding hierarchy z-order violations corrected', {
+        violationsCount: violations.length,
+      });
+    }
+  }
+
+  /**
+   * Recursively update z-index for descendant nodes and their connected edges
+   * Supporting method for cascading z-index updates during embedding
+   */
+  private updateDescendantNodesZIndex(graph: Graph, parentNode: Node): void {
+    const descendants = this.zOrderService.getDescendantNodesForCascadingUpdate(parentNode);
+
+    descendants.forEach(descendant => {
+      const descendantParent = descendant.getParent();
+      if (descendantParent && descendantParent.isNode()) {
+        const newZIndex = this.zOrderService.calculateEmbeddedNodeZIndex(
+          descendantParent,
+          descendant,
+        );
+        descendant.setZIndex(newZIndex);
+
+        // Update connected edges for this descendant
+        this.updateConnectedEdgesZOrder(graph, descendant, newZIndex);
+
+        this.logger.info('Updated descendant node z-index', {
+          descendantId: descendant.id,
+          parentId: descendantParent.id,
+          newZIndex,
+        });
+      }
     });
   }
 

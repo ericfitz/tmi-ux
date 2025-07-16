@@ -5,7 +5,7 @@ import { X6NodeSnapshot } from '../../types/x6-cell.types';
 /**
  * Node types supported in the DFD diagram
  */
-export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'textbox';
+export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
 
 /**
  * Metadata entry structure aligned with X6NodeSnapshot
@@ -27,7 +27,7 @@ export class NodeData {
     public readonly size: { width: number; height: number },
     public readonly attrs: Node.Properties['attrs'] = { text: { text: '' } },
     public readonly ports: Node.Properties['ports'] = {},
-    public readonly zIndex: number = 1,
+    public readonly zIndex: number = 1, // Temporary default, actual z-index set by ZOrderService
     public readonly visible: boolean = true,
     public readonly data: MetadataEntry[] = [],
   ) {
@@ -195,7 +195,7 @@ export class NodeData {
         return { width: 160, height: 60 };
       case 'security-boundary':
         return { width: 200, height: 150 };
-      case 'textbox':
+      case 'text-box':
         return { width: 100, height: 40 };
       default:
         return { width: 120, height: 60 };
@@ -217,7 +217,7 @@ export class NodeData {
           return 'Data Store';
         case 'security-boundary':
           return 'Security Boundary';
-        case 'textbox':
+        case 'text-box':
           return 'Text';
         default:
           return 'Node';
@@ -234,7 +234,7 @@ export class NodeData {
         return translateFn('editor.nodeLabels.store');
       case 'security-boundary':
         return translateFn('editor.nodeLabels.securityBoundary');
-      case 'textbox':
+      case 'text-box':
         return translateFn('editor.nodeLabels.textbox');
       default:
         return translateFn('editor.nodeLabels.node');
@@ -508,7 +508,7 @@ export class NodeData {
    * Checks if the given shape is a valid node type
    */
   private isValidNodeType(shape: string): shape is NodeType {
-    return ['actor', 'process', 'store', 'security-boundary', 'textbox'].includes(shape);
+    return ['actor', 'process', 'store', 'security-boundary', 'text-box'].includes(shape);
   }
 
   /**

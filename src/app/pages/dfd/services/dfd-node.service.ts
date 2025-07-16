@@ -6,6 +6,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { NodeType } from '../domain/value-objects/node-data';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
 
 /**
@@ -20,6 +21,7 @@ export class DfdNodeService {
     private logger: LoggerService,
     private transloco: TranslocoService,
     private x6GraphAdapter: X6GraphAdapter,
+    private x6ZOrderAdapter: X6ZOrderAdapter,
   ) {}
 
   // ========================================
@@ -121,7 +123,10 @@ export class DfdNodeService {
       // Get node-specific configuration
       const nodeConfig = this.getNodeConfigForType(shapeType, nodeId, position);
 
-      graph.addNode(nodeConfig);
+      const node = graph.addNode(nodeConfig);
+
+      // Apply proper z-index using ZOrderService after node creation
+      this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
 
       this.logger.info('Node created successfully directly in X6', { nodeId, shapeType });
       return of(void 0);
@@ -155,7 +160,7 @@ export class DfdNodeService {
       data: {
         type: shapeType, // This allows CSS targeting via [data-type="..."]
       },
-      zIndex: 1,
+      zIndex: 1, // Temporary z-index, will be set properly after node creation
     };
 
     // Configure ports with proper magnet properties for edge creation
@@ -259,7 +264,7 @@ export class DfdNodeService {
         return this.transloco.translate('editor.nodeLabels.store');
       case 'security-boundary':
         return this.transloco.translate('editor.nodeLabels.securityBoundary');
-      case 'textbox':
+      case 'text-box':
         return this.transloco.translate('editor.nodeLabels.textbox');
       default:
         return this.transloco.translate('editor.nodeLabels.node');

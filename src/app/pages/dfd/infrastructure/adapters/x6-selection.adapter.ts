@@ -428,8 +428,8 @@ export class X6SelectionAdapter {
       const nodeType = (cell as any).getNodeTypeInfo
         ? (cell as any).getNodeTypeInfo().type
         : 'process';
-      if (nodeType === 'textbox') {
-        // For textbox shapes, apply hover glow to text element since body is transparent
+      if (nodeType === 'text-box') {
+        // For text-box shapes, apply hover glow to text element since body is transparent
         cell.attr('text/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
       } else {
         // For all other node types, apply hover glow to body element
@@ -449,8 +449,8 @@ export class X6SelectionAdapter {
       const nodeType = (cell as any).getNodeTypeInfo
         ? (cell as any).getNodeTypeInfo().type
         : 'process';
-      if (nodeType === 'textbox') {
-        // For textbox shapes, remove hover glow from text element
+      if (nodeType === 'text-box') {
+        // For text-box shapes, remove hover glow from text element
         cell.attr('text/filter', 'none');
       } else {
         // For all other node types, remove hover glow from body element
@@ -470,8 +470,8 @@ export class X6SelectionAdapter {
       const nodeType = (cell as any).getNodeTypeInfo
         ? (cell as any).getNodeTypeInfo().type
         : 'process';
-      if (nodeType === 'textbox') {
-        // For textbox shapes, apply glow to text element since body is transparent
+      if (nodeType === 'text-box') {
+        // For text-box shapes, apply glow to text element since body is transparent
         cell.attr('text/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
       } else {
         // For all other node types, apply glow to body element
@@ -492,8 +492,8 @@ export class X6SelectionAdapter {
       const nodeType = (cell as any).getNodeTypeInfo
         ? (cell as any).getNodeTypeInfo().type
         : 'process';
-      if (nodeType === 'textbox') {
-        // For textbox shapes, remove glow from text element
+      if (nodeType === 'text-box') {
+        // For text-box shapes, remove glow from text element
         cell.attr('text/filter', 'none');
       } else {
         // For all other node types, remove glow from body element

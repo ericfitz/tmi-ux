@@ -22,7 +22,7 @@ export class EdgeData {
     public readonly attrs: Edge.Properties['attrs'] = {},
     public readonly labels: Edge.Properties['labels'] = [],
     public readonly vertices: Array<{ x: number; y: number }> = [],
-    public readonly zIndex: number = 1,
+    public readonly zIndex: number = 1, // Temporary default, actual z-index set by ZOrderService
     public readonly visible: boolean = true,
     public readonly data: MetadataEntry[] = [],
   ) {

@@ -70,8 +70,8 @@ export class NodeConfigurationService {
           text: baseTextAttrs,
         };
 
-      case 'textbox':
-        // Custom textbox shape handles the transparent background
+      case 'text-box':
+        // Custom text-box shape handles the transparent background
         return {
           text: baseTextAttrs,
         };
@@ -93,8 +93,8 @@ export class NodeConfigurationService {
    * Get port configuration for a specific node type
    */
   getNodePorts(nodeType: string): PortConfiguration {
-    // Textbox shapes should not have ports
-    if (nodeType === 'textbox') {
+    // text-box shapes should not have ports
+    if (nodeType === 'text-box') {
       return {
         groups: {},
         items: [],
@@ -188,18 +188,18 @@ export class NodeConfigurationService {
     switch (nodeType) {
       case 'security-boundary':
         return 1; // Security boundaries stay behind other nodes
-      case 'textbox':
-        return 20; // Textboxes appear above all other shapes
+      case 'text-box':
+        return 20; // text-boxes appear above all other shapes
       default:
         return 10; // Default z-index for regular nodes
     }
   }
 
   /**
-   * Check if a node type is a textbox
+   * Check if a node type is a text-box
    */
   isTextboxNode(nodeType: string): boolean {
-    return nodeType === 'textbox';
+    return nodeType === 'text-box';
   }
 
   /**
@@ -231,7 +231,7 @@ export class NodeConfigurationService {
    * Validate if a node type is supported
    */
   isValidNodeType(nodeType: string): boolean {
-    const validTypes = ['process', 'store', 'actor', 'security-boundary', 'textbox'];
+    const validTypes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     return validTypes.includes(nodeType);
   }
 
@@ -239,6 +239,6 @@ export class NodeConfigurationService {
    * Get all supported node types
    */
   getSupportedNodeTypes(): string[] {
-    return ['process', 'store', 'actor', 'security-boundary', 'textbox'];
+    return ['process', 'store', 'actor', 'security-boundary', 'text-box'];
   }
 }

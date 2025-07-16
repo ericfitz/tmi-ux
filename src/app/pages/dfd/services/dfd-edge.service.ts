@@ -214,7 +214,7 @@ export class DfdEdgeService {
             },
           },
         ],
-        zIndex: 1,
+        zIndex: 1, // Temporary z-index, will be set properly when added to graph
       });
 
       this.logger.info('Inverse edge created successfully directly in X6', {

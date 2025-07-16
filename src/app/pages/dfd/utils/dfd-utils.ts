@@ -33,7 +33,7 @@ export function getShapeType(node: Node): ShapeType | undefined {
       case 'SecurityBoundaryShape':
         return 'securityBoundary';
       case 'TextboxShape':
-        return 'textbox';
+        return 'text-box';
       default:
         return undefined;
     }

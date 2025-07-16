@@ -164,7 +164,7 @@ export function initializeX6CellExtensions(): void {
     }
 
     const nodeType = this.getApplicationMetadata('type') || 'process';
-    const isTextbox = nodeType === 'textbox';
+    const isTextbox = nodeType === 'text-box';
     const isSecurityBoundary = nodeType === 'security-boundary';
 
     // Determine default z-index based on node type
@@ -186,7 +186,7 @@ export function initializeX6CellExtensions(): void {
         break;
       case 'actor':
       case 'security-boundary':
-      case 'textbox':
+      case 'text-box':
         shape = 'rect';
         break;
     }

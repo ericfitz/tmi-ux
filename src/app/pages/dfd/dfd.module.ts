@@ -6,6 +6,7 @@ import { DfdComponent } from './dfd.component';
 import { DfdStateStore } from './state/dfd.state';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
+import { X6EmbeddingAdapter } from './infrastructure/adapters/x6-embedding.adapter';
 
 /**
  * Module for the DFD component and related services
@@ -22,6 +23,7 @@ import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler
     // Infrastructure adapters
     X6GraphAdapter,
     X6KeyboardHandler,
+    X6EmbeddingAdapter,
   ],
 })
 export class DfdModule {}

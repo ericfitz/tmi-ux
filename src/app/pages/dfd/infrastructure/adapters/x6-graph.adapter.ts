@@ -17,8 +17,10 @@ import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
+import { EmbeddingService } from '../services/embedding.service';
 import { X6KeyboardHandler } from './x6-keyboard-handler';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
+import { X6EmbeddingAdapter } from './x6-embedding.adapter';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -167,8 +169,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     private logger: LoggerService,
     private readonly _edgeQueryService: EdgeQueryService,
     private readonly _nodeConfigurationService: NodeConfigurationService,
+    private readonly _embeddingService: EmbeddingService,
     private readonly _keyboardHandler: X6KeyboardHandler,
     private readonly _zOrderAdapter: X6ZOrderAdapter,
+    private readonly _embeddingAdapter: X6EmbeddingAdapter,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -313,30 +317,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         enabled: true,
         findParent: 'bbox',
         validate: (args: { parent: Node; child: Node }) => {
-          const parentType = (args.parent as any).getNodeTypeInfo
-            ? (args.parent as any).getNodeTypeInfo().type
-            : 'process';
-          const childType = (args.child as any).getNodeTypeInfo
-            ? (args.child as any).getNodeTypeInfo().type
-            : 'process';
-
-          // Textbox shapes cannot be embedded into other shapes
-          if (childType === 'textbox') {
-            return false;
-          }
-
-          // Other shapes cannot be embedded into textbox shapes
-          if (parentType === 'textbox') {
-            return false;
-          }
-
-          // Security boundaries can only be embedded into other security boundaries
-          if (childType === 'security-boundary') {
-            return parentType === 'security-boundary';
-          }
-
-          // All other node types can be embedded into any node type
-          return true;
+          // Use EmbeddingService for validation logic
+          const validation = this._embeddingService.validateEmbedding(args.parent, args.child);
+          return validation.isValid;
         },
       },
       interacting: {
@@ -525,7 +508,7 @@ export class X6GraphAdapter implements IGraphAdapter {
                 },
               },
             ],
-            zIndex: 1,
+            zIndex: 1, // Temporary z-index, will be set properly when connected
           });
 
           this.logger.debugComponent('DFD', '[Edge Creation] createEdge - Initial labels config:', {
@@ -576,6 +559,9 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Setup keyboard handling using dedicated handler
     this._keyboardHandler.setupKeyboardHandling(this._graph);
+
+    // Initialize embedding functionality using dedicated adapter
+    this._embeddingAdapter.initializeEmbedding(this._graph);
   }
 
   /**
@@ -595,11 +581,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     const graph = this.getGraph();
     const nodeType = node.data.shape;
 
-    // Use NodeConfigurationService for all node configuration
+    // Use NodeConfigurationService for node configuration (except z-index)
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
     const nodePorts = this._nodeConfigurationService.getNodePorts(nodeType);
     const nodeShape = this._nodeConfigurationService.getNodeShape(nodeType);
-    const zIndex = this._nodeConfigurationService.getNodeZIndex(nodeType);
 
     const x6Node = graph.addNode({
       id: node.id,
@@ -617,7 +602,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         },
       },
       ports: nodePorts as any,
-      zIndex,
+      zIndex: 1, // Temporary z-index, will be set properly below
     });
 
     // Set metadata using X6 cell extensions
@@ -626,6 +611,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     (x6Node as any).setApplicationMetadata('width', String(node.data.width || 120));
     (x6Node as any).setApplicationMetadata('height', String(node.data.height || 60));
     (x6Node as any).setApplicationMetadata('label', node.data.label || '');
+
+    // Apply proper z-index using ZOrderService after node creation
+    this._zOrderAdapter.applyNodeCreationZIndex(graph, x6Node);
 
     return x6Node;
   }
@@ -1321,124 +1309,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._hideUnconnectedPorts();
     });
 
-    // Node embedding events
-    this._graph.on('node:embedding', ({ node }: { node: Node }) => {
-      // Store the original z-index before temporarily changing it using metadata
-      const originalZIndex = node.getZIndex();
-      if ((node as any).setApplicationMetadata) {
-        (node as any).setApplicationMetadata('_originalZIndex', String(originalZIndex));
-      }
-
-      // When a node is being embedded, ensure it appears in front temporarily
-      // But respect the node type - security boundaries should stay behind regular nodes
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
-      if (nodeType === 'security-boundary') {
-        // Security boundaries get a temporary higher z-index but still behind regular nodes
-        node.setZIndex(5);
-      } else {
-        // Regular nodes get a higher temporary z-index
-        node.setZIndex(20);
-      }
-    });
-
-    this._graph.on(
-      'node:embedded',
-      ({ node, currentParent }: { node: Node; currentParent: Node }) => {
-        // Only adjust z-indices if the node was actually embedded (has a parent)
-        if (!currentParent) {
-          // If embedding was cancelled, restore original z-index from metadata
-          const originalZIndexValue = (node as any).getApplicationMetadata
-            ? (node as any).getApplicationMetadata('_originalZIndex')
-            : '';
-          const originalZIndex = originalZIndexValue ? Number(originalZIndexValue) : null;
-          if (typeof originalZIndex === 'number' && !isNaN(originalZIndex)) {
-            node.setZIndex(originalZIndex);
-            // Also restore z-order for connected edges
-            this._zOrderAdapter.updateConnectedEdgesZOrder(this._graph!, node, originalZIndex);
-          }
-          return;
-        }
-
-        // After embedding, adjust z-indices
-        const parentType = (currentParent as any).getNodeTypeInfo
-          ? (currentParent as any).getNodeTypeInfo().type
-          : 'process';
-        const childType = (node as any).getNodeTypeInfo
-          ? (node as any).getNodeTypeInfo().type
-          : 'process';
-
-        // Parent keeps its base z-index (security boundaries stay behind)
-        let parentZIndex: number;
-        if (parentType === 'security-boundary') {
-          parentZIndex = 1; // Security boundaries stay at the back
-          currentParent.setZIndex(parentZIndex);
-        } else {
-          parentZIndex = 10;
-          currentParent.setZIndex(parentZIndex);
-        }
-
-        // Child gets appropriate z-index based on type
-        let childZIndex: number;
-        if (childType === 'security-boundary') {
-          // Security boundaries should always stay behind, even when embedded
-          childZIndex = 2; // Slightly higher than non-embedded security boundaries but still behind regular nodes
-          node.setZIndex(childZIndex);
-        } else {
-          childZIndex = 15; // Regular nodes appear in front when embedded
-          node.setZIndex(childZIndex);
-        }
-
-        // Update z-order for edges connected to the child node to match the child's z-order
-        this._zOrderAdapter.updateConnectedEdgesZOrder(this._graph!, node, childZIndex);
-
-        // Update fill color based on embedding depth
-        this._updateEmbeddedNodeColor(node);
-
-        // Clean up the temporary metadata
-        if ((node as any).setApplicationMetadata) {
-          (node as any).setApplicationMetadata('_originalZIndex', '');
-        }
-
-        // Enforce z-order invariants after embedding operations
-        this._zOrderAdapter.enforceZOrderInvariants(this._graph!);
-      },
-    );
-
-    this._graph.on('node:change:parent', ({ node, current }: { node: Node; current?: string }) => {
-      // When a node is removed from its parent (unembedded)
-      if (!current) {
-        const nodeType = (node as any).getNodeTypeInfo
-          ? (node as any).getNodeTypeInfo().type
-          : 'process';
-
-        // Reset to default z-index based on type
-        let nodeZIndex: number;
-        if (nodeType === 'security-boundary') {
-          nodeZIndex = 1; // Security boundaries always stay at the back
-          node.setZIndex(nodeZIndex);
-        } else {
-          nodeZIndex = 10;
-          node.setZIndex(nodeZIndex);
-        }
-
-        // Update z-order for edges connected to the node to match the node's z-order
-        this._zOrderAdapter.updateConnectedEdgesZOrder(this._graph!, node, nodeZIndex);
-
-        // Update fill color based on new embedding depth (or reset to white if fully unembedded)
-        this._updateEmbeddedNodeColor(node);
-
-        // Enforce z-order invariants after parent change operations
-        this._zOrderAdapter.enforceZOrderInvariants(this._graph!);
-      }
-    });
-
-    // Handle node movement without embedding - restore z-index when drag ends
-    // Use a more reliable approach that doesn't depend on timeouts
-    this._graph.on('node:moved', ({ node }: { node: Node }) => {
-      this._zOrderAdapter.handleNodeMovedZOrderRestoration(this._graph!, node);
-    });
+    // Note: Embedding event handlers are now managed by X6EmbeddingAdapter
+    // The embedding adapter handles: node:embedding, node:embedded, node:change:parent, node:moved (embedding-related)
 
     // Edge events - handle addition and removal
     this._graph.on('edge:added', ({ edge }: { edge: Edge }) => {
@@ -1520,8 +1392,8 @@ export class X6GraphAdapter implements IGraphAdapter {
             const nodeType = (cell as any).getNodeTypeInfo
               ? (cell as any).getNodeTypeInfo().type
               : 'process';
-            if (nodeType === 'textbox') {
-              // For textbox shapes, apply glow to text element since body is transparent
+            if (nodeType === 'text-box') {
+              // For text-box shapes, apply glow to text element since body is transparent
               cell.attr('text/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
             } else {
               // For all other node types, apply glow to body element
@@ -1545,8 +1417,8 @@ export class X6GraphAdapter implements IGraphAdapter {
             const nodeType = (cell as any).getNodeTypeInfo
               ? (cell as any).getNodeTypeInfo().type
               : 'process';
-            if (nodeType === 'textbox') {
-              // For textbox shapes, remove glow from text element
+            if (nodeType === 'text-box') {
+              // For text-box shapes, remove glow from text element
               cell.attr('text/filter', 'none');
             } else {
               // For all other node types, remove glow from body element
@@ -1598,27 +1470,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         e.preventDefault();
         this._addLabelEditor(cell, e);
       }
-    });
-
-    // History events for undo/redo state tracking
-    this._graph.on('history:undo', () => {
-      this.logger.info('History undo event fired');
-      this._emitHistoryStateChange();
-    });
-
-    this._graph.on('history:redo', () => {
-      this.logger.info('History redo event fired');
-      this._emitHistoryStateChange();
-    });
-
-    this._graph.on('history:change', () => {
-      this.logger.debug('History change event fired');
-      this._emitHistoryStateChange();
-    });
-
-    this._graph.on('history:clear', () => {
-      this.logger.info('History clear event fired');
-      this._emitHistoryStateChange();
     });
   }
 
@@ -1888,8 +1739,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           const nodeType = (cell as any).getNodeTypeInfo
             ? (cell as any).getNodeTypeInfo().type
             : 'process';
-          if (nodeType === 'textbox') {
-            // For textbox shapes, apply hover glow to text element since body is transparent
+          if (nodeType === 'text-box') {
+            // For text-box shapes, apply hover glow to text element since body is transparent
             cell.attr('text/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
           } else {
             // For all other node types, apply hover glow to body element
@@ -1908,8 +1759,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           const nodeType = (cell as any).getNodeTypeInfo
             ? (cell as any).getNodeTypeInfo().type
             : 'process';
-          if (nodeType === 'textbox') {
-            // For textbox shapes, remove hover glow from text element
+          if (nodeType === 'text-box') {
+            // For text-box shapes, remove hover glow from text element
             cell.attr('text/filter', 'none');
           } else {
             // For all other node types, remove hover glow from body element
@@ -1936,91 +1787,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     return nodeType || 'process';
   }
 
-  /**
-   * Calculate the embedding depth of a node (how many levels deep it is embedded)
-   */
-  private _getEmbeddingDepth(node: Node): number {
-    if (!this._graph) return 0;
-
-    let depth = 0;
-    let currentNode = node;
-
-    // Traverse up the parent chain to count embedding levels
-    while (currentNode.getParent()) {
-      depth++;
-      const parent = currentNode.getParent();
-      if (!parent) break;
-
-      // The parent is already a Cell object, not an ID
-      if (!parent.isNode()) break;
-
-      currentNode = parent;
-
-      // Safety check to prevent infinite loops
-      if (depth > 10) {
-        this.logger.warn('Maximum embedding depth reached, breaking loop', { nodeId: node.id });
-        break;
-      }
-    }
-
-    return depth;
-  }
-
-  /**
-   * Calculate the fill color based on embedding depth
-   * Level 0 (not embedded): white (#FFFFFF)
-   * Level 1: very light bluish white (#F8F9FF)
-   * Level 2: slightly darker (#F0F2FF)
-   * Level 3+: progressively darker bluish tints
-   */
-  private _getEmbeddingFillColor(depth: number): string {
-    if (depth === 0) {
-      return '#FFFFFF'; // Pure white for non-embedded nodes
-    }
-
-    // Base bluish white color components
-    const baseRed = 240;
-    const baseGreen = 250;
-
-    // Calculate darker tint based on depth
-    // Each level reduces the RGB values by 8 points to create a progressively darker tint
-    const reduction = Math.min(depth * 10, 60); // Cap at 48 to avoid going too dark
-
-    const red = Math.max(baseRed - reduction, 200);
-    const green = Math.max(baseGreen - reduction, 200);
-    const blue = 255; // Keep blue at maximum to maintain bluish tint
-
-    return `rgb(${red}, ${green}, ${blue})`;
-  }
-
-  /**
-   * Update the fill color of an embedded node based on its embedding depth
-   */
-  private _updateEmbeddedNodeColor(node: Node): void {
-    if (!this._graph) return;
-
-    const depth = this._getEmbeddingDepth(node);
-    const fillColor = this._getEmbeddingFillColor(depth);
-    const nodeType = (node as any).getNodeTypeInfo
-      ? (node as any).getNodeTypeInfo().type
-      : 'process';
-
-    this.logger.info('Updating embedded node color', {
-      nodeId: node.id,
-      nodeType,
-      embeddingDepth: depth,
-      fillColor,
-    });
-
-    // Update the fill color based on node type
-    if (nodeType === 'store') {
-      // For store nodes, update the body fill
-      node.attr('body/fill', fillColor);
-    } else {
-      // For all other node types, update the body fill
-      node.attr('body/fill', fillColor);
-    }
-  }
+  // Note: Embedding helper methods have been migrated to EmbeddingService and X6EmbeddingAdapter
+  // - _getEmbeddingDepth() → EmbeddingService.calculateEmbeddingDepth()
+  // - _getEmbeddingFillColor() → EmbeddingService.calculateEmbeddingFillColor()
+  // - _updateEmbeddedNodeColor() → X6EmbeddingAdapter.updateEmbeddingAppearance()
 
   /**
    * Add tools to a selected node using X6's native tool system

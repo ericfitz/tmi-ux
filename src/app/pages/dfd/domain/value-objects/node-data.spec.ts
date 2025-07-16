@@ -165,8 +165,8 @@ describe('NodeData', () => {
       expect(boundary.size.width).toBe(200);
       expect(boundary.size.height).toBe(150);
 
-      const textbox = NodeData.createDefault('text-1', 'textbox', position);
-      expect(textbox.type).toBe('textbox');
+      const textbox = NodeData.createDefault('text-1', 'text-box', position);
+      expect(textbox.type).toBe('text-box');
       expect(textbox.label).toBe('Text');
       expect(textbox.size.width).toBe(100);
       expect(textbox.size.height).toBe(40);

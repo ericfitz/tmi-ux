@@ -159,9 +159,9 @@ export function registerCustomShapes(): void {
     },
   });
 
-  // Register custom textbox shape (transparent background, text only)
+  // Register custom text-box shape (transparent background, text only)
   Shape.Rect.define({
-    shape: 'textbox',
+    shape: 'text-box',
     markup: [
       {
         tagName: 'rect',
@@ -204,8 +204,8 @@ export function getX6ShapeForNodeType(nodeType: string): string {
       return 'actor'; // Use custom shape for actor
     case 'security-boundary':
       return 'security-boundary'; // Use custom shape for security boundary
-    case 'textbox':
-      return 'textbox'; // Use custom shape for textbox
+    case 'text-box':
+      return 'text-box'; // Use custom shape for text-box
     default:
       return 'rect';
   }

@@ -147,22 +147,180 @@ export class X6EmbeddingAdapter {
    * Set up embedding-related event handlers
    */
   private setupEmbeddingEvents(graph: Graph): void {
+    // Track previous parent states for unembedding detection
+    const nodeParentStates = new Map<string, string | null>();
+
     // Handle node embedding
-    graph.on('node:embedded', ({ node, parent }: { node: Node; parent: Node }) => {
-      this.handleNodeEmbedded(graph, node, parent);
+    graph.on('node:embedded', ({ node, parent }: { node: Node; parent?: Node }) => {
+      if (!node) {
+        this.logger.warn('Node embedding event received with undefined node');
+        return;
+      }
+
+      // If parent is not provided in the event, try to get it from the node
+      let actualParent = parent;
+      if (!actualParent) {
+        const nodeParent = node.getParent();
+        if (nodeParent?.isNode()) {
+          actualParent = nodeParent;
+          this.logger.info('Found parent from node after embedding event', {
+            nodeId: node.id,
+            parentId: actualParent.id,
+          });
+        } else {
+          this.logger.warn(
+            'Node embedding event received with undefined parent and no parent found on node',
+            {
+              nodeId: node.id,
+            },
+          );
+          return;
+        }
+      }
+
+      // Update parent state tracking
+      nodeParentStates.set(node.id, actualParent.id);
+
+      this.handleNodeEmbedded(graph, node, actualParent);
     });
 
     // Handle node unembedding
     graph.on('node:unembedded', ({ node }: { node: Node }) => {
+      if (!node) {
+        this.logger.warn('Node unembedding event received with undefined node');
+        return;
+      }
+
+      // Update parent state tracking
+      nodeParentStates.set(node.id, null);
+
       this.handleNodeUnembedded(graph, node);
     });
 
+    // Handle parent changes to detect unembedding
+    graph.on(
+      'node:change:parent',
+      ({
+        node,
+        current,
+        _previous,
+      }: {
+        node: Node;
+        current?: Node | null;
+        _previous?: Node | null;
+      }) => {
+        if (!node) {
+          this.logger.warn('Node parent change event received with undefined node');
+          return;
+        }
+
+        const previousParentId = nodeParentStates.get(node.id);
+        const currentParent = current;
+
+        // Safely check if currentParent is a valid Node with isNode method
+        let currentParentId: string | null = null;
+        if (currentParent && typeof currentParent === 'object' && 'isNode' in currentParent) {
+          try {
+            if (typeof currentParent.isNode === 'function' && currentParent.isNode()) {
+              currentParentId = currentParent.id;
+            }
+          } catch (error) {
+            this.logger.warn('Error checking if currentParent is a node', {
+              nodeId: node.id,
+              currentParent,
+              error,
+            });
+          }
+        }
+
+        this.logger.info('Node parent changed', {
+          nodeId: node.id,
+          previousParentId,
+          currentParentId,
+          wasEmbedded: !!previousParentId,
+          isEmbedded: !!currentParentId,
+        });
+
+        // Update parent state tracking
+        nodeParentStates.set(node.id, currentParentId);
+
+        // Detect unembedding: had a parent before, now doesn't
+        if (previousParentId && !currentParentId) {
+          this.logger.info('Detected unembedding via parent change', {
+            nodeId: node.id,
+            formerParentId: previousParentId,
+          });
+          this.handleNodeUnembedded(graph, node);
+        }
+        // Detect embedding: didn't have a parent before, now does
+        else if (
+          !previousParentId &&
+          currentParentId &&
+          currentParent &&
+          typeof currentParent === 'object' &&
+          'isNode' in currentParent
+        ) {
+          try {
+            if (typeof currentParent.isNode === 'function' && currentParent.isNode()) {
+              this.logger.info('Detected embedding via parent change', {
+                nodeId: node.id,
+                newParentId: currentParentId,
+              });
+              this.handleNodeEmbedded(graph, node, currentParent);
+            }
+          } catch (error) {
+            this.logger.warn('Error handling embedding via parent change', {
+              nodeId: node.id,
+              error,
+            });
+          }
+        }
+        // Handle parent change (from one parent to another)
+        else if (
+          previousParentId &&
+          currentParentId &&
+          previousParentId !== currentParentId &&
+          currentParent &&
+          typeof currentParent === 'object' &&
+          'isNode' in currentParent
+        ) {
+          try {
+            if (typeof currentParent.isNode === 'function' && currentParent.isNode()) {
+              this.logger.info('Detected parent change (re-embedding)', {
+                nodeId: node.id,
+                formerParentId: previousParentId,
+                newParentId: currentParentId,
+              });
+              this.handleNodeEmbedded(graph, node, currentParent);
+            }
+          } catch (error) {
+            this.logger.warn('Error handling parent change (re-embedding)', {
+              nodeId: node.id,
+              error,
+            });
+          }
+        }
+      },
+    );
+
     // Handle node movement during embedding
     graph.on('node:moved', ({ node }: { node: Node }) => {
+      if (!node) {
+        this.logger.warn('Node moved event received with undefined node');
+        return;
+      }
+
       this.handleNodeMoved(graph, node);
     });
 
-    this.logger.info('Embedding event handlers set up');
+    // Initialize parent state tracking for existing nodes
+    graph.getNodes().forEach(node => {
+      const parent = node.getParent();
+      const parentId = parent?.isNode() ? parent.id : null;
+      nodeParentStates.set(node.id, parentId);
+    });
+
+    this.logger.info('Embedding event handlers set up with unembedding detection');
   }
 
   /**
@@ -221,47 +379,97 @@ export class X6EmbeddingAdapter {
    * Handle node embedded event
    */
   private handleNodeEmbedded(graph: Graph, node: Node, parent: Node): void {
+    if (!node || !parent) {
+      this.logger.error('handleNodeEmbedded called with invalid parameters', {
+        nodeId: node?.id || 'undefined',
+        parentId: parent?.id || 'undefined',
+      });
+      return;
+    }
+
     this.logger.info('Node embedded', {
       nodeId: node.id,
       parentId: parent.id,
     });
 
-    // Update visual appearance
-    this.updateEmbeddingAppearance(node, parent);
+    try {
+      // Update visual appearance
+      this.updateEmbeddingAppearance(node, parent);
 
-    // Update z-order
-    this.x6ZOrderAdapter.applyEmbeddingZIndexes(parent, node);
+      // Update z-order
+      this.x6ZOrderAdapter.applyEmbeddingZIndexes(parent, node);
 
-    // Update connected edges z-order
-    this.x6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+      // Update connected edges z-order
+      this.x6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+    } catch (error) {
+      this.logger.error('Error handling node embedded event', {
+        nodeId: node.id,
+        parentId: parent.id,
+        error,
+      });
+    }
   }
 
   /**
    * Handle node unembedded event
    */
   private handleNodeUnembedded(graph: Graph, node: Node): void {
+    if (!node) {
+      this.logger.error('handleNodeUnembedded called with invalid node parameter');
+      return;
+    }
+
     this.logger.info('Node unembedded', {
       nodeId: node.id,
     });
 
-    // Reset visual appearance
-    this.resetEmbeddingAppearance(node);
+    try {
+      // Reset visual appearance
+      this.resetEmbeddingAppearance(node);
 
-    // Reset z-order
-    this.x6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
+      // Reset z-order - check if this is a security boundary node
+      const nodeType = (node as any).getNodeTypeInfo
+        ? (node as any).getNodeTypeInfo().type
+        : 'process';
+
+      if (nodeType === 'security-boundary') {
+        // Use specific rule for unembedded security boundary nodes
+        this.x6ZOrderAdapter.applyUnembeddedSecurityBoundaryZIndex(graph, node);
+      } else {
+        // Use general unembedding z-index for other node types
+        this.x6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
+      }
+    } catch (error) {
+      this.logger.error('Error handling node unembedded event', {
+        nodeId: node.id,
+        error,
+      });
+    }
   }
 
   /**
    * Handle node moved event (for embedding operations)
    */
   private handleNodeMoved(graph: Graph, node: Node): void {
-    // Check if this is a z-order restoration case
-    this.x6ZOrderAdapter.handleNodeMovedZOrderRestoration(graph, node);
+    if (!node) {
+      this.logger.error('handleNodeMoved called with invalid node parameter');
+      return;
+    }
 
-    // Update embedding appearance if the node is embedded
-    const parent = node.getParent();
-    if (parent?.isNode()) {
-      this.updateEmbeddingAppearance(node, parent);
+    try {
+      // Check if this is a z-order restoration case
+      this.x6ZOrderAdapter.handleNodeMovedZOrderRestoration(graph, node);
+
+      // Update embedding appearance if the node is embedded
+      const parent = node.getParent();
+      if (parent?.isNode()) {
+        this.updateEmbeddingAppearance(node, parent);
+      }
+    } catch (error) {
+      this.logger.error('Error handling node moved event', {
+        nodeId: node.id,
+        error,
+      });
     }
   }
 

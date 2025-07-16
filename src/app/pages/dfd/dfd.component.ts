@@ -30,6 +30,8 @@ import { EdgeQueryService } from './infrastructure/services/edge-query.service';
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
 import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
 import { X6ZOrderAdapter } from './infrastructure/adapters/x6-z-order.adapter';
+import { X6EmbeddingAdapter } from './infrastructure/adapters/x6-embedding.adapter';
+import { EmbeddingService } from './infrastructure/services/embedding.service';
 
 // Import the new consolidated services
 import { DfdNodeService } from './services/dfd-node.service';
@@ -57,6 +59,10 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     NodeConfigurationService,
     X6KeyboardHandler,
     X6ZOrderAdapter,
+    X6EmbeddingAdapter,
+
+    // Infrastructure services
+    EmbeddingService,
 
     // New consolidated services
     DfdNodeService,
@@ -151,7 +157,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.eventHandlers.selectedCells$.subscribe(selectedCells => {
         this.hasSelectedCells = selectedCells.length > 0;
         this.hasExactlyOneSelectedCell = selectedCells.length === 1;
-        this.selectedCellIsTextBox = selectedCells.some(cell => cell.shape === 'textbox');
+        this.selectedCellIsTextBox = selectedCells.some(cell => cell.shape === 'text-box');
         this.cdr.markForCheck();
       }),
     );
@@ -659,7 +665,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         },
       ],
-      zIndex: 1,
+      zIndex: 1, // Temporary z-index, will be set properly when added to graph
     });
 
     // Add the edge to the graph, which will trigger the normal edge creation flow
