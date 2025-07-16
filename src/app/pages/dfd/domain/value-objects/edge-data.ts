@@ -97,7 +97,7 @@ export class EdgeData {
   }
 
   /**
-   * Creates EdgeData from a plain object (supports both new and legacy formats)
+   * Creates EdgeData from a plain object
    */
   static fromJSON(data: {
     id: string;
@@ -116,7 +116,7 @@ export class EdgeData {
     visible?: boolean;
     metadata?: MetadataEntry[] | Record<string, string>;
   }): EdgeData {
-    // Handle legacy format
+    // Handle format conversion
     let source: Edge.Properties['source'];
     let target: Edge.Properties['target'];
 
@@ -144,12 +144,12 @@ export class EdgeData {
     let attrs = data.attrs || {};
     const labels = data.labels || [];
 
-    // If legacy label is provided, add it to attrs
+    // If label is provided, add it to attrs
     if (data.label && !attrs['text']) {
       attrs = { ...attrs, text: { text: data.label } };
     }
 
-    // Convert metadata if it's in legacy Record format
+    // Convert metadata if it's in Record format
     let metadata: MetadataEntry[] = [];
     if (data.metadata) {
       if (Array.isArray(data.metadata)) {
@@ -174,7 +174,7 @@ export class EdgeData {
   }
 
   /**
-   * Creates EdgeData from legacy format for backward compatibility
+   * Creates EdgeData from alternative format
    */
   static fromLegacyJSON(data: {
     id: string;
@@ -241,7 +241,6 @@ export class EdgeData {
 
   /**
    * Creates a simple edge between two nodes
-   * @deprecated Use EdgeDataFactory.createFromNodes() instead for centralized edge creation
    */
   static createSimple(
     id: string,
@@ -258,7 +257,6 @@ export class EdgeData {
 
   /**
    * Creates an edge with port connections
-   * @deprecated Use EdgeDataFactory.createFromNodes() instead for centralized edge creation
    */
   static createWithPorts(
     id: string,
@@ -352,7 +350,7 @@ export class EdgeData {
       // Already in correct format
       newMetadata = [...this.data, ...metadata];
     } else {
-      // Convert from legacy Record format
+      // Convert from Record format
       const additionalEntries = Object.entries(metadata).map(([key, value]) => ({ key, value }));
       newMetadata = [...this.data, ...additionalEntries];
     }
@@ -578,10 +576,7 @@ export class EdgeData {
   }
 
   /**
-   * Converts metadata array to Record format for backward compatibility
-   * @deprecated Use the metadata property directly instead of converting to Record format.
-   * Normal edge properties should be stored in their dedicated properties (labels, vertices, etc.)
-   * rather than in metadata.
+   * Converts metadata array to Record format
    */
   getMetadataAsRecord(): Record<string, string> {
     const record: Record<string, string> = {};

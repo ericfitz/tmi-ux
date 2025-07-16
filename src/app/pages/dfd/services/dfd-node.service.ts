@@ -7,6 +7,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { NodeType } from '../domain/value-objects/node-data';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
+import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
 import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
 
 /**
@@ -22,6 +23,7 @@ export class DfdNodeService {
     private transloco: TranslocoService,
     private x6GraphAdapter: X6GraphAdapter,
     private x6ZOrderAdapter: X6ZOrderAdapter,
+    private nodeConfigurationService: NodeConfigurationService,
   ) {}
 
   // ========================================
@@ -157,64 +159,12 @@ export class DfdNodeService {
       width: 120,
       height: 80,
       label,
-      data: {
-        type: shapeType, // This allows CSS targeting via [data-type="..."]
-      },
+      // Remove data.type - use shape property instead for type determination
       zIndex: 1, // Temporary z-index, will be set properly after node creation
     };
 
-    // Configure ports with proper magnet properties for edge creation
-    // but minimal styling - let the CSS handle the visual appearance
-    const portConfig = {
-      groups: {
-        top: {
-          position: 'top',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: true,
-              class: 'x6-port-body',
-            },
-          },
-        },
-        right: {
-          position: 'right',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: true,
-              class: 'x6-port-body',
-            },
-          },
-        },
-        bottom: {
-          position: 'bottom',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: true,
-              class: 'x6-port-body',
-            },
-          },
-        },
-        left: {
-          position: 'left',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: true,
-              class: 'x6-port-body',
-            },
-          },
-        },
-      },
-      items: [
-        { id: 'top', group: 'top' },
-        { id: 'right', group: 'right' },
-        { id: 'bottom', group: 'bottom' },
-        { id: 'left', group: 'left' },
-      ],
-    };
+    // Use NodeConfigurationService to get the correct port configuration for this node type
+    const portConfig = this.nodeConfigurationService.getNodePorts(shapeType);
 
     // Adjust dimensions based on node type to match original styling
     switch (shapeType) {
@@ -242,8 +192,24 @@ export class DfdNodeService {
           ports: portConfig,
         };
 
+      case 'security-boundary':
+        return {
+          ...baseConfig,
+          width: 200,
+          height: 150,
+          ports: portConfig,
+        };
+
+      case 'text-box':
+        return {
+          ...baseConfig,
+          width: 100,
+          height: 40,
+          ports: portConfig, // This will be empty for text-box nodes
+        };
+
       default:
-        // Default configuration for security-boundary, textbox, etc.
+        // Fallback for unknown node types
         return {
           ...baseConfig,
           ports: portConfig,

@@ -30,7 +30,6 @@ We strongly prefer using X6 capabilities rather than inventing our own, for inte
 - **✅ IMPLEMENTED**: Nodes can be resized by clicking on them to reveal resize handles, then dragging the handles. The minimum size is 40x30 pixels, and there is no maxiumum size.
 - **✅ IMPLEMENTED**: Node embedding/nesting is supported. When a node is dragged over another node, the potential parent node is highlighted to indicate it can accept the dragged node as a child.
   - **✅ IMPLEMENTED**: Embedded nodes get progressively darker bluish tints based on their nesting depth, providing clear visual feedback of their hierarchy.
-  - **🔄 FUTURE**:
 - **✅ IMPLEMENTED**: Security boundaries have lower z-index to appear behind other nodes
 
 ## Edge Creation and Management
@@ -109,7 +108,7 @@ We strongly prefer using X6 capabilities rather than inventing our own, for inte
 - **✅ IMPLEMENTED**: Selection effects: When a node or edge is selected, it displays a stronger red glow and its stroke width increases to 3 pixels, providing clear visual feedback of its selected state.
 - **✅ IMPLEMENTED**: No traditional selection boxes are displayed around selected nodes or edges.
 - **✅ IMPLEMENTED**: Custom highlighting is implemented using drop-shadow filters, offering a more integrated and visually appealing feedback mechanism compared to standard bounding boxes.
-- **🔄 FUTURE**: API-added cells and cells restored via "undo" get a short highlight effect that is initially bright to call attention to a non-user-added cell, but which fades out over a couple of seconds.
+- **🔄 FUTURE**: New cells and cells restored via "undo" get a short highlight effect that is initially bright to call attention to a non-user-added cell, but which fades out over one second.
 
 ## Tools and Interaction
 

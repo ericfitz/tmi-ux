@@ -8,11 +8,13 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { EdgeService } from './edge.service';
 import { EdgeQueryService } from './edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { PortStateManagerService } from './port-state-manager.service';
+import { X6PortManager } from '../adapters/x6-port-manager';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
-// Mock interfaces for type safety
+// Mock interface for LoggerService only (cross-cutting concern)
 interface MockLoggerService {
   info: ReturnType<typeof vi.fn>;
   debug: ReturnType<typeof vi.fn>;
@@ -23,13 +25,15 @@ interface MockLoggerService {
 describe('EdgeService - X6 Integration Tests', () => {
   let service: EdgeService;
   let queryService: EdgeQueryService;
+  let portStateManager: PortStateManagerService;
+  let portManager: X6PortManager;
   let graph: Graph;
   let sourceNode: Node;
   let targetNode: Node;
   let mockLogger: MockLoggerService;
 
   beforeEach(() => {
-    // Create mocks for dependencies
+    // Create mock for LoggerService (cross-cutting concern)
     mockLogger = {
       info: vi.fn(),
       debug: vi.fn(),
@@ -37,9 +41,20 @@ describe('EdgeService - X6 Integration Tests', () => {
       error: vi.fn(),
     };
 
-    // Create services with mocked dependencies
-    service = new EdgeService(mockLogger as unknown as LoggerService);
+    // Create real service instances for integration testing
     queryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
+    portStateManager = new PortStateManagerService(
+      queryService,
+      mockLogger as unknown as LoggerService,
+    );
+    portManager = new X6PortManager(mockLogger as unknown as LoggerService);
+
+    // Create EdgeService with real port management services
+    service = new EdgeService(
+      mockLogger as unknown as LoggerService,
+      portStateManager,
+      portManager,
+    );
 
     // Create real X6 graph instance
     const container = document.createElement('div');

@@ -6,7 +6,9 @@ import { LoggerService } from '../../../../core/services/logger.service';
  * X6 Port Manager
  * Handles port visibility and management for graph nodes
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class X6PortManager {
   constructor(private logger: LoggerService) {}
 

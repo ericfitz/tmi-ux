@@ -7,6 +7,9 @@ import { ZOrderService } from '../services/z-order.service';
  * X6 Z-Order Adapter
  * Handles X6-specific z-order implementation
  * Works with ZOrderService for business logic
+ *
+ * Uses X6's standard 'shape' property for node type determination.
+ * The deprecated 'data.type' property is no longer used.
  */
 @Injectable()
 export class X6ZOrderAdapter {
@@ -396,13 +399,13 @@ export class X6ZOrderAdapter {
   }
 
   /**
-   * Apply proper z-index for newly created nodes based on node type and context
-   * Rule: New nodes get z-index based on their type - security boundaries (1), regular nodes (10), text-boxes (20)
+   * Apply proper z-index for newly created nodes based on node shape and context
+   * Rule: New nodes get z-index based on their shape - security boundaries (1), regular nodes (10), text-boxes (20)
+   * Uses X6's standard 'shape' property for type determination (not deprecated 'data.type')
    */
   applyNodeCreationZIndex(graph: Graph, node: Node): void {
-    // Get node type from data.type (set by DfdNodeService)
-    const nodeData = node.getData();
-    const nodeType = nodeData?.type || 'process';
+    // Get node type from shape property (X6 standard approach)
+    const nodeType = node.shape || 'process';
 
     // Use getDefaultZIndex for all node types
     const zIndex = this.zOrderService.getDefaultZIndex(nodeType);

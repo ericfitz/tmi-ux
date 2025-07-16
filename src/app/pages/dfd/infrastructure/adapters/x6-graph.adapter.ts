@@ -18,9 +18,11 @@ import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { EmbeddingService } from '../services/embedding.service';
+import { PortStateManagerService } from '../services/port-state-manager.service';
 import { X6KeyboardHandler } from './x6-keyboard-handler';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
+import { X6PortManager } from './x6-port-manager';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -170,9 +172,11 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _edgeQueryService: EdgeQueryService,
     private readonly _nodeConfigurationService: NodeConfigurationService,
     private readonly _embeddingService: EmbeddingService,
+    private readonly _portStateManager: PortStateManagerService,
     private readonly _keyboardHandler: X6KeyboardHandler,
     private readonly _zOrderAdapter: X6ZOrderAdapter,
     private readonly _embeddingAdapter: X6EmbeddingAdapter,
+    private readonly _portManager: X6PortManager,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -555,7 +559,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Enable plugins
     this._setupPlugins();
     this._setupEventListeners();
-    this._setupPortVisibility();
+
+    // Setup port visibility using dedicated port manager
+    this._portManager.setupPortVisibility(this._graph);
+    this._portManager.setupPortTooltips(this._graph);
 
     // Setup keyboard handling using dedicated handler
     this._keyboardHandler.setupKeyboardHandling(this._graph);
@@ -581,6 +588,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     const graph = this.getGraph();
     const nodeType = node.data.shape;
 
+    // Validate that shape property is set correctly
+    this._validateNodeShape(nodeType, node.id);
+
     // Use NodeConfigurationService for node configuration (except z-index)
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
     const nodePorts = this._nodeConfigurationService.getNodePorts(nodeType);
@@ -604,6 +614,9 @@ export class X6GraphAdapter implements IGraphAdapter {
       ports: nodePorts as any,
       zIndex: 1, // Temporary z-index, will be set properly below
     });
+
+    // Validate that the X6 node was created with the correct shape
+    this._validateX6NodeShape(x6Node);
 
     // Set metadata using X6 cell extensions
     (x6Node as any).setApplicationMetadata('type', nodeType);
@@ -650,7 +663,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         itemCount: (snapshot.ports as any).items.length,
       });
     } else if (Array.isArray(snapshot.ports)) {
-      // If snapshot ports is an array (legacy format), reconstruct the complete structure
+      // If snapshot ports is an array, reconstruct the complete structure
       const nodeType = snapshot.data?.find((m: any) => m.key === 'type')?.value || 'process';
       const basePortConfig = this._nodeConfigurationService.getNodePorts(nodeType);
 
@@ -827,9 +840,27 @@ export class X6GraphAdapter implements IGraphAdapter {
     const edge = graph.getCellById(edgeId) as Edge;
 
     if (edge && edge.isEdge()) {
-      // Update port visibility before removing edge
-      this._updatePortVisibilityBeforeEdgeRemoval(edge);
+      // Update port visibility before removing edge using port manager
+      const sourceNodeId = edge.getSourceCellId();
+      const targetNodeId = edge.getTargetCellId();
+
+      // Remove the edge first
       graph.removeEdge(edge);
+
+      // Then update port visibility for affected nodes
+      if (sourceNodeId) {
+        const sourceNode = graph.getCellById(sourceNodeId) as Node;
+        if (sourceNode && sourceNode.isNode()) {
+          this._portManager.updateNodePortVisibility(graph, sourceNode);
+        }
+      }
+
+      if (targetNodeId) {
+        const targetNode = graph.getCellById(targetNodeId) as Node;
+        if (targetNode && targetNode.isNode()) {
+          this._portManager.updateNodePortVisibility(graph, targetNode);
+        }
+      }
     }
   }
 
@@ -1163,7 +1194,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
 
-          // Drag state tracking removed - using simpler approach with initial positions
+          // Using simpler approach with initial positions
 
           // Emit immediate event for UI responsiveness
           this._nodeMoved$.next({
@@ -1172,7 +1203,7 @@ export class X6GraphAdapter implements IGraphAdapter {
             previous: previousPos,
           });
 
-          // Note: Debounced node movement removed - drag completion provides superior tracking
+          // Note: Drag completion provides superior tracking
         }
       },
     );
@@ -1235,9 +1266,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         lineAttrs: edge.attr('line'),
       });
 
-      // Set connecting state and show all ports (consolidated from port visibility setup)
+      // Set connecting state and show all ports using port manager
       this._isConnecting = true;
-      this._showAllPorts();
+      this._portManager.showAllPorts(this._graph!);
     });
 
     this._graph.on('edge:connected', ({ edge }: { edge: Edge }) => {
@@ -1277,9 +1308,9 @@ export class X6GraphAdapter implements IGraphAdapter {
             },
           );
 
-          // Update port visibility after connection (consolidated functionality)
-          this._hideUnconnectedPorts();
-          this._ensureConnectedPortsVisible(edge);
+          // Update port visibility after connection using port manager
+          this._portManager.hideUnconnectedPorts(this._graph!);
+          this._portManager.ensureConnectedPortsVisible(this._graph!, edge);
 
           // Simplified flow without command bus - just emit the edge added event
           this.logger.debugComponent('DFD', '[Edge Creation] Emitting edge added event');
@@ -1304,9 +1335,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         edgeId: edge.id,
       });
 
-      // Reset connecting state and update port visibility (consolidated from port visibility setup)
+      // Reset connecting state and update port visibility using port manager
       this._isConnecting = false;
-      this._hideUnconnectedPorts();
+      this._portManager.hideUnconnectedPorts(this._graph!);
     });
 
     // Note: Embedding event handlers are now managed by X6EmbeddingAdapter
@@ -1358,22 +1389,21 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
       this._edgeRemoved$.next({ edgeId: edge.id, edge });
 
-      // Update port visibility for the source and target nodes
-      // when an edge is removed
+      // Update port visibility for the source and target nodes using port manager
       const sourceCellId = edge.getSourceCellId();
       const targetCellId = edge.getTargetCellId();
 
       if (sourceCellId) {
         const sourceNode = this._graph!.getCellById(sourceCellId) as Node;
         if (sourceNode && sourceNode.isNode()) {
-          this._updateNodePortVisibility(sourceNode);
+          this._portManager.updateNodePortVisibility(this._graph!, sourceNode);
         }
       }
 
       if (targetCellId) {
         const targetNode = this._graph!.getCellById(targetCellId) as Node;
         if (targetNode && targetNode.isNode()) {
-          this._updateNodePortVisibility(targetNode);
+          this._portManager.updateNodePortVisibility(this._graph!, targetNode);
         }
       }
     });
@@ -1471,134 +1501,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         this._addLabelEditor(cell, e);
       }
     });
-  }
-
-  /**
-   * Setup port visibility behavior for connection interactions
-   */
-  private _setupPortVisibility(): void {
-    if (!this._graph) return;
-
-    // Show ports on node hover
-    this._graph.on('node:mouseenter', ({ node }) => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-      });
-    });
-
-    // Hide ports on node leave (unless connecting or connected)
-    this._graph.on('node:mouseleave', ({ node }) => {
-      if (!this._isConnecting) {
-        const ports = node.getPorts();
-        ports.forEach(port => {
-          // Only hide ports that are not connected
-          if (!this._isPortConnected(node, port.id!)) {
-            node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-          }
-        });
-      }
-    });
-
-    // Also listen for mouse down on magnets to show ports
-    this._graph.on('node:magnet:mousedown', () => {
-      this._isConnecting = true;
-      this._showAllPorts();
-    });
-
-    // Handle mouse up to stop connecting if no valid connection was made
-    this._graph.on('blank:mouseup', () => {
-      if (this._isConnecting) {
-        this._isConnecting = false;
-        this._hideUnconnectedPorts();
-      }
-    });
-  }
-
-  /**
-   * Hide all ports on all nodes
-   */
-  private _hideAllPorts(): void {
-    if (!this._graph) return;
-
-    this._graph.getNodes().forEach(node => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-      });
-    });
-  }
-
-  // Ensure that the ports connected by a specific edge remain visible
-  private _ensureConnectedPortsVisible(edge: Edge): void {
-    if (!this._graph) return;
-
-    const sourceCellId = edge.getSourceCellId();
-    const targetCellId = edge.getTargetCellId();
-    const sourcePortId = edge.getSourcePortId();
-    const targetPortId = edge.getTargetPortId();
-
-    this.logger.info('FIXED: Ensuring connected ports are visible for edge', {
-      edgeId: edge.id,
-      sourceCellId,
-      targetCellId,
-      sourcePortId,
-      targetPortId,
-    });
-
-    // Make sure source port is visible
-    if (sourceCellId && sourcePortId) {
-      const sourceNode = this._graph.getCellById(sourceCellId) as Node;
-      if (sourceNode && sourceNode.isNode()) {
-        // Verify port exists before setting visibility
-        const ports = sourceNode.getPorts();
-        const portExists = ports.some(port => port.id === sourcePortId);
-
-        if (portExists) {
-          sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
-          this.logger.info('FIXED: Made source port visible', {
-            edgeId: edge.id,
-            sourceNodeId: sourceCellId,
-            sourcePortId,
-            portExists: true,
-          });
-        } else {
-          this.logger.warn('FIXED: Source port does not exist on node', {
-            edgeId: edge.id,
-            sourceNodeId: sourceCellId,
-            sourcePortId,
-            availablePorts: ports.map(p => p.id),
-          });
-        }
-      }
-    }
-
-    // Make sure target port is visible
-    if (targetCellId && targetPortId) {
-      const targetNode = this._graph.getCellById(targetCellId) as Node;
-      if (targetNode && targetNode.isNode()) {
-        // Verify port exists before setting visibility
-        const ports = targetNode.getPorts();
-        const portExists = ports.some(port => port.id === targetPortId);
-
-        if (portExists) {
-          targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
-          this.logger.info('FIXED: Made target port visible', {
-            edgeId: edge.id,
-            targetNodeId: targetCellId,
-            targetPortId,
-            portExists: true,
-          });
-        } else {
-          this.logger.warn('FIXED: Target port does not exist on node', {
-            edgeId: edge.id,
-            targetNodeId: targetCellId,
-            targetPortId,
-            availablePorts: ports.map(p => p.id),
-          });
-        }
-      }
-    }
   }
 
   /**
@@ -1875,7 +1777,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         });
 
         // Update the edge metadata with new vertices
-        // @deprecated Storing vertices in metadata is deprecated. Use the dedicated vertices property instead.
         if ((edge as any).setApplicationMetadata) {
           (edge as any).setApplicationMetadata(
             'vertices',
@@ -1919,8 +1820,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           newSourcePortId: sourcePortId,
         });
 
-        // Update port visibility for old and new source nodes
-        this._updateAllNodePortVisibility();
+        // Update port visibility for old and new source nodes using port manager
+        this._portManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -1935,8 +1836,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           newTargetPortId: targetPortId,
         });
 
-        // Update port visibility for old and new target nodes
-        this._updateAllNodePortVisibility();
+        // Update port visibility for old and new target nodes using port manager
+        this._portManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -1946,18 +1847,6 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Note: Event handlers are managed by X6 graph event system
     // No need to store handler references in metadata
-  }
-
-  /**
-   * Update port visibility for all nodes after a connection change
-   */
-  private _updatePortVisibilityAfterConnectionChange(): void {
-    if (!this._graph) return;
-
-    // Update port visibility for all nodes to reflect new connection states
-    this._graph.getNodes().forEach(node => {
-      this._updateNodePortVisibility(node);
-    });
   }
 
   /**
@@ -2082,7 +1971,6 @@ export class X6GraphAdapter implements IGraphAdapter {
 
   /**
    * Update port visibility for connected nodes after edge creation
-   * @deprecated This functionality is now handled by EdgeService.createEdge()
    */
   private _updatePortVisibilityAfterEdgeCreation(edge: Edge): void {
     const graph = this.getGraph();
@@ -2090,18 +1978,17 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Set edge z-order to the higher of source or target node z-orders
     this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
-    // Ensure connected ports are visible after edge restoration
-    // This is essential for undo/redo operations where edges are restored from snapshots
-    this._ensureConnectedPortsVisible(edge);
+    // Use port manager for port visibility updates
+    this._portManager.ensureConnectedPortsVisible(graph, edge);
 
-    // Update port visibility for connected nodes
+    // Update port visibility for connected nodes using port manager
     const sourceNodeId = edge.getSourceCellId();
     const targetNodeId = edge.getTargetCellId();
 
     if (sourceNodeId) {
       const sourceNode = graph.getCellById(sourceNodeId);
       if (sourceNode && sourceNode.isNode()) {
-        this._updateNodePortVisibility(sourceNode);
+        this._portManager.updateNodePortVisibility(graph, sourceNode);
         this.logger.info('Updated source node port visibility after edge creation', {
           edgeId: edge.id,
           sourceNodeId,
@@ -2113,40 +2000,11 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (targetNodeId) {
       const targetNode = graph.getCellById(targetNodeId);
       if (targetNode && targetNode.isNode()) {
-        this._updateNodePortVisibility(targetNode);
+        this._portManager.updateNodePortVisibility(graph, targetNode);
         this.logger.info('Updated target node port visibility after edge creation', {
           edgeId: edge.id,
           targetNodeId,
           targetPortId: edge.getTargetPortId(),
-        });
-      }
-    }
-
-    // Double-check that the specific ports connected by this edge are visible
-    // This ensures that undo/redo operations properly restore port visibility
-    const sourcePortId = edge.getSourcePortId();
-    const targetPortId = edge.getTargetPortId();
-
-    if (sourceNodeId && sourcePortId) {
-      const sourceNode = graph.getCellById(sourceNodeId);
-      if (sourceNode && sourceNode.isNode()) {
-        sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
-        this.logger.info('FIXED: Ensured source port visibility after edge restoration', {
-          edgeId: edge.id,
-          sourceNodeId,
-          sourcePortId,
-        });
-      }
-    }
-
-    if (targetNodeId && targetPortId) {
-      const targetNode = graph.getCellById(targetNodeId);
-      if (targetNode && targetNode.isNode()) {
-        targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
-        this.logger.info('FIXED: Ensured target port visibility after edge restoration', {
-          edgeId: edge.id,
-          targetNodeId,
-          targetPortId,
         });
       }
     }
@@ -2179,130 +2037,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         },
       },
     ];
-  }
-
-  /**
-   * Update port visibility before edge removal
-   */
-  private _updatePortVisibilityBeforeEdgeRemoval(edge: Edge): void {
-    const sourceNodeId = edge.getSourceCellId();
-    const targetNodeId = edge.getTargetCellId();
-    const sourcePortId = edge.getSourcePortId();
-    const targetPortId = edge.getTargetPortId();
-
-    // Update port visibility for source and target nodes
-    if (sourceNodeId && sourcePortId) {
-      const sourceNode = this._graph!.getCellById(sourceNodeId) as Node;
-      if (sourceNode && sourceNode.isNode()) {
-        this._updateNodePortVisibilityAfterEdgeRemoval(sourceNode, sourcePortId, edge);
-      }
-    }
-
-    if (targetNodeId && targetPortId) {
-      const targetNode = this._graph!.getCellById(targetNodeId) as Node;
-      if (targetNode && targetNode.isNode()) {
-        this._updateNodePortVisibilityAfterEdgeRemoval(targetNode, targetPortId, edge);
-      }
-    }
-  }
-
-  /**
-   * Update port visibility for a specific node and port after edge removal
-   */
-  private _updateNodePortVisibilityAfterEdgeRemoval(
-    node: Node,
-    portId: string,
-    edgeToRemove: Edge,
-  ): void {
-    // Check if this port will still be connected to any other edges after removing the specified edge
-    const edges = this._graph!.getEdges();
-    const willStillBeConnected = edges.some((edge: Edge) => {
-      // Skip the edge we're about to remove
-      if (edge.id === edgeToRemove.id) {
-        return false;
-      }
-
-      const sourceCellId = edge.getSourceCellId();
-      const targetCellId = edge.getTargetCellId();
-      const sourcePortId = edge.getSourcePortId();
-      const targetPortId = edge.getTargetPortId();
-
-      // Check if this edge connects to the specific port on this node
-      return (
-        (sourceCellId === node.id && sourcePortId === portId) ||
-        (targetCellId === node.id && targetPortId === portId)
-      );
-    });
-
-    // Set port visibility based on whether it will still be connected
-    const visibility = willStillBeConnected ? 'visible' : 'hidden';
-    node.setPortProp(portId, 'attrs/circle/style/visibility', visibility);
-  }
-
-  /**
-   * Update port visibility for all nodes based on connection status
-   */
-  private _updateAllNodePortVisibility(): void {
-    if (!this._graph) return;
-
-    const nodes = this._graph.getNodes();
-    nodes.forEach(node => {
-      this._updateNodePortVisibility(node);
-    });
-  }
-
-  /**
-   * Update port visibility for a specific node based on connection status
-   */
-  private _updateNodePortVisibility(node: Node): void {
-    if (!this._graph) return;
-
-    const ports = node.getPorts();
-    ports.forEach(port => {
-      // Check if this port is connected to any edge
-      if (this._isPortConnected(node, port.id!)) {
-        // Keep connected ports visible
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-      } else {
-        // Hide unconnected ports
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-      }
-    });
-  }
-
-  /**
-   * Check if a specific port is connected to any edge
-   */
-  private _isPortConnected(node: Node, portId: string): boolean {
-    if (!this._graph) return false;
-    return this._edgeQueryService.isPortConnected(this._graph, node.id, portId);
-  }
-
-  /**
-   * Show all ports on all nodes (used during edge creation)
-   */
-  private _showAllPorts(): void {
-    if (!this._graph) return;
-
-    const nodes = this._graph.getNodes();
-    nodes.forEach(node => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-      });
-    });
-  }
-
-  /**
-   * Hide only unconnected ports on all nodes
-   */
-  private _hideUnconnectedPorts(): void {
-    if (!this._graph) return;
-
-    const nodes = this._graph.getNodes();
-    nodes.forEach(node => {
-      this._updateNodePortVisibility(node);
-    });
   }
 
   /**
@@ -2348,5 +2082,66 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._previousCanUndo = canUndo;
       this._previousCanRedo = canRedo;
     }
+  }
+
+  /**
+   * Validate that a node shape is properly set and is a valid shape type
+   */
+  private _validateNodeShape(nodeType: string, nodeId: string): void {
+    if (!nodeType || typeof nodeType !== 'string') {
+      const error = `Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`;
+      this.logger.error(error);
+      throw new Error(error);
+    }
+
+    // Validate against known shape types
+    const validShapes = ['process', 'store', 'external-entity', 'text-box'];
+    if (!validShapes.includes(nodeType)) {
+      const error = `Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
+      this.logger.error(error);
+      throw new Error(error);
+    }
+
+    this.logger.debugComponent('DFD', 'Node shape validation passed', {
+      nodeId,
+      nodeType,
+      validShapes,
+    });
+  }
+
+  /**
+   * Validate that an X6 node was created with the correct shape property
+   */
+  private _validateX6NodeShape(x6Node: Node): void {
+    const nodeShape = x6Node.shape;
+    const nodeId = x6Node.id;
+
+    if (!nodeShape || typeof nodeShape !== 'string') {
+      const error = `X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`;
+      this.logger.error(error);
+      throw new Error(error);
+    }
+
+    // Ensure the shape property matches what we expect
+    const validShapes = ['process', 'store', 'external-entity', 'text-box'];
+    if (!validShapes.includes(nodeShape)) {
+      const error = `X6 node created with invalid shape: '${nodeShape}'. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
+      this.logger.error(error);
+      throw new Error(error);
+    }
+
+    // Verify that no data.type property exists (should only use shape)
+    const nodeData = x6Node.getData();
+    if (nodeData && 'type' in nodeData) {
+      const warning = `X6 node has data.type property. Only shape property should be used for type determination. Node ID: ${nodeId}, data.type: ${nodeData.type}, shape: ${nodeShape}`;
+      this.logger.warn(warning);
+      // Don't throw error, just warn since this might be from existing data
+    }
+
+    this.logger.debugComponent('DFD', 'X6 node shape validation passed', {
+      nodeId,
+      nodeShape,
+      hasDataType: nodeData && 'type' in nodeData,
+    });
   }
 }

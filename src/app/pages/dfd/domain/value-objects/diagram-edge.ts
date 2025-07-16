@@ -67,17 +67,14 @@ export class DiagramEdge {
   }
 
   /**
-   * Gets the edge vertices (converted to Point objects for backward compatibility)
+   * Gets the edge vertices (converted to Point objects)
    */
   get vertices(): Point[] {
     return this._data.vertices.map(v => new Point(v.x, v.y));
   }
 
   /**
-   * Gets the edge metadata (converted to Record format for backward compatibility)
-   * @deprecated Use this._data.metadata directly instead of converting to Record format.
-   * Normal edge properties should be stored in their dedicated properties (labels, vertices, etc.)
-   * rather than in metadata.
+   * Gets the edge metadata (converted to Record format)
    */
   get metadata(): Record<string, string> {
     return this._data.getMetadataAsRecord();

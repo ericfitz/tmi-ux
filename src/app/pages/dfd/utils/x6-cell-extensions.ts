@@ -216,20 +216,6 @@ export function initializeX6CellExtensions(): void {
     if (!this.isNode()) {
       return;
     }
-
-    const ports = this.getPorts();
-    if (!ports || ports.length === 0) {
-      return;
-    }
-
-    // This method will be enhanced when we integrate with PortStateManager
-    // For now, it provides a placeholder for the unified interface
-    ports.forEach((port: any) => {
-      // Basic visibility logic - will be replaced with PortStateManager logic
-      const isConnected = this._isPortConnectedBasic ? this._isPortConnectedBasic(port.id) : false;
-      const visibility = isConnected ? 'visible' : 'hidden';
-      this.setPortProp(port.id, 'attrs/circle/style/visibility', visibility);
-    });
   };
 
   // Add getPortConnectionState method to Cell prototype
@@ -238,28 +224,10 @@ export function initializeX6CellExtensions(): void {
       return null;
     }
 
-    const ports = this.getPorts();
-    const connectedPorts = new Set<string>();
-    const visiblePorts = new Set<string>();
-
-    ports.forEach((port: any) => {
-      // Basic connection detection - will be enhanced with PortStateManager
-      const isConnected = this._isPortConnectedBasic ? this._isPortConnectedBasic(port.id) : false;
-      if (isConnected) {
-        connectedPorts.add(port.id);
-      }
-
-      // Check visibility
-      const visibility = port.attrs?.circle?.style?.visibility;
-      if (visibility === 'visible') {
-        visiblePorts.add(port.id);
-      }
-    });
-
     return {
       nodeId: this.id,
-      connectedPorts,
-      visiblePorts,
+      connectedPorts: new Set<string>(),
+      visiblePorts: new Set<string>(),
       lastUpdated: new Date(),
     };
   };

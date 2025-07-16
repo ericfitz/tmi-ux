@@ -26,3 +26,6 @@ AI assistants should update this list whenever adding a new file, or when you di
 
 - tmi-server-integration-plan.md
   This file describes how we will integrate the application and the TMI server.
+
+- INTEGRATION_TESTING_APPROACH.md
+  This file describes the integration testing approach implemented for DFD services to eliminate mock logic duplication and improve test reliability.

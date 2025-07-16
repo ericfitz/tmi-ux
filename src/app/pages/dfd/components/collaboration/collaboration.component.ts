@@ -223,6 +223,4 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         return '';
     }
   }
-
-  // The getRoleDisplayName method is no longer needed as we're using translations
 }

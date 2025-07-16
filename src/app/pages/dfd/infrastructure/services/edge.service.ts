@@ -3,6 +3,8 @@ import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { EdgeData } from '../../domain/value-objects/edge-data';
+import { PortStateManagerService } from './port-state-manager.service';
+import { X6PortManager } from '../adapters/x6-port-manager';
 
 /**
  * Consolidated Edge Service
@@ -19,7 +21,11 @@ import { EdgeData } from '../../domain/value-objects/edge-data';
   providedIn: 'root',
 })
 export class EdgeService {
-  constructor(private readonly _logger: LoggerService) {}
+  constructor(
+    private readonly _logger: LoggerService,
+    private readonly _portStateManager: PortStateManagerService,
+    private readonly _portManager: X6PortManager,
+  ) {}
 
   /**
    * Create an edge in the X6 graph from EdgeData or X6EdgeSnapshot
@@ -73,9 +79,9 @@ export class EdgeService {
       x6Edge.setMetadata(snapshot.data);
     }
 
-    // Update port visibility if requested
+    // Update port visibility if requested using dedicated port manager
     if (updatePortVisibility) {
-      this._updatePortVisibilityAfterEdgeCreation(graph, x6Edge);
+      this._portManager.ensureConnectedPortsVisible(graph, x6Edge);
     }
 
     this._logger.debug('Edge created successfully', {
@@ -107,10 +113,6 @@ export class EdgeService {
       options,
     });
 
-    // Store original connections for port visibility updates
-    const originalSource = updatePortVisibility ? edge.getSource() : null;
-    const originalTarget = updatePortVisibility ? edge.getTarget() : null;
-
     // Apply X6 native property updates directly
     if (updates.source !== undefined) {
       edge.setSource(updates.source);
@@ -120,13 +122,13 @@ export class EdgeService {
       edge.setTarget(updates.target);
     }
 
-    // Update port visibility if connections changed
+    // Update port visibility if connections changed using dedicated port manager
     if (
       updatePortVisibility &&
       graph &&
       (updates.source !== undefined || updates.target !== undefined)
     ) {
-      this._updatePortVisibilityAfterEdgeUpdate(edge, originalSource, originalTarget, graph);
+      this._portManager.onConnectionChange(graph);
     }
 
     if (updates.vertices !== undefined) {
@@ -207,10 +209,26 @@ export class EdgeService {
     const edge = graph.getCellById(edgeId) as Edge;
 
     if (edge && edge.isEdge()) {
-      // Update port visibility before removing edge
-      this._updatePortVisibilityBeforeEdgeRemoval(graph, edge);
+      // Update port visibility before removing edge using dedicated port manager
+      const sourceNodeId = edge.getSourceCellId();
+      const targetNodeId = edge.getTargetCellId();
 
       graph.removeEdge(edge);
+
+      // Update port visibility for affected nodes after removal
+      if (sourceNodeId) {
+        const sourceNode = graph.getCellById(sourceNodeId) as Node;
+        if (sourceNode && sourceNode.isNode()) {
+          this._portManager.updateNodePortVisibility(graph, sourceNode);
+        }
+      }
+
+      if (targetNodeId) {
+        const targetNode = graph.getCellById(targetNodeId) as Node;
+        if (targetNode && targetNode.isNode()) {
+          this._portManager.updateNodePortVisibility(graph, targetNode);
+        }
+      }
 
       this._logger.debug('Edge removed successfully', { edgeId });
       return true;
@@ -396,215 +414,5 @@ export class EdgeService {
         });
       }
     }
-  }
-
-  /**
-   * Update port visibility for connected nodes after edge creation
-   */
-  private _updatePortVisibilityAfterEdgeCreation(graph: any, edge: Edge): void {
-    const sourceNodeId = edge.getSourceCellId();
-    const targetNodeId = edge.getTargetCellId();
-    const sourcePortId = edge.getSourcePortId();
-    const targetPortId = edge.getTargetPortId();
-
-    this._logger.debug('Updating port visibility after edge creation', {
-      edgeId: edge.id,
-      sourceNodeId,
-      targetNodeId,
-      sourcePortId,
-      targetPortId,
-    });
-
-    // Make source port visible
-    if (sourceNodeId && sourcePortId) {
-      const sourceNode = graph.getCellById(sourceNodeId) as Node;
-      if (sourceNode && sourceNode.isNode()) {
-        const ports = sourceNode.getPorts();
-        const portExists = ports.some((port: any) => port.id === sourcePortId);
-
-        if (portExists) {
-          sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
-          this._logger.debug('Made source port visible', {
-            edgeId: edge.id,
-            sourceNodeId,
-            sourcePortId,
-          });
-        }
-      }
-    }
-
-    // Make target port visible
-    if (targetNodeId && targetPortId) {
-      const targetNode = graph.getCellById(targetNodeId) as Node;
-      if (targetNode && targetNode.isNode()) {
-        const ports = targetNode.getPorts();
-        const portExists = ports.some((port: any) => port.id === targetPortId);
-
-        if (portExists) {
-          targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
-          this._logger.debug('Made target port visible', {
-            edgeId: edge.id,
-            targetNodeId,
-            targetPortId,
-          });
-        }
-      }
-    }
-  }
-
-  /**
-   * Update port visibility for connected nodes before edge removal
-   */
-  private _updatePortVisibilityBeforeEdgeRemoval(graph: any, edge: Edge): void {
-    const sourceNodeId = edge.getSourceCellId();
-    const targetNodeId = edge.getTargetCellId();
-    const sourcePortId = edge.getSourcePortId();
-    const targetPortId = edge.getTargetPortId();
-
-    // Update port visibility for source and target nodes
-    // We need to check if ports will still be connected after this edge is removed
-    if (sourceNodeId && sourcePortId) {
-      const sourceNode = graph.getCellById(sourceNodeId) as Node;
-      if (sourceNode && sourceNode.isNode()) {
-        this._updateNodePortVisibilityAfterEdgeRemoval(graph, sourceNode, sourcePortId, edge);
-      }
-    }
-
-    if (targetNodeId && targetPortId) {
-      const targetNode = graph.getCellById(targetNodeId) as Node;
-      if (targetNode && targetNode.isNode()) {
-        this._updateNodePortVisibilityAfterEdgeRemoval(graph, targetNode, targetPortId, edge);
-      }
-    }
-  }
-
-  /**
-   * Update port visibility for a specific node and port after edge removal
-   */
-  private _updateNodePortVisibilityAfterEdgeRemoval(
-    graph: any,
-    node: Node,
-    portId: string,
-    edgeToRemove: Edge,
-  ): void {
-    // Check if this port will still be connected to any other edges after removing the specified edge
-    const edges = graph.getEdges();
-    const willStillBeConnected = edges.some((edge: Edge) => {
-      // Skip the edge we're about to remove
-      if (edge.id === edgeToRemove.id) {
-        return false;
-      }
-
-      const sourceCellId = edge.getSourceCellId();
-      const targetCellId = edge.getTargetCellId();
-      const sourcePortId = edge.getSourcePortId();
-      const targetPortId = edge.getTargetPortId();
-
-      // Check if this edge connects to the specific port on this node
-      return (
-        (sourceCellId === node.id && sourcePortId === portId) ||
-        (targetCellId === node.id && targetPortId === portId)
-      );
-    });
-
-    // Set port visibility based on whether it will still be connected
-    const visibility = willStillBeConnected ? 'visible' : 'hidden';
-    node.setPortProp(portId, 'attrs/circle/style/visibility', visibility);
-
-    this._logger.debug('Updated port visibility after edge removal', {
-      nodeId: node.id,
-      portId,
-      edgeToRemoveId: edgeToRemove.id,
-      willStillBeConnected,
-      visibility,
-    });
-  }
-
-  /**
-   * Update port visibility for a specific node based on connection status
-   */
-  private _updateNodePortVisibility(graph: any, node: Node): void {
-    const ports = node.getPorts();
-    ports.forEach((port: any) => {
-      // Check if this port is connected to any edge
-      if (this._isPortConnected(graph, node, port.id)) {
-        // Keep connected ports visible
-        node.setPortProp(port.id, 'attrs/circle/style/visibility', 'visible');
-      } else {
-        // Hide unconnected ports
-        node.setPortProp(port.id, 'attrs/circle/style/visibility', 'hidden');
-      }
-    });
-  }
-
-  /**
-   * Check if a specific port is connected to any edge
-   */
-  private _isPortConnected(graph: any, node: Node, portId: string): boolean {
-    const edges = graph.getEdges();
-    return edges.some((edge: Edge) => {
-      const sourceCellId = edge.getSourceCellId();
-      const targetCellId = edge.getTargetCellId();
-      const sourcePortId = edge.getSourcePortId();
-      const targetPortId = edge.getTargetPortId();
-
-      // Check if this edge connects to the specific port on this node
-      return (
-        (sourceCellId === node.id && sourcePortId === portId) ||
-        (targetCellId === node.id && targetPortId === portId)
-      );
-    });
-  }
-
-  /**
-   * Update port visibility after edge connection update
-   */
-  private _updatePortVisibilityAfterEdgeUpdate(
-    edge: Edge,
-    originalSource: any,
-    originalTarget: any,
-    graph: any,
-  ): void {
-    if (!graph) {
-      this._logger.warn('Cannot update port visibility: graph not found', { edgeId: edge.id });
-      return;
-    }
-
-    // Handle old source port visibility
-    if (originalSource?.cell && originalSource?.port) {
-      const oldSourceNode = graph.getCellById(originalSource.cell) as Node;
-      if (oldSourceNode && oldSourceNode.isNode()) {
-        this._updateNodePortVisibilityAfterEdgeRemoval(
-          graph,
-          oldSourceNode,
-          originalSource.port,
-          edge,
-        );
-      }
-    }
-
-    // Handle old target port visibility
-    if (originalTarget?.cell && originalTarget?.port) {
-      const oldTargetNode = graph.getCellById(originalTarget.cell) as Node;
-      if (oldTargetNode && oldTargetNode.isNode()) {
-        this._updateNodePortVisibilityAfterEdgeRemoval(
-          graph,
-          oldTargetNode,
-          originalTarget.port,
-          edge,
-        );
-      }
-    }
-
-    // Handle new connections
-    this._updatePortVisibilityAfterEdgeCreation(graph, edge);
-
-    this._logger.debug('Updated port visibility after edge connection change', {
-      edgeId: edge.id,
-      originalSource,
-      originalTarget,
-      newSource: edge.getSource(),
-      newTarget: edge.getTarget(),
-    });
   }
 }
