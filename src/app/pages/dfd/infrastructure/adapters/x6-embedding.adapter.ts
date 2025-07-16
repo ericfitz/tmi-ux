@@ -543,12 +543,6 @@ export class X6EmbeddingAdapter {
     }
 
     node.setAttrs(updatedAttrs);
-
-    // Store embedding metadata
-    if ((node as any).setApplicationMetadata) {
-      (node as any).setApplicationMetadata('embeddingDepth', String(depth));
-      (node as any).setApplicationMetadata('embeddingFillColor', fillColor);
-    }
   }
 
   /**

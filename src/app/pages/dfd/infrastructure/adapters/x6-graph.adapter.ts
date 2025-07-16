@@ -1077,7 +1077,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   getCellLabel(cell: Cell): string {
     // Use X6 cell extensions for unified label handling
-    return (cell as any).getUnifiedLabel ? (cell as any).getUnifiedLabel() : '';
+    return (cell as any).getLabel ? (cell as any).getLabel() : '';
   }
 
   /**
@@ -1102,8 +1102,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     // Use X6 cell extensions for unified label handling
-    if ((cell as any).setUnifiedLabel) {
-      (cell as any).setUnifiedLabel(text);
+    if ((cell as any).setLabel) {
+      (cell as any).setLabel(text);
     }
 
     // Trigger cell:change:data event for history integration
@@ -1290,15 +1290,12 @@ export class X6GraphAdapter implements IGraphAdapter {
       const targetId = edge.getTargetCellId();
 
       if (sourceId && targetId) {
-        // Set edge z-order to the higher of source or target node z-orders
-        this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
-
         // CRITICAL FIX: Add a small delay to ensure X6 has fully established the connection
-        // before capturing the port information - may need to revisit this implementation for reliability
+        // before capturing the port information and setting zIndex - may need to revisit this implementation for reliability
         setTimeout(() => {
           this.logger.debugComponent(
             'DFD',
-            '[Edge Creation] Delayed port capture after connection',
+            '[Edge Creation] Delayed port capture and zIndex setting after connection',
             {
               edgeId: edge.id,
               sourcePortId: edge.getSourcePortId(),
@@ -1307,6 +1304,9 @@ export class X6GraphAdapter implements IGraphAdapter {
               target: edge.getTarget(),
             },
           );
+
+          // FIXED: Set edge z-order to the higher of source or target node z-orders AFTER connection is established
+          this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
           // Update port visibility after connection using port manager
           this._portManager.hideUnconnectedPorts(this._graph!);
@@ -1975,7 +1975,8 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _updatePortVisibilityAfterEdgeCreation(edge: Edge): void {
     const graph = this.getGraph();
 
-    // Set edge z-order to the higher of source or target node z-orders
+    // FIXED: Set edge z-order to the higher of source or target node z-orders
+    // This ensures programmatically added edges also get correct zIndex
     this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
     // Use port manager for port visibility updates
