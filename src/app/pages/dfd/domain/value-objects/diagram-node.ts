@@ -3,6 +3,7 @@ import { Point } from './point';
 
 /**
  * DiagramNode entity representing a node in the diagram domain
+ * Uses the 'shape' property for node type determination, following X6 standards.
  */
 export class DiagramNode {
   private _data: NodeData;
@@ -29,10 +30,10 @@ export class DiagramNode {
   }
 
   /**
-   * Gets the node type
+   * Gets the node type from the shape property
    */
   get type(): string {
-    return this._data.type;
+    return this._data.shape;
   }
 
   /**
@@ -46,7 +47,7 @@ export class DiagramNode {
    * Gets the node position
    */
   get position(): Point {
-    return this._data.position;
+    return new Point(this._data.position.x, this._data.position.y);
   }
 
   /**
@@ -67,7 +68,7 @@ export class DiagramNode {
    * Gets the node metadata
    */
   get metadata(): Record<string, string> {
-    return this._data.metadata;
+    return this._data.getMetadataAsRecord();
   }
 
   /**

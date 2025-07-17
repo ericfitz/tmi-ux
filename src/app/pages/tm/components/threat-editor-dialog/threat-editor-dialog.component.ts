@@ -662,9 +662,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Get the translation
       const translation = this.translocoService.translate(key);
 
-      // Log the translation for debugging
-      this.logger.debug(`Translation for ${key}: ${translation}`);
-
       // If translation is missing or empty, try to load it again
       if (!translation || translation === key) {
         this.logger.warn(`Missing translation for key: ${key}`);

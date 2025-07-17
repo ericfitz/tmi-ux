@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Graph, Node, Edge, Cell, Shape } from '@antv/x6';
+import { Graph, Node, Edge, Cell } from '@antv/x6';
 import '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
+import { History } from '@antv/x6-plugin-history';
 import { v4 as uuidv4 } from 'uuid';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
@@ -12,60 +13,19 @@ import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DiagramCommandFactory } from '../../domain/commands/diagram-commands';
-import { ICommandBus } from '../../application/interfaces/command-bus.interface';
-import { OperationStateTracker } from '../services/operation-state-tracker.service';
-import { OperationType } from '../../domain/history/history.types';
+import { X6NodeSnapshot, X6EdgeSnapshot } from '../../types/x6-cell.types';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { EdgeQueryService } from '../services/edge-query.service';
+import { NodeConfigurationService } from '../services/node-configuration.service';
+import { EmbeddingService } from '../services/embedding.service';
+import { PortStateManagerService } from '../services/port-state-manager.service';
+import { X6KeyboardHandler } from './x6-keyboard-handler';
+import { X6ZOrderAdapter } from './x6-z-order.adapter';
+import { X6EmbeddingAdapter } from './x6-embedding.adapter';
+import { X6PortManager } from './x6-port-manager';
 
-// Register custom store shape with only top and bottom borders
-Shape.Rect.define({
-  shape: 'store-shape',
-  markup: [
-    {
-      tagName: 'rect',
-      selector: 'body',
-    },
-    {
-      tagName: 'text',
-      selector: 'text',
-    },
-    {
-      tagName: 'path',
-      selector: 'topLine',
-    },
-    {
-      tagName: 'path',
-      selector: 'bottomLine',
-    },
-  ],
-  attrs: {
-    topLine: {
-      stroke: '#333333',
-      strokeWidth: 2,
-      refD: 'M 0 0 l 200 0',
-    },
-    bottomLine: {
-      stroke: '#333333',
-      strokeWidth: 2,
-      refY: '100%',
-      refD: 'M 0 0 l 200 0',
-    },
-    body: {
-      fill: '#FFFFFF',
-      stroke: 'transparent',
-      strokeWidth: 0,
-    },
-    text: {
-      refX: '50%',
-      refY: '50%',
-      textAnchor: 'middle',
-      textVerticalAnchor: 'middle',
-      fontFamily: '"Roboto Condensed", Arial, sans-serif',
-      fontSize: 12,
-      fill: '#000000',
-    },
-  },
-});
+// Import the extracted shape definitions
+import { registerCustomShapes } from './x6-shape-definitions';
 
 /**
  * X6 Graph Adapter that provides abstraction over X6 Graph operations
@@ -73,53 +33,105 @@ Shape.Rect.define({
  */
 @Injectable()
 export class X6GraphAdapter implements IGraphAdapter {
+  /**
+   * Standard tool configurations for consistent behavior
+   */
+  private static readonly NODE_TOOLS = [
+    {
+      name: 'button-remove',
+      args: {
+        x: '100%',
+        y: 0,
+        offset: { x: -10, y: 10 },
+      },
+    },
+    {
+      name: 'boundary',
+      args: {
+        padding: 5,
+        attrs: {
+          fill: 'none',
+          stroke: '#fe854f',
+          'stroke-width': 2,
+          'stroke-dasharray': '5,5',
+          'pointer-events': 'none',
+        },
+      },
+    },
+  ];
+
+  private static readonly EDGE_TOOLS = [
+    {
+      name: 'vertices',
+      args: {
+        attrs: {
+          body: {
+            fill: '#fe854f',
+            stroke: '#fe854f',
+            'stroke-width': 2,
+            r: 5,
+            cursor: 'move',
+          },
+        },
+        addable: true,
+        removable: true,
+        snapRadius: 10,
+        threshold: 40,
+        stopPropagation: false,
+        useCellGeometry: true,
+      },
+    },
+    {
+      name: 'source-arrowhead',
+      args: {
+        attrs: {
+          fill: '#31d0c6',
+          stroke: '#31d0c6',
+          'stroke-width': 2,
+          r: 6,
+          cursor: 'move',
+        },
+        tagName: 'circle',
+        stopPropagation: false,
+      },
+    },
+    {
+      name: 'target-arrowhead',
+      args: {
+        attrs: {
+          fill: '#fe854f',
+          stroke: '#fe854f',
+          'stroke-width': 2,
+          r: 6,
+          cursor: 'move',
+        },
+        tagName: 'circle',
+        stopPropagation: false,
+      },
+    },
+    {
+      name: 'button-remove',
+      args: {
+        distance: 0.5,
+        offset: { x: 10, y: -10 },
+      },
+    },
+  ];
+
   private _graph: Graph | null = null;
   private readonly _destroy$ = new Subject<void>();
   private _isConnecting = false;
   private _selectedCells = new Set<string>();
   private _currentEditor: HTMLInputElement | HTMLTextAreaElement | null = null;
 
-  // Context for command pattern operations
-  private _diagramId: string | null = null;
-  private _userId: string | null = null;
-  private _commandBus: ICommandBus | null = null;
-  private _operationStateTracker: OperationStateTracker | null = null;
-
-  // Shift key and drag state tracking for snap to grid control
-  private _isShiftPressed = false;
-  private _isDragging = false;
-  private _originalGridSize = 10;
-
-  // Store initial position of node when drag starts
-  private _initialNodePositions = new Map<string, Point>();
-
-  // Debouncing for history service integration
-  private readonly _debouncedNodeMoved$ = new Subject<{
+  // Operation-aware event coordination (replaces timer-based debouncing)
+  private readonly _dragCompleted$ = new Subject<{
     nodeId: string;
-    position: Point;
-    previous: Point;
+    initialPosition: Point;
+    finalPosition: Point;
+    dragDuration: number;
+    dragId: string;
   }>();
-  private readonly _debouncedNodeResized$ = new Subject<{
-    nodeId: string;
-    width: number;
-    height: number;
-    oldWidth: number;
-    oldHeight: number;
-  }>();
-  private readonly _debouncedNodeDataChanged$ = new Subject<{
-    nodeId: string;
-    newData: Record<string, unknown>;
-    oldData: Record<string, unknown>;
-  }>();
-  private readonly _debouncedEdgeVerticesChanged$ = new Subject<{
-    edgeId: string;
-    vertices: Array<{ x: number; y: number }>;
-  }>();
-  private _nodeMovementTimers = new Map<string, number>();
-  private _nodeResizeTimers = new Map<string, number>();
-  private _nodeDataChangeTimers = new Map<string, number>();
-  private _edgeVertexTimers = new Map<string, number>();
-  private readonly _debounceDelay = 500; // 500ms debounce delay
 
   // Event subjects
   private readonly _nodeAdded$ = new Subject<Node>();
@@ -149,8 +161,29 @@ export class X6GraphAdapter implements IGraphAdapter {
     edgeId: string;
     vertices: Array<{ x: number; y: number }>;
   }>();
+  private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
 
-  constructor(private logger: LoggerService) {}
+  // Private properties to track previous undo/redo states
+  private _previousCanUndo = false;
+  private _previousCanRedo = false;
+
+  constructor(
+    private logger: LoggerService,
+    private readonly _edgeQueryService: EdgeQueryService,
+    private readonly _nodeConfigurationService: NodeConfigurationService,
+    private readonly _embeddingService: EmbeddingService,
+    private readonly _portStateManager: PortStateManagerService,
+    private readonly _keyboardHandler: X6KeyboardHandler,
+    private readonly _zOrderAdapter: X6ZOrderAdapter,
+    private readonly _embeddingAdapter: X6EmbeddingAdapter,
+    private readonly _portManager: X6PortManager,
+  ) {
+    // Initialize X6 cell extensions once when the adapter is created
+    initializeX6CellExtensions();
+
+    // Register custom shapes for DFD diagrams
+    registerCustomShapes();
+  }
 
   /**
    * Observable for node addition events
@@ -174,10 +207,16 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Observable for debounced node movement events (for history service)
+   * Observable for drag completion events (for clean history recording)
    */
-  get debouncedNodeMoved$(): Observable<{ nodeId: string; position: Point; previous: Point }> {
-    return this._debouncedNodeMoved$.asObservable();
+  get dragCompleted$(): Observable<{
+    nodeId: string;
+    initialPosition: Point;
+    finalPosition: Point;
+    dragDuration: number;
+    dragId: string;
+  }> {
+    return this._dragCompleted$.asObservable();
   }
 
   /**
@@ -194,19 +233,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Observable for debounced node resize events (for history service)
-   */
-  get debouncedNodeResized$(): Observable<{
-    nodeId: string;
-    width: number;
-    height: number;
-    oldWidth: number;
-    oldHeight: number;
-  }> {
-    return this._debouncedNodeResized$.asObservable();
-  }
-
-  /**
    * Observable for node data change events (immediate, non-debounced)
    */
   get nodeDataChanged$(): Observable<{
@@ -215,17 +241,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     oldData: Record<string, unknown>;
   }> {
     return this._nodeDataChanged$.asObservable();
-  }
-
-  /**
-   * Observable for debounced node data change events (for history service)
-   */
-  get debouncedNodeDataChanged$(): Observable<{
-    nodeId: string;
-    newData: Record<string, unknown>;
-    oldData: Record<string, unknown>;
-  }> {
-    return this._debouncedNodeDataChanged$.asObservable();
   }
 
   /**
@@ -267,13 +282,10 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Observable for debounced edge vertex changes (for history service)
+   * Observable for history state changes (undo/redo availability)
    */
-  get debouncedEdgeVerticesChanged$(): Observable<{
-    edgeId: string;
-    vertices: Array<{ x: number; y: number }>;
-  }> {
-    return this._debouncedEdgeVerticesChanged$.asObservable();
+  get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
+    return this._historyChanged$.asObservable();
   }
 
   /**
@@ -309,26 +321,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         enabled: true,
         findParent: 'bbox',
         validate: (args: { parent: Node; child: Node }) => {
-          const parentType = this._getNodeType(args.parent);
-          const childType = this._getNodeType(args.child);
-
-          // Textbox shapes cannot be embedded into other shapes
-          if (childType === 'textbox') {
-            return false;
-          }
-
-          // Other shapes cannot be embedded into textbox shapes
-          if (parentType === 'textbox') {
-            return false;
-          }
-
-          // Security boundaries can only be embedded into other security boundaries
-          if (childType === 'security-boundary') {
-            return parentType === 'security-boundary';
-          }
-
-          // All other node types can be embedded into any node type
-          return true;
+          // Use EmbeddingService for validation logic
+          const validation = this._embeddingService.validateEmbedding(args.parent, args.child);
+          return validation.isValid;
         },
       },
       interacting: {
@@ -369,8 +364,13 @@ export class X6GraphAdapter implements IGraphAdapter {
             return false;
           }
 
-          const isValid = magnet.getAttribute('magnet') === 'active';
-          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet result:', { isValid });
+          // FIXED: Check for magnet="true" instead of magnet="active" to match port configuration
+          const magnetAttr = magnet.getAttribute('magnet');
+          const isValid = magnetAttr === 'true' || magnetAttr === 'active';
+          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet result:', {
+            magnetAttr,
+            isValid,
+          });
           return isValid;
         },
         validateConnection: args => {
@@ -501,6 +501,7 @@ export class X6GraphAdapter implements IGraphAdapter {
                     text: 'Flow',
                     fontSize: 12,
                     fill: '#333',
+                    fontFamily: '"Roboto Condensed", Arial, sans-serif',
                     textAnchor: 'middle',
                     dominantBaseline: 'middle',
                   },
@@ -511,7 +512,7 @@ export class X6GraphAdapter implements IGraphAdapter {
                 },
               },
             ],
-            zIndex: 1,
+            zIndex: 1, // Temporary z-index, will be set properly when connected
           });
 
           this.logger.debugComponent('DFD', '[Edge Creation] createEdge - Initial labels config:', {
@@ -558,8 +559,16 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Enable plugins
     this._setupPlugins();
     this._setupEventListeners();
-    this._setupPortVisibility();
-    this._setupShiftKeyHandling();
+
+    // Setup port visibility using dedicated port manager
+    this._portManager.setupPortVisibility(this._graph);
+    this._portManager.setupPortTooltips(this._graph);
+
+    // Setup keyboard handling using dedicated handler
+    this._keyboardHandler.setupKeyboardHandling(this._graph);
+
+    // Initialize embedding functionality using dedicated adapter
+    this._embeddingAdapter.initializeEmbedding(this._graph);
   }
 
   /**
@@ -577,15 +586,15 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   addNode(node: DiagramNode): Node {
     const graph = this.getGraph();
-    const nodeType = node.data.type as string;
+    const nodeType = node.data.shape;
 
-    // Set z-index based on node type
-    let zIndex = 10; // Default z-index for regular nodes
-    if (nodeType === 'security-boundary') {
-      zIndex = 1; // Lower z-index for security boundaries to appear behind other nodes
-    } else if (nodeType === 'textbox') {
-      zIndex = 20; // Higher z-index for textbox shapes to appear above all other shapes
-    }
+    // Validate that shape property is set correctly
+    this._validateNodeShape(nodeType, node.id);
+
+    // Use NodeConfigurationService for node configuration (except z-index)
+    const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
+    const nodePorts = this._nodeConfigurationService.getNodePorts(nodeType);
+    const nodeShape = this._nodeConfigurationService.getNodeShape(nodeType);
 
     const x6Node = graph.addNode({
       id: node.id,
@@ -594,20 +603,167 @@ export class X6GraphAdapter implements IGraphAdapter {
       width: node.data.width || 120,
       height: node.data.height || 60,
       label: node.data.label || '', // Add label for mock compatibility
-      shape: this._getX6ShapeForNodeType(nodeType),
+      shape: nodeShape,
       attrs: {
-        ...this._getNodeAttrs(nodeType),
+        ...(nodeAttrs as any),
         text: {
-          ...((this._getNodeAttrs(nodeType)['text'] as Record<string, unknown>) || {}),
+          ...((nodeAttrs['text'] as Record<string, unknown>) || {}),
           text: node.data.label || '',
         },
       },
-      ports: this._getNodePorts(nodeType),
-      data: {
-        ...node.data,
-        domainNodeId: node.id,
-      },
-      zIndex,
+      ports: nodePorts as any,
+      zIndex: 1, // Temporary z-index, will be set properly below
+    });
+
+    // Validate that the X6 node was created with the correct shape
+    this._validateX6NodeShape(x6Node);
+
+    // Set metadata using X6 cell extensions
+    (x6Node as any).setApplicationMetadata('type', nodeType);
+    (x6Node as any).setApplicationMetadata('domainNodeId', node.id);
+    (x6Node as any).setApplicationMetadata('width', String(node.data.width || 120));
+    (x6Node as any).setApplicationMetadata('height', String(node.data.height || 60));
+    (x6Node as any).setApplicationMetadata('label', node.data.label || '');
+
+    // Apply proper z-index using ZOrderService after node creation
+    this._zOrderAdapter.applyNodeCreationZIndex(graph, x6Node);
+
+    return x6Node;
+  }
+
+  /**
+   * Add a node to the graph from a complete X6 snapshot (preserves exact port structure)
+   */
+  addNodeFromSnapshot(snapshot: X6NodeSnapshot): Node {
+    const graph = this.getGraph();
+
+    this.logger.info('Starting node restoration from snapshot', {
+      nodeId: snapshot.id,
+      shape: snapshot.shape,
+      position: snapshot.position,
+      size: snapshot.size,
+      hasSnapshotGroups: !!(snapshot.ports as any)?.groups,
+      hasSnapshotItems: !!(snapshot.ports as any)?.items,
+      portCount: (snapshot.ports as any)?.items?.length || 0,
+      portIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+      fullSnapshotPorts: snapshot.ports,
+    });
+
+    // X6 expects either a port configuration object with groups/items OR just the items array
+    let portsForX6;
+
+    if ((snapshot.ports as any)?.groups && (snapshot.ports as any)?.items) {
+      // If snapshot has the complete structure, use it directly
+      portsForX6 = snapshot.ports;
+      this.logger.info(' Using complete port structure from snapshot', {
+        nodeId: snapshot.id,
+        hasGroups: true,
+        hasItems: true,
+        groupKeys: Object.keys((snapshot.ports as any).groups),
+        itemCount: (snapshot.ports as any).items.length,
+      });
+    } else if (Array.isArray(snapshot.ports)) {
+      // If snapshot ports is an array, reconstruct the complete structure
+      const nodeType = snapshot.data?.find((m: any) => m.key === 'type')?.value || 'process';
+      const basePortConfig = this._nodeConfigurationService.getNodePorts(nodeType);
+
+      portsForX6 = {
+        groups: (basePortConfig as any).groups || {},
+        items: snapshot.ports, // Use the snapshot port items to preserve IDs
+      };
+
+      this.logger.info(' FIXED - Reconstructed port structure from array format', {
+        nodeId: snapshot.id,
+        nodeType,
+        originalFormat: 'array',
+        reconstructedHasGroups: !!(basePortConfig as any).groups,
+        reconstructedItemCount: (snapshot.ports as any).length,
+        reconstructedPortIds: (snapshot.ports as any).map((item: any) => item.id),
+      });
+    } else {
+      // Fallback: create from base configuration
+      const nodeType = snapshot.data?.find((m: any) => m.key === 'type')?.value || 'process';
+      portsForX6 = this._nodeConfigurationService.getNodePorts(nodeType);
+
+      this.logger.warn(' Fallback - Using base port configuration', {
+        nodeId: snapshot.id,
+        nodeType,
+        snapshotPortsType: typeof snapshot.ports,
+        snapshotPorts: snapshot.ports,
+      });
+    }
+
+    //  Detailed analysis of the port configuration being used
+    this.logger.info(' Final port configuration for X6 restoration', {
+      nodeId: snapshot.id,
+      portsForX6,
+      hasGroups: !!(portsForX6 as any)?.groups,
+      hasItems: !!(portsForX6 as any)?.items,
+      groupKeys: Object.keys((portsForX6 as any)?.groups || {}),
+      itemCount: (portsForX6 as any)?.items?.length || 0,
+      portDetails:
+        (portsForX6 as any)?.items?.map((item: any) => ({
+          id: item.id,
+          group: item.group,
+          hasAttrs: !!item.attrs,
+          visibility: item.attrs?.circle?.style?.visibility,
+        })) || [],
+    });
+
+    //  Log the exact parameters being passed to addNode
+    const nodeParams = {
+      id: snapshot.id,
+      x: snapshot.position.x,
+      y: snapshot.position.y,
+      width: snapshot.size.width,
+      height: snapshot.size.height,
+      shape: snapshot.shape,
+      attrs: snapshot.attrs,
+      ports: portsForX6 as any, // Use properly formatted port configuration
+      zIndex: snapshot.zIndex,
+      visible: snapshot.visible,
+    };
+
+    this.logger.info(' Parameters being passed to graph.addNode()', {
+      nodeId: snapshot.id,
+      nodeParams,
+      portsParam: nodeParams.ports,
+    });
+
+    const x6Node = graph.addNode(nodeParams);
+
+    //  Verify the node was created with correct port configuration
+    const restoredPorts = x6Node.getPorts();
+    this.logger.info(' Node restored - verifying port configuration', {
+      nodeId: snapshot.id,
+      restoredPortCount: restoredPorts.length,
+      restoredPortIds: restoredPorts.map((item: any) => item.id),
+      restoredPortDetails: restoredPorts.map((item: any) => ({
+        id: item.id,
+        group: item.group,
+        hasAttrs: !!item.attrs,
+        visibility: item.attrs?.circle?.style?.visibility,
+      })),
+      originalPortIds: (snapshot.ports as any)?.items?.map((item: any) => item.id) || [],
+      portIdsMatch:
+        JSON.stringify(restoredPorts.map((item: any) => item.id).sort()) ===
+        JSON.stringify(((snapshot.ports as any)?.items?.map((item: any) => item.id) || []).sort()),
+    });
+
+    // Set metadata using X6 cell extensions
+    if (snapshot.data) {
+      snapshot.data.forEach((entry: any) => {
+        if ((x6Node as any).setApplicationMetadata) {
+          (x6Node as any).setApplicationMetadata(entry.key, entry.value);
+        }
+      });
+    }
+
+    //  Log final restoration status
+    this.logger.info(' Node restoration completed', {
+      nodeId: snapshot.id,
+      nodeCreated: !!x6Node,
+      metadataSet: !!(snapshot.data && (x6Node as any).setApplicationMetadata),
     });
 
     return x6Node;
@@ -638,145 +794,73 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Add an edge to the graph
+   * Add an edge to the graph from either a DiagramEdge or X6EdgeSnapshot
+   * Uses X6's native edge operations directly
    */
-  addEdge(edge: DiagramEdge): Edge {
-    this.logger.debugComponent('DFD', '[Edge Add] addEdge called', {
-      diagramEdgeId: edge.id,
-      diagramEdgeLabel: edge.data.label,
-      diagramEdgeSourceNodeId: edge.sourceNodeId,
-      diagramEdgeTargetNodeId: edge.targetNodeId,
-      diagramEdgeSourcePortId: edge.data.sourcePortId,
-      diagramEdgeTargetPortId: edge.data.targetPortId,
-    });
-    this.logger.info('DIAGNOSTIC: AddEdgeCommand - Inspecting edge.data before X6 add', {
-      edgeId: edge.id,
-      edgeData: edge.data,
-      isEdgeDataInstance: edge.data instanceof DiagramEdge, // This will be false, as edge.data is EdgeData, not DiagramEdge
-      hasToJSONMethod: typeof (edge.data as any).toJSON === 'function',
-      edgeDataKeys: Object.keys(edge.data),
-    });
+  addEdge(edgeInput: DiagramEdge | X6EdgeSnapshot): Edge {
     const graph = this.getGraph();
 
-    // Prepare source and target with port information if available
-    const sourceConfig = edge.data.sourcePortId
-      ? { cell: edge.sourceNodeId, port: edge.data.sourcePortId }
-      : edge.sourceNodeId;
+    // Determine if input is EdgeData or X6EdgeSnapshot
+    const isSnapshot = 'source' in edgeInput && typeof edgeInput.source === 'object';
+    const snapshot = isSnapshot ? edgeInput : (edgeInput as DiagramEdge).data.toX6Snapshot();
 
-    const targetConfig = edge.data.targetPortId
-      ? { cell: edge.targetNodeId, port: edge.data.targetPortId }
-      : edge.targetNodeId;
+    const edgeParams = {
+      id: snapshot.id,
+      source: snapshot.source,
+      target: snapshot.target,
+      shape: snapshot.shape,
+      markup: this._getEdgeMarkup(),
+      attrs: snapshot.attrs,
+      labels: snapshot.labels,
+      vertices: snapshot.vertices,
+      zIndex: snapshot.zIndex,
+      visible: snapshot.visible,
+    };
 
-    const x6Edge = graph.addEdge({
-      id: edge.id,
-      source: sourceConfig,
-      target: targetConfig,
-      // Remove the 'label' property here, as the 'labels' array below already handles it.
-      // This prevents duplicate labels when an edge is created via addEdge.
-      shape: 'edge',
-      markup: [
-        {
-          tagName: 'path',
-          selector: 'wrap',
-          attrs: {
-            fill: 'none',
-            cursor: 'pointer',
-            stroke: 'transparent',
-            strokeLinecap: 'round',
-          },
-        },
-        {
-          tagName: 'path',
-          selector: 'line',
-          attrs: {
-            fill: 'none',
-            pointerEvents: 'none',
-          },
-        },
-      ],
-      attrs: {
-        wrap: {
-          connection: true,
-          strokeWidth: 10,
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round',
-          stroke: 'transparent',
-          fill: 'none',
-        },
-        line: {
-          connection: true,
-          stroke: '#000000',
-          strokeWidth: 2,
-          fill: 'none',
-          targetMarker: {
-            name: 'classic',
-            size: 8,
-            fill: '#000000',
-            stroke: '#000000',
-          },
-        },
-      },
-      // Add vertices if they exist in the edge data
-      vertices: edge.data.vertices ? edge.data.vertices.map(v => ({ x: v.x, y: v.y })) : [],
-      // Only add one label with the edge's label text
-      labels: [
-        {
-          position: 0.5,
-          attrs: {
-            text: {
-              text: (edge.data.label as string) || 'Flow',
-              fontSize: 12,
-              fill: '#333',
-              textAnchor: 'middle',
-              dominantBaseline: 'middle',
-            },
-            rect: {
-              fill: '#ffffff',
-              stroke: 'none',
-            },
-          },
-        },
-      ],
-      data: {
-        ...edge.data,
-        domainEdgeId: edge.id,
-      },
-      zIndex: 1,
-    });
+    const x6Edge = graph.addEdge(edgeParams);
 
-    // Set edge z-order to the higher of source or target node z-orders
-    this.logger.debugComponent('DFD', '[Edge Add] X6 Edge created', {
-      x6EdgeId: x6Edge.id,
-      x6EdgeLabel: x6Edge.getLabels(),
-      x6EdgeDataLabel: (() => {
-        // Safety check for test environment where getData might not exist
-        if (typeof x6Edge.getData === 'function') {
-          const data: unknown = x6Edge.getData();
-          if (data && typeof data === 'object' && 'label' in data) {
-            return (data as Record<string, unknown>)['label'];
-          }
-        }
-        return undefined;
-      })(),
-      x6EdgeSource: typeof x6Edge.getSource === 'function' ? x6Edge.getSource() : 'unknown',
-      x6EdgeTarget: typeof x6Edge.getTarget === 'function' ? x6Edge.getTarget() : 'unknown',
-    });
+    // Set metadata using X6 cell extensions
+    if (snapshot.data && (x6Edge as any).setApplicationMetadata) {
+      snapshot.data.forEach((entry: any) => {
+        (x6Edge as any).setApplicationMetadata(entry.key, entry.value);
+      });
+    }
 
-    // Set edge z-order to the higher of source or target node z-orders
-    this._setEdgeZOrderFromConnectedNodes(x6Edge);
+    // Update port visibility after edge creation
+    this._updatePortVisibilityAfterEdgeCreation(x6Edge);
 
     return x6Edge;
   }
 
   /**
-   * Remove an edge from the graph
+   * Remove an edge from the graph using X6's native operations
    */
   removeEdge(edgeId: string): void {
     const graph = this.getGraph();
     const edge = graph.getCellById(edgeId) as Edge;
 
     if (edge && edge.isEdge()) {
+      // Update port visibility before removing edge using port manager
+      const sourceNodeId = edge.getSourceCellId();
+      const targetNodeId = edge.getTargetCellId();
+
+      // Remove the edge first
       graph.removeEdge(edge);
+
+      // Then update port visibility for affected nodes
+      if (sourceNodeId) {
+        const sourceNode = graph.getCellById(sourceNodeId) as Node;
+        if (sourceNode && sourceNode.isNode()) {
+          this._portManager.updateNodePortVisibility(graph, sourceNode);
+        }
+      }
+
+      if (targetNodeId) {
+        const targetNode = graph.getCellById(targetNodeId) as Node;
+        if (targetNode && targetNode.isNode()) {
+          this._portManager.updateNodePortVisibility(graph, targetNode);
+        }
+      }
     }
   }
 
@@ -789,7 +873,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Get all edges in the graph
+   * Get all edges in the graph using X6's native operations
    */
   getEdges(): Edge[] {
     const graph = this.getGraph();
@@ -806,7 +890,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Get an edge by ID
+   * Get an edge by ID using X6's native operations
    */
   getEdge(edgeId: string): Edge | null {
     const graph = this.getGraph();
@@ -850,6 +934,70 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Undo the last action using X6 history plugin
+   */
+  undo(): void {
+    const graph = this.getGraph();
+    if (graph && typeof graph.undo === 'function') {
+      graph.undo();
+      this.logger.info('Undo action performed');
+      this._emitHistoryStateChange();
+    } else {
+      this.logger.warn('Undo not available - history plugin may not be enabled');
+    }
+  }
+
+  /**
+   * Redo the last undone action using X6 history plugin
+   */
+  redo(): void {
+    const graph = this.getGraph();
+    if (graph && typeof graph.redo === 'function') {
+      graph.redo();
+      this.logger.info('Redo action performed');
+      this._emitHistoryStateChange();
+    } else {
+      this.logger.warn('Redo not available - history plugin may not be enabled');
+    }
+  }
+
+  /**
+   * Check if undo is available
+   */
+  canUndo(): boolean {
+    const graph = this.getGraph();
+    if (graph && typeof graph.canUndo === 'function') {
+      return graph.canUndo();
+    }
+    return false;
+  }
+
+  /**
+   * Check if redo is available
+   */
+  canRedo(): boolean {
+    const graph = this.getGraph();
+    if (graph && typeof graph.canRedo === 'function') {
+      return graph.canRedo();
+    }
+    return false;
+  }
+
+  /**
+   * Clear the history stack
+   */
+  clearHistory(): void {
+    const graph = this.getGraph();
+    if (graph && typeof graph.cleanHistory === 'function') {
+      graph.cleanHistory();
+      this.logger.info('History cleared');
+      this._emitHistoryStateChange();
+    } else {
+      this.logger.warn('Clear history not available - history plugin may not be enabled');
+    }
+  }
+
+  /**
    * Debug method to manually inspect edge rendering
    * Call this from browser console: adapter.debugEdgeRendering()
    */
@@ -863,91 +1011,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     this.logger.debugComponent('DFD', `[Edge Debug] Found ${edges.length} edges`);
 
     edges.forEach((edge, index) => {
-      const edgeView = this._graph!.findViewByCell(edge);
-      const lineAttrs = edge.attr('line');
-      const allAttrs = edge.attr();
-
       this.logger.debugComponent('DFD', `[Edge Debug] Edge ${index + 1}:`, {
         id: edge.id,
         shape: edge.shape,
         source: edge.getSourceCellId(),
         target: edge.getTargetCellId(),
-        sourcePortId: edge.getSourcePortId(),
-        targetPortId: edge.getTargetPortId(),
-        markup: edge.markup,
-        attrs: allAttrs,
-        lineAttrs: lineAttrs
-          ? {
-              stroke: (lineAttrs as Record<string, unknown>)['stroke'],
-              strokeWidth: (lineAttrs as Record<string, unknown>)['strokeWidth'],
-              fill: (lineAttrs as Record<string, unknown>)['fill'],
-              targetMarker: (lineAttrs as Record<string, unknown>)['targetMarker'],
-            }
-          : null,
-        zIndex: edge.getZIndex(),
         visible: edge.isVisible(),
       });
-
-      // Try to find the SVG element
-      if (edgeView && 'container' in edgeView) {
-        const container = (edgeView as unknown as Record<string, unknown>)[
-          'container'
-        ] as HTMLElement;
-        const pathElements = container?.querySelectorAll('path');
-
-        this.logger.debugComponent('DFD', `[Edge Debug] Edge ${index + 1} DOM structure:`, {
-          containerHTML: container?.outerHTML?.substring(0, 500) + '...',
-          pathCount: pathElements?.length || 0,
-        });
-
-        if (pathElements && pathElements.length > 0) {
-          pathElements.forEach((path, pathIndex) => {
-            const computedStyle = window.getComputedStyle(path);
-            this.logger.debugComponent(
-              'DFD',
-              `[Edge Debug] Edge ${index + 1} Path ${pathIndex + 1}:`,
-              {
-                // Direct attributes
-                stroke: path.getAttribute('stroke'),
-                strokeWidth: path.getAttribute('stroke-width'),
-                fill: path.getAttribute('fill'),
-                d: path.getAttribute('d'),
-                className: path.getAttribute('class'),
-                style: path.getAttribute('style'),
-                markerEnd: path.getAttribute('marker-end'),
-                // Computed styles
-                computedStroke: computedStyle.stroke,
-                computedStrokeWidth: computedStyle.strokeWidth,
-                computedOpacity: computedStyle.opacity,
-                computedVisibility: computedStyle.visibility,
-                computedDisplay: computedStyle.display,
-                computedFill: computedStyle.fill,
-                // Validation checks
-                hasValidStroke:
-                  computedStyle.stroke !== 'none' && computedStyle.stroke !== 'transparent',
-                hasValidWidth: parseFloat(computedStyle.strokeWidth) > 0,
-                isVisible:
-                  computedStyle.visibility !== 'hidden' && computedStyle.display !== 'none',
-                hasPath: !!path.getAttribute('d'),
-              },
-            );
-          });
-        } else {
-          this.logger.debugComponent(
-            'DFD',
-            `[Edge Debug] Edge ${index + 1}: No path elements found`,
-          );
-        }
-      } else {
-        this.logger.debugComponent(
-          'DFD',
-          `[Edge Debug] Edge ${index + 1}: No view or container found`,
-        );
-      }
     });
-
-    // Check CSS rules
-    this._debugEdgeStyles();
   }
 
   /**
@@ -960,11 +1031,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Clean up any existing editor
     this._removeExistingEditor();
 
-    // Clean up shift key event listeners
-    this._cleanupShiftKeyHandling();
-
-    // Clean up debouncing timers
-    this._cleanupDebouncingTimers();
+    // Clean up keyboard handler
+    this._keyboardHandler.cleanup();
 
     if (this._graph) {
       this._graph.dispose();
@@ -977,20 +1045,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsForward(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move forward operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells forward', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellForward(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsForward(graph);
   }
 
   /**
@@ -998,20 +1053,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsBackward(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move backward operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells backward', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellBackward(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsBackward(graph);
   }
 
   /**
@@ -1019,20 +1061,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsToFront(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move to front operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells to front', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellToFront(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsToFront(graph);
   }
 
   /**
@@ -1040,39 +1069,15 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   moveSelectedCellsToBack(): void {
     const graph = this.getGraph();
-    const selectedCells = graph.getSelectedCells();
-
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move to back operation');
-      return;
-    }
-
-    this.logger.info('Moving selected cells to back', {
-      selectedCellIds: selectedCells.map(cell => cell.id),
-    });
-
-    selectedCells.forEach(cell => {
-      this._moveCellToBack(cell);
-    });
+    this._zOrderAdapter.moveSelectedCellsToBack(graph);
   }
 
   /**
    * Get the standardized label text from a cell
    */
   getCellLabel(cell: Cell): string {
-    if (cell.isNode()) {
-      const textAttr = cell.attr('text/text');
-      return typeof textAttr === 'string' ? textAttr : '';
-    } else {
-      const edge = cell as Edge;
-      const labels = edge.getLabels();
-      if (labels.length > 0 && labels[0].attrs && labels[0].attrs['text']) {
-        const textAttr = labels[0].attrs['text'] as Record<string, unknown>;
-        const textValue = textAttr['text'];
-        return typeof textValue === 'string' ? textValue : '';
-      }
-      return '';
-    }
+    // Use X6 cell extensions for unified label handling
+    return (cell as any).getLabel ? (cell as any).getLabel() : '';
   }
 
   /**
@@ -1085,80 +1090,44 @@ export class X6GraphAdapter implements IGraphAdapter {
       isNode: cell.isNode(),
       currentLabel: oldLabel,
       newText: text,
-      existingLabelsCount: (cell as Edge).getLabels ? (cell as Edge).getLabels().length : 0,
     });
 
-    // DIAGNOSTIC: Log label change for history debugging
-    this.logger.info('DIAGNOSTIC: Label change detected', {
-      cellId: cell.id,
-      cellType: cell.isNode() ? 'node' : 'edge',
-      oldLabel,
-      newLabel: text,
-      willTriggerDataChange: oldLabel !== text,
-    });
+    // Only proceed if the label actually changed
+    if (oldLabel === text) {
+      this.logger.debugComponent('DFD', '[Set Cell Label] Label unchanged, skipping update', {
+        cellId: cell.id,
+        label: text,
+      });
+      return;
+    }
+
+    // Use X6 cell extensions for unified label handling
+    if ((cell as any).setLabel) {
+      (cell as any).setLabel(text);
+    }
+
+    // Trigger cell:change:data event for history integration
+    // This ensures that label changes flow through the normal event chain
+    // and are captured by the history system via nodeDataChanged$
     if (cell.isNode()) {
-      cell.attr('text/text', text);
-      // Also update the data for consistency
-      const rawData: unknown = cell.getData();
-      const currentData = (rawData && typeof rawData === 'object' ? rawData : {}) as Record<
-        string,
-        unknown
-      >;
-      cell.setData({ ...currentData, label: text });
-    } else {
-      const edge = cell as Edge;
-      const labels = edge.getLabels();
-      if (labels.length > 0) {
-        const currentLabel = labels[0];
-        const currentAttrs = currentLabel.attrs || {};
-        const currentTextAttrs = (currentAttrs['text'] as Record<string, unknown>) || {};
+      // For nodes, trigger the data change event that the history system monitors
+      const oldData = { label: oldLabel };
+      const newData = { label: text };
 
-        edge.setLabelAt(0, {
-          ...currentLabel,
-          attrs: {
-            ...currentAttrs,
-            text: {
-              ...currentTextAttrs,
-              text,
-            },
-          },
-        });
-        this.logger.debugComponent('DFD', '[Set Cell Label] Updated existing label', {
-          cellId: cell.id,
-          newText: text,
-          labelsAfterUpdate: edge.getLabels().length,
-        });
-      } else {
-        // Create a new label if none exists
-        edge.appendLabel({
-          position: 0.5,
-          attrs: {
-            text: {
-              text,
-              fontSize: 12,
-              fill: '#333',
-              textAnchor: 'middle',
-              dominantBaseline: 'middle',
-            },
-            rect: {
-              fill: '#ffffff',
-              stroke: 'none',
-            },
-          },
-        });
-        this.logger.debugComponent('DFD', '[Set Cell Label] Appended new label', {
-          cellId: cell.id,
-          newText: text,
-          labelsAfterAppend: edge.getLabels().length,
-        });
-      }
-      // Also update the data for consistency
-      const rawData: unknown = edge.getData();
-      const currentData = (rawData && typeof rawData === 'object' ? rawData : {}) as Record<
-        string,
-        unknown
-      >;
-      edge.setData({ ...currentData, label: text });
+      this.logger.info('FIXED: Triggering cell:change:data event for label change', {
+        cellId: cell.id,
+        oldData,
+        newData,
+        eventType: 'cell:change:data',
+      });
+
+      // Emit immediate event for text changes since text editing
+      // only updates when editing is complete - no need for debouncing
+      this._nodeDataChanged$.next({
+        nodeId: cell.id,
+        newData,
+        oldData,
+      });
     }
   }
 
@@ -1173,27 +1142,15 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Get the initial position of a node when drag started (for history tracking)
    */
   getInitialNodePosition(nodeId: string): Point | null {
-    return this._initialNodePositions.get(nodeId) || null;
+    return this._keyboardHandler.getInitialNodePosition(nodeId);
   }
 
   /**
-   * Set the context for command pattern operations (diagram ID, user ID, command bus, and operation state tracker)
+   * Public method to validate and correct z-order - can be called externally
    */
-  setCommandContext(
-    diagramId: string,
-    userId: string,
-    commandBus: ICommandBus,
-    operationStateTracker?: OperationStateTracker,
-  ): void {
-    this._diagramId = diagramId;
-    this._userId = userId;
-    this._commandBus = commandBus;
-    this._operationStateTracker = operationStateTracker || null;
-    this.logger.info('Command context set for X6 adapter', {
-      diagramId,
-      userId,
-      hasOperationTracker: !!operationStateTracker,
-    });
+  validateAndCorrectZOrder(): void {
+    const graph = this.getGraph();
+    this._zOrderAdapter.validateAndCorrectZOrder(graph);
   }
 
   /**
@@ -1223,9 +1180,21 @@ export class X6GraphAdapter implements IGraphAdapter {
         current?: { x: number; y: number };
         previous?: { x: number; y: number };
       }) => {
+        this.logger.debug('node:change:position event fired (raw)', {
+          nodeId: node.id,
+          current,
+          previous,
+        }); // Raw log
+        this.logger.debugComponent('DFD', 'node:change:position event fired', {
+          nodeId: node.id,
+          current: current,
+          previous: previous,
+        });
         if (current && previous) {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
+
+          // Using simpler approach with initial positions
 
           // Emit immediate event for UI responsiveness
           this._nodeMoved$.next({
@@ -1234,8 +1203,7 @@ export class X6GraphAdapter implements IGraphAdapter {
             previous: previousPos,
           });
 
-          // Handle debounced event for history service
-          this._handleDebouncedNodeMovement(node.id, currentPos, previousPos);
+          // Note: Drag completion provides superior tracking
         }
       },
     );
@@ -1261,15 +1229,6 @@ export class X6GraphAdapter implements IGraphAdapter {
             oldWidth: previous.width,
             oldHeight: previous.height,
           });
-
-          // Handle debounced event for history service
-          this._handleDebouncedNodeResize(
-            node.id,
-            current.width,
-            current.height,
-            previous.width,
-            previous.height,
-          );
         }
       },
     );
@@ -1293,9 +1252,6 @@ export class X6GraphAdapter implements IGraphAdapter {
             newData: current,
             oldData: previous,
           });
-
-          // Handle debounced event for history service
-          this._handleDebouncedNodeDataChange(cell.id, current, previous);
         }
       },
     );
@@ -1309,6 +1265,10 @@ export class X6GraphAdapter implements IGraphAdapter {
         attrs: edge.attr(),
         lineAttrs: edge.attr('line'),
       });
+
+      // Set connecting state and show all ports using port manager
+      this._isConnecting = true;
+      this._portManager.showAllPorts(this._graph!);
     });
 
     this._graph.on('edge:connected', ({ edge }: { edge: Edge }) => {
@@ -1316,21 +1276,46 @@ export class X6GraphAdapter implements IGraphAdapter {
         edgeId: edge.id,
         sourceId: edge.getSourceCellId(),
         targetId: edge.getTargetCellId(),
+        sourcePortId: edge.getSourcePortId(),
+        targetPortId: edge.getTargetPortId(),
+        source: edge.getSource(),
+        target: edge.getTarget(),
       });
+
+      // Reset connecting state and update port visibility (consolidated from port visibility setup)
+      this._isConnecting = false;
 
       // Only emit for edges with valid source and target
       const sourceId = edge.getSourceCellId();
       const targetId = edge.getTargetCellId();
 
       if (sourceId && targetId) {
-        // Set edge z-order to the higher of source or target node z-orders
-        this._setEdgeZOrderFromConnectedNodes(edge);
+        // CRITICAL FIX: Add a small delay to ensure X6 has fully established the connection
+        // before capturing the port information and setting zIndex - may need to revisit this implementation for reliability
+        setTimeout(() => {
+          this.logger.debugComponent(
+            'DFD',
+            '[Edge Creation] Delayed port capture and zIndex setting after connection',
+            {
+              edgeId: edge.id,
+              sourcePortId: edge.getSourcePortId(),
+              targetPortId: edge.getTargetPortId(),
+              source: edge.getSource(),
+              target: edge.getTarget(),
+            },
+          );
 
-        this.logger.debugComponent(
-          'DFD',
-          '[Edge Creation] Valid edge created, emitting edgeAdded$',
-        );
-        this._edgeAdded$.next(edge);
+          // FIXED: Set edge z-order to the higher of source or target node z-orders AFTER connection is established
+          this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
+
+          // Update port visibility after connection using port manager
+          this._portManager.hideUnconnectedPorts(this._graph!);
+          this._portManager.ensureConnectedPortsVisible(this._graph!, edge);
+
+          // Simplified flow without command bus - just emit the edge added event
+          this.logger.debugComponent('DFD', '[Edge Creation] Emitting edge added event');
+          this._edgeAdded$.next(edge);
+        }, 50); // Small delay to ensure connection is fully established
       } else {
         this.logger.debugComponent('DFD', '[Edge Creation] Invalid edge, removing', {
           hasSource: !!sourceId,
@@ -1349,164 +1334,14 @@ export class X6GraphAdapter implements IGraphAdapter {
       this.logger.debugComponent('DFD', '[Edge Creation] edge:disconnected event', {
         edgeId: edge.id,
       });
+
+      // Reset connecting state and update port visibility using port manager
+      this._isConnecting = false;
+      this._portManager.hideUnconnectedPorts(this._graph!);
     });
 
-    // Node embedding events
-    this._graph.on('node:embedding', ({ node }: { node: Node }) => {
-      // Store the original z-index before temporarily changing it
-      const originalZIndex = node.getZIndex();
-      node.setData({
-        ...node.getData(),
-        _originalZIndex: originalZIndex,
-      });
-
-      // When a node is being embedded, ensure it appears in front temporarily
-      // But respect the node type - security boundaries should stay behind regular nodes
-      const nodeType = this._getNodeType(node);
-      if (nodeType === 'security-boundary') {
-        // Security boundaries get a temporary higher z-index but still behind regular nodes
-        node.setZIndex(5);
-      } else {
-        // Regular nodes get a higher temporary z-index
-        node.setZIndex(20);
-      }
-    });
-
-    this._graph.on(
-      'node:embedded',
-      ({ node, currentParent }: { node: Node; currentParent: Node }) => {
-        // Only adjust z-indices if the node was actually embedded (has a parent)
-        if (!currentParent) {
-          // If embedding was cancelled, restore original z-index
-          const rawNodeData: unknown = node.getData();
-          const nodeData =
-            rawNodeData && typeof rawNodeData === 'object'
-              ? (rawNodeData as Record<string, unknown>)
-              : {};
-          const originalZIndex = nodeData['_originalZIndex'];
-          if (typeof originalZIndex === 'number') {
-            node.setZIndex(originalZIndex);
-            // Also restore z-order for connected edges
-            this._updateConnectedEdgesZOrder(node, originalZIndex);
-          }
-          return;
-        }
-
-        // After embedding, adjust z-indices
-        const parentType = this._getNodeType(currentParent);
-        const childType = this._getNodeType(node);
-
-        // Parent keeps its base z-index (security boundaries stay behind)
-        let parentZIndex: number;
-        if (parentType === 'security-boundary') {
-          parentZIndex = 1; // Security boundaries stay at the back
-          currentParent.setZIndex(parentZIndex);
-        } else {
-          parentZIndex = 10;
-          currentParent.setZIndex(parentZIndex);
-        }
-
-        // Child gets appropriate z-index based on type
-        let childZIndex: number;
-        if (childType === 'security-boundary') {
-          // Security boundaries should always stay behind, even when embedded
-          childZIndex = 2; // Slightly higher than non-embedded security boundaries but still behind regular nodes
-          node.setZIndex(childZIndex);
-        } else {
-          childZIndex = 15; // Regular nodes appear in front when embedded
-          node.setZIndex(childZIndex);
-        }
-
-        // Update z-order for edges connected to the child node to match the child's z-order
-        this._updateConnectedEdgesZOrder(node, childZIndex);
-
-        // Update fill color based on embedding depth
-        this._updateEmbeddedNodeColor(node);
-
-        // Clean up the temporary data
-        const rawNodeData: unknown = node.getData();
-        const nodeData =
-          rawNodeData && typeof rawNodeData === 'object'
-            ? (rawNodeData as Record<string, unknown>)
-            : {};
-        if (nodeData && '_originalZIndex' in nodeData) {
-          delete nodeData['_originalZIndex'];
-          node.setData(nodeData);
-        }
-      },
-    );
-
-    this._graph.on('node:change:parent', ({ node, current }: { node: Node; current?: string }) => {
-      // When a node is removed from its parent (unembedded)
-      if (!current) {
-        const nodeType = this._getNodeType(node);
-
-        // Reset to default z-index based on type
-        let nodeZIndex: number;
-        if (nodeType === 'security-boundary') {
-          nodeZIndex = 1; // Security boundaries always stay at the back
-          node.setZIndex(nodeZIndex);
-        } else {
-          nodeZIndex = 10;
-          node.setZIndex(nodeZIndex);
-        }
-
-        // Update z-order for edges connected to the node to match the node's z-order
-        this._updateConnectedEdgesZOrder(node, nodeZIndex);
-
-        // Update fill color based on new embedding depth (or reset to white if fully unembedded)
-        this._updateEmbeddedNodeColor(node);
-      }
-    });
-
-    // Handle node movement without embedding - restore z-index when drag ends
-    // We'll use a more reliable approach by listening to the node:moved event
-    // which fires after the drag operation is complete
-    this._graph.on('node:moved', ({ node }: { node: Node }) => {
-      // Check if this node has a stored original z-index from embedding attempt
-      // Safety check for test environment where getData might not exist
-      if (typeof node.getData !== 'function') {
-        return;
-      }
-
-      const rawNodeData: unknown = node.getData();
-      const nodeData =
-        rawNodeData && typeof rawNodeData === 'object'
-          ? (rawNodeData as Record<string, unknown>)
-          : {};
-      const originalZIndex = nodeData['_originalZIndex'];
-
-      // If we have an original z-index stored and the node is not currently embedded,
-      // restore the original z-index (this handles the case where dragging was just for movement)
-      if (typeof originalZIndex === 'number' && !node.getParent()) {
-        // Use a longer timeout to ensure this runs after all embedding events have completed
-        setTimeout(() => {
-          // Double-check that the node still doesn't have a parent and still has the stored z-index
-          if (!node.getParent() && typeof node.getData === 'function') {
-            const currentNodeData: unknown = node.getData();
-            const safeNodeData =
-              currentNodeData && typeof currentNodeData === 'object'
-                ? (currentNodeData as Record<string, unknown>)
-                : {};
-
-            // Only restore if we still have the original z-index stored (not cleaned up by embedding)
-            if (safeNodeData && '_originalZIndex' in safeNodeData) {
-              node.setZIndex(originalZIndex);
-              // Update z-order for connected edges to match the restored node z-order
-              this._updateConnectedEdgesZOrder(node, originalZIndex);
-              // Clean up the temporary data
-              delete safeNodeData['_originalZIndex'];
-              node.setData(safeNodeData);
-
-              this.logger.info('Restored original z-index after drag without embedding', {
-                nodeId: node.id,
-                restoredZIndex: originalZIndex,
-              });
-            }
-          }
-        }, 100);
-      }
-    });
+    // Note: Embedding event handlers are now managed by X6EmbeddingAdapter
+    // The embedding adapter handles: node:embedding, node:embedded, node:change:parent, node:moved (embedding-related)
 
     // Edge events - handle addition and removal
     this._graph.on('edge:added', ({ edge }: { edge: Edge }) => {
@@ -1554,22 +1389,21 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
       this._edgeRemoved$.next({ edgeId: edge.id, edge });
 
-      // Update port visibility for the source and target nodes
-      // when an edge is removed
+      // Update port visibility for the source and target nodes using port manager
       const sourceCellId = edge.getSourceCellId();
       const targetCellId = edge.getTargetCellId();
 
       if (sourceCellId) {
         const sourceNode = this._graph!.getCellById(sourceCellId) as Node;
         if (sourceNode && sourceNode.isNode()) {
-          this._updateNodePortVisibility(sourceNode);
+          this._portManager.updateNodePortVisibility(this._graph!, sourceNode);
         }
       }
 
       if (targetCellId) {
         const targetNode = this._graph!.getCellById(targetCellId) as Node;
         if (targetNode && targetNode.isNode()) {
-          this._updateNodePortVisibility(targetNode);
+          this._portManager.updateNodePortVisibility(this._graph!, targetNode);
         }
       }
     });
@@ -1585,9 +1419,11 @@ export class X6GraphAdapter implements IGraphAdapter {
         added.forEach((cell: Cell) => {
           this._selectedCells.add(cell.id);
           if (cell.isNode()) {
-            const nodeType = this._getNodeType(cell);
-            if (nodeType === 'textbox') {
-              // For textbox shapes, apply glow to text element since body is transparent
+            const nodeType = (cell as any).getNodeTypeInfo
+              ? (cell as any).getNodeTypeInfo().type
+              : 'process';
+            if (nodeType === 'text-box') {
+              // For text-box shapes, apply glow to text element since body is transparent
               cell.attr('text/filter', 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
             } else {
               // For all other node types, apply glow to body element
@@ -1608,9 +1444,11 @@ export class X6GraphAdapter implements IGraphAdapter {
         removed.forEach((cell: Cell) => {
           this._selectedCells.delete(cell.id);
           if (cell.isNode()) {
-            const nodeType = this._getNodeType(cell);
-            if (nodeType === 'textbox') {
-              // For textbox shapes, remove glow from text element
+            const nodeType = (cell as any).getNodeTypeInfo
+              ? (cell as any).getNodeTypeInfo().type
+              : 'process';
+            if (nodeType === 'text-box') {
+              // For text-box shapes, remove glow from text element
               cell.attr('text/filter', 'none');
             } else {
               // For all other node types, remove glow from body element
@@ -1663,423 +1501,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         this._addLabelEditor(cell, e);
       }
     });
-  }
-
-  /**
-   * Get X6 shape name for domain node type
-   */
-  private _getX6ShapeForNodeType(nodeType: string): string {
-    switch (nodeType) {
-      case 'process':
-        return 'ellipse';
-      case 'store':
-        return 'store-shape'; // Use custom shape for store
-      case 'actor':
-        return 'rect';
-      case 'security-boundary':
-        return 'rect';
-      case 'textbox':
-        return 'rect';
-      default:
-        return 'rect';
-    }
-  }
-
-  /**
-   * Get X6 node attributes for domain node type
-   */
-  private _getNodeAttrs(nodeType: string): Record<string, unknown> {
-    const baseAttrs = {
-      body: {
-        strokeWidth: 2,
-        stroke: '#000000',
-        fill: '#FFFFFF',
-      },
-      text: {
-        fontFamily: '"Roboto Condensed", Arial, sans-serif',
-        fontSize: 12,
-        fill: '#000000',
-      },
-    };
-
-    switch (nodeType) {
-      case 'process':
-        return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-            rx: 30,
-            ry: 30,
-          },
-        };
-      case 'store':
-        return {
-          body: {
-            fill: '#FFFFFF',
-            stroke: 'transparent',
-            strokeWidth: 0,
-          },
-          topLine: {
-            stroke: '#333333',
-            strokeWidth: 2,
-          },
-          bottomLine: {
-            stroke: '#333333',
-            strokeWidth: 2,
-          },
-          text: {
-            fontFamily: '"Roboto Condensed", Arial, sans-serif',
-            fontSize: 12,
-            fill: '#000000',
-          },
-        };
-      case 'actor':
-        return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-          },
-        };
-      case 'security-boundary':
-        return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-            strokeDasharray: '5 5',
-            rx: 10,
-            ry: 10,
-          },
-        };
-      case 'textbox':
-        return {
-          ...baseAttrs,
-          body: {
-            ...baseAttrs.body,
-            stroke: 'none',
-            strokeWidth: 0,
-            fill: 'transparent',
-          },
-          text: {
-            ...baseAttrs.text,
-            fontSize: 12,
-          },
-        };
-      default:
-        return baseAttrs;
-    }
-  }
-
-  /**
-   * Get X6 edge attributes for domain edge type
-   */
-  private _getEdgeAttrs(edgeType: string): Record<string, unknown> {
-    const baseAttrs = {
-      line: {
-        stroke: '#000000',
-        strokeWidth: 2,
-        targetMarker: {
-          name: 'classic',
-          size: 8,
-          fill: '#000000',
-          stroke: '#000000',
-        },
-      },
-    };
-
-    switch (edgeType) {
-      case 'data-flow':
-        return baseAttrs;
-      case 'trust-boundary':
-        return {
-          ...baseAttrs,
-          line: {
-            ...baseAttrs.line,
-            stroke: '#722ED1',
-            strokeDasharray: '5 5',
-            targetMarker: {
-              ...baseAttrs.line.targetMarker,
-              fill: '#722ED1',
-              stroke: '#722ED1',
-            },
-          },
-        };
-      default:
-        return baseAttrs;
-    }
-  }
-
-  /**
-   * Get X6 port configuration for domain node type
-   */
-  private _getNodePorts(nodeType: string): Record<string, unknown> {
-    // Textbox shapes should not have ports
-    if (nodeType === 'textbox') {
-      return {
-        groups: {},
-        items: [],
-      };
-    }
-
-    const basePorts = {
-      groups: {
-        top: {
-          position: 'top',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: 'active',
-              'port-group': 'top',
-              stroke: '#000',
-              strokeWidth: 2,
-              fill: '#fff',
-              style: {
-                visibility: 'hidden',
-              },
-            },
-          },
-        },
-        right: {
-          position: 'right',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: 'active',
-              'port-group': 'right',
-              stroke: '#000',
-              strokeWidth: 2,
-              fill: '#fff',
-              style: {
-                visibility: 'hidden',
-              },
-            },
-          },
-        },
-        bottom: {
-          position: 'bottom',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: 'active',
-              'port-group': 'bottom',
-              stroke: '#000',
-              strokeWidth: 2,
-              fill: '#fff',
-              style: {
-                visibility: 'hidden',
-              },
-            },
-          },
-        },
-        left: {
-          position: 'left',
-          attrs: {
-            circle: {
-              r: 5,
-              magnet: 'active',
-              'port-group': 'left',
-              stroke: '#000',
-              strokeWidth: 2,
-              fill: '#fff',
-              style: {
-                visibility: 'hidden',
-              },
-            },
-          },
-        },
-      },
-      items: [{ group: 'top' }, { group: 'right' }, { group: 'bottom' }, { group: 'left' }],
-    };
-
-    // All other node types get the same port configuration
-    return basePorts;
-  }
-
-  /**
-   * Setup port visibility behavior for connection interactions
-   */
-  private _setupPortVisibility(): void {
-    if (!this._graph) return;
-
-    // Show ports on node hover
-    this._graph.on('node:mouseenter', ({ node }) => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-      });
-    });
-
-    // Hide ports on node leave (unless connecting or connected)
-    this._graph.on('node:mouseleave', ({ node }) => {
-      if (!this._isConnecting) {
-        const ports = node.getPorts();
-        ports.forEach(port => {
-          // Only hide ports that are not connected
-          if (!this._isPortConnected(node, port.id!)) {
-            node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-          }
-        });
-      }
-    });
-
-    // Show all ports when starting to connect
-    this._graph.on('edge:connecting', () => {
-      this._isConnecting = true;
-      this._showAllPorts();
-    });
-
-    // Also listen for mouse down on magnets to show ports
-    this._graph.on('node:magnet:mousedown', () => {
-      this._isConnecting = true;
-      this._showAllPorts();
-    });
-
-    // Hide ports when connection is complete or cancelled, but keep connected ports visible
-    this._graph.on('edge:connected', ({ edge }) => {
-      this._isConnecting = false;
-      // Add a small delay to ensure the edge connection is fully established
-      // before updating port visibility
-      setTimeout(() => {
-        this._hideUnconnectedPorts();
-        // Ensure the newly connected ports remain visible
-        this._ensureConnectedPortsVisible(edge);
-      }, 10);
-    });
-
-    this._graph.on('edge:disconnected', () => {
-      this._isConnecting = false;
-      this._hideUnconnectedPorts();
-    });
-
-    // Handle mouse up to stop connecting if no valid connection was made
-    this._graph.on('blank:mouseup', () => {
-      if (this._isConnecting) {
-        this._isConnecting = false;
-        this._hideUnconnectedPorts();
-      }
-    });
-
-    // Handle node mouse up during edge creation to prevent port hiding
-    this._graph.on('node:mouseup', () => {
-      // If we just finished connecting, ensure connected ports stay visible
-      if (!this._isConnecting) {
-        setTimeout(() => {
-          this._hideUnconnectedPorts();
-        }, 50);
-      }
-    });
-  }
-
-  /**
-   * Show all ports on all nodes
-   */
-  private _showAllPorts(): void {
-    if (!this._graph) return;
-
-    this._graph.getNodes().forEach(node => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-      });
-    });
-  }
-
-  /**
-   * Hide all ports on all nodes
-   */
-  private _hideAllPorts(): void {
-    if (!this._graph) return;
-
-    this._graph.getNodes().forEach(node => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-      });
-    });
-  }
-
-  /**
-   * Hide only unconnected ports on all nodes
-   */
-  private _hideUnconnectedPorts(): void {
-    if (!this._graph) return;
-
-    this._graph.getNodes().forEach(node => {
-      const ports = node.getPorts();
-      ports.forEach(port => {
-        // Only hide ports that are not connected
-        if (!this._isPortConnected(node, port.id!)) {
-          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-        }
-      });
-    });
-  }
-
-  /**
-   * Check if a specific port is connected to any edge
-   */
-  private _isPortConnected(node: Node, portId: string): boolean {
-    if (!this._graph) return false;
-
-    const edges = this._graph.getEdges();
-    return edges.some(edge => {
-      const sourceCellId = edge.getSourceCellId();
-      const targetCellId = edge.getTargetCellId();
-      const sourcePortId = edge.getSourcePortId();
-      const targetPortId = edge.getTargetPortId();
-
-      // Check if this edge connects to the specific port on this node
-      return (
-        (sourceCellId === node.id && sourcePortId === portId) ||
-        (targetCellId === node.id && targetPortId === portId)
-      );
-    });
-  }
-
-  /**
-   * Update port visibility for a specific node based on connection status
-   */
-  private _updateNodePortVisibility(node: Node): void {
-    if (!this._graph) return;
-
-    const ports = node.getPorts();
-    ports.forEach(port => {
-      // Check if this port is connected to any edge
-      if (this._isPortConnected(node, port.id!)) {
-        // Keep connected ports visible
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
-      } else {
-        // Hide unconnected ports
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
-      }
-    });
-  }
-
-  /**
-   * Ensure that the ports connected by a specific edge remain visible
-   */
-  private _ensureConnectedPortsVisible(edge: Edge): void {
-    if (!this._graph) return;
-
-    const sourceCellId = edge.getSourceCellId();
-    const targetCellId = edge.getTargetCellId();
-    const sourcePortId = edge.getSourcePortId();
-    const targetPortId = edge.getTargetPortId();
-
-    // Make sure source port is visible
-    if (sourceCellId && sourcePortId) {
-      const sourceNode = this._graph.getCellById(sourceCellId) as Node;
-      if (sourceNode && sourceNode.isNode()) {
-        sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
-      }
-    }
-
-    // Make sure target port is visible
-    if (targetCellId && targetPortId) {
-      const targetNode = this._graph.getCellById(targetCellId) as Node;
-      if (targetNode && targetNode.isNode()) {
-        targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
-      }
-    }
   }
 
   /**
@@ -2170,6 +1591,13 @@ export class X6GraphAdapter implements IGraphAdapter {
         }),
       );
 
+      // Enable history plugin
+      this._graph.use(
+        new History({
+          stackSize: 10,
+        }),
+      );
+
       // Enable transform plugin for resizing
       this._graph.use(
         new Transform({
@@ -2210,9 +1638,11 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
       if (!this._selectedCells.has(cell.id)) {
         if (cell.isNode()) {
-          const nodeType = this._getNodeType(cell);
-          if (nodeType === 'textbox') {
-            // For textbox shapes, apply hover glow to text element since body is transparent
+          const nodeType = (cell as any).getNodeTypeInfo
+            ? (cell as any).getNodeTypeInfo().type
+            : 'process';
+          if (nodeType === 'text-box') {
+            // For text-box shapes, apply hover glow to text element since body is transparent
             cell.attr('text/filter', 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.6))');
           } else {
             // For all other node types, apply hover glow to body element
@@ -2228,9 +1658,11 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('cell:mouseleave', ({ cell }: { cell: Cell }) => {
       if (!this._selectedCells.has(cell.id)) {
         if (cell.isNode()) {
-          const nodeType = this._getNodeType(cell);
-          if (nodeType === 'textbox') {
-            // For textbox shapes, remove hover glow from text element
+          const nodeType = (cell as any).getNodeTypeInfo
+            ? (cell as any).getNodeTypeInfo().type
+            : 'process';
+          if (nodeType === 'text-box') {
+            // For text-box shapes, remove hover glow from text element
             cell.attr('text/filter', 'none');
           } else {
             // For all other node types, remove hover glow from body element
@@ -2249,359 +1681,83 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   private _getNodeType(node: Node | null | undefined): string | undefined {
     if (!node) return undefined;
-    // Use unknown first to avoid direct any assignment
-    const rawData: unknown = node.getData();
-    // Type guard to check if it's an object with a type property
-    if (rawData && typeof rawData === 'object' && 'type' in rawData) {
-      const data = rawData as { type?: string };
-      return data.type;
-    }
-    return undefined;
+
+    // Use X6 cell extensions to get metadata
+    const nodeType = (node as any).getApplicationMetadata
+      ? (node as any).getApplicationMetadata('type')
+      : '';
+    return nodeType || 'process';
   }
 
-  /**
-   * Calculate the embedding depth of a node (how many levels deep it is embedded)
-   */
-  private _getEmbeddingDepth(node: Node): number {
-    if (!this._graph) return 0;
-
-    let depth = 0;
-    let currentNode = node;
-
-    // Traverse up the parent chain to count embedding levels
-    while (currentNode.getParent()) {
-      depth++;
-      const parent = currentNode.getParent();
-      if (!parent) break;
-
-      // The parent is already a Cell object, not an ID
-      if (!parent.isNode()) break;
-
-      currentNode = parent;
-
-      // Safety check to prevent infinite loops
-      if (depth > 10) {
-        this.logger.warn('Maximum embedding depth reached, breaking loop', { nodeId: node.id });
-        break;
-      }
-    }
-
-    return depth;
-  }
+  // Note: Embedding helper methods have been migrated to EmbeddingService and X6EmbeddingAdapter
+  // - _getEmbeddingDepth() → EmbeddingService.calculateEmbeddingDepth()
+  // - _getEmbeddingFillColor() → EmbeddingService.calculateEmbeddingFillColor()
+  // - _updateEmbeddedNodeColor() → X6EmbeddingAdapter.updateEmbeddingAppearance()
 
   /**
-   * Calculate the fill color based on embedding depth
-   * Level 0 (not embedded): white (#FFFFFF)
-   * Level 1: very light bluish white (#F8F9FF)
-   * Level 2: slightly darker (#F0F2FF)
-   * Level 3+: progressively darker bluish tints
-   */
-  private _getEmbeddingFillColor(depth: number): string {
-    if (depth === 0) {
-      return '#FFFFFF'; // Pure white for non-embedded nodes
-    }
-
-    // Base bluish white color components
-    const baseRed = 240;
-    const baseGreen = 250;
-
-    // Calculate darker tint based on depth
-    // Each level reduces the RGB values by 8 points to create a progressively darker tint
-    const reduction = Math.min(depth * 10, 60); // Cap at 48 to avoid going too dark
-
-    const red = Math.max(baseRed - reduction, 200);
-    const green = Math.max(baseGreen - reduction, 200);
-    const blue = 255; // Keep blue at maximum to maintain bluish tint
-
-    return `rgb(${red}, ${green}, ${blue})`;
-  }
-
-  /**
-   * Update the fill color of an embedded node based on its embedding depth
-   */
-  private _updateEmbeddedNodeColor(node: Node): void {
-    if (!this._graph) return;
-
-    const depth = this._getEmbeddingDepth(node);
-    const fillColor = this._getEmbeddingFillColor(depth);
-    const nodeType = this._getNodeType(node);
-
-    this.logger.info('Updating embedded node color', {
-      nodeId: node.id,
-      nodeType,
-      embeddingDepth: depth,
-      fillColor,
-    });
-
-    // Update the fill color based on node type
-    if (nodeType === 'store') {
-      // For store nodes, update the body fill
-      node.attr('body/fill', fillColor);
-    } else {
-      // For all other node types, update the body fill
-      node.attr('body/fill', fillColor);
-    }
-  }
-
-  /**
-   * Add tools to a selected node
+   * Add tools to a selected node using X6's native tool system
    */
   private _addNodeTools(node: Node): void {
     if (!this._graph) return;
 
-    const tools = [
-      // Use X6's native button-remove tool
-      {
-        name: 'button-remove',
-        args: {
-          x: '100%',
-          y: 0,
-          offset: { x: -10, y: 10 },
-          onClick: ({ cell }: { cell: Cell }) => {
-            this.logger.info('Delete tool clicked for node', { nodeId: cell.id });
-
-            // FIX: Use command pattern for delete operations to enable history tracking
-            if (this._diagramId && this._userId && this._commandBus) {
-              this.logger.info('FIXED: Using command pattern for node deletion', {
-                cellId: cell.id,
-                cellType: 'node',
-                diagramId: this._diagramId,
-                userId: this._userId,
-              });
-
-              // CRITICAL FIX: Start operation tracking for delete operations
-              const operationId = `delete_node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-              if (this._operationStateTracker) {
-                this._operationStateTracker.startOperation(operationId, OperationType.DELETE, {
-                  entityId: cell.id,
-                  entityType: 'node',
-                  metadata: { operationType: 'DELETE_NODE' },
-                });
-
-                this.logger.info('DIAGNOSTIC: Started operation tracking for delete', {
-                  operationId,
-                  nodeId: cell.id,
-                });
-              }
-
-              const command = DiagramCommandFactory.removeNode(
-                this._diagramId,
-                this._userId,
-                cell.id,
-                true, // isLocalUserInitiated = true for history recording
-              );
-
-              // Attach operation ID to command for history middleware
-              const commandWithOperationId = command as unknown as Record<string, unknown>;
-              commandWithOperationId['operationId'] = operationId;
-
-              this._commandBus.execute(command).subscribe({
-                next: () => {
-                  this.logger.info('Node deletion command executed successfully', {
-                    nodeId: cell.id,
-                    operationId,
-                  });
-
-                  // CRITICAL FIX: Complete operation tracking
-                  if (this._operationStateTracker) {
-                    this._operationStateTracker.completeOperation(operationId);
-                    this.logger.info('DIAGNOSTIC: Completed operation tracking for delete', {
-                      operationId,
-                      nodeId: cell.id,
-                    });
-                  }
-                },
-                error: (error: unknown) => {
-                  this.logger.error('Failed to execute node deletion command', {
-                    nodeId: cell.id,
-                    error,
-                    operationId,
-                  });
-
-                  // Cancel operation tracking on error
-                  if (this._operationStateTracker) {
-                    this._operationStateTracker.cancelOperation(operationId);
-                  }
-
-                  // Fallback to direct removal if command fails
-                  if (this._graph) {
-                    this._graph.removeCell(cell);
-                  }
-                },
-              });
-            } else {
-              this.logger.warn('Command context not set, falling back to direct removal', {
-                cellId: cell.id,
-                hasContext: {
-                  diagramId: !!this._diagramId,
-                  userId: !!this._userId,
-                  commandBus: !!this._commandBus,
-                },
-              });
-              // Fallback to direct removal if context is not set
-              if (this._graph) {
-                this._graph.removeCell(cell);
-              }
-            }
+    // Clone tools and add delete handler to button-remove
+    const tools = X6GraphAdapter.NODE_TOOLS.map(tool => {
+      if (tool.name === 'button-remove') {
+        return {
+          ...tool,
+          args: {
+            ...tool.args,
+            onClick: ({ cell }: { cell: Cell }) => this._handleCellDeletion(cell),
           },
-        },
-      },
-      // Boundary tool to show selection
-      {
-        name: 'boundary',
-        args: {
-          padding: 5,
-          attrs: {
-            fill: 'none',
-            stroke: '#fe854f',
-            'stroke-width': 2,
-            'stroke-dasharray': '5,5',
-            'pointer-events': 'none',
-          },
-        },
-      },
-    ];
+        };
+      }
+      return tool;
+    });
 
     node.addTools(tools);
   }
 
   /**
-   * Add tools to a selected edge
+   * Add tools to a selected edge using X6's native tool system
    */
   private _addEdgeTools(edge: Edge): void {
     if (!this._graph) return;
 
-    const tools = [
-      // Use X6's native vertices tool for edge manipulation with enhanced functionality
-      {
-        name: 'vertices',
-        args: {
-          attrs: {
-            body: {
-              fill: '#fe854f',
-              stroke: '#fe854f',
-              'stroke-width': 2,
-              r: 5,
-              cursor: 'move',
-            },
+    // Clone tools and add delete handler to button-remove
+    const tools = X6GraphAdapter.EDGE_TOOLS.map(tool => {
+      if (tool.name === 'button-remove') {
+        return {
+          ...tool,
+          args: {
+            ...tool.args,
+            onClick: ({ cell }: { cell: Cell }) => this._handleCellDeletion(cell),
           },
-          // Enable adding vertices by clicking on the edge stroke
-          addable: true,
-          // Enable removing vertices by double-clicking
-          removable: true,
-          // Snap vertices to grid
-          snapRadius: 10,
-          // Reduce threshold to make vertices less sensitive to clicks
-          threshold: 40,
-          // Configure vertex addition behavior - don't stop propagation to allow arrowhead tools to work
-          stopPropagation: false,
-          // Prevent interference with other tools
-          useCellGeometry: true,
-        },
-      },
-      // Source arrowhead tool for dragging source endpoint
-      {
-        name: 'source-arrowhead',
-        args: {
-          attrs: {
-            fill: '#31d0c6',
-            stroke: '#31d0c6',
-            'stroke-width': 2,
-            r: 6,
-            cursor: 'move',
-          },
-          // Enable dragging to reconnect source
-          tagName: 'circle',
-          // Prevent interference with label editing
-          stopPropagation: false,
-        },
-      },
-      // Target arrowhead tool for dragging target endpoint
-      {
-        name: 'target-arrowhead',
-        args: {
-          attrs: {
-            fill: '#fe854f',
-            stroke: '#fe854f',
-            'stroke-width': 2,
-            r: 6,
-            cursor: 'move',
-          },
-          // Enable dragging to reconnect target
-          tagName: 'circle',
-          // Prevent interference with label editing
-          stopPropagation: false,
-        },
-      },
-      // Use X6's native button-remove tool for edges
-      {
-        name: 'button-remove',
-        args: {
-          distance: 0.5, // Position at middle of edge
-          offset: { x: 10, y: -10 },
-          onClick: ({ cell }: { cell: Cell }) => {
-            this.logger.info('Delete tool clicked for edge', { edgeId: cell.id });
-
-            // FIX: Use command pattern for delete operations to enable history tracking
-            if (this._diagramId && this._userId && this._commandBus) {
-              this.logger.info('FIXED: Using command pattern for edge deletion', {
-                cellId: cell.id,
-                cellType: 'edge',
-                diagramId: this._diagramId,
-                userId: this._userId,
-              });
-
-              const command = DiagramCommandFactory.removeEdge(
-                this._diagramId,
-                this._userId,
-                cell.id,
-                true, // isLocalUserInitiated = true for history recording
-              );
-
-              this._commandBus.execute(command).subscribe({
-                next: () => {
-                  this.logger.info('Edge deletion command executed successfully', {
-                    edgeId: cell.id,
-                  });
-                },
-                error: (error: unknown) => {
-                  this.logger.error('Failed to execute edge deletion command', {
-                    edgeId: cell.id,
-                    error,
-                  });
-                  // Fallback to direct removal if command fails
-                  if (this._graph) {
-                    this._graph.removeCell(cell);
-                  }
-                },
-              });
-            } else {
-              this.logger.warn('Command context not set, falling back to direct removal', {
-                cellId: cell.id,
-                hasContext: {
-                  diagramId: !!this._diagramId,
-                  userId: !!this._userId,
-                  commandBus: !!this._commandBus,
-                },
-              });
-              // Fallback to direct removal if context is not set
-              if (this._graph) {
-                this._graph.removeCell(cell);
-              }
-            }
-          },
-        },
-      },
-    ];
+        };
+      }
+      return tool;
+    });
 
     edge.addTools(tools);
 
-    // Set up vertex change tracking for domain model updates
+    // Set up change tracking for domain model updates
     this._setupVertexChangeTracking(edge);
-
-    // Set up source/target change tracking for domain model updates
     this._setupEdgeConnectionChangeTracking(edge);
+  }
+
+  /**
+   * Centralized cell deletion handler - simplified without command pattern
+   */
+  private _handleCellDeletion(cell: Cell): void {
+    const cellType = cell.isNode() ? 'node' : 'edge';
+    this.logger.info(`Delete tool clicked for ${cellType}`, { cellId: cell.id });
+
+    // Direct removal without command pattern
+    if (this._graph) {
+      this._graph.removeCell(cell);
+      this.logger.info(`${cellType} removed directly from graph`, {
+        cellId: cell.id,
+      });
+    }
   }
 
   /**
@@ -2620,13 +1776,13 @@ export class X6GraphAdapter implements IGraphAdapter {
           vertices,
         });
 
-        // Update the edge data with new vertices
-        const currentData: unknown = edge.getData();
-        const safeCurrentData = currentData && typeof currentData === 'object' ? currentData : {};
-        edge.setData({
-          ...safeCurrentData,
-          vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
-        });
+        // Update the edge metadata with new vertices
+        if ((edge as any).setApplicationMetadata) {
+          (edge as any).setApplicationMetadata(
+            'vertices',
+            JSON.stringify(vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y }))),
+          );
+        }
 
         // Emit immediate vertex change event for UI responsiveness
         this._edgeVerticesChanged$.next({
@@ -2634,25 +1790,17 @@ export class X6GraphAdapter implements IGraphAdapter {
           vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
         });
 
-        // Handle debounced event for history service
-        this._handleDebouncedEdgeVertexChange(
-          edge.id,
-          vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
-        );
+        // Vertex changes are drag operations - emit immediate event for UI responsiveness
+        // History tracking will be handled by drag completion events
+        // TODO: Implement proper vertex drag completion tracking
       }
     };
 
     // Add the event listener
     this._graph.on('edge:change:vertices', vertexChangeHandler);
 
-    // Store the handler reference for cleanup
-    if (!edge.getData()) {
-      edge.setData({});
-    }
-    const edgeData: unknown = edge.getData();
-    if (edgeData && typeof edgeData === 'object') {
-      (edgeData as Record<string, unknown>)['_vertexChangeHandler'] = vertexChangeHandler;
-    }
+    // Note: Event handlers are managed by X6 graph event system
+    // No need to store handler references in metadata
   }
 
   /**
@@ -2672,8 +1820,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           newSourcePortId: sourcePortId,
         });
 
-        // Update port visibility for old and new source nodes
-        this._updatePortVisibilityAfterConnectionChange();
+        // Update port visibility for old and new source nodes using port manager
+        this._portManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -2688,8 +1836,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           newTargetPortId: targetPortId,
         });
 
-        // Update port visibility for old and new target nodes
-        this._updatePortVisibilityAfterConnectionChange();
+        // Update port visibility for old and new target nodes using port manager
+        this._portManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -2697,179 +1845,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:change:source', sourceChangeHandler);
     this._graph.on('edge:change:target', targetChangeHandler);
 
-    // Store the handler references for cleanup
-    if (!edge.getData()) {
-      edge.setData({});
-    }
-    const edgeData: unknown = edge.getData();
-    if (edgeData && typeof edgeData === 'object') {
-      (edgeData as Record<string, unknown>)['_sourceChangeHandler'] = sourceChangeHandler;
-      (edgeData as Record<string, unknown>)['_targetChangeHandler'] = targetChangeHandler;
-    }
-  }
-
-  /**
-   * Update port visibility for all nodes after a connection change
-   */
-  private _updatePortVisibilityAfterConnectionChange(): void {
-    if (!this._graph) return;
-
-    // Update port visibility for all nodes to reflect new connection states
-    this._graph.getNodes().forEach(node => {
-      this._updateNodePortVisibility(node);
-    });
-  }
-
-  /**
-   * Move a single cell forward in z-order
-   */
-  private _moveCellForward(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryUnselectedCells = allCells.filter(
-      c =>
-        c.id !== cell.id &&
-        !graph.isSelected(c) &&
-        this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryUnselectedCells.length === 0) {
-      this.logger.info('No other cells to move forward relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-
-    // Find the next higher z-index among unselected cells of the same category
-    const higherZIndices = sameCategoryUnselectedCells
-      .map(c => c.getZIndex() ?? 1)
-      .filter(z => z > currentZIndex)
-      .sort((a, b) => a - b);
-
-    if (higherZIndices.length > 0) {
-      const nextHigherZIndex = higherZIndices[0];
-      cell.setZIndex(nextHigherZIndex + 1);
-      this.logger.info('Moved cell forward', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex: nextHigherZIndex + 1,
-      });
-    } else {
-      this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
-    }
-  }
-
-  /**
-   * Move a single cell backward in z-order
-   */
-  private _moveCellBackward(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryUnselectedCells = allCells.filter(
-      c =>
-        c.id !== cell.id &&
-        !graph.isSelected(c) &&
-        this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryUnselectedCells.length === 0) {
-      this.logger.info('No other cells to move backward relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-
-    // Find the next lower z-index among unselected cells of the same category
-    const lowerZIndices = sameCategoryUnselectedCells
-      .map(c => c.getZIndex() ?? 1)
-      .filter(z => z < currentZIndex)
-      .sort((a, b) => b - a);
-
-    if (lowerZIndices.length > 0) {
-      const nextLowerZIndex = lowerZIndices[0];
-      cell.setZIndex(Math.max(nextLowerZIndex - 1, 1));
-      this.logger.info('Moved cell backward', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex: Math.max(nextLowerZIndex - 1, 1),
-      });
-    } else {
-      this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
-    }
-  }
-
-  /**
-   * Move a single cell to the front (highest z-index among cells of the same type)
-   */
-  private _moveCellToFront(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryCells = allCells.filter(
-      c => c.id !== cell.id && this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryCells.length === 0) {
-      this.logger.info('No other cells to move to front relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-    const maxZIndex = Math.max(...sameCategoryCells.map(c => c.getZIndex() ?? 1));
-    const newZIndex = maxZIndex + 1;
-
-    if (newZIndex > currentZIndex) {
-      cell.setZIndex(newZIndex);
-      this.logger.info('Moved cell to front', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex,
-      });
-    } else {
-      this.logger.info('Cell is already at the front among its category', { cellId: cell.id });
-    }
-  }
-
-  /**
-   * Move a single cell to the back (lowest z-index among cells of the same type)
-   */
-  private _moveCellToBack(cell: Cell): void {
-    const graph = this.getGraph();
-    const allCells = [...graph.getNodes(), ...graph.getEdges()];
-    const isSecurityBoundary = this._isSecurityBoundaryCell(cell);
-
-    // Get cells of the same type (security boundaries vs non-security boundaries)
-    const sameCategoryCells = allCells.filter(
-      c => c.id !== cell.id && this._isSecurityBoundaryCell(c) === isSecurityBoundary,
-    );
-
-    if (sameCategoryCells.length === 0) {
-      this.logger.info('No other cells to move to back relative to', { cellId: cell.id });
-      return;
-    }
-
-    const currentZIndex = cell.getZIndex() ?? 1;
-    const minZIndex = Math.min(...sameCategoryCells.map(c => c.getZIndex() ?? 1));
-    const newZIndex = Math.max(minZIndex - 1, 1);
-
-    if (newZIndex < currentZIndex) {
-      cell.setZIndex(newZIndex);
-      this.logger.info('Moved cell to back', {
-        cellId: cell.id,
-        oldZIndex: currentZIndex,
-        newZIndex,
-      });
-    } else {
-      this.logger.info('Cell is already at the back among its category', { cellId: cell.id });
-    }
+    // Note: Event handlers are managed by X6 graph event system
+    // No need to store handler references in metadata
   }
 
   /**
@@ -2891,23 +1868,21 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Remove any existing custom editors
     this._removeExistingEditor();
 
-    // Get the cell's position in the viewport
+    // Use X6's native coordinate transformation methods
     const cellView = this._graph.findViewByCell(cell);
     if (!cellView) {
       this.logger.debugComponent('DFD', 'Could not find cell view for editor', { cellId: cell.id });
       return;
     }
 
-    // Get the cell's bounding box in screen coordinates
-    const cellBBox = (
-      cellView as unknown as { getBBox(): { x: number; y: number; width: number; height: number } }
-    ).getBBox();
-    const graphContainer = this._graph.container;
-    const containerRect = graphContainer.getBoundingClientRect();
+    // Get cell center using X6's native methods
+    const cellBBox = cell.getBBox();
+    const centerPoint = { x: cellBBox.x + cellBBox.width / 2, y: cellBBox.y + cellBBox.height / 2 };
 
-    // Calculate the position for the editor
-    const editorX = containerRect.left + cellBBox.x + cellBBox.width / 2;
-    const editorY = containerRect.top + cellBBox.y + cellBBox.height / 2;
+    // Transform to client coordinates using X6's coordinate system
+    const clientPoint = this._graph.localToClient(centerPoint);
+    const editorX = clientPoint.x;
+    const editorY = clientPoint.y;
 
     // Create a custom textarea element to support multiline text
     const textarea = document.createElement('textarea');
@@ -2995,392 +1970,179 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Check if a cell is a security boundary
+   * Update port visibility for connected nodes after edge creation
    */
-  private _isSecurityBoundaryCell(cell: Cell): boolean {
-    if (cell.isNode()) {
-      const nodeType = this._getNodeType(cell);
-      return nodeType === 'security-boundary';
+  private _updatePortVisibilityAfterEdgeCreation(edge: Edge): void {
+    const graph = this.getGraph();
+
+    // FIXED: Set edge z-order to the higher of source or target node z-orders
+    // This ensures programmatically added edges also get correct zIndex
+    this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
+
+    // Use port manager for port visibility updates
+    this._portManager.ensureConnectedPortsVisible(graph, edge);
+
+    // Update port visibility for connected nodes using port manager
+    const sourceNodeId = edge.getSourceCellId();
+    const targetNodeId = edge.getTargetCellId();
+
+    if (sourceNodeId) {
+      const sourceNode = graph.getCellById(sourceNodeId);
+      if (sourceNode && sourceNode.isNode()) {
+        this._portManager.updateNodePortVisibility(graph, sourceNode);
+        this.logger.info('Updated source node port visibility after edge creation', {
+          edgeId: edge.id,
+          sourceNodeId,
+          sourcePortId: edge.getSourcePortId(),
+        });
+      }
     }
-    return false;
+
+    if (targetNodeId) {
+      const targetNode = graph.getCellById(targetNodeId);
+      if (targetNode && targetNode.isNode()) {
+        this._portManager.updateNodePortVisibility(graph, targetNode);
+        this.logger.info('Updated target node port visibility after edge creation', {
+          edgeId: edge.id,
+          targetNodeId,
+          targetPortId: edge.getTargetPortId(),
+        });
+      }
+    }
   }
 
   /**
-   * Update the z-order of all edges connected to a node to match the node's z-order
+   * Emit history state change event
    */
-  private _updateConnectedEdgesZOrder(node: Node, zIndex: number): void {
-    if (!this._graph) return;
-
-    const edges = this._graph.getConnectedEdges(node) || [];
-    edges.forEach(edge => {
-      edge.setZIndex(zIndex);
-      this.logger.info('Updated connected edge z-order', {
-        nodeId: node.id,
-        edgeId: edge.id,
-        newZIndex: zIndex,
-      });
-    });
+  /**
+   * Get standard edge markup for consistent rendering
+   */
+  private _getEdgeMarkup(): any[] {
+    return [
+      {
+        tagName: 'path',
+        selector: 'wrap',
+        attrs: {
+          fill: 'none',
+          cursor: 'pointer',
+          stroke: 'transparent',
+          strokeLinecap: 'round',
+        },
+      },
+      {
+        tagName: 'path',
+        selector: 'line',
+        attrs: {
+          fill: 'none',
+          pointerEvents: 'none',
+        },
+      },
+    ];
   }
 
   /**
-   * Set the z-order of an edge to the higher of its source or target node z-orders
+   * Create edge snapshot from X6 edge with proper port information
    */
-  private _setEdgeZOrderFromConnectedNodes(edge: Edge): void {
-    if (!this._graph) return;
+  private _createEdgeSnapshot(edge: Edge): X6EdgeSnapshot {
+    // Get metadata using X6 cell extensions
+    const metadata = (edge as any).getApplicationMetadata
+      ? (edge as any).getApplicationMetadata()
+      : {};
+    const metadataArray = Object.entries(metadata).map(([key, value]) => ({
+      key,
+      value: String(value),
+    }));
 
-    const sourceId = edge.getSourceCellId();
-    const targetId = edge.getTargetCellId();
-
-    if (!sourceId || !targetId) {
-      this.logger.warn('Cannot set edge z-order: missing source or target', {
-        edgeId: edge.id,
-        sourceId,
-        targetId,
-      });
-      return;
-    }
-
-    const sourceNode = this._graph.getCellById(sourceId) as Node;
-    const targetNode = this._graph.getCellById(targetId) as Node;
-
-    if (!sourceNode?.isNode() || !targetNode?.isNode()) {
-      this.logger.warn('Cannot set edge z-order: source or target is not a node', {
-        edgeId: edge.id,
-        sourceIsNode: sourceNode?.isNode(),
-        targetIsNode: targetNode?.isNode(),
-      });
-      return;
-    }
-
-    // Safety check for test environment where getZIndex might not exist
-    const sourceZIndex =
-      typeof sourceNode.getZIndex === 'function' ? (sourceNode.getZIndex() ?? 1) : 1;
-    const targetZIndex =
-      typeof targetNode.getZIndex === 'function' ? (targetNode.getZIndex() ?? 1) : 1;
-    const edgeZIndex = Math.max(sourceZIndex, targetZIndex);
-
-    // Safety check for test environment where setZIndex might not exist
-    if (typeof edge.setZIndex === 'function') {
-      edge.setZIndex(edgeZIndex);
-    }
-
-    this.logger.info('Set edge z-order from connected nodes', {
-      edgeId: edge.id,
-      sourceNodeId: sourceId,
-      targetNodeId: targetId,
-      sourceZIndex,
-      targetZIndex,
-      edgeZIndex,
-    });
-  }
-
-  /**
-   * Setup shift key handling for temporary snap to grid disable
-   */
-  private _setupShiftKeyHandling(): void {
-    if (!this._graph) return;
-
-    // Listen for shift key events on the document
-    document.addEventListener('keydown', this._handleKeyDown);
-    document.addEventListener('keyup', this._handleKeyUp);
-
-    // Listen for drag start/end events on nodes
-    this._graph.on('node:mousedown', this._handleNodeMouseDown);
-    this._graph.on('node:mousemove', this._handleNodeMouseMove);
-    this._graph.on('node:mouseup', this._handleNodeMouseUp);
-
-    // Also listen for global mouse up to handle cases where mouse is released outside the graph
-    document.addEventListener('mouseup', this._handleDocumentMouseUp);
-
-    // Handle window blur to reset state if user switches windows while dragging
-    window.addEventListener('blur', this._handleWindowBlur);
-
-    this.logger.info('Shift key handling for snap to grid control initialized');
-  }
-
-  /**
-   * Clean up shift key event listeners
-   */
-  private _cleanupShiftKeyHandling(): void {
-    document.removeEventListener('keydown', this._handleKeyDown);
-    document.removeEventListener('keyup', this._handleKeyUp);
-    document.removeEventListener('mouseup', this._handleDocumentMouseUp);
-    window.removeEventListener('blur', this._handleWindowBlur);
-  }
-
-  /**
-   * Handle keydown events to track shift key state
-   */
-  private _handleKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === 'Shift' && !this._isShiftPressed) {
-      this._isShiftPressed = true;
-      this._updateSnapToGrid();
-    }
-  };
-
-  /**
-   * Handle keyup events to track shift key state
-   */
-  private _handleKeyUp = (event: KeyboardEvent): void => {
-    if (event.key === 'Shift' && this._isShiftPressed) {
-      this._isShiftPressed = false;
-      this._updateSnapToGrid();
-    }
-  };
-
-  /**
-   * Handle node mouse down to track drag start and store initial position
-   */
-  private _handleNodeMouseDown = ({ node }: { node: Node }): void => {
-    this._isDragging = true;
-    this._updateSnapToGrid();
-    // Store the initial position of the node when the drag starts
-    const initialPosition = new Point(node.position().x, node.position().y);
-    this._initialNodePositions.set(node.id, initialPosition);
-
-    // DIAGNOSTIC: Log initial position capture for history debugging
-    this.logger.info('DIAGNOSTIC: Node drag started - capturing initial position', {
-      nodeId: node.id,
-      initialPosition: { x: initialPosition.x, y: initialPosition.y },
-      storedInMap: this._initialNodePositions.has(node.id),
-    });
-  };
-
-  /**
-   * Handle node mouse move during drag
-   */
-  private _handleNodeMouseMove = (): void => {
-    // Update snap to grid in case shift state changed during drag
-    if (this._isDragging) {
-      this._updateSnapToGrid();
-    }
-  };
-
-  /**
-   * Handle node mouse up to track drag end
-   */
-  private _handleNodeMouseUp = ({ node }: { node: Node }): void => {
-    if (this._isDragging) {
-      this._isDragging = false;
-      this._updateSnapToGrid();
-      // Clear the initial position after drag ends
-      this._initialNodePositions.delete(node.id);
-    }
-  };
-
-  /**
-   * Handle document mouse up to ensure drag state is reset
-   */
-  private _handleDocumentMouseUp = (): void => {
-    if (this._isDragging) {
-      this._isDragging = false;
-      this._updateSnapToGrid();
-      // Clear all initial positions if mouse up happens outside a node
-      this._initialNodePositions.clear();
-    }
-  };
-
-  /**
-   * Handle window blur to reset state
-   */
-  private _handleWindowBlur = (): void => {
-    this._isShiftPressed = false;
-    this._isDragging = false;
-    this._updateSnapToGrid();
-    this._initialNodePositions.clear();
-  };
-
-  /**
-   * Update snap to grid based on current shift and drag state
-   */
-  private _updateSnapToGrid(): void {
-    if (!this._graph) return;
-
-    // Disable snap to grid (set to 1) if shift is pressed during drag
-    const shouldDisableSnap = this._isShiftPressed && this._isDragging;
-    const newGridSize = shouldDisableSnap ? 1 : this._originalGridSize;
-
-    // Update the grid size by modifying the graph options
-    // We need to access the internal grid configuration and update it
-     
-    const graphOptions = (this._graph as any).options as {
-      grid?: { size: number; visible: boolean };
+    return {
+      id: edge.id,
+      source: edge.getSource(),
+      target: edge.getTarget(),
+      shape: edge.shape,
+      attrs: edge.getAttrs(),
+      vertices: edge.getVertices(),
+      labels: edge.getLabels(),
+      zIndex: edge.getZIndex() || 1,
+      visible: edge.isVisible(),
+      data: metadataArray,
     };
-    if (graphOptions?.grid) {
-      graphOptions.grid.size = newGridSize;
-      // Redraw the grid with the new size
-      this._graph.drawGrid();
+  }
+
+  /**
+   * Emit history state change event
+   */
+  private _emitHistoryStateChange(): void {
+    const canUndo = this.canUndo();
+    const canRedo = this.canRedo();
+
+    // Only emit and log if the state has actually changed
+    if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
+      this._historyChanged$.next({ canUndo, canRedo });
+      this.logger.debug('History state changed', { canUndo, canRedo });
+
+      // Update previous state tracking
+      this._previousCanUndo = canUndo;
+      this._previousCanRedo = canRedo;
     }
   }
 
   /**
-   * Handle debounced node movement for history service integration
+   * Validate that a node shape is properly set and is a valid shape type
    */
-  private _handleDebouncedNodeMovement(nodeId: string, position: Point, previous: Point): void {
-    // Clear existing timer for this node
-    const existingTimer = this._nodeMovementTimers.get(nodeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
+  private _validateNodeShape(nodeType: string, nodeId: string): void {
+    if (!nodeType || typeof nodeType !== 'string') {
+      const error = `Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`;
+      this.logger.error(error);
+      throw new Error(error);
     }
 
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.logger.debugComponent('DFD', '[Debounced] Node movement finalized', {
-        nodeId,
-        position: { x: position.x, y: position.y },
-        previous: { x: previous.x, y: previous.y },
-        debounceDelay: this._debounceDelay,
-      });
+    // Validate against known shape types
+    const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
+    if (!validShapes.includes(nodeType)) {
+      const error = `Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
+      this.logger.error(error);
+      throw new Error(error);
+    }
 
-      // Emit debounced event for history service
-      this._debouncedNodeMoved$.next({
-        nodeId,
-        position,
-        previous,
-      });
-
-      // Clean up timer
-      this._nodeMovementTimers.delete(nodeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._nodeMovementTimers.set(nodeId, timer);
+    this.logger.debugComponent('DFD', 'Node shape validation passed', {
+      nodeId,
+      nodeType,
+      validShapes,
+    });
   }
 
   /**
-   * Handle debounced node resize for history service integration
+   * Validate that an X6 node was created with the correct shape property
    */
-  private _handleDebouncedNodeResize(
-    nodeId: string,
-    width: number,
-    height: number,
-    oldWidth: number,
-    oldHeight: number,
-  ): void {
-    // Clear existing timer for this node
-    const existingTimer = this._nodeResizeTimers.get(nodeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
+  private _validateX6NodeShape(x6Node: Node): void {
+    const nodeShape = x6Node.shape;
+    const nodeId = x6Node.id;
+
+    if (!nodeShape || typeof nodeShape !== 'string') {
+      const error = `X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`;
+      this.logger.error(error);
+      throw new Error(error);
     }
 
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.logger.debugComponent('DFD', '[Debounced] Node resize finalized', {
-        nodeId,
-        width,
-        height,
-        oldWidth,
-        oldHeight,
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedNodeResized$.next({
-        nodeId,
-        width,
-        height,
-        oldWidth,
-        oldHeight,
-      });
-
-      // Clean up timer
-      this._nodeResizeTimers.delete(nodeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._nodeResizeTimers.set(nodeId, timer);
-  }
-
-  /**
-   * Handle debounced node data change for history service integration
-   */
-  private _handleDebouncedNodeDataChange(
-    nodeId: string,
-    newData: Record<string, unknown>,
-    oldData: Record<string, unknown>,
-  ): void {
-    // Clear existing timer for this node
-    const existingTimer = this._nodeDataChangeTimers.get(nodeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
+    // Ensure the shape property matches what we expect
+    const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
+    if (!validShapes.includes(nodeShape)) {
+      const error = `X6 node created with invalid shape: '${nodeShape}'. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
+      this.logger.error(error);
+      throw new Error(error);
     }
 
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.logger.debugComponent('DFD', '[Debounced] Node data change finalized', {
-        nodeId,
-        newData,
-        oldData,
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedNodeDataChanged$.next({
-        nodeId,
-        newData,
-        oldData,
-      });
-
-      // Clean up timer
-      this._nodeDataChangeTimers.delete(nodeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._nodeDataChangeTimers.set(nodeId, timer);
-  }
-
-  /**
-   * Handle debounced edge vertex changes for history service integration
-   */
-  private _handleDebouncedEdgeVertexChange(
-    edgeId: string,
-    vertices: Array<{ x: number; y: number }>,
-  ): void {
-    // Clear existing timer for this edge
-    const existingTimer = this._edgeVertexTimers.get(edgeId);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
+    // Verify that no data.type property exists (should only use shape)
+    const nodeData = x6Node.getData();
+    if (nodeData && 'type' in nodeData) {
+      const warning = `X6 node has data.type property. Only shape property should be used for type determination. Node ID: ${nodeId}, data.type: ${nodeData.type}, shape: ${nodeShape}`;
+      this.logger.warn(warning);
+      // Don't throw error, just warn since this might be from existing data
     }
 
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.logger.debugComponent('DFD', '[Debounced] Edge vertex change finalized', {
-        edgeId,
-        vertexCount: vertices.length,
-        vertices,
-        debounceDelay: this._debounceDelay,
-      });
-
-      // Emit debounced event for history service
-      this._debouncedEdgeVerticesChanged$.next({
-        edgeId,
-        vertices,
-      });
-
-      // Clean up timer
-      this._edgeVertexTimers.delete(edgeId);
-    }, this._debounceDelay) as unknown as number;
-
-    this._edgeVertexTimers.set(edgeId, timer);
-  }
-
-  /**
-   * Clean up all debouncing timers
-   */
-  private _cleanupDebouncingTimers(): void {
-    // Clear all node movement timers
-    this._nodeMovementTimers.forEach(timer => clearTimeout(timer));
-    this._nodeMovementTimers.clear();
-
-    // Clear all node resize timers
-    this._nodeResizeTimers.forEach(timer => clearTimeout(timer));
-    this._nodeResizeTimers.clear();
-
-    // Clear all node data change timers
-    this._nodeDataChangeTimers.forEach(timer => clearTimeout(timer));
-    this._nodeDataChangeTimers.clear();
-
-    // Clear all edge vertex timers
-    this._edgeVertexTimers.forEach(timer => clearTimeout(timer));
-    this._edgeVertexTimers.clear();
-
-    this.logger.debugComponent('DFD', '[Debouncing] All timers cleaned up');
+    this.logger.debugComponent('DFD', 'X6 node shape validation passed', {
+      nodeId,
+      nodeShape,
+      hasDataType: nodeData && 'type' in nodeData,
+    });
   }
 }

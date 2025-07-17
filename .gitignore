@@ -50,5 +50,7 @@ CLAUDE.md
 
 # Local environment files
 src/environments/environment.local.ts
-docs/PHASE_3_1_2_COMPLETION_SUMMARY.md
-docs/PHASE_3_MIGRATION_STRATEGY.md
+context/*.json
+unused/*
+unused
+

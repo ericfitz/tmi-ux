@@ -1,4 +1,9 @@
-import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withFetch,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 import {
   ApplicationConfig,
   provideZoneChangeDetection,
@@ -31,7 +36,7 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: getBasicLocale() },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi(), withFetch()),
     provideAnimations(),
     // Add Transloco root module
     importProvidersFrom(TranslocoRootModule),

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
 ## API and Backend
 
@@ -13,19 +13,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build/Test Commands
 
-- Development server: `ng serve` or `pnpm run dev`
-- Production build: `ng build --configuration=production` or `pnpm run build:prod`
-- Run all tests: `ng test` or `pnpm run test`
-- Run single test: `ng test --include=**/path/to/file.spec.ts`
-- Run tests for specific component: `ng test --include=**/component-name/*.spec.ts`
-- Focus tests in code: Use `fdescribe()` and `fit()` in spec files
+- Run all pnpm commands from the project root directory
+  - Always cd to the project root directory before running a pnpm command
+- Development server: `pnpm run dev`
+- Production build: `pnpm run build:prod`
+- Run all tests: `pnpm run test`
+- Run single test: `pnpm run test relative/path/to/file.spec.ts`
+- Run tests for specific component: `pnpm run test <componentname>` (currently supported for tm, dfd)
+- Focus tests in code: Use `describe.only()` and `it.only()` in spec files
 - Lint TypeScript/HTML: `pnpm run lint`
 - Lint SCSS: `pnpm run lint:scss`
 - Lint all files: `pnpm run lint:all`
 - Format code: `pnpm run format`
 - Check formatting: `pnpm run format:check`
 - Check all (lint+format): `pnpm run check`
-- Pre-commit hooks: (temporarily disabled) Uses husky and lint-staged to verify code quality before commits
 
 ## Code Style
 
@@ -47,12 +48,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## User Preferences
 
-- When starting, list all of the files in the context directory and the docs directory, and read any of them that are relevant to the current prompt.
+- When starting, run the appropriate tool to list the files in the context directory and the docs directory.
+  - Read the README.md file in each of those directories to discover what each file is for.
+  - Read any of context or docs files that are relevant to the current prompt.
 - When making changes to any file:
   - Always run lint with "pnpm run lint:all" and fix any lint errors related to changes you made
     - When fixing lint errors about unused items, remove the unused item rather than prefixing with an underscore, unless the item is commented as a placeholder for future functionality
-  - If the file contained executable code, run a build with "pnpm run build" and fix any build errors
-    - Never complete a task if there are any remaining build errors
-  - If the file was a test file, run the test using the proper vitest syntax (path to test file in double quotes) and fix any test errors.
-    - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
+- When making a change to any file containing executable code:
+  - Run a build with "pnpm run build" and fix any build errors
+  - Run the related tests with the vitest CLI and fix any test errors related to the change
+  - Never complete a task if there are any remaining build errors
+- If the file was a test file, run the test using the proper vitest CLI syntax and fix any test errors.
+- Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
 - Always stop and prompt the user before running the application. The user usually already has an instance of the application running on http://localhost:4200
