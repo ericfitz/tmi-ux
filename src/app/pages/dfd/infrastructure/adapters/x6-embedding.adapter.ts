@@ -362,7 +362,7 @@ export class X6EmbeddingAdapter {
    * Validate if embedding is allowed
    */
   private validateEmbedding(child: Node, parent: Node): boolean {
-    const validation = this.embeddingService.validateEmbedding(child, parent);
+    const validation = this.embeddingService.validateEmbedding(parent, child);
 
     if (!validation.isValid) {
       this.logger.warn('Embedding validation failed', {

@@ -23,6 +23,9 @@ export class EdgeQueryService {
    * Find edges connected to a specific node
    */
   findEdgesConnectedToNode(graph: any, nodeId: string): Edge[] {
+    if (!graph || !nodeId) {
+      return [];
+    }
     const edges = graph.getEdges();
     return edges.filter((edge: Edge) => {
       const sourceCellId = edge.getSourceCellId();
@@ -35,6 +38,9 @@ export class EdgeQueryService {
    * Find edges connected to a specific port
    */
   findEdgesConnectedToPort(graph: any, nodeId: string, portId: string): Edge[] {
+    if (!graph || !nodeId || !portId) {
+      return [];
+    }
     const edges = graph.getEdges();
     return edges.filter((edge: Edge) => {
       const sourceCellId = edge.getSourceCellId();
@@ -101,6 +107,9 @@ export class EdgeQueryService {
    * Find edges between two specific nodes
    */
   findEdgesBetweenNodes(graph: any, sourceNodeId: string, targetNodeId: string): Edge[] {
+    if (!graph || !sourceNodeId || !targetNodeId) {
+      return [];
+    }
     const edges = graph.getEdges();
     return edges.filter((edge: Edge) => {
       const sourceCellId = edge.getSourceCellId();
@@ -125,6 +134,16 @@ export class EdgeQueryService {
     connectedPorts: number;
     unconnectedPorts: number;
   } {
+    if (!graph || !nodeId) {
+      return {
+        totalEdges: 0,
+        incomingEdges: 0,
+        outgoingEdges: 0,
+        connectedPorts: 0,
+        unconnectedPorts: 0,
+      };
+    }
+
     const node = graph.getCellById(nodeId) as Node;
     if (!node || !node.isNode()) {
       return {
@@ -229,6 +248,9 @@ export class EdgeQueryService {
     edgeId: string;
     issues: string[];
   }> {
+    if (!graph) {
+      return [];
+    }
     const edges = graph.getEdges();
     const validationResults: Array<{ edgeId: string; issues: string[] }> = [];
 
@@ -312,6 +334,15 @@ export class EdgeQueryService {
       targetPortId?: string;
     }>;
   } {
+    if (!graph) {
+      return {
+        totalEdges: 0,
+        edgesWithPorts: 0,
+        edgesWithoutPorts: 0,
+        uniqueConnections: 0,
+        connectionDetails: [],
+      };
+    }
     const edges = graph.getEdges();
     const connectionDetails: Array<{
       edgeId: string;

@@ -94,6 +94,11 @@ export class X6KeyboardHandler {
    * Handle node mouse down to track drag start and store initial position
    */
   private _handleNodeMouseDown = ({ node }: { node: Node }): void => {
+    if (!node) {
+      this.logger.warn('Node mouse down event received with missing node data');
+      return;
+    }
+
     this.logger.debugComponent('DFD', 'Node drag started (handleNodeMouseDown)', {
       nodeId: node.id,
     });
@@ -126,6 +131,11 @@ export class X6KeyboardHandler {
    * Handle node mouse up to track drag end
    */
   private _handleNodeMouseUp = ({ node }: { node: Node }): void => {
+    if (!node) {
+      this.logger.warn('Node mouse up event received with missing node data');
+      return;
+    }
+
     this.logger.debugComponent('DFD', 'Node drag ended (handleNodeMouseUp)', { nodeId: node.id });
     if (this._isDragging) {
       this._isDragging = false;
