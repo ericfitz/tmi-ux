@@ -84,6 +84,16 @@ export class AuthService {
   }
 
   /**
+   * Check if the current user is a test user
+   * Test users are identified by their email patterns (user1@example.com, user2@example.com, etc.)
+   * @returns True if the current user is a test user
+   */
+  get isTestUser(): boolean {
+    const email = this.userEmail;
+    return /^user[1-3]@example\.com$/.test(email) || email === 'demo.user@example.com';
+  }
+
+  /**
    * Check if the current JWT token is valid and not expired
    * @returns True if the token is valid and not expired
    */
@@ -451,5 +461,44 @@ export class AuthService {
 
     this.logger.info(`Demo user ${email} logged in`);
     void this.router.navigate(['/tm']);
+  }
+
+  /**
+   * Silently extend the session for test users
+   * Creates a new token with extended expiration time
+   * @returns Observable that resolves to true if session was extended successfully
+   */
+  extendTestUserSession(): Observable<boolean> {
+    if (!this.isTestUser) {
+      this.logger.warn('Attempted to extend session for non-test user');
+      return of(false);
+    }
+
+    try {
+      const currentProfile = this.userProfile;
+      if (!currentProfile) {
+        this.logger.error('No user profile found for session extension');
+        return of(false);
+      }
+
+      // Create a new token with extended expiration
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1); // Extend by 1 hour
+
+      const extendedToken: JwtToken = {
+        token: 'mock.jwt.token.extended',
+        expiresIn: 3600,
+        expiresAt,
+      };
+
+      // Store the extended token
+      this.storeToken(extendedToken);
+
+      this.logger.info(`Session extended for test user: ${currentProfile.email}`);
+      return of(true);
+    } catch (error) {
+      this.logger.error('Error extending test user session', error);
+      return of(false);
+    }
   }
 }

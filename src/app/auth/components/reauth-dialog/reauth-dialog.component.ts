@@ -39,13 +39,37 @@ export class ReauthDialogComponent implements OnInit {
   reauthenticate(): void {
     this.isLoading = true;
     this.error = null;
-    this.logger.info('Attempting re-authentication via Google OAuth');
 
-    // Redirect to Google OAuth login page
-    this.authService.loginWithGoogle();
+    // Check if this is a test user
+    if (this.authService.isTestUser) {
+      this.logger.info('Test user detected - extending session silently');
 
-    // Note: The dialog will be closed by the OAuth callback handler
-    // once the authentication flow completes.
+      // For test users, extend the session silently
+      this.authService.extendTestUserSession().subscribe({
+        next: success => {
+          this.isLoading = false;
+          if (success) {
+            this.logger.info('Test user session extended successfully');
+            this.dialogRef.close(true);
+          } else {
+            this.error = 'Failed to extend session. Please try again.';
+            this.logger.error('Failed to extend test user session');
+          }
+        },
+        error: error => {
+          this.isLoading = false;
+          this.error = 'An error occurred while extending your session.';
+          this.logger.error('Error extending test user session', error);
+        },
+      });
+    } else {
+      // For OAuth users, redirect to Google OAuth login page
+      this.logger.info('Attempting re-authentication via Google OAuth');
+      this.authService.loginWithGoogle();
+
+      // Note: The dialog will be closed by the OAuth callback handler
+      // once the authentication flow completes.
+    }
   }
 
   cancel(): void {

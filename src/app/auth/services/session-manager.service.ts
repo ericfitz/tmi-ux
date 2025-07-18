@@ -117,11 +117,27 @@ export class SessionManagerService {
     if (timeToExpiry <= 0) {
       // Token has expired
       this.logger.warn('Token has expired');
-      this.handleSessionTimeout();
+
+      // Check if this is a test user - if so, silently extend the session
+      if (this.authService.isTestUser) {
+        this.logger.info('Test user token expired - silently extending session');
+        this.silentlyExtendTestUserSession();
+      } else {
+        // For OAuth users, handle session timeout normally
+        this.handleSessionTimeout();
+      }
     } else if (timeToExpiry <= this.warningTime && !this.isWarningDisplayed) {
-      // Token is about to expire, show warning
+      // Token is about to expire
       this.logger.debug(`Token will expire in ${Math.round(timeToExpiry / 1000 / 60)} minutes`);
-      this.showExpiryWarning(Math.round(timeToExpiry / 1000 / 60));
+
+      // Check if this is a test user - if so, silently extend the session
+      if (this.authService.isTestUser) {
+        this.logger.info('Test user detected - silently extending session');
+        this.silentlyExtendTestUserSession();
+      } else {
+        // For OAuth users, show the reauthentication warning
+        this.showExpiryWarning(Math.round(timeToExpiry / 1000 / 60));
+      }
     }
   }
 
@@ -210,5 +226,32 @@ export class SessionManagerService {
 
     // Return success
     return of(true);
+  }
+
+  /**
+   * Silently extend the session for test users
+   * Calls the AuthService to extend the test user session without showing any UI
+   */
+  private silentlyExtendTestUserSession(): void {
+    this.logger.debug('Silently extending test user session');
+
+    this.authService.extendTestUserSession().subscribe({
+      next: success => {
+        if (success) {
+          this.logger.info('Test user session extended successfully');
+          // Reset the warning flag since we've extended the session
+          this.isWarningDisplayed = false;
+        } else {
+          this.logger.error('Failed to extend test user session');
+          // Fall back to showing the warning dialog
+          this.showExpiryWarning(5); // Show with 5 minutes remaining
+        }
+      },
+      error: error => {
+        this.logger.error('Error extending test user session', error);
+        // Fall back to showing the warning dialog
+        this.showExpiryWarning(5); // Show with 5 minutes remaining
+      },
+    });
   }
 }
