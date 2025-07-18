@@ -38,6 +38,7 @@ import { DfdNodeService } from './services/dfd-node.service';
 import { DfdEdgeService } from './services/dfd-edge.service';
 import { DfdEventHandlersService } from './services/dfd-event-handlers.service';
 import { DfdExportService } from './services/dfd-export.service';
+import { X6EventLoggerService } from './services/x6-event-logger.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -69,6 +70,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdEdgeService,
     DfdEventHandlersService,
     DfdExportService,
+
+    // X6 Event Logger
+    X6EventLoggerService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],

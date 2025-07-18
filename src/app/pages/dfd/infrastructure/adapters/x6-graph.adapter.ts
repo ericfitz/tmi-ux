@@ -23,6 +23,7 @@ import { X6KeyboardHandler } from './x6-keyboard-handler';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
 import { X6PortManager } from './x6-port-manager';
+import { X6EventLoggerService } from '../../services/x6-event-logger.service';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -177,6 +178,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _zOrderAdapter: X6ZOrderAdapter,
     private readonly _embeddingAdapter: X6EmbeddingAdapter,
     private readonly _portManager: X6PortManager,
+    private readonly _x6EventLogger: X6EventLoggerService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -296,7 +298,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       this.dispose();
     }
 
-    this.logger.info('[DFD Graph Init] Initializing X6 graph with embedding support');
+    this.logger.info('[DFD] Initializing X6 graph');
 
     this._graph = new Graph({
       container,
@@ -367,28 +369,13 @@ export class X6GraphAdapter implements IGraphAdapter {
           // FIXED: Check for magnet="true" instead of magnet="active" to match port configuration
           const magnetAttr = magnet.getAttribute('magnet');
           const isValid = magnetAttr === 'true' || magnetAttr === 'active';
-          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet result:', {
-            magnetAttr,
-            isValid,
-          });
           return isValid;
         },
         validateConnection: args => {
-          this.logger.debugComponent('DFD', '[Edge Creation] validateConnection called', {
-            sourceView: args.sourceView?.cell?.id,
-            targetView: args.targetView?.cell?.id,
-            sourceMagnet: args.sourceMagnet?.getAttribute('port-group'),
-            targetMagnet: args.targetMagnet?.getAttribute('port-group'),
-          });
-
           const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
 
           // Prevent creating an edge if source and target are the same port on the same node
           if (sourceView === targetView && sourceMagnet === targetMagnet) {
-            this.logger.debugComponent(
-              'DFD',
-              '[Edge Creation] validateConnection: same source and target port',
-            );
             return false;
           }
 
@@ -420,23 +407,6 @@ export class X6GraphAdapter implements IGraphAdapter {
             return false;
           }
 
-          // Get the source and target cells
-          const sourceCell = sourceView?.cell;
-          const targetCell = targetView?.cell;
-
-          // Allow self-connections (connecting a node to itself via different ports)
-          if (sourceCell === targetCell) {
-            this.logger.debugComponent(
-              'DFD',
-              '[Edge Creation] validateConnection: self-connection allowed between different ports',
-              {
-                sourcePort: sourcePortGroup,
-                targetPort: targetPortGroup,
-              },
-            );
-          }
-
-          this.logger.debugComponent('DFD', '[Edge Creation] validateConnection: connection valid');
           return true;
         },
         createEdge: () => {
@@ -560,6 +530,11 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._setupPlugins();
     this._setupEventListeners();
 
+    // Initialize X6 event logging (if service is available)
+    if (this._x6EventLogger) {
+      this._x6EventLogger.initializeEventLogging(this._graph);
+    }
+
     // Setup port visibility using dedicated port manager
     this._portManager.setupPortVisibility(this._graph);
     this._portManager.setupPortTooltips(this._graph);
@@ -637,7 +612,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   addNodeFromSnapshot(snapshot: X6NodeSnapshot): Node {
     const graph = this.getGraph();
 
-    this.logger.info('Starting node restoration from snapshot', {
+    this.logger.info('[DFD] Starting node restoration from snapshot', {
       nodeId: snapshot.id,
       shape: snapshot.shape,
       position: snapshot.position,
@@ -655,7 +630,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if ((snapshot.ports as any)?.groups && (snapshot.ports as any)?.items) {
       // If snapshot has the complete structure, use it directly
       portsForX6 = snapshot.ports;
-      this.logger.info(' Using complete port structure from snapshot', {
+      this.logger.info('[DFD] Using complete port structure from snapshot', {
         nodeId: snapshot.id,
         hasGroups: true,
         hasItems: true,
@@ -672,7 +647,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         items: snapshot.ports, // Use the snapshot port items to preserve IDs
       };
 
-      this.logger.info(' FIXED - Reconstructed port structure from array format', {
+      this.logger.info('[DFD] Reconstructed port structure from array format', {
         nodeId: snapshot.id,
         nodeType,
         originalFormat: 'array',
@@ -685,7 +660,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       const nodeType = snapshot.data?.find((m: any) => m.key === 'type')?.value || 'process';
       portsForX6 = this._nodeConfigurationService.getNodePorts(nodeType);
 
-      this.logger.warn(' Fallback - Using base port configuration', {
+      this.logger.warn('[DFD] Fallback - Using base port configuration', {
         nodeId: snapshot.id,
         nodeType,
         snapshotPortsType: typeof snapshot.ports,
@@ -694,7 +669,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     //  Detailed analysis of the port configuration being used
-    this.logger.info(' Final port configuration for X6 restoration', {
+    this.logger.info('[DFD] Final port configuration for X6 restoration', {
       nodeId: snapshot.id,
       portsForX6,
       hasGroups: !!(portsForX6 as any)?.groups,
@@ -724,7 +699,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       visible: snapshot.visible,
     };
 
-    this.logger.info(' Parameters being passed to graph.addNode()', {
+    this.logger.info('[DFD] Parameters being passed to graph.addNode()', {
       nodeId: snapshot.id,
       nodeParams,
       portsParam: nodeParams.ports,
@@ -734,7 +709,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     //  Verify the node was created with correct port configuration
     const restoredPorts = x6Node.getPorts();
-    this.logger.info(' Node restored - verifying port configuration', {
+    this.logger.info('[DFD] Node restored - verifying port configuration', {
       nodeId: snapshot.id,
       restoredPortCount: restoredPorts.length,
       restoredPortIds: restoredPorts.map((item: any) => item.id),
@@ -760,7 +735,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     //  Log final restoration status
-    this.logger.info(' Node restoration completed', {
+    this.logger.info('[DFD] Node restoration completed', {
       nodeId: snapshot.id,
       nodeCreated: !!x6Node,
       metadataSet: !!(snapshot.data && (x6Node as any).setApplicationMetadata),
@@ -940,10 +915,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     const graph = this.getGraph();
     if (graph && typeof graph.undo === 'function') {
       graph.undo();
-      this.logger.info('Undo action performed');
+      this.logger.info('[DFD] Undo action performed');
       this._emitHistoryStateChange();
     } else {
-      this.logger.warn('Undo not available - history plugin may not be enabled');
+      this.logger.warn('[DFD] Undo not available - history plugin may not be enabled');
     }
   }
 
@@ -954,10 +929,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     const graph = this.getGraph();
     if (graph && typeof graph.redo === 'function') {
       graph.redo();
-      this.logger.info('Redo action performed');
+      this.logger.info('[DFD] Redo action performed');
       this._emitHistoryStateChange();
     } else {
-      this.logger.warn('Redo not available - history plugin may not be enabled');
+      this.logger.warn('[DFD] Redo not available - history plugin may not be enabled');
     }
   }
 
@@ -990,10 +965,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     const graph = this.getGraph();
     if (graph && typeof graph.cleanHistory === 'function') {
       graph.cleanHistory();
-      this.logger.info('History cleared');
+      this.logger.info('[DFD] History cleared');
       this._emitHistoryStateChange();
     } else {
-      this.logger.warn('Clear history not available - history plugin may not be enabled');
+      this.logger.warn('[DFD] Clear history not available - history plugin may not be enabled');
     }
   }
 
@@ -1033,6 +1008,11 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Clean up keyboard handler
     this._keyboardHandler.cleanup();
+
+    // Clean up X6 event logger (if service is available)
+    if (this._x6EventLogger) {
+      this._x6EventLogger.dispose();
+    }
 
     if (this._graph) {
       this._graph.dispose();
@@ -1114,7 +1094,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       const oldData = { label: oldLabel };
       const newData = { label: text };
 
-      this.logger.info('FIXED: Triggering cell:change:data event for label change', {
+      this.logger.info('[DFD] Triggering cell:change:data event for label change', {
         cellId: cell.id,
         oldData,
         newData,
@@ -1123,6 +1103,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Emit immediate event for text changes since text editing
       // only updates when editing is complete - no need for debouncing
+      // TODO - this should not go into the data property of cells
       this._nodeDataChanged$.next({
         nodeId: cell.id,
         newData,
@@ -1170,7 +1151,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Node position changes
     this._graph.on(
-      'node:change:position',
+      'node:moved',
       ({
         node,
         current,
@@ -1180,12 +1161,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         current?: { x: number; y: number };
         previous?: { x: number; y: number };
       }) => {
-        this.logger.debug('node:change:position event fired (raw)', {
-          nodeId: node.id,
-          current,
-          previous,
-        }); // Raw log
-        this.logger.debugComponent('DFD', 'node:change:position event fired', {
+        this.logger.debugComponent('DFD', 'node:moved event fired', {
           nodeId: node.id,
           current: current,
           previous: previous,
@@ -1352,36 +1328,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         attrs: edge.attr(),
         lineAttrs: edge.attr('line'),
       });
-
-      // Debug: Inspect the actual SVG element (only in non-test environment)
-      if (this._graph && typeof this._graph.findViewByCell === 'function') {
-        setTimeout(() => {
-          // Get the edge element from the graph
-          const edgeElement = this._graph?.getCellById(edge.id);
-          if (edgeElement && edgeElement.isEdge()) {
-            const edgeView = this._graph?.findViewByCell(edgeElement);
-            if (edgeView && 'container' in edgeView) {
-              const container = (edgeView as unknown as Record<string, unknown>)[
-                'container'
-              ] as HTMLElement;
-              const svgPath = container?.querySelector('path.x6-edge-line');
-              if (svgPath) {
-                this.logger.debugComponent('DFD', '[Edge Creation] SVG path element inspection:', {
-                  stroke: svgPath.getAttribute('stroke'),
-                  strokeWidth: svgPath.getAttribute('stroke-width'),
-                  fill: svgPath.getAttribute('fill'),
-                  d: svgPath.getAttribute('d'),
-                  className: svgPath.getAttribute('class'),
-                  style: svgPath.getAttribute('style'),
-                  computedStyle: window.getComputedStyle(svgPath).stroke,
-                });
-              } else {
-                this.logger.debugComponent('DFD', '[Edge Creation] No SVG path element found');
-              }
-            }
-          }
-        }, 100);
-      }
 
       // Note: We handle edge creation in edge:connected event instead
     });
@@ -1749,12 +1695,12 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   private _handleCellDeletion(cell: Cell): void {
     const cellType = cell.isNode() ? 'node' : 'edge';
-    this.logger.info(`Delete tool clicked for ${cellType}`, { cellId: cell.id });
+    this.logger.info(`[DFD] Delete tool clicked for ${cellType}`, { cellId: cell.id });
 
     // Direct removal without command pattern
     if (this._graph) {
       this._graph.removeCell(cell);
-      this.logger.info(`${cellType} removed directly from graph`, {
+      this.logger.info(`[DFD] ${cellType} removed directly from graph`, {
         cellId: cell.id,
       });
     }
@@ -1770,7 +1716,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const vertexChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
       if (changedEdge.id === edge.id) {
         const vertices = changedEdge.getVertices();
-        this.logger.info('Edge vertices changed', {
+        this.logger.info('[DFD] Edge vertices changed', {
           edgeId: edge.id,
           vertexCount: vertices.length,
           vertices,
@@ -1814,7 +1760,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (changedEdge.id === edge.id) {
         const sourceId = changedEdge.getSourceCellId();
         const sourcePortId = changedEdge.getSourcePortId();
-        this.logger.info('Edge source changed', {
+        this.logger.info('[DFD] Edge source changed', {
           edgeId: edge.id,
           newSourceId: sourceId,
           newSourcePortId: sourcePortId,
@@ -1830,7 +1776,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (changedEdge.id === edge.id) {
         const targetId = changedEdge.getTargetCellId();
         const targetPortId = changedEdge.getTargetPortId();
-        this.logger.info('Edge target changed', {
+        this.logger.info('[DFD] Edge target changed', {
           edgeId: edge.id,
           newTargetId: targetId,
           newTargetPortId: targetPortId,
@@ -1990,11 +1936,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       const sourceNode = graph.getCellById(sourceNodeId);
       if (sourceNode && sourceNode.isNode()) {
         this._portManager.updateNodePortVisibility(graph, sourceNode);
-        this.logger.info('Updated source node port visibility after edge creation', {
-          edgeId: edge.id,
-          sourceNodeId,
-          sourcePortId: edge.getSourcePortId(),
-        });
       }
     }
 
@@ -2002,18 +1943,10 @@ export class X6GraphAdapter implements IGraphAdapter {
       const targetNode = graph.getCellById(targetNodeId);
       if (targetNode && targetNode.isNode()) {
         this._portManager.updateNodePortVisibility(graph, targetNode);
-        this.logger.info('Updated target node port visibility after edge creation', {
-          edgeId: edge.id,
-          targetNodeId,
-          targetPortId: edge.getTargetPortId(),
-        });
       }
     }
   }
 
-  /**
-   * Emit history state change event
-   */
   /**
    * Get standard edge markup for consistent rendering
    */
@@ -2077,7 +2010,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Only emit and log if the state has actually changed
     if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
       this._historyChanged$.next({ canUndo, canRedo });
-      this.logger.debug('History state changed', { canUndo, canRedo });
+      this.logger.debugComponent('DFD', 'History state changed', { canUndo, canRedo });
+    } else {
+      this.logger.debugComponent('DFD', 'History state changed', { canUndo, canRedo });
 
       // Update previous state tracking
       this._previousCanUndo = canUndo;
@@ -2090,7 +2025,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   private _validateNodeShape(nodeType: string, nodeId: string): void {
     if (!nodeType || typeof nodeType !== 'string') {
-      const error = `Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`;
+      const error = `[DFD] Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`;
       this.logger.error(error);
       throw new Error(error);
     }
@@ -2098,16 +2033,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Validate against known shape types
     const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     if (!validShapes.includes(nodeType)) {
-      const error = `Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
+      const error = `[DFD] Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
       this.logger.error(error);
       throw new Error(error);
     }
-
-    this.logger.debugComponent('DFD', 'Node shape validation passed', {
-      nodeId,
-      nodeType,
-      validShapes,
-    });
   }
 
   /**
@@ -2118,7 +2047,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const nodeId = x6Node.id;
 
     if (!nodeShape || typeof nodeShape !== 'string') {
-      const error = `X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`;
+      const error = `[DFD] X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`;
       this.logger.error(error);
       throw new Error(error);
     }
@@ -2126,7 +2055,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Ensure the shape property matches what we expect
     const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     if (!validShapes.includes(nodeShape)) {
-      const error = `X6 node created with invalid shape: '${nodeShape}'. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
+      const error = `[DFD] X6 node created with invalid shape: '${nodeShape}'. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
       this.logger.error(error);
       throw new Error(error);
     }
@@ -2134,15 +2063,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Verify that no data.type property exists (should only use shape)
     const nodeData = x6Node.getData();
     if (nodeData && 'type' in nodeData) {
-      const warning = `X6 node has data.type property. Only shape property should be used for type determination. Node ID: ${nodeId}, data.type: ${nodeData.type}, shape: ${nodeShape}`;
+      const warning = `[DFD] X6 node has data.type property. Only shape property should be used for type determination. Node ID: ${nodeId}, data.type: ${nodeData.type}, shape: ${nodeShape}`;
       this.logger.warn(warning);
       // Don't throw error, just warn since this might be from existing data
     }
-
-    this.logger.debugComponent('DFD', 'X6 node shape validation passed', {
-      nodeId,
-      nodeShape,
-      hasDataType: nodeData && 'type' in nodeData,
-    });
   }
 }

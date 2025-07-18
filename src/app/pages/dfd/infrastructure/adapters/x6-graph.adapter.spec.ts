@@ -140,6 +140,7 @@ describe('X6GraphAdapter', () => {
       zOrderAdapter,
       embeddingAdapter,
       portManager,
+      null as any, // Suppress X6EventLoggerService for testing
     );
 
     // Initialize the adapter with the container
