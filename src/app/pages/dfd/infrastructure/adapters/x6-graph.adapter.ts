@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
@@ -871,6 +872,11 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._x6EventLogger.dispose();
     }
 
+    // Clean up history manager
+    if (this._historyManager) {
+      this._historyManager.dispose();
+    }
+
     if (this._graph) {
       this._graph.dispose();
       this._graph = null;
@@ -1377,6 +1383,16 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Setup selection event handlers
     this._setupSelectionEvents();
+    
+    // Setup history event handlers
+    this._historyManager.setupHistoryEvents(this._graph);
+    
+    // Subscribe to history state changes from history manager
+    this._historyManager.historyChanged$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(({ canUndo, canRedo }) => {
+        this._historyChanged$.next({ canUndo, canRedo });
+      });
   }
 
   /**
