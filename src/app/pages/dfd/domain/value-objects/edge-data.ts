@@ -26,7 +26,7 @@ export class EdgeData {
     public readonly visible: boolean = true,
     public readonly data: MetadataEntry[] = [],
   ) {
-    this.validate();
+    this._validate();
   }
 
   /**
@@ -629,7 +629,7 @@ export class EdgeData {
   /**
    * Validates the edge data
    */
-  private validate(): void {
+  private _validate(): void {
     if (!this.id || this.id.trim().length === 0) {
       throw new Error('Edge ID cannot be empty');
     }

@@ -585,25 +585,25 @@ describe('EdgeQueryService', () => {
     });
 
     it('should find edge by connection with port specification', () => {
-      const foundEdge = service.findEdgeByConnection(graph, node1.id, node2.id, 'port1', 'port2');
+      const foundEdge = service.findEdgeBetweenPorts(graph, node1.id, node2.id, 'port1', 'port2');
 
       expect(foundEdge).toBe(validEdge);
     });
 
     it('should find edge by connection with source port only', () => {
-      const foundEdge = service.findEdgeByConnection(graph, node1.id, node2.id, 'port1');
+      const foundEdge = service.findEdgeBetweenPorts(graph, node1.id, node2.id, 'port1');
 
       expect(foundEdge).toBe(validEdge);
     });
 
     it('should find edge by connection with target port only', () => {
-      const foundEdge = service.findEdgeByConnection(graph, node1.id, node2.id, undefined, 'port2');
+      const foundEdge = service.findEdgeBetweenPorts(graph, node1.id, node2.id, undefined, 'port2');
 
       expect(foundEdge).toBe(validEdge);
     });
 
     it('should find edge by connection without port specification', () => {
-      const foundEdge = service.findEdgeByConnection(graph, node1.id, node2.id);
+      const foundEdge = service.findEdgeBetweenPorts(graph, node1.id, node2.id);
 
       expect(foundEdge).toBe(validEdge);
     });
@@ -617,13 +617,13 @@ describe('EdgeQueryService', () => {
         height: 50,
       });
 
-      const foundEdge = service.findEdgeByConnection(graph, node1.id, node3.id);
+      const foundEdge = service.findEdgeBetweenPorts(graph, node1.id, node3.id);
 
       expect(foundEdge).toBeNull();
     });
 
     it('should return null for wrong port specification', () => {
-      const foundEdge = service.findEdgeByConnection(
+      const foundEdge = service.findEdgeBetweenPorts(
         graph,
         node1.id,
         node2.id,
@@ -879,7 +879,7 @@ describe('EdgeQueryService', () => {
     });
 
     it('should get edge connection summary', () => {
-      const summary = service.getEdgeConnectionSummary(graph);
+      const summary = service.getConnectionSummary(graph);
 
       expect(summary.totalEdges).toBe(2);
       expect(summary.edgesWithPorts).toBe(1);
@@ -911,7 +911,7 @@ describe('EdgeQueryService', () => {
         height: 400,
       });
 
-      const summary = service.getEdgeConnectionSummary(emptyGraph);
+      const summary = service.getConnectionSummary(emptyGraph);
 
       expect(summary.totalEdges).toBe(0);
       expect(summary.edgesWithPorts).toBe(0);
@@ -929,7 +929,7 @@ describe('EdgeQueryService', () => {
         target: { cell: node2.id, port: 'port2' },
       });
 
-      const summary = service.getEdgeConnectionSummary(graph);
+      const summary = service.getConnectionSummary(graph);
 
       expect(summary.totalEdges).toBe(3);
       expect(summary.uniqueConnections).toBe(2); // Should still be 2 unique connections
@@ -942,7 +942,7 @@ describe('EdgeQueryService', () => {
         target: node2.id, // No target port
       });
 
-      const summary = service.getEdgeConnectionSummary(graph);
+      const summary = service.getConnectionSummary(graph);
 
       expect(summary.edgesWithPorts).toBe(1); // Only edge1 has both ports
       expect(summary.edgesWithoutPorts).toBe(2); // edge2 and partialPortEdge
@@ -1112,7 +1112,7 @@ describe('EdgeQueryService', () => {
 
       expect(service.validateEdgeConnections(null as any)).toEqual([]);
 
-      const summary = service.getEdgeConnectionSummary(null as any);
+      const summary = service.getConnectionSummary(null as any);
       expect(summary.totalEdges).toBe(0);
     });
   });

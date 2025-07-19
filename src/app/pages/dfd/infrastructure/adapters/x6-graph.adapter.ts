@@ -287,8 +287,18 @@ export class X6GraphAdapter implements IGraphAdapter {
           return this._connectionValidationService.isMagnetValid(args);
         },
         validateConnection: args => {
-          // Delegate to validation service
-          return this._connectionValidationService.isConnectionValid(args);
+          // Ensure all required properties exist before delegating to validation service
+          if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
+            return false;
+          }
+
+          // Delegate to validation service with properly typed args
+          return this._connectionValidationService.isConnectionValid({
+            sourceView: args.sourceView,
+            targetView: args.targetView,
+            sourceMagnet: args.sourceMagnet,
+            targetMagnet: args.targetMagnet,
+          });
         },
         createEdge: () => {
           this.logger.debugComponent('DFD', '[Edge Creation] createEdge called');
@@ -476,13 +486,6 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Validate that the X6 node was created with the correct shape
     this._connectionValidationService.validateX6NodeShape(x6Node);
-
-    // Set metadata using X6 cell extensions
-    (x6Node as any).setApplicationMetadata('type', nodeType);
-    (x6Node as any).setApplicationMetadata('domainNodeId', node.id);
-    (x6Node as any).setApplicationMetadata('width', String(node.data.width || 120));
-    (x6Node as any).setApplicationMetadata('height', String(node.data.height || 60));
-    (x6Node as any).setApplicationMetadata('label', node.data.label || '');
 
     // Apply proper z-index using ZOrderService after node creation
     this._zOrderAdapter.applyNodeCreationZIndex(graph, x6Node);
@@ -814,7 +817,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Check if redo is available - delegates to X6HistoryManager  
+   * Check if redo is available - delegates to X6HistoryManager
    */
   canRedo(): boolean {
     return this._historyManager.canRedo(this._graph!);

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { Cell, Node } from '@antv/x6';
+import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 
 /**
@@ -118,7 +118,7 @@ export class DfdCellLabelService {
   /**
    * Check if a label change is valid
    */
-  isLabelChangeValid(cell: Cell, newText: string, oldText: string): boolean {
+  isLabelChangeValid(cell: Cell, newText: string, _oldText: string): boolean {
     // Basic validation rules
     if (typeof newText !== 'string') {
       this.logger.warn('[CellLabelService] Invalid label type', {
@@ -161,6 +161,7 @@ export class DfdCellLabelService {
     sanitized = sanitized.replace(/\s+/g, ' ');
 
     // Remove control characters but keep newlines for multi-line labels
+    // eslint-disable-next-line no-control-regex
     sanitized = sanitized.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
 
     return sanitized;

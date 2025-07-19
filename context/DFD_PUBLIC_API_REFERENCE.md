@@ -30,7 +30,7 @@ This document provides a comprehensive list of all TypeScript files (excluding t
 - `updateState(update: DfdStateUpdate, source?: string): void`
 - `resetState(): void`
 - `getHistory(): History | null`
-- `select<T>(selector: (state: DfdState) => T): Observable<T>`
+- `query<T>(selector: (state: DfdState) => T): Observable<T>`
 
 ---
 
@@ -87,7 +87,7 @@ This document provides a comprehensive list of all TypeScript files (excluding t
 - `addInverseConnection(originalEdge: Edge, diagramId: string): Observable<void>`
 - `handleEdgeAdded(edge: Edge, diagramId: string, isInitialized: boolean): Observable<void>`
 - `handleEdgeVerticesChanged(edgeId: string, vertices: Array<{x: number, y: number}>, diagramId: string, isInitialized: boolean): Observable<void>`
-- `validateConnection(sourceNode: Node, targetNode: Node): boolean`
+- `isNodeConnectionValid(sourceNode: Node, targetNode: Node): boolean`
 
 ### `services/x6-event-logger.service.ts`
 **Exports:**
@@ -119,9 +119,9 @@ This document provides a comprehensive list of all TypeScript files (excluding t
 - `class DfdConnectionValidationService`
 
 **Public APIs:**
-- `validateMagnet(args: MagnetValidationArgs): boolean`
-- `validateConnection(args: ConnectionValidationArgs): boolean`
-- `validateNodeConnection(sourceNode: Node, targetNode: Node): boolean`
+- `isMagnetValid(args: MagnetValidationArgs): boolean`
+- `isConnectionValid(args: ConnectionValidationArgs): boolean`
+- `isNodeConnectionValid(sourceNode: Node, targetNode: Node): boolean`
 - `validateNodeShape(nodeType: string, nodeId: string): void`
 - `validateX6NodeShape(x6Node: Node): void`
 - `getValidConnectionTargets(sourceShape: string): string[]`
@@ -139,7 +139,7 @@ This document provides a comprehensive list of all TypeScript files (excluding t
 - `get nodeDataChanged$(): Observable<NodeDataChangeEvent>`
 - `getCellLabel(cell: Cell): string`
 - `setCellLabel(cell: Cell, text: string): boolean`
-- `validateLabelChange(cell: Cell, newText: string, oldText: string): boolean`
+- `isLabelChangeValid(cell: Cell, newText: string, oldText: string): boolean`
 - `sanitizeLabelText(text: string): string`
 - `canEditCellLabel(cell: Cell): boolean`
 - `getLabelConstraints(): { maxLength: number; allowedCharacters: string }`
@@ -457,9 +457,9 @@ This document provides a comprehensive list of all TypeScript files (excluding t
 - `findEdgesBetweenNodes(graph: any, sourceNodeId: string, targetNodeId: string): Edge[]`
 - `getNodeEdgeStatistics(graph: any, nodeId: string): any`
 - `findEdgesByMetadata(graph: any, criteria: Record<string, string>): Edge[]`
-- `findEdgeByConnection(graph: any, sourceNodeId: string, sourcePortId: string, targetNodeId: string, targetPortId: string): Edge | null`
+- `findEdgeBetweenPorts(graph: any, sourceNodeId: string, sourcePortId: string, targetNodeId: string, targetPortId: string): Edge | null`
 - `validateEdgeConnections(graph: any): Array<any>`
-- `getEdgeConnectionSummary(graph: any): any`
+- `getConnectionSummary(graph: any): any`
 
 ### `infrastructure/services/embedding.service.ts`
 **Exports:**
@@ -917,5 +917,34 @@ The DFD component exposes a comprehensive public API consisting of:
 8. **Real-time Collaboration**: WebSocket-based real-time features with user presence
 9. **Comprehensive Validation**: Multi-layer validation for data integrity
 10. **Extensible Design**: Well-defined interfaces for easy extension and testing
+11. **Consistent API Naming**: Standardized naming patterns across all layers:
+    - Boolean methods use `is*()`, `can*()`, `has*()` prefixes
+    - Event handlers use `on*()` prefix
+    - State queries use `query()` instead of ambiguous `select()`
+    - Validation methods use `is*Valid()` pattern
+    - Edge queries avoid redundant "connection" terminology
+
+## **Recent API Improvements** ✨
+
+This API reference reflects recent consistency improvements made to standardize naming patterns:
+
+### **Breaking Changes Applied:**
+- `DfdStateStore.select()` → `query()` (eliminates confusion with diagram selection)
+- `EdgeQueryService.findEdgeByConnection()` → `findEdgeBetweenPorts()`
+- `EdgeQueryService.getEdgeConnectionSummary()` → `getConnectionSummary()`
+- `DfdConnectionValidationService` validation methods now use `is*Valid()` pattern:
+  - `validateMagnet()` → `isMagnetValid()`
+  - `validateConnection()` → `isConnectionValid()` 
+  - `validateNodeConnection()` → `isNodeConnectionValid()`
+- `DfdCellLabelService.validateLabelChange()` → `isLabelChangeValid()`
+
+### **Internal Consistency Improvements:**
+- All domain objects now use consistent `_validate()` private method naming
+- Event handlers consistently use `on*()` prefix for internal event methods
+- Observable naming verified to follow Angular conventions with `$` suffix
+
+These improvements enhance API discoverability, reduce ambiguity, and follow established Angular/TypeScript naming conventions.
+
+---
 
 This represents a mature, well-architected diagramming component with extensive public APIs for integration, customization, and extension.

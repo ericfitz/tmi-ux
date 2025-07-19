@@ -17,6 +17,9 @@ import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { NodeData } from '../../domain/value-objects/node-data';
 import { EdgeData } from '../../domain/value-objects/edge-data';
+import { X6EventLoggerService } from '../../services/x6-event-logger.service';
+import { DfdConnectionValidationService } from '../../services/dfd-connection-validation.service';
+import { DfdCellLabelService } from '../../services/dfd-cell-label.service';
 
 // Mock LoggerService for integration testing
 class MockLoggerService {
@@ -100,6 +103,9 @@ describe('X6GraphAdapter', () => {
   let zOrderAdapter: X6ZOrderAdapter;
   let embeddingAdapter: X6EmbeddingAdapter;
   let historyManager: X6HistoryManager;
+  let x6EventLogger: X6EventLoggerService;
+  let connectionValidationService: DfdConnectionValidationService;
+  let cellLabelService: DfdCellLabelService;
 
   beforeEach(() => {
     // Create DOM container for X6 graph
@@ -128,6 +134,9 @@ describe('X6GraphAdapter', () => {
       zOrderAdapter,
     );
     historyManager = new X6HistoryManager(mockLogger as unknown as LoggerService);
+    x6EventLogger = new X6EventLoggerService(mockLogger as unknown as LoggerService);
+    connectionValidationService = new DfdConnectionValidationService(mockLogger as unknown as LoggerService);
+    cellLabelService = new DfdCellLabelService(mockLogger as unknown as LoggerService);
 
     // Create X6GraphAdapter with real dependencies
     adapter = new X6GraphAdapter(
@@ -140,7 +149,9 @@ describe('X6GraphAdapter', () => {
       zOrderAdapter,
       embeddingAdapter,
       historyManager,
-      null as any, // Suppress X6EventLoggerService for testing
+      x6EventLogger,
+      connectionValidationService,
+      cellLabelService,
     );
 
     // Initialize the adapter with the container

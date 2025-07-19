@@ -31,7 +31,7 @@ export class NodeData {
     public readonly visible: boolean = true,
     public readonly data: MetadataEntry[] = [],
   ) {
-    this.validate();
+    this._validate();
   }
 
   /**
@@ -478,7 +478,7 @@ export class NodeData {
   /**
    * Validates the node data
    */
-  private validate(): void {
+  private _validate(): void {
     if (!this.id || this.id.trim().length === 0) {
       throw new Error('Node ID cannot be empty');
     }

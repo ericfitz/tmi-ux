@@ -6,7 +6,7 @@ export class Point {
     public readonly x: number,
     public readonly y: number,
   ) {
-    this.validate();
+    this._validate();
   }
 
   /**
@@ -77,7 +77,7 @@ export class Point {
   /**
    * Validates the point coordinates
    */
-  private validate(): void {
+  private _validate(): void {
     if (!Number.isFinite(this.x) || !Number.isFinite(this.y)) {
       throw new Error('Point coordinates must be finite numbers');
     }

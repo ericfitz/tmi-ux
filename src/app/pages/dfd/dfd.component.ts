@@ -17,7 +17,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { Node, Edge } from '@antv/x6';
+import { Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
@@ -217,7 +217,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private loadDiagramData(diagramId: string): void {
     this._subscriptions.add(
-      this.diagramService.loadDiagram(diagramId, this.threatModelId).subscribe({
+      this.diagramService.loadDiagram(diagramId, this.threatModelId ?? undefined).subscribe({
         next: result => {
           if (result.success && result.diagram) {
             this.diagramName = result.diagram.name;
