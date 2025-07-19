@@ -22,7 +22,7 @@ import { PortStateManagerService } from '../services/port-state-manager.service'
 import { X6KeyboardHandler } from './x6-keyboard-handler';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
-import { X6PortManager } from './x6-port-manager';
+import { X6HistoryManager } from './x6-history-manager';
 import { X6EventLoggerService } from '../../services/x6-event-logger.service';
 
 // Import the extracted shape definitions
@@ -177,7 +177,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _keyboardHandler: X6KeyboardHandler,
     private readonly _zOrderAdapter: X6ZOrderAdapter,
     private readonly _embeddingAdapter: X6EmbeddingAdapter,
-    private readonly _portManager: X6PortManager,
+    private readonly _historyManager: X6HistoryManager,
     private readonly _x6EventLogger: X6EventLoggerService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
@@ -536,8 +536,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     }
 
     // Setup port visibility using dedicated port manager
-    this._portManager.setupPortVisibility(this._graph);
-    this._portManager.setupPortTooltips(this._graph);
+    this._portStateManager.setupPortVisibility(this._graph);
+    this._portStateManager.setupPortTooltips(this._graph);
 
     // Setup keyboard handling using dedicated handler
     this._keyboardHandler.setupKeyboardHandling(this._graph);
@@ -826,14 +826,14 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (sourceNodeId) {
         const sourceNode = graph.getCellById(sourceNodeId) as Node;
         if (sourceNode && sourceNode.isNode()) {
-          this._portManager.updateNodePortVisibility(graph, sourceNode);
+          this._portStateManager.updateNodePortVisibility(graph, sourceNode);
         }
       }
 
       if (targetNodeId) {
         const targetNode = graph.getCellById(targetNodeId) as Node;
         if (targetNode && targetNode.isNode()) {
-          this._portManager.updateNodePortVisibility(graph, targetNode);
+          this._portStateManager.updateNodePortVisibility(graph, targetNode);
         }
       }
     }
@@ -909,67 +909,38 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Undo the last action using X6 history plugin
+   * Undo the last action using X6 history plugin - delegates to X6HistoryManager
    */
   undo(): void {
-    const graph = this.getGraph();
-    if (graph && typeof graph.undo === 'function') {
-      graph.undo();
-      this.logger.info('[DFD] Undo action performed');
-      this._emitHistoryStateChange();
-    } else {
-      this.logger.warn('[DFD] Undo not available - history plugin may not be enabled');
-    }
+    this._historyManager.undo(this._graph!);
   }
 
   /**
-   * Redo the last undone action using X6 history plugin
+   * Redo the last undone action using X6 history plugin - delegates to X6HistoryManager
    */
   redo(): void {
-    const graph = this.getGraph();
-    if (graph && typeof graph.redo === 'function') {
-      graph.redo();
-      this.logger.info('[DFD] Redo action performed');
-      this._emitHistoryStateChange();
-    } else {
-      this.logger.warn('[DFD] Redo not available - history plugin may not be enabled');
-    }
+    this._historyManager.redo(this._graph!);
   }
 
   /**
-   * Check if undo is available
+   * Check if undo is available - delegates to X6HistoryManager
    */
   canUndo(): boolean {
-    const graph = this.getGraph();
-    if (graph && typeof graph.canUndo === 'function') {
-      return graph.canUndo();
-    }
-    return false;
+    return this._historyManager.canUndo(this._graph!);
   }
 
   /**
-   * Check if redo is available
+   * Check if redo is available - delegates to X6HistoryManager  
    */
   canRedo(): boolean {
-    const graph = this.getGraph();
-    if (graph && typeof graph.canRedo === 'function') {
-      return graph.canRedo();
-    }
-    return false;
+    return this._historyManager.canRedo(this._graph!);
   }
 
   /**
-   * Clear the history stack
+   * Clear the history stack - delegates to X6HistoryManager
    */
   clearHistory(): void {
-    const graph = this.getGraph();
-    if (graph && typeof graph.cleanHistory === 'function') {
-      graph.cleanHistory();
-      this.logger.info('[DFD] History cleared');
-      this._emitHistoryStateChange();
-    } else {
-      this.logger.warn('[DFD] Clear history not available - history plugin may not be enabled');
-    }
+    this._historyManager.clearHistory(this._graph!);
   }
 
   /**
@@ -1244,7 +1215,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Set connecting state and show all ports using port manager
       this._isConnecting = true;
-      this._portManager.showAllPorts(this._graph!);
+      this._portStateManager.showAllPorts(this._graph!);
     });
 
     this._graph.on('edge:connected', ({ edge }: { edge: Edge }) => {
@@ -1285,8 +1256,8 @@ export class X6GraphAdapter implements IGraphAdapter {
           this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
           // Update port visibility after connection using port manager
-          this._portManager.hideUnconnectedPorts(this._graph!);
-          this._portManager.ensureConnectedPortsVisible(this._graph!, edge);
+          this._portStateManager.hideUnconnectedPorts(this._graph!);
+          this._portStateManager.ensureConnectedPortsVisible(this._graph!, edge);
 
           // Simplified flow without command bus - just emit the edge added event
           this.logger.debugComponent('DFD', '[Edge Creation] Emitting edge added event');
@@ -1313,7 +1284,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Reset connecting state and update port visibility using port manager
       this._isConnecting = false;
-      this._portManager.hideUnconnectedPorts(this._graph!);
+      this._portStateManager.hideUnconnectedPorts(this._graph!);
     });
 
     // Note: Embedding event handlers are now managed by X6EmbeddingAdapter
@@ -1342,14 +1313,14 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (sourceCellId) {
         const sourceNode = this._graph!.getCellById(sourceCellId) as Node;
         if (sourceNode && sourceNode.isNode()) {
-          this._portManager.updateNodePortVisibility(this._graph!, sourceNode);
+          this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
         }
       }
 
       if (targetCellId) {
         const targetNode = this._graph!.getCellById(targetCellId) as Node;
         if (targetNode && targetNode.isNode()) {
-          this._portManager.updateNodePortVisibility(this._graph!, targetNode);
+          this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
         }
       }
     });
@@ -1767,7 +1738,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         });
 
         // Update port visibility for old and new source nodes using port manager
-        this._portManager.onConnectionChange(this._graph!);
+        this._portStateManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -1783,7 +1754,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         });
 
         // Update port visibility for old and new target nodes using port manager
-        this._portManager.onConnectionChange(this._graph!);
+        this._portStateManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -1926,7 +1897,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
 
     // Use port manager for port visibility updates
-    this._portManager.ensureConnectedPortsVisible(graph, edge);
+    this._portStateManager.ensureConnectedPortsVisible(graph, edge);
 
     // Update port visibility for connected nodes using port manager
     const sourceNodeId = edge.getSourceCellId();
@@ -1935,14 +1906,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (sourceNodeId) {
       const sourceNode = graph.getCellById(sourceNodeId);
       if (sourceNode && sourceNode.isNode()) {
-        this._portManager.updateNodePortVisibility(graph, sourceNode);
+        this._portStateManager.updateNodePortVisibility(graph, sourceNode);
       }
     }
 
     if (targetNodeId) {
       const targetNode = graph.getCellById(targetNodeId);
       if (targetNode && targetNode.isNode()) {
-        this._portManager.updateNodePortVisibility(graph, targetNode);
+        this._portStateManager.updateNodePortVisibility(graph, targetNode);
       }
     }
   }

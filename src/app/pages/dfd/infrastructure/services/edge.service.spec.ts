@@ -9,7 +9,6 @@ import { EdgeService } from './edge.service';
 import { EdgeQueryService } from './edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { PortStateManagerService } from './port-state-manager.service';
-import { X6PortManager } from '../adapters/x6-port-manager';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
@@ -26,7 +25,6 @@ describe('EdgeService - X6 Integration Tests', () => {
   let service: EdgeService;
   let queryService: EdgeQueryService;
   let portStateManager: PortStateManagerService;
-  let portManager: X6PortManager;
   let graph: Graph;
   let sourceNode: Node;
   let targetNode: Node;
@@ -47,13 +45,10 @@ describe('EdgeService - X6 Integration Tests', () => {
       queryService,
       mockLogger as unknown as LoggerService,
     );
-    portManager = new X6PortManager(mockLogger as unknown as LoggerService);
-
     // Create EdgeService with real port management services
     service = new EdgeService(
       mockLogger as unknown as LoggerService,
       portStateManager,
-      portManager,
     );
 
     // Create real X6 graph instance

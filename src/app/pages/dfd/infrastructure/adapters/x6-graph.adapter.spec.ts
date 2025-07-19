@@ -12,7 +12,7 @@ import { X6KeyboardHandler } from './x6-keyboard-handler';
 import { ZOrderService } from '../services/z-order.service';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
-import { X6PortManager } from './x6-port-manager';
+import { X6HistoryManager } from './x6-history-manager';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { NodeData } from '../../domain/value-objects/node-data';
@@ -99,7 +99,7 @@ describe('X6GraphAdapter', () => {
   let zOrderService: ZOrderService;
   let zOrderAdapter: X6ZOrderAdapter;
   let embeddingAdapter: X6EmbeddingAdapter;
-  let portManager: X6PortManager;
+  let historyManager: X6HistoryManager;
 
   beforeEach(() => {
     // Create DOM container for X6 graph
@@ -127,7 +127,7 @@ describe('X6GraphAdapter', () => {
       embeddingService,
       zOrderAdapter,
     );
-    portManager = new X6PortManager(mockLogger as unknown as LoggerService);
+    historyManager = new X6HistoryManager(mockLogger as unknown as LoggerService);
 
     // Create X6GraphAdapter with real dependencies
     adapter = new X6GraphAdapter(
@@ -139,7 +139,7 @@ describe('X6GraphAdapter', () => {
       keyboardHandler,
       zOrderAdapter,
       embeddingAdapter,
-      portManager,
+      historyManager,
       null as any, // Suppress X6EventLoggerService for testing
     );
 

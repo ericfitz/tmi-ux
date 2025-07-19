@@ -242,6 +242,102 @@ export class PortStateManagerService {
   }
 
   /**
+   * Setup port visibility behavior for connection interactions
+   */
+  setupPortVisibility(graph: Graph): void {
+    if (!graph) {
+      return;
+    }
+
+    // Show ports on node hover
+    graph.on('node:mouseenter', ({ node }) => {
+      const ports = node.getPorts();
+      ports.forEach(port => {
+        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+      });
+    });
+
+    // Hide ports on node leave (unless connecting or connected)
+    graph.on('node:mouseleave', ({ node }) => {
+      const ports = node.getPorts();
+      ports.forEach(port => {
+        // Only hide ports that are not connected
+        if (!this.isPortConnected(graph, node.id, port.id!)) {
+          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+        }
+      });
+    });
+
+    this._logger.debug('Port visibility behavior setup completed');
+  }
+
+  /**
+   * Setup port tooltips
+   */
+  setupPortTooltips(graph: Graph): void {
+    if (!graph) {
+      return;
+    }
+
+    // Create tooltip element
+    const tooltipEl = document.createElement('div');
+    tooltipEl.className = 'dfd-port-tooltip';
+    tooltipEl.style.display = 'none';
+    graph.container.appendChild(tooltipEl);
+
+    // Handle port mouseenter
+    graph.on(
+      'node:port:mouseenter',
+      ({ node, port, e }: { node: Node; port: { id: string }; e: MouseEvent }) => {
+        if (!port || !node) {
+          return;
+        }
+
+        // Get the port label
+        type PortObject = {
+          id?: string;
+          attrs?: Record<string, { text?: string }>;
+        };
+
+        const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
+        if (!portObj) {
+          return;
+        }
+
+        // Get the port label text
+        let labelText = '';
+        if (portObj?.attrs && 'text' in portObj.attrs) {
+          const textAttr = portObj.attrs['text'];
+          labelText = typeof textAttr['text'] === 'string' ? textAttr['text'] : '';
+        }
+
+        // If no label, use the port ID as fallback
+        if (!labelText) {
+          labelText = String(port.id);
+        }
+
+        // Set tooltip content and position
+        tooltipEl.textContent = labelText;
+        tooltipEl.style.left = `${e.clientX + 10}px`;
+        tooltipEl.style.top = `${e.clientY - 30}px`;
+        tooltipEl.style.display = 'block';
+      },
+    );
+
+    // Handle port mouseleave
+    graph.on('node:port:mouseleave', () => {
+      tooltipEl.style.display = 'none';
+    });
+
+    // Hide tooltip on other events
+    graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
+      tooltipEl.style.display = 'none';
+    });
+
+    this._logger.debug('Port tooltips setup completed');
+  }
+
+  /**
    * Update port state cache for a specific node and port
    */
   private _updatePortStateCache(

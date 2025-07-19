@@ -321,14 +321,18 @@ describe('X6EmbeddingAdapter', () => {
         body: { fill: 'rgb(240, 250, 255)', fillOpacity: 0.9 },
       });
       childNode.setAttrs = vi.fn();
-      (childNode as any).getApplicationMetadata = vi.fn().mockReturnValue('#e1f5fe');
+      
+      // Mock removeFromParent to actually remove the parent relationship
+      childNode.removeFromParent = vi.fn(() => {
+        (childNode as any).setParent(null);
+      });
 
       adapter.unembedNode(graph, childNode);
 
-      // Verify visual effects were reset
+      // Verify visual effects were reset to original color (depth 0)
       expect(childNode.setAttrs).toHaveBeenCalled();
       const setAttrsCall = (childNode.setAttrs as any).mock.calls[0][0];
-      expect(setAttrsCall.body.fill).toBe('#e1f5fe'); // Original color restored
+      expect(setAttrsCall.body.fill).toBe('#FFFFFF'); // Original color for process shape
       expect(setAttrsCall.body.fillOpacity).toBeUndefined(); // Opacity removed
     });
 

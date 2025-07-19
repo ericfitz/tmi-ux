@@ -4,7 +4,6 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { X6EdgeSnapshot } from '../../types/x6-cell.types';
 import { EdgeData } from '../../domain/value-objects/edge-data';
 import { PortStateManagerService } from './port-state-manager.service';
-import { X6PortManager } from '../adapters/x6-port-manager';
 
 /**
  * Consolidated Edge Service
@@ -24,7 +23,6 @@ export class EdgeService {
   constructor(
     private readonly _logger: LoggerService,
     private readonly _portStateManager: PortStateManagerService,
-    private readonly _portManager: X6PortManager,
   ) {}
 
   /**
@@ -81,7 +79,7 @@ export class EdgeService {
 
     // Update port visibility if requested using dedicated port manager
     if (updatePortVisibility) {
-      this._portManager.ensureConnectedPortsVisible(graph, x6Edge);
+      this._portStateManager.ensureConnectedPortsVisible(graph, x6Edge);
     }
 
     this._logger.debug('Edge created successfully', {
@@ -128,7 +126,7 @@ export class EdgeService {
       graph &&
       (updates.source !== undefined || updates.target !== undefined)
     ) {
-      this._portManager.onConnectionChange(graph);
+      this._portStateManager.onConnectionChange(graph);
     }
 
     if (updates.vertices !== undefined) {
@@ -219,14 +217,14 @@ export class EdgeService {
       if (sourceNodeId) {
         const sourceNode = graph.getCellById(sourceNodeId) as Node;
         if (sourceNode && sourceNode.isNode()) {
-          this._portManager.updateNodePortVisibility(graph, sourceNode);
+          this._portStateManager.updateNodePortVisibility(graph, sourceNode);
         }
       }
 
       if (targetNodeId) {
         const targetNode = graph.getCellById(targetNodeId) as Node;
         if (targetNode && targetNode.isNode()) {
-          this._portManager.updateNodePortVisibility(graph, targetNode);
+          this._portStateManager.updateNodePortVisibility(graph, targetNode);
         }
       }
 

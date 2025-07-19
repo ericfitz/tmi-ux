@@ -31,6 +31,7 @@ import { NodeConfigurationService } from './infrastructure/services/node-configu
 import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
 import { X6ZOrderAdapter } from './infrastructure/adapters/x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './infrastructure/adapters/x6-embedding.adapter';
+import { X6HistoryManager } from './infrastructure/adapters/x6-history-manager';
 import { EmbeddingService } from './infrastructure/services/embedding.service';
 
 // Import the new consolidated services
@@ -61,6 +62,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     X6KeyboardHandler,
     X6ZOrderAdapter,
     X6EmbeddingAdapter,
+    X6HistoryManager,
 
     // Infrastructure services
     EmbeddingService,

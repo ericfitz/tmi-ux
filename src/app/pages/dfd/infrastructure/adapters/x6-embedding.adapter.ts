@@ -424,8 +424,12 @@ export class X6EmbeddingAdapter {
     });
 
     try {
-      // Reset visual appearance
-      this.resetEmbeddingAppearance(node);
+      // Recalculate embedding appearance based on new embedding depth
+      const newDepth = this.embeddingService.calculateEmbeddingDepth(node);
+      const fillColor = newDepth === 0 
+        ? this._getOriginalFillColorForShape(node.shape)
+        : this.embeddingService.calculateEmbeddingFillColor(newDepth);
+      this.applyEmbeddingVisualEffects(node, fillColor, newDepth);
 
       // Reset z-order - check if this is a security boundary node
       const nodeType = (node as any).getNodeTypeInfo
@@ -481,7 +485,9 @@ export class X6EmbeddingAdapter {
     const depth = this.embeddingService.calculateEmbeddingDepth(node);
 
     // Calculate fill color based on depth
-    const fillColor = this.embeddingService.calculateEmbeddingFillColor(depth);
+    const fillColor = depth === 0 
+      ? this._getOriginalFillColorForShape(node.shape)
+      : this.embeddingService.calculateEmbeddingFillColor(depth);
 
     // Apply visual changes
     this.applyEmbeddingVisualEffects(node, fillColor, depth);
@@ -498,8 +504,8 @@ export class X6EmbeddingAdapter {
    * Reset visual appearance for unembedded nodes
    */
   private resetEmbeddingAppearance(node: Node): void {
-    // Get original fill color
-    const originalFillColor = this.getOriginalFillColor(node);
+    // Get original fill color based on shape type
+    const originalFillColor = this._getOriginalFillColorForShape(node.shape);
 
     // Reset visual effects
     this.applyEmbeddingVisualEffects(node, originalFillColor, 0);
@@ -545,43 +551,27 @@ export class X6EmbeddingAdapter {
     node.setAttrs(updatedAttrs);
   }
 
+
   /**
-   * Get original fill color for a node
+   * Get original fill color based on X6 shape type (matches shape definitions)
    */
-  private getOriginalFillColor(node: Node): string {
-    // Try to get from stored metadata first
-    if ((node as any).getApplicationMetadata) {
-      const storedColor = (node as any).getApplicationMetadata('originalFillColor');
-      if (storedColor) {
-        return storedColor;
-      }
-    }
+  private _getOriginalFillColorForShape(shape: string): string {
+    const shapeColorMap: Record<string, string> = {
+      'process': '#FFFFFF',
+      'store': '#FFFFFF', 
+      'actor': '#FFFFFF',
+      'security-boundary': '#FFFFFF',
+      'text-box': 'transparent',
+    };
 
-    // Get node type info to determine default color
-    const nodeTypeInfo = (node as any).getNodeTypeInfo ? (node as any).getNodeTypeInfo() : null;
-
-    if (nodeTypeInfo?.type) {
-      return this.getDefaultFillColorForType(nodeTypeInfo.type);
-    }
-
-    // Fallback to current fill color or default
-    const currentAttrs = node.getAttrs() || {};
-    const bodyAttrs = currentAttrs['body'] as any;
-    const fillValue = bodyAttrs?.['fill'];
-    return typeof fillValue === 'string' ? fillValue : '#ffffff';
+    return shapeColorMap[shape] || '#FFFFFF';
   }
 
   /**
-   * Get default fill color for node type
+   * Get default fill color for node type (legacy method, consider removing)
    */
   private getDefaultFillColorForType(nodeType: string): string {
-    const colorMap: Record<string, string> = {
-      process: '#e1f5fe',
-      'external-entity': '#f3e5f5',
-      'data-store': '#e8f5e8',
-      'security-boundary': '#fff3e0',
-    };
-
-    return colorMap[nodeType] || '#ffffff';
+    // Now delegate to the shape-based method since it's more accurate
+    return this._getOriginalFillColorForShape(nodeType);
   }
 }
