@@ -428,7 +428,6 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Setup port visibility using dedicated port manager
     this._portStateManager.setupPortVisibility(this._graph);
-    this._portStateManager.setupPortTooltips(this._graph);
 
     // Setup keyboard handling using dedicated handler
     this._keyboardHandler.setupKeyboardHandling(this._graph);
