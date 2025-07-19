@@ -92,7 +92,7 @@ export class DfdEventHandlersService {
       // Handle delete/backspace
       if (event.key === 'Delete' || event.key === 'Backspace') {
         event.preventDefault();
-        this.deleteSelected(isInitialized);
+        this.onDeleteSelected(isInitialized);
         return;
       }
 
@@ -131,7 +131,7 @@ export class DfdEventHandlersService {
   /**
    * Deletes the currently selected cell(s) - simplified without command bus
    */
-  deleteSelected(isInitialized: boolean): void {
+  onDeleteSelected(isInitialized: boolean): void {
     if (!isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;

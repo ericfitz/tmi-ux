@@ -41,6 +41,10 @@ import { DfdEventHandlersService } from './services/dfd-event-handlers.service';
 import { DfdExportService } from './services/dfd-export.service';
 import { X6EventLoggerService } from './services/x6-event-logger.service';
 import { DfdDiagramService } from './services/dfd-diagram.service';
+import { DfdConnectionValidationService } from './services/dfd-connection-validation.service';
+import { DfdCellLabelService } from './services/dfd-cell-label.service';
+import { DfdTooltipService } from './services/dfd-tooltip.service';
+import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -64,6 +68,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     X6ZOrderAdapter,
     X6EmbeddingAdapter,
     X6HistoryManager,
+    X6TooltipAdapter,
 
     // Infrastructure services
     EmbeddingService,
@@ -74,6 +79,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdEventHandlersService,
     DfdExportService,
     DfdDiagramService,
+    DfdConnectionValidationService,
+    DfdCellLabelService,
+    DfdTooltipService,
 
     // X6 Event Logger
     X6EventLoggerService,
@@ -125,6 +133,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private edgeManager: DfdEdgeService,
     private eventHandlers: DfdEventHandlersService,
     private exportService: DfdExportService,
+    private diagramService: DfdDiagramService,
+    private tooltipAdapter: X6TooltipAdapter,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -203,22 +213,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Loads the diagram data for the given diagram ID
+   * Loads the diagram data for the given diagram ID using the diagram service
    */
   private loadDiagramData(diagramId: string): void {
-    // In a real implementation, this would use a dedicated diagram service
-    void import('../../pages/tm/models/diagram.model').then(module => {
-      const diagram = module.DIAGRAMS_BY_ID.get(diagramId);
-      if (diagram) {
-        this.diagramName = diagram.name;
-        this.logger.info('Loaded diagram data', { name: this.diagramName, id: diagramId });
-        this.cdr.markForCheck();
-      } else {
-        this.logger.warn('Diagram not found, redirecting to threat model page', { id: diagramId });
-        // Redirect to threat model page if diagram doesn't exist
-        this.eventHandlers.closeDiagram(this.threatModelId, this.dfdId);
-      }
-    });
+    this._subscriptions.add(
+      this.diagramService.loadDiagram(diagramId, this.threatModelId).subscribe({
+        next: result => {
+          if (result.success && result.diagram) {
+            this.diagramName = result.diagram.name;
+            this.cdr.markForCheck();
+          } else {
+            // Handle diagram not found
+            this.eventHandlers.closeDiagram(this.threatModelId, this.dfdId);
+          }
+        },
+        error: error => {
+          this.logger.error('Error loading diagram data', error);
+          this.eventHandlers.closeDiagram(this.threatModelId, this.dfdId);
+        },
+      }),
+    );
   }
 
   ngAfterViewInit(): void {
@@ -248,6 +262,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dispose event handlers
     this.eventHandlers.dispose();
+
+    // Dispose tooltip adapter
+    this.tooltipAdapter.dispose();
 
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
@@ -297,37 +314,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Initialize the X6 graph
+   * Initialize the X6 graph and related systems
    */
   private initializeGraph(): void {
     this.logger.info('DfdComponent initializeGraph called');
 
     try {
-      // Initialize the graph using X6GraphAdapter
-      this.x6GraphAdapter.initialize(this.graphContainer.nativeElement as HTMLElement);
+      const container = this.graphContainer.nativeElement as HTMLElement;
+      
+      // Initialize the graph using X6GraphAdapter (delegates all X6-specific setup)
+      this.x6GraphAdapter.initialize(container);
       this._isInitialized = true;
 
-      // Trigger an initial resize to ensure the graph fits the container
-      setTimeout(() => {
-        const graph = this.x6GraphAdapter.getGraph();
-        if (graph) {
-          const container = this.graphContainer.nativeElement as HTMLElement;
-          const width = container.clientWidth;
-          const height = container.clientHeight;
-          graph.resize(width, height);
-          this.logger.info('Initial graph resize', { width, height });
-        }
-      }, 0);
+      // Get the initialized graph for other adapters
+      const graph = this.x6GraphAdapter.getGraph();
+      if (!graph) {
+        throw new Error('Graph initialization failed');
+      }
 
-      // Set up observation for DOM changes to add passive event listeners
+      // Set up additional systems that depend on the graph
       this.setupDomObservation();
-
-      // Set up port tooltips
-      this.setupPortTooltips();
+      this.tooltipAdapter.initialize(graph);
 
       this.logger.info('Graph initialization complete');
-
-      // Force change detection after initialization
       this.cdr.detectChanges();
     } catch (error) {
       this.logger.error('Error initializing graph', error);
@@ -381,70 +390,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('DOM observation set up for passive event listeners');
   }
 
-  /**
-   * Set up tooltips for ports
-   */
-  private setupPortTooltips(): void {
-    const graph = this.x6GraphAdapter.getGraph();
-    if (!graph) {
-      return;
-    }
-
-    // Create tooltip element
-    const tooltipEl = document.createElement('div');
-    tooltipEl.className = 'dfd-port-tooltip';
-    tooltipEl.style.display = 'none';
-    graph.container.appendChild(tooltipEl);
-
-    // Handle port mouseenter
-    graph.on(
-      'node:port:mouseenter',
-      ({ node, port, e }: { node: Node; port: { id: string }; e: MouseEvent }) => {
-        if (!port || !node) {
-          return;
-        }
-
-        // Get the port label
-        type PortObject = {
-          id?: string;
-          attrs?: Record<string, { text?: string }>;
-        };
-
-        const portObj = node ? ((node as any).getPort(String(port.id)) as PortObject) : null;
-        if (!portObj) {
-          return;
-        }
-
-        // Get the port label text
-        let labelText = '';
-        if (portObj?.attrs && 'text' in portObj.attrs) {
-          const textAttr = portObj.attrs['text'];
-          labelText = typeof textAttr['text'] === 'string' ? textAttr['text'] : '';
-        }
-
-        // If no label, use the port ID as fallback
-        if (!labelText) {
-          labelText = String(port.id);
-        }
-
-        // Set tooltip content and position
-        tooltipEl.textContent = labelText;
-        tooltipEl.style.left = `${e.clientX + 10}px`;
-        tooltipEl.style.top = `${e.clientY - 30}px`;
-        tooltipEl.style.display = 'block';
-      },
-    );
-
-    // Handle port mouseleave
-    graph.on('node:port:mouseleave', () => {
-      tooltipEl.style.display = 'none';
-    });
-
-    // Hide tooltip on other events
-    graph.on('blank:mousedown node:mousedown edge:mousedown', () => {
-      tooltipEl.style.display = 'none';
-    });
-  }
 
   /**
    * Export the diagram to the specified format
@@ -457,7 +402,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    this.eventHandlers.deleteSelected(this._isInitialized);
+    this.eventHandlers.onDeleteSelected(this._isInitialized);
     this.cdr.markForCheck();
   }
 

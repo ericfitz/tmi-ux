@@ -199,9 +199,9 @@ export class EdgeQueryService {
   }
 
   /**
-   * Get edge by source and target with optional port specification
+   * Find edge between specific ports on nodes
    */
-  findEdgeByConnection(
+  findEdgeBetweenPorts(
     graph: any,
     sourceNodeId: string,
     targetNodeId: string,
@@ -321,7 +321,7 @@ export class EdgeQueryService {
   /**
    * Get edge connection summary for debugging
    */
-  getEdgeConnectionSummary(graph: any): {
+  getConnectionSummary(graph: any): {
     totalEdges: number;
     edgesWithPorts: number;
     edgesWithoutPorts: number;

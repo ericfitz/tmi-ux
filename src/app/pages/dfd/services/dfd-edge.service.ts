@@ -5,6 +5,7 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
+import { DfdConnectionValidationService } from './dfd-connection-validation.service';
 
 /**
  * Consolidated service for edge handling, operations, and management in DFD diagrams
@@ -18,6 +19,7 @@ export class DfdEdgeService {
     private logger: LoggerService,
     private x6GraphAdapter: X6GraphAdapter,
     private x6ZOrderAdapter: X6ZOrderAdapter,
+    private connectionValidationService: DfdConnectionValidationService,
   ) {}
 
   // ========================================
@@ -360,32 +362,7 @@ export class DfdEdgeService {
    * Validate if a connection between two nodes is allowed
    */
   validateConnection(sourceNode: Node, targetNode: Node): boolean {
-    const sourceShape = sourceNode.shape;
-    const targetShape = targetNode.shape;
-
-    // DFD connection rules
-    const connectionRules: Record<string, string[]> = {
-      'dfd-process': ['dfd-datastore', 'dfd-external-entity', 'dfd-process'],
-      'dfd-datastore': ['dfd-process'],
-      'dfd-external-entity': ['dfd-process'],
-    };
-
-    const allowedTargets = connectionRules[sourceShape];
-    if (!allowedTargets) {
-      this.logger.warn('Unknown source shape type', { sourceShape });
-      return false;
-    }
-
-    const isValid = allowedTargets.includes(targetShape);
-    if (!isValid) {
-      this.logger.info('Connection not allowed by DFD rules', {
-        sourceShape,
-        targetShape,
-        allowedTargets,
-      });
-    }
-
-    return isValid;
+    return this.connectionValidationService.isNodeConnectionValid(sourceNode, targetNode);
   }
 
   /**

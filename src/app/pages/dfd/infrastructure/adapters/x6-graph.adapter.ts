@@ -25,6 +25,8 @@ import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
 import { X6HistoryManager } from './x6-history-manager';
 import { X6EventLoggerService } from '../../services/x6-event-logger.service';
+import { DfdConnectionValidationService } from '../../services/dfd-connection-validation.service';
+import { DfdCellLabelService } from '../../services/dfd-cell-label.service';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -99,12 +101,19 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _embeddingAdapter: X6EmbeddingAdapter,
     private readonly _historyManager: X6HistoryManager,
     private readonly _x6EventLogger: X6EventLoggerService,
+    private readonly _connectionValidationService: DfdConnectionValidationService,
+    private readonly _cellLabelService: DfdCellLabelService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
 
     // Register custom shapes for DFD diagrams
     registerCustomShapes();
+
+    // Set up subscription to relay label service events for X6 coordination
+    this._cellLabelService.nodeDataChanged$.subscribe(event => {
+      this._nodeDataChanged$.next(event);
+    });
   }
 
   /**
@@ -274,60 +283,12 @@ export class X6GraphAdapter implements IGraphAdapter {
           name: 'smooth',
         },
         validateMagnet: args => {
-          this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet called', {
-            magnet: args.magnet,
-            magnetAttribute: args.magnet?.getAttribute('magnet'),
-            portGroup: args.magnet?.getAttribute('port-group'),
-          });
-
-          const magnet = args.magnet;
-          if (!magnet) {
-            this.logger.debugComponent('DFD', '[Edge Creation] validateMagnet: no magnet found');
-            return false;
-          }
-
-          // FIXED: Check for magnet="true" instead of magnet="active" to match port configuration
-          const magnetAttr = magnet.getAttribute('magnet');
-          const isValid = magnetAttr === 'true' || magnetAttr === 'active';
-          return isValid;
+          // Delegate to validation service
+          return this._connectionValidationService.isMagnetValid(args);
         },
         validateConnection: args => {
-          const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
-
-          // Prevent creating an edge if source and target are the same port on the same node
-          if (sourceView === targetView && sourceMagnet === targetMagnet) {
-            return false;
-          }
-
-          if (!targetMagnet || !sourceMagnet) {
-            this.logger.debugComponent(
-              'DFD',
-              '[Edge Creation] validateConnection: missing magnet',
-              {
-                hasSourceMagnet: !!sourceMagnet,
-                hasTargetMagnet: !!targetMagnet,
-              },
-            );
-            return false;
-          }
-
-          // Allow connections to any port
-          const sourcePortGroup = sourceMagnet.getAttribute('port-group');
-          const targetPortGroup = targetMagnet.getAttribute('port-group');
-
-          if (!sourcePortGroup || !targetPortGroup) {
-            this.logger.debugComponent(
-              'DFD',
-              '[Edge Creation] validateConnection: missing port groups',
-              {
-                sourcePortGroup,
-                targetPortGroup,
-              },
-            );
-            return false;
-          }
-
-          return true;
+          // Delegate to validation service
+          return this._connectionValidationService.isConnectionValid(args);
         },
         createEdge: () => {
           this.logger.debugComponent('DFD', '[Edge Creation] createEdge called');
@@ -464,6 +425,9 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
+
+    // Trigger an initial resize to ensure the graph fits the container properly
+    this._scheduleInitialResize(container);
   }
 
   /**
@@ -484,7 +448,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const nodeType = node.data.shape;
 
     // Validate that shape property is set correctly
-    this._validateNodeShape(nodeType, node.id);
+    this._connectionValidationService.validateNodeShape(nodeType, node.id);
 
     // Use NodeConfigurationService for node configuration (except z-index)
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
@@ -511,7 +475,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
 
     // Validate that the X6 node was created with the correct shape
-    this._validateX6NodeShape(x6Node);
+    this._connectionValidationService.validateX6NodeShape(x6Node);
 
     // Set metadata using X6 cell extensions
     (x6Node as any).setApplicationMetadata('type', nodeType);
@@ -947,60 +911,16 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Get the standardized label text from a cell
    */
   getCellLabel(cell: Cell): string {
-    // Use X6 cell extensions for unified label handling
-    return (cell as any).getLabel ? (cell as any).getLabel() : '';
+    // Delegate to label service
+    return this._cellLabelService.getCellLabel(cell);
   }
 
   /**
    * Set the standardized label text for a cell
    */
   setCellLabel(cell: Cell, text: string): void {
-    const oldLabel = this.getCellLabel(cell);
-    this.logger.debugComponent('DFD', '[Set Cell Label] Attempting to set label', {
-      cellId: cell.id,
-      isNode: cell.isNode(),
-      currentLabel: oldLabel,
-      newText: text,
-    });
-
-    // Only proceed if the label actually changed
-    if (oldLabel === text) {
-      this.logger.debugComponent('DFD', '[Set Cell Label] Label unchanged, skipping update', {
-        cellId: cell.id,
-        label: text,
-      });
-      return;
-    }
-
-    // Use X6 cell extensions for unified label handling
-    if ((cell as any).setLabel) {
-      (cell as any).setLabel(text);
-    }
-
-    // Trigger cell:change:data event for history integration
-    // This ensures that label changes flow through the normal event chain
-    // and are captured by the history system via nodeDataChanged$
-    if (cell.isNode()) {
-      // For nodes, trigger the data change event that the history system monitors
-      const oldData = { label: oldLabel };
-      const newData = { label: text };
-
-      this.logger.info('[DFD] Triggering cell:change:data event for label change', {
-        cellId: cell.id,
-        oldData,
-        newData,
-        eventType: 'cell:change:data',
-      });
-
-      // Emit immediate event for text changes since text editing
-      // only updates when editing is complete - no need for debouncing
-      // TODO - this should not go into the data property of cells
-      this._nodeDataChanged$.next({
-        nodeId: cell.id,
-        newData,
-        oldData,
-      });
-    }
+    // Delegate to label service (events will be relayed via constructor subscription)
+    this._cellLabelService.setCellLabel(cell, text);
   }
 
   /**
@@ -1912,51 +1832,16 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Validate that a node shape is properly set and is a valid shape type
+   * Schedule initial resize to ensure graph fits container properly
    */
-  private _validateNodeShape(nodeType: string, nodeId: string): void {
-    if (!nodeType || typeof nodeType !== 'string') {
-      const error = `[DFD] Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
-
-    // Validate against known shape types
-    const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
-    if (!validShapes.includes(nodeType)) {
-      const error = `[DFD] Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
-  }
-
-  /**
-   * Validate that an X6 node was created with the correct shape property
-   */
-  private _validateX6NodeShape(x6Node: Node): void {
-    const nodeShape = x6Node.shape;
-    const nodeId = x6Node.id;
-
-    if (!nodeShape || typeof nodeShape !== 'string') {
-      const error = `[DFD] X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
-
-    // Ensure the shape property matches what we expect
-    const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
-    if (!validShapes.includes(nodeShape)) {
-      const error = `[DFD] X6 node created with invalid shape: '${nodeShape}'. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
-
-    // Verify that no data.type property exists (should only use shape)
-    const nodeData = x6Node.getData();
-    if (nodeData && 'type' in nodeData) {
-      const warning = `[DFD] X6 node has data.type property. Only shape property should be used for type determination. Node ID: ${nodeId}, data.type: ${nodeData.type}, shape: ${nodeShape}`;
-      this.logger.warn(warning);
-      // Don't throw error, just warn since this might be from existing data
-    }
+  private _scheduleInitialResize(container: HTMLElement): void {
+    setTimeout(() => {
+      if (this._graph) {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        this._graph.resize(width, height);
+        this.logger.info('[X6GraphAdapter] Initial graph resize completed', { width, height });
+      }
+    }, 0);
   }
 }

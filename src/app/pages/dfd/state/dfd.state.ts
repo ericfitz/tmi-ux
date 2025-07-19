@@ -147,11 +147,11 @@ export class DfdStateStore {
   }
 
   /**
-   * Select specific state property as an observable
+   * Query specific state property as an observable
    * @param selector Function that selects a portion of the state
-   * @returns Observable of the selected state portion
+   * @returns Observable of the queried state portion
    */
-  select<T>(selector: (state: DfdState) => T): Observable<T> {
+  query<T>(selector: (state: DfdState) => T): Observable<T> {
     return new Observable<T>(observer => {
       const subscription = this._state.subscribe(state => {
         try {
