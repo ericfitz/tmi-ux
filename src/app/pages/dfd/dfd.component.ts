@@ -40,6 +40,7 @@ import { DfdEdgeService } from './services/dfd-edge.service';
 import { DfdEventHandlersService } from './services/dfd-event-handlers.service';
 import { DfdExportService } from './services/dfd-export.service';
 import { X6EventLoggerService } from './services/x6-event-logger.service';
+import { DfdDiagramService } from './services/dfd-diagram.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -72,6 +73,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdEdgeService,
     DfdEventHandlersService,
     DfdExportService,
+    DfdDiagramService,
 
     // X6 Event Logger
     X6EventLoggerService,
@@ -565,7 +567,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Add an inverse connection for the right-clicked edge using X6 native functionality
+   * Add an inverse connection for the right-clicked edge using the edge service
    */
   addInverseConnection(): void {
     const rightClickedCell = this.eventHandlers.getRightClickedCell();
@@ -575,118 +577,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const originalEdge = rightClickedCell;
-    const sourceNodeId = originalEdge.getSourceCellId();
-    const targetNodeId = originalEdge.getTargetCellId();
-    const sourcePortId = originalEdge.getSourcePortId();
-    const targetPortId = originalEdge.getTargetPortId();
-
-    if (!sourceNodeId || !targetNodeId) {
-      this.logger.warn('Cannot create inverse connection: edge missing source or target', {
-        edgeId: originalEdge.id,
-        sourceNodeId,
-        targetNodeId,
+    
+    this.edgeManager
+      .addInverseConnection(originalEdge, this.dfdId || 'default-diagram')
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Error adding inverse connection', error);
+        },
       });
-      return;
-    }
-
-    this.logger.info('Creating inverse connection using X6 native functionality', {
-      originalEdgeId: originalEdge.id,
-      originalSource: sourceNodeId,
-      originalTarget: targetNodeId,
-      originalSourcePort: sourcePortId,
-      originalTargetPort: targetPortId,
-    });
-
-    // Get the original edge's label for consistency
-    const originalLabel = this.x6GraphAdapter.getCellLabel(originalEdge) || 'Flow';
-
-    // Create inverse edge using X6GraphAdapter's addEdge method to ensure proper domain model integration
-    // This will trigger the normal edge creation flow and register the edge in the domain model
-    const graph = this.x6GraphAdapter.getGraph();
-
-    // Use X6's createEdge method to create the edge with proper configuration
-    const inverseEdge = graph.createEdge({
-      source: { cell: targetNodeId, port: targetPortId },
-      target: { cell: sourceNodeId, port: sourcePortId },
-      shape: 'edge',
-      markup: [
-        {
-          tagName: 'path',
-          selector: 'wrap',
-          attrs: {
-            fill: 'none',
-            cursor: 'pointer',
-            stroke: 'transparent',
-            strokeLinecap: 'round',
-          },
-        },
-        {
-          tagName: 'path',
-          selector: 'line',
-          attrs: {
-            fill: 'none',
-            pointerEvents: 'none',
-          },
-        },
-      ],
-      attrs: {
-        wrap: {
-          connection: true,
-          strokeWidth: 10,
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round',
-          stroke: 'transparent',
-          fill: 'none',
-        },
-        line: {
-          connection: true,
-          stroke: '#000000',
-          strokeWidth: 2,
-          fill: 'none',
-          targetMarker: {
-            name: 'classic',
-            size: 8,
-            fill: '#000000',
-            stroke: '#000000',
-          },
-        },
-      },
-      vertices: [],
-      labels: [
-        {
-          position: 0.5,
-          attrs: {
-            text: {
-              text: originalLabel,
-              fontSize: 12,
-              fill: '#333',
-              fontFamily: '"Roboto Condensed", Arial, sans-serif',
-              textAnchor: 'middle',
-              dominantBaseline: 'middle',
-            },
-            rect: {
-              fill: '#ffffff',
-              stroke: 'none',
-            },
-          },
-        },
-      ],
-      zIndex: 1, // Temporary z-index, will be set properly when added to graph
-    });
-
-    // Add the edge to the graph, which will trigger the normal edge creation flow
-    graph.addCell(inverseEdge);
-
-    this.logger.info('Inverse edge created successfully using X6 native functionality', {
-      originalEdgeId: originalEdge.id,
-      inverseEdgeId: inverseEdge.id,
-      newSource: targetNodeId,
-      newTarget: sourceNodeId,
-      newSourcePort: targetPortId,
-      newTargetPort: sourcePortId,
-    });
-
-    this.cdr.markForCheck();
   }
 
   /**

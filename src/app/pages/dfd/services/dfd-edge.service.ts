@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 
 /**
  * Consolidated service for edge handling, operations, and management in DFD diagrams
@@ -16,6 +17,7 @@ export class DfdEdgeService {
   constructor(
     private logger: LoggerService,
     private x6GraphAdapter: X6GraphAdapter,
+    private x6ZOrderAdapter: X6ZOrderAdapter,
   ) {}
 
   // ========================================
@@ -147,7 +149,7 @@ export class DfdEdgeService {
       // Create inverse edge directly in X6 graph
       const graph = this.x6GraphAdapter.getGraph();
 
-      graph.addEdge({
+      const inverseEdge = graph.addEdge({
         id: inverseEdgeId,
         source: { cell: targetNodeId, port: targetPortId },
         target: { cell: sourceNodeId, port: sourcePortId },
@@ -214,8 +216,11 @@ export class DfdEdgeService {
             },
           },
         ],
-        zIndex: 1, // Temporary z-index, will be set properly when added to graph
+        zIndex: 1, // Temporary z-index, will be set properly by ZOrderAdapter
       });
+
+      // Apply proper zIndex using the same logic as normal edge creation
+      this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
 
       this.logger.info('Inverse edge created successfully directly in X6', {
         originalEdgeId: edge.id,
@@ -224,6 +229,7 @@ export class DfdEdgeService {
         newTarget: sourceNodeId,
         newSourcePort: targetPortId,
         newTargetPort: sourcePortId,
+        appliedZIndexLogic: true,
       });
 
       return of(void 0);

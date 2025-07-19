@@ -1,5 +1,4 @@
 {
-  "enableAllProjectMcpServers": false,
   "permissions": {
     "allow": [
       "Bash(cat:*)",
@@ -41,7 +40,9 @@
       "Bash(rm:*)",
       "Bash(sed:*)",
       "WebFetchTool(domain:angular.io)",
-      "WebFetchTool(domain:github.com)"
+      "WebFetchTool(domain:github.com)",
+      "Bash(pnpm run test:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false
 }

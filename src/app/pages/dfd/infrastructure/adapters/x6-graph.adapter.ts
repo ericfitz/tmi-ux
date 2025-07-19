@@ -8,6 +8,7 @@ import { Transform } from '@antv/x6-plugin-transform';
 import { History } from '@antv/x6-plugin-history';
 import { v4 as uuidv4 } from 'uuid';
 
+import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
@@ -37,87 +38,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Standard tool configurations for consistent behavior
    */
-  private static readonly NODE_TOOLS = [
-    {
-      name: 'button-remove',
-      args: {
-        x: '100%',
-        y: 0,
-        offset: { x: -10, y: 10 },
-      },
-    },
-    {
-      name: 'boundary',
-      args: {
-        padding: 5,
-        attrs: {
-          fill: 'none',
-          stroke: '#fe854f',
-          'stroke-width': 2,
-          'stroke-dasharray': '5,5',
-          'pointer-events': 'none',
-        },
-      },
-    },
-  ];
-
-  private static readonly EDGE_TOOLS = [
-    {
-      name: 'vertices',
-      args: {
-        attrs: {
-          body: {
-            fill: '#fe854f',
-            stroke: '#fe854f',
-            'stroke-width': 2,
-            r: 5,
-            cursor: 'move',
-          },
-        },
-        addable: true,
-        removable: true,
-        snapRadius: 10,
-        threshold: 40,
-        stopPropagation: false,
-        useCellGeometry: true,
-      },
-    },
-    {
-      name: 'source-arrowhead',
-      args: {
-        attrs: {
-          fill: '#31d0c6',
-          stroke: '#31d0c6',
-          'stroke-width': 2,
-          r: 6,
-          cursor: 'move',
-        },
-        tagName: 'circle',
-        stopPropagation: false,
-      },
-    },
-    {
-      name: 'target-arrowhead',
-      args: {
-        attrs: {
-          fill: '#fe854f',
-          stroke: '#fe854f',
-          'stroke-width': 2,
-          r: 6,
-          cursor: 'move',
-        },
-        tagName: 'circle',
-        stopPropagation: false,
-      },
-    },
-    {
-      name: 'button-remove',
-      args: {
-        distance: 0.5,
-        offset: { x: 10, y: -10 },
-      },
-    },
-  ];
 
   private _graph: Graph | null = null;
   private readonly _destroy$ = new Subject<void>();
@@ -1618,7 +1538,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (!this._graph) return;
 
     // Clone tools and add delete handler to button-remove
-    const tools = X6GraphAdapter.NODE_TOOLS.map(tool => {
+    const tools = NODE_TOOLS.map(tool => {
       if (tool.name === 'button-remove') {
         return {
           ...tool,
@@ -1641,7 +1561,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (!this._graph) return;
 
     // Clone tools and add delete handler to button-remove
-    const tools = X6GraphAdapter.EDGE_TOOLS.map(tool => {
+    const tools = EDGE_TOOLS.map(tool => {
       if (tool.name === 'button-remove') {
         return {
           ...tool,
