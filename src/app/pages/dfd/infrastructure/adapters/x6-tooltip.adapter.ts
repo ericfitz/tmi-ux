@@ -132,7 +132,7 @@ export class X6TooltipAdapter {
     graph.on(
       'node:port:mouseenter',
       ({ node, port, e }: { node: Node; port: { id: string }; e: MouseEvent }) => {
-        if (!port || !node) {
+        if (!port || !node || !port.id) {
           return;
         }
 

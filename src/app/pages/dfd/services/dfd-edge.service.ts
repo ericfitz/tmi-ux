@@ -5,6 +5,7 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
+import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
 import { DfdConnectionValidationService } from './dfd-connection-validation.service';
 
 /**
@@ -20,6 +21,7 @@ export class DfdEdgeService {
     private x6GraphAdapter: X6GraphAdapter,
     private x6ZOrderAdapter: X6ZOrderAdapter,
     private connectionValidationService: DfdConnectionValidationService,
+    private visualEffectsService: VisualEffectsService,
   ) {}
 
   // ========================================
@@ -224,7 +226,10 @@ export class DfdEdgeService {
       // Apply proper zIndex using the same logic as normal edge creation
       this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
 
-      this.logger.info('Inverse edge created successfully directly in X6', {
+      // Apply creation highlight effect for programmatically created inverse edges
+      this.visualEffectsService.applyCreationHighlight(inverseEdge);
+
+      this.logger.info('Inverse edge created successfully directly in X6 with creation highlight', {
         originalEdgeId: edge.id,
         inverseEdgeId,
         newSource: targetNodeId,
@@ -336,7 +341,10 @@ export class DfdEdgeService {
 
       const edge = graph.addEdge(edgeConfig);
 
-      this.logger.info('Edge created successfully', {
+      // Apply creation highlight effect for programmatically created edges
+      this.visualEffectsService.applyCreationHighlight(edge);
+
+      this.logger.info('Edge created successfully with creation highlight', {
         edgeId: edge.id,
         sourceNodeId,
         targetNodeId,

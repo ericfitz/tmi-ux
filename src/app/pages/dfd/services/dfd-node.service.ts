@@ -7,6 +7,7 @@ import { NodeType } from '../domain/value-objects/node-data';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
+import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
 import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
 
 /**
@@ -23,6 +24,7 @@ export class DfdNodeService {
     private x6GraphAdapter: X6GraphAdapter,
     private x6ZOrderAdapter: X6ZOrderAdapter,
     private nodeConfigurationService: NodeConfigurationService,
+    private visualEffectsService: VisualEffectsService,
   ) {}
 
   // ========================================
@@ -129,7 +131,10 @@ export class DfdNodeService {
       // Apply proper z-index using ZOrderService after node creation
       this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
 
-      this.logger.info('Node created successfully directly in X6', { nodeId, shapeType });
+      // Apply creation highlight effect for programmatically created nodes
+      this.visualEffectsService.applyCreationHighlight(node);
+
+      this.logger.info('Node created successfully directly in X6 with creation highlight', { nodeId, shapeType });
       return of(void 0);
     } catch (error) {
       this.logger.error('Error creating node directly in X6', error);

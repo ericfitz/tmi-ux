@@ -41,7 +41,8 @@
       "Bash(sed:*)",
       "WebFetchTool(domain:angular.io)",
       "WebFetchTool(domain:github.com)",
-      "Bash(pnpm run test:*)"
+      "Bash(pnpm run test:*)",
+      "Bash(pnpm run:*)"
     ]
   },
   "enableAllProjectMcpServers": false
