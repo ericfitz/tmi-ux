@@ -354,8 +354,6 @@ export class DfdEdgeService {
       graph.batchUpdate(() => {
         createdEdge = graph.addEdge(edgeConfig);
 
-        // 🐛 DEBUG: Capture actual default edge styling values for constants verification (DISABLED)
-        // this._debugWriteActualDefaultsEdge(createdEdge);
 
         // Apply creation highlight effect for programmatically created edges
         this.visualEffectsService.applyCreationHighlight(createdEdge, graph);
@@ -608,46 +606,4 @@ export class DfdEdgeService {
   }
 
 
-  /**
-   * 🐛 DEBUG METHOD: Capture actual default edge styling values for constants verification
-   * This helps us understand what X6 actually creates for edges vs what we expect
-   */
-  private _debugWriteActualDefaultsEdge(edge: any): void {
-    const debugData = {
-      timestamp: new Date().toISOString(),
-      cellType: 'edge',
-      id: edge.id,
-      shape: edge.shape,
-      actualDefaults: {
-        'line/stroke': edge.attr('line/stroke'),
-        'line/strokeWidth': edge.attr('line/strokeWidth'),
-        'line/fill': edge.attr('line/fill'),
-        'line/filter': edge.attr('line/filter'),
-        'line/strokeDasharray': edge.attr('line/strokeDasharray'),
-      },
-      source: edge.source,
-      target: edge.target,
-      vertices: edge.vertices,
-      zIndex: edge.getZIndex(),
-    };
-
-    // Store in localStorage (browser-compatible)
-    try {
-      const key = 'debug-shape-defaults';
-      const existing = localStorage.getItem(key);
-      let allData = [];
-
-      if (existing) {
-        allData = JSON.parse(existing);
-      }
-
-      allData.push(debugData);
-      localStorage.setItem(key, JSON.stringify(allData, null, 2));
-
-      // console.log(`🐛 DEBUG: Edge defaults stored in localStorage (${allData.length} entries total)`);
-      // console.log('📱 To download: Run this in browser console: window.downloadDebugData()');
-    } catch (error) {
-      console.error('Could not store debug data:', error);
-    }
-  }
 }

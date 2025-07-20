@@ -45,6 +45,8 @@ import { DfdConnectionValidationService } from './services/dfd-connection-valida
 import { DfdCellLabelService } from './services/dfd-cell-label.service';
 import { DfdTooltipService } from './services/dfd-tooltip.service';
 import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
+import { GraphHistoryCoordinator } from './services/graph-history-coordinator.service';
+import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -69,9 +71,13 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     X6EmbeddingAdapter,
     X6HistoryManager,
     X6TooltipAdapter,
+    X6SelectionAdapter,
 
     // Infrastructure services
     EmbeddingService,
+
+    // History coordination
+    GraphHistoryCoordinator,
 
     // New consolidated services
     DfdNodeService,

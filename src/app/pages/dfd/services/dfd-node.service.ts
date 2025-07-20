@@ -255,51 +255,5 @@ export class DfdNodeService {
     }
   }
 
-  /**
-   * 🐛 DEBUG METHOD: Capture actual default styling values for constants verification
-   * This helps us understand what X6 actually creates vs what we expect
-   */
-  private _debugWriteActualDefaults(node: any, nodeType: string): void {
-    const debugData = {
-      timestamp: new Date().toISOString(),
-      nodeType: nodeType,
-      id: node.id,
-      shape: node.shape,
-      actualDefaults: {
-        'body/stroke': node.attr('body/stroke'),
-        'body/strokeWidth': node.attr('body/strokeWidth'),
-        'body/fill': node.attr('body/fill'),
-        'body/filter': node.attr('body/filter'),
-        'body/strokeDasharray': node.attr('body/strokeDasharray'),
-        'text/text': node.attr('text/text'),
-        'text/fill': node.attr('text/fill'),
-        'text/fontSize': node.attr('text/fontSize'),
-        'text/fontFamily': node.attr('text/fontFamily'),
-        'text/filter': node.attr('text/filter'),
-      },
-      position: node.position(),
-      size: node.size(),
-      zIndex: node.getZIndex(),
-    };
-    
-    // Store in localStorage (browser-compatible)
-    try {
-      const key = 'debug-shape-defaults';
-      const existing = localStorage.getItem(key);
-      let allData = [];
-      
-      if (existing) {
-        allData = JSON.parse(existing);
-      }
-      
-      allData.push(debugData);
-      localStorage.setItem(key, JSON.stringify(allData, null, 2));
-      
-      // console.log(`🐛 DEBUG: Shape defaults stored in localStorage for ${nodeType} (${allData.length} entries total)`);
-      // console.log('📱 To download: Run this in browser console: window.downloadDebugData()');
-    } catch (error) {
-      console.error('Could not store debug data:', error);
-    }
-  }
 
 }

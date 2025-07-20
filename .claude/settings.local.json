@@ -21,7 +21,8 @@
       "Bash(pnpm:*)",
       "Bash(node:*)",
       "Bash(mv:*)",
-      "Bash(pntml run lint:*)"
+      "Bash(pntml run lint:*)",
+      "Bash(pnmp run:*)"
     ]
   },
   "enableAllProjectMcpServers": false

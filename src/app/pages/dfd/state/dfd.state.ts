@@ -130,10 +130,6 @@ export class DfdStateStore {
    * Reset the state to initial values
    */
   resetState(): void {
-    const currentGraph = this._state.value.graph;
-    if (currentGraph) {
-      // Don't dispose the graph here, that should be handled elsewhere
-    }
     this._state.next({ ...initialDfdState });
     this.logger.info('DfdStateStore reset to initial state');
   }

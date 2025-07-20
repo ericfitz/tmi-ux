@@ -98,7 +98,6 @@ export class DfdEventHandlersService {
         return;
       }
 
-      // Note: Undo/redo functionality now handled by X6 history addon
     }
   }
 

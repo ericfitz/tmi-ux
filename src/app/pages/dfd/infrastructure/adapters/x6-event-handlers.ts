@@ -292,16 +292,12 @@ export class X6EventHandlers {
    * Setup performance monitoring events
    */
   setupPerformanceEvents(graph: Graph): void {
-    let renderStartTime: number;
-
     graph.on('render:start', () => {
-      renderStartTime = performance.now();
       this.logger.debug('Render started');
     });
 
     graph.on('render:done', () => {
-      const renderTime = performance.now() - renderStartTime;
-      this.logger.info('Render completed', { renderTime: `${renderTime.toFixed(2)}ms` });
+      this.logger.info('Render completed');
     });
 
     // Monitor large operations

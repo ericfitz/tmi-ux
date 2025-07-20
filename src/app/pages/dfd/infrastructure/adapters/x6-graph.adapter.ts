@@ -429,7 +429,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._x6EventLogger.initializeEventLogging(this._graph);
     }
 
-    // Port visibility is now handled by X6SelectionAdapter's batched hover events
     // This prevents separate history entries for port visibility and highlights
     this._portStateManager.setupPortVisibility(this._graph);
 
@@ -1056,7 +1055,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       }
     });
 
-    // Note: Embedding event handlers are now managed by X6EmbeddingAdapter
     // The embedding adapter handles: node:embedding, node:embedded, node:change:parent, node:moved (embedding-related)
 
     // Edge events - handle addition and removal
@@ -1069,7 +1067,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         lineAttrs: edge.attr('line'),
       });
 
-      // Note: We handle edge creation in edge:connected event instead
     });
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
@@ -1380,7 +1377,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     return nodeTypeInfo?.type || 'unknown';
   }
 
-  // Note: Embedding helper methods have been migrated to EmbeddingService and X6EmbeddingAdapter
   // - _getEmbeddingDepth() → EmbeddingService.calculateEmbeddingDepth()
   // - _getEmbeddingFillColor() → EmbeddingService.calculateEmbeddingFillColor()
   // - _updateEmbeddedNodeColor() → X6EmbeddingAdapter.updateEmbeddingAppearance()
@@ -1442,7 +1438,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Add the event listener
     this._graph.on('edge:change:vertices', vertexChangeHandler);
 
-    // Note: Event handlers are managed by X6 graph event system
     // No need to store handler references in metadata
   }
 
@@ -1498,7 +1493,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:change:source', sourceChangeHandler);
     this._graph.on('edge:change:target', targetChangeHandler);
 
-    // Note: Event handlers are managed by X6 graph event system
     // No need to store handler references in metadata
   }
 
@@ -1749,95 +1743,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     }, 0);
   }
 
-  /**
-   * DEBUG METHOD: Write actual default styling values to localStorage for constants verification
-   * This helps us understand what X6 actually creates vs what we expect
-   */
-  private _debugWriteActualDefaults(node: Node, nodeType: string): void {
-    const debugData = {
-      timestamp: new Date().toISOString(),
-      nodeType: nodeType,
-      id: node.id,
-      shape: node.shape,
-      actualDefaults: {
-        'body/stroke': node.attr('body/stroke'),
-        'body/strokeWidth': node.attr('body/strokeWidth'),
-        'body/fill': node.attr('body/fill'),
-        'body/filter': node.attr('body/filter'),
-        'body/strokeDasharray': node.attr('body/strokeDasharray'),
-        'text/text': node.attr('text/text'),
-        'text/fill': node.attr('text/fill'),
-        'text/fontSize': node.attr('text/fontSize'),
-        'text/fontFamily': node.attr('text/fontFamily'),
-        'text/filter': node.attr('text/filter'),
-      },
-      position: node.position(),
-      size: node.size(),
-      zIndex: node.getZIndex(),
-    };
-    
-    // Store in localStorage (browser-compatible)
-    try {
-      const key = 'debug-shape-defaults';
-      const existing = localStorage.getItem(key);
-      let allData = [];
-      
-      if (existing) {
-        allData = JSON.parse(existing);
-      }
-      
-      allData.push(debugData);
-      localStorage.setItem(key, JSON.stringify(allData, null, 2));
-      
-      // console.log(`🐛 DEBUG: Shape defaults stored in localStorage for ${nodeType} (${allData.length} entries total)`);
-      // console.log('📱 To download: Run this in browser console: window.downloadDebugData()');
-    } catch (error) {
-      console.error('Could not store debug data:', error);
-    }
-  }
 
-  /**
-   * DEBUG METHOD: Write actual default edge styling values to localStorage for constants verification
-   * This helps us understand what X6 actually creates for edges vs what we expect
-   */
-  private _debugWriteActualDefaultsEdge(edge: Edge): void {
-    const debugData = {
-      timestamp: new Date().toISOString(),
-      cellType: 'edge',
-      id: edge.id,
-      shape: edge.shape,
-      actualDefaults: {
-        'line/stroke': edge.attr('line/stroke'),
-        'line/strokeWidth': edge.attr('line/strokeWidth'),
-        'line/fill': edge.attr('line/fill'),
-        'line/filter': edge.attr('line/filter'),
-        'line/strokeDasharray': edge.attr('line/strokeDasharray'),
-      },
-      source: edge.source,
-      target: edge.target,
-      vertices: edge.vertices,
-      zIndex: edge.getZIndex(),
-    };
-    
-    // Store in localStorage (browser-compatible)
-    try {
-      const key = 'debug-shape-defaults';
-      const existing = localStorage.getItem(key);
-      let allData = [];
-      
-      if (existing) {
-        allData = JSON.parse(existing);
-      }
-      
-      allData.push(debugData);
-      localStorage.setItem(key, JSON.stringify(allData, null, 2));
-      
-      // console.log(`🐛 DEBUG: Edge defaults stored in localStorage (${allData.length} entries total)`);
-      // console.log('📱 To download: Run this in browser console: window.downloadDebugData()');
-    } catch (error) {
-      console.error('Could not store debug data:', error);
-    }
-  }
 
   /**
    * Centralized history filtering logic using GraphHistoryCoordinator
@@ -1975,34 +1881,3 @@ export class X6GraphAdapter implements IGraphAdapter {
 
 }
 
-// DEBUG: Add global function to download debug data from localStorage
-if (typeof window !== 'undefined') {
-  (window as any).downloadDebugData = function() {
-    try {
-      const data = localStorage.getItem('debug-shape-defaults');
-      if (!data) {
-        // console.log('No debug data found in localStorage');
-        return;
-      }
-      
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'debug-shape-defaults.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // console.log('Debug data downloaded as debug-shape-defaults.json');
-    } catch (error) {
-      console.error('Error downloading debug data:', error);
-    }
-  };
-  
-  (window as any).clearDebugData = function() {
-    localStorage.removeItem('debug-shape-defaults');
-    // console.log('Debug data cleared from localStorage');
-  };
-}

@@ -81,9 +81,7 @@ export type HistoryOperationType = typeof HISTORY_OPERATION_TYPES[keyof typeof H
  * Centralized service for coordinating history management across all graph operations.
  * Ensures consistent filtering and atomic batching for node/edge creation and modification.
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class GraphHistoryCoordinator {
   
   private readonly historyFilters = {
@@ -154,8 +152,6 @@ export class GraphHistoryCoordinator {
     operation: () => T,
     options: HistoryOperationOptions = {}
   ): T {
-    const startTime = performance.now();
-    
     this.loggerService.debug(`Starting atomic operation: ${operationType}`, {
       options,
       timestamp: new Date().toISOString()
@@ -171,19 +167,15 @@ export class GraphHistoryCoordinator {
         return operation();
       });
 
-      const duration = performance.now() - startTime;
       this.loggerService.debug(`Completed atomic operation: ${operationType}`, {
-        durationMs: Math.round(duration * 100) / 100,
         success: true
       });
 
       return result;
 
     } catch (error) {
-      const duration = performance.now() - startTime;
       this.loggerService.error(`Failed atomic operation: ${operationType}`, {
         error: error instanceof Error ? error.message : String(error),
-        durationMs: Math.round(duration * 100) / 100,
         options
       });
       throw error;

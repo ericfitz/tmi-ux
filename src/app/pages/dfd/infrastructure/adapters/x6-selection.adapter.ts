@@ -13,9 +13,7 @@ import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services
  * Handles X6-specific selection implementation and visual effects
  * Works with SelectionService for business logic
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class X6SelectionAdapter {
   /**
    * Standard tool configurations for consistent behavior

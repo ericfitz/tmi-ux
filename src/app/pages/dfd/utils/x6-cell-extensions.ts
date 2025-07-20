@@ -164,9 +164,6 @@ export function initializeX6CellExtensions(): void {
     }
 
     const nodeType = this.shape || 'unknown';
-    if (nodeType === 'unknown') {
-      // TODO: log an event for missing node type property
-    }
 
     const isTextbox = nodeType === 'text-box';
     const isSecurityBoundary = nodeType === 'security-boundary';
@@ -212,9 +209,6 @@ export function initializeX6CellExtensions(): void {
       return false;
     }
     const nodeType = this.shape || 'unknown';
-    if (nodeType === 'unknown') {
-      // TODO: log an event for missing node type property
-    }
     return nodeType === type;
   };
 

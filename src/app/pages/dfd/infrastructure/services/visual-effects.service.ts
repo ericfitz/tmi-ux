@@ -220,7 +220,6 @@ export class VisualEffectsService {
     color: { r: number; g: number; b: number },
     graph?: any,
   ): void {
-    // Blur radius is now handled by centralized constants
 
     // Batch visual effect changes to exclude them from history
     const applyVisualEffect = () => {
