@@ -1,0 +1,326 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "actions": "Actions",
+    "delete": "Delete"
+  },
+  "navbar": {
+    "appTitle": "TMI: Threat Modeling Improved",
+    "logoutButton": "Logout",
+    "currentLanguage": "{{language}}",
+    "username": "{{username}}",
+    "languageName": "{{language}}"
+  },
+  "footer": {
+    "about": "About",
+    "privacy": "Privacy Policy",
+    "tos": "Terms of Service"
+  },
+  "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
+  "tos": {
+    "title": "Terms of Service",
+    "lastUpdatedDate": "2025-04-06",
+    "lastUpdated": "Last updated: ",
+    "intro": {
+      "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the operator listed on the ",
+      "aboutLink": "About",
+      "part2": " page of this web site (\"The Operator\")."
+    },
+    "section1": {
+      "title": "1. Acceptance of Terms",
+      "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site."
+    },
+    "section2": {
+      "title": "2. Use of the Website",
+      "content": "You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems."
+    },
+    "section3": {
+      "title": "3. No Warranty",
+      "content": "The website is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation."
+    },
+    "section4": {
+      "title": "4. Limitation of Liability",
+      "content": "To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website."
+    },
+    "section5": {
+      "title": "5. Open Source Software",
+      "content": {
+        "part1": "This website runs the TMI open source software. Its source code is available at the link provided on the ",
+        "aboutLink": "About",
+        "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
+      }
+    },
+    "section6": {
+      "title": "6. Changes to Terms",
+      "content": "The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms."
+    },
+    "section7": {
+      "title": "7. Termination",
+      "content": "The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason."
+    },
+    "section8": {
+      "title": "8. Governing Law",
+      "content": "These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual), without regard to conflict of law principles."
+    },
+    "contactInfo": {
+      "part1": "If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the ",
+      "aboutLink": "About",
+      "part2": " page."
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdatedDate": "2025-04-06",
+    "lastUpdated": "Last updated: ",
+    "intro1": {
+      "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the ",
+      "aboutLink": "About",
+      "part2": " page of this web site (\"The Operator\")."
+    },
+    "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
+    "dataTitle": "No Data Collection or Storage",
+    "dataContent": "The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.",
+    "complianceTitle": "Legal Compliance",
+    "complianceContent": "The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
+    "changesTitle": "Changes to This Policy",
+    "changesContent": "The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
+    "contactTitle": "Contact Us",
+    "contactContent": {
+      "part1": "If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the ",
+      "aboutLink": "About",
+      "part2": " page."
+    }
+  },
+  "about": {
+    "title": "About TMI",
+    "description1": "TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.",
+    "description2": "The platform features interactive diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling.",
+    "contacttitle": "Operated By",
+    "contactoperator": "Operator: ",
+    "contactoperatordetails": "Operator Contact: ",
+    "sourcetitle": "TMI Application",
+    "sourceCode": "Source Code: ",
+    "bugReport": "File a Bug: ",
+    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "opensourcetitle": "Open Source",
+    "opensource": {
+      "paragraph1-intro": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind ",
+      "paragraph1-outro": " for their outstanding tools and resources that bring our interface and functionality to life.",
+      "paragraph2-intro": "A special thanks goes to the ",
+      "paragraph2-outro": " open-source project for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application.",
+      "paragraph3-intro": "Special thanks also goes to the ",
+      "paragraph3-outro": " open-source project that was used throughout the development of this project."
+    }
+  },
+  "diagrams": {
+    "pageTitle": "Diagrams",
+    "lastModified": "Last modified: {{date}}",
+    "noItemsMessage": "You don't have any diagrams yet.",
+    "createFirstButton": "Create your first diagram",
+    "diagramTitle": "{{name}}",
+    "tooltips": {
+      "create": "Create",
+      "delete": "Delete"
+    }
+  },
+  "threatModels": {
+    "pageTitle": "Threat Models",
+    "dashboard": "Dashboard",
+    "yourThreatModels": "Your Threat Models",
+    "threatModelPrefix": "Threat Model:",
+    "lastModified": "Last modified: {{date}}",
+    "noItemsMessage": "You don't have any threat models yet.",
+    "createFirstButton": "Create your first threat model",
+    "newThreatModel": "New Threat Model",
+    "details": "Threat Model Details",
+    "name": "Name",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
+    "metadata": "Metadata",
+    "metadataButton": "Manage metadata",
+    "metadataTooltip": "Manage metadata",
+    "sourceCodeButton": "Source code",
+    "sourceCodeTooltip": "Source code",
+    "reportButton": "Report",
+    "reportTooltip": "Report",
+    "metadataKey": "Key",
+    "metadataValue": "Value",
+    "noMetadata": "No metadata available",
+    "addMetadata": "Add metadata",
+    "permissions": "Permissions",
+    "permissionsButton": "Permissions",
+    "permissionsTooltip": "Manage permissions",
+    "permissionsUser": "User",
+    "permissionsRole": "Role",
+    "noPermissions": "No permissions defined",
+    "addPermission": "Add Permission",
+    "threatId": "Threat ID",
+    "createdAt": "Created",
+    "modifiedAt": "Last Modified",
+    "copyToClipboard": "Copy to clipboard",
+    "threats": "Threats",
+    "noThreats": "No threats defined yet",
+    "diagrams": "Diagrams",
+    "noDiagrams": "No diagrams added yet",
+    "documents": "Documents",
+    "noDocuments": "No documents added yet",
+    "diagramsCount": "diagrams",
+    "threatsCount": "threats",
+    "idLabel": "ID:",
+    "createdBy": "Created by:",
+    "tooltips": {
+      "create": "Create",
+      "delete": "Delete",
+      "addThreat": "Add Threat",
+      "addDiagram": "Add Diagram",
+      "addDocument": "Add Document",
+      "viewThreat": "View Threat",
+      "editThreat": "Edit Threat",
+      "renameDiagram": "Rename Diagram",
+      "deleteDiagram": "Delete Diagram",
+      "openDiagram": "Open Diagram",
+      "deleteThreat": "Delete Threat"
+    },
+    "createNewThreat": "Create New Threat",
+    "editThreat": "Edit Threat",
+    "viewThreat": "View Threat",
+    "threatName": "Threat Name",
+    "threatDescription": "Threat Description",
+    "threatDescriptionPlaceholder": "Describe the threat in detail",
+    "createNewDiagram": "Create New Diagram",
+    "renameDiagram": "Rename Diagram",
+    "rename": "Rename",
+    "diagramName": "Diagram Name",
+    "threatModelFramework": "Threat Model Framework",
+    "severity": "Severity",
+    "severityUnknown": "Unknown",
+    "severityNone": "None",
+    "severityLow": "Low",
+    "severityMedium": "Medium",
+    "severityHigh": "High",
+    "severityCritical": "Critical",
+    "threatType": "Threat Type",
+    "score": "Score",
+    "priority": "Priority",
+    "status": "Status",
+    "mitigated": "Mitigated",
+    "issueUrl": "Issue URL",
+    "diagramId": "Diagram ID",
+    "cellId": "Cell ID",
+    "close": "Close",
+    "actions": "Actions",
+    "delete": "Delete",
+    "validation": {
+      "required": "This field is required",
+      "maxLength": "Maximum length is {{max}} characters"
+    }
+  },
+  "editor": {
+    "pageTitle": "Data Flow Diagram Editor",
+    "diagramPrefix": "Diagram:",
+    "properties": {
+      "title": "Properties",
+      "help": "Element properties will appear here when an element is selected."
+    },
+    "toolbar": {
+      "tooltips": {
+        "addActor": "Add Actor",
+        "addProcess": "Add Process",
+        "addStore": "Add Store",
+        "addSecurityBoundary": "Add Security Boundary",
+        "addTextbox": "Add Text Box",
+        "deleteSelected": "Delete Selected",
+        "undo": "Undo",
+        "redo": "Redo",
+        "addThreat": "Add Threat",
+        "share": "Share",
+        "export": "Export...",
+        "close": "Close"
+      }
+    },
+    "nodeLabels": {
+      "actor": "Actor",
+      "process": "Process",
+      "store": "Data Store",
+      "securityBoundary": "Security Boundary",
+      "textbox": "Text",
+      "node": "Node"
+    }
+  },
+  "contextMenu": {
+    "editText": "Edit text",
+    "copyDefinitionToClipboard": "Copy definition to clipboard",
+    "moveForward": "Move forward",
+    "moveBackward": "Move backward",
+    "moveToFront": "Move to front",
+    "moveToBack": "Move to back",
+    "addInverseConnection": "Add inverse connection"
+  },
+  "threatEditor": {
+    "createNewThreat": "Create New Threat",
+    "editThreat": "Edit Threat",
+    "viewThreat": "View Threat",
+    "threatId": "Threat ID",
+    "threatName": "Threat Name",
+    "threatDescription": "Threat Description",
+    "threatDescriptionPlaceholder": "Describe the threat in detail",
+    "threatType": "Threat Type",
+    "severity": "Severity",
+    "severityUnknown": "Unknown",
+    "severityNone": "None",
+    "severityLow": "Low",
+    "severityMedium": "Medium",
+    "severityHigh": "High",
+    "severityCritical": "Critical",
+    "score": "Score",
+    "priority": "Priority",
+    "status": "Status",
+    "mitigated": "Mitigated",
+    "issueUrl": "Issue URL",
+    "diagramId": "Diagram ID",
+    "cellId": "Cell ID",
+    "notAssociatedWithDiagram": "Not associated with a diagram",
+    "notAssociatedWithCell": "Not associated with a cell",
+    "createdAt": "Created",
+    "modifiedAt": "Last Modified",
+    "copyToClipboard": "Copy to clipboard",
+    "metadata": "Metadata",
+    "metadataKey": "Key",
+    "metadataValue": "Value",
+    "actions": "Actions",
+    "addMetadata": "Add Metadata",
+    "delete": "Delete",
+    "noMetadata": "No metadata available",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "validation": {
+      "required": "This field is required",
+      "maxLength": "Maximum length is {{max}} characters"
+    }
+  },
+  "collaboration": {
+    "title": "Collaboration",
+    "availableCollaborationSessions": "Available Collaboration Sessions",
+    "startCollaboration": "Start Collaboration",
+    "endCollaboration": "End Collaboration",
+    "manageCollaboration": "Manage Collaboration",
+    "shareLinkHeader": "Share Collaboration Link",
+    "copyLink": "Copy Link",
+    "collaboratorsHeader": "Collaborators",
+    "changeRole": "Change Role",
+    "makeOwner": "Make Owner",
+    "makeWriter": "Make Writer",
+    "makeReader": "Make Reader",
+    "removeUser": "Remove User",
+    "roles": {
+      "owner": "Owner",
+      "writer": "Writer",
+      "reader": "Reader"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Note: The pre-built theme is included via angular.json
+
+// Material Symbols settings for filled icons
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+// Global styles
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+// RTL support for Arabic
+html[dir='rtl'] {
+  body,
+  .mat-typography {
+    text-align: right;
+  }
+}
+
+.content-container {
+  padding: 16px;
+  flex: 1;
+}
+
+.page-title {
+  margin-bottom: 16px;
+  color: #1976d2; /* Use explicit blue color instead of function */
+  font-weight: 500;
+}
+
+.page-content {
+  margin-bottom: 24px;
+}
+
+// Common card styles
+.mat-card {
+  margin-bottom: 16px;
+}

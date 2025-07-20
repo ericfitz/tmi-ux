@@ -1,0 +1,117 @@
+<div class="header-row dashboard-title">
+  <h1 class="page-title" [transloco]="'threatModels.dashboard'">Dashboard</h1>
+</div>
+
+<div class="tm-container">
+  <div class="header-row">
+    <h2 class="section-title" [transloco]="'threatModels.yourThreatModels'">Your Threat Models</h2>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="createThreatModel()"
+      [matTooltip]="'threatModels.tooltips.create' | transloco"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="threat-models-list">
+    <mat-card
+      *ngFor="let threatModel of threatModels"
+      class="threat-model-card"
+      (click)="openThreatModel(threatModel.id)"
+    >
+      <mat-card-content>
+        <div class="threat-model-info">
+          <mat-icon class="threat-model-icon">security</mat-icon>
+          <div class="threat-model-details">
+            <h3 class="threat-model-title">
+              {{ threatModel.name }}
+            </h3>
+            <p class="threat-model-date">
+              {{
+                'diagrams.lastModified' | transloco: { date: formatDate(threatModel.modified_at) }
+              }}
+            </p>
+            <p class="threat-model-description" *ngIf="threatModel.description">
+              {{ threatModel.description }}
+            </p>
+            <div class="threat-model-stats">
+              <span class="stat">
+                <mat-icon>account_tree</mat-icon>
+                {{ threatModel.diagrams?.length || 0 }}
+                {{ 'threatModels.diagramsCount' | transloco }}
+              </span>
+              <span class="stat">
+                <mat-icon
+                  fontSet="material-symbols-outlined"
+                  fontWeight="100"
+                  style="font-variation-settings: 'FILL' 0"
+                  class="skull-icon"
+                  >skull</mat-icon
+                >
+                {{ threatModel.threats?.length || 0 }} {{ 'threatModels.threatsCount' | transloco }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <button
+          mat-icon-button
+          color="warn"
+          class="delete-button"
+          (click)="deleteThreatModel(threatModel.id, $event)"
+          [matTooltip]="'threatModels.tooltips.delete' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="threatModels.length === 0" class="no-threat-models">
+      <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
+      <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
+      <button mat-raised-button color="primary" (click)="createThreatModel()">
+        <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="collaboration-sessions-container">
+  <div class="header-row">
+    <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
+      Available Collaboration Sessions
+    </h2>
+  </div>
+
+  <div class="collaboration-sessions-list">
+    <mat-card
+      *ngFor="let session of collaborationSessions"
+      class="collaboration-session-card"
+      (click)="openCollaborationSession(session.diagramId)"
+    >
+      <mat-card-content>
+        <div class="collaboration-session-info">
+          <mat-icon class="collaboration-session-icon">groups</mat-icon>
+          <div class="collaboration-session-details">
+            <h3 class="collaboration-session-title">
+              {{ session.threatModelName }}
+            </h3>
+            <p class="collaboration-session-diagram">
+              <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
+            </p>
+            <p class="collaboration-session-host">
+              <mat-icon>person</mat-icon> Hosted by {{ session.hostUser }}
+            </p>
+          </div>
+        </div>
+        <mat-icon class="join-icon">login</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="collaborationSessions.length === 0" class="no-collaboration-sessions">
+      <mat-icon class="empty-icon">groups_off</mat-icon>
+      <p>No active collaboration sessions</p>
+    </div>
+  </div>
+</div>

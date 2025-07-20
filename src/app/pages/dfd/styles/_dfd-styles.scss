@@ -1,0 +1,207 @@
+// Consolidated DFD Styles
+
+// =============================================================================
+// MIXINS AND VARIABLES
+// =============================================================================
+
+// Common label styles mixin for all shapes
+@mixin shape-label-styles {
+  fill: #333;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+// =============================================================================
+// BASE GRAPH CONTAINER STYLES
+// =============================================================================
+
+// =============================================================================
+// FONT STYLES - CONSOLIDATED
+// =============================================================================
+
+// Apply to all SVG text elements within the graph with high specificity
+.x6-graph svg text,
+.x6-graph svg tspan,
+.x6-graph svg text.label,
+.x6-graph svg text.dfd-label,
+.x6-graph svg tspan.v-line,
+.x6-graph text.actor-label,
+.x6-graph text.process-label,
+.x6-graph text.store-label,
+.x6-graph text.security-boundary-label {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 12px;
+  fill: #333; /* Ensure text color is consistent */
+}
+
+// Target SVG text elements with font-family attribute
+svg text[font-family] {
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 12px;
+}
+
+.x6-graph {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background-color: #f8f9fa;
+  border: 2px dashed #ccc;
+
+  // Z-index hierarchy for elements within the graph
+  .security-boundary-shape {
+    z-index: 0; // Security boundaries at the bottom
+  }
+
+  .x6-node {
+    z-index: 10; // Regular nodes above boundaries
+
+    &.is-selected {
+      z-index: 20; // Selected nodes above regular nodes
+    }
+  }
+
+  // Edge z-index is now handled by X6 configuration
+}
+
+// Generic dfd-label class used by all shapes
+.dfd-label {
+  @include shape-label-styles;
+
+  &:hover {
+    fill: #1890ff;
+    cursor: text;
+  }
+}
+
+.x6-snapline {
+  stroke: #f00;
+}
+
+// Store shape specific styles
+.store-shape {
+  path.topLine,
+  path.bottomLine {
+    stroke: #333;
+    stroke-width: 2;
+  }
+
+  // Explicitly ensure left and right sides have no stroke
+  path.leftLine,
+  path.rightLine {
+    stroke: transparent;
+    stroke-width: 0;
+  }
+
+  text.label {
+    @include shape-label-styles;
+  }
+
+  // Ensure store shapes get the same hover and selection filter treatment
+  &.is-hovered,
+  &:hover {
+    .x6-cell-body {
+      rect.body {
+        filter: drop-shadow(0 0 4px rgb(255 0 0 / 60%));
+      }
+    }
+  }
+
+  &.is-selected {
+    .x6-cell-body {
+      rect.body {
+        filter: drop-shadow(0 0 8px rgb(255 0 0 / 80%));
+      }
+    }
+  }
+}
+
+// =============================================================================
+// PORT STYLES - CONSOLIDATED
+// =============================================================================
+
+// Port body styles - base styles first
+.x6-port-body,
+circle.x6-port-body {
+  cursor: pointer;
+  display: block;
+  stroke: #000;
+  fill: #fff;
+  r: 5;
+  transition: all 0.2s ease-in-out;
+
+  // Default state: hidden
+  visibility: hidden;
+  opacity: 0;
+
+  &:hover {
+    stroke-width: 3px !important;
+    filter: drop-shadow(0 0 4px rgb(49 208 110 / 80%));
+  }
+}
+
+// Port visibility states
+.x6-port-body.port-visible,
+.x6-port-body.port-connected,
+.x6-port-body.port-hovered {
+  visibility: visible;
+  opacity: 1;
+  stroke: #000;
+  fill: #fff;
+  stroke-width: 2;
+}
+
+// Node hover state - show all ports
+.is-hovered circle.x6-port-body,
+.is-connected circle.x6-port-body {
+  display: block;
+  pointer-events: all;
+  visibility: visible;
+  opacity: 1;
+  stroke: #000;
+  fill: #fff;
+  stroke-width: 2;
+}
+
+.x6-port {
+  z-index: 10;
+}
+
+// Port tooltip styles
+.dfd-port-tooltip {
+  position: absolute;
+  background-color: rgb(255 255 255 / 90%);
+  color: #333;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-weight: normal;
+  pointer-events: none;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  display: none;
+}
+
+// =============================================================================
+// SNAPLINE STYLES
+// =============================================================================
+
+// Red snaplines for node alignment during movement
+// Enhanced specificity to override X6 plugin default styles
+// Ordered from least to most specific to satisfy linting rules
+.dfd-snapline-red,
+svg .dfd-snapline-red,
+.x6-graph .dfd-snapline-red,
+.x6-graph-svg .dfd-snapline-red,
+.x6-graph-svg-container .dfd-snapline-red,
+.dfd-container .x6-graph .dfd-snapline-red {
+  stroke: #f00;
+  stroke-width: 1px;
+  fill: none;
+  pointer-events: none;
+  opacity: 0.8;
+}

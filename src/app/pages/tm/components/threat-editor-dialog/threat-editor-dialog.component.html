@@ -1,0 +1,270 @@
+<h2 mat-dialog-title>{{ dialogTitle | transloco }}</h2>
+<mat-dialog-content [dir]="currentDirection">
+  <!-- Force translation update -->
+  <div style="display: none">{{ 'threatEditor.threatName' | transloco }}</div>
+  <!-- Threat ID and timestamps section -->
+  <div class="info-section-vertical" *ngIf="data.threat" [dir]="currentDirection">
+    <div class="info-field">
+      <span class="info-label">{{ 'threatEditor.threatId' | transloco }}:</span>
+      <span class="info-value">{{ data.threat.id }}</span>
+      <button
+        mat-icon-button
+        class="copy-button"
+        (click)="copyToClipboard(data.threat.id)"
+        matTooltip="{{ 'threatEditor.copyToClipboard' | transloco }}"
+        [attr.aria-label]="'threatEditor.copyToClipboard' | transloco"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </div>
+    <div class="info-field dates-row">
+      <div class="date-field">
+        <span class="info-label">{{ 'threatEditor.createdAt' | transloco }}:</span>
+        <span class="info-value">{{
+          data.threat.created_at | date: 'short' : undefined : currentLocale
+        }}</span>
+      </div>
+      <div class="date-field">
+        <span class="info-label">{{ 'threatEditor.modifiedAt' | transloco }}:</span>
+        <span class="info-value">{{
+          data.threat.modified_at | date: 'short' : undefined : currentLocale
+        }}</span>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="threatForm" class="dialog-form" [dir]="currentDirection">
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'threatEditor.threatName' | transloco }}</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
+          {{ 'threatEditor.validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="threatForm.get('name')?.hasError('maxlength')">
+          {{ 'threatEditor.validation.maxLength' | transloco: { max: 100 } }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'threatEditor.threatDescription' | transloco }}</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="3"
+          placeholder="{{ 'threatEditor.threatDescriptionPlaceholder' | transloco }}"
+        ></textarea>
+        <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
+          {{ 'threatEditor.validation.maxLength' | transloco: { max: 500 } }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Threat Type field - on its own row -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'threatEditor.threatType' | transloco }}</mat-label>
+        <input matInput formControlName="threat_type" />
+        <mat-error *ngIf="threatForm.get('threat_type')?.hasError('required')">
+          {{ 'threatEditor.validation.required' | transloco }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Severity, Score, Priority row -->
+    <div class="form-field-row three-columns">
+      <!-- Severity field -->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>{{ 'threatEditor.severity' | transloco }}</mat-label>
+        <mat-select formControlName="severity">
+          <mat-option value="Unknown">{{ 'threatEditor.severityUnknown' | transloco }}</mat-option>
+          <mat-option value="None">{{ 'threatEditor.severityNone' | transloco }}</mat-option>
+          <mat-option value="Low">{{ 'threatEditor.severityLow' | transloco }}</mat-option>
+          <mat-option value="Medium">{{ 'threatEditor.severityMedium' | transloco }}</mat-option>
+          <mat-option value="High">{{ 'threatEditor.severityHigh' | transloco }}</mat-option>
+          <mat-option value="Critical">{{
+            'threatEditor.severityCritical' | transloco
+          }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="threatForm.get('severity')?.hasError('required')">
+          {{ 'threatEditor.validation.required' | transloco }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Score field -->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>{{ 'threatEditor.score' | transloco }}</mat-label>
+        <input matInput type="number" formControlName="score" min="0" max="10" step="0.1" />
+      </mat-form-field>
+
+      <!-- Priority field -->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>{{ 'threatEditor.priority' | transloco }}</mat-label>
+        <input matInput formControlName="priority" />
+      </mat-form-field>
+    </div>
+
+    <!-- Issue URL field - on its own row with copy button -->
+    <div class="form-field-row">
+      <div class="url-field-container">
+        <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+          <mat-label>{{ 'threatEditor.issueUrl' | transloco }}</mat-label>
+          <input matInput formControlName="issue_url" type="url" />
+        </mat-form-field>
+        <button
+          mat-icon-button
+          class="url-copy-button"
+          (click)="copyToClipboard(threatForm.get('issue_url')?.value)"
+          matTooltip="{{ 'threatEditor.copyToClipboard' | transloco }}"
+          [attr.aria-label]="'threatEditor.copyToClipboard' | transloco"
+          [disabled]="!threatForm.get('issue_url')?.value"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Status and Mitigated row -->
+    <div class="form-field-row two-columns">
+      <!-- Status field -->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>{{ 'threatEditor.status' | transloco }}</mat-label>
+        <input matInput formControlName="status" />
+      </mat-form-field>
+
+      <!-- Mitigated field -->
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="mitigated">
+          {{ 'threatEditor.mitigated' | transloco }}
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Diagram ID field - on its own row -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'threatEditor.diagramId' | transloco }}</mat-label>
+        <mat-select formControlName="diagram_id">
+          <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
+            {{
+              diagram.id === NOT_ASSOCIATED_VALUE
+                ? diagram.name
+                : diagram.id + ' (' + diagram.name + ')'
+            }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Cell ID field - on its own row -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'threatEditor.cellId' | transloco }}</mat-label>
+        <mat-select formControlName="cell_id">
+          <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
+            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.id + ' (' + cell.label + ')' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Metadata section -->
+    <div class="metadata-section">
+      <div class="metadata-header">
+        <h3>{{ 'threatEditor.metadata' | transloco }}</h3>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addMetadataItem()"
+          [matTooltip]="'threatEditor.addMetadata' | transloco"
+          *ngIf="!isViewOnly"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="metadataDataSource" #metadataTable class="metadata-table">
+          <!-- Key Column -->
+          <ng-container matColumnDef="key">
+            <th mat-header-cell *matHeaderCellDef>{{ 'threatEditor.metadataKey' | transloco }}</th>
+            <td mat-cell *matCellDef="let item; let i = index">
+              <mat-form-field class="table-field" *ngIf="!isViewOnly" floatLabel="always">
+                <input
+                  matInput
+                  [value]="item.key"
+                  (blur)="updateMetadataKey(i, $event)"
+                  placeholder="Key"
+                />
+              </mat-form-field>
+              <span *ngIf="isViewOnly">{{ item.key }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Value Column -->
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'threatEditor.metadataValue' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let item; let i = index">
+              <mat-form-field class="table-field" *ngIf="!isViewOnly" floatLabel="always">
+                <input
+                  matInput
+                  [value]="item.value"
+                  (blur)="updateMetadataValue(i, $event)"
+                  placeholder="Value"
+                />
+              </mat-form-field>
+              <span *ngIf="isViewOnly">{{ item.value }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-column">
+              {{ 'threatEditor.actions' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let item; let i = index" class="actions-column">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteMetadataItem(i)"
+                [matTooltip]="'threatEditor.delete' | transloco"
+                *ngIf="!isViewOnly"
+                class="compact-button"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="metadataColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: metadataColumns"></tr>
+        </table>
+      </div>
+
+      <div *ngIf="!hasMetadata()" class="no-items-message">
+        {{ 'threatEditor.noMetadata' | transloco }}
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'threatEditor.cancel' | transloco }}
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="threatForm.invalid"
+    (click)="onSubmit()"
+    *ngIf="!isViewOnly"
+  >
+    {{ 'threatEditor.save' | transloco }}
+  </button>
+  <button mat-raised-button color="primary" (click)="onCancel()" *ngIf="isViewOnly">
+    {{ 'threatEditor.close' | transloco }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,128 @@
+<div class="collaboration-container">
+  <!-- Main collaboration button with badge showing number of users when active -->
+  <button
+    mat-icon-button
+    color="primary"
+    [matBadge]="isCollaborating ? collaborationUsers.length : null"
+    matBadgeColor="accent"
+    [matTooltip]="
+      isCollaborating
+        ? ('collaboration.manageCollaboration' | transloco)
+        : ('collaboration.startCollaboration' | transloco)
+    "
+    [matMenuTriggerFor]="collaborationMenu"
+  >
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      fontWeight="100"
+      style="font-variation-settings: 'FILL' 0"
+      [class.active]="isCollaborating"
+    >
+      group
+    </mat-icon>
+  </button>
+
+  <!-- Collaboration menu -->
+  <mat-menu #collaborationMenu="matMenu" class="collaboration-menu">
+    <div class="menu-header">
+      <h3>{{ 'collaboration.title' | transloco }}</h3>
+    </div>
+
+    <!-- Toggle collaboration button -->
+    <div class="collaboration-action">
+      <button
+        mat-flat-button
+        [color]="isCollaborating ? 'warn' : 'success'"
+        (click)="toggleCollaboration()"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+        >
+          {{ isCollaborating ? 'stop' : 'play_arrow' }}
+        </mat-icon>
+        {{
+          isCollaborating
+            ? ('collaboration.endCollaboration' | transloco)
+            : ('collaboration.startCollaboration' | transloco)
+        }}
+      </button>
+    </div>
+
+    <!-- Copy Link section (only visible when collaborating) -->
+    <div *ngIf="isCollaborating" class="copy-link-section">
+      <div class="copy-link-header">
+        <h4>{{ 'collaboration.shareLinkHeader' | transloco }}</h4>
+      </div>
+      <div class="copy-link-action">
+        <button mat-flat-button color="primary" (click)="copyLinkToClipboard()">
+          <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
+          {{ 'collaboration.copyLink' | transloco }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Users list (only visible when collaborating) -->
+    <div *ngIf="isCollaborating && collaborationUsers.length > 0" class="users-section">
+      <div class="users-header">
+        <h4>{{ 'collaboration.collaboratorsHeader' | transloco }}</h4>
+      </div>
+      <div class="users-list">
+        <div *ngFor="let user of collaborationUsers" class="user-item">
+          <div class="user-info">
+            <div class="user-status" [ngClass]="getStatusColor(user.status)"></div>
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-role">{{ 'collaboration.roles.' + user.role | transloco }}</div>
+          </div>
+          <div
+            class="user-actions"
+            *ngIf="hasPermission('changeRole') && user.id !== 'current-user'"
+          >
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="userMenu"
+              [matTooltip]="'collaboration.changeRole' | transloco"
+            >
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+              >
+                settings
+              </mat-icon>
+            </button>
+            <mat-menu #userMenu="matMenu">
+              <button
+                mat-menu-item
+                (click)="updateUserRole(user.id, 'owner')"
+                [disabled]="user.role === 'owner'"
+              >
+                {{ 'collaboration.makeOwner' | transloco }}
+              </button>
+              <button
+                mat-menu-item
+                (click)="updateUserRole(user.id, 'writer')"
+                [disabled]="user.role === 'writer'"
+              >
+                {{ 'collaboration.makeWriter' | transloco }}
+              </button>
+              <button
+                mat-menu-item
+                (click)="updateUserRole(user.id, 'reader')"
+                [disabled]="user.role === 'reader'"
+              >
+                {{ 'collaboration.makeReader' | transloco }}
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="removeUser(user.id)" *ngIf="hasPermission('remove')">
+                <mat-icon color="warn">person_remove</mat-icon>
+                <span class="warn-text">{{ 'collaboration.removeUser' | transloco }}</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-menu>
+</div>

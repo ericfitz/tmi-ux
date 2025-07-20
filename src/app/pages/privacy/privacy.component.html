@@ -1,0 +1,49 @@
+<div class="page-container">
+  <div class="title-row">
+    <h1 class="page-title" [transloco]="'privacy.title'">Privacy Policy</h1>
+  </div>
+
+  <div class="content-row">
+    <p class="update-date">
+      {{ 'privacy.lastUpdated' | transloco
+      }}<strong>{{ 'privacy.lastUpdatedDate' | transloco | date: 'longDate' }}</strong>
+    </p>
+
+    <p class="page-content">
+      {{ 'privacy.intro1.part1' | transloco }}
+      <a [routerLink]="['/about']">{{ 'privacy.intro1.aboutLink' | transloco }}</a>
+      {{ 'privacy.intro1.part2' | transloco }}
+    </p>
+    <p class="page-content" [transloco]="'privacy.intro2'">
+      The Operator is committed to protecting your privacy. This Privacy Policy explains how your
+      information is handled.
+    </p>
+
+    <h2 [transloco]="'privacy.dataTitle'">No Data Collection or Storage</h2>
+    <p class="page-content" [transloco]="'privacy.dataContent'">
+      The Operator does not collect, store, or process any personal data from users. The Operator
+      does not track your activities, store your information, or share any data about you with third
+      parties for any purpose.
+    </p>
+
+    <h2 [transloco]="'privacy.complianceTitle'">Legal Compliance</h2>
+    <p class="page-content" [transloco]="'privacy.complianceContent'">
+      The Operator will only disclose information if required to do so by law, such as in response
+      to a valid government order or subpoena. In such cases, The Operator will comply with
+      applicable legal obligations.
+    </p>
+
+    <h2 [transloco]="'privacy.changesTitle'">Changes to This Policy</h2>
+    <p class="page-content" [transloco]="'privacy.changesContent'">
+      The Operator may update this Privacy Policy from time to time. Any changes will be posted on
+      this page with an updated "Last Updated" date.
+    </p>
+
+    <h2 [transloco]="'privacy.contactTitle'">Contact Us</h2>
+    <p class="page-content">
+      {{ 'privacy.contactContent.part1' | transloco }}
+      <a [routerLink]="['/about']">{{ 'privacy.contactContent.aboutLink' | transloco }}</a>
+      {{ 'privacy.contactContent.part2' | transloco }}
+    </p>
+  </div>
+</div>

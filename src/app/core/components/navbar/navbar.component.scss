@@ -1,0 +1,56 @@
+.navbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.app-title {
+  margin-left: 8px;
+  margin-right: 16px;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.language-selector {
+  margin-left: 8px;
+
+  .mat-icon {
+    margin-right: 4px;
+  }
+}
+
+.username {
+  margin-right: 16px;
+  font-weight: 400;
+  font-size: 0.875rem; // Same size as buttons (14px)
+}
+
+// RTL adjustments
+:host-context([dir='rtl']) {
+  .app-title {
+    margin-left: 16px;
+    margin-right: 8px;
+  }
+
+  .language-selector {
+    margin-left: 0;
+    margin-right: 8px;
+
+    .mat-icon {
+      margin-right: 0;
+      margin-left: 4px;
+    }
+  }
+
+  .username {
+    margin-right: 0;
+    margin-left: 16px;
+  }
+}

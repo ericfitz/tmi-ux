@@ -1,0 +1,53 @@
+<mat-toolbar color="primary">
+  <div class="navbar-container">
+    <!-- Left side: Home, App Title, and Language Selector -->
+    <div class="navbar-left">
+      <button mat-icon-button [routerLink]="homeLink">
+        <mat-icon>home</mat-icon>
+      </button>
+      <span class="app-title" [transloco]="'navbar.appTitle'">TMI: Threat Modeling Improved</span>
+
+      <!-- Language Selector -->
+      <button mat-button [matMenuTriggerFor]="languageMenu" class="language-selector">
+        <mat-icon>language</mat-icon>
+        <span
+          [transloco]="'navbar.currentLanguage'"
+          [translocoParams]="{ language: currentLanguage.localName }"
+          >{{ currentLanguage.localName }}</span
+        >
+      </button>
+
+      <mat-menu #languageMenu="matMenu">
+        <button mat-menu-item *ngFor="let lang of languages" (click)="switchLanguage(lang)">
+          <span
+            [transloco]="'navbar.languageName'"
+            [translocoParams]="{ language: lang.localName }"
+            >{{ lang.localName }}</span
+          >
+        </button>
+      </mat-menu>
+    </div>
+
+    <!-- Right side: Mock data toggle, User info and logout button -->
+    <div class="navbar-right">
+      <!-- Mock data toggle in development mode -->
+      <app-mock-data-toggle *ngIf="isDevelopmentMode"></app-mock-data-toggle>
+
+      <!-- User info and logout when authenticated -->
+      <ng-container *ngIf="isAuthenticated">
+        <span
+          class="username"
+          [transloco]="'navbar.username'"
+          [translocoParams]="{ username: username }"
+          >{{ username }}</span
+        >
+        <button mat-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span [transloco]="'navbar.logoutButton'">Logout</span>
+        </button>
+
+        <!-- No additional navigation buttons needed as home button will navigate to threat models when authenticated -->
+      </ng-container>
+    </div>
+  </div>
+</mat-toolbar>

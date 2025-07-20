@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(cp:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(ng --version)",
+      "Bash(npx husky add:*)",
+      "Bash(npx husky init:*)",
+      "Bash(npx ng lint:*)",
+      "Bash(pkill:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(rm -rf node_modules package-lock.json && pnpm install)",
+      "Bash(rm:*)",
+      "Bash(sed:*)",
+      "WebFetchTool(domain:angular.io)",
+      "WebFetchTool(domain:github.com)",
+      "Bash(pnpm:*)",
+      "Bash(node:*)",
+      "Bash(mv:*)",
+      "Bash(pntml run lint:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": false
+}

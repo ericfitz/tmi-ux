@@ -1,0 +1,25 @@
+mat-dialog-content {
+  padding: 20px;
+  text-align: center;
+}
+
+mat-dialog-actions {
+  padding: 0 20px 20px;
+  justify-content: flex-end;
+}
+
+.error-message {
+  color: var(--mat-form-field-error-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+
+  mat-icon {
+    margin-right: 5px;
+  }
+}
+
+mat-spinner {
+  margin-left: 10px;
+}

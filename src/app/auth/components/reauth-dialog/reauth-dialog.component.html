@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Session Expired</h2>
+
+<mat-dialog-content>
+  <p>Your session has expired. Please re-authenticate to continue.</p>
+  <div *ngIf="error" class="error-message">
+    <mat-icon color="warn">error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="isLoading">Cancel</button>
+  <button mat-raised-button color="primary" (click)="reauthenticate()" [disabled]="isLoading">
+    <span *ngIf="!isLoading">Re-authenticate with Google</span>
+    <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+  </button>
+</mat-dialog-actions>

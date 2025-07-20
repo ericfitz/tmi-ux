@@ -1,0 +1,120 @@
+@use './styles/_dfd-styles' as dfd;
+
+// Compact layout styles
+.dfd-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 4px 0;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-title {
+  margin: 0 0 2px;
+}
+
+// Toolbar styles
+.graph-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+
+    button {
+      margin-right: 8px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .button-spacer {
+      width: 16px;
+      display: inline-block;
+    }
+  }
+
+  button[mat-icon-button] {
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    &:disabled {
+      color: #ccc;
+    }
+  }
+}
+
+// Graph container
+.graph-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+// Deep styles
+:host ::ng-deep {
+  .x6-graph,
+  .x6-graph-svg-container,
+  .x6-graph-svg,
+  .x6-graph-scroller,
+  .x6-graph-background,
+  .x6-graph-grid,
+  .x6-graph-view {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .x6-graph-view {
+    overflow: visible !important;
+  }
+
+  // Material styles
+  .mat-tooltip,
+  .mat-menu-item,
+  .mat-menu-panel {
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+  }
+
+  .mat-tooltip {
+    font-size: 12px;
+  }
+
+  .mat-menu-item {
+    font-size: 14px;
+  }
+}

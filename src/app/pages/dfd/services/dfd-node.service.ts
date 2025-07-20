@@ -1,0 +1,305 @@
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
+import { TranslocoService } from '@jsverse/transloco';
+import { LoggerService } from '../../../core/services/logger.service';
+import { NodeType } from '../domain/value-objects/node-info';
+import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
+import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
+import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
+import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
+import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from './graph-history-coordinator.service';
+
+/**
+ * Consolidated service for node creation, management, and operations in DFD diagrams
+ * Combines the functionality of DfdNodeManagerService and X6NodeOperations
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class DfdNodeService {
+  constructor(
+    private logger: LoggerService,
+    private transloco: TranslocoService,
+    private x6GraphAdapter: X6GraphAdapter,
+    private x6ZOrderAdapter: X6ZOrderAdapter,
+    private nodeConfigurationService: NodeConfigurationService,
+    private visualEffectsService: VisualEffectsService,
+    private historyCoordinator: GraphHistoryCoordinator,
+  ) {}
+
+  // ========================================
+  // High-level Node Management Methods
+  // ========================================
+
+  /**
+   * Add a node at a predictable position
+   */
+  addGraphNode(
+    shapeType: NodeType = 'actor',
+    containerWidth: number,
+    containerHeight: number,
+    diagramId: string,
+    isInitialized: boolean,
+  ): Observable<void> {
+    if (!isInitialized) {
+      this.logger.warn('Cannot add node: Graph is not initialized');
+      throw new Error('Graph is not initialized');
+    }
+
+    // Calculate a predictable position using a grid-based algorithm
+    const position = this.calculateNextNodePosition(containerWidth, containerHeight);
+
+    return this.createNode(shapeType, position);
+  }
+
+  /**
+   * Calculate the next predictable position for a new node using a grid-based algorithm
+   * that ensures nodes are always placed in the viewable area
+   */
+  private calculateNextNodePosition(
+    containerWidth: number,
+    containerHeight: number,
+  ): { x: number; y: number } {
+    const nodeWidth = 120; // Default node width
+    const nodeHeight = 80; // Default node height
+    const padding = 50; // Padding from edges and between nodes
+    const gridSpacingX = nodeWidth + padding;
+    const gridSpacingY = nodeHeight + padding;
+    const offsetIncrement = 25; // Offset increment for layered placement
+
+    // Calculate available grid dimensions
+    const availableWidth = containerWidth - 2 * padding;
+    const availableHeight = containerHeight - 2 * padding;
+    const maxColumns = Math.floor(availableWidth / gridSpacingX);
+    const maxRows = Math.floor(availableHeight / gridSpacingY);
+    const totalGridPositions = maxColumns * maxRows;
+
+    // Get existing nodes to determine occupied positions
+    const existingNodes = this.x6GraphAdapter.getNodes();
+
+    // Calculate which layer we're on based on existing node count
+    const currentLayer = Math.floor(existingNodes.length / totalGridPositions);
+    const positionInLayer = existingNodes.length % totalGridPositions;
+
+    // Calculate the offset for this layer to create a staggered effect
+    const layerOffsetX = (currentLayer * offsetIncrement) % (gridSpacingX / 2);
+    const layerOffsetY = (currentLayer * offsetIncrement) % (gridSpacingY / 2);
+
+    // Calculate row and column for this position in the current layer
+    const row = Math.floor(positionInLayer / maxColumns);
+    const col = positionInLayer % maxColumns;
+
+    // Calculate the actual position with layer offset
+    const baseX = padding + col * gridSpacingX;
+    const baseY = padding + row * gridSpacingY;
+    const x = baseX + layerOffsetX;
+    const y = baseY + layerOffsetY;
+
+    // Ensure the position stays within the viewable area
+    const clampedX = Math.min(Math.max(x, padding), containerWidth - nodeWidth - padding);
+    const clampedY = Math.min(Math.max(y, padding), containerHeight - nodeHeight - padding);
+
+    this.logger.info('Calculated predictable node position with layering', {
+      layer: currentLayer,
+      positionInLayer,
+      gridPosition: { col, row },
+      layerOffset: { x: layerOffsetX, y: layerOffsetY },
+      calculatedPosition: { x, y },
+      finalPosition: { x: clampedX, y: clampedY },
+      totalGridPositions,
+      existingNodeCount: existingNodes.length,
+    });
+
+    return { x: clampedX, y: clampedY };
+  }
+
+  /**
+   * Create a node with the specified type and position directly in X6
+   * All operations are batched into a single history command
+   */
+  private createNode(shapeType: NodeType, position: { x: number; y: number }): Observable<void> {
+    const nodeId = uuidv4(); // Generate UUID type 4 for UX-created nodes
+
+    try {
+      // Add node directly to X6 graph using the graph instance
+      const graph = this.x6GraphAdapter.getGraph();
+
+      // Get node-specific configuration
+      const nodeConfig = this.getNodeConfigForType(shapeType, nodeId, position);
+
+      // Use centralized history coordinator for consistent filtering and batching
+    const createdNode = this.historyCoordinator.executeCompoundOperation(
+        graph,
+        HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
+        // Structural changes (recorded in history)
+        () => {
+          const node = graph.addNode(nodeConfig);
+          // Apply proper z-index using ZOrderService after node creation
+          this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+          return node;
+        },
+        // Visual effects (excluded from history)
+        () => {
+          this.visualEffectsService.applyCreationHighlight(createdNode, graph);
+        },
+        // Use default options for node creation (excludes visual effects)
+        this.historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.NODE_CREATION_USER)
+      );
+
+      this.logger.info('Node created successfully directly in X6 with creation highlight (batched)', { nodeId, shapeType });
+      return of(void 0);
+    } catch (error) {
+      this.logger.error('Error creating node directly in X6', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get node configuration based on node type
+   * Uses the original CSS-based styling system instead of inline attrs
+   */
+  private getNodeConfigForType(
+    shapeType: NodeType,
+    nodeId: string,
+    position: { x: number; y: number },
+  ): any {
+    const x6Shape = getX6ShapeForNodeType(shapeType);
+    const label = this.getDefaultLabelForType(shapeType);
+
+    // Base configuration with minimal styling - let CSS handle the appearance
+    const baseConfig = {
+      id: nodeId,
+      shape: x6Shape,
+      x: position.x,
+      y: position.y,
+      width: 120,
+      height: 80,
+      label,
+      // Remove data.type - use shape property instead for type determination
+      zIndex: 1, // Temporary z-index, will be set properly after node creation
+    };
+
+    // Use NodeConfigurationService to get the correct port configuration for this node type
+    const portConfig = this.nodeConfigurationService.getNodePorts(shapeType);
+
+    // Adjust dimensions based on node type to match original styling
+    switch (shapeType) {
+      case 'process':
+        return {
+          ...baseConfig,
+          width: 120,
+          height: 60,
+          ports: portConfig,
+        };
+
+      case 'store':
+        return {
+          ...baseConfig,
+          width: 140,
+          height: 40,
+          ports: portConfig,
+        };
+
+      case 'actor':
+        return {
+          ...baseConfig,
+          width: 100,
+          height: 80,
+          ports: portConfig,
+        };
+
+      case 'security-boundary':
+        return {
+          ...baseConfig,
+          width: 200,
+          height: 150,
+          ports: portConfig,
+        };
+
+      case 'text-box':
+        return {
+          ...baseConfig,
+          width: 100,
+          height: 40,
+          ports: portConfig, // This will be empty for text-box nodes
+        };
+
+      default:
+        // Fallback for unknown node types
+        return {
+          ...baseConfig,
+          ports: portConfig,
+        };
+    }
+  }
+
+  /**
+   * Get default label for a shape type
+   */
+  private getDefaultLabelForType(shapeType: NodeType): string {
+    switch (shapeType) {
+      case 'actor':
+        return this.transloco.translate('editor.nodeLabels.actor');
+      case 'process':
+        return this.transloco.translate('editor.nodeLabels.process');
+      case 'store':
+        return this.transloco.translate('editor.nodeLabels.store');
+      case 'security-boundary':
+        return this.transloco.translate('editor.nodeLabels.securityBoundary');
+      case 'text-box':
+        return this.transloco.translate('editor.nodeLabels.textbox');
+      default:
+        return this.transloco.translate('editor.nodeLabels.node');
+    }
+  }
+
+  /**
+   * 🐛 DEBUG METHOD: Capture actual default styling values for constants verification
+   * This helps us understand what X6 actually creates vs what we expect
+   */
+  private _debugWriteActualDefaults(node: any, nodeType: string): void {
+    const debugData = {
+      timestamp: new Date().toISOString(),
+      nodeType: nodeType,
+      id: node.id,
+      shape: node.shape,
+      actualDefaults: {
+        'body/stroke': node.attr('body/stroke'),
+        'body/strokeWidth': node.attr('body/strokeWidth'),
+        'body/fill': node.attr('body/fill'),
+        'body/filter': node.attr('body/filter'),
+        'body/strokeDasharray': node.attr('body/strokeDasharray'),
+        'text/text': node.attr('text/text'),
+        'text/fill': node.attr('text/fill'),
+        'text/fontSize': node.attr('text/fontSize'),
+        'text/fontFamily': node.attr('text/fontFamily'),
+        'text/filter': node.attr('text/filter'),
+      },
+      position: node.position(),
+      size: node.size(),
+      zIndex: node.getZIndex(),
+    };
+    
+    // Store in localStorage (browser-compatible)
+    try {
+      const key = 'debug-shape-defaults';
+      const existing = localStorage.getItem(key);
+      let allData = [];
+      
+      if (existing) {
+        allData = JSON.parse(existing);
+      }
+      
+      allData.push(debugData);
+      localStorage.setItem(key, JSON.stringify(allData, null, 2));
+      
+      // console.log(`🐛 DEBUG: Shape defaults stored in localStorage for ${nodeType} (${allData.length} entries total)`);
+      // console.log('📱 To download: Run this in browser console: window.downloadDebugData()');
+    } catch (error) {
+      console.error('Could not store debug data:', error);
+    }
+  }
+
+}

@@ -1,0 +1,45 @@
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.title-row {
+  margin-bottom: 24px;
+}
+
+.content-row {
+  margin-bottom: 36px;
+}
+
+.page-content {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+}
+
+.login-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (width <= 768px) {
+  .login-buttons {
+    flex-direction: column;
+  }
+}
+
+// RTL support
+:host-context([dir='rtl']) {
+  .action-row button mat-icon {
+    margin-left: 8px;
+    margin-right: 0;
+  }
+}

@@ -1,0 +1,375 @@
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-content {
+  min-width: 300px;
+  padding-top: 6px;
+}
+
+.mat-mdc-form-field {
+  margin-top: 2px;
+}
+
+.dialog-form {
+  padding: 2px 0;
+}
+
+.form-field-container {
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+// Form field rows
+.form-field-row {
+  margin-top: 4px;
+  margin-bottom: 4px;
+
+  &.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  &.three-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+// Common styles for button icons (placeholder selectors)
+%button-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Smaller button icon (placeholder selector)
+%small-button-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+// URL field with copy button
+.url-field-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .mat-form-field {
+    flex: 1;
+  }
+
+  .url-copy-button {
+    margin-left: 8px;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mat-icon {
+      @extend %button-icon;
+    }
+  }
+}
+
+// For smaller screens, adjust the grid
+@media (width <= 800px) {
+  .form-field-row.three-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 600px) {
+  .form-field-row.three-columns,
+  .form-field-row.two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Checkbox field styling
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  height: 56px; // Match height of form fields with some extra space for alignment
+}
+
+// Info section styles
+.info-section {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+// Vertical info section for threat ID and timestamps
+.info-section-vertical {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 6px 12px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-field {
+  display: flex;
+  font-size: 13px;
+  align-items: center;
+  margin-bottom: 4px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.dates-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .date-field {
+      display: flex;
+      align-items: center;
+      width: 48%;
+    }
+  }
+}
+
+@media (width <= 800px) {
+  .info-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 600px) {
+  .info-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-label {
+  font-weight: 500;
+  min-width: 120px;
+  color: rgb(0 0 0 / 70%);
+}
+
+.info-value {
+  color: rgb(0 0 0 / 87%);
+  flex: 1;
+}
+
+// Copy button styles
+.copy-button {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  margin-inline-start: 8px; // Use logical property for RTL support
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-icon {
+    @extend %button-icon;
+  }
+}
+
+// Metadata section styles
+.metadata-section {
+  margin-top: 8px;
+
+  h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-family: Roboto, Arial, sans-serif;
+  }
+}
+
+.metadata-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: visible;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 4px;
+}
+
+.metadata-table {
+  width: 100%;
+
+  input {
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+  }
+}
+
+// Make all form fields more compact
+::ng-deep .mat-mdc-form-field-infix {
+  min-height: 36px !important;
+  padding-top: 8px !important;
+  padding-bottom: 6px !important;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  height: 12px !important;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.table-field {
+  width: 100%;
+  margin-bottom: 0;
+
+  // Remove outline appearance for form fields in tables
+  ::ng-deep .mat-mdc-form-field-flex {
+    border: none;
+    padding: 0 2px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding: 4px 0;
+    min-height: unset;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.mat-column-key {
+  width: 20%;
+  max-width: 150px;
+}
+
+.mat-column-value {
+  width: 70%;
+}
+
+.mat-column-actions {
+  width: 10%;
+  min-width: 50px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.actions-column {
+  padding: 0 2px !important;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+.compact-button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+
+  .mat-icon {
+    @extend %small-button-icon;
+  }
+}
+
+.mat-mdc-header-cell {
+  font-weight: 500;
+  color: rgb(0 0 0 / 70%);
+  text-align: left;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  padding: 0 4px;
+  font-size: 13px;
+}
+
+.mat-mdc-cell {
+  padding: 2px 4px;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-size: 13px;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgb(0 0 0 / 4%);
+}
+
+.no-items-message {
+  color: rgb(0 0 0 / 60%);
+  font-style: italic;
+  padding: 12px 0;
+  text-align: center;
+  font-family: 'Roboto Condensed', Arial, sans-serif;
+}
+
+// Keep the original metadata grid styles for view-only mode
+.metadata-grid {
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metadata-grid .metadata-header {
+  display: flex;
+  background-color: #f5f5f5;
+  font-weight: 500;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+  margin-bottom: 0;
+}
+
+.metadata-key-header,
+.metadata-value-header {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.metadata-key-header {
+  flex: 1;
+  border-inline-end: 1px solid rgb(0 0 0 / 12%); // Use logical property for RTL support
+}
+
+.metadata-value-header {
+  flex: 2;
+}
+
+.metadata-row {
+  display: flex;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.metadata-key,
+.metadata-value {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.metadata-key {
+  flex: 1;
+  border-inline-end: 1px solid rgb(0 0 0 / 12%); // Use logical property for RTL support
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+.metadata-value {
+  flex: 2;
+}
