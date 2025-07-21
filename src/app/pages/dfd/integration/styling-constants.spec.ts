@@ -35,11 +35,14 @@ describe('DFD Integration - Styling Constants', () => {
     });
     
     it('should have valid selection styling constants', () => {
-      expect(DFD_STYLING.SELECTION.STROKE_WIDTH).toBe(3);
+      expect(DFD_STYLING.SELECTION.STROKE_WIDTH).toBe(2);
+      expect(DFD_STYLING.SELECTION.STROKE_COLOR).toBe('#000000');
       expect(DFD_STYLING.SELECTION.GLOW_COLOR).toBe('rgba(255, 0, 0, 0.8)');
       expect(DFD_STYLING.SELECTION.GLOW_BLUR_RADIUS).toBe(8);
       
-      // Verify selection color is valid RGBA
+      // Verify selection color is valid hex
+      expect(DFD_STYLING.SELECTION.STROKE_COLOR).toMatch(/^#[0-9a-fA-F]{6}$/);
+      // Verify selection glow color is valid RGBA
       expect(DFD_STYLING.SELECTION.GLOW_COLOR).toMatch(/^rgba\(\d+,\s*\d+,\s*\d+,\s*[\d.]+\)$/);
       
       // Verify template function works

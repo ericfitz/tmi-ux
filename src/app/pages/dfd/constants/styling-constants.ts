@@ -22,6 +22,7 @@ export const DFD_STYLING = {
   // Selection styling effects
   SELECTION: {
     STROKE_WIDTH: 2,
+    STROKE_COLOR: '#000000',
     GLOW_COLOR: 'rgba(255, 0, 0, 0.8)',
     GLOW_BLUR_RADIUS: 8,
     FILTER_TEMPLATE: (blur: number, color: string) => `drop-shadow(0 0 ${blur}px ${color})`,

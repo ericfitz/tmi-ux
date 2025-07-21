@@ -460,10 +460,12 @@ export class X6SelectionAdapter {
         // For all other node types, apply glow to body element
         cell.attr('body/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
         cell.attr('body/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
+        cell.attr('body/stroke', DFD_STYLING.SELECTION.STROKE_COLOR);
       }
     } else if (cell.isEdge()) {
       cell.attr('line/filter', DFD_STYLING_HELPERS.getSelectionFilter('edge'));
       cell.attr('line/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
+      cell.attr('line/stroke', DFD_STYLING.SELECTION.STROKE_COLOR);
     }
   }
 
@@ -481,13 +483,16 @@ export class X6SelectionAdapter {
       } else {
         // For all other node types, remove glow from body element
         cell.attr('body/filter', 'none');
-        // Restore shape-specific default stroke width
+        // Restore shape-specific default stroke width and color
         const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType as NodeType);
+        const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType as NodeType);
         cell.attr('body/strokeWidth', defaultStrokeWidth);
+        cell.attr('body/stroke', defaultStroke);
       }
     } else if (cell.isEdge()) {
       cell.attr('line/filter', 'none');
       cell.attr('line/strokeWidth', DFD_STYLING.DEFAULT_STROKE_WIDTH);
+      cell.attr('line/stroke', DFD_STYLING.EDGES.DEFAULT_STROKE);
     }
   }
 

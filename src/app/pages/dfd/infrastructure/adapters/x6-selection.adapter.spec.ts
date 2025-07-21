@@ -14,6 +14,7 @@ import { SelectionService } from '../services/selection.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { X6HistoryManager } from './x6-history-manager';
 import { registerCustomShapes } from './x6-shape-definitions';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 // Mock logger service
 class MockLoggerService {
@@ -287,8 +288,10 @@ describe('X6SelectionAdapter', () => {
       // Verify selection effect applied
       const bodyFilter = node.attr('body/filter');
       const strokeWidth = node.attr('body/strokeWidth');
+      const strokeColor = node.attr('body/stroke');
       expect(bodyFilter).toBe('drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
-      expect(strokeWidth).toBe(3);
+      expect(strokeWidth).toBe(DFD_STYLING.SELECTION.STROKE_WIDTH);
+      expect(strokeColor).toBe(DFD_STYLING.SELECTION.STROKE_COLOR);
     });
 
     it('should remove selection effect when cell is deselected', () => {

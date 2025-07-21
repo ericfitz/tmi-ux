@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
 /**
  * X6 History Manager
@@ -212,7 +212,7 @@ export class X6HistoryManager {
       // Restore default stroke width if it has selection styling
       const currentStrokeWidth = node.attr('body/strokeWidth');
       const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType as any);
-      if (currentStrokeWidth === 3 && defaultStrokeWidth !== 3) { // 3 is selection stroke width
+      if (currentStrokeWidth === DFD_STYLING.SELECTION.STROKE_WIDTH && defaultStrokeWidth !== DFD_STYLING.SELECTION.STROKE_WIDTH) {
         node.attr('body/strokeWidth', defaultStrokeWidth);
       }
     }
