@@ -28,7 +28,10 @@ import { X6HistoryManager } from './x6-history-manager';
 import { X6SelectionAdapter } from './x6-selection.adapter';
 import { X6EventLoggerService } from './x6-event-logger.service';
 import { DfdEdgeService } from '../../services/dfd-edge.service';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -497,7 +500,9 @@ export class X6GraphAdapter implements IGraphAdapter {
         return createdNode;
       },
       // Use default options for domain node creation (excludes visual effects)
-      this._historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.NODE_CREATION_DOMAIN)
+      this._historyCoordinator.getDefaultOptionsForOperation(
+        HISTORY_OPERATION_TYPES.NODE_CREATION_DOMAIN,
+      ),
     );
 
     // DEBUG: Write actual default styling values to file for constants verification (DISABLED)
@@ -505,7 +510,6 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     return x6Node;
   }
-
 
   /**
    * Remove a node from the graph
@@ -538,7 +542,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   addEdge(diagramEdge: DiagramEdge): Edge {
     const graph = this.getGraph();
     const edgeData = diagramEdge.data;
-    
+
     // Use centralized history coordinator for consistent filtering and atomic batching
     const x6Edge = this._historyCoordinator.executeAtomicOperation(
       graph,
@@ -575,7 +579,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         return createdEdge;
       },
       // Use default options for edge creation (excludes visual effects)
-      this._historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.EDGE_CREATION)
+      this._historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.EDGE_CREATION),
     );
 
     return x6Edge;
@@ -700,7 +704,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   redo(): void {
     this._historyManager.redo(this._graph!);
   }
-
 
   /**
    * Check if undo is available - delegates to X6HistoryManager
@@ -1070,7 +1073,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         attrs: edge.attr(),
         lineAttrs: edge.attr('line'),
       });
-
     });
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
@@ -1113,7 +1115,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     //         // Apply glow effects and tools to newly selected cells
     //         added.forEach((cell: Cell) => {
     //           this._selectedCells.add(cell.id);
-              
+
     //           if (cell.isNode()) {
     //             const nodeType = (cell as any).getNodeTypeInfo
     //               ? (cell as any).getNodeTypeInfo().type
@@ -1130,7 +1132,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     //             cell.attr('line/filter', DFD_STYLING_HELPERS.getSelectionFilter('edge'));
     //             cell.attr('line/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
     //           }
-              
+
     //           // Add tools for selected cells (tools can be tracked in history)
     //           if (cell.isNode()) {
     //             this._addNodeTools(cell);
@@ -1142,7 +1144,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     //         // Remove glow effects and tools from deselected cells
     //         removed.forEach((cell: Cell) => {
     //           this._selectedCells.delete(cell.id);
-              
+
     //           if (cell.isNode()) {
     //             const nodeType = (cell as any).getNodeTypeInfo
     //               ? (cell as any).getNodeTypeInfo().type
@@ -1161,7 +1163,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     //             cell.attr('line/filter', 'none');
     //             cell.attr('line/strokeWidth', DFD_STYLING.DEFAULT_STROKE_WIDTH);
     //           }
-              
+
     //           // Remove tools from deselected cells (tools can be tracked in history)
     //           cell.removeTools();
     //         });
@@ -1173,11 +1175,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     // );
 
     // For testing - just emit the event for observability
-    this._graph.on('selection:changed', ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
-      const selected = added.map((cell: Cell) => cell.id);
-      const deselected = removed.map((cell: Cell) => cell.id);
-      this._selectionChanged$.next({ selected, deselected });
-    });
+    this._graph.on(
+      'selection:changed',
+      ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
+        const selected = added.map((cell: Cell) => cell.id);
+        const deselected = removed.map((cell: Cell) => cell.id);
+        this._selectionChanged$.next({ selected, deselected });
+      },
+    );
 
     // Context menu events
     this._graph.on('cell:contextmenu', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
@@ -1286,10 +1291,11 @@ export class X6GraphAdapter implements IGraphAdapter {
           enabled: true,
           multiple: true,
           rubberband: true,
+          modifiers: null, // Allow rubberband selection without modifiers
           movable: true,
+          multipleSelectionModifiers: ['shift'], // Shift for multi-selection
           showNodeSelectionBox: false,
           showEdgeSelectionBox: false,
-          modifiers: null, // Allow rubberband selection without modifiers
           pointerEvents: 'none',
         }),
       );
@@ -1357,16 +1363,16 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Initialize selection plugins
     this._selectionAdapter.initializePlugins(this._graph);
-    
+
     // Setup history controller for selection adapter
     this._selectionAdapter.setHistoryController({
       disable: () => this._historyManager.disable(this._graph!),
-      enable: () => this._historyManager.enable(this._graph!)
+      enable: () => this._historyManager.enable(this._graph!),
     });
-    
+
     // Set up port state manager for coordinated hover effects
     this._selectionAdapter.setPortStateManager(this._portStateManager);
-    
+
     // Setup all selection events including hover, selection, and tools
     this._selectionAdapter.setupSelectionEvents(this._graph, (cell: Cell) => {
       this._handleCellDeletion(cell);
@@ -1387,8 +1393,6 @@ export class X6GraphAdapter implements IGraphAdapter {
   // - _getEmbeddingDepth() → EmbeddingService.calculateEmbeddingDepth()
   // - _getEmbeddingFillColor() → EmbeddingService.calculateEmbeddingFillColor()
   // - _updateEmbeddedNodeColor() → X6EmbeddingAdapter.updateEmbeddingAppearance()
-
-
 
   /**
    * Centralized cell deletion handler - simplified without command pattern
@@ -1686,7 +1690,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     ];
   }
 
-
   /**
    * Check if port data changes are only visibility-related (should be excluded from history)
    */
@@ -1695,11 +1698,19 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (portData.attrs && typeof portData.attrs === 'object') {
       const attrsKeys = Object.keys(portData.attrs);
       return attrsKeys.every(attrKey => {
-        if (attrKey === 'circle' && portData.attrs[attrKey] && typeof portData.attrs[attrKey] === 'object') {
+        if (
+          attrKey === 'circle' &&
+          portData.attrs[attrKey] &&
+          typeof portData.attrs[attrKey] === 'object'
+        ) {
           const circleData = portData.attrs[attrKey];
           const circleKeys = Object.keys(circleData);
           return circleKeys.every(circleKey => {
-            if (circleKey === 'style' && circleData[circleKey] && typeof circleData[circleKey] === 'object') {
+            if (
+              circleKey === 'style' &&
+              circleData[circleKey] &&
+              typeof circleData[circleKey] === 'object'
+            ) {
               const styleData = circleData[circleKey];
               const styleKeys = Object.keys(styleData);
               // Only allow visibility changes
@@ -1750,15 +1761,13 @@ export class X6GraphAdapter implements IGraphAdapter {
     }, 0);
   }
 
-
-
   /**
    * Centralized history filtering logic using GraphHistoryCoordinator
    */
   private _shouldIncludeInHistory(event: string, args: any): boolean {
     // DEBUG: Log all history events to understand what's happening
     this.logger.debug('History event:', { event, args });
-    
+
     // Completely exclude tools from history
     if (event === 'cell:change:tools') {
       this.logger.debug('Excluding tools event');
@@ -1768,25 +1777,25 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Handle cell:change:* events (which is what X6 actually fires)
     if (event === 'cell:change:*' && args.key) {
       // Handle different types of changes based on the key
-      
+
       // Exclude tool changes
       if (args.key === 'tools') {
         this.logger.debug('Excluding tools key change');
         return false;
       }
-      
+
       // Exclude zIndex changes (usually for visual layering)
       if (args.key === 'zIndex') {
         this.logger.debug('Excluding zIndex change');
         return false;
       }
-      
+
       // Handle attribute changes
       if (args.key === 'attrs' && args.current && args.previous) {
         // Instead of checking all current attributes, check what actually changed
         const actualChanges = this._findActualAttributeChanges(args.current, args.previous);
         this.logger.debug('Actual attribute changes detected:', actualChanges);
-        
+
         // Check if all actual changes are visual-only
         const isOnlyVisualAttributes = actualChanges.every(changePath => {
           const isExcluded = this._historyCoordinator.shouldExcludeAttribute(changePath);
@@ -1800,30 +1809,30 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
         this.logger.debug('Including attribute changes - not all visual');
       }
-      
+
       // For other cell:change:* events, allow them unless they're specifically excluded
       this.logger.debug('Including cell:change:* event with key:', args.key);
       return true;
     }
 
     // Handle legacy cell:change:attrs events (in case any still exist)
-    if ((event === 'cell:change:attrs') && args.current) {
+    if (event === 'cell:change:attrs' && args.current) {
       const changedAttrs = Object.keys(args.current);
-      
+
       // Check if this change only affects excluded visual/tool attributes
       const isOnlyVisualAttributes = changedAttrs.every(attrGroup => {
         // First check if the top-level attribute is excluded
         if (this._historyCoordinator.shouldExcludeAttribute(attrGroup)) {
           return true;
         }
-        
+
         // Then check nested attributes (e.g., body/filter, line/strokeWidth)
         const groupData = args.current[attrGroup];
         if (!groupData || typeof groupData !== 'object') {
           // If it's not an object and not in excluded list, it's not visual-only
           return false;
         }
-        
+
         const groupKeys = Object.keys(groupData);
         // Check if all changes in this group are visual-only
         return groupKeys.every(key => {
@@ -1836,7 +1845,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         return false; // Don't add to history
       }
     }
-    
+
     // Allow all other changes (position, size, labels, structure)
     this.logger.debug('Including other event type:', event);
     return true;
@@ -1847,7 +1856,7 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   private _findActualAttributeChanges(current: any, previous: any): string[] {
     const changes: string[] = [];
-    
+
     const findChangesInObject = (curr: any, prev: any, path = '') => {
       if (!curr || !prev || typeof curr !== 'object' || typeof prev !== 'object') {
         // If either is not an object, compare directly
@@ -1856,15 +1865,19 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
         return;
       }
-      
+
       // Check all keys in current object
       for (const key of Object.keys(curr)) {
         const currentPath = path ? `${path}/${key}` : key;
         const currentValue = curr[key];
         const previousValue = prev[key];
-        
-        if (typeof currentValue === 'object' && currentValue !== null && 
-            typeof previousValue === 'object' && previousValue !== null) {
+
+        if (
+          typeof currentValue === 'object' &&
+          currentValue !== null &&
+          typeof previousValue === 'object' &&
+          previousValue !== null
+        ) {
           // Recurse into nested objects
           findChangesInObject(currentValue, previousValue, currentPath);
         } else if (currentValue !== previousValue) {
@@ -1872,7 +1885,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           changes.push(currentPath);
         }
       }
-      
+
       // Check for keys that were removed (exist in previous but not current)
       for (const key of Object.keys(prev)) {
         if (!(key in curr)) {
@@ -1881,10 +1894,8 @@ export class X6GraphAdapter implements IGraphAdapter {
         }
       }
     };
-    
+
     findChangesInObject(current, previous);
     return changes;
   }
-
 }
-

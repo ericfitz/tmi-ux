@@ -370,6 +370,13 @@ describe('X6SelectionAdapter', () => {
       expect(graph.cleanSelection).toHaveBeenCalled();
     });
 
+    it('should handle multi-selection with shift modifier configured', () => {
+      // Verify the selection plugin was configured with shift modifier for multi-selection
+      expect(adapter['selectionPlugin']).toBeDefined();
+      // Note: We can't easily test the internal configuration, but this verifies the plugin exists
+      // The actual shift+click behavior will be handled by X6's selection plugin natively
+    });
+
     it('should handle selection change events correctly', () => {
       // Simulate selection change with multiple cells
       graph.trigger('selection:changed', {

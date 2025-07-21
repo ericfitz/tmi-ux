@@ -11,12 +11,20 @@ import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-consta
 @Injectable()
 export class X6HistoryManager {
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
+  private portStateManager: any = null;
 
   // Private properties to track previous undo/redo states
   private _previousCanUndo = false;
   private _previousCanRedo = false;
 
   constructor(private logger: LoggerService) {}
+
+  /**
+   * Set port state manager for handling port visibility during undo/redo operations
+   */
+  setPortStateManager(portStateManager: any): void {
+    this.portStateManager = portStateManager;
+  }
 
   /**
    * Observable for history state changes (undo/redo availability)
@@ -172,14 +180,22 @@ export class X6HistoryManager {
   private _cleanupVisualEffectsAfterRestore(graph: Graph): void {
     const cells = graph.getCells();
     
-    cells.forEach((cell: Cell) => {
-      if (cell.isNode()) {
-        const node = cell;
-        this._cleanupNodeVisualEffects(node);
-      } else if (cell.isEdge()) {
-        const edge = cell;
-        this._cleanupEdgeVisualEffects(edge);
-      }
+    // Batch all cleanup operations to prevent them from being added to history
+    graph.batchUpdate(() => {
+      cells.forEach((cell: Cell) => {
+        if (cell.isNode()) {
+          const node = cell;
+          this._cleanupNodeVisualEffects(node);
+          
+          // Update port visibility for all nodes (hide unconnected ports)
+          if (this.portStateManager) {
+            this.portStateManager.hideUnconnectedNodePorts(graph, node);
+          }
+        } else if (cell.isEdge()) {
+          const edge = cell;
+          this._cleanupEdgeVisualEffects(edge);
+        }
+      });
     });
     
     // Clear any selection state since restored cells should not be selected

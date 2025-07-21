@@ -6,7 +6,10 @@ import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 
 /**
  * X6 Selection Adapter
@@ -54,10 +57,11 @@ export class X6SelectionAdapter {
       enabled: true,
       multiple: true,
       rubberband: true,
+      modifiers: null, // Allow rubberband selection without modifiers
       movable: true,
+      multipleSelectionModifiers: ['shift'], // Shift for multi-selection
       showNodeSelectionBox: false,
       showEdgeSelectionBox: false,
-      modifiers: null, // Allow rubberband selection without modifiers
       pointerEvents: 'none',
     });
 
@@ -98,55 +102,55 @@ export class X6SelectionAdapter {
     graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
       if (!this.selectedCells.has(cell.id)) {
         // Use centralized history coordinator to exclude visual effects from history
-        this.historyCoordinator.executeVisualEffect(
-          graph,
-          `hover-enter-${cell.id}`,
-          () => {
-            this.applyHoverEffect(cell);
-            
-            // Show ports for nodes during hover (if port state manager available)
-            if (cell.isNode() && this.portStateManager) {
-              this.portStateManager.showNodePorts(cell);
-            }
+        this.historyCoordinator.executeVisualEffect(graph, `hover-enter-${cell.id}`, () => {
+          this.applyHoverEffect(cell);
+
+          // Show ports for nodes during hover (if port state manager available)
+          if (cell.isNode() && this.portStateManager) {
+            this.portStateManager.showNodePorts(cell);
           }
-        );
+        });
       }
     });
 
     graph.on('cell:mouseleave', ({ cell }: { cell: Cell }) => {
       if (!this.selectedCells.has(cell.id)) {
         // Use centralized history coordinator to exclude visual effects from history
-        this.historyCoordinator.executeVisualEffect(
-          graph,
-          `hover-leave-${cell.id}`,
-          () => {
-            this.removeHoverEffect(cell);
-            
-            // Hide unconnected ports for nodes when hover ends (if port state manager available)
-            if (cell.isNode() && this.portStateManager) {
-              this.portStateManager.hideUnconnectedNodePorts(graph, cell);
-            }
+        this.historyCoordinator.executeVisualEffect(graph, `hover-leave-${cell.id}`, () => {
+          this.removeHoverEffect(cell);
+
+          // Hide unconnected ports for nodes when hover ends (if port state manager available)
+          if (cell.isNode() && this.portStateManager) {
+            this.portStateManager.hideUnconnectedNodePorts(graph, cell);
           }
-        );
+        });
       }
     });
 
     // Handle selection changes
     graph.on('selection:changed', ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
-      // Batch all selection styling changes to prevent history pollution
-      graph.batchUpdate(() => {
-        // Apply glow effects and tools to newly selected cells
-        added.forEach((cell: Cell) => {
-          this.selectedCells.add(cell.id);
-          this.applySelectionEffect(cell);
-          this.addCellTools(cell, onCellDeletion);
-        });
+      // Use history coordinator to exclude all selection-related visual effects from history
+      this.historyCoordinator.executeVisualEffect(graph, `selection-changed-${Date.now()}`, () => {
+        // Batch all selection styling changes to prevent history pollution
+        graph.batchUpdate(() => {
+          // Apply glow effects and tools to newly selected cells
+          added.forEach((cell: Cell) => {
+            this.selectedCells.add(cell.id);
+            this.applySelectionEffect(cell);
+            this.addCellTools(cell, onCellDeletion);
+          });
 
-        // Remove glow effects and tools from deselected cells
-        removed.forEach((cell: Cell) => {
-          this.selectedCells.delete(cell.id);
-          this.removeSelectionEffect(cell);
-          cell.removeTools();
+          // Remove glow effects and tools from deselected cells
+          removed.forEach((cell: Cell) => {
+            this.selectedCells.delete(cell.id);
+            this.removeSelectionEffect(cell);
+            cell.removeTools();
+
+            // Hide ports for deselected nodes
+            if (cell.isNode() && this.portStateManager) {
+              this.portStateManager.hideUnconnectedNodePorts(graph, cell);
+            }
+          });
         });
       });
 
@@ -295,7 +299,7 @@ export class X6SelectionAdapter {
         return createdGroupNode;
       },
       // Use default options for group creation (excludes visual effects)
-      this.historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.GROUP_CREATION)
+      this.historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.GROUP_CREATION),
     );
 
     this.logger.info('Created group with nodes', {
@@ -452,7 +456,7 @@ export class X6SelectionAdapter {
       // Use getNodeTypeInfo for reliable node type detection
       const nodeTypeInfo = (cell as any).getNodeTypeInfo();
       const nodeType = nodeTypeInfo?.type || 'unknown';
-      
+
       if (nodeType === 'text-box') {
         // For text-box shapes, apply glow to text element since body is transparent
         cell.attr('text/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
