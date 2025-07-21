@@ -7,22 +7,18 @@
       "Bash(grep:*)",
       "Bash(ls:*)",
       "Bash(mkdir:*)",
+      "Bash(rg:*)",
       "Bash(ng --version)",
-      "Bash(npx husky add:*)",
-      "Bash(npx husky init:*)",
-      "Bash(npx ng lint:*)",
+      "Bash(npx:*)",
       "Bash(pkill:*)",
-      "Bash(pnpm exec tsc:*)",
       "Bash(rm -rf node_modules package-lock.json && pnpm install)",
-      "Bash(rm:*)",
       "Bash(sed:*)",
       "WebFetchTool(domain:angular.io)",
       "WebFetchTool(domain:github.com)",
       "Bash(pnpm:*)",
       "Bash(node:*)",
       "Bash(mv:*)",
-      "Bash(pntml run lint:*)",
-      "Bash(pnmp run:*)"
+      "Bash(curl:*)"
     ]
   },
   "enableAllProjectMcpServers": false

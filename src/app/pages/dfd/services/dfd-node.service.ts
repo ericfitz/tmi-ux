@@ -130,7 +130,9 @@ export class DfdNodeService {
       const nodeConfig = this.getNodeConfigForType(shapeType, nodeId, position);
 
       // Use centralized history coordinator for consistent filtering and batching
-    const createdNode = this.historyCoordinator.executeCompoundOperation(
+      let createdNode: any;
+      
+      this.historyCoordinator.executeCompoundOperation(
         graph,
         HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
         // Structural changes (recorded in history)
@@ -138,11 +140,14 @@ export class DfdNodeService {
           const node = graph.addNode(nodeConfig);
           // Apply proper z-index using ZOrderService after node creation
           this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+          createdNode = node; // Capture the created node for visual effects
           return node;
         },
         // Visual effects (excluded from history)
         () => {
-          this.visualEffectsService.applyCreationHighlight(createdNode, graph);
+          if (createdNode) {
+            this.visualEffectsService.applyCreationHighlight(createdNode, graph);
+          }
         },
         // Use default options for node creation (excludes visual effects)
         this.historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.NODE_CREATION_USER)

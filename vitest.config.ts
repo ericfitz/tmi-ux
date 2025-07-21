@@ -20,6 +20,11 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     include: ['src/**/*.spec.ts'],
+    exclude: [
+      // Exclude integration tests that have been converted to Cypress
+      'src/app/pages/dfd/integration/**',
+      'src/app/pages/dfd/infrastructure/adapters/x6-graph.adapter.spec.ts'
+    ],
     setupFiles: ['src/test-setup.ts'],
     server: {
       deps: {

@@ -25,9 +25,8 @@ import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
 import { X6HistoryManager } from './x6-history-manager';
 import { X6SelectionAdapter } from './x6-selection.adapter';
-import { X6EventLoggerService } from '../../services/x6-event-logger.service';
-import { DfdConnectionValidationService } from '../../services/dfd-connection-validation.service';
-import { DfdCellLabelService } from '../../services/dfd-cell-label.service';
+import { X6EventLoggerService } from './x6-event-logger.service';
+import { DfdEdgeService } from '../../services/dfd-edge.service';
 import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
 
 // Import the extracted shape definitions
@@ -103,8 +102,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _historyManager: X6HistoryManager,
     private readonly _selectionAdapter: X6SelectionAdapter,
     private readonly _x6EventLogger: X6EventLoggerService,
-    private readonly _connectionValidationService: DfdConnectionValidationService,
-    private readonly _cellLabelService: DfdCellLabelService,
+    private readonly _edgeService: DfdEdgeService,
     private readonly _historyCoordinator: GraphHistoryCoordinator,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
@@ -113,10 +111,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Register custom shapes for DFD diagrams
     registerCustomShapes();
 
-    // Set up subscription to relay label service events for X6 coordination
-    this._cellLabelService.nodeInfoChanged$.subscribe((event: any) => {
-      this._nodeInfoChanged$.next(event);
-    });
+    // Note: Label service events are now handled directly by the DFD component
+    // to avoid circular dependency between X6GraphAdapter and DfdEventHandlersService
   }
 
   /**
@@ -287,7 +283,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         },
         validateMagnet: args => {
           // Delegate to validation service
-          return this._connectionValidationService.isMagnetValid(args);
+          return this._edgeService.isMagnetValid(args);
         },
         validateConnection: args => {
           // Ensure all required properties exist before delegating to validation service
@@ -296,7 +292,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           }
 
           // Delegate to validation service with properly typed args
-          return this._connectionValidationService.isConnectionValid({
+          return this._edgeService.isConnectionValid({
             sourceView: args.sourceView,
             targetView: args.targetView,
             sourceMagnet: args.sourceMagnet,
@@ -460,7 +456,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const nodeType = node.type;
 
     // Validate that shape property is set correctly
-    this._connectionValidationService.validateNodeShape(nodeType, node.id);
+    this._edgeService.validateNodeShape(nodeType, node.id);
 
     // Use NodeConfigurationService for node configuration (except z-index)
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
@@ -492,7 +488,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         });
 
         // Validate that the X6 node was created with the correct shape
-        this._connectionValidationService.validateX6NodeShape(createdNode);
+        this._edgeService.validateX6NodeShape(createdNode);
 
         // Apply proper z-index using ZOrderService after node creation
         this._zOrderAdapter.applyNodeCreationZIndex(graph, createdNode);
@@ -815,8 +811,8 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Get the standardized label text from a cell
    */
   getCellLabel(cell: Cell): string {
-    // Delegate to label service
-    return this._cellLabelService.getCellLabel(cell);
+    // Use X6 cell extensions for unified label handling
+    return (cell as any).getLabel ? (cell as any).getLabel() : '';
   }
 
   /**
@@ -831,8 +827,15 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Batch all label changes into a single history command
     // This ensures multiple attribute changes are grouped as one undoable operation
     this._graph.batchUpdate(() => {
-      // Delegate to label service (events will be relayed via constructor subscription)
-      this._cellLabelService.setCellLabel(cell, text);
+      // Apply the label change using X6 cell extensions
+      if ((cell as any).setLabel) {
+        (cell as any).setLabel(text);
+      } else {
+        this.logger.warn('Cell does not support setLabel method', {
+          cellId: cell.id,
+          cellType: cell.isNode() ? 'node' : 'edge',
+        });
+      }
     });
   }
 

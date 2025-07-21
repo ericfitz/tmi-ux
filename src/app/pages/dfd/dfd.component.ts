@@ -34,15 +34,14 @@ import { X6EmbeddingAdapter } from './infrastructure/adapters/x6-embedding.adapt
 import { X6HistoryManager } from './infrastructure/adapters/x6-history-manager';
 import { EmbeddingService } from './infrastructure/services/embedding.service';
 
-// Import the new consolidated services
+// Import the facade service and remaining infrastructure
+import { DfdFacadeService } from './services/dfd-facade.service';
 import { DfdNodeService } from './services/dfd-node.service';
 import { DfdEdgeService } from './services/dfd-edge.service';
 import { DfdEventHandlersService } from './services/dfd-event-handlers.service';
 import { DfdExportService } from './services/dfd-export.service';
-import { X6EventLoggerService } from './services/x6-event-logger.service';
+import { X6EventLoggerService } from './infrastructure/adapters/x6-event-logger.service';
 import { DfdDiagramService } from './services/dfd-diagram.service';
-import { DfdConnectionValidationService } from './services/dfd-connection-validation.service';
-import { DfdCellLabelService } from './services/dfd-cell-label.service';
 import { DfdTooltipService } from './services/dfd-tooltip.service';
 import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
 import { GraphHistoryCoordinator } from './services/graph-history-coordinator.service';
@@ -85,9 +84,10 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdEventHandlersService,
     DfdExportService,
     DfdDiagramService,
-    DfdConnectionValidationService,
-    DfdCellLabelService,
     DfdTooltipService,
+
+    // Facade service
+    DfdFacadeService,
 
     // X6 Event Logger
     X6EventLoggerService,
@@ -125,9 +125,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _previousCanUndo = false;
   private _previousCanRedo = false;
 
-  // Expose context menu position from event handlers service
+  // Expose context menu position from facade service
   get contextMenuPosition(): { x: string; y: string } {
-    return this.eventHandlers.contextMenuPosition;
+    return this.facade.contextMenuPosition;
   }
 
   constructor(
@@ -135,11 +135,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private x6GraphAdapter: X6GraphAdapter,
     private route: ActivatedRoute,
-    private nodeManager: DfdNodeService,
-    private edgeManager: DfdEdgeService,
-    private eventHandlers: DfdEventHandlersService,
-    private exportService: DfdExportService,
-    private diagramService: DfdDiagramService,
+    private facade: DfdFacadeService,
     private tooltipAdapter: X6TooltipAdapter,
   ) {
     this.logger.info('DfdComponent constructor called');
@@ -167,18 +163,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Initialize event handlers
-    this.eventHandlers.initialize();
+    this.facade.initializeEventHandlers(this.x6GraphAdapter);
 
     // Subscribe to context menu events from X6GraphAdapter
     this._subscriptions.add(
       this.x6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }) => {
-        this.eventHandlers.openCellContextMenu(cell, x, y, this.contextMenuTrigger, this.cdr);
+        // Direct call to event handlers for component-specific UI operations
+        // This is acceptable since it involves component-specific parameters (MatMenuTrigger, ChangeDetectorRef)
+        // that shouldn't be exposed through the facade
+        this.facade.openCellContextMenu(cell, x, y, this.contextMenuTrigger, this.cdr);
       }),
     );
 
-    // Subscribe to selection state changes from event handlers
+    // Subscribe to selection state changes from facade
     this._subscriptions.add(
-      this.eventHandlers.selectedCells$.subscribe(selectedCells => {
+      this.facade.selectedCells$.subscribe(selectedCells => {
         this.hasSelectedCells = selectedCells.length > 0;
         this.hasExactlyOneSelectedCell = selectedCells.length === 1;
         this.selectedCellIsTextBox = selectedCells.some(cell => cell.shape === 'text-box');
@@ -223,19 +222,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private loadDiagramData(diagramId: string): void {
     this._subscriptions.add(
-      this.diagramService.loadDiagram(diagramId, this.threatModelId ?? undefined).subscribe({
+      this.facade.loadDiagram(diagramId, this.threatModelId ?? undefined).subscribe({
         next: result => {
           if (result.success && result.diagram) {
             this.diagramName = result.diagram.name;
             this.cdr.markForCheck();
           } else {
             // Handle diagram not found
-            this.eventHandlers.closeDiagram(this.threatModelId, this.dfdId);
+            this.facade.closeDiagram(this.threatModelId, this.dfdId);
           }
         },
         error: error => {
           this.logger.error('Error loading diagram data', error);
-          this.eventHandlers.closeDiagram(this.threatModelId, this.dfdId);
+          this.facade.closeDiagram(this.threatModelId, this.dfdId);
         },
       }),
     );
@@ -266,8 +265,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this._resizeTimeout = null;
     }
 
-    // Dispose event handlers
-    this.eventHandlers.dispose();
+    // Dispose event handlers through facade
+    this.facade.disposeEventHandlers();
 
     // Dispose tooltip adapter
     this.tooltipAdapter.dispose();
@@ -284,9 +283,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   @HostListener('window:resize')
   onWindowResize(): void {
-    this._resizeTimeout = this.eventHandlers.onWindowResize(
+    this._resizeTimeout = this.facade.onWindowResize(
       this.graphContainer,
       this._resizeTimeout,
+      this.x6GraphAdapter,
     );
   }
 
@@ -295,7 +295,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    this.eventHandlers.onKeyDown(event, this.dfdId || 'default-diagram', this._isInitialized);
+    this.facade.onKeyDown(event, this.dfdId || 'default-diagram', this._isInitialized, this.x6GraphAdapter);
   }
 
   /**
@@ -306,7 +306,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    this.nodeManager
+    this.facade
       .addGraphNode(shapeType, width, height, this.dfdId || 'default-diagram', this._isInitialized)
       .pipe(take(1))
       .subscribe({
@@ -401,14 +401,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Export the diagram to the specified format
    */
   exportDiagram(format: ExportFormat): void {
-    this.exportService.exportDiagram(format);
+    this.facade.exportDiagram(format);
   }
 
   /**
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    this.eventHandlers.onDeleteSelected(this._isInitialized);
+    this.facade.onDeleteSelected(this._isInitialized, this.x6GraphAdapter);
     this.cdr.markForCheck();
   }
 
@@ -416,29 +416,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Shows the cell properties dialog with the serialized JSON object definition
    */
   showCellProperties(): void {
-    this.eventHandlers.showCellProperties();
+    this.facade.showCellProperties();
   }
 
   /**
    * Opens the threat editor dialog to create a new threat
    */
   openThreatEditor(): void {
-    this.eventHandlers.openThreatEditor(this.threatModelId, this.dfdId);
+    this.facade.openThreatEditor(this.threatModelId, this.dfdId);
   }
 
   /**
    * Closes the diagram and navigates back to the threat model editor page
    */
   closeDiagram(): void {
-    this.eventHandlers.closeDiagram(this.threatModelId, this.dfdId);
+    this.facade.closeDiagram(this.threatModelId, this.dfdId);
   }
 
   /**
    * Handle edge added events from the graph adapter
    */
   private handleEdgeAdded(edge: Edge): void {
-    this.edgeManager
-      .handleEdgeAdded(edge, this.dfdId || 'default-diagram', this._isInitialized)
+    const graph = this.x6GraphAdapter.getGraph();
+    this.facade
+      .handleEdgeAdded(edge, graph, this.dfdId || 'default-diagram', this._isInitialized)
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -457,10 +458,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     edgeId: string,
     vertices: Array<{ x: number; y: number }>,
   ): void {
-    this.edgeManager
+    const graph = this.x6GraphAdapter.getGraph();
+    this.facade
       .handleEdgeVerticesChanged(
         edgeId,
         vertices,
+        graph,
         this.dfdId || 'default-diagram',
         this._isInitialized,
       )
@@ -479,58 +482,59 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Move selected cells forward in z-order
    */
   moveForward(): void {
-    this.eventHandlers.moveForward();
+    this.facade.moveForward(this.x6GraphAdapter);
   }
 
   /**
    * Move selected cells backward in z-order
    */
   moveBackward(): void {
-    this.eventHandlers.moveBackward();
+    this.facade.moveBackward(this.x6GraphAdapter);
   }
 
   /**
    * Move selected cells to front
    */
   moveToFront(): void {
-    this.eventHandlers.moveToFront();
+    this.facade.moveToFront(this.x6GraphAdapter);
   }
 
   /**
    * Move selected cells to back
    */
   moveToBack(): void {
-    this.eventHandlers.moveToBack();
+    this.facade.moveToBack(this.x6GraphAdapter);
   }
 
   /**
    * Check if the right-clicked cell is an edge
    */
   isRightClickedCellEdge(): boolean {
-    return this.eventHandlers.isRightClickedCellEdge();
+    return this.facade.isRightClickedCellEdge();
   }
 
   /**
    * Edit the text/label of the right-clicked cell by invoking the label editor
    */
   editCellText(): void {
-    this.eventHandlers.editCellText();
+    this.facade.editCellText(this.x6GraphAdapter);
   }
 
   /**
    * Add an inverse connection for the right-clicked edge using the edge service
    */
   addInverseConnection(): void {
-    const rightClickedCell = this.eventHandlers.getRightClickedCell();
+    const rightClickedCell = this.facade.getRightClickedCell();
     if (!rightClickedCell || !rightClickedCell.isEdge()) {
       this.logger.warn('No edge selected for inverse connection');
       return;
     }
 
     const originalEdge = rightClickedCell;
+    const graph = this.x6GraphAdapter.getGraph();
     
-    this.edgeManager
-      .addInverseConnection(originalEdge, this.dfdId || 'default-diagram')
+    this.facade
+      .addInverseConnection(originalEdge, graph, this.dfdId || 'default-diagram')
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -546,13 +550,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Undo the last action using X6 history addon
    */
   undo(): void {
-    this.eventHandlers.undo(this._isInitialized);
+    this.facade.undo(this._isInitialized, this.x6GraphAdapter);
   }
 
   /**
    * Redo the last undone action using X6 history addon
    */
   redo(): void {
-    this.eventHandlers.redo(this._isInitialized);
+    this.facade.redo(this._isInitialized, this.x6GraphAdapter);
   }
 }

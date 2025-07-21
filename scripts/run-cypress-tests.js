@@ -13,8 +13,8 @@
  *   --spec=<spec-pattern>: Run only tests matching the specified pattern
  */
 
-const { execSync } = require('child_process');
-const path = require('path');
+import { execSync } from 'child_process';
+import path from 'path';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -23,7 +23,7 @@ const isOpen = args.includes('--open');
 const specPattern = args.find(arg => arg.startsWith('--spec='))?.split('=')[1];
 
 // Build the Cypress command
-let command = 'cypress';
+let command = 'npx cypress';
 command += isOpen ? ' open' : ' run';
 command += isComponentTest ? ' --component' : ' --e2e';
 
@@ -32,15 +32,25 @@ if (specPattern) {
 }
 
 // Add additional options
-command += ' --browser chrome';
-command += ' --config-file cypress.config.ts';
+command += ' --browser electron';
+command += ' --config-file cypress.config.cjs';
 
 // Print the command
 console.log(`Running: ${command}`);
 
 try {
-    // Execute the command
-    execSync(command, { stdio: 'inherit' });
+    // Execute the command with environment variables to suppress warnings
+    execSync(command, { 
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            NODE_OPTIONS: '--no-warnings --no-experimental-loader --disable-warning=ExperimentalWarning',
+            ELECTRON_ENABLE_LOGGING: 'false',
+            CYPRESS_CRASH_REPORTS: '0',
+            DEBUG: '',
+            FORCE_COLOR: '0'
+        }
+    });
     console.log('Tests completed successfully');
     process.exit(0);
 } catch (error) {

@@ -365,53 +365,6 @@ export class X6EventLoggerService {
   }
 
   /**
-   * Log an X6 event with timestamp and structured data
-   */
-  private _logEvent(eventType: string, message: string, data?: Record<string, unknown>): void {
-    if (!this._isEnabled) {
-      return;
-    }
-
-    const timestamp = new Date().toISOString();
-    const logLine = `[${timestamp}] ${eventType}: ${message} ${JSON.stringify(data || {})}`;
-
-    // Add to in-memory log
-    this._logEntries.push(logLine);
-
-    // Prevent memory issues by limiting log entries
-    if (this._logEntries.length > this._maxLogEntries) {
-      this._logEntries = this._logEntries.slice(-this._maxLogEntries / 2);
-    }
-
-    // In a browser environment, we'll use console.info with a specific prefix
-    // for easy filtering. In a Node.js environment, this could write to a file.
-
-    console.info(`[X6_EVENT_LOG] ${logLine}`);
-  }
-
-  /**
-   * Get node label safely
-   */
-  private _getNodeLabel(node: Node): string {
-    try {
-      // Use X6 cell extensions if available
-      if ((node as any).getLabel) {
-        return (node as any).getLabel();
-      }
-
-      // Fallback to attrs
-      const attrs = node.getAttrs();
-      if (attrs && attrs['text'] && typeof attrs['text'] === 'object' && 'text' in attrs['text']) {
-        return String((attrs['text'] as any)['text']);
-      }
-
-      return '';
-    } catch {
-      return '';
-    }
-  }
-
-  /**
    * Get all logged events
    */
   getLogEntries(): string[] {
@@ -494,5 +447,52 @@ export class X6EventLoggerService {
     });
     this._logEntries = [];
     this._isEnabled = false;
+  }
+
+  /**
+   * Log an X6 event with timestamp and structured data
+   */
+  private _logEvent(eventType: string, message: string, data?: Record<string, unknown>): void {
+    if (!this._isEnabled) {
+      return;
+    }
+
+    const timestamp = new Date().toISOString();
+    const logLine = `[${timestamp}] ${eventType}: ${message} ${JSON.stringify(data || {})}`;
+
+    // Add to in-memory log
+    this._logEntries.push(logLine);
+
+    // Prevent memory issues by limiting log entries
+    if (this._logEntries.length > this._maxLogEntries) {
+      this._logEntries = this._logEntries.slice(-this._maxLogEntries / 2);
+    }
+
+    // In a browser environment, we'll use console.info with a specific prefix
+    // for easy filtering. In a Node.js environment, this could write to a file.
+
+    console.info(`[X6_EVENT_LOG] ${logLine}`);
+  }
+
+  /**
+   * Get node label safely
+   */
+  private _getNodeLabel(node: Node): string {
+    try {
+      // Use X6 cell extensions if available
+      if ((node as any).getLabel) {
+        return (node as any).getLabel();
+      }
+
+      // Fallback to attrs
+      const attrs = node.getAttrs();
+      if (attrs && attrs['text'] && typeof attrs['text'] === 'object' && 'text' in attrs['text']) {
+        return String((attrs['text'] as any)['text']);
+      }
+
+      return '';
+    } catch {
+      return '';
+    }
   }
 }

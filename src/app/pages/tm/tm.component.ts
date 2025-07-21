@@ -58,8 +58,15 @@ export class TmComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('[CYPRESS-DEBUG] TmComponent.ngOnInit called');
     this.subscription = this.threatModelService.getThreatModels().subscribe(models => {
       this.threatModels = models;
+      console.log('[CYPRESS-DEBUG] TmComponent received threat models', { 
+        count: models.length,
+        models: models.map(tm => ({ id: tm.id, name: tm.name }))
+      });
+      // Trigger change detection to update the view
+      this.cdr.detectChanges();
     });
 
     // Subscribe to language changes to refresh date formatting

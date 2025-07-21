@@ -26,12 +26,21 @@ export class ThreatModelService implements OnDestroy {
     this._subscription = this.mockDataService.useMockData$.subscribe(useMock => {
       this._useMockData = useMock;
       this.logger.debug(`ThreatModelService using mock data: ${useMock}`);
+      console.log('[CYPRESS-DEBUG] ThreatModelService.useMockData$ subscription triggered', { 
+        useMock, 
+        threatModelsCount: useMock ? this.mockDataService.getMockThreatModels().length : 0
+      });
 
       // Initialize threat models based on the mock data setting
       if (useMock) {
         this._threatModels = [...this.mockDataService.getMockThreatModels()];
+        console.log('[CYPRESS-DEBUG] ThreatModelService loaded mock threat models', { 
+          count: this._threatModels.length,
+          models: this._threatModels.map(tm => ({ id: tm.id, name: tm.name }))
+        });
       } else {
         this._threatModels = []; // Will be populated from API when needed
+        console.log('[CYPRESS-DEBUG] ThreatModelService using API mode (empty models)');
       }
     });
   }
@@ -40,6 +49,12 @@ export class ThreatModelService implements OnDestroy {
    * Get all threat models
    */
   getThreatModels(): Observable<ThreatModel[]> {
+    console.log('[CYPRESS-DEBUG] ThreatModelService.getThreatModels called', { 
+      useMockData: this._useMockData,
+      threatModelsCount: this._threatModels.length,
+      models: this._threatModels.map(tm => ({ id: tm.id, name: tm.name }))
+    });
+    
     if (this._useMockData) {
       this.logger.debug('Returning mock threat models');
       return of(this._threatModels);
