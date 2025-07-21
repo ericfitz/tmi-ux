@@ -1285,21 +1285,8 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Check if the graph has the use method (not available in test mocks)
     if (typeof this._graph.use === 'function') {
-      // Enable selection plugin with no selection box (we'll use custom styling)
-      this._graph.use(
-        new Selection({
-          enabled: true,
-          multiple: true,
-          rubberband: true,
-          modifiers: null, // Allow rubberband selection without modifiers
-          movable: true,
-          multipleSelectionModifiers: ['shift'], // Shift for multi-selection
-          showNodeSelectionBox: false,
-          showEdgeSelectionBox: false,
-          pointerEvents: 'none',
-        }),
-      );
-
+      // Selection plugin is initialized by X6SelectionAdapter to avoid duplication
+      
       // Enable snapline plugin with red color
       this._graph.use(
         new Snapline({
