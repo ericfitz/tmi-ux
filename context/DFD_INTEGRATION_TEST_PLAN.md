@@ -1,732 +1,534 @@
-# DFD Integration Test Plan - Real X6 Graph Operations
+# DFD Component - Comprehensive Browser-Based Integration Test Plan
 
 ## Overview
 
-This document defines a comprehensive integration test plan for the DFD graph component that tests **real X6 graph operations** without mocking. The tests will create actual X6 graph instances, perform user-like interactions, and verify the actual state and styling of X6 cells to help debug complex styling and state issues.
+This document defines a comprehensive, realistic browser-based integration test plan for the DFD component that tests actual user workflows and browser behaviors. The plan prioritizes catching the critical selection styling persistence issue while providing complete coverage of all DFD features.
 
 ## Testing Philosophy
 
-### Real X6 Integration Testing
-- **Use actual X6 Graph instances** - No mocking of X6 library
-- **Test real user interactions** - Operations that mirror actual user behavior
-- **Verify actual X6 cell properties** - Examine real SVG attributes, tools, and styling
-- **Debug styling issues** - Specifically designed to catch visual state problems
+### Browser-First Integration Testing
+- **Real browser environments** - Test in actual browsers (Cypress)
+- **Actual user interactions** - Mouse clicks, drags, keyboard input
+- **Real DOM verification** - Inspect actual SVG elements and CSS properties
+- **Performance monitoring** - Measure actual browser performance
+- **Visual regression detection** - Catch styling and visual issues
 
-### Coverage Strategy
-- **Single-object operations** - Individual node/edge manipulations
-- **Multi-object operations** - Bulk selections and operations
-- **State verification** - Before/after comparisons of actual X6 cell attributes
-- **History integration** - Undo/redo with styling verification
-- **Dynamic styling verification** - Look up expected values from code/constants rather than hardcoding
+### Comprehensive Feature Coverage
+- **Complete user workflows** - End-to-end diagram creation scenarios
+- **Edge cases and error conditions** - Handle failures gracefully
+- **Cross-browser compatibility** - Works in all supported browsers
+- **Responsive behavior** - Canvas resizing and mobile support
+- **Integration points** - Collaboration, export, persistence
+
+## Critical Issues Priority
+
+### 🚨 **Priority 1: Selection Styling Persistence Bug**
+**Issue**: After undo operations, restored cells retain selection styling (glow effects, tools)
+**Impact**: Major UX issue affecting diagram editing workflow
+**Test Focus**: Verify clean state restoration after undo/redo operations
+
+### 🔥 **Priority 2: Visual Effects State Management**
+**Issue**: Visual effects may accumulate or persist across operations
+**Impact**: Inconsistent user interface, performance degradation
+**Test Focus**: State transitions maintain correct styling throughout complex workflows
+
+### ⚡ **Priority 3: History System Integration**
+**Issue**: Visual effects may pollute undo/redo history
+**Impact**: Incorrect history behavior, unnecessary undo entries
+**Test Focus**: History contains only structural changes, not visual effects
 
 ## Test Structure
 
-### Multiple Focused Test Files
+### Cypress Integration Test Organization
 
-Tests are organized into multiple focused files for better maintainability:
-
-```typescript
-// Integration test directory structure
-src/app/pages/dfd/integration/
-├── styling-constants.spec.ts           // Styling constants and helpers
-├── node-creation-styling.spec.ts       // Node creation and visual effects
-├── edge-creation-styling.spec.ts       // Edge creation and connections
-├── selection-styling.spec.ts           // Selection effects and tools (CRITICAL)
-├── history-styling.spec.ts             // Undo/redo with styling verification
-├── ports-visibility.spec.ts            // Port management and visibility
-├── z-order-embedding.spec.ts           // Z-order and embedding operations
-├── tools-context-menu.spec.ts          // Interactive tools and context menu
-└── keyboard-interactions.spec.ts       // Keyboard and mouse interactions
+```
+cypress/e2e/dfd/
+├── critical/
+│   ├── selection-styling-persistence.cy.ts    // 🚨 CRITICAL BUG
+│   ├── visual-effects-consistency.cy.ts       // Visual state management
+│   └── history-system-integrity.cy.ts         // History filtering
+├── core-features/
+│   ├── node-creation-workflows.cy.ts          // Node creation and styling
+│   ├── edge-creation-connections.cy.ts        // Edge creation and validation
+│   ├── drag-drop-operations.cy.ts             // Movement and positioning
+│   └── port-management.cy.ts                  // Port visibility and connections
+├── user-workflows/
+│   ├── complete-diagram-creation.cy.ts        // End-to-end workflows
+│   ├── context-menu-operations.cy.ts          // Right-click operations
+│   ├── keyboard-interactions.cy.ts            // Keyboard shortcuts
+│   └── multi-user-collaboration.cy.ts         // Real-time collaboration
+├── advanced-features/
+│   ├── z-order-embedding.cy.ts                // Layer management
+│   ├── export-functionality.cy.ts             // Export to various formats
+│   ├── label-editing.cy.ts                    // In-place text editing
+│   └── performance-testing.cy.ts              // Large diagram performance
+└── browser-specific/
+    ├── responsive-behavior.cy.ts              // Window resize, zoom, pan
+    ├── cross-browser-compatibility.cy.ts      // Browser-specific behaviors
+    └── accessibility-testing.cy.ts            // Keyboard navigation, a11y
 ```
 
-## Dynamic Styling Verification Approach
+## Critical Test Scenarios
 
-### Styling Constants Centralization
+### 1. Selection Styling Persistence (🚨 HIGHEST PRIORITY)
 
-To avoid hardcoded styling values in tests, we need to centralize styling constants that can be referenced by both implementation code and tests.
-
-#### Recommended Constants Structure
-
+#### 1.1 Single Cell Selection-Delete-Undo
 ```typescript
-// Location: src/app/pages/dfd/constants/styling-constants.ts
-export const DFD_STYLING = {
-  // Default stroke and fill
-  DEFAULT_STROKE: '#000',
-  DEFAULT_STROKE_WIDTH: 2,
-  DEFAULT_FILL: '#ffffff',
-  
-  // Selection styling
-  SELECTION: {
-    STROKE_WIDTH: 3,
-    GLOW_COLOR: 'rgba(255, 0, 0, 0.8)',
-    GLOW_BLUR_RADIUS: 8,
-    FILTER_TEMPLATE: (blur: number, color: string) => `drop-shadow(0 0 ${blur}px ${color})`,
-  },
-  
-  // Hover effects
-  HOVER: {
-    GLOW_COLOR: 'rgba(255, 0, 0, 0.6)',
-    GLOW_BLUR_RADIUS: 4,
-  },
-  
-  // Creation effects
-  CREATION: {
-    GLOW_COLOR: 'rgba(0, 150, 255, 0.9)',
-    GLOW_BLUR_RADIUS: 12,
-    FADE_DURATION_MS: 1000,
-  },
-  
-  // Node-specific styling
-  NODES: {
-    MIN_WIDTH: 40,
-    MIN_HEIGHT: 30,
-    DEFAULT_FONT: 'Roboto Condensed',
-    DEFAULT_FONT_SIZE: 14,
+describe('Selection Styling Persistence Bug', () => {
+  it('should restore deleted nodes without selection styling', () => {
+    // Create node
+    cy.dfdCreateNode('actor', { x: 100, y: 100 });
+    cy.dfdGetNode('actor').should('be.visible');
     
-    // Node type specific
-    SECURITY_BOUNDARY: {
-      STROKE_DASHARRAY: '5,5',
-      DEFAULT_Z_INDEX: 1,
-    },
-    TEXT_BOX: {
-      FILL: 'transparent',
-    },
-  },
-  
-  // Edge styling
-  EDGES: {
-    DEFAULT_LABEL: 'Flow',
-    ARROWHEAD: 'block',
-    CONNECTOR: 'smooth',
-  },
-  
-  // Port styling
-  PORTS: {
-    RADIUS: 5,
-    STROKE: '#000',
-    FILL: '#ffffff',
-    STROKE_WIDTH: 1,
-  },
-  
-  // Z-order values
-  Z_ORDER: {
-    SECURITY_BOUNDARY_DEFAULT: 1,
-    NODE_DEFAULT: 10,
-    EDGE_OFFSET: 0, // Edges inherit from connected nodes
-  },
-} as const;
-
-// Type-safe access to styling constants
-export type DfdStyling = typeof DFD_STYLING;
-```
-
-#### Tool Configuration Constants
-
-```typescript
-// Location: src/app/pages/dfd/constants/tool-constants.ts
-export const TOOL_CONFIG = {
-  NODE_TOOLS: {
-    BUTTON_REMOVE: {
-      name: 'button-remove',
-      args: { x: '100%', y: 0, offset: { x: -10, y: 10 } },
-    },
-    BOUNDARY: {
-      name: 'boundary',
-      args: { attrs: { fill: 'none', stroke: '#000', strokeDasharray: '2,4' } },
-    },
-  },
-  
-  EDGE_TOOLS: {
-    SOURCE_ARROWHEAD: {
-      name: 'source-arrowhead',
-      args: { attrs: { fill: '#4C9AFF' } },
-    },
-    TARGET_ARROWHEAD: {
-      name: 'target-arrowhead', 
-      args: { attrs: { fill: '#FF7452' } },
-    },
-    BUTTON_REMOVE: {
-      name: 'button-remove',
-      args: { distance: '50%' },
-    },
-    VERTICES: {
-      name: 'vertices',
-    },
-  },
-} as const;
-```
-
-### Test Helper Utilities
-
-```typescript
-// Location: src/app/pages/dfd/integration/test-helpers/styling-helpers.ts
-import { DFD_STYLING } from '../../constants/styling-constants';
-import { Cell } from '@antv/x6';
-
-export class StylingVerifier {
-  /**
-   * Verify default node styling matches constants
-   */
-  static verifyDefaultNodeStyling(cell: Cell, nodeType: string): void {
-    expect(cell.attr('body/stroke')).toBe(DFD_STYLING.DEFAULT_STROKE);
-    expect(cell.attr('body/strokeWidth')).toBe(DFD_STYLING.DEFAULT_STROKE_WIDTH);
+    // Select node and verify selection styling
+    cy.dfdSelectNode('actor');
+    cy.dfdVerifySelectionStyling('actor', true);
+    cy.dfdVerifyTools('actor', ['button-remove', 'boundary']);
     
-    if (nodeType === 'text-box') {
-      expect(cell.attr('body/fill')).toBe(DFD_STYLING.NODES.TEXT_BOX.FILL);
-    } else {
-      expect(cell.attr('body/fill')).toBe(DFD_STYLING.DEFAULT_FILL);
-    }
-  }
-  
-  /**
-   * Verify selection styling matches constants
-   */
-  static verifySelectionStyling(cell: Cell, nodeType: string): void {
-    const expectedFilter = DFD_STYLING.SELECTION.FILTER_TEMPLATE(
-      DFD_STYLING.SELECTION.GLOW_BLUR_RADIUS,
-      DFD_STYLING.SELECTION.GLOW_COLOR
-    );
+    // Delete selected node
+    cy.dfdDeleteSelected();
+    cy.dfdGetNodes().should('have.length', 0);
     
-    if (nodeType === 'text-box') {
-      expect(cell.attr('text/filter')).toBe(expectedFilter);
-    } else {
-      expect(cell.attr('body/filter')).toBe(expectedFilter);
-      expect(cell.attr('body/strokeWidth')).toBe(DFD_STYLING.SELECTION.STROKE_WIDTH);
-    }
-  }
-  
-  /**
-   * Verify cell has no visual effects (clean state)
-   */
-  static verifyCleanStyling(cell: Cell, nodeType: string): void {
-    if (nodeType === 'text-box') {
-      expect(cell.attr('text/filter')).toBeOneOf(['none', undefined, null]);
-    } else {
-      expect(cell.attr('body/filter')).toBeOneOf(['none', undefined, null]);
-      expect(cell.attr('body/strokeWidth')).toBe(DFD_STYLING.DEFAULT_STROKE_WIDTH);
-    }
+    // Undo deletion - CRITICAL VERIFICATION
+    cy.dfdUndo();
+    cy.dfdGetNodes().should('have.length', 1);
     
-    // Verify no tools
-    expect(cell.hasTools()).toBe(false);
-  }
-  
-  /**
-   * Verify hover styling matches constants
-   */
-  static verifyHoverStyling(cell: Cell, nodeType: string): void {
-    const expectedFilter = DFD_STYLING.HOVER.FILTER_TEMPLATE(
-      DFD_STYLING.HOVER.GLOW_BLUR_RADIUS,
-      DFD_STYLING.HOVER.GLOW_COLOR
-    );
+    // VERIFY: No selection styling artifacts
+    cy.dfdVerifySelectionStyling('actor', false);
+    cy.dfdVerifyTools('actor', []);
+    cy.dfdVerifyCleanState('actor');
     
-    const filterAttr = nodeType === 'text-box' ? 'text/filter' : 'body/filter';
-    expect(cell.attr(filterAttr)).toBe(expectedFilter);
-  }
-  
-  /**
-   * Verify creation effect styling
-   */
-  static verifyCreationEffect(cell: Cell, nodeType: string, expectedOpacity: number): void {
-    const expectedColor = DFD_STYLING.CREATION.GLOW_COLOR.replace('0.9', expectedOpacity.toString());
-    const expectedFilter = DFD_STYLING.CREATION.FILTER_TEMPLATE(
-      DFD_STYLING.CREATION.GLOW_BLUR_RADIUS,
-      expectedColor
-    );
-    
-    const filterAttr = nodeType === 'text-box' ? 'text/filter' : 'body/filter';
-    expect(cell.attr(filterAttr)).toBe(expectedFilter);
-  }
-}
-```
-
-## Test Categories
-
-### 1. Styling Constants and Helpers (`styling-constants.spec.ts`)
-
-**Purpose**: Verify styling constants are correctly defined and test helper utilities work.
-
-#### 1.1 Constants Validation
-- **Test**: Verify all styling constants are defined and have correct types
-- **Verification**: 
-  - All required styling properties exist
-  - Color values are valid CSS colors
-  - Numeric values are within expected ranges
-  - Template functions produce valid CSS
-
-#### 1.2 Helper Utilities
-- **Test**: Verify test helper functions work correctly
-- **Verification**:
-  - StylingVerifier methods correctly check expected vs actual values
-  - Error messages are clear and helpful
-  - Edge cases handled properly
-
-### 2. Node Creation and Styling Tests (`node-creation-styling.spec.ts`)
-
-**Purpose**: Verify that all node types are created with correct visual properties and that their X6 attributes match expectations.
-
-#### 2.1 Single Node Creation
-- **Test**: Create each node type (Actor, Process, Store, Security Boundary, Text Box)
-- **Verification**: 
-  - Node exists in X6 graph (`graph.getCells()`)
-  - Correct shape registered (`cell.shape`)
-  - **Dynamic styling verification**: `StylingVerifier.verifyDefaultNodeStyling(cell, nodeType)`
-  - Z-index matches constants: `DFD_STYLING.Z_ORDER.NODE_DEFAULT` or `DFD_STYLING.Z_ORDER.SECURITY_BOUNDARY_DEFAULT`
-  - Port configuration matches `DFD_STYLING.PORTS` constants
-
-#### 2.2 Node Visual Creation Effect
-- **Test**: Create node and verify creation highlight effect
-- **Verification**:
-  - Initial creation effect: `StylingVerifier.verifyCreationEffect(cell, nodeType, 0.9)`
-  - Effect fades over `DFD_STYLING.CREATION.FADE_DURATION_MS`
-  - Final clean state: `StylingVerifier.verifyCleanStyling(cell, nodeType)`
-
-#### 2.3 Node Creation Position Algorithm
-- **Test**: Create multiple nodes and verify positioning algorithm
-- **Verification**:
-  - Predictable layered positioning
-  - No overlapping placements
-  - Grid-aligned positions
-
-### 3. Edge Creation and Connection Tests (`edge-creation-styling.spec.ts`)
-
-**Purpose**: Verify edge creation, port connections, and edge styling.
-
-#### 3.1 Basic Edge Creation
-- **Test**: Create edges between different node types
-- **Verification**:
-  - Edge exists with correct source/target (`edge.getSource()`, `edge.getTarget()`)
-  - Port connections are valid
-  - **Dynamic styling**: Default edge attributes match `DFD_STYLING.EDGES` and `DFD_STYLING.DEFAULT_STROKE*` constants
-  - Z-index inheritance follows `DFD_STYLING.Z_ORDER.EDGE_OFFSET` rules
-
-#### 3.2 Edge Visual Effects
-- **Test**: Create edge and verify creation highlight
-- **Verification**:
-  - Creation effect: `StylingVerifier.verifyCreationEffect(edge, 'edge', 0.9)`
-  - Effect fades over `DFD_STYLING.CREATION.FADE_DURATION_MS`
-  - Final clean state: `StylingVerifier.verifyCleanStyling(edge, 'edge')`
-
-#### 3.3 Edge Tools and Reconnection
-- **Test**: Select edge and test reconnection tools
-- **Verification**:
-  - Tools match `TOOL_CONFIG.EDGE_TOOLS` specifications
-  - Successful reconnection updates source/target
-  - Z-index recalculation follows constants
-
-### 4. Selection and Visual Effects Tests (`selection-styling.spec.ts`) **🔥 CRITICAL**
-
-**Purpose**: Verify selection mechanics and styling, including the critical issue of selection styling persistence after undo.
-
-#### 4.1 Single Cell Selection
-- **Test**: Select individual nodes and edges
-- **Verification**:
-  - **Dynamic selection styling**: `StylingVerifier.verifySelectionStyling(cell, nodeType)`
-  - Tools match `TOOL_CONFIG.NODE_TOOLS` or `TOOL_CONFIG.EDGE_TOOLS`
-  - Hover effects disabled during selection
-  - Clean deselection: `StylingVerifier.verifyCleanStyling(cell, nodeType)`
-
-#### 4.2 Multi-Selection Operations
-- **Test**: Select multiple cells via rubberband or programmatic selection
-- **Verification**:
-  - All selected cells pass `StylingVerifier.verifySelectionStyling()`
-  - Selection styling batched properly (no individual history entries)
-  - Tools applied consistently across all selected cells
-
-#### 4.3 **🚨 CRITICAL: Selection Styling and History Integration**
-- **Test**: Select multiple cells, delete them, then undo
-- **Verification Pattern**:
-```typescript
-// Before delete - verify selection state
-selectedCells.forEach(cell => {
-  StylingVerifier.verifySelectionStyling(cell, getNodeType(cell));
-  expect(cell.hasTools()).toBe(true);
-});
-
-// Delete operation
-adapter.deleteSelected();
-expect(graph.getCells()).toHaveLength(0);
-
-// Undo operation  
-adapter.undo();
-const restoredCells = graph.getCells();
-
-// CRITICAL: Verify completely clean state after undo
-restoredCells.forEach(cell => {
-  StylingVerifier.verifyCleanStyling(cell, getNodeType(cell));
-});
-
-// Verify graph selection is empty
-expect(graph.getSelectedCells()).toHaveLength(0);
-```
-
-### 5. History and Undo/Redo Tests (`history-styling.spec.ts`)
-
-**Purpose**: Verify history filtering works correctly and styling doesn't pollute undo/redo.
-
-#### 5.1 History Filtering Verification
-- **Test**: Apply various styling changes and verify they don't enter history
-- **Verification**:
-  - Selection effects don't create history entries (monitor `graph.history.length`)
-  - Hover effects don't create history entries
-  - Tool changes don't create history entries
-  - Only structural changes create history (position, size, labels)
-  - Verify excluded attributes list matches implementation
-
-#### 5.2 Complex Undo/Redo Scenarios
-- **Test**: Complex operations with undo/redo and styling verification
-- **Scenarios & Verification**:
-  - Create node → select → delete → undo: `StylingVerifier.verifyCleanStyling()`
-  - Move multiple selected nodes → undo: Position restored, no selection artifacts
-  - Resize node while selected → undo: Size restored, clean styling
-  - Change label while selected → undo: Label restored, no tools or selection effects
-
-### 6. Port Visibility and Connection Tests (`ports-visibility.spec.ts`)
-
-**Purpose**: Verify port management and visibility rules.
-
-#### 6.1 Port Visibility States
-- **Test**: Hover, drag, and connection scenarios
-- **Verification**:
-  - Ports invisible by default (`port.attr('circle/style')` contains `display: none`)
-  - Ports visible on hover (style updated to visible)
-  - All ports visible during edge creation
-  - Connected ports remain visible
-  - **Dynamic port styling**: Port attributes match `DFD_STYLING.PORTS` constants
-
-#### 6.2 Port Connection Validation
-- **Test**: Valid and invalid connection attempts using real X6 connection validation
-- **Verification**:
-  - Port-to-port connections succeed
-  - Node-to-node connections rejected
-  - Self-connections allowed on different ports
-  - Multiple connections between same nodes allowed
-
-### 7. Z-Order and Embedding Tests (`z-order-embedding.spec.ts`)
-
-**Purpose**: Verify z-order management and node embedding with real X6 z-index values.
-
-#### 7.1 Z-Order Rules
-- **Test**: Create different node types and verify z-order
-- **Verification**:
-  - Security boundaries: `cell.getZIndex() === DFD_STYLING.Z_ORDER.SECURITY_BOUNDARY_DEFAULT`
-  - Regular nodes: `cell.getZIndex() === DFD_STYLING.Z_ORDER.NODE_DEFAULT`
-  - Edges inherit z-index correctly from connected nodes
-
-#### 7.2 Node Embedding
-- **Test**: Drag nodes into/out of parent nodes
-- **Verification**:
-  - Visual embedding effects (verify bluish tint attributes)
-  - Z-index adjustments follow embedding rules
-  - Cascading z-index updates for connected edges
-  - **Dynamic verification**: All z-index values derived from constants
-
-### 8. Tools and Context Menu Tests (`tools-context-menu.spec.ts`)
-
-**Purpose**: Verify tools behavior and context menu operations with real tool instances.
-
-#### 8.1 Node Tools
-- **Test**: Select nodes and verify tools using real X6 tool objects
-- **Verification**:
-  - Tools match `TOOL_CONFIG.NODE_TOOLS` configuration exactly
-  - Tool positioning and styling from constants
-  - Tools trigger correct deletion behavior
-  - Tool cleanup on deselection
-
-#### 8.2 Edge Tools  
-- **Test**: Select edges and verify tools
-- **Verification**:
-  - Tools match `TOOL_CONFIG.EDGE_TOOLS` specifications
-  - Source/target arrowhead colors match constants
-  - Button-remove positioning from constants
-  - Vertices tool functionality
-
-#### 8.3 Context Menu Operations
-- **Test**: Right-click operations with real context menu interactions
-- **Verification**:
-  - Z-order manipulation updates actual `cell.getZIndex()`
-  - Cell properties dialog shows real cell data
-  - Label editing activates real X6 text editor
-
-### 9. Keyboard and Interaction Tests (`keyboard-interactions.spec.ts`)
-
-**Purpose**: Verify keyboard shortcuts and mouse interactions with real event handling.
-
-#### 9.1 Keyboard Operations
-- **Test**: Delete, navigation, and shortcuts with real KeyboardEvent simulation
-- **Verification**:
-  - Delete/Backspace removes selected cells (verify with `StylingVerifier.verifyCleanStyling()` after undo)
-  - Keyboard events properly filtered for input fields
-  - Focus management doesn't interfere with styling
-
-#### 9.2 Mouse Interactions
-- **Test**: Pan, zoom, selection operations with real mouse events
-- **Verification**:
-  - Shift+drag panning updates graph transform matrix
-  - Shift+wheel zooming affects graph.zoom() value
-  - Rubberband selection applies selection styling correctly
-  - Blank click clears selection and restores clean styling
-
-## Test Implementation Patterns
-
-### Common Setup Pattern
-```typescript
-// Each test file follows this pattern
-import { DFD_STYLING } from '../../constants/styling-constants';
-import { TOOL_CONFIG } from '../../constants/tool-constants';
-import { StylingVerifier } from '../test-helpers/styling-helpers';
-
-describe('DFD Integration - Selection Styling', () => {
-  let container: HTMLElement;
-  let graph: Graph;
-  let adapter: X6GraphAdapter;
-  let selectionAdapter: X6SelectionAdapter;
-  
-  beforeEach(() => {
-    // Create real DOM container
-    container = document.createElement('div');
-    container.style.width = '800px';
-    container.style.height = '600px';
-    document.body.appendChild(container);
-    
-    // Initialize real services with minimal mocking
-    const mockLogger = new MockLoggerService();
-    const realServices = {
-      edgeQueryService: new EdgeQueryService(mockLogger),
-      nodeConfigService: new NodeConfigurationService(),
-      // ... other real services
-    };
-    
-    // Initialize real X6 graph with all adapters
-    adapter = new X6GraphAdapter(mockLogger, ...realServices);
-    selectionAdapter = new X6SelectionAdapter(mockLogger, /* real deps */);
-    
-    adapter.initialize(container);
-    graph = adapter.getGraph();
-  });
-  
-  afterEach(() => {
-    adapter.dispose();
-    document.body.removeChild(container);
+    // VERIFY: Graph selection is empty
+    cy.dfdGetSelectedCells().should('have.length', 0);
   });
 });
 ```
 
-### Dynamic Styling Verification Pattern
+#### 1.2 Multi-Cell Selection Persistence
 ```typescript
-it('should restore deleted cells without selection styling', async () => {
-  // Create and select multiple nodes using real node data
-  const node1 = adapter.addNode(NodeData.create({
-    id: 'node-1',
-    type: 'actor',
-    label: 'User',
-    position: { x: 100, y: 100 },
-    width: 120,
-    height: 80,
-  }));
-  const node2 = adapter.addNode(NodeData.create({
-    id: 'node-2', 
-    type: 'process',
-    label: 'Process',
-    position: { x: 300, y: 100 },
-    width: 120,
-    height: 80,
-  }));
+it('should restore multiple deleted cells without selection styling', () => {
+  // Create multiple nodes of different types
+  cy.dfdCreateNode('actor', { x: 100, y: 100 });
+  cy.dfdCreateNode('process', { x: 300, y: 100 });
+  cy.dfdCreateNode('store', { x: 500, y: 100 });
   
-  // Select both nodes
-  graph.select([node1, node2]);
+  // Select all nodes
+  cy.dfdSelectAll();
+  cy.dfdGetSelectedCells().should('have.length', 3);
   
-  // Verify selection styling using dynamic constants
-  StylingVerifier.verifySelectionStyling(node1, 'actor');
-  StylingVerifier.verifySelectionStyling(node2, 'process');
+  // Verify selection styling on all
+  cy.dfdVerifySelectionStyling('actor', true);
+  cy.dfdVerifySelectionStyling('process', true);
+  cy.dfdVerifySelectionStyling('store', true);
   
-  // Verify tools are present
-  expect(node1.hasTools()).toBe(true);
-  expect(node2.hasTools()).toBe(true);
-  
-  // Delete selected cells
-  adapter.deleteSelected();
-  expect(graph.getCells()).toHaveLength(0);
+  // Delete all selected
+  cy.dfdDeleteSelected();
+  cy.dfdGetNodes().should('have.length', 0);
   
   // Undo deletion
-  adapter.undo();
+  cy.dfdUndo();
+  cy.dfdGetNodes().should('have.length', 3);
   
-  // CRITICAL: Verify restored cells have completely clean state
-  const restoredCells = graph.getCells();
-  expect(restoredCells).toHaveLength(2);
+  // CRITICAL: All restored nodes should have clean state
+  cy.dfdVerifyCleanState('actor');
+  cy.dfdVerifyCleanState('process');
+  cy.dfdVerifyCleanState('store');
+  cy.dfdGetSelectedCells().should('have.length', 0);
+});
+```
+
+### 2. Visual Effects State Management
+
+#### 2.1 Creation Effects Lifecycle
+```typescript
+describe('Visual Effects Consistency', () => {
+  it('should properly manage creation effect lifecycle', () => {
+    // Create node and verify creation effect
+    cy.dfdCreateNode('process', { x: 200, y: 200 });
+    cy.dfdVerifyCreationEffect('process', true);
+    
+    // Wait for fade-out animation
+    cy.wait(1000); // Based on DFD_STYLING.CREATION.FADE_DURATION_MS
+    
+    // Verify clean state after animation
+    cy.dfdVerifyCreationEffect('process', false);
+    cy.dfdVerifyCleanState('process');
+  });
+});
+```
+
+#### 2.2 Hover Effects During Complex Operations
+```typescript
+it('should manage hover effects during selection operations', () => {
+  cy.dfdCreateNode('actor', { x: 100, y: 100 });
   
-  // Use dynamic verification for clean state
-  restoredCells.forEach(cell => {
-    const nodeType = getNodeTypeFromCell(cell);
-    StylingVerifier.verifyCleanStyling(cell, nodeType);
+  // Test hover effect
+  cy.dfdHoverNode('actor');
+  cy.dfdVerifyHoverEffect('actor', true);
+  
+  // Select node (should disable hover)
+  cy.dfdSelectNode('actor');
+  cy.dfdVerifyHoverEffect('actor', false);
+  cy.dfdVerifySelectionStyling('actor', true);
+  
+  // Deselect and verify hover works again
+  cy.dfdClearSelection();
+  cy.dfdHoverNode('actor');
+  cy.dfdVerifyHoverEffect('actor', true);
+});
+```
+
+### 3. Complete User Workflows
+
+#### 3.1 Full Diagram Creation Scenario
+```typescript
+describe('Complete User Workflows', () => {
+  it('should handle realistic diagram creation workflow', () => {
+    // Create external entity (actor)
+    cy.dfdCreateNode('actor', { x: 50, y: 200 }, 'User');
+    
+    // Create process
+    cy.dfdCreateNode('process', { x: 300, y: 200 }, 'Login Process');
+    
+    // Create data store
+    cy.dfdCreateNode('store', { x: 550, y: 200 }, 'User Database');
+    
+    // Create connections
+    cy.dfdCreateEdge('User', 'Login Process', 'Login Request');
+    cy.dfdCreateEdge('Login Process', 'User Database', 'Validate User');
+    cy.dfdCreateEdge('User Database', 'Login Process', 'User Data');
+    cy.dfdCreateEdge('Login Process', 'User', 'Login Response');
+    
+    // Verify diagram structure
+    cy.dfdGetNodes().should('have.length', 3);
+    cy.dfdGetEdges().should('have.length', 4);
+    
+    // Test selection and manipulation
+    cy.dfdSelectNode('Login Process');
+    cy.dfdMoveNode('Login Process', { x: 400, y: 250 });
+    
+    // Verify connections maintained
+    cy.dfdVerifyConnections('Login Process', 4);
+    
+    // Test undo/redo
+    cy.dfdUndo(); // Undo move
+    cy.dfdVerifyNodePosition('Login Process', { x: 300, y: 200 });
+    cy.dfdRedo(); // Redo move
+    cy.dfdVerifyNodePosition('Login Process', { x: 400, y: 250 });
+    
+    // Verify clean state throughout
+    cy.dfdVerifyAllNodesCleanState();
+  });
+});
+```
+
+#### 3.2 Security Boundary and Embedding
+```typescript
+it('should handle security boundary creation and embedding', () => {
+  // Create security boundary
+  cy.dfdCreateNode('security-boundary', { x: 100, y: 100 }, 'Trusted Zone');
+  cy.dfdResizeNode('Trusted Zone', { width: 400, height: 300 });
+  
+  // Create nodes inside boundary
+  cy.dfdCreateNode('process', { x: 200, y: 200 }, 'Internal Process');
+  cy.dfdCreateNode('store', { x: 350, y: 200 }, 'Internal Data');
+  
+  // Drag to embed
+  cy.dfdDragToEmbed('Internal Process', 'Trusted Zone');
+  cy.dfdDragToEmbed('Internal Data', 'Trusted Zone');
+  
+  // Verify embedding effects
+  cy.dfdVerifyEmbedding('Internal Process', 'Trusted Zone');
+  cy.dfdVerifyEmbedding('Internal Data', 'Trusted Zone');
+  
+  // Verify z-order
+  cy.dfdVerifyZOrder('Trusted Zone', 1);
+  cy.dfdVerifyZOrder('Internal Process', 10);
+  cy.dfdVerifyZOrder('Internal Data', 10);
+});
+```
+
+### 4. Port Management and Connection Validation
+
+#### 4.1 Port Visibility States
+```typescript
+describe('Port Management', () => {
+  it('should manage port visibility correctly', () => {
+    cy.dfdCreateNode('process', { x: 200, y: 200 });
+    
+    // Ports hidden by default
+    cy.dfdVerifyPortsVisible('process', false);
+    
+    // Hover shows ports
+    cy.dfdHoverNode('process');
+    cy.dfdVerifyPortsVisible('process', true);
+    
+    // Start edge creation - all ports visible
+    cy.dfdStartEdgeCreation('process');
+    cy.dfdVerifyAllPortsVisible(true);
+    
+    // Cancel edge creation - ports hidden again
+    cy.dfdCancelEdgeCreation();
+    cy.dfdVerifyAllPortsVisible(false);
+  });
+});
+```
+
+#### 4.2 DFD Connection Rules
+```typescript
+it('should enforce DFD connection validation rules', () => {
+  cy.dfdCreateNode('actor', { x: 100, y: 100 }, 'User');
+  cy.dfdCreateNode('store', { x: 300, y: 100 }, 'Database');
+  
+  // Invalid: Actor cannot connect directly to Store
+  cy.dfdAttemptConnection('User', 'Database')
+    .should('be.rejected');
+  
+  // Add process for valid connection
+  cy.dfdCreateNode('process', { x: 200, y: 100 }, 'Handler');
+  
+  // Valid: Actor → Process → Store
+  cy.dfdCreateEdge('User', 'Handler', 'Request');
+  cy.dfdCreateEdge('Handler', 'Database', 'Query');
+  
+  // Verify connections exist
+  cy.dfdVerifyConnection('User', 'Handler', true);
+  cy.dfdVerifyConnection('Handler', 'Database', true);
+  cy.dfdVerifyConnection('User', 'Database', false);
+});
+```
+
+### 5. Performance and Browser-Specific Testing
+
+#### 5.1 Large Diagram Performance
+```typescript
+describe('Performance Testing', () => {
+  it('should handle large diagrams without performance degradation', () => {
+    // Create 50 nodes and 100 edges
+    cy.dfdCreateLargeDiagram(50, 100);
+    
+    // Measure performance
+    cy.dfdMeasurePerformance(() => {
+      cy.dfdSelectAll();
+      cy.dfdMoveSelection({ x: 50, y: 50 });
+      cy.dfdClearSelection();
+    }).should('be.lessThan', 1000); // < 1 second
+    
+    // Verify no memory leaks
+    cy.dfdCheckMemoryUsage().should('be.stable');
+  });
+});
+```
+
+#### 5.2 Responsive Canvas Behavior
+```typescript
+describe('Browser-Specific Behavior', () => {
+  it('should handle window resize appropriately', () => {
+    cy.dfdCreateNode('process', { x: 400, y: 300 });
+    
+    // Resize window
+    cy.viewport(1200, 800);
+    cy.dfdVerifyCanvasSize(1200, 800);
+    
+    // Verify node still visible and interactive
+    cy.dfdVerifyNodeVisible('process');
+    cy.dfdSelectNode('process');
+    cy.dfdVerifySelectionStyling('process', true);
+    
+    // Resize to smaller window
+    cy.viewport(800, 600);
+    cy.dfdVerifyCanvasSize(800, 600);
+    cy.dfdVerifyNodeVisible('process');
   });
   
-  // Verify graph selection is empty
-  expect(graph.getSelectedCells()).toHaveLength(0);
+  it('should handle zoom and pan operations', () => {
+    cy.dfdCreateNode('actor', { x: 200, y: 200 });
+    
+    // Test zoom
+    cy.dfdZoom(1.5);
+    cy.dfdVerifyZoomLevel(1.5);
+    cy.dfdVerifyNodeVisible('actor');
+    
+    // Test pan
+    cy.dfdPan({ x: 100, y: 50 });
+    cy.dfdVerifyPanOffset({ x: 100, y: 50 });
+    
+    // Node should still be selectable
+    cy.dfdSelectNode('actor');
+    cy.dfdVerifySelectionStyling('actor', true);
+  });
 });
 ```
 
-### Test Helper Utilities Pattern
-```typescript
-// Utility functions for common operations
-function getNodeTypeFromCell(cell: Cell): string {
-  return (cell as any).getNodeTypeInfo?.()?.type || 'process';
-}
+### 6. Collaboration and Real-Time Features
 
-function createTestNodes(adapter: X6GraphAdapter, count: number): Cell[] {
-  const nodes: Cell[] = [];
-  const nodeTypes = ['actor', 'process', 'store', 'security-boundary', 'text-box'];
-  
-  for (let i = 0; i < count; i++) {
-    const nodeType = nodeTypes[i % nodeTypes.length];
-    const node = adapter.addNode(NodeData.create({
-      id: `test-node-${i}`,
-      type: nodeType as NodeType,
-      label: `Test ${nodeType} ${i}`,
-      position: { x: 100 + (i * 150), y: 100 },
-      width: 120,
-      height: 80,
-    }));
-    nodes.push(node);
+#### 6.1 Multi-User Collaboration
+```typescript
+describe('Collaboration Features', () => {
+  it('should handle multi-user editing scenarios', () => {
+    // Simulate second user connection
+    cy.dfdSimulateUserJoin('user2');
+    cy.dfdVerifyUserPresence('user2', true);
+    
+    // User 1 creates node
+    cy.dfdCreateNode('process', { x: 200, y: 200 }, 'Shared Process');
+    
+    // Verify user 2 sees the node
+    cy.dfdVerifyNodeExistsForUser('Shared Process', 'user2');
+    
+    // User 2 modifies node
+    cy.dfdSimulateUserAction('user2', 'moveNode', {
+      nodeId: 'Shared Process',
+      position: { x: 300, y: 200 }
+    });
+    
+    // Verify user 1 sees the change
+    cy.dfdVerifyNodePosition('Shared Process', { x: 300, y: 200 });
+    
+    // Test conflict resolution
+    cy.dfdSimulateConcurrentEdit('Shared Process');
+    cy.dfdVerifyConflictResolution();
+  });
+});
+```
+
+### 7. Export and Data Persistence
+
+#### 7.1 Export Functionality
+```typescript
+describe('Export and Persistence', () => {
+  it('should export diagrams in multiple formats', () => {
+    // Create sample diagram
+    cy.dfdCreateSampleDiagram();
+    
+    // Test SVG export
+    cy.dfdExportDiagram('svg')
+      .should('contain', '<svg')
+      .should('contain', 'actor')
+      .should('contain', 'process');
+    
+    // Test PNG export
+    cy.dfdExportDiagram('png')
+      .should('have.property', 'type', 'image/png');
+    
+    // Test JPEG export
+    cy.dfdExportDiagram('jpeg')
+      .should('have.property', 'type', 'image/jpeg');
+  });
+});
+```
+
+## Custom Cypress Commands
+
+### Node Operations
+```typescript
+// cypress/support/dfd-commands.ts
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      dfdCreateNode(type: string, position: {x: number, y: number}, label?: string): Chainable<Element>
+      dfdSelectNode(identifier: string): Chainable<Element>
+      dfdVerifySelectionStyling(identifier: string, isSelected: boolean): Chainable<Element>
+      dfdVerifyCleanState(identifier: string): Chainable<Element>
+      dfdDeleteSelected(): Chainable<Element>
+      dfdUndo(): Chainable<Element>
+      dfdRedo(): Chainable<Element>
+    }
   }
-  
-  return nodes;
 }
 
-async function waitForAnimationComplete(durationMs: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, durationMs + 50));
-}
+Cypress.Commands.add('dfdCreateNode', (type, position, label = '') => {
+  cy.get(`[data-testid="toolbar-${type}"]`).click();
+  cy.get('[data-testid="dfd-canvas"]').click(position.x, position.y);
+  if (label) {
+    cy.get('[data-testid="node-label-input"]').type(label).type('{enter}');
+  }
+});
+
+Cypress.Commands.add('dfdVerifySelectionStyling', (identifier, isSelected) => {
+  const selector = `[data-node-id="${identifier}"]`;
+  if (isSelected) {
+    cy.get(selector).should('have.css', 'filter').and('contain', 'drop-shadow');
+    cy.get(selector).find('.x6-tool').should('exist');
+  } else {
+    cy.get(selector).should('have.css', 'filter', 'none');
+    cy.get(selector).find('.x6-tool').should('not.exist');
+  }
+});
 ```
 
-### Constants Integration Example
+### Visual Verification
 ```typescript
-it('should apply creation effects with correct styling', async () => {
-  const node = adapter.addNode(NodeData.create({...}));
+Cypress.Commands.add('dfdVerifyCleanState', (identifier) => {
+  const selector = `[data-node-id="${identifier}"]`;
   
-  // Verify initial creation effect using constants
-  StylingVerifier.verifyCreationEffect(node, 'actor', 0.9);
+  // No visual effects
+  cy.get(selector).should('have.css', 'filter', 'none');
   
-  // Wait for fade to complete
-  await waitForAnimationComplete(DFD_STYLING.CREATION.FADE_DURATION_MS);
+  // No tools
+  cy.get(selector).find('.x6-tool').should('not.exist');
   
-  // Verify clean final state
-  StylingVerifier.verifyCleanStyling(node, 'actor');
+  // Default styling
+  cy.get(selector).find('path, rect, ellipse')
+    .should('have.css', 'stroke-width', '2px');
 });
 
-it('should apply hover effects correctly', () => {
-  const node = createTestNodes(adapter, 1)[0];
-  
-  // Simulate hover
-  selectionAdapter.applyHoverEffect(node);
-  
-  // Verify hover styling matches constants
-  StylingVerifier.verifyHoverStyling(node, 'actor');
-  
-  // Remove hover
-  selectionAdapter.removeHoverEffect(node);
-  
-  // Verify clean state
-  StylingVerifier.verifyCleanStyling(node, 'actor');
+Cypress.Commands.add('dfdVerifyCreationEffect', (identifier, hasEffect) => {
+  const selector = `[data-node-id="${identifier}"]`;
+  if (hasEffect) {
+    cy.get(selector).should('have.css', 'filter').and('contain', 'drop-shadow');
+    cy.get(selector).should('have.css', 'filter').and('contain', 'rgba(0, 150, 255');
+  } else {
+    cy.get(selector).should('have.css', 'filter', 'none');
+  }
 });
 ```
-
-## Implementation Priority
-
-### Phase 1: Foundation and Critical Issues (High Priority)
-1. **`styling-constants.spec.ts`** - Establish constants and helper infrastructure
-2. **`selection-styling.spec.ts`** - **🚨 CRITICAL: Selection styling and history integration**
-3. **`history-styling.spec.ts`** - History filtering verification  
-4. **`node-creation-styling.spec.ts`** - Basic node creation with dynamic verification
-
-### Phase 2: Core Operations (Medium Priority)  
-5. **`edge-creation-styling.spec.ts`** - Edge creation and connections
-6. **`ports-visibility.spec.ts`** - Port management and visibility rules
-7. **`keyboard-interactions.spec.ts`** - Delete operations and basic interactions
-
-### Phase 3: Advanced Features (Lower Priority)
-8. **`z-order-embedding.spec.ts`** - Z-order and embedding operations
-9. **`tools-context-menu.spec.ts`** - Interactive tools and context menu
-
-## Prerequisites for Implementation
-
-### 1. Constants Infrastructure Setup
-Before implementing tests, create the constants infrastructure:
-
-```bash
-# Create constants directory and files
-mkdir -p src/app/pages/dfd/constants
-mkdir -p src/app/pages/dfd/integration/test-helpers
-
-# Files to create:
-touch src/app/pages/dfd/constants/styling-constants.ts
-touch src/app/pages/dfd/constants/tool-constants.ts  
-touch src/app/pages/dfd/integration/test-helpers/styling-helpers.ts
-```
-
-### 2. Refactor Existing Code
-Update existing adapters and services to use the new constants:
-
-- **X6SelectionAdapter**: Import and use `DFD_STYLING.SELECTION.*` constants
-- **Visual Effects Service**: Import and use `DFD_STYLING.CREATION.*` constants  
-- **Tool Configuration**: Import and use `TOOL_CONFIG.*` constants
-- **Node/Edge Creation**: Use styling constants for default attributes
-
-### 3. Test Infrastructure
-Set up the integration test directory and shared utilities.
 
 ## Success Criteria
 
-### Technical Success
-- ✅ **All tests pass consistently** with real X6 objects
-- ✅ **No hardcoded styling values** - all verification uses constants
-- ✅ **Comprehensive attribute coverage** - every visual property verified
-- ✅ **Multiple focused test files** - maintainable and targeted
+### Critical Issue Resolution
+- ✅ **Selection styling persistence eliminated** - No selection artifacts after undo
+- ✅ **Visual effects state management** - Clean state transitions
+- ✅ **History system integrity** - Only structural changes in history
 
-### Problem Detection Success
-- 🎯 **Tests catch selection styling persistence after undo** (primary goal)
-- 🎯 **Tests detect history pollution from visual effects**
-- 🎯 **Tests verify correct tool state management**
-- 🎯 **Tests catch styling regressions during development**
+### Feature Coverage
+- ✅ **Complete workflow testing** - End-to-end diagram creation
+- ✅ **All node and edge types** - Comprehensive type coverage
+- ✅ **User interaction patterns** - Realistic user scenarios
+- ✅ **Performance validation** - Large diagrams handle smoothly
 
-### Constants Integration Success
-- ✅ **Dynamic styling verification** - no hardcoded values in tests
-- ✅ **Single source of truth** - constants shared between implementation and tests
-- ✅ **Type safety** - constants are strongly typed and compile-time checked
-- ✅ **Maintainability** - styling changes only require constant updates
+### Browser Integration
+- ✅ **Real DOM verification** - Actual SVG and CSS inspection
+- ✅ **Cross-browser compatibility** - Works in all supported browsers
+- ✅ **Responsive behavior** - Canvas adaptation to viewport changes
+- ✅ **Performance monitoring** - Real browser performance metrics
 
-### Maintenance Success
-- ✅ **Tests are maintainable and readable** with clear helper utilities
-- ✅ **Clear patterns established** for adding new test scenarios
-- ✅ **Integration with existing infrastructure** - follows established patterns
-- ✅ **Proper resource management** - X6 graphs properly created and disposed
+### Quality Standards
+- ✅ **Maintainable test code** - Clear, reusable custom commands
+- ✅ **Comprehensive error coverage** - Edge cases and error conditions
+- ✅ **Visual regression detection** - Catch styling changes
+- ✅ **CI/CD integration** - Automated test execution
 
-## Quality Standards
+## Implementation Priority
 
-### Code Quality
-- ✅ **Full TypeScript compliance** with strict typing
-- ✅ **ESLint and Prettier conformance** 
-- ✅ **Comprehensive error handling** for async operations
-- ✅ **Proper async/await usage** for timing-sensitive tests (animations, effects)
+### Phase 1: Critical Issues (Week 1)
+1. **Selection styling persistence tests** - Address the primary bug
+2. **Visual effects state management** - Ensure clean state transitions
+3. **Basic Cypress command infrastructure** - Foundation for other tests
 
-### Test Quality  
-- ✅ **Clear, descriptive test names** that explain the verification being performed
-- ✅ **Comprehensive before/after state verification** using dynamic helpers
-- ✅ **Realistic user interaction simulation** with real X6 events
-- ✅ **Robust timing and synchronization** for visual effects and animations
+### Phase 2: Core Features (Week 2)
+1. **Node/edge creation workflows** - Fundamental functionality
+2. **History system integration** - Undo/redo behavior
+3. **Port management and connections** - Connection validation
 
-### Constants Quality
-- ✅ **Complete coverage** of all styling properties used in the application
-- ✅ **Logical organization** - grouped by feature area (selection, hover, creation, etc.)
-- ✅ **Template functions** for complex CSS generation (filters, etc.)
-- ✅ **Type safety** with `as const` assertions and proper TypeScript types
+### Phase 3: Advanced Features (Week 3)
+1. **Complete user workflows** - End-to-end scenarios
+2. **Performance testing** - Large diagram handling
+3. **Browser-specific behaviors** - Responsive design, zoom/pan
 
-## Expected Outcomes
+### Phase 4: Collaboration and Integration (Week 4)
+1. **Multi-user collaboration** - Real-time features
+2. **Export functionality** - File format support
+3. **Cross-browser compatibility** - Comprehensive browser testing
 
-This revised integration test plan will:
-
-1. **Solve the core problem**: Catch and prevent selection styling persistence after undo operations
-2. **Establish infrastructure**: Create reusable constants and verification helpers  
-3. **Enable comprehensive testing**: Cover all visual aspects with dynamic verification
-4. **Improve maintainability**: Centralize styling constants and eliminate hardcoded values
-5. **Support future development**: Provide robust patterns for testing visual interactions
-
-The focus on **dynamic styling verification** using constants will make the tests both more reliable and more maintainable, while the **multiple focused test files** approach will make the test suite easier to understand and extend.
+This comprehensive test plan focuses on realistic browser-based scenarios that will catch the critical selection styling persistence issue while providing complete coverage of the DFD component's sophisticated feature set. The emphasis on actual browser testing with Cypress ensures that tests reflect real user experiences and catch issues that unit tests might miss.
