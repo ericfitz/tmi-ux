@@ -90,7 +90,7 @@ export const DFD_STYLING = {
   // Edge styling constants
   EDGES: {
     DEFAULT_LABEL: 'Flow',
-    DEFAULT_STROKE: '#333',
+    DEFAULT_STROKE: '#000000',
     ARROWHEAD: 'block',
     CONNECTOR: 'smooth',
     ROUTER: 'normal',
@@ -100,7 +100,7 @@ export const DFD_STYLING = {
   // Port styling properties
   PORTS: {
     RADIUS: 5,
-    STROKE: '#000',
+    STROKE: '#000000',
     FILL: '#ffffff',
     STROKE_WIDTH: 1,
     MAGNET: 'active',
