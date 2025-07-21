@@ -10,6 +10,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { SelectionService } from './selection.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -526,9 +527,9 @@ describe('SelectionService', () => {
           },
           label: {
             text: 'Group',
-            fontSize: 12,
+            fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
             fill: '#666',
-            fontFamily: '"Roboto Condensed", Arial, sans-serif',
+            fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           },
         },
         zIndex: -1,

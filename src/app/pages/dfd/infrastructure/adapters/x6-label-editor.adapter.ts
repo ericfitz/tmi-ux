@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Graph, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * X6 Label Editor Adapter
@@ -194,8 +195,8 @@ export class X6LabelEditorAdapter {
     input.style.border = '2px solid #007bff';
     input.style.borderRadius = '4px';
     input.style.padding = '4px';
-    input.style.fontSize = '14px';
-    input.style.fontFamily = 'Arial, sans-serif';
+    input.style.fontSize = `${DFD_STYLING.DEFAULT_FONT_SIZE}px`;
+    input.style.fontFamily = DFD_STYLING.TEXT_FONT_FAMILY;
     input.style.textAlign = 'center';
     input.style.backgroundColor = 'white';
     input.style.zIndex = '1000';

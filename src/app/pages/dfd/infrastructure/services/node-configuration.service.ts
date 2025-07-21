@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NodeTypeInfo } from '../../utils/x6-cell-extensions';
 import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Node attributes configuration interface
@@ -36,8 +37,8 @@ export class NodeConfigurationService {
     // Since we now use custom shapes with their own predefined attributes,
     // we only need to provide minimal overrides for dynamic content like text
     const baseTextAttrs = {
-      fontFamily: '"Roboto Condensed", Arial, sans-serif',
-      fontSize: 12,
+      fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+      fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
       fill: '#000000',
       refX: '50%',
       refY: '50%',

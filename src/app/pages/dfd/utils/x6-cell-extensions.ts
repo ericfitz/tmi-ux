@@ -1,4 +1,5 @@
 import { Cell, Edge } from '@antv/x6';
+import { DFD_STYLING } from '../constants/styling-constants';
 
 /**
  * X6 Cell Extensions
@@ -71,16 +72,48 @@ export function initializeX6CellExtensions(): void {
       // For nodes, set the text attribute directly
       this.setAttrByPath('text/text', label);
     } else if (this.isEdge()) {
-      // For edges, use X6's native labels array
-      (this as Edge).setLabels([
-        {
-          attrs: {
-            text: {
-              text: label,
+      // For edges, preserve existing label styling while updating text
+      const existingLabels = (this as Edge).getLabels();
+      if (existingLabels && existingLabels.length > 0) {
+        // Preserve existing label attributes and only update the text
+        const updatedLabels = existingLabels.map(existingLabel => {
+          if (existingLabel && typeof existingLabel === 'object' && 'attrs' in existingLabel) {
+            return {
+              ...existingLabel,
+              attrs: {
+                ...existingLabel.attrs,
+                text: {
+                  ...(existingLabel.attrs as any)?.text,
+                  text: label,
+                },
+              },
+            };
+          }
+          return existingLabel;
+        });
+        (this as Edge).setLabels(updatedLabels);
+      } else {
+        // Fallback for edges without existing labels - use default styling
+        (this as Edge).setLabels([
+          {
+            position: 0.5,
+            attrs: {
+              text: {
+                text: label,
+                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+                fill: '#333',
+                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+                textAnchor: 'middle',
+                dominantBaseline: 'middle',
+              },
+              rect: {
+                fill: '#ffffff',
+                stroke: 'none',
+              },
             },
           },
-        },
-      ]);
+        ]);
+      }
     }
   };
 

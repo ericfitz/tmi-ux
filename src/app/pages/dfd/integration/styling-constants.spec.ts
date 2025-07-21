@@ -71,8 +71,9 @@ describe('DFD Integration - Styling Constants', () => {
     it('should have valid node constants', () => {
       expect(DFD_STYLING.NODES.MIN_WIDTH).toBe(40);
       expect(DFD_STYLING.NODES.MIN_HEIGHT).toBe(30);
-      expect(DFD_STYLING.NODES.DEFAULT_FONT).toBe('Roboto Condensed');
-      expect(DFD_STYLING.NODES.DEFAULT_FONT_SIZE).toBe(14);
+      expect(DFD_STYLING.TEXT_FONT_FAMILY).toBe("'Roboto Condensed', Arial, sans-serif");
+      expect(DFD_STYLING.ICON_FONT_FAMILY).toBe('Material Symbols Outlined');
+      expect(DFD_STYLING.DEFAULT_FONT_SIZE).toBe(12);
       
       // Verify node type specific constants
       expect(DFD_STYLING.NODES.SECURITY_BOUNDARY.STROKE_DASHARRAY).toBe('5,5');

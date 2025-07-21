@@ -1,3 +1,5 @@
+import { DFD_STYLING } from '../../constants/styling-constants';
+
 /**
  * Visual attributes for a node
  * Matches the NodeAttrs schema from the OpenAPI specification
@@ -80,9 +82,9 @@ export const DEFAULT_NODE_ATTRS: NodeAttrs = {
   },
   text: {
     text: '',
-    fontSize: 14,
+    fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
     fill: '#000000',
-    fontFamily: 'Arial, sans-serif',
+    fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
     textAnchor: 'middle',
     dominantBaseline: 'middle',
   },
@@ -119,7 +121,7 @@ export function createDefaultNodeAttrs(nodeType: string, label?: string): NodeAt
     case 'text-box':
       attrs.body!.fill = 'transparent';
       attrs.body!.stroke = 'transparent';
-      attrs.text!.fontSize = 12;
+      attrs.text!.fontSize = DFD_STYLING.DEFAULT_FONT_SIZE;
       break;
   }
 

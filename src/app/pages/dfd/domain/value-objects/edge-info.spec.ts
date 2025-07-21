@@ -11,6 +11,7 @@ import { EdgeInfo } from './edge-info';
 import { Metadata } from './metadata';
 import { EdgeTerminal } from './edge-terminal';
 import { EdgeAttrs } from './edge-attrs';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import { EdgeLabel } from './edge-label';
 import { Point } from './point';
 
@@ -606,7 +607,7 @@ describe('EdgeInfo', () => {
       const target: EdgeTerminal = { cell: 'target' };
       const attrs: EdgeAttrs = {
         line: { stroke: '#000' },
-        text: { text: 'Complex Label', fontSize: 12 },
+        text: { text: 'Complex Label', fontSize: DFD_STYLING.DEFAULT_FONT_SIZE },
       };
       const edgeInfo = new EdgeInfo('edge-1', 'edge', source, target, 1, true, attrs);
 

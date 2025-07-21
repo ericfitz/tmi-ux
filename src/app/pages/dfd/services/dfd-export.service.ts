@@ -33,16 +33,45 @@ export class DfdExportService {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `dfd-diagram-${timestamp}.${format}`;
 
-      // Default callback for handling exported data
-      const handleExport = (blob: Blob, name: string): void => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = name;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+      // Modern file save callback using File System Access API
+      const handleExport = async (blob: Blob, name: string, mimeType: string): Promise<void> => {
+        try {
+          // Check if File System Access API is supported
+          if ('showSaveFilePicker' in window) {
+            const fileHandle = await window.showSaveFilePicker({
+              suggestedName: name,
+              types: [{
+                description: `${format.toUpperCase()} files`,
+                accept: { [mimeType]: [`.${format}`] },
+              }],
+            });
+
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            
+            this.logger.info('File saved successfully using File System Access API', { filename: name });
+          } else {
+            // Fallback for browsers that don't support File System Access API
+            this.logger.warn('File System Access API not supported, using fallback download method');
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }
+        } catch (error) {
+          // User cancelled or API error
+          if (error instanceof DOMException && error.name === 'AbortError') {
+            this.logger.info('File save cancelled by user');
+          } else {
+            this.logger.error('Error saving file', error);
+            throw error;
+          }
+        }
       };
 
       // Cast graph to access export methods added by the plugin
@@ -55,8 +84,14 @@ export class DfdExportService {
       if (format === 'svg') {
         exportGraph.toSVG((svgString: string) => {
           const blob = new Blob([svgString], { type: 'image/svg+xml' });
-          handleExport(blob, filename);
-          this.logger.info('SVG export completed', { filename });
+          // Handle async operation without blocking the callback
+          handleExport(blob, filename, 'image/svg+xml')
+            .then(() => {
+              this.logger.info('SVG export completed', { filename });
+            })
+            .catch(error => {
+              this.logger.error('SVG export failed', error);
+            });
         });
       } else {
         const exportOptions = {
@@ -68,14 +103,26 @@ export class DfdExportService {
         if (format === 'png') {
           exportGraph.toPNG((dataUri: string) => {
             const blob = this.dataUriToBlob(dataUri, 'image/png');
-            handleExport(blob, filename);
-            this.logger.info('PNG export completed', { filename });
+            // Handle async operation without blocking the callback
+            handleExport(blob, filename, 'image/png')
+              .then(() => {
+                this.logger.info('PNG export completed', { filename });
+              })
+              .catch(error => {
+                this.logger.error('PNG export failed', error);
+              });
           }, exportOptions);
         } else {
           exportGraph.toJPEG((dataUri: string) => {
             const blob = this.dataUriToBlob(dataUri, 'image/jpeg');
-            handleExport(blob, filename);
-            this.logger.info('JPEG export completed', { filename });
+            // Handle async operation without blocking the callback
+            handleExport(blob, filename, 'image/jpeg')
+              .then(() => {
+                this.logger.info('JPEG export completed', { filename });
+              })
+              .catch(error => {
+                this.logger.error('JPEG export failed', error);
+              });
           }, exportOptions);
         }
       }

@@ -1,3 +1,5 @@
+import { DFD_STYLING } from '../../constants/styling-constants';
+
 /**
  * Text label positioned along an edge
  * Matches the EdgeLabel schema from the OpenAPI specification
@@ -121,9 +123,9 @@ export function createSimpleEdgeLabel(
     attrs: {
       text: {
         text,
-        fontSize: options?.fontSize || 12,
+        fontSize: options?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
         fill: options?.fill || '#333333',
-        fontFamily: 'Arial, sans-serif',
+        fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
         textAnchor: 'middle',
       },
       ...(options?.backgroundColor && {

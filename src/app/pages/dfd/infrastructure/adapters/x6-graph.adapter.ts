@@ -3,6 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import '@antv/x6-plugin-export';
+import { Export } from '@antv/x6-plugin-export';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
@@ -359,9 +360,9 @@ export class X6GraphAdapter implements IGraphAdapter {
                 attrs: {
                   text: {
                     text: DFD_STYLING.EDGES.DEFAULT_LABEL,
-                    fontSize: DFD_STYLING.NODES.DEFAULT_FONT_SIZE,
+                    fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                     fill: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                    fontFamily: `"${DFD_STYLING.NODES.DEFAULT_FONT}", Arial, sans-serif`,
+                    fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
                     textAnchor: 'middle',
                     dominantBaseline: 'middle',
                   },
@@ -1329,6 +1330,9 @@ export class X6GraphAdapter implements IGraphAdapter {
           rotating: false,
         }),
       );
+
+      // Enable export plugin for diagram export functionality
+      this._graph.use(new Export());
     }
 
     // Setup selection event handlers
@@ -1549,8 +1553,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       border: 2px solid #007bff;
       border-radius: 4px;
       background: #fff;
-      font-family: "Roboto Condensed", Arial, sans-serif;
-      font-size: 12px;
+      font-family: ${DFD_STYLING.TEXT_FONT_FAMILY};
+      font-size: ${DFD_STYLING.DEFAULT_FONT_SIZE}px;
       text-align: center;
       z-index: 10000;
       outline: none;

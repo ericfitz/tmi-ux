@@ -3,6 +3,7 @@ import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { PortStateManagerService } from './port-state-manager.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Consolidated Edge Service
@@ -143,9 +144,9 @@ export class EdgeService {
             attrs: {
               text: {
                 text: updates.label,
-                fontSize: 12,
+                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                 fill: '#333',
-                fontFamily: '"Roboto Condensed", Arial, sans-serif',
+                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
                 textAnchor: 'middle',
                 dominantBaseline: 'middle',
               },

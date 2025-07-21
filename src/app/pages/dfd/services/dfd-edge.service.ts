@@ -6,6 +6,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
 import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
+import { DFD_STYLING } from '../constants/styling-constants';
 
 /**
  * Interface for connection validation arguments from X6
@@ -234,9 +235,9 @@ export class DfdEdgeService {
               attrs: {
                 text: {
                   text: originalLabel,
-                  fontSize: 12,
+                  fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                   fill: '#333',
-                  fontFamily: '"Roboto Condensed", Arial, sans-serif',
+                  fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
                   textAnchor: 'middle',
                   dominantBaseline: 'middle',
                 },
@@ -354,9 +355,9 @@ export class DfdEdgeService {
             attrs: {
               text: {
                 text: label,
-                fontSize: 12,
+                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                 fill: '#333',
-                fontFamily: '"Roboto Condensed", Arial, sans-serif',
+                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
               },
               rect: {
                 fill: 'white',
@@ -421,9 +422,9 @@ export class DfdEdgeService {
           attrs: {
             text: {
               text: label,
-              fontSize: 12,
+              fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
               fill: '#333',
-              fontFamily: '"Roboto Condensed", Arial, sans-serif',
+              fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
             },
             rect: {
               fill: 'white',

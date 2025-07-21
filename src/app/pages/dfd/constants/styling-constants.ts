@@ -15,6 +15,9 @@ export const DFD_STYLING = {
   DEFAULT_STROKE: '#000000',
   DEFAULT_STROKE_WIDTH: 2,
   DEFAULT_FILL: '#FFFFFF',
+  DEFAULT_FONT_SIZE: 12,
+  TEXT_FONT_FAMILY: "'Roboto Condensed', Arial, sans-serif",
+  ICON_FONT_FAMILY: 'Material Symbols Outlined',
   
   // Selection styling effects
   SELECTION: {
@@ -45,8 +48,6 @@ export const DFD_STYLING = {
   NODES: {
     MIN_WIDTH: 40,
     MIN_HEIGHT: 30,
-    DEFAULT_FONT: 'Roboto Condensed',
-    DEFAULT_FONT_SIZE: 14,
     DEFAULT_FONT_WEIGHT: 400,
     
     // Shape-specific default styling (matches x6-shape-definitions.ts)

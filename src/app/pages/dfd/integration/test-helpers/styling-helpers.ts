@@ -245,8 +245,8 @@ export class StylingVerifier {
     this.verifyPortConfiguration(node);
     
     // Verify font properties
-    expect(node.attr('text/fontFamily')).toBe(DFD_STYLING.NODES.DEFAULT_FONT);
-    expect(node.attr('text/fontSize')).toBe(DFD_STYLING.NODES.DEFAULT_FONT_SIZE);
+    expect(node.attr('text/fontFamily')).toBe(DFD_STYLING.TEXT_FONT_FAMILY);
+    expect(node.attr('text/fontSize')).toBe(DFD_STYLING.DEFAULT_FONT_SIZE);
   }
   
   /**

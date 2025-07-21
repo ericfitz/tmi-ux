@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Selection Service
@@ -300,9 +301,9 @@ export class SelectionService {
         },
         label: {
           text: 'Group',
-          fontSize: 12,
+          fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: '#666',
-          fontFamily: '"Roboto Condensed", Arial, sans-serif',
+          fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
         },
       },
       zIndex: -1, // Place behind other nodes

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdTooltipService } from '../../services/dfd-tooltip.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * X6 Tooltip Adapter
@@ -111,7 +112,7 @@ export class X6TooltipAdapter {
       color: white;
       padding: 4px 8px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: ${DFD_STYLING.DEFAULT_FONT_SIZE}px;
       font-family: inherit;
       white-space: nowrap;
       z-index: 10000;
