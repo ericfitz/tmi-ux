@@ -33,8 +33,7 @@ export class MockDataService implements OnDestroy {
   private _mockDiagramsMap = new Map<string, Diagram>();
 
   constructor(private logger: LoggerService) {
-    this.logger.debug('MockDataService initialized');
-    console.log('[CYPRESS-DEBUG] MockDataService initialized', { 
+    this.logger.debug('MockDataService initialized', {
       initialMockState: this.getInitialMockState(),
       localStorage: localStorage.getItem('useMockData')
     });
@@ -55,8 +54,7 @@ export class MockDataService implements OnDestroy {
   toggleMockData(useMock: boolean): void {
     this._useMockData.next(useMock);
     localStorage.setItem('useMockData', String(useMock));
-    this.logger.info(`Mock data ${useMock ? 'enabled' : 'disabled'}`);
-    console.log('[CYPRESS-DEBUG] MockDataService.toggleMockData called', { useMock });
+    this.logger.debug(`Mock data ${useMock ? 'enabled' : 'disabled'}`, { useMock });
   }
 
   /**

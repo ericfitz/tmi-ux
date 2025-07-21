@@ -4,7 +4,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import '@antv/x6-plugin-export';
 import { Export } from '@antv/x6-plugin-export';
-import { Selection } from '@antv/x6-plugin-selection';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
 import { History } from '@antv/x6-plugin-history';
@@ -505,8 +504,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       ),
     );
 
-    // DEBUG: Write actual default styling values to file for constants verification (DISABLED)
-    // this._debugWriteActualDefaults(x6Node, nodeType);
 
     return x6Node;
   }
@@ -573,8 +570,6 @@ export class X6GraphAdapter implements IGraphAdapter {
         // Update port visibility after edge creation
         this._updatePortVisibilityAfterEdgeCreation(createdEdge);
 
-        // DEBUG: Write actual default styling values to file for constants verification (DISABLED)
-        // this._debugWriteActualDefaultsEdge(createdEdge);
 
         return createdEdge;
       },
@@ -1360,6 +1355,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Set up port state manager for coordinated hover effects
     this._selectionAdapter.setPortStateManager(this._portStateManager);
 
+    // Set up history coordinator for port state manager to suppress port visibility from history
+    this._portStateManager.setHistoryCoordinator(this._historyCoordinator);
+
     // Setup all selection events including hover, selection, and tools
     this._selectionAdapter.setupSelectionEvents(this._graph, (cell: Cell) => {
       this._handleCellDeletion(cell);
@@ -1752,8 +1750,6 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Centralized history filtering logic using GraphHistoryCoordinator
    */
   private _shouldIncludeInHistory(event: string, args: any): boolean {
-    // DEBUG: Log all history events to understand what's happening
-    this.logger.debug('History event:', { event, args });
 
     // Completely exclude tools from history
     if (event === 'cell:change:tools') {

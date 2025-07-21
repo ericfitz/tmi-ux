@@ -20,17 +20,17 @@ export class X6HistoryManager {
   constructor(private logger: LoggerService) {}
 
   /**
-   * Set port state manager for handling port visibility during undo/redo operations
-   */
-  setPortStateManager(portStateManager: any): void {
-    this.portStateManager = portStateManager;
-  }
-
-  /**
    * Observable for history state changes (undo/redo availability)
    */
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
     return this._historyChanged$.asObservable();
+  }
+
+  /**
+   * Set port state manager for handling port visibility during undo/redo operations
+   */
+  setPortStateManager(portStateManager: any): void {
+    this.portStateManager = portStateManager;
   }
 
   /**
