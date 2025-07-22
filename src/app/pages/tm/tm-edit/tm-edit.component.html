@@ -196,6 +196,14 @@
                 <button
                   mat-icon-button
                   color="primary"
+                  (click)="openDiagramMetadataDialog(diagram, $event)"
+                  [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                >
+                  <mat-icon>list</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="primary"
                   (click)="renameDiagram(diagram, $event)"
                   [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
                 >

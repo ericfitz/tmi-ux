@@ -591,6 +591,48 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Opens the metadata dialog for a specific diagram
+   */
+  openDiagramMetadataDialog(diagram: Diagram, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dialogData: MetadataDialogData = {
+      metadata: diagram.metadata || [],
+      isReadOnly: false,
+    };
+
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result) {
+          // Update the diagram metadata in the local diagrams array
+          const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
+          if (diagramIndex !== -1) {
+            this.diagrams[diagramIndex].metadata = result;
+            this.diagrams[diagramIndex].modified_at = new Date().toISOString();
+
+            // Note: The threat model's diagrams array only contains IDs (strings), not full diagram objects
+            // In a real implementation, we would likely update the diagram via a separate API call
+            // For now, we just update the local diagram data
+            this.logger.info('Updated diagram metadata', { 
+              diagramId: diagram.id, 
+              metadata: result 
+            });
+          }
+        }
+      }),
+    );
+  }
+
+  /**
    * Opens the source code view (placeholder for future functionality)
    */
   openSourceCodeView(): void {

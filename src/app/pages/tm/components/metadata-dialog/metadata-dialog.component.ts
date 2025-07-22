@@ -149,7 +149,6 @@ export class MetadataDialogComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (index >= 0 && index < this.dataSource.data.length) {
       this.dataSource.data[index].key = input.value;
-      this.metadataTable.renderRows();
     }
   }
 
@@ -162,7 +161,6 @@ export class MetadataDialogComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (index >= 0 && index < this.dataSource.data.length) {
       this.dataSource.data[index].value = input.value;
-      this.metadataTable.renderRows();
     }
   }
 
@@ -170,11 +168,11 @@ export class MetadataDialogComponent implements OnInit {
    * Adds a new metadata item to the list
    */
   addItem(): void {
-    this.dataSource.data.push({
+    const newData = [...this.dataSource.data, {
       key: '',
       value: '',
-    });
-    this.metadataTable.renderRows();
+    }];
+    this.dataSource.data = newData;
   }
 
   /**
@@ -183,8 +181,9 @@ export class MetadataDialogComponent implements OnInit {
    */
   deleteItem(index: number): void {
     if (index >= 0 && index < this.dataSource.data.length) {
-      this.dataSource.data.splice(index, 1);
-      this.metadataTable.renderRows();
+      const newData = [...this.dataSource.data];
+      newData.splice(index, 1);
+      this.dataSource.data = newData;
     }
   }
 

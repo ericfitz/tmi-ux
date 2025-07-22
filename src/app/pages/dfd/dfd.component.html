@@ -88,6 +88,16 @@
           >delete</mat-icon
         >
       </button>
+      
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="openCellMetadataDialog()"
+        [disabled]="!hasExactlyOneSelectedCell"
+        [matTooltip]="'threatModels.metadataTooltip' | transloco"
+      >
+        <mat-icon>list</mat-icon>
+      </button>
     </div>
 
     <div class="toolbar-group">

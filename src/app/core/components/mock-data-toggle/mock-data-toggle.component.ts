@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Observable } from 'rxjs';
 import { MockDataService } from '../../../mocks/mock-data.service';
 import { LoggerService } from '../../services/logger.service';
@@ -12,13 +13,15 @@ import { LoggerService } from '../../services/logger.service';
 @Component({
   selector: 'app-mock-data-toggle',
   standalone: true,
-  imports: [CommonModule, MatSlideToggleModule],
+  imports: [CommonModule, MatSlideToggleModule, MatTooltipModule],
   template: `
     <mat-slide-toggle
       [checked]="useMockData$ | async"
       (change)="toggleMockData($event.checked)"
       color="accent"
       class="mock-data-toggle"
+      matTooltip="Use mock data"
+      matTooltipPosition="below"
     >
       <span class="mock-data-label">Mock Data</span>
     </mat-slide-toggle>

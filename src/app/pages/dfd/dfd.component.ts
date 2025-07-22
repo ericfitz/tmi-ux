@@ -47,6 +47,12 @@ import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
 import { GraphHistoryCoordinator } from './services/graph-history-coordinator.service';
 import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
 import { ThreatModelService } from '../tm/services/threat-model.service';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  MetadataDialogComponent,
+  MetadataDialogData,
+} from '../tm/components/metadata-dialog/metadata-dialog.component';
+import { Metadata } from '../tm/models/threat-model.model';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -143,6 +149,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private facade: DfdFacadeService,
     private tooltipAdapter: X6TooltipAdapter,
     private threatModelService: ThreatModelService,
+    private dialog: MatDialog,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -454,6 +461,50 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   openThreatEditor(): void {
     this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+  }
+
+  /**
+   * Opens the metadata dialog for the selected cell
+   */
+  openCellMetadataDialog(): void {
+    if (!this.hasExactlyOneSelectedCell) {
+      this.logger.warn('Cannot open metadata dialog: no single cell selected');
+      return;
+    }
+
+    // Get the selected cell from the graph adapter
+    const selectedCells = this.x6GraphAdapter.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      return;
+    }
+
+    const cell = selectedCells[0];
+    const cellData = cell.getData() || {};
+    
+    const dialogData: MetadataDialogData = {
+      metadata: cellData.metadata || [],
+      isReadOnly: false,
+    };
+
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && cell) {
+          // Update the cell metadata
+          const updatedData = { ...cellData, metadata: result };
+          cell.setData(updatedData);
+          
+          this.logger.info('Updated cell metadata', { cellId: cell.id, metadata: result });
+        }
+      }),
+    );
   }
 
   /**
