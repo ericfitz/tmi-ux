@@ -214,8 +214,8 @@ export class DfdFacadeService {
   /**
    * Export diagram to specified format
    */
-  exportDiagram(format: 'png' | 'jpeg' | 'svg'): void {
-    this.exportService.exportDiagram(format);
+  exportDiagram(format: 'png' | 'jpeg' | 'svg', threatModelName?: string, diagramName?: string): void {
+    this.exportService.exportDiagram(format, threatModelName, diagramName);
   }
 
   // ===============================

@@ -402,26 +402,51 @@ export class AuthService {
     const userEmail = this.userEmail;
     this.logger.info(`Logging out user: ${userEmail}`);
 
-    // Call logout endpoint if authenticated
+    // Clear authentication data immediately for test users or when server is unavailable
+    if (this.isTestUser) {
+      this.logger.debug('Skipping server logout for test user');
+      this.clearAuthData();
+      this.logger.info('Test user logged out successfully');
+      void this.router.navigate(['/']);
+      return;
+    }
+
+    // Call logout endpoint if authenticated (only for real users)
     if (this.isAuthenticated) {
       this.http
         .post(`${environment.apiUrl}/auth/logout`, {})
         .pipe(
-          catchError(error => {
-            this.logger.error('Error during logout', error);
+          catchError((error: HttpErrorResponse) => {
+            // Log the error but don't fail the logout process
+            if (error.status === 0 || error.name === 'HttpErrorResponse') {
+              this.logger.warn('Server unavailable during logout - proceeding with client-side logout');
+            } else {
+              this.logger.error('Error during logout', error);
+            }
             return of(null);
           }),
         )
-        .subscribe(() => {
-          this.logger.debug('Logout request completed');
+        .subscribe({
+          next: () => {
+            this.logger.debug('Server logout request completed');
+          },
+          error: () => {
+            // This should not happen due to catchError, but handle it just in case
+            this.logger.warn('Unexpected error in logout subscription');
+          },
+          complete: () => {
+            // Clear authentication data after server request completes (or fails)
+            this.clearAuthData();
+            this.logger.info('User logged out successfully');
+            void this.router.navigate(['/']);
+          },
         });
+    } else {
+      // Not authenticated, just clear any remaining data and redirect
+      this.clearAuthData();
+      this.logger.info('User logged out successfully');
+      void this.router.navigate(['/']);
     }
-
-    // Clear authentication data
-    this.clearAuthData();
-
-    this.logger.info('User logged out successfully');
-    void this.router.navigate(['/']);
   }
 
   /**

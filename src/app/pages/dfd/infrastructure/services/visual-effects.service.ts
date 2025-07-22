@@ -229,8 +229,14 @@ export class VisualEffectsService {
 
         if (nodeType === 'text-box') {
           if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
+            // Remove both filter and fill effects
             cell.attr('text/filter', 'none');
+            cell.attr('body/fill', 'transparent'); // Restore default transparent fill
           } else {
+            // IMPORTANT: Apply fill FIRST, then drop shadow, so shadow is visible against the background
+            const fillColorString = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`; // Lower opacity for fill
+            cell.attr('body/fill', fillColorString);
+            
             const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
             cell.attr('text/filter', filterValue);
           }
@@ -284,11 +290,21 @@ export class VisualEffectsService {
 
       if (nodeType === 'text-box') {
         if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
+          // Remove both filter and fill effects
           cell.attr('text/filter', 'none');
+          cell.attr('body/fill', 'transparent'); // Restore default transparent fill
         } else {
+          // IMPORTANT: Apply fill FIRST, then drop shadow, so shadow is visible against the background
+          const fillColorString = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`; // Lower opacity for fill
+          cell.attr('body/fill', fillColorString);
+          
           const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
           cell.attr('text/filter', filterValue);
-          this.logger.info('[VisualEffects] Applied text filter to text-box', { filterValue });
+          
+          this.logger.info('[VisualEffects] Applied body fill then text filter to text-box', { 
+            fillColor: fillColorString,
+            filterValue
+          });
         }
       } else {
         if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
@@ -325,6 +341,7 @@ export class VisualEffectsService {
 
       if (nodeType === 'text-box') {
         cell.attr('text/filter', 'none');
+        cell.attr('body/fill', 'transparent'); // Restore default transparent fill
       } else {
         cell.attr('body/filter', 'none');
       }

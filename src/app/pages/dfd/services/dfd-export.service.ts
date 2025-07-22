@@ -19,25 +19,25 @@ export class DfdExportService {
   /**
    * Export the diagram to the specified format
    */
-  exportDiagram(format: ExportFormat): void {
+  exportDiagram(format: ExportFormat, threatModelName?: string, diagramName?: string): void {
     const graph = this.x6GraphAdapter.getGraph();
     if (!graph) {
       this.logger.warn('Cannot export - graph not initialized');
       return;
     }
 
-    this.logger.info('Exporting diagram', { format });
+    this.logger.info('Exporting diagram', { format, threatModelName, diagramName });
 
     try {
-      // Generate filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `dfd-diagram-${timestamp}.${format}`;
+      // Generate filename based on threat model and diagram names
+      const filename = this.generateFilename(format, threatModelName, diagramName);
 
       // Modern file save callback using File System Access API
       const handleExport = async (blob: Blob, name: string, mimeType: string): Promise<void> => {
-        try {
-          // Check if File System Access API is supported
-          if ('showSaveFilePicker' in window) {
+        // Check if File System Access API is supported
+        if ('showSaveFilePicker' in window) {
+          try {
+            this.logger.debug('Using File System Access API for file save');
             const fileHandle = await window.showSaveFilePicker({
               suggestedName: name,
               types: [{
@@ -51,26 +51,35 @@ export class DfdExportService {
             await writable.close();
             
             this.logger.info('File saved successfully using File System Access API', { filename: name });
-          } else {
-            // Fallback for browsers that don't support File System Access API
-            this.logger.warn('File System Access API not supported, using fallback download method');
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = name;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            return; // Success, exit early
+          } catch (error) {
+            // Handle File System Access API errors
+            if (error instanceof DOMException && error.name === 'AbortError') {
+              this.logger.info('File save cancelled by user');
+              return; // User cancelled, exit without fallback
+            } else {
+              this.logger.warn('File System Access API failed, falling back to download method', error);
+              // Continue to fallback method below
+            }
           }
-        } catch (error) {
-          // User cancelled or API error
-          if (error instanceof DOMException && error.name === 'AbortError') {
-            this.logger.info('File save cancelled by user');
-          } else {
-            this.logger.error('Error saving file', error);
-            throw error;
-          }
+        } else {
+          this.logger.debug('File System Access API not supported, using fallback download method');
+        }
+
+        // Fallback method for unsupported browsers or API failures
+        try {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          this.logger.info('File downloaded successfully using fallback method', { filename: name });
+        } catch (fallbackError) {
+          this.logger.error('Both File System Access API and fallback method failed', fallbackError);
+          throw fallbackError;
         }
       };
 
@@ -144,5 +153,58 @@ export class DfdExportService {
     }
 
     return new Blob([arrayBuffer], { type: mimeType });
+  }
+
+  /**
+   * Generate filename based on threat model name, diagram name, and format
+   * Format: "{threatModelName}-{diagramName}-DFD.{format}"
+   * Names are truncated to 63 characters if longer
+   */
+  private generateFilename(format: ExportFormat, threatModelName?: string, diagramName?: string): string {
+    // Helper function to sanitize and truncate names for filenames
+    const sanitizeAndTruncate = (name: string, maxLength: number): string => {
+      // Remove or replace characters that are invalid in filenames
+      const sanitized = name
+        .replace(/[<>:"/\\|?*]/g, '-') // Replace invalid filename characters with dash
+        .replace(/\s+/g, '-') // Replace spaces with dashes
+        .replace(/-+/g, '-') // Replace multiple dashes with single dash
+        .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
+      
+      // Truncate to max length
+      return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
+    };
+
+    const filenameParts: string[] = [];
+
+    // Add threat model name if available
+    if (threatModelName && threatModelName.trim()) {
+      filenameParts.push(sanitizeAndTruncate(threatModelName.trim(), 63));
+    }
+
+    // Add diagram name if available
+    if (diagramName && diagramName.trim()) {
+      filenameParts.push(sanitizeAndTruncate(diagramName.trim(), 63));
+    }
+
+    // Add DFD suffix
+    filenameParts.push('DFD');
+
+    // If no names were provided, use default with timestamp
+    if (filenameParts.length === 1) { // Only 'DFD' was added
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      return `dfd-diagram-${timestamp}.${format}`;
+    }
+
+    // Join parts and add extension
+    const filename = `${filenameParts.join('-')}.${format}`;
+    
+    this.logger.debug('Generated filename', { 
+      threatModelName, 
+      diagramName, 
+      format, 
+      filename 
+    });
+
+    return filename;
   }
 }

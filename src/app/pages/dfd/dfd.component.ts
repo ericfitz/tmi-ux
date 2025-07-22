@@ -46,6 +46,7 @@ import { DfdTooltipService } from './services/dfd-tooltip.service';
 import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
 import { GraphHistoryCoordinator } from './services/graph-history-coordinator.service';
 import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
+import { ThreatModelService } from '../tm/services/threat-model.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -91,6 +92,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // X6 Event Logger
     X6EventLoggerService,
+
+    // Threat Model Service
+    ThreatModelService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -111,6 +115,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Diagram data
   diagramName: string | null = null;
+  threatModelName: string | null = null;
 
   // State properties - exposed as public properties for template binding
   hasSelectedCells = false;
@@ -137,6 +142,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private facade: DfdFacadeService,
     private tooltipAdapter: X6TooltipAdapter,
+    private threatModelService: ThreatModelService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -156,6 +162,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.info('DfdComponent ngOnInit called');
+
+    // Load threat model data if we have a threatModelId
+    if (this.threatModelId) {
+      this.loadThreatModelData(this.threatModelId);
+    }
 
     // Load diagram data if we have a dfdId
     if (this.dfdId) {
@@ -213,6 +224,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.x6GraphAdapter.edgeVerticesChanged$.subscribe(({ edgeId, vertices }) => {
         this.handleEdgeVerticesChanged(edgeId, vertices);
+      }),
+    );
+  }
+
+  /**
+   * Loads the threat model data for the given threat model ID
+   */
+  private loadThreatModelData(threatModelId: string): void {
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(threatModelId).subscribe({
+        next: threatModel => {
+          if (threatModel) {
+            this.threatModelName = threatModel.name;
+            this.cdr.markForCheck();
+          }
+        },
+        error: error => {
+          this.logger.error('Error loading threat model data', error);
+        },
       }),
     );
   }
@@ -401,7 +431,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Export the diagram to the specified format
    */
   exportDiagram(format: ExportFormat): void {
-    this.facade.exportDiagram(format);
+    this.facade.exportDiagram(format, this.threatModelName ?? undefined, this.diagramName ?? undefined);
   }
 
   /**
