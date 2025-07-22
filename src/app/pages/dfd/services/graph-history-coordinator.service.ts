@@ -58,6 +58,8 @@ export const HISTORY_OPERATION_TYPES = {
   EDGE_CREATION_INVERSE: 'edge-creation-inverse',
   NODE_DELETION: 'node-deletion',
   EDGE_DELETION: 'edge-deletion',
+  CELL_DELETION: 'cell-deletion',
+  TOOL_DELETION: 'tool-deletion',
   NODE_POSITIONING: 'node-positioning',
   NODE_RESIZING: 'node-resizing',
   
@@ -328,6 +330,10 @@ export class GraphHistoryCoordinator {
       case HISTORY_OPERATION_TYPES.EDGE_CREATION:
       case HISTORY_OPERATION_TYPES.EDGE_CREATION_USER:
       case HISTORY_OPERATION_TYPES.EDGE_CREATION_INVERSE:
+      case HISTORY_OPERATION_TYPES.NODE_DELETION:
+      case HISTORY_OPERATION_TYPES.EDGE_DELETION:
+      case HISTORY_OPERATION_TYPES.CELL_DELETION:
+      case HISTORY_OPERATION_TYPES.TOOL_DELETION:
         return {
           includeVisualEffects: false,
           includeHighlighting: false,

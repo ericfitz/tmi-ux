@@ -99,23 +99,24 @@ svg text[font-family] {
     @include shape-label-styles;
   }
 
-  // Ensure store shapes get the same hover and selection filter treatment
-  &.is-hovered,
-  &:hover {
-    .x6-cell-body {
-      rect.body {
-        filter: drop-shadow(0 0 4px rgb(255 0 0 / 60%));
-      }
-    }
-  }
+  // NOTE: Commented out CSS filter rules to allow X6 attribute-based filters to work
+  // These CSS rules override X6's filter attributes and prevent creation effects
+  // &.is-hovered,
+  // &:hover {
+  //   .x6-cell-body {
+  //     rect.body {
+  //       filter: drop-shadow(0 0 4px rgb(255 0 0 / 60%));
+  //     }
+  //   }
+  // }
 
-  &.is-selected {
-    .x6-cell-body {
-      rect.body {
-        filter: drop-shadow(0 0 8px rgb(255 0 0 / 80%));
-      }
-    }
-  }
+  // &.is-selected {
+  //   .x6-cell-body {
+  //     rect.body {
+  //       filter: drop-shadow(0 0 8px rgb(255 0 0 / 80%));
+  //     }
+  //   }
+  // }
 }
 
 // =============================================================================

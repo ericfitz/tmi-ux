@@ -50,7 +50,7 @@ export class EdgeService {
     this._verifyEdgeNodes(graph, edgeInfo);
 
     // Ensure proper edge attributes for visual rendering
-    const attrs = ensureVisualRendering ? this._ensureEdgeAttrs(edgeInfo.attrs) : edgeInfo.attrs;
+    const attrs = ensureVisualRendering ? this._ensureEdgeAttrs(edgeInfo.attrs as any) : edgeInfo.attrs as any;
 
     const edgeParams = {
       id: edgeInfo.id,
@@ -161,7 +161,7 @@ export class EdgeService {
     }
 
     if (updates.attrs !== undefined) {
-      const attrs = ensureVisualRendering ? this._ensureEdgeAttrs(updates.attrs) : updates.attrs;
+      const attrs = ensureVisualRendering ? this._ensureEdgeAttrs(updates.attrs as any) : updates.attrs as any;
       edge.setAttrs(attrs);
     }
 
@@ -209,6 +209,8 @@ export class EdgeService {
       graph.removeEdge(edge);
 
       // Update port visibility for affected nodes after removal
+      // This ensures the service works independently, while the event handler
+      // in x6-graph.adapter.ts will handle the same when used in the full context
       if (sourceNodeId) {
         const sourceNode = graph.getCellById(sourceNodeId) as Node;
         if (sourceNode && sourceNode.isNode()) {

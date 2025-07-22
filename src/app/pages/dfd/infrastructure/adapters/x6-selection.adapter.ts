@@ -91,10 +91,15 @@ export class X6SelectionAdapter {
    * Setup selection event handlers for visual feedback
    */
   setupSelectionEvents(graph: Graph, onCellDeletion?: (cell: Cell) => void): void {
-    // Clear selection on blank click
+    // Clear selection on blank click and update port visibility
     graph.on('blank:click', () => {
       if (graph && typeof graph.cleanSelection === 'function') {
         graph.cleanSelection();
+      }
+      
+      // Update port visibility for all nodes after blank click
+      if (this.portStateManager) {
+        this.portStateManager.hideUnconnectedPorts(graph);
       }
     });
 
@@ -218,12 +223,22 @@ export class X6SelectionAdapter {
       return;
     }
 
-    // Remove selected cells in a single batch for proper undo/redo
-    graph.batchUpdate(() => {
-      selectedCells.forEach(cell => {
-        graph.removeCell(cell);
-      });
-    });
+    // Use history coordinator to ensure proper atomic deletion with port visibility suppression
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      HISTORY_OPERATION_TYPES.CELL_DELETION,
+      () => {
+        selectedCells.forEach(cell => {
+          graph.removeCell(cell);
+        });
+      },
+      {
+        includePortVisibility: false, // Suppress port visibility changes from history
+        includeVisualEffects: false,
+        includeHighlighting: false,
+        includeToolChanges: false
+      }
+    );
 
     this.logger.info('Deleted selected cells', { count: selectedCells.length });
   }

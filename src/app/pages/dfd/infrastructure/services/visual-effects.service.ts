@@ -220,7 +220,6 @@ export class VisualEffectsService {
     color: { r: number; g: number; b: number },
     graph?: any,
   ): void {
-
     // Batch visual effect changes to exclude them from history
     const applyVisualEffect = () => {
       if (cell.isNode()) {
@@ -275,12 +274,21 @@ export class VisualEffectsService {
       const nodeTypeInfo = (cell as any).getNodeTypeInfo();
       const nodeType = nodeTypeInfo?.type || 'unknown';
 
+      // Log critical information for debugging
+      this.logger.info('[VisualEffects] Applying creation effect', {
+        cellId: cell.id,
+        nodeType,
+        opacity,
+        willApplyFilter: !DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity),
+      });
+
       if (nodeType === 'text-box') {
         if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
           cell.attr('text/filter', 'none');
         } else {
           const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
           cell.attr('text/filter', filterValue);
+          this.logger.info('[VisualEffects] Applied text filter to text-box', { filterValue });
         }
       } else {
         if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
@@ -288,6 +296,10 @@ export class VisualEffectsService {
         } else {
           const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
           cell.attr('body/filter', filterValue);
+          this.logger.info('[VisualEffects] Applied body filter to node type', {
+            nodeType,
+            filterValue,
+          });
         }
       }
     } else if (cell.isEdge()) {
@@ -325,8 +337,8 @@ export class VisualEffectsService {
    * Check if a cell is currently selected (to avoid conflicts)
    */
   isCellSelected(cell: Cell): boolean {
-    // Check if cell has selection attributes that would indicate it's selected
-    // This is a heuristic since we don't have direct access to selection state
+    // Check if cell has selection filter attributes that would indicate it's selected
+    // Only rely on filter attributes, not stroke width (which can match default stroke width)
     try {
       if (cell.isNode()) {
         // Use getNodeTypeInfo for reliable node type detection
@@ -338,19 +350,13 @@ export class VisualEffectsService {
           return DFD_STYLING_HELPERS.isSelectionFilter(filter as string);
         } else {
           const filter = cell.attr('body/filter');
-          const strokeWidth = cell.attr('body/strokeWidth');
-          return !!(
-            DFD_STYLING_HELPERS.isSelectionFilter(filter as string) ||
-            strokeWidth === DFD_STYLING.SELECTION.STROKE_WIDTH
-          );
+          // Only check filter, not stroke width (stroke width can match default values)
+          return DFD_STYLING_HELPERS.isSelectionFilter(filter as string);
         }
       } else if (cell.isEdge()) {
         const filter = cell.attr('line/filter');
-        const strokeWidth = cell.attr('line/strokeWidth');
-        return !!(
-          DFD_STYLING_HELPERS.isSelectionFilter(filter as string) ||
-          strokeWidth === DFD_STYLING.SELECTION.STROKE_WIDTH
-        );
+        // Only check filter, not stroke width (stroke width can match default values)
+        return DFD_STYLING_HELPERS.isSelectionFilter(filter as string);
       }
     } catch (error) {
       this.logger.debug('[VisualEffects] Error checking selection state', {

@@ -6,6 +6,8 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
 import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
+import { EdgeService } from '../infrastructure/services/edge.service';
+import { EdgeInfo } from '../domain/value-objects/edge-info';
 import { DFD_STYLING } from '../constants/styling-constants';
 
 /**
@@ -50,6 +52,7 @@ export class DfdEdgeService {
     private x6ZOrderAdapter: X6ZOrderAdapter,
     private x6HistoryManager: X6HistoryManager,
     private visualEffectsService: VisualEffectsService,
+    private edgeService: EdgeService,
   ) {}
 
   // ========================================
@@ -76,8 +79,8 @@ export class DfdEdgeService {
         sourceNodeId,
         targetNodeId,
       });
-      // Remove the invalid edge from the graph
-      graph.removeCell(edge);
+      // Remove the invalid edge from the graph using EdgeService
+      this.edgeService.removeEdge(graph, edge.id);
       throw new Error('Edge added without valid source or target nodes');
     }
 
@@ -93,8 +96,8 @@ export class DfdEdgeService {
         sourceNodeExists: !!(sourceNode && sourceNode.isNode()),
         targetNodeExists: !!(targetNode && targetNode.isNode()),
       });
-      // Remove the invalid edge from the graph
-      graph.removeCell(edge);
+      // Remove the invalid edge from the graph using EdgeService
+      this.edgeService.removeEdge(graph, edge.id);
       throw new Error('Edge references non-existent nodes');
     }
 
@@ -179,84 +182,27 @@ export class DfdEdgeService {
     const originalLabel = (edge as any).getLabel() || 'Flow';
 
     try {
-      // Batch all inverse edge creation operations into a single history command
-      graph.batchUpdate(() => {
-        const inverseEdge = graph.addEdge({
-          id: inverseEdgeId,
-          source: { cell: targetNodeId, port: targetPortId },
-          target: { cell: sourceNodeId, port: sourcePortId },
-          shape: 'edge',
-          markup: [
-            {
-              tagName: 'path',
-              selector: 'wrap',
-              attrs: {
-                fill: 'none',
-                cursor: 'pointer',
-                stroke: 'transparent',
-                strokeLinecap: 'round',
-              },
-            },
-            {
-              tagName: 'path',
-              selector: 'line',
-              attrs: {
-                fill: 'none',
-                pointerEvents: 'none',
-              },
-            },
-          ],
-          attrs: {
-            wrap: {
-              connection: true,
-              strokeWidth: 10,
-              strokeLinecap: 'round',
-              strokeLinejoin: 'round',
-              stroke: 'transparent',
-              fill: 'none',
-            },
-            line: {
-              connection: true,
-              stroke: '#000000',
-              strokeWidth: 2,
-              fill: 'none',
-              targetMarker: {
-                name: 'classic',
-                size: 8,
-                fill: '#000000',
-                stroke: '#000000',
-              },
-            },
-          },
-          vertices: [],
-          labels: [
-            {
-              position: 0.5,
-              attrs: {
-                text: {
-                  text: originalLabel,
-                  fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                  fill: '#333',
-                  fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                  textAnchor: 'middle',
-                  dominantBaseline: 'middle',
-                },
-                rect: {
-                  fill: '#ffffff',
-                  stroke: 'none',
-                },
-              },
-            },
-          ],
-          zIndex: 1, // Temporary z-index, will be set properly by ZOrderAdapter
-        });
-
-        // Apply proper zIndex using the same logic as normal edge creation
-        this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
-
-        // Apply creation highlight effect for programmatically created inverse edges
-        this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
+      // Create inverse EdgeInfo domain object
+      const inverseEdgeInfo = EdgeInfo.create({
+        id: inverseEdgeId,
+        sourceNodeId: targetNodeId, // Swap source and target for inverse
+        targetNodeId: sourceNodeId,
+        sourcePortId: targetPortId,
+        targetPortId: sourcePortId,
+        label: originalLabel,
       });
+
+      // Delegate to EdgeService for X6 operations (proper layered architecture)
+      const inverseEdge = this.edgeService.createEdge(graph, inverseEdgeInfo, {
+        ensureVisualRendering: true,
+        updatePortVisibility: true,
+      });
+
+      // Apply proper zIndex using the same logic as normal edge creation (application layer)
+      this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
+
+      // Apply creation highlight effect for programmatically created inverse edges (application layer)
+      this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
 
       this.logger.info(
         'Inverse edge created successfully directly in X6 with creation highlight (batched)',
@@ -306,7 +252,7 @@ export class DfdEdgeService {
         return null;
       }
 
-      // Validate connection rules
+      // Business logic validation (DFD-specific rules - kept in application layer)
       if (!this.validateConnection(sourceNode, targetNode)) {
         this.logger.warn('Invalid connection attempt', {
           sourceType: sourceNode.shape,
@@ -315,80 +261,34 @@ export class DfdEdgeService {
         return null;
       }
 
-      const edgeConfig: any = {
-        source: {
-          cell: sourceNodeId,
-          port: sourcePortId,
-        },
-        target: {
-          cell: targetNodeId,
-          port: targetPortId,
-        },
-        attrs: {
-          line: {
-            stroke: '#333',
-            strokeWidth: 2,
-            targetMarker: {
-              name: 'classic',
-              size: 8,
-            },
-          },
-        },
-        connector: {
-          name: 'rounded',
-          args: {
-            radius: 10,
-          },
-        },
-        router: {
-          name: 'manhattan',
-          args: {
-            padding: 10,
-          },
-        },
-      };
+      // Generate unique edge ID
+      const edgeId = uuidv4();
 
-      // Add label if provided
-      if (label) {
-        edgeConfig.labels = [
-          {
-            attrs: {
-              text: {
-                text: label,
-                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                fill: '#333',
-                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-              },
-              rect: {
-                fill: 'white',
-                stroke: '#ccc',
-                strokeWidth: 1,
-                rx: 3,
-                ry: 3,
-              },
-            },
-            position: 0.5,
-          },
-        ];
-      }
-
-      let createdEdge!: Edge;
-
-      // Batch all edge creation operations into a single history command
-      graph.batchUpdate(() => {
-        createdEdge = graph.addEdge(edgeConfig);
-
-
-        // Apply creation highlight effect for programmatically created edges
-        this.visualEffectsService.applyCreationHighlight(createdEdge, graph);
+      // Create EdgeInfo domain object with DFD-specific defaults
+      const edgeInfo = EdgeInfo.create({
+        id: edgeId,
+        sourceNodeId,
+        targetNodeId,
+        sourcePortId: sourcePortId || 'right',
+        targetPortId: targetPortId || 'left',
+        label: label || DFD_STYLING.EDGES.DEFAULT_LABEL,
       });
 
-      this.logger.info('Edge created successfully with creation highlight (batched)', {
+      // Delegate to EdgeService for X6 operations (proper layered architecture)
+      const createdEdge = this.edgeService.createEdge(graph, edgeInfo, {
+        ensureVisualRendering: true,
+        updatePortVisibility: true,
+      });
+
+      // Apply DFD-specific visual effects (application layer responsibility)
+      this.visualEffectsService.applyCreationHighlight(createdEdge, graph);
+
+      this.logger.info('Edge created successfully via EdgeService', {
         edgeId: createdEdge.id,
         sourceNodeId,
         targetNodeId,
-        sourcePortId,
-        targetPortId,
+        sourcePortId: edgeInfo.sourcePortId,
+        targetPortId: edgeInfo.targetPortId,
         label,
       });
 
@@ -546,11 +446,9 @@ export class DfdEdgeService {
   removeNodeEdges(graph: Graph, nodeId: string): void {
     const connectedEdges = this.getNodeEdges(graph, nodeId);
 
-    // Remove all connected edges in a single batch for proper undo/redo
-    graph.batchUpdate(() => {
-      connectedEdges.forEach(edge => {
-        graph.removeCell(edge);
-      });
+    // Remove all connected edges using EdgeService for proper layered architecture
+    connectedEdges.forEach(edge => {
+      this.edgeService.removeEdge(graph, edge.id);
     });
 
     this.logger.info('Removed edges connected to node', {

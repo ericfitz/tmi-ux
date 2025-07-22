@@ -180,31 +180,39 @@ export class X6HistoryManager {
   private _cleanupVisualEffectsAfterRestore(graph: Graph): void {
     const cells = graph.getCells();
     
-    // Batch all cleanup operations to prevent them from being added to history
-    graph.batchUpdate(() => {
-      cells.forEach((cell: Cell) => {
-        if (cell.isNode()) {
-          const node = cell;
-          this._cleanupNodeVisualEffects(node);
-          
-          // Update port visibility for all nodes (hide unconnected ports)
-          if (this.portStateManager) {
-            this.portStateManager.hideUnconnectedNodePorts(graph, node);
+    // CRITICAL FIX: Properly disable history during cleanup to prevent leaks
+    this.disable(graph);
+    try {
+      // Batch all cleanup operations within history-disabled context
+      graph.batchUpdate(() => {
+        cells.forEach((cell: Cell) => {
+          if (cell.isNode()) {
+            const node = cell;
+            this._cleanupNodeVisualEffects(node);
+            
+            // Update port visibility for all nodes (hide unconnected ports)
+            if (this.portStateManager) {
+              this.portStateManager.hideUnconnectedNodePorts(graph, node);
+            }
+          } else if (cell.isEdge()) {
+            const edge = cell;
+            this._cleanupEdgeVisualEffects(edge);
           }
-        } else if (cell.isEdge()) {
-          const edge = cell;
-          this._cleanupEdgeVisualEffects(edge);
-        }
+        });
       });
-    });
-    
-    // Clear any selection state since restored cells should not be selected
-    graph.resetSelection();
-    
-    this.logger.debug('Cleaned up visual effects after history restore', {
-      cellsProcessed: cells.length,
-      timestamp: new Date().toISOString()
-    });
+      
+      // Clear any selection state since restored cells should not be selected
+      // This must also be within the history-disabled context to prevent selection events
+      graph.resetSelection();
+      
+      this.logger.debug('Cleaned up visual effects after history restore', {
+        cellsProcessed: cells.length,
+        timestamp: new Date().toISOString()
+      });
+    } finally {
+      // Always re-enable history even if cleanup fails
+      this.enable(graph);
+    }
   }
   
   /**

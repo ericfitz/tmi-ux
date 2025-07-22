@@ -428,8 +428,8 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._x6EventLogger.initializeEventLogging(this._graph);
     }
 
-    // This prevents separate history entries for port visibility and highlights
-    this._portStateManager.setupPortVisibility(this._graph);
+    // Port visibility is now handled by X6SelectionAdapter with proper history suppression
+    // No need for duplicate port visibility event handlers here
 
     // Setup keyboard handling using dedicated handler
     this._keyboardHandler.setupKeyboardHandling(this._graph);
@@ -588,32 +588,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     const edge = graph.getCellById(edgeId) as Edge;
 
     if (edge && edge.isEdge()) {
-      // Update port visibility before removing edge using port manager
-      const sourceNodeId = edge.getSourceCellId();
-      const targetNodeId = edge.getTargetCellId();
-
-      // Remove the edge first
+      // Remove the edge - port visibility will be updated by the EdgeService
       graph.removeEdge(edge);
-
-      // Then update port visibility for affected nodes (with history disabled)
-      this._historyManager.disable(this._graph!);
-      try {
-        if (sourceNodeId) {
-          const sourceNode = graph.getCellById(sourceNodeId) as Node;
-          if (sourceNode && sourceNode.isNode()) {
-            this._portStateManager.updateNodePortVisibility(graph, sourceNode);
-          }
-        }
-
-        if (targetNodeId) {
-          const targetNode = graph.getCellById(targetNodeId) as Node;
-          if (targetNode && targetNode.isNode()) {
-            this._portStateManager.updateNodePortVisibility(graph, targetNode);
-          }
-        }
-      } finally {
-        this._historyManager.enable(this._graph!);
-      }
     }
   }
 
@@ -1072,29 +1048,9 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
       this._edgeRemoved$.next({ edgeId: edge.id, edge });
-
-      // Update port visibility for the source and target nodes using port manager (with history disabled)
-      const sourceCellId = edge.getSourceCellId();
-      const targetCellId = edge.getTargetCellId();
-
-      this._historyManager.disable(this._graph!);
-      try {
-        if (sourceCellId) {
-          const sourceNode = this._graph!.getCellById(sourceCellId) as Node;
-          if (sourceNode && sourceNode.isNode()) {
-            this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
-          }
-        }
-
-        if (targetCellId) {
-          const targetNode = this._graph!.getCellById(targetCellId) as Node;
-          if (targetNode && targetNode.isNode()) {
-            this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
-          }
-        }
-      } finally {
-        this._historyManager.enable(this._graph!);
-      }
+      
+      // Port visibility is now handled by the EdgeService or other calling services
+      // to avoid duplicate updates and ensure proper history suppression
     });
 
     // Selection events - TEMPORARILY COMMENTED OUT TO TEST HISTORY FILTERING
@@ -1380,16 +1336,29 @@ export class X6GraphAdapter implements IGraphAdapter {
   // - _updateEmbeddedNodeColor() → X6EmbeddingAdapter.updateEmbeddingAppearance()
 
   /**
-   * Centralized cell deletion handler - simplified without command pattern
+   * Centralized cell deletion handler - uses history coordinator for proper atomic deletion
    */
   private _handleCellDeletion(cell: Cell): void {
     const cellType = cell.isNode() ? 'node' : 'edge';
     this.logger.info(`[DFD] Delete tool clicked for ${cellType}`, { cellId: cell.id });
 
-    // Direct removal without command pattern
+    // Use history coordinator for atomic deletion with port visibility suppression
     if (this._graph) {
-      this._graph.removeCell(cell);
-      this.logger.info(`[DFD] ${cellType} removed directly from graph`, {
+      this._historyCoordinator.executeAtomicOperation(
+        this._graph,
+        HISTORY_OPERATION_TYPES.TOOL_DELETION,
+        () => {
+          this._graph!.removeCell(cell);
+        },
+        {
+          includePortVisibility: false, // Suppress port visibility changes from history
+          includeVisualEffects: false,
+          includeHighlighting: false,
+          includeToolChanges: false
+        }
+      );
+      
+      this.logger.info(`[DFD] ${cellType} removed via atomic operation`, {
         cellId: cell.id,
       });
     }
