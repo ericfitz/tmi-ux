@@ -35,12 +35,15 @@
 
       <!-- User info and logout when authenticated -->
       <ng-container *ngIf="isAuthenticated">
-        <span
-          class="username"
-          [transloco]="'navbar.username'"
-          [translocoParams]="{ username: username }"
-          >{{ username }}</span
-        >
+        <button 
+          mat-button 
+          (click)="openUserPreferences()"
+          class="user-profile-button"
+          [matTooltip]="userEmail"
+          matTooltipPosition="below">
+          <mat-icon>person</mat-icon>
+          <span>{{ username }}</span>
+        </button>
         <button mat-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span [transloco]="'navbar.logoutButton'">Logout</span>

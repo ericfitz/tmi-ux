@@ -11,7 +11,8 @@
     "logoutButton": "Logout",
     "currentLanguage": "{{language}}",
     "username": "{{username}}",
-    "languageName": "{{language}}"
+    "languageName": "{{language}}",
+    "userProfileTooltip": "{{email}}"
   },
   "footer": {
     "about": "About",
@@ -322,5 +323,10 @@
       "writer": "Writer",
       "reader": "Reader"
     }
+  },
+  "userPreferences": {
+    "title": "User Preferences",
+    "diagramAnimationEffects": "Diagram animation effects",
+    "close": "Close"
   }
 }
