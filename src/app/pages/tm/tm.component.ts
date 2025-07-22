@@ -172,4 +172,123 @@ export class TmComponent implements OnInit, OnDestroy {
     this.logger.info('Opening collaboration session', { diagramId });
     void this.router.navigate(['/dfd', diagramId]);
   }
+
+  /**
+   * Load a threat model from desktop using File System Access API
+   */
+  async loadFromDesktop(): Promise<void> {
+    this.logger.info('Loading threat model from desktop');
+
+    try {
+      let fileHandle: FileSystemFileHandle;
+      let file: File;
+
+      // Check if File System Access API is supported
+      if ('showOpenFilePicker' in window) {
+        this.logger.debug('Using File System Access API');
+        
+        const [handle] = await window.showOpenFilePicker({
+          types: [
+            {
+              description: 'JSON files',
+              accept: {
+                'application/json': ['.json'],
+              },
+            },
+          ],
+          excludeAcceptAllOption: false,
+        });
+
+        fileHandle = handle;
+        file = await fileHandle.getFile();
+      } else {
+        // Fallback for browsers that don't support File System Access API
+        this.logger.debug('Using fallback file input method');
+        file = await this.selectFileViaInput();
+      }
+
+      // Read and parse the file content
+      const content = await file.text();
+      const threatModelData = JSON.parse(content) as Record<string, unknown>;
+
+      this.logger.info('File loaded successfully', { 
+        filename: file.name,
+        size: file.size,
+        type: file.type 
+      });
+
+      // Import the threat model
+      await this.importThreatModel(threatModelData);
+
+    } catch (error) {
+      // Check if user cancelled the operation
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        this.logger.debug('File selection cancelled by user');
+        return;
+      }
+      
+      // Handle other errors (file parsing, import errors, etc.)
+      this.logger.error('Failed to load threat model from file', error);
+    }
+  }
+
+  /**
+   * Fallback method for selecting files in browsers without File System Access API
+   */
+  private selectFileViaInput(): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+          resolve(file);
+        } else {
+          reject(new Error('No file selected'));
+        }
+      };
+      
+      input.oncancel = () => {
+        reject(new DOMException('User cancelled file selection', 'AbortError'));
+      };
+      
+      // Trigger file picker
+      input.click();
+    });
+  }
+
+  /**
+   * Import a threat model from parsed JSON data
+   */
+  private async importThreatModel(data: Record<string, unknown>): Promise<void> {
+    try {
+      // Basic validation - check if it has expected threat model structure
+      if (typeof data['id'] !== 'string' || typeof data['name'] !== 'string') {
+        throw new Error('Invalid threat model format: missing required fields (id, name)');
+      }
+
+      this.logger.info('Importing threat model', { 
+        id: data['id'], 
+        name: data['name'] 
+      });
+
+      // Use the threat model service to import/create the threat model
+      // This will handle the backend integration when available
+      const importedModel = await this.threatModelService.importThreatModel(
+        data as Partial<ThreatModel> & { id: string; name: string }
+      ).toPromise();
+      
+      if (importedModel) {
+        this.logger.info('Threat model imported successfully', { id: importedModel.id });
+        
+        // Navigate to the imported threat model
+        void this.router.navigate(['/tm', importedModel.id]);
+      }
+    } catch (error) {
+      this.logger.error('Failed to import threat model', error);
+      throw error;
+    }
+  }
 }

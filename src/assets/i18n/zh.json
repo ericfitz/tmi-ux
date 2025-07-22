@@ -1,120 +1,12 @@
 {
-  "contextMenu": {
-    "editText": "编辑文本",
-    "copyDefinitionToClipboard": "复制定义到剪贴板",
-    "moveForward": "向前移动",
-    "moveBackward": "向后移动",
-    "moveToFront": "移到最前",
-    "moveToBack": "移到最后",
-    "addInverseConnection": "添加反向连接"
-  },
-  "common": {
-    "save": "保存",
-    "cancel": "取消",
-    "actions": "操作",
-    "delete": "删除"
-  },
-  "navbar": {
-    "appTitle": "TMI: 威胁建模改进",
-    "logoutButton": "退出登录",
-    "currentLanguage": "{{language}}",
-    "username": "{{username}}",
-    "languageName": "{{language}}"
-  },
-  "footer": {
-    "about": "关于",
-    "privacy": "隐私政策",
-    "tos": "服务条款"
-  },
-  "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
-  "homeDescription": "一种协作威胁建模工具，旨在帮助团队识别、分析和记录其系统中的安全威胁。创建、共享和协作编辑威胁模型和图表，以提高应用程序安全性。",
-  "tos": {
-    "title": "服务条款",
-    "lastUpdatedDate": "2025-04-06",
-    "lastUpdated": "最后更新: ",
-    "intro": {
-      "part1": "欢迎使用我们的TMI实例。这些使用条款(\"条款\")规范您对本网站的访问和使用，本网站是由本网站",
-      "aboutLink": "关于",
-      "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序的一个实例。"
-    },
-    "section1": {
-      "title": "1. 接受条款",
-      "content": "通过访问和使用本网站，您接受并同意受本协议的条款和规定的约束。如果您不同意这些条款，请不要使用本网站。"
-    },
-    "section2": {
-      "title": "2. 网站使用",
-      "content": "本网站按原样提供，利用TMI，一个根据Apache 2.0许可证授权的开源软件。您只能将网站用于合法目的。您同意不滥用、破坏或尝试未经授权访问网站或其底层系统。"
-    },
-    "section3": {
-      "title": "3. 无保证",
-      "content": "本网站\"按原样\"提供，不提供任何形式的明示或暗示保证，包括但不限于适合特定目的、可用性或准确性。我们不保证不间断或无错误的操作。"
-    },
-    "section4": {
-      "title": "4. 责任限制",
-      "content": "在法律允许的最大范围内，运营商不对因您使用或无法使用网站而产生的任何直接、间接、附带或后果性损害负责。"
-    },
-    "section5": {
-      "title": "5. 开源软件",
-      "content": {
-        "part1": "本网站运行TMI软件，其源代码可在本网站",
-        "aboutLink": "关于",
-        "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。本网站的运营商可能与TMI项目或其创建者无关。"
-      }
-    },
-    "section6": {
-      "title": "6. 条款变更",
-      "content": "运营商可能随时更新这些条款。在变更后继续使用网站即表示接受更新后的条款。"
-    },
-    "section7": {
-      "title": "7. 终止",
-      "content": "运营商保留自行决定暂停或终止访问网站的权利，无需通知，无论出于何种原因。"
-    },
-    "section8": {
-      "title": "8. 适用法律",
-      "content": "这些条款受运营商总部所在地（如果是组织）或居住地（如果是个人）的司法管辖区法律管辖，不考虑法律冲突原则。"
-    },
-    "contactInfo": {
-      "part1": "如果您对这些条款有任何疑问，请随时通过",
-      "aboutLink": "关于",
-      "part2": "页面上的联系信息与本网站的运营商联系。"
-    }
-  },
-  "privacy": {
-    "title": "隐私政策",
-    "lastUpdatedDate": "2025-04-06",
-    "lastUpdated": "最后更新: ",
-    "intro1": {
-      "part1": "本网站是由本网站",
-      "aboutLink": "关于",
-      "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序(\"TMI\")的一个实例。"
-    },
-    "intro2": "运营商致力于保护您的隐私。本隐私政策解释了如何处理您的信息。",
-    "dataTitle": "无数据收集或存储",
-    "dataContent": "运营商不收集、存储或处理用户的任何个人数据。运营商不会跟踪您的活动，存储您的信息，或出于任何目的与第三方共享有关您的任何数据。",
-    "complianceTitle": "法律合规",
-    "complianceContent": "运营商只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
-    "changesTitle": "本政策的变更",
-    "changesContent": "运营商可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
-    "contactTitle": "联系我们",
-    "contactContent": {
-      "part1": "如果您对本隐私政策有任何疑问，请随时通过",
-      "aboutLink": "关于",
-      "part2": "页面上的联系信息与本网站的运营商联系。"
-    }
-  },
   "about": {
-    "title": "关于 TMI",
-    "description1": "TMI（威胁建模改进）是一个用于创建、管理和共享威胁模型的协作平台。我们的使命是使安全威胁建模变得易于访问、高效，并集成到软件开发生命周期中。",
-    "description2": "该平台具有交互式图表创建、实时协作和全面的威胁文档功能。TMI采用现代Web技术构建，通过协作建模帮助团队识别、分析和减轻安全威胁。",
-    "contacttitle": "运营者",
+    "bugReport": "提交错误：",
+    "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactoperator": "运营者：",
     "contactoperatordetails": "运营者联系方式：",
-    "sourcetitle": "TMI 应用程序",
-    "sourceCode": "源代码：",
-    "bugReport": "提交错误：",
-    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
-    "opensourcetitle": "开源软件",
+    "contacttitle": "运营者",
+    "description1": "TMI（威胁建模改进）是一个用于创建、管理和共享威胁模型的协作平台。我们的使命是使安全威胁建模变得易于访问、高效，并集成到软件开发生命周期中。",
+    "description2": "该平台具有交互式图表创建、实时协作和全面的威胁文档功能。TMI采用现代Web技术构建，通过协作建模帮助团队识别、分析和减轻安全威胁。",
     "opensource": {
       "paragraph1-intro": "此应用程序是在杰出开源项目的支持下构建的。我们感谢",
       "paragraph1-outro": "背后的社区，它们提供了出色的工具和资源，为我们的界面和功能注入了生机。",
@@ -122,171 +14,322 @@
       "paragraph2-outro": "开源项目提供的灵感，帮助塑造了我们构建安全且用户友好的应用程序的愿景和方法。",
       "paragraph3-intro": "特别感谢",
       "paragraph3-outro": "开源项目，该项目在整个项目开发过程中被使用。"
-    }
+    },
+    "opensourcetitle": "开源软件",
+    "sourceCode": "源代码：",
+    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourcetitle": "TMI 应用程序",
+    "title": "关于 TMI"
+  },
+  "collaboration": {
+    "availableCollaborationSessions": "可用协作会话",
+    "changeRole": "更改角色",
+    "collaboratorsHeader": "协作者",
+    "copyLink": "复制链接",
+    "endCollaboration": "结束协作",
+    "makeOwner": "设为所有者",
+    "makeReader": "设为阅读者",
+    "makeWriter": "设为编辑者",
+    "manageCollaboration": "管理协作",
+    "removeUser": "移除用户",
+    "roles": {
+      "owner": "所有者",
+      "reader": "阅读者",
+      "writer": "编辑者"
+    },
+    "shareLinkHeader": "分享协作链接",
+    "startCollaboration": "开始协作",
+    "title": "协作"
+  },
+  "common": {
+    "actions": "操作",
+    "cancel": "取消",
+    "delete": "删除",
+    "ok": "确定",
+    "save": "保存"
+  },
+  "contextMenu": {
+    "addInverseConnection": "添加反向连接",
+    "copyDefinitionToClipboard": "复制定义到剪贴板",
+    "editText": "编辑文本",
+    "moveBackward": "向后移动",
+    "moveForward": "向前移动",
+    "moveToBack": "移到最后",
+    "moveToFront": "移到最前"
   },
   "diagrams": {
-    "pageTitle": "我的图表",
-    "lastModified": "最后修改: {{date}}",
-    "noItemsMessage": "您还没有任何图表。",
     "createFirstButton": "创建您的第一个图表",
     "diagramTitle": "{{name}}",
+    "lastModified": "最后修改: {{date}}",
+    "noItemsMessage": "您还没有任何图表。",
+    "pageTitle": "我的图表",
     "tooltips": {
       "create": "创建",
       "delete": "删除"
     }
   },
-  "threatModels": {
-    "pageTitle": "威胁模型",
-    "dashboard": "仪表板",
-    "yourThreatModels": "您的威胁模型",
-    "threatModelPrefix": "威胁模型:",
-    "lastModified": "最后修改: {{date}}",
-    "noItemsMessage": "您还没有任何威胁模型。",
-    "createFirstButton": "创建您的第一个威胁模型",
-    "newThreatModel": "新威胁模型",
-    "details": "威胁模型详情",
-    "name": "名称",
-    "description": "描述",
-    "descriptionPlaceholder": "描述此威胁模型的目的和范围",
-    "metadata": "元数据",
-    "metadataButton": "管理元数据",
-    "metadataTooltip": "管理元数据",
-    "sourceCodeButton": "源代码",
-    "sourceCodeTooltip": "源代码",
-    "reportButton": "报告",
-    "reportTooltip": "报告",
-    "noMetadata": "没有可用的元数据",
-    "addMetadata": "添加元数据",
-    "threats": "威胁",
-    "noThreats": "尚未定义威胁",
-    "diagrams": "图表",
-    "noDiagrams": "尚未添加图表",
-    "documents": "文档",
-    "noDocuments": "尚未添加文档",
-    "diagramsCount": "图表",
-    "threatsCount": "威胁",
-    "idLabel": "ID:",
-    "createdBy": "创建者:",
-    "metadataKey": "键",
-    "metadataValue": "值",
-    "permissions": "权限",
-    "permissionsButton": "权限",
-    "permissionsTooltip": "管理权限",
-    "permissionsUser": "用户",
-    "permissionsRole": "角色",
-    "noPermissions": "未定义权限",
-    "addPermission": "添加权限",
-    "threatId": "威胁ID",
-    "createdAt": "创建时间",
-    "modifiedAt": "最后修改",
-    "copyToClipboard": "复制到剪贴板",
-    "tooltips": {
-      "create": "创建",
-      "delete": "删除",
-      "addThreat": "添加威胁",
-      "addDiagram": "添加图表",
-      "addDocument": "添加文档",
-      "viewThreat": "查看威胁",
-      "editThreat": "编辑威胁",
-      "renameDiagram": "重命名图表",
-      "deleteDiagram": "删除图表",
-      "openDiagram": "打开图表",
-      "deleteThreat": "删除威胁"
-    }
-  },
   "editor": {
-    "pageTitle": "数据流图编辑器",
     "diagramPrefix": "图表:",
+    "nodeLabels": {
+      "actor": "角色",
+      "node": "节点",
+      "process": "处理",
+      "securityBoundary": "安全边界",
+      "store": "数据存储",
+      "textbox": "文本"
+    },
+    "pageTitle": "数据流图编辑器",
     "properties": {
-      "title": "属性",
-      "help": "选择元素后，元素属性将显示在此处。"
+      "help": "选择元素后，元素属性将显示在此处。",
+      "title": "属性"
     },
     "toolbar": {
       "tooltips": {
         "addActor": "添加角色",
         "addProcess": "添加处理",
-        "addStore": "添加存储",
         "addSecurityBoundary": "添加安全边界",
+        "addStore": "添加存储",
         "addTextbox": "添加文本框",
-        "deleteSelected": "删除所选",
-        "undo": "撤销",
-        "redo": "重做",
         "addThreat": "添加威胁",
-        "share": "分享",
+        "close": "关闭",
+        "deleteSelected": "删除所选",
         "export": "导出...",
-        "close": "关闭"
+        "redo": "重做",
+        "share": "分享",
+        "undo": "撤销"
       }
-    },
-    "nodeLabels": {
-      "actor": "角色",
-      "process": "处理",
-      "store": "数据存储",
-      "securityBoundary": "安全边界",
-      "textbox": "文本",
-      "node": "节点"
     }
   },
+  "footer": {
+    "about": "关于",
+    "privacy": "隐私政策",
+    "tos": "服务条款"
+  },
+  "homeDescription": "一种协作威胁建模工具，旨在帮助团队识别、分析和记录其系统中的安全威胁。创建、共享和协作编辑威胁模型和图表，以提高应用程序安全性。",
+  "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
+  "navbar": {
+    "appTitle": "TMI: 威胁建模改进",
+    "currentLanguage": "{{language}}",
+    "languageName": "{{language}}",
+    "logoutButton": "退出登录",
+    "userProfileTooltip": "{{email}}",
+    "username": "{{username}}"
+  },
+  "privacy": {
+    "changesContent": "运营商可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
+    "changesTitle": "本政策的变更",
+    "complianceContent": "运营商只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
+    "complianceTitle": "法律合规",
+    "contactContent": {
+      "aboutLink": "关于",
+      "part1": "如果您对本隐私政策有任何疑问，请随时通过",
+      "part2": "页面上的联系信息与本网站的运营商联系。"
+    },
+    "contactTitle": "联系我们",
+    "dataContent": "运营商不收集、存储或处理用户的任何个人数据。运营商不会跟踪您的活动，存储您的信息，或出于任何目的与第三方共享有关您的任何数据。",
+    "dataTitle": "无数据收集或存储",
+    "intro1": {
+      "aboutLink": "关于",
+      "part1": "本网站是由本网站",
+      "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序(\"TMI\")的一个实例。"
+    },
+    "intro2": "运营商致力于保护您的隐私。本隐私政策解释了如何处理您的信息。",
+    "lastUpdated": "最后更新: ",
+    "lastUpdatedDate": "2025-04-06",
+    "title": "隐私政策"
+  },
   "threatEditor": {
-    "createNewThreat": "创建新威胁",
-    "editThreat": "编辑威胁",
-    "viewThreat": "查看威胁",
-    "threatId": "威胁ID",
-    "threatName": "威胁名称",
-    "threatDescription": "威胁描述",
-    "threatDescriptionPlaceholder": "详细描述威胁",
-    "threatType": "威胁类型",
-    "severity": "严重程度",
-    "severityUnknown": "未知",
-    "severityNone": "无",
-    "severityLow": "低",
-    "severityMedium": "中",
-    "severityHigh": "高",
-    "severityCritical": "严重",
-    "score": "评分",
-    "priority": "优先级",
-    "status": "状态",
-    "mitigated": "已缓解",
-    "issueUrl": "问题URL",
-    "diagramId": "图表ID",
+    "actions": "操作",
+    "addMetadata": "添加元数据",
+    "cancel": "取消",
     "cellId": "单元格ID",
-    "notAssociatedWithDiagram": "未关联图表",
-    "notAssociatedWithCell": "未关联单元格",
-    "createdAt": "创建时间",
-    "modifiedAt": "最后修改",
+    "close": "关闭",
     "copyToClipboard": "复制到剪贴板",
+    "createNewThreat": "创建新威胁",
+    "createdAt": "创建时间",
+    "delete": "删除",
+    "diagramId": "图表ID",
+    "editThreat": "编辑威胁",
+    "issueUrl": "问题URL",
     "metadata": "元数据",
     "metadataKey": "键",
     "metadataValue": "值",
+    "mitigated": "已缓解",
+    "modifiedAt": "最后修改",
+    "noMetadata": "没有可用的元数据",
+    "notAssociatedWithCell": "未关联单元格",
+    "notAssociatedWithDiagram": "未关联图表",
+    "priority": "优先级",
+    "save": "保存",
+    "score": "评分",
+    "severity": "严重程度",
+    "severityCritical": "严重",
+    "severityHigh": "高",
+    "severityLow": "低",
+    "severityMedium": "中",
+    "severityNone": "无",
+    "severityUnknown": "未知",
+    "status": "状态",
+    "threatDescription": "威胁描述",
+    "threatDescriptionPlaceholder": "详细描述威胁",
+    "threatId": "威胁ID",
+    "threatName": "威胁名称",
+    "threatType": "威胁类型",
+    "validation": {
+      "maxLength": "最大长度为 {{max}} 个字符",
+      "required": "此字段为必填项"
+    },
+    "viewThreat": "查看威胁"
+  },
+  "threatModels": {
     "actions": "操作",
     "addMetadata": "添加元数据",
-    "delete": "删除",
-    "noMetadata": "没有可用的元数据",
-    "save": "保存",
-    "cancel": "取消",
+    "addPermission": "添加权限",
+    "cellId": "单元格ID",
     "close": "关闭",
+    "copyToClipboard": "复制到剪贴板",
+    "createFirstButton": "创建您的第一个威胁模型",
+    "createNewDiagram": "创建新图表",
+    "createNewThreat": "创建新威胁",
+    "createdAt": "创建时间",
+    "createdBy": "创建者:",
+    "dashboard": "仪表板",
+    "delete": "删除",
+    "description": "描述",
+    "descriptionPlaceholder": "描述此威胁模型的目的和范围",
+    "details": "威胁模型详情",
+    "diagramId": "图表ID",
+    "diagramName": "图表名称",
+    "diagrams": "图表",
+    "diagramsCount": "图表",
+    "documents": "文档",
+    "downloadButton": "下载到桌面",
+    "downloadTooltip": "下载到桌面",
+    "editThreat": "编辑威胁",
+    "idLabel": "ID:",
+    "issueUrl": "问题URL",
+    "lastModified": "最后修改: {{date}}",
+    "metadata": "元数据",
+    "metadataButton": "管理元数据",
+    "metadataKey": "键",
+    "metadataTooltip": "管理元数据",
+    "metadataValue": "值",
+    "mitigated": "已缓解",
+    "modifiedAt": "最后修改",
+    "name": "名称",
+    "newThreatModel": "新威胁模型",
+    "noDiagrams": "尚未添加图表",
+    "noDocuments": "尚未添加文档",
+    "noItemsMessage": "您还没有任何威胁模型。",
+    "noMetadata": "没有可用的元数据",
+    "noPermissions": "未定义权限",
+    "noThreats": "尚未定义威胁",
+    "pageTitle": "威胁模型",
+    "permissions": "权限",
+    "permissionsButton": "权限",
+    "permissionsRole": "角色",
+    "permissionsTooltip": "管理权限",
+    "permissionsUser": "用户",
+    "priority": "优先级",
+    "rename": "重命名",
+    "renameDiagram": "重命名图表",
+    "reportButton": "报告",
+    "reportTooltip": "报告",
+    "score": "评分",
+    "severity": "严重程度",
+    "severityCritical": "严重",
+    "severityHigh": "高",
+    "severityLow": "低",
+    "severityMedium": "中",
+    "severityNone": "无",
+    "severityUnknown": "未知",
+    "sourceCodeButton": "源代码",
+    "sourceCodeTooltip": "源代码",
+    "status": "状态",
+    "threatDescription": "威胁描述",
+    "threatDescriptionPlaceholder": "详细描述威胁",
+    "threatId": "威胁ID",
+    "threatModelFramework": "威胁模型框架",
+    "threatModelPrefix": "威胁模型:",
+    "threatName": "威胁名称",
+    "threatType": "威胁类型",
+    "threats": "威胁",
+    "threatsCount": "威胁",
+    "tooltips": {
+      "addDiagram": "添加图表",
+      "addDocument": "添加文档",
+      "addThreat": "添加威胁",
+      "create": "创建",
+      "delete": "删除",
+      "deleteDiagram": "删除图表",
+      "deleteThreat": "删除威胁",
+      "editThreat": "编辑威胁",
+      "loadFromDesktop": "从桌面加载",
+      "openDiagram": "打开图表",
+      "renameDiagram": "重命名图表",
+      "viewThreat": "查看威胁"
+    },
     "validation": {
-      "required": "此字段为必填项",
-      "maxLength": "最大长度为 {{max}} 个字符"
-    }
+      "maxLength": "最大长度为 {{max}} 个字符",
+      "required": "此字段为必填项"
+    },
+    "viewThreat": "查看威胁",
+    "yourThreatModels": "您的威胁模型"
   },
-  "collaboration": {
-    "title": "协作",
-    "availableCollaborationSessions": "可用协作会话",
-    "startCollaboration": "开始协作",
-    "endCollaboration": "结束协作",
-    "manageCollaboration": "管理协作",
-    "shareLinkHeader": "分享协作链接",
-    "copyLink": "复制链接",
-    "collaboratorsHeader": "协作者",
-    "changeRole": "更改角色",
-    "makeOwner": "设为所有者",
-    "makeWriter": "设为编辑者",
-    "makeReader": "设为阅读者",
-    "removeUser": "移除用户",
-    "roles": {
-      "owner": "所有者",
-      "writer": "编辑者",
-      "reader": "阅读者"
-    }
+  "tos": {
+    "contactInfo": {
+      "aboutLink": "关于",
+      "part1": "如果您对这些条款有任何疑问，请随时通过",
+      "part2": "页面上的联系信息与本网站的运营商联系。"
+    },
+    "intro": {
+      "aboutLink": "关于",
+      "part1": "欢迎使用我们的TMI实例。这些使用条款(\"条款\")规范您对本网站的访问和使用，本网站是由本网站",
+      "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序的一个实例。"
+    },
+    "lastUpdated": "最后更新: ",
+    "lastUpdatedDate": "2025-04-06",
+    "section1": {
+      "content": "通过访问和使用本网站，您接受并同意受本协议的条款和规定的约束。如果您不同意这些条款，请不要使用本网站。",
+      "title": "1. 接受条款"
+    },
+    "section2": {
+      "content": "本网站按原样提供，利用TMI，一个根据Apache 2.0许可证授权的开源软件。您只能将网站用于合法目的。您同意不滥用、破坏或尝试未经授权访问网站或其底层系统。",
+      "title": "2. 网站使用"
+    },
+    "section3": {
+      "content": "本网站\"按原样\"提供，不提供任何形式的明示或暗示保证，包括但不限于适合特定目的、可用性或准确性。我们不保证不间断或无错误的操作。",
+      "title": "3. 无保证"
+    },
+    "section4": {
+      "content": "在法律允许的最大范围内，运营商不对因您使用或无法使用网站而产生的任何直接、间接、附带或后果性损害负责。",
+      "title": "4. 责任限制"
+    },
+    "section5": {
+      "content": {
+        "aboutLink": "关于",
+        "part1": "本网站运行TMI软件，其源代码可在本网站",
+        "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。本网站的运营商可能与TMI项目或其创建者无关。"
+      },
+      "title": "5. 开源软件"
+    },
+    "section6": {
+      "content": "运营商可能随时更新这些条款。在变更后继续使用网站即表示接受更新后的条款。",
+      "title": "6. 条款变更"
+    },
+    "section7": {
+      "content": "运营商保留自行决定暂停或终止访问网站的权利，无需通知，无论出于何种原因。",
+      "title": "7. 终止"
+    },
+    "section8": {
+      "content": "这些条款受运营商总部所在地（如果是组织）或居住地（如果是个人）的司法管辖区法律管辖，不考虑法律冲突原则。",
+      "title": "8. 适用法律"
+    },
+    "title": "服务条款"
+  },
+  "userPreferences": {
+    "close": "关闭",
+    "diagramAnimationEffects": "图表动画效果",
+    "title": "用户偏好"
   }
 }

@@ -5,14 +5,24 @@
 <div class="tm-container">
   <div class="header-row">
     <h2 class="section-title" [transloco]="'threatModels.yourThreatModels'">Your Threat Models</h2>
-    <button
-      mat-icon-button
-      color="primary"
-      (click)="createThreatModel()"
-      [matTooltip]="'threatModels.tooltips.create' | transloco"
-    >
-      <mat-icon>add</mat-icon>
-    </button>
+    <div class="header-actions">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="loadFromDesktop()"
+        [matTooltip]="'threatModels.tooltips.loadFromDesktop' | transloco"
+      >
+        <mat-icon>file_open</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="createThreatModel()"
+        [matTooltip]="'threatModels.tooltips.create' | transloco"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="threat-models-list">

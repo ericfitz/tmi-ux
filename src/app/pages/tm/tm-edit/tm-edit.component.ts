@@ -647,4 +647,126 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // TODO: Implement report functionality
     this.logger.info('Report clicked - functionality to be implemented');
   }
+
+  /**
+   * Downloads the threat model as a JSON file to the desktop
+   */
+  downloadToDesktop(): void {
+    if (!this.threatModel) {
+      this.logger.warn('Cannot download threat model: no threat model loaded');
+      return;
+    }
+
+    this.logger.info('Downloading threat model to desktop', { 
+      threatModelId: this.threatModel.id,
+      threatModelName: this.threatModel.name 
+    });
+
+    try {
+      // Generate filename: threat model name (truncated to 63 chars) + "-threat-model.json"
+      const filename = this.generateThreatModelFilename(this.threatModel.name);
+      
+      // Serialize the complete threat model as JSON
+      const jsonContent = JSON.stringify(this.threatModel, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+
+      // Use the same file picker pattern as DFD exports
+      this.handleThreatModelExport(blob, filename).catch(error => {
+        this.logger.error('Error downloading threat model', error);
+      });
+    } catch (error) {
+      this.logger.error('Error preparing threat model download', error);
+    }
+  }
+
+  /**
+   * Generate filename for threat model download
+   * Format: "{threatModelName}-threat-model.json" (name truncated to 63 chars)
+   */
+  private generateThreatModelFilename(threatModelName: string): string {
+    // Helper function to sanitize and truncate names for filenames
+    const sanitizeAndTruncate = (name: string, maxLength: number): string => {
+      // Remove or replace characters that are invalid in filenames
+      const sanitized = name
+        .replace(/[<>:"/\\|?*]/g, '-') // Replace invalid filename characters with dash
+        .replace(/\s+/g, '-') // Replace spaces with dashes
+        .replace(/-+/g, '-') // Replace multiple dashes with single dash
+        .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
+      
+      // Truncate to max length
+      return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
+    };
+
+    // Sanitize and truncate the threat model name
+    const sanitizedName = sanitizeAndTruncate(threatModelName.trim(), 63);
+    
+    // If sanitization resulted in an empty string, use default with timestamp
+    if (!sanitizedName) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      return `threat-model-${timestamp}.json`;
+    }
+
+    const filename = `${sanitizedName}-threat-model.json`;
+    
+    this.logger.debug('Generated threat model filename', { 
+      originalName: threatModelName,
+      sanitizedName,
+      filename 
+    });
+
+    return filename;
+  }
+
+  /**
+   * Handle threat model export using File System Access API with fallback
+   */
+  private async handleThreatModelExport(blob: Blob, filename: string): Promise<void> {
+    // Check if File System Access API is supported
+    if ('showSaveFilePicker' in window) {
+      try {
+        this.logger.debug('Using File System Access API for threat model save');
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: 'JSON files',
+            accept: { 'application/json': ['.json'] },
+          }],
+        });
+
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        
+        this.logger.info('Threat model saved successfully using File System Access API', { filename });
+        return; // Success, exit early
+      } catch (error) {
+        // Handle File System Access API errors
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          this.logger.debug('Threat model save cancelled by user');
+          return; // User cancelled, exit without fallback
+        } else {
+          this.logger.warn('File System Access API failed, falling back to download method', error);
+          // Continue to fallback method below
+        }
+      }
+    } else {
+      this.logger.debug('File System Access API not supported, using fallback download method');
+    }
+
+    // Fallback method for unsupported browsers or API failures
+    try {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      this.logger.info('Threat model downloaded successfully using fallback method', { filename });
+    } catch (fallbackError) {
+      this.logger.error('Both File System Access API and fallback method failed', fallbackError);
+      throw fallbackError;
+    }
+  }
 }

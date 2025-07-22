@@ -11,6 +11,16 @@
       <button
         mat-button
         color="primary"
+        (click)="downloadToDesktop()"
+        [matTooltip]="'threatModels.downloadTooltip' | transloco"
+        [attr.aria-label]="'threatModels.downloadButton' | transloco"
+      >
+        <mat-icon>file_download</mat-icon>
+        <span [transloco]="'threatModels.downloadButton'">Download to desktop</span>
+      </button>
+      <button
+        mat-button
+        color="primary"
         (click)="openReport()"
         [matTooltip]="'threatModels.reportTooltip' | transloco"
         [attr.aria-label]="'threatModels.reportButton' | transloco"

@@ -188,6 +188,48 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Import a threat model from external JSON data
+   */
+  importThreatModel(data: Partial<ThreatModel> & { id: string; name: string }): Observable<ThreatModel> {
+    this.logger.info('Importing threat model', { originalId: data.id, name: data.name });
+
+    if (this._useMockData) {
+      // Generate a new ID to avoid conflicts
+      const importedModel: ThreatModel = {
+        ...data,
+        id: uuidv4(),
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        created_by: 'imported', // TODO: Use actual user when auth is implemented
+        owner: 'imported', // TODO: Use actual user when auth is implemented
+        threat_model_framework: data.threat_model_framework || 'STRIDE', // Provide default if missing
+        authorization: data.authorization || [], // Provide default if missing
+      };
+
+      // Add to local mock data
+      this._threatModels.push(importedModel);
+      
+      this.logger.debug('Imported threat model to mock data', { 
+        newId: importedModel.id, 
+        name: importedModel.name,
+        totalCount: this._threatModels.length 
+      });
+
+      return of(importedModel);
+    } else {
+      // For API mode, send the data to the backend
+      this.logger.debug('Sending threat model to API for import');
+      
+      return this.http.post<ThreatModel>('/api/threat-models/import', data).pipe(
+        catchError(error => {
+          this.logger.error('Failed to import threat model via API', error);
+          throw error;
+        }),
+      );
+    }
+  }
+
+  /**
    * Update a threat model
    */
   updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
