@@ -143,6 +143,13 @@
             "description": "Description of document purpose or content",
             "maxLength": 1024,
             "nullable": true
+          },
+          "metadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Metadata"
+            },
+            "description": "Key-value pairs for additional document metadata"
           }
         },
         "required": ["name", "url"],
@@ -150,7 +157,17 @@
           "id": "6ba7b810-9dad-11d1-beef-00c04fd430c8",
           "name": "Example Application Design",
           "url": "https://example.com/design.pdf",
-          "description": "Technical design document for the Example application"
+          "description": "Technical design document for the Example application",
+          "metadata": [
+            {
+              "key": "document_type",
+              "value": "technical_specification"
+            },
+            {
+              "key": "version",
+              "value": "1.2"
+            }
+          ]
         }
       },
       "Source": {
@@ -733,6 +750,24 @@
             }
           ],
           "metadata": [],
+          "documents": [
+            {
+              "id": "3ba7b810-9dad-11d1-beef-00c04fd430c8",
+              "name": "System Architecture Document",
+              "url": "https://docs.example.com/system-architecture.pdf",
+              "description": "Technical architecture documentation for the system",
+              "metadata": [
+                {
+                  "key": "document_type",
+                  "value": "architecture"
+                },
+                {
+                  "key": "version",
+                  "value": "2.1"
+                }
+              ]
+            }
+          ],
           "diagrams": ["22DB9004-435D-4765-9E41-0291AA8FE15A"],
           "threats": [
             {
@@ -1958,6 +1993,7 @@
                     }
                   ],
                   "metadata": [],
+                  "documents": [],
                   "diagrams": [],
                   "threats": []
                 }
@@ -2102,6 +2138,7 @@
                 }
               ],
               "metadata": [],
+              "documents": [],
               "diagrams": [],
               "threats": []
             }
@@ -2204,6 +2241,7 @@
                 }
               ],
               "metadata": [],
+              "documents": [],
               "diagrams": [],
               "threats": [
                 {
