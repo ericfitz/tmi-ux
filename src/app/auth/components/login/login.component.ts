@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, ProviderInfo } from '../../services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthError, OAuthResponse } from '../../models/auth.models';
 import { take } from 'rxjs';
@@ -28,6 +28,7 @@ interface LoginQueryParams {
 export class LoginComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
+  availableProviders: ProviderInfo[] = [];
   private returnUrl: string | null = null;
 
   constructor(
@@ -39,6 +40,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.logger.info('LoginComponent initialized');
+    
+    // Get available providers from auth service
+    this.availableProviders = this.authService.getAvailableProviders();
 
     this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
       this.returnUrl = params.returnUrl || '/tm';
@@ -55,15 +59,32 @@ export class LoginComponent implements OnInit {
           message: errorDescription || 'Authentication failed',
           retryable: true,
         });
+      } else if (this.availableProviders.length === 1 && !this.hasCallbackParams(params)) {
+        // Auto-login if only one provider available and not handling callback
+        this.login(this.availableProviders[0].id);
       }
     });
   }
 
-  loginWithGoogle(): void {
+  /**
+   * Check if we have callback parameters
+   */
+  private hasCallbackParams(params: LoginQueryParams): boolean {
+    return !!(params.code || params.error);
+  }
+
+  /**
+   * Generic login method - works with any configured provider
+   */
+  login(providerId?: string): void {
     this.isLoading = true;
     this.error = null;
-    this.logger.info('Initiating Google login from UI');
-    this.authService.loginWithGoogle();
+    
+    const provider = this.availableProviders.find(p => p.id === providerId);
+    const providerName = provider?.name || providerId || 'default provider';
+    
+    this.logger.info(`Initiating login with ${providerName}`);
+    this.authService.initiateLogin(providerId);
   }
 
   private handleOAuthCallback(response: OAuthResponse): void {

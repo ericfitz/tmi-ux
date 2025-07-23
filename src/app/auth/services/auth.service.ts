@@ -13,6 +13,17 @@ import {
 import { LoggerService } from '../../core/services/logger.service';
 import { environment } from '../../../environments/environment';
 import { AuthError, JwtToken, OAuthResponse, UserProfile, UserRole } from '../models/auth.models';
+import { OAuthProvider } from '../../../environments/environment.interface';
+import { LocalOAuthProviderService } from './local-oauth-provider.service';
+
+/**
+ * Provider information for UI display
+ */
+export interface ProviderInfo {
+  id: string;
+  name: string;
+  icon: string;
+}
 
 /**
  * Service for handling authentication with the TMI server
@@ -37,14 +48,50 @@ export class AuthService {
   username$ = this.userProfileSubject.pipe(map(profile => profile?.name || ''));
 
   // OAuth configuration
-  private readonly googleOAuthConfig = environment.oauth?.google;
   private readonly tokenStorageKey = 'auth_token';
   private readonly profileStorageKey = 'user_profile';
+
+  private get oauthProviders(): OAuthProvider[] {
+    return environment.oauth?.providers || [];
+  }
+
+  private get availableProviders(): ProviderInfo[] {
+    const providers: ProviderInfo[] = this.oauthProviders.map(p => ({
+      id: p.id,
+      name: p.name,
+      icon: p.icon
+    }));
+    
+    // Only show Local provider if:
+    // 1. We're in development environment, OR
+    // 2. We're in production but no other OAuth providers are configured
+    const shouldShowLocal = environment.oauth?.local?.enabled !== false && (
+      !environment.production || // Development environment
+      providers.length === 0     // Production but no other providers
+    );
+    
+    if (shouldShowLocal) {
+      providers.push({
+        id: 'local',
+        name: 'Local Development',
+        icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code'
+      });
+    }
+    
+    return providers;
+  }
+
+  private get defaultProvider(): string {
+    return environment.defaultAuthProvider || 
+           (this.availableProviders.find(p => p.id === 'local') ? 'local' : 
+            this.availableProviders[0]?.id || 'local');
+  }
 
   constructor(
     private router: Router,
     private http: HttpClient,
     private logger: LoggerService,
+    private localProvider: LocalOAuthProviderService,
   ) {
     this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
@@ -141,60 +188,99 @@ export class AuthService {
   }
 
   /**
-   * Initialize Google OAuth login flow
-   * Redirects to Google OAuth authorization URL
+   * Get available authentication providers with icon information
    */
-  loginWithGoogle(): void {
-    if (!this.googleOAuthConfig) {
+  getAvailableProviders(): ProviderInfo[] {
+    return this.availableProviders;
+  }
+
+  /**
+   * Initiate login with specified provider (or default if none specified)
+   */
+  initiateLogin(providerId?: string): void {
+    const selectedProvider = providerId || this.defaultProvider;
+    
+    if (selectedProvider === 'local') {
+      this.initiateLocalLogin();
+      return;
+    }
+
+    const provider = this.oauthProviders.find(p => p.id === selectedProvider);
+    if (!provider) {
       this.handleAuthError({
-        code: 'config_error',
-        message: 'Google OAuth configuration is missing',
-        retryable: false,
+        code: 'provider_not_found',
+        message: `Provider ${selectedProvider} is not configured`,
+        retryable: false
       });
       return;
     }
 
-    try {
-      this.logger.info('Initiating Google OAuth login flow');
+    this.initiateOAuthLogin(provider);
+  }
 
-      // Generate a random state for CSRF protection
+  /**
+   * Generic OAuth login initiation
+   */
+  private initiateOAuthLogin(provider: OAuthProvider): void {
+    try {
+      this.logger.info(`Initiating OAuth login with ${provider.name}`);
+
       const state = this.generateRandomState();
       localStorage.setItem('oauth_state', state);
+      localStorage.setItem('oauth_provider', provider.id);
 
-      // Build the authorization URL
-      const authUrl = this.buildGoogleAuthUrl(state);
-
-      // Redirect to Google OAuth
+      const authUrl = this.buildAuthUrl(provider, state);
       window.location.href = authUrl;
     } catch (error) {
       this.handleAuthError({
         code: 'oauth_init_error',
-        message: 'Failed to initialize OAuth flow',
-        retryable: true,
+        message: `Failed to initialize ${provider.name} OAuth flow`,
+        retryable: true
       });
-      this.logger.error('Error initializing Google OAuth', error);
+      this.logger.error(`Error initializing ${provider.name} OAuth`, error);
     }
   }
 
   /**
-   * Build the Google OAuth authorization URL
+   * Initiate local provider login
+   */
+  private initiateLocalLogin(): void {
+    try {
+      this.logger.info('Initiating local provider login');
+
+      const state = this.generateRandomState();
+      localStorage.setItem('oauth_state', state);
+      localStorage.setItem('oauth_provider', 'local');
+
+      const authUrl = this.localProvider.buildAuthUrl(state);
+      window.location.href = authUrl;
+    } catch (error) {
+      this.handleAuthError({
+        code: 'local_auth_error',
+        message: 'Failed to initialize local authentication',
+        retryable: true
+      });
+      this.logger.error('Error initializing local authentication', error);
+    }
+  }
+
+  /**
+   * Build generic OAuth authorization URL
+   * @param provider OAuth provider configuration
    * @param state Random state for CSRF protection
    * @returns The authorization URL
    */
-  private buildGoogleAuthUrl(state: string): string {
-    if (!this.googleOAuthConfig) {
-      throw new Error('Google OAuth configuration is missing');
-    }
-
+  private buildAuthUrl(provider: OAuthProvider, state: string): string {
     const params = new URLSearchParams({
-      client_id: this.googleOAuthConfig.clientId,
-      redirect_uri: this.googleOAuthConfig.redirectUri,
+      client_id: provider.clientId,
+      redirect_uri: provider.redirectUri,
       response_type: 'code',
-      scope: 'openid email profile',
+      scope: provider.scopes.join(' '),
       state,
+      ...provider.additionalParams
     });
 
-    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    return `${provider.authUrl}?${params.toString()}`;
   }
 
   /**
@@ -208,7 +294,7 @@ export class AuthService {
   }
 
   /**
-   * Handle OAuth callback from Google
+   * Handle OAuth callback - now completely generic
    * @param response OAuth response containing code and state
    * @returns Observable that resolves to true if authentication is successful
    */
@@ -226,26 +312,27 @@ export class AuthService {
       return of(false);
     }
 
-    // Clear the stored state
+    const providerId = localStorage.getItem('oauth_provider');
     localStorage.removeItem('oauth_state');
+    localStorage.removeItem('oauth_provider');
 
-    // Exchange the authorization code for a token
-    return this.exchangeCodeForToken(response.code).pipe(
+    // Handle local provider
+    if (providerId === 'local') {
+      return this.handleLocalCallback(response);
+    }
+
+    // Handle all other providers generically via TMI server
+    return this.exchangeCodeForToken(response.code, providerId).pipe(
       map(token => {
-        // Store the token
         this.storeToken(token);
-
-        // Get user profile from token
         const userProfile = this.extractUserProfileFromToken(token);
         this.storeUserProfile(userProfile);
 
-        // Update authentication state
         this.isAuthenticatedSubject.next(true);
         this.userProfileSubject.next(userProfile);
 
-        this.logger.info(`User ${userProfile.email} successfully logged in`);
+        this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`);
         void this.router.navigate(['/tm']);
-
         return true;
       }),
       catchError(error => {
@@ -261,34 +348,101 @@ export class AuthService {
   }
 
   /**
-   * Exchange authorization code for JWT token
+   * Handle local OAuth callback
+   */
+  private handleLocalCallback(response: OAuthResponse): Observable<boolean> {
+    const userInfo = this.localProvider.exchangeCodeForUser(response.code);
+    if (!userInfo) {
+      this.handleAuthError({
+        code: 'local_auth_error',
+        message: 'Failed to authenticate with local provider',
+        retryable: true
+      });
+      return of(false);
+    }
+
+    // Create a local JWT-like token
+    const token = this.createLocalToken(userInfo);
+    this.storeToken(token);
+    this.storeUserProfile(userInfo);
+
+    this.isAuthenticatedSubject.next(true);
+    this.userProfileSubject.next(userInfo);
+
+    this.logger.info(`Local user ${userInfo.email} successfully logged in`);
+    void this.router.navigate(['/tm']);
+    return of(true);
+  }
+
+  /**
+   * Exchange authorization code for JWT token via TMI server
    * @param code Authorization code from OAuth provider
+   * @param providerId ID of the OAuth provider used
    * @returns Observable with JWT token
    */
-  private exchangeCodeForToken(code: string): Observable<JwtToken> {
-    this.logger.debug('Exchanging authorization code for token');
+  private exchangeCodeForToken(code: string, providerId: string | null): Observable<JwtToken> {
+    this.logger.debug(`Exchanging authorization code for token via ${providerId}`);
 
-    return this.http
-      .post<{ token: string; expires_in: number }>(`${environment.apiUrl}/auth/token`, {
+    return this.http.post<{ token: string; expires_in: number }>(
+      `${environment.apiUrl}/auth/token`, 
+      {
         code,
-        redirect_uri: this.googleOAuthConfig?.redirectUri,
-      })
-      .pipe(
-        map(response => {
-          const expiresAt = new Date();
-          expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
+        provider: providerId,
+        redirect_uri: this.getRedirectUri(providerId)
+      }
+    ).pipe(
+      map(response => {
+        const expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
 
-          return {
-            token: response.token,
-            expiresIn: response.expires_in,
-            expiresAt,
-          };
-        }),
-        catchError((error: HttpErrorResponse) => {
-          this.logger.error('Token exchange error', error);
-          return throwError(() => new Error('Failed to exchange code for token'));
-        }),
-      );
+        return {
+          token: response.token,
+          expiresIn: response.expires_in,
+          expiresAt
+        };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.logger.error('Token exchange error', error);
+        return throwError(() => new Error('Failed to exchange code for token'));
+      })
+    );
+  }
+
+  /**
+   * Get redirect URI for specified provider
+   */
+  private getRedirectUri(providerId: string | null): string {
+    const provider = this.oauthProviders.find(p => p.id === providerId);
+    return provider?.redirectUri || `${window.location.origin}/auth/callback`;
+  }
+
+  /**
+   * Create a local JWT-like token for development use
+   */
+  private createLocalToken(userInfo: UserProfile): JwtToken {
+    const header = { alg: 'HS256', typ: 'JWT' };
+    const payload = {
+      sub: userInfo.email,
+      name: userInfo.name,
+      email: userInfo.email,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (environment.authTokenExpiryMinutes * 60),
+      provider: 'local'
+    };
+
+    // Create a fake JWT (just for consistency, server not involved)
+    const fakeJwt = btoa(JSON.stringify(header)) + '.' + 
+                   btoa(JSON.stringify(payload)) + '.' + 
+                   'local-signature';
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + environment.authTokenExpiryMinutes);
+
+    return {
+      token: fakeJwt,
+      expiresIn: environment.authTokenExpiryMinutes * 60,
+      expiresAt
+    };
   }
 
   /**

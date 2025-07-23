@@ -1,4 +1,49 @@
 /**
+ * OAuth provider configuration
+ */
+export interface OAuthProvider {
+  /**
+   * Unique identifier for the provider
+   */
+  id: string;
+
+  /**
+   * Display name for the provider
+   */
+  name: string;
+
+  /**
+   * OAuth authorization URL
+   */
+  authUrl: string;
+
+  /**
+   * OAuth scopes to request
+   */
+  scopes: string[];
+
+  /**
+   * OAuth client ID
+   */
+  clientId: string;
+
+  /**
+   * OAuth redirect URI
+   */
+  redirectUri: string;
+
+  /**
+   * FontAwesome icon class (e.g., "fa-brands fa-google")
+   */
+  icon: string;
+
+  /**
+   * Additional URL parameters for the authorization request
+   */
+  additionalParams?: Record<string, string>;
+}
+
+/**
  * Interface for application environment configuration
  * This interface defines all environment variables used in the application
  */
@@ -98,20 +143,41 @@ export interface Environment {
    */
   oauth?: {
     /**
-     * Google OAuth configuration
+     * Configured OAuth providers
      */
-    google?: {
+    providers?: OAuthProvider[];
+
+    /**
+     * Local development provider configuration
+     */
+    local?: {
       /**
-       * Google OAuth client ID
-       * Obtained from Google Cloud Console
+       * Whether local provider is enabled
+       * Default: true in development, false in production
        */
-      clientId: string;
+      enabled?: boolean;
 
       /**
-       * Redirect URI for OAuth callback
-       * Must match one of the authorized redirect URIs in Google Cloud Console
+       * FontAwesome icon class for local provider
+       * Default: 'fa-solid fa-laptop-code'
        */
-      redirectUri: string;
+      icon?: string;
+
+      /**
+       * Available test users for local development
+       */
+      users?: Array<{
+        id: string;
+        name: string;
+        email: string;
+        picture?: string;
+      }>;
     };
   };
+
+  /**
+   * Default authentication provider to use
+   * If not specified, will use 'local' if available, otherwise first configured provider
+   */
+  defaultAuthProvider?: string;
 }

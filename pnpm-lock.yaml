@@ -72,6 +72,9 @@ importers:
       '@antv/x6-plugin-transform':
         specifier: ^2.1.8
         version: 2.1.8(@antv/x6@2.18.1)
+      '@fortawesome/fontawesome-free':
+        specifier: ^7.0.0
+        version: 7.0.0
       '@jsverse/transloco':
         specifier: ^7.6.1
         version: 7.6.1(@angular/core@20.1.0(@angular/compiler@20.1.0)(rxjs@7.8.2)(zone.js@0.15.1))(typescript@5.8.3)
@@ -1447,6 +1450,10 @@ packages:
   '@eslint/plugin-kit@0.3.3':
     resolution: {integrity: sha512-1+WqvgNMhmlAambTvT3KPtCl/Ibr68VldY2XY40SL1CE0ZXiakFR/cbTspaF5HsnpDMvcYYoJHfl4980NBjGag==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@fortawesome/fontawesome-free@7.0.0':
+    resolution: {integrity: sha512-X48nISrSOa89zu2VMljC4XaRf8NmgTwQBVHfS2Nu5G00ZwM31oOVrAtGxZF3b6wDYf9lJsf/Eq4cCSFKIkOWPQ==}
+    engines: {node: '>=6'}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -8076,6 +8083,8 @@ snapshots:
     dependencies:
       '@eslint/core': 0.15.1
       levn: 0.4.1
+
+  '@fortawesome/fontawesome-free@7.0.0': {}
 
   '@humanfs/core@0.19.1': {}
 

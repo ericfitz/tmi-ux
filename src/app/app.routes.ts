@@ -34,6 +34,13 @@ export const routes: Routes = [
       ).then(c => c.UnauthorizedComponent),
   },
   {
+    path: 'auth/local-select',
+    loadComponent: () =>
+      import(
+        /* webpackChunkName: "local-auth" */ './auth/components/local-user-select/local-user-select.component'
+      ).then(c => c.LocalUserSelectComponent),
+  },
+  {
     path: 'about',
     loadComponent: () =>
       import(/* webpackChunkName: "about" */ './pages/about/about.component').then(

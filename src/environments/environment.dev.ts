@@ -14,10 +14,36 @@ export const environment: Environment = {
   serverPort: 4200,
   serverInterface: '0.0.0.0',
   enableTLS: false,
+  defaultAuthProvider: 'local',
   oauth: {
-    google: {
-      clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual Google OAuth client ID
-      redirectUri: 'http://localhost:4200/auth/callback',
-    },
+    providers: [
+      {
+        id: 'google',
+        name: 'Google',
+        authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+        scopes: ['openid', 'email', 'profile'],
+        clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual Google OAuth client ID
+        redirectUri: 'http://localhost:4200/auth/callback',
+        icon: 'fa-brands fa-google'
+      },
+      {
+        id: 'github',
+        name: 'GitHub',
+        authUrl: 'https://github.com/login/oauth/authorize',
+        scopes: ['user:email'],
+        clientId: 'YOUR_GITHUB_CLIENT_ID', // Replace with actual GitHub OAuth client ID
+        redirectUri: 'http://localhost:4200/auth/callback',
+        icon: 'fa-brands fa-github'
+      }
+    ],
+    local: {
+      enabled: true,
+      icon: 'fa-solid fa-laptop-code',
+      users: [
+        { id: 'user1', name: 'Alice Developer', email: 'user1@example.com' },
+        { id: 'user2', name: 'Bob Tester', email: 'user2@example.com' },
+        { id: 'user3', name: 'Charlie Admin', email: 'user3@example.com' }
+      ]
+    }
   },
 };

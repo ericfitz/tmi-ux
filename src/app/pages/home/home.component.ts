@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from '../../core/rxjs-imports';
 
@@ -13,7 +13,7 @@ import { AuthService } from '../../auth/services/auth.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CoreMaterialModule, TranslocoModule],
+  imports: [CommonModule, CoreMaterialModule, TranslocoModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -45,18 +45,4 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  loginUser1(): void {
-    // Use auth service for login with user1
-    this.authService.demoLogin('user1@example.com');
-  }
-
-  loginUser2(): void {
-    // Use auth service for login with user2
-    this.authService.demoLogin('user2@example.com');
-  }
-
-  loginUser3(): void {
-    // Use auth service for login with user3
-    this.authService.demoLogin('user3@example.com');
-  }
 }

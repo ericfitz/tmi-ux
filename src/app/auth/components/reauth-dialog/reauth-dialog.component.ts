@@ -63,9 +63,9 @@ export class ReauthDialogComponent implements OnInit {
         },
       });
     } else {
-      // For OAuth users, redirect to Google OAuth login page
-      this.logger.info('Attempting re-authentication via Google OAuth');
-      this.authService.loginWithGoogle();
+      // For OAuth users, redirect to default OAuth login page
+      this.logger.info('Attempting re-authentication via OAuth');
+      this.authService.initiateLogin();
 
       // Note: The dialog will be closed by the OAuth callback handler
       // once the authentication flow completes.
