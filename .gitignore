@@ -44,6 +44,8 @@ testem.log
 Thumbs.db
 
 # AI assistant files
+.claude
+.claude/*
 CLAUDE.local.md
 .clinerules
 CLAUDE.md
