@@ -5,10 +5,11 @@ import { Router } from '@angular/router';
 import { Subscription, BehaviorSubject, Subject, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Cell } from '@antv/x6';
-import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { FrameworkService } from '../../../shared/services/framework.service';
+import { Threat } from '../../tm/models/threat-model.model';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
@@ -59,6 +60,7 @@ export class DfdEventHandlersService {
     private logger: LoggerService,
     private x6SelectionAdapter: X6SelectionAdapter,
     private threatModelService: ThreatModelService,
+    private frameworkService: FrameworkService,
     private dialog: MatDialog,
     private router: Router,
   ) {}
@@ -236,6 +238,29 @@ export class DfdEventHandlersService {
       return;
     }
 
+    // Get the selected cell to determine shape type
+    const selectedCell = this._selectedCells$.value[0];
+    let shapeType: string | undefined;
+    
+    if (selectedCell?.shape) {
+      // Map DFD shape names to framework shape types
+      const shapeMapping: Record<string, string> = {
+        'process': 'Process',
+        'store': 'Store', 
+        'actor': 'Actor',
+        'edge': 'Flow',
+        // security-boundary and text-box don't map to threat framework shapes
+      };
+      
+      shapeType = shapeMapping[selectedCell.shape];
+      
+      this.logger.info('Selected cell shape type for threat editor', {
+        dfdShape: selectedCell.shape,
+        frameworkShapeType: shapeType || 'unmapped',
+        cellId: selectedCell.id,
+      });
+    }
+
     // Get the threat model to add the threat to
     this.threatModelService
       .getThreatModelById(threatModelId)
@@ -246,74 +271,109 @@ export class DfdEventHandlersService {
           return;
         }
 
-        const dialogData: ThreatEditorDialogData = {
-          threatModelId: threatModelId,
-          mode: 'create',
-          diagramId: dfdId || '',
-          cellId: this._selectedCells$.value[0]?.id || '',
-        };
-
-        const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
-          width: '650px',
-          maxHeight: '90vh',
-          panelClass: 'threat-editor-dialog-650',
-          data: dialogData,
-        });
-
-        this._subscriptions.add(
-          dialogRef.afterClosed().subscribe(result => {
-            if (result && threatModel) {
-              const now = new Date().toISOString();
-
-              interface ThreatFormResult {
-                name: string;
-                description: string;
-                severity?: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-                threat_type?: string;
-                diagram_id?: string;
-                cell_id?: string;
-                score?: number;
-                priority?: string;
-                issue_url?: string;
-                metadata?: Array<{ key: string; value: string }>;
-              }
-              const formResult = result as ThreatFormResult;
-
-              // Create a new threat
-              const newThreat = {
-                id: uuidv4(),
-                threat_model_id: threatModel.id,
-                name: formResult.name,
-                description: formResult.description,
-                created_at: now,
-                modified_at: now,
-                severity: formResult.severity || 'High',
-                threat_type: formResult.threat_type || 'Information Disclosure',
-                diagram_id: formResult.diagram_id || dfdId || '',
-                cell_id: formResult.cell_id || this._selectedCells$.value[0]?.id || '',
-                score: formResult.score || 10.0,
-                priority: formResult.priority || 'High',
-                issue_url: formResult.issue_url || 'n/a',
-                metadata: formResult.metadata || [],
-              };
-
-              // Add the threat to the threat model
-              if (!threatModel.threats) {
-                threatModel.threats = [];
-              }
-              threatModel.threats.push(newThreat);
-
-              // Update the threat model
-              this._subscriptions.add(
-                this.threatModelService.updateThreatModel(threatModel).subscribe(updatedModel => {
-                  if (updatedModel) {
-                    this.logger.info('Threat added successfully', { threatId: newThreat.id });
-                  }
-                }),
-              );
+        const currentFrameworkName = threatModel.threat_model_framework;
+        
+        // Find the framework model that matches the threat model's framework
+        this.frameworkService.loadAllFrameworks()
+          .pipe(take(1))
+          .subscribe(frameworks => {
+            const framework = frameworks.find(f => f.name === currentFrameworkName);
+            
+            if (!framework) {
+              this.logger.warn('Framework not found for threat model', {
+                threatModelFramework: currentFrameworkName,
+                availableFrameworks: frameworks.map(f => f.name),
+              });
+            } else {
+              this.logger.info('Using framework for DFD threat editor', {
+                framework: framework.name,
+                shapeType: shapeType || 'none',
+                frameworkThreatTypes: framework.threatTypes.map(tt => tt.name),
+              });
             }
-          }),
-        );
+
+            const dialogData: ThreatEditorDialogData = {
+              threatModelId: threatModelId,
+              mode: 'create',
+              diagramId: dfdId || '',
+              cellId: selectedCell?.id || '',
+              framework,
+              shapeType,
+            };
+
+            const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
+              width: '650px',
+              maxHeight: '90vh',
+              panelClass: 'threat-editor-dialog-650',
+              data: dialogData,
+            });
+
+            this._subscriptions.add(
+              dialogRef.afterClosed().subscribe(result => {
+                if (result && threatModel) {
+                  const now = new Date().toISOString();
+
+                  // Type the result to avoid unsafe assignments
+                  interface ThreatFormResult {
+                    name: string;
+                    description: string;
+                    severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+                    threat_type: string;
+                    diagram_id?: string;
+                    cell_id?: string;
+                    score?: number;
+                    priority?: string;
+                    mitigated?: boolean;
+                    status?: string;
+                    issue_url?: string;
+                    metadata?: { key: string; value: string }[];
+                  }
+
+                  const formResult = result as ThreatFormResult;
+
+                  const newThreat: Threat = {
+                    id: crypto.randomUUID(),
+                    threat_model_id: threatModelId,
+                    name: formResult.name,
+                    description: formResult.description || '',
+                    created_at: now,
+                    modified_at: now,
+                    severity: formResult.severity || 'High',
+                    threat_type: formResult.threat_type || 'Information Disclosure',
+                    diagram_id: formResult.diagram_id || dfdId || '',
+                    cell_id: formResult.cell_id || selectedCell?.id || '',
+                    score: formResult.score || 10.0,
+                    priority: formResult.priority || 'High',
+                    issue_url: formResult.issue_url || 'n/a',
+                    mitigated: formResult.mitigated || false,
+                    status: formResult.status || 'Open',
+                    metadata: formResult.metadata || [],
+                  };
+
+                  // Add the new threat to the threat model
+                  const updatedThreats = [...(threatModel.threats || []), newThreat];
+                  const updatedThreatModel = { ...threatModel, threats: updatedThreats };
+
+                  // Update the threat model via the service
+                  this.threatModelService.updateThreatModel(updatedThreatModel).subscribe({
+                    next: () => {
+                      this.logger.info('Threat added successfully from DFD', {
+                        threatId: newThreat.id,
+                        threatName: newThreat.name,
+                        diagramId: dfdId,
+                        cellId: newThreat.cell_id,
+                        shapeType: shapeType || 'none',
+                      });
+                    },
+                    error: (error: unknown) => {
+                      const errorMessage = error instanceof Error ? error.message : String(error);
+                      this.logger.error('Failed to add threat from DFD', errorMessage);
+                    },
+                  });
+                }
+              }),
+            );
+          });
       });
   }
 

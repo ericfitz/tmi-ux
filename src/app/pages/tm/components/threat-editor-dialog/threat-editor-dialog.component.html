@@ -66,7 +66,11 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.threatType' | transloco }}</mat-label>
-        <input matInput formControlName="threat_type" />
+        <mat-select formControlName="threat_type">
+          <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
+            {{ threatType }}
+          </mat-option>
+        </mat-select>
         <mat-error *ngIf="threatForm.get('threat_type')?.hasError('required')">
           {{ 'threatEditor.validation.required' | transloco }}
         </mat-error>

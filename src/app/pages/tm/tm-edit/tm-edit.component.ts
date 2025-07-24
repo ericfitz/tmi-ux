@@ -38,12 +38,14 @@ import {
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
 import { Authorization, Document, Metadata, Source, Threat, ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
+import { FrameworkService } from '../../../shared/services/framework.service';
+import { FrameworkModel } from '../../../shared/models/framework.model';
 
 // Define form value interface
 interface ThreatModelFormValues {
   name: string;
   description: string;
-  threat_model_framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
+  threat_model_framework: string;
   issue_url?: string;
 }
 
@@ -92,6 +94,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   currentDirection: 'ltr' | 'rtl' = 'ltr';
   isEditingIssueUrl = false;
   initialIssueUrlValue = '';
+  frameworks: FrameworkModel[] = [];
 
   private _subscriptions = new Subscription();
 
@@ -104,6 +107,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private languageService: LanguageService,
     private logger: LoggerService,
     private transloco: TranslocoService,
+    private frameworkService: FrameworkService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -171,6 +175,31 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Load frameworks from JSON files
+    this._subscriptions.add(
+      this.frameworkService.loadAllFrameworks().subscribe({
+        next: frameworks => {
+          this.frameworks = frameworks;
+          this.logger.info('Loaded frameworks for threat model editor', {
+            count: frameworks.length,
+            frameworks: frameworks.map(f => f.name),
+          });
+          this.logger.debug('Framework details loaded', {
+            frameworks: frameworks.map(f => ({
+              name: f.name,
+              threatTypeCount: f.threatTypes.length,
+              threatTypes: f.threatTypes.map(tt => tt.name),
+            })),
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to load frameworks', error);
+          // Set empty array as fallback
+          this.frameworks = [];
+        },
+      }),
+    );
+
     // Subscribe to language changes
     this._subscriptions.add(
       this.languageService.currentLanguage$.subscribe(language => {
@@ -185,6 +214,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
         this.currentDirection = direction;
       }),
     );
+
+    // Subscribe to framework changes to handle threat type updates
+    const frameworkControl = this.threatModelForm.get('threat_model_framework');
+    if (frameworkControl) {
+      this._subscriptions.add(
+        frameworkControl.valueChanges.subscribe(newFramework => {
+          if (newFramework && this.threatModel && newFramework !== this.threatModel.threat_model_framework) {
+            this.handleFrameworkChange(this.threatModel.threat_model_framework, newFramework as string);
+          }
+        }),
+      );
+    }
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       void this.router.navigate(['/tm']);
@@ -292,19 +333,41 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens a dialog to create, edit, or view a threat
    * If the user confirms, adds or updates the threat in the threat model
    * @param threat Optional threat to edit or view
-   * @param mode Dialog mode: 'create', 'edit', or 'view'
+   * @param shapeType Optional shape type to filter applicable threat types
    */
-  openThreatEditor(threat?: Threat): void {
+  openThreatEditor(threat?: Threat, shapeType?: string): void {
     // Determine the mode based on whether a threat is provided
     const mode: 'create' | 'edit' | 'view' = threat ? 'edit' : 'create';
     if (!this.threatModel) {
       return;
     }
 
+    // Get the current framework from the form (which may be different from saved model)
+    const currentFrameworkName = this.threatModelForm.get('threat_model_framework')?.value || this.threatModel?.threat_model_framework;
+    
+    // Find the framework model that matches the current framework selection
+    const framework = this.frameworks.find(f => f.name === currentFrameworkName);
+    
+    if (!framework) {
+      this.logger.warn('Framework not found for current selection', {
+        currentFrameworkName,
+        savedFramework: this.threatModel.threat_model_framework,
+        availableFrameworks: this.frameworks.map(f => f.name),
+      });
+    } else {
+      this.logger.info('Using framework for threat editor', {
+        currentFrameworkName,
+        frameworkThreatTypes: framework.threatTypes.map(tt => tt.name),
+        shapeType: shapeType || 'none',
+      });
+    }
+
     const dialogData: ThreatEditorDialogData = {
       threat,
       threatModelId: this.threatModel.id,
       mode,
+      framework,
+      shapeType,
     };
 
     const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
@@ -1349,6 +1412,29 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   getDiagramTooltip(diagram: Diagram): string {
     return diagram.type || 'Unknown Type';
+  }
+
+  /**
+   * Handle framework change - log the change for debugging purposes
+   * @param oldFramework The previous framework name
+   * @param newFramework The new framework name
+   */
+  private handleFrameworkChange(oldFramework: string, newFramework: string): void {
+    this.logger.info('Framework changed', {
+      oldFramework,
+      newFramework,
+      threatCount: this.threatModel?.threats?.length || 0,
+    });
+
+    // Framework control should be disabled if threats exist, so this should only
+    // happen when there are no existing threats, but we log it for debugging
+    if (this.threatModel?.threats && this.threatModel.threats.length > 0) {
+      this.logger.warn('Framework change detected with existing threats - this should not be possible', {
+        oldFramework,
+        newFramework,
+        threatCount: this.threatModel.threats.length,
+      });
+    }
   }
 
   /**

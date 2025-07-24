@@ -143,11 +143,12 @@
                 formControlName="threat_model_framework"
                 [attr.aria-label]="'threatModels.threatModelFramework' | transloco"
               >
-                <mat-option value="STRIDE">STRIDE</mat-option>
-                <mat-option value="CIA">CIA</mat-option>
-                <mat-option value="LINDDUN">LINDDUN</mat-option>
-                <mat-option value="DIE">DIE</mat-option>
-                <mat-option value="PLOT4ai">PLOT4ai</mat-option>
+                <mat-option 
+                  *ngFor="let framework of frameworks" 
+                  [value]="framework.name"
+                >
+                  {{ framework.name }}
+                </mat-option>
               </mat-select>
               <mat-hint *ngIf="hasThreats()">
                 {{ 'threatModels.frameworkDisabledHint' | transloco }}

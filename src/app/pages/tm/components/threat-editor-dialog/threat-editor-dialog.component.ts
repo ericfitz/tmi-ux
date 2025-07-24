@@ -14,6 +14,7 @@ import { Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
+import { FrameworkModel } from '../../../../shared/models/framework.model';
 
 /**
  * Interface for threat form values
@@ -62,6 +63,8 @@ export interface ThreatEditorDialogData {
   cellId?: string;
   diagrams?: DiagramOption[];
   cells?: CellOption[];
+  framework?: FrameworkModel;
+  shapeType?: string;
 }
 
 @Component({
@@ -96,6 +99,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   // Dropdown options
   diagramOptions: DiagramOption[] = [];
   cellOptions: CellOption[] = [];
+  threatTypeOptions: string[] = [];
 
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
@@ -119,7 +123,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
       severity: ['High', Validators.required],
-      threat_type: ['Elevation of Privilege', Validators.required],
+      threat_type: ['', Validators.required],
       diagram_id: [''],
       cell_id: [''],
       score: [null],
@@ -219,6 +223,50 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   }
 
   /**
+   * Initialize threat type options based on the framework and optional shape type
+   */
+  private initializeThreatTypeOptions(): void {
+    this.threatTypeOptions = [];
+    
+    if (this.data.framework && this.data.framework.threatTypes.length > 0) {
+      let applicableThreatTypes = this.data.framework.threatTypes;
+      
+      // Filter threat types by shape type if provided
+      if (this.data.shapeType) {
+        applicableThreatTypes = this.data.framework.threatTypes.filter(tt => 
+          tt.appliesTo.includes(this.data.shapeType!)
+        );
+        
+        this.logger.info('Filtering threat types by shape type', {
+          framework: this.data.framework.name,
+          shapeType: this.data.shapeType,
+          filteredThreatTypes: applicableThreatTypes.map(tt => tt.name),
+          allThreatTypes: this.data.framework.threatTypes.map(tt => tt.name),
+        });
+      }
+      
+      this.threatTypeOptions = applicableThreatTypes.map(tt => tt.name);
+      
+      this.logger.info('Threat type options initialized from framework', {
+        framework: this.data.framework.name,
+        shapeType: this.data.shapeType || 'none',
+        threatTypes: this.threatTypeOptions,
+      });
+    } else {
+      // Fallback to default threat types if no framework provided
+      this.threatTypeOptions = [
+        'Spoofing',
+        'Tampering', 
+        'Repudiation',
+        'Information Disclosure',
+        'Denial of Service',
+        'Elevation of Privilege',
+      ];
+      this.logger.warn('No framework provided, using default STRIDE threat types');
+    }
+  }
+
+  /**
    * Initialize cell options for the dropdown
    */
   private initializeCellOptions(): void {
@@ -298,6 +346,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               // Initialize dropdown options after translations are loaded
               this.initializeDiagramOptions();
               this.initializeCellOptions();
+              this.initializeThreatTypeOptions();
 
               // Force change detection to update the translations
               setTimeout(() => {
@@ -323,6 +372,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           // Initialize dropdown options with English translations
           this.initializeDiagramOptions();
           this.initializeCellOptions();
+          this.initializeThreatTypeOptions();
 
           // Force change detection to update the translations
           setTimeout(() => {
@@ -338,6 +388,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         // Initialize dropdown options even if translations failed
         this.initializeDiagramOptions();
         this.initializeCellOptions();
+        this.initializeThreatTypeOptions();
       },
     });
 
@@ -355,7 +406,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
           severity: 'High',
-          threat_type: 'Information Disclosure',
+          threat_type: this.threatTypeOptions.length > 0 ? this.threatTypeOptions[0] : 'Information Disclosure',
           diagram_id: this.data.diagramId || '',
           cell_id: this.data.cellId || '',
           score: 10.0,
@@ -375,12 +426,17 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Initialize form with empty values for text fields and default values for other fields
     // We're using floatLabel="always" in the HTML to ensure labels are always visible
     const defaultCellId = this.data.cellId || '';
+    
+    // Use first threat type from framework, or fallback to a default
+    const defaultThreatType = this.threatTypeOptions.length > 0 
+      ? this.threatTypeOptions[0] 
+      : 'Information Disclosure';
 
     this.threatForm.patchValue({
       name: '',
       description: '',
       severity: 'High',
-      threat_type: 'Information Disclosure',
+      threat_type: defaultThreatType,
       diagram_id: this.data.diagramId || '',
       cell_id: defaultCellId,
       score: 10.0,
@@ -430,6 +486,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Reinitialize dropdown options when language changes
       this.initializeDiagramOptions();
       this.initializeCellOptions();
+      this.initializeThreatTypeOptions();
     });
 
     // Also subscribe to direction changes

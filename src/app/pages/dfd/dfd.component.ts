@@ -129,6 +129,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   hasSelectedCells = false;
   hasExactlyOneSelectedCell = false;
   selectedCellIsTextBox = false;
+  selectedCellIsSecurityBoundary = false;
 
   // Undo/redo state properties - updated by X6 history addon
   canUndo = false;
@@ -202,6 +203,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.hasSelectedCells = selectedCells.length > 0;
         this.hasExactlyOneSelectedCell = selectedCells.length === 1;
         this.selectedCellIsTextBox = selectedCells.some(cell => cell.shape === 'text-box');
+        this.selectedCellIsSecurityBoundary = selectedCells.some(cell => cell.shape === 'security-boundary');
         this.cdr.markForCheck();
       }),
     );

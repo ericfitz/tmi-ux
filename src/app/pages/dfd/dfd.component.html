@@ -93,7 +93,7 @@
         mat-icon-button
         color="primary"
         (click)="openCellMetadataDialog()"
-        [disabled]="!hasExactlyOneSelectedCell"
+        [disabled]="!hasExactlyOneSelectedCell || selectedCellIsTextBox"
         [matTooltip]="'threatModels.metadataTooltip' | transloco"
       >
         <mat-icon>list</mat-icon>
@@ -130,7 +130,7 @@
 
       <button
         mat-icon-button
-        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox"
+        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox || selectedCellIsSecurityBoundary"
         (click)="openThreatEditor()"
         [matTooltip]="'editor.toolbar.tooltips.addThreat' | transloco"
       >

@@ -57,7 +57,7 @@ export interface ThreatModel {
   modified_at: string;
   owner: string;
   created_by: string;
-  threat_model_framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
+  threat_model_framework: string;
   issue_url?: string;
   authorization: Authorization[];
   metadata?: Metadata[];
