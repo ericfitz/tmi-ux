@@ -22,12 +22,13 @@ import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
 import { NodeType } from './domain/value-objects/node-info';
+import { getX6ShapeForNodeType } from './infrastructure/adapters/x6-shape-definitions';
+import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 
 // Import providers needed for standalone component
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
-import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
 import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
 import { X6ZOrderAdapter } from './infrastructure/adapters/x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './infrastructure/adapters/x6-embedding.adapter';
@@ -122,6 +123,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Diagram data
   diagramName: string | null = null;
   threatModelName: string | null = null;
+  private pendingDiagramCells: any[] | null = null;
 
   // State properties - exposed as public properties for template binding
   hasSelectedCells = false;
@@ -150,6 +152,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private tooltipAdapter: X6TooltipAdapter,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
+    private nodeConfigurationService: NodeConfigurationService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -258,11 +261,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Loads the diagram data for the given diagram ID using the diagram service
    */
   private loadDiagramData(diagramId: string): void {
+    if (!this.threatModelId) {
+      this.logger.error('Cannot load diagram data: threat model ID is required');
+      return;
+    }
+
     this._subscriptions.add(
-      this.facade.loadDiagram(diagramId, this.threatModelId ?? undefined).subscribe({
+      this.facade.loadDiagram(diagramId, this.threatModelId).subscribe({
         next: result => {
           if (result.success && result.diagram) {
             this.diagramName = result.diagram.name;
+            
+            // Load the diagram cells into the graph if available
+            if (result.diagram.cells && result.diagram.cells.length > 0) {
+              if (this._isInitialized) {
+                this.loadDiagramCells(result.diagram.cells);
+              } else {
+                // Store cells to load after graph is initialized
+                this.pendingDiagramCells = result.diagram.cells;
+              }
+            }
+            
             this.cdr.markForCheck();
           } else {
             // Handle diagram not found
@@ -380,9 +399,127 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tooltipAdapter.initialize(graph);
 
       this.logger.info('Graph initialization complete');
+      
+      // Load any pending diagram cells
+      if (this.pendingDiagramCells) {
+        this.loadDiagramCells(this.pendingDiagramCells);
+        this.pendingDiagramCells = null;
+      }
+      
       this.cdr.detectChanges();
     } catch (error) {
       this.logger.error('Error initializing graph', error);
+    }
+  }
+
+  /**
+   * Load diagram cells into the graph
+   */
+  private loadDiagramCells(cells: any[]): void {
+    try {
+      const graph = this.x6GraphAdapter.getGraph();
+      if (!graph) {
+        this.logger.error('Cannot load diagram cells: graph not initialized');
+        return;
+      }
+
+      this.logger.info('Loading diagram cells into graph', { cellCount: cells.length });
+
+      // Add cells to graph based on their type (nodes vs edges)
+      cells.forEach(cell => {
+        try {
+          const convertedCell = this.convertMockCellToX6Format(cell);
+          
+          // Use appropriate X6 method based on cell type
+          if (cell.shape === 'edge') {
+            // Handle edges separately if needed
+            graph.addEdge(convertedCell);
+          } else {
+            // Handle all node types (actor, process, store, security-boundary, etc.)
+            graph.addNode(convertedCell);
+          }
+          
+          this.logger.debug('Successfully added cell to graph', { 
+            cellId: cell.id, 
+            cellShape: cell.shape 
+          });
+        } catch (error) {
+          this.logger.error('Error adding individual cell to graph', { 
+            cellId: cell.id, 
+            cellShape: cell.shape, 
+            error 
+          });
+        }
+      });
+      
+      // Fit the graph to show all content
+      graph.centerContent();
+      
+      this.logger.info('Successfully loaded diagram cells into graph');
+      
+    } catch (error) {
+      this.logger.error('Error loading diagram cells', error);
+    }
+  }
+
+  /**
+   * Convert mock diagram cell data to proper X6 format with correct styling and ports
+   */
+  private convertMockCellToX6Format(mockCell: any): any {
+    // Get the node type from the shape (actor, process, store, security-boundary)
+    const nodeType = mockCell.shape as NodeType;
+    
+    // Get the correct X6 shape name
+    const x6Shape = getX6ShapeForNodeType(nodeType);
+    
+    // Extract label from mock data attrs.text.text if available, otherwise use default
+    const label = mockCell.attrs?.text?.text || this.getDefaultLabelForType(nodeType);
+    
+    // Get proper port configuration for this node type
+    const portConfig = this.nodeConfigurationService.getNodePorts(nodeType);
+    
+    // Create base configuration with default styling (no custom colors)
+    const cellConfig: any = {
+      id: mockCell.id,
+      shape: x6Shape,
+      x: mockCell.x,
+      y: mockCell.y,
+      width: mockCell.width,
+      height: mockCell.height,
+      label,
+      zIndex: mockCell.zIndex || 1,
+      ports: portConfig,
+    };
+
+    // Add metadata if present (convert from array format to object format)
+    if (mockCell.data && Array.isArray(mockCell.data)) {
+      const metadata: any = {};
+      mockCell.data.forEach((item: any) => {
+        if (item.key && item.value) {
+          metadata[item.key] = item.value;
+        }
+      });
+      cellConfig.data = { metadata };
+    }
+
+    return cellConfig;
+  }
+
+  /**
+   * Get default label for node type
+   */
+  private getDefaultLabelForType(nodeType: NodeType): string {
+    switch (nodeType) {
+      case 'actor':
+        return 'External Entity';
+      case 'process':
+        return 'Process';
+      case 'store':
+        return 'Data Store';
+      case 'security-boundary':
+        return 'Trust Boundary';
+      default:
+        return 'Element';
     }
   }
 
@@ -461,6 +598,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   openThreatEditor(): void {
     this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+  }
+
+  /**
+   * Manage metadata for the selected cell (placeholder for now)
+   */
+  manageMetadata(): void {
+    if (!this.hasExactlyOneSelectedCell) {
+      this.logger.warn('Cannot manage metadata: no single cell selected');
+      return;
+    }
+
+    // Get the selected cell from the graph adapter
+    const selectedCells = this.x6GraphAdapter.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      return;
+    }
+
+    const cell = selectedCells[0];
+    this.logger.info('Manage metadata clicked for cell', { cellId: cell.id });
+    
+    // TODO: Implement metadata management functionality
   }
 
   /**

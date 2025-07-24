@@ -120,6 +120,16 @@
 
       <button
         mat-icon-button
+        color="primary"
+        [disabled]="!hasExactlyOneSelectedCell"
+        (click)="manageMetadata()"
+        [matTooltip]="'editor.toolbar.tooltips.manageMetadata' | transloco"
+      >
+        <mat-icon>list</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
         [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox"
         (click)="openThreatEditor()"
         [matTooltip]="'editor.toolbar.tooltips.addThreat' | transloco"
