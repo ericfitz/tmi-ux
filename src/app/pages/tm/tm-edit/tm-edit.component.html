@@ -164,6 +164,9 @@
                 <mat-option value="DIE">DIE</mat-option>
                 <mat-option value="PLOT4ai">PLOT4ai</mat-option>
               </mat-select>
+              <mat-hint *ngIf="hasThreats()">
+                {{ 'threatModels.frameworkDisabledHint' | transloco }}
+              </mat-hint>
               <mat-error
                 *ngIf="threatModelForm.get('threat_model_framework')?.hasError('required')"
               >
@@ -200,7 +203,14 @@
               class="diagram-item"
               [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
             >
-              <mat-icon matListItemIcon class="material-symbols-outlined">graph_3</mat-icon>
+              <mat-icon 
+                matListItemIcon 
+                class="material-symbols-outlined"
+                [matTooltip]="getDiagramTooltip(diagram)"
+                matTooltipPosition="above"
+              >
+                {{ getDiagramIcon(diagram) }}
+              </mat-icon>
               <div matListItemTitle>{{ diagram.name }}</div>
               <div matListItemMeta>
                 <button
@@ -242,13 +252,61 @@
           <button
             mat-icon-button
             color="primary"
+            (click)="addDocument()"
             [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
           >
             <mat-icon>add</mat-icon>
           </button>
         </mat-card-header>
         <mat-card-content>
-          <div class="no-items-message">
+          <mat-list>
+            <mat-list-item
+              *ngFor="let document of threatModel.documents"
+              class="document-item"
+            >
+              <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
+              <div matListItemTitle>
+                <a 
+                  [href]="document.url" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="document-name-link"
+                  [matTooltip]="getDocumentTooltip(document)"
+                  matTooltipPosition="above"
+                  matTooltipClass="document-tooltip"
+                >
+                  {{ document.name }}
+                </a>
+              </div>
+              <div matListItemMeta class="document-actions">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="openDocumentMetadataDialog(document, $event)"
+                  [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                >
+                  <mat-icon>list</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="editDocument(document, $event)"
+                  [matTooltip]="'threatModels.tooltips.editDocument' | transloco"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteDocument(document, $event)"
+                  [matTooltip]="'threatModels.tooltips.deleteDocument' | transloco"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div *ngIf="!threatModel.documents?.length" class="no-items-message">
             {{ 'threatModels.noDocuments' | transloco }}
           </div>
         </mat-card-content>

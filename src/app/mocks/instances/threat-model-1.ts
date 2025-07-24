@@ -222,7 +222,41 @@ export const mockThreatModel1: ThreatModel = {
       value: 'High',
     },
   ],
-  diagrams: [DIAGRAM_IDS.authFlow, DIAGRAM_IDS.dataStorage],
+  documents: [
+    {
+      id: '3ba7b810-9dad-11d1-beef-00c04fd430c8',
+      name: 'System Architecture Document',
+      url: 'https://docs.example.com/system-architecture.pdf',
+      description: 'Technical architecture documentation for the system',
+      metadata: [
+        {
+          key: 'document_type',
+          value: 'architecture',
+        },
+        {
+          key: 'version',
+          value: '2.1',
+        },
+      ],
+    },
+    {
+      id: '4ba7b810-9dad-11d1-beef-00c04fd430c9',
+      name: 'Security Requirements',
+      url: 'https://docs.example.com/security-requirements.docx',
+      description: 'Security requirements and compliance documentation',
+      metadata: [
+        {
+          key: 'document_type',
+          value: 'requirements',
+        },
+        {
+          key: 'compliance',
+          value: 'SOC2',
+        },
+      ],
+    },
+  ],
+  diagrams: [authFlowDiagram, dataStorageDiagram],
   threats: threats,
 };
 

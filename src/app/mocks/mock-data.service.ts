@@ -102,9 +102,8 @@ export class MockDataService implements OnDestroy {
       return [];
     }
 
-    return threatModel.diagrams
-      .map(diagramId => this._mockDiagramsMap.get(diagramId))
-      .filter((diagram): diagram is Diagram => !!diagram);
+    // Since diagrams are now Diagram objects directly, return them
+    return threatModel.diagrams;
   }
 
   /**

@@ -1,0 +1,34 @@
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  max-width: 600px;
+  padding: 8px 0;
+}
+
+.form-field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Add margin to the form field label
+.mat-mdc-form-field {
+  margin-top: 8px;
+}
+
+mat-dialog-content {
+  min-width: 300px;
+  padding: 20px 24px;
+  padding-top: 16px; // Add padding to the top of the dialog content
+}
+
+mat-dialog-actions {
+  padding: 8px 24px 20px;
+}

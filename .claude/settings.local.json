@@ -18,7 +18,8 @@
       "Bash(pnpm:*)",
       "Bash(node:*)",
       "Bash(mv:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(python3:*)"
     ]
   },
   "enableAllProjectMcpServers": false

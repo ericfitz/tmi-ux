@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>
+  {{ mode === 'create' ? ('threatModels.createNewDocument' | transloco) : ('threatModels.editDocument' | transloco) }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="documentForm" class="dialog-form">
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.documentName' | transloco }}</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="documentForm.get('name')?.hasError('required')">
+          {{ 'threatModels.validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="documentForm.get('name')?.hasError('maxlength')">
+          {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
+        <input matInput formControlName="url" type="url" />
+        <mat-error *ngIf="documentForm.get('url')?.hasError('required')">
+          {{ 'threatModels.validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="documentForm.get('url')?.hasError('maxlength')">
+          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.documentDescription' | transloco }}</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="3"
+          placeholder="{{ 'threatModels.documentDescriptionPlaceholder' | transloco }}"
+        ></textarea>
+        <mat-error *ngIf="documentForm.get('description')?.hasError('maxlength')">
+          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button mat-raised-button color="primary" [disabled]="documentForm.invalid" (click)="onSubmit()">
+    {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+  </button>
+</mat-dialog-actions>

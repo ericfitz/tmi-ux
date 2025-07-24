@@ -330,7 +330,25 @@ export const mockThreatModel2: ThreatModel = {
       value: 'Security Team',
     },
   ],
-  diagrams: [DIAGRAM_IDS.cloudInfrastructure, DIAGRAM_IDS.networkSecurity, DIAGRAM_IDS.dataFlow],
+  documents: [
+    {
+      id: '5ba7b810-9dad-11d1-beef-00c04fd430ca',
+      name: 'Cloud Security Playbook',
+      url: 'https://docs.example.com/cloud-security-playbook.pdf',
+      description: 'Cloud security best practices and procedures',
+      metadata: [
+        {
+          key: 'document_type',
+          value: 'playbook',
+        },
+        {
+          key: 'cloud_provider',
+          value: 'AWS',
+        },
+      ],
+    },
+  ],
+  diagrams: [cloudInfrastructureDiagram, networkSecurityDiagram, dataFlowDiagram],
   threats: threats,
 };
 

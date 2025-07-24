@@ -51,6 +51,8 @@
 .diagrams-card,
 .documents-card {
   width: 100%;
+  min-width: 0; /* Allow cards to shrink and prevent overflow */
+  overflow: hidden; /* Ensure content doesn't exceed card boundaries */
 }
 
 .threats-card {
@@ -243,13 +245,48 @@ mat-card-header {
 }
 
 .diagram-item,
+.document-item,
 .clickable-item {
   cursor: pointer;
   transition: background-color 0.2s ease;
+  min-width: 0; /* Allow list items to shrink */
+  overflow: hidden; /* Prevent content overflow */
 
   &:hover {
     background-color: rgb(0 0 0 / 4%);
   }
+}
+
+.document-name-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 100%;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+
+.document-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  align-self: center; /* Center the buttons vertically within the list item */
+}
+
+// Tooltip styling for document items
+::ng-deep .document-tooltip {
+  max-width: 400px;
+  white-space: pre-line;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 // Style for the action buttons container

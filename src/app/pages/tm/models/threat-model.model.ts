@@ -8,6 +8,14 @@ export interface Authorization {
   role: 'reader' | 'writer' | 'owner';
 }
 
+export interface Document {
+  id: string;
+  name: string;
+  url: string;
+  description?: string;
+  metadata?: Metadata[];
+}
+
 export interface Threat {
   id: string;
   threat_model_id: string;
@@ -39,7 +47,8 @@ export interface ThreatModel {
   issue_url?: string;
   authorization: Authorization[];
   metadata?: Metadata[];
-  diagrams?: string[];
+  documents?: Document[];
+  diagrams?: import('./diagram.model').Diagram[];
   threats?: Threat[];
 }
 
@@ -71,11 +80,41 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         value: 'Other Person',
       },
     ],
-    diagrams: [
-      '123e4567-e89b-12d3-a456-426614174000',
-      '123e4567-e89b-12d3-a456-426614174001',
-      '123e4567-e89b-12d3-a456-426614174002',
+    documents: [
+      {
+        id: '3ba7b810-9dad-11d1-beef-00c04fd430c8',
+        name: 'System Architecture Document',
+        url: 'https://docs.example.com/system-architecture.pdf',
+        description: 'Technical architecture documentation for the system',
+        metadata: [
+          {
+            key: 'document_type',
+            value: 'architecture',
+          },
+          {
+            key: 'version',
+            value: '2.1',
+          },
+        ],
+      },
+      {
+        id: '4ba7b810-9dad-11d1-beef-00c04fd430c9',
+        name: 'Security Requirements',
+        url: 'https://docs.example.com/security-requirements.docx',
+        description: 'Security requirements and compliance documentation',
+        metadata: [
+          {
+            key: 'document_type',
+            value: 'requirements',
+          },
+          {
+            key: 'compliance',
+            value: 'SOC2',
+          },
+        ],
+      },
     ],
+    diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {
         id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
@@ -177,7 +216,25 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         value: 'Other Person',
       },
     ],
-    diagrams: ['223e4567-e89b-12d3-a456-426614174000', '223e4567-e89b-12d3-a456-426614174001'],
+    documents: [
+      {
+        id: '5ba7b810-9dad-11d1-beef-00c04fd430ca',
+        name: 'Cloud Security Playbook',
+        url: 'https://docs.example.com/cloud-security-playbook.pdf',
+        description: 'Cloud security best practices and procedures',
+        metadata: [
+          {
+            key: 'document_type',
+            value: 'playbook',
+          },
+          {
+            key: 'cloud_provider',
+            value: 'AWS',
+          },
+        ],
+      },
+    ],
+    diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {
         id: '7ba7b810-9dad-11d1-80b4-00c04fd430c8',
@@ -243,7 +300,41 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         value: 'Other Person',
       },
     ],
-    diagrams: ['323e4567-e89b-12d3-a456-426614174000'],
+    documents: [
+      {
+        id: '6ba7b810-9dad-11d1-beef-00c04fd430cb',
+        name: 'Mobile Security Guidelines',
+        url: 'https://docs.example.com/mobile-security-guidelines.pdf',
+        description: 'OWASP mobile security testing guide compliance',
+        metadata: [
+          {
+            key: 'document_type',
+            value: 'guidelines',
+          },
+          {
+            key: 'standard',
+            value: 'OWASP MSTG',
+          },
+        ],
+      },
+      {
+        id: '7ba7b810-9dad-11d1-beef-00c04fd430cc',
+        name: 'Privacy Impact Assessment',
+        url: 'https://docs.example.com/privacy-impact-assessment.docx',
+        description: 'GDPR and privacy compliance assessment for mobile app',
+        metadata: [
+          {
+            key: 'document_type',
+            value: 'assessment',
+          },
+          {
+            key: 'regulation',
+            value: 'GDPR',
+          },
+        ],
+      },
+    ],
+    diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {
         id: '8ba7b810-9dad-11d1-80b4-00c04fd430c8',

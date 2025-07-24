@@ -225,7 +225,41 @@ export const mockThreatModel3: ThreatModel = {
       value: 'Beta',
     },
   ],
-  diagrams: [DIAGRAM_IDS.mobileComponents],
+  documents: [
+    {
+      id: '6ba7b810-9dad-11d1-beef-00c04fd430cb',
+      name: 'Mobile Security Guidelines',
+      url: 'https://docs.example.com/mobile-security-guidelines.pdf',
+      description: 'OWASP mobile security testing guide compliance',
+      metadata: [
+        {
+          key: 'document_type',
+          value: 'guidelines',
+        },
+        {
+          key: 'standard',
+          value: 'OWASP MSTG',
+        },
+      ],
+    },
+    {
+      id: '7ba7b810-9dad-11d1-beef-00c04fd430cc',
+      name: 'Privacy Impact Assessment',
+      url: 'https://docs.example.com/privacy-impact-assessment.docx',
+      description: 'GDPR and privacy compliance assessment for mobile app',
+      metadata: [
+        {
+          key: 'document_type',
+          value: 'assessment',
+        },
+        {
+          key: 'regulation',
+          value: 'GDPR',
+        },
+      ],
+    },
+  ],
+  diagrams: [mobileComponentsDiagram],
   threats: threats,
 };
 

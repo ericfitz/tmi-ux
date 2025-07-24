@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageService } from '../../../i18n/language.service';
@@ -14,6 +14,10 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { MaterialModule } from '../../../shared/material/material.module';
 import { SharedModule } from '../../../shared/shared.module';
 import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
+import {
+  DocumentEditorDialogComponent,
+  DocumentEditorDialogData,
+} from '../components/document-editor-dialog/document-editor-dialog.component';
 import {
   PermissionsDialogComponent,
   PermissionsDialogData,
@@ -28,7 +32,7 @@ import {
   ThreatEditorDialogData,
 } from '../components/threat-editor-dialog/threat-editor-dialog.component';
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
-import { Authorization, Metadata, Threat, ThreatModel } from '../models/threat-model.model';
+import { Authorization, Document, Metadata, Threat, ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
 
 // Define form value interface
@@ -37,6 +41,13 @@ interface ThreatModelFormValues {
   description: string;
   threat_model_framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
   issue_url?: string;
+}
+
+// Define document form result interface
+interface DocumentFormResult {
+  name: string;
+  url: string;
+  description?: string;
 }
 
 @Component({
@@ -73,6 +84,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private languageService: LanguageService,
     private logger: LoggerService,
+    private transloco: TranslocoService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -130,23 +142,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
             issue_url: threatModel.issue_url || '',
           });
 
-          // Populate diagrams array with diagram objects
-          this.diagrams =
-            threatModel.diagrams?.map(diagramId => {
-              // Look up the diagram by ID
-              const diagram = DIAGRAMS_BY_ID.get(diagramId);
-              if (diagram) {
-                return diagram;
-              }
-              // If diagram not found, create a placeholder with the ID as name
-              return {
-                id: diagramId,
-                name: `Diagram ${diagramId.substring(0, 8)}...`,
-                created_at: new Date().toISOString(),
-                modified_at: new Date().toISOString(),
-                type: 'DFD-1.0.0',
-              };
-            }) || [];
+          // Update framework control disabled state based on threats
+          this.updateFrameworkControlState();
+
+          // Use diagrams directly as they are now Diagram objects
+          this.diagrams = threatModel.diagrams || [];
         } else {
           // Handle case where threat model is not found
           this.isNewThreatModel = true;
@@ -166,6 +166,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               },
             ],
             metadata: [],
+            documents: [],
             diagrams: [],
             threats: [],
           };
@@ -175,6 +176,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
             threat_model_framework: this.threatModel.threat_model_framework,
             issue_url: this.threatModel.issue_url || '',
           });
+
+          // Update framework control disabled state based on threats
+          this.updateFrameworkControlState();
         }
       }),
     );
@@ -292,6 +296,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
               this.threatModel.threats = [];
             }
             this.threatModel.threats.push(newThreat);
+
+            // Update framework control state since we added a threat
+            this.updateFrameworkControlState();
           } else if (mode === 'edit' && threat) {
             // Update an existing threat
             const index = this.threatModel.threats?.findIndex(t => t.id === threat.id) ?? -1;
@@ -351,6 +358,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
       if (index !== -1) {
         this.threatModel.threats.splice(index, 1);
 
+        // Update framework control state since we removed a threat
+        this.updateFrameworkControlState();
+
         // Update the threat model
         this._subscriptions.add(
           this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
@@ -385,14 +395,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
             type: 'DFD-1.0.0',
           };
 
-          // Add the diagram to the DIAGRAMS_BY_ID map
+          // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
           DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
 
-          // Add the diagram ID to the threat model
+          // Add the diagram object directly to the threat model
           if (!this.threatModel.diagrams) {
             this.threatModel.diagrams = [];
           }
-          this.threatModel.diagrams.push(newDiagram.id);
+          this.threatModel.diagrams.push(newDiagram);
 
           // Update the threat model
           this._subscriptions.add(
@@ -483,9 +493,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
     );
 
     if (confirmDelete) {
-      // Remove the diagram ID from the threat model
-      const index = this.threatModel.diagrams.indexOf(diagram.id);
-      if (index !== -1) {
+      // Remove the diagram object from the threat model
+      const index = this.threatModel.diagrams?.findIndex(d => d.id === diagram.id) ?? -1;
+      if (index !== -1 && this.threatModel.diagrams) {
         this.threatModel.diagrams.splice(index, 1);
 
         // Remove the diagram from the local array
@@ -504,6 +514,200 @@ export class TmEditComponent implements OnInit, OnDestroy {
         );
       }
     }
+  }
+
+  /**
+   * Opens a dialog to create a new document
+   * If the user confirms, adds the new document to the threat model
+   */
+  addDocument(): void {
+    const dialogData: DocumentEditorDialogData = {
+      mode: 'create',
+    };
+
+    const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
+      width: '600px',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: DocumentFormResult | undefined) => {
+        if (result && this.threatModel) {
+          // Create a new document with UUID
+          const newDocument: Document = {
+            id: uuidv4(),
+            name: result.name,
+            url: result.url,
+            description: result.description || undefined,
+            metadata: [],
+          };
+
+          // Add the document to the threat model
+          if (!this.threatModel.documents) {
+            this.threatModel.documents = [];
+          }
+          this.threatModel.documents.push(newDocument);
+
+          // Update the threat model
+          this._subscriptions.add(
+            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+              if (updatedModel) {
+                this.threatModel = updatedModel;
+              }
+            }),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Opens a dialog to edit a document
+   * If the user confirms, updates the document in the threat model
+   * @param document The document to edit
+   * @param event The click event
+   */
+  editDocument(document: Document, event: Event): void {
+    // Prevent event propagation
+    event.stopPropagation();
+
+    if (!this.threatModel) {
+      return;
+    }
+
+    const dialogData: DocumentEditorDialogData = {
+      document,
+      mode: 'edit',
+    };
+
+    const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
+      width: '600px',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: DocumentFormResult | undefined) => {
+        if (result && this.threatModel && this.threatModel.documents) {
+          // Update the existing document
+          const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+          if (index !== -1) {
+            this.threatModel.documents[index] = {
+              ...document,
+              name: result.name,
+              url: result.url,
+              description: result.description || undefined,
+            };
+
+            // Update the threat model
+            this._subscriptions.add(
+              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+                if (updatedModel) {
+                  this.threatModel = updatedModel;
+                }
+              }),
+            );
+          }
+        }
+      }),
+    );
+  }
+
+  /**
+   * Deletes a document from the threat model
+   * @param document The document to delete
+   * @param event The click event
+   */
+  deleteDocument(document: Document, event: Event): void {
+    // Prevent event propagation
+    event.stopPropagation();
+
+    if (!this.threatModel || !this.threatModel.documents) {
+      return;
+    }
+
+    // Confirm deletion
+    const confirmMessage = this.transloco.translate('common.confirmDelete', {
+      item: this.transloco.translate('threatModels.documents').toLowerCase(),
+      name: document.name
+    });
+    const confirmDelete = window.confirm(confirmMessage);
+
+    if (confirmDelete) {
+      // Remove the document from the threat model
+      const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+      if (index !== -1) {
+        this.threatModel.documents.splice(index, 1);
+
+        // Update the threat model
+        this._subscriptions.add(
+          this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
+            if (result) {
+              this.threatModel = result;
+            }
+          }),
+        );
+      }
+    }
+  }
+
+  /**
+   * Generates tooltip text for document list items
+   * @param document The document to generate tooltip for
+   * @returns Formatted tooltip text with URL and description
+   */
+  getDocumentTooltip(document: Document): string {
+    let tooltip = document.url;
+    if (document.description) {
+      tooltip += `\n\n${document.description}`;
+    }
+    return tooltip;
+  }
+
+  /**
+   * Opens the metadata dialog for a specific document
+   */
+  openDocumentMetadataDialog(document: Document, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dialogData: MetadataDialogData = {
+      metadata: document.metadata || [],
+      isReadOnly: false,
+    };
+
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && this.threatModel && this.threatModel.documents) {
+          // Update the document metadata
+          const documentIndex = this.threatModel.documents.findIndex(d => d.id === document.id);
+          if (documentIndex !== -1) {
+            this.threatModel.documents[documentIndex].metadata = result;
+
+            // Update the threat model
+            this._subscriptions.add(
+              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+                if (updatedModel) {
+                  this.threatModel = updatedModel;
+                }
+              }),
+            );
+
+            this.logger.info('Updated document metadata', { 
+              documentId: document.id, 
+              metadata: result 
+            });
+          }
+        }
+      }),
+    );
   }
 
   cancel(): void {
@@ -768,5 +972,60 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this.logger.error('Both File System Access API and fallback method failed', fallbackError);
       throw fallbackError;
     }
+  }
+
+  /**
+   * Check if the threat model has any threats defined
+   * Used to determine if the framework control should be disabled
+   * @returns true if threats exist, false otherwise
+   */
+  hasThreats(): boolean {
+    return !!(this.threatModel?.threats && this.threatModel.threats.length > 0);
+  }
+
+  /**
+   * Update the framework control's disabled state based on whether threats exist
+   * The framework cannot be changed once threats are defined to maintain data consistency
+   */
+  private updateFrameworkControlState(): void {
+    const frameworkControl = this.threatModelForm.get('threat_model_framework');
+    if (frameworkControl) {
+      if (this.hasThreats()) {
+        frameworkControl.disable();
+      } else {
+        frameworkControl.enable();
+      }
+    }
+  }
+
+  /**
+   * Get the appropriate Material icon for a diagram based on its type
+   * @param diagram The diagram object
+   * @returns The Material icon name to use
+   */
+  getDiagramIcon(diagram: Diagram): string {
+    if (!diagram.type) {
+      return 'indeterminate_question_box'; // Default icon for unknown type
+    }
+
+    // Extract the type prefix (everything before the first hyphen)
+    const typePrefix = diagram.type.split('-')[0].toUpperCase();
+    
+    switch (typePrefix) {
+      case 'DFD':
+        return 'graph_3';
+      // Future diagram types can be added here
+      default:
+        return 'indeterminate_question_box'; // Default fallback for unrecognized types
+    }
+  }
+
+  /**
+   * Get tooltip text for a diagram icon showing the diagram type
+   * @param diagram The diagram object
+   * @returns The tooltip text
+   */
+  getDiagramTooltip(diagram: Diagram): string {
+    return diagram.type || 'Unknown Type';
   }
 }

@@ -708,12 +708,9 @@
           "diagrams": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Unique identifier of a related diagram (UUID)",
-              "maxLength": 36
+              "$ref": "#/components/schemas/Diagram"
             },
-            "description": "List of diagram UUIDs associated with this threat model"
+            "description": "List of diagram objects associated with this threat model"
           },
           "threats": {
             "type": "array",
@@ -768,7 +765,18 @@
               ]
             }
           ],
-          "diagrams": ["22DB9004-435D-4765-9E41-0291AA8FE15A"],
+          "diagrams": [
+            {
+              "id": "22DB9004-435D-4765-9E41-0291AA8FE15A",
+              "type": "DFD-1.0.0",
+              "name": "System Overview Diagram",
+              "description": "Main system data flow diagram",
+              "created_at": "2025-04-06T12:00:00Z",
+              "modified_at": "2025-04-06T12:30:00Z",
+              "metadata": [],
+              "cells": []
+            }
+          ],
           "threats": [
             {
               "id": "EC464A19-D1CA-4B72-AD8D-055AD2073C2B",
