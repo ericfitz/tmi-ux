@@ -20,7 +20,7 @@ import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
   const storedLang = localStorage.getItem('preferredLanguage');
-  const supportedLocales = ['en-US', 'de', 'zh', 'ar'];
+  const supportedLocales = ['en-US', 'de', 'zh', 'ar', 'th'];
 
   if (storedLang && supportedLocales.includes(storedLang)) {
     return storedLang;

@@ -16,6 +16,20 @@ export interface Document {
   metadata?: Metadata[];
 }
 
+export interface Source {
+  id: string;
+  name: string;
+  description?: string;
+  type: 'git' | 'svn' | 'mercurial' | 'other';
+  url: string;
+  parameters?: {
+    refType: 'branch' | 'tag' | 'commit';
+    refValue: string;
+    subPath?: string;
+  };
+  metadata?: Metadata[];
+}
+
 export interface Threat {
   id: string;
   threat_model_id: string;
@@ -48,6 +62,7 @@ export interface ThreatModel {
   authorization: Authorization[];
   metadata?: Metadata[];
   documents?: Document[];
+  sourceCode?: Source[];
   diagrams?: import('./diagram.model').Diagram[];
   threats?: Threat[];
 }
@@ -110,6 +125,50 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
           {
             key: 'compliance',
             value: 'SOC2',
+          },
+        ],
+      },
+    ],
+    sourceCode: [
+      {
+        id: '6ba7b810-1dad-11d1-8080-00c04fd430c8',
+        name: 'GitHub Repo',
+        description: 'Main application source code repository',
+        type: 'git',
+        url: 'https://github.com/ericfitz/tmi-ux.git',
+        parameters: {
+          refType: 'branch',
+          refValue: 'main',
+        },
+        metadata: [
+          {
+            key: 'environment',
+            value: 'production',
+          },
+          {
+            key: 'team',
+            value: 'security',
+          },
+        ],
+      },
+      {
+        id: '7ba7b810-1dad-11d1-8080-00c04fd430c9',
+        name: 'API Repository',
+        description: 'Backend API source code',
+        type: 'git',
+        url: 'https://github.com/ericfitz/tmi-api.git',
+        parameters: {
+          refType: 'tag',
+          refValue: 'v2.1.0',
+        },
+        metadata: [
+          {
+            key: 'language',
+            value: 'python',
+          },
+          {
+            key: 'framework',
+            value: 'django',
           },
         ],
       },
@@ -234,6 +293,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         ],
       },
     ],
+    sourceCode: [],
     diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {
@@ -334,6 +394,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         ],
       },
     ],
+    sourceCode: [],
     diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {

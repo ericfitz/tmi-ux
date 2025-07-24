@@ -1,0 +1,95 @@
+<h2 mat-dialog-title>
+  {{ mode === 'create' ? ('threatModels.createNewSourceCode' | transloco) : ('threatModels.editSourceCode' | transloco) }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="sourceCodeForm" class="dialog-form">
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.sourceCodeName' | transloco }}</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('required')">
+          {{ 'threatModels.validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('maxlength')">
+          {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.sourceCodeDescription' | transloco }}</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="3"
+          placeholder="{{ 'threatModels.sourceCodeDescriptionPlaceholder' | transloco }}"
+        ></textarea>
+        <mat-error *ngIf="sourceCodeForm.get('description')?.hasError('maxlength')">
+          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.sourceCodeType' | transloco }}</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="git">Git</mat-option>
+          <mat-option value="svn">SVN</mat-option>
+          <mat-option value="mercurial">Mercurial</mat-option>
+          <mat-option value="other">{{ 'common.other' | transloco }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="sourceCodeForm.get('type')?.hasError('required')">
+          {{ 'threatModels.validation.required' | transloco }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.sourceCodeUrl' | transloco }}</mat-label>
+        <input matInput formControlName="url" type="url" />
+        <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('required')">
+          {{ 'threatModels.validation.required' | transloco }}
+        </mat-error>
+        <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('maxlength')">
+          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="parameters-section">
+        <h3>{{ 'threatModels.sourceCodeParameters' | transloco }}</h3>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'threatModels.sourceCodeRefType' | transloco }}</mat-label>
+          <mat-select formControlName="refType">
+            <mat-option value="branch">{{ 'threatModels.branch' | transloco }}</mat-option>
+            <mat-option value="tag">{{ 'threatModels.tag' | transloco }}</mat-option>
+            <mat-option value="commit">{{ 'threatModels.commit' | transloco }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'threatModels.sourceCodeRefValue' | transloco }}</mat-label>
+          <input matInput formControlName="refValue" />
+          <mat-hint>{{ 'threatModels.sourceCodeRefValueHint' | transloco }}</mat-hint>
+          <mat-error *ngIf="sourceCodeForm.get('refValue')?.hasError('maxlength')">
+            {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'threatModels.sourceCodeSubPath' | transloco }}</mat-label>
+          <input matInput formControlName="subPath" />
+          <mat-hint>{{ 'threatModels.sourceCodeSubPathHint' | transloco }}</mat-hint>
+          <mat-error *ngIf="sourceCodeForm.get('subPath')?.hasError('maxlength')">
+            {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button mat-raised-button color="primary" [disabled]="sourceCodeForm.invalid" (click)="onSubmit()">
+    {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+  </button>
+</mat-dialog-actions>

@@ -19,6 +19,10 @@ import {
   DocumentEditorDialogData,
 } from '../components/document-editor-dialog/document-editor-dialog.component';
 import {
+  SourceCodeEditorDialogComponent,
+  SourceCodeEditorDialogData,
+} from '../components/source-code-editor-dialog/source-code-editor-dialog.component';
+import {
   PermissionsDialogComponent,
   PermissionsDialogData,
 } from '../components/permissions-dialog/permissions-dialog.component';
@@ -32,7 +36,7 @@ import {
   ThreatEditorDialogData,
 } from '../components/threat-editor-dialog/threat-editor-dialog.component';
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
-import { Authorization, Document, Metadata, Threat, ThreatModel } from '../models/threat-model.model';
+import { Authorization, Document, Metadata, Source, Threat, ThreatModel } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
 
 // Define form value interface
@@ -48,6 +52,19 @@ interface DocumentFormResult {
   name: string;
   url: string;
   description?: string;
+}
+
+// Define source code form result interface
+interface SourceCodeFormResult {
+  name: string;
+  description?: string;
+  type: 'git' | 'svn' | 'mercurial' | 'other';
+  url: string;
+  parameters?: {
+    refType: 'branch' | 'tag' | 'commit';
+    refValue: string;
+    subPath?: string;
+  };
 }
 
 @Component({
@@ -213,6 +230,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             ],
             metadata: [],
             documents: [],
+            sourceCode: [],
             diagrams: [],
             threats: [],
           };
@@ -714,6 +732,210 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Opens a dialog to create a new source code repository reference
+   * If the user confirms, adds the new source code to the threat model
+   */
+  addSourceCode(): void {
+    const dialogData: SourceCodeEditorDialogData = {
+      mode: 'create',
+    };
+
+    const dialogRef = this.dialog.open(SourceCodeEditorDialogComponent, {
+      width: '700px',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: SourceCodeFormResult | undefined) => {
+        if (result && this.threatModel) {
+          // Create a new source code with UUID
+          const newSourceCode: Source = {
+            id: uuidv4(),
+            name: result.name,
+            description: result.description || undefined,
+            type: result.type,
+            url: result.url,
+            parameters: result.parameters,
+            metadata: [],
+          };
+
+          // Add the source code to the threat model
+          if (!this.threatModel.sourceCode) {
+            this.threatModel.sourceCode = [];
+          }
+          this.threatModel.sourceCode.push(newSourceCode);
+
+          // Update the threat model
+          this._subscriptions.add(
+            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+              if (updatedModel) {
+                this.threatModel = updatedModel;
+              }
+            }),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Opens a dialog to edit a source code repository reference
+   * If the user confirms, updates the source code in the threat model
+   * @param sourceCode The source code to edit
+   * @param event The click event
+   */
+  editSourceCode(sourceCode: Source, event: Event): void {
+    // Prevent event propagation
+    event.stopPropagation();
+
+    if (!this.threatModel) {
+      return;
+    }
+
+    const dialogData: SourceCodeEditorDialogData = {
+      sourceCode,
+      mode: 'edit',
+    };
+
+    const dialogRef = this.dialog.open(SourceCodeEditorDialogComponent, {
+      width: '700px',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: SourceCodeFormResult | undefined) => {
+        if (result && this.threatModel && this.threatModel.sourceCode) {
+          // Update the existing source code
+          const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+          if (index !== -1) {
+            this.threatModel.sourceCode[index] = {
+              ...sourceCode,
+              name: result.name,
+              description: result.description || undefined,
+              type: result.type,
+              url: result.url,
+              parameters: result.parameters,
+            };
+
+            // Update the threat model
+            this._subscriptions.add(
+              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+                if (updatedModel) {
+                  this.threatModel = updatedModel;
+                }
+              }),
+            );
+          }
+        }
+      }),
+    );
+  }
+
+  /**
+   * Deletes a source code repository reference from the threat model
+   * @param sourceCode The source code to delete
+   * @param event The click event
+   */
+  deleteSourceCode(sourceCode: Source, event: Event): void {
+    // Prevent event propagation
+    event.stopPropagation();
+
+    if (!this.threatModel || !this.threatModel.sourceCode) {
+      return;
+    }
+
+    // Confirm deletion
+    const confirmMessage = this.transloco.translate('common.confirmDelete', {
+      item: this.transloco.translate('threatModels.sourceCode').toLowerCase(),
+      name: sourceCode.name
+    });
+    const confirmDelete = window.confirm(confirmMessage);
+
+    if (confirmDelete) {
+      // Remove the source code from the threat model
+      const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+      if (index !== -1) {
+        this.threatModel.sourceCode.splice(index, 1);
+
+        // Update the threat model
+        this._subscriptions.add(
+          this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
+            if (result) {
+              this.threatModel = result;
+            }
+          }),
+        );
+      }
+    }
+  }
+
+  /**
+   * Generates tooltip text for source code list items
+   * @param sourceCode The source code to generate tooltip for
+   * @returns Formatted tooltip text with URL and description
+   */
+  getSourceCodeTooltip(sourceCode: Source): string {
+    let tooltip = sourceCode.url;
+    if (sourceCode.description) {
+      tooltip += `\n\n${sourceCode.description}`;
+    }
+    if (sourceCode.parameters) {
+      tooltip += `\n\n${sourceCode.parameters.refType}: ${sourceCode.parameters.refValue}`;
+      if (sourceCode.parameters.subPath) {
+        tooltip += `\nPath: ${sourceCode.parameters.subPath}`;
+      }
+    }
+    return tooltip;
+  }
+
+  /**
+   * Opens the metadata dialog for a specific source code repository
+   */
+  openSourceCodeMetadataDialog(sourceCode: Source, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dialogData: MetadataDialogData = {
+      metadata: sourceCode.metadata || [],
+      isReadOnly: false,
+    };
+
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && this.threatModel && this.threatModel.sourceCode) {
+          // Update the source code metadata
+          const sourceCodeIndex = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+          if (sourceCodeIndex !== -1) {
+            this.threatModel.sourceCode[sourceCodeIndex].metadata = result;
+
+            // Update the threat model
+            this._subscriptions.add(
+              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+                if (updatedModel) {
+                  this.threatModel = updatedModel;
+                }
+              }),
+            );
+
+            this.logger.info('Updated source code metadata', { 
+              sourceCodeId: sourceCode.id, 
+              metadata: result 
+            });
+          }
+        }
+      }),
+    );
+  }
+
+  /**
    * Opens the metadata dialog for a specific document
    */
   openDocumentMetadataDialog(document: Document, event: Event): void {
@@ -1127,5 +1349,25 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   getDiagramTooltip(diagram: Diagram): string {
     return diagram.type || 'Unknown Type';
+  }
+
+  /**
+   * Truncate a URL for display in the threats list
+   * @param url The full URL
+   * @returns Truncated URL for display
+   */
+  getTruncatedUrl(url: string): string {
+    if (!url) return '';
+    
+    // Remove protocol and www prefix for cleaner display
+    let displayUrl = url.replace(/^https?:\/\/(www\.)?/, '');
+    
+    // Truncate if too long
+    const maxLength = 40;
+    if (displayUrl.length > maxLength) {
+      displayUrl = displayUrl.substring(0, maxLength - 3) + '...';
+    }
+    
+    return displayUrl;
   }
 }

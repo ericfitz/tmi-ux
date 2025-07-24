@@ -19,7 +19,10 @@
       "Bash(node:*)",
       "Bash(mv:*)",
       "Bash(curl:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Processing $file\")",
+      "Bash(done)"
     ]
   },
   "enableAllProjectMcpServers": false

@@ -37,15 +37,6 @@
         <mat-icon>close</mat-icon>
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button
-        mat-raised-button
-        color="primary"
-        [disabled]="threatModelForm.invalid"
-        (click)="saveThreatModel()"
-      >
-        <mat-icon>save</mat-icon>
-        <span [transloco]="'common.save'">Save</span>
-      </button>
     </div>
   </div>
 
@@ -54,15 +45,6 @@
       <mat-card-header>
         <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
         <div class="header-actions">
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="openSourceCodeView()"
-            [matTooltip]="'threatModels.sourceCodeTooltip' | transloco"
-            [attr.aria-label]="'threatModels.sourceCodeButton' | transloco"
-          >
-            <mat-icon>code_blocks</mat-icon>
-          </button>
           <button
             mat-icon-button
             color="primary"
@@ -157,7 +139,10 @@
               <mat-label [transloco]="'threatModels.threatModelFramework'"
                 >Threat Model Framework</mat-label
               >
-              <mat-select formControlName="threat_model_framework">
+              <mat-select 
+                formControlName="threat_model_framework"
+                [attr.aria-label]="'threatModels.threatModelFramework' | transloco"
+              >
                 <mat-option value="STRIDE">STRIDE</mat-option>
                 <mat-option value="CIA">CIA</mat-option>
                 <mat-option value="LINDDUN">LINDDUN</mat-option>
@@ -350,6 +335,66 @@
           </div>
         </mat-card-content>
       </mat-card>
+
+      <mat-card class="source-code-card">
+        <mat-card-header>
+          <mat-card-title [transloco]="'threatModels.sourceCode'">Source Code</mat-card-title>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="addSourceCode()"
+            [matTooltip]="'threatModels.tooltips.addSourceCode' | transloco"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item
+              *ngFor="let sourceCode of threatModel.sourceCode"
+              class="source-code-item"
+              (click)="editSourceCode(sourceCode, $event)"
+            >
+              <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
+              <div matListItemTitle>
+                <a 
+                  [href]="sourceCode.url" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="source-code-name-link"
+                  [matTooltip]="getSourceCodeTooltip(sourceCode)"
+                  matTooltipPosition="above"
+                  matTooltipClass="source-code-tooltip"
+                  (click)="$event.stopPropagation()"
+                >
+                  {{ sourceCode.name }}
+                </a>
+              </div>
+              <div matListItemMeta class="source-code-actions">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="openSourceCodeMetadataDialog(sourceCode, $event)"
+                  [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                >
+                  <mat-icon>list</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteSourceCode(sourceCode, $event)"
+                  [matTooltip]="'threatModels.tooltips.deleteSourceCode' | transloco"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div *ngIf="!threatModel.sourceCode?.length" class="no-items-message">
+            {{ 'threatModels.noSourceCode' | transloco }}
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <mat-card class="threats-card">
@@ -369,17 +414,41 @@
           <mat-list-item
             *ngFor="let threat of threatModel.threats"
             (click)="openThreatEditor(threat)"
-            class="clickable-item"
+            class="clickable-item threat-list-item"
           >
             <mat-icon
               matListItemIcon
               fontSet="material-symbols-outlined"
               fontWeight="100"
               style="font-variation-settings: 'FILL' 0"
+              [matTooltip]="threat.threat_type"
               >skull</mat-icon
             >
-            <div matListItemTitle>{{ threat.name }}</div>
-            <div matListItemLine>{{ threat.description }}</div>
+            <div matListItemTitle class="threat-content">
+              <span class="threat-severity" [class]="'severity-' + threat.severity?.toLowerCase()">
+                {{ threat.severity }}
+              </span>
+              <span 
+                class="threat-name"
+                [matTooltip]="threat.description"
+                matTooltipClass="threat-description-tooltip"
+                matTooltipPosition="above"
+              >
+                {{ threat.name }}
+              </span>
+              <a 
+                *ngIf="threat.issue_url" 
+                [href]="threat.issue_url" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="threat-issue-url"
+                (click)="$event.stopPropagation()"
+                [matTooltip]="threat.issue_url"
+                matTooltipPosition="above"
+              >
+                {{ getTruncatedUrl(threat.issue_url) }}
+              </a>
+            </div>
             <div matListItemMeta>
               <button
                 mat-icon-button

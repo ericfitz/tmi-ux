@@ -8,6 +8,7 @@ import { registerLocaleData } from '@angular/common';
 import localeAr from '@angular/common/locales/ar';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
+import localeTh from '@angular/common/locales/th';
 import localeZh from '@angular/common/locales/zh';
 
 // Register all locales
@@ -15,6 +16,7 @@ registerLocaleData(localeEn, 'en-US');
 registerLocaleData(localeDe, 'de');
 registerLocaleData(localeZh, 'zh');
 registerLocaleData(localeAr, 'ar');
+registerLocaleData(localeTh, 'th');
 
 // Register RTL for Arabic
 document.addEventListener('DOMContentLoaded', () => {
