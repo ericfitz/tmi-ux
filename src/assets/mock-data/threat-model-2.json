@@ -70,6 +70,30 @@
       ]
     }
   ],
+  "sourceCode": [
+    {
+      "id": "7ba7b810-1dad-11d1-8080-00c04fd430c9",
+      "name": "Infrastructure Repository",
+      "description": "Terraform infrastructure as code",
+      "type": "git",
+      "url": "https://github.com/example/infrastructure-templates.git",
+      "parameters": {
+        "refType": "tag",
+        "refValue": "v2.1.0",
+        "subPath": "aws/production"
+      },
+      "metadata": [
+        {
+          "key": "tool",
+          "value": "terraform"
+        },
+        {
+          "key": "environment",
+          "value": "production"
+        }
+      ]
+    }
+  ],
   "diagrams": [
     {
       "id": "223e4567-e89b-12d3-a456-426614174000",
@@ -77,143 +101,186 @@
       "description": "Cloud deployment architecture",
       "created_at": "2025-01-10T21:58:00.000Z",
       "modified_at": "2025-01-19T21:58:00.000Z",
-      "metadata": [],
       "type": "DFD-1.0.0",
+      "metadata": [
+        {
+          "key": "cloud_provider",
+          "value": "AWS"
+        },
+        {
+          "key": "environment",
+          "value": "production"
+        }
+      ],
       "cells": [
         {
           "id": "internet-actor-1",
-          "value": "Internet Users",
-          "geometry": {
-            "x": 50,
-            "y": 200,
-            "width": 80,
-            "height": 80
+          "shape": "actor",
+          "x": 50,
+          "y": 200,
+          "width": 80,
+          "height": 80,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#ffffff",
+              "stroke": "#000000",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Internet Users",
+              "fontSize": 12,
+              "fill": "#000000"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "trust_level",
+              "value": "untrusted"
+            }
+          ]
         },
         {
           "id": "loadbalancer-process-1",
-          "value": "Load Balancer",
-          "geometry": {
-            "x": 200,
-            "y": 200,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 200,
+          "y": 200,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#ffe0cc",
+              "stroke": "#ff6600",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Load Balancer",
+              "fontSize": 12,
+              "fill": "#cc3300"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "service_type",
+              "value": "load_balancer"
+            }
+          ]
         },
         {
           "id": "webserver-process-1",
-          "value": "Web Server",
-          "geometry": {
-            "x": 400,
-            "y": 150,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 400,
+          "y": 150,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#e0f0ff",
+              "stroke": "#0066cc",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Web Server",
+              "fontSize": 12,
+              "fill": "#003399"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "instance_type",
+              "value": "ec2"
+            }
+          ]
         },
         {
           "id": "webserver-process-2",
-          "value": "Web Server",
-          "geometry": {
-            "x": 400,
-            "y": 250,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 400,
+          "y": 250,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#e0f0ff",
+              "stroke": "#0066cc",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Web Server",
+              "fontSize": 12,
+              "fill": "#003399"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "instance_type",
+              "value": "ec2"
+            }
+          ]
         },
         {
           "id": "database-store-1",
-          "value": "RDS Database",
-          "geometry": {
-            "x": 600,
-            "y": 200,
-            "width": 120,
-            "height": 60
+          "shape": "store",
+          "x": 600,
+          "y": 200,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#fff0e0",
+              "stroke": "#cc6600",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "RDS Database",
+              "fontSize": 12,
+              "fill": "#994400"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "db_type",
+              "value": "mysql"
+            }
+          ]
         },
         {
           "id": "vpc-boundary-1",
-          "value": "VPC",
-          "geometry": {
-            "x": 150,
-            "y": 100,
-            "width": 600,
-            "height": 250
+          "shape": "security-boundary",
+          "x": 150,
+          "y": 100,
+          "width": 600,
+          "height": 250,
+          "zIndex": 0,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "transparent",
+              "stroke": "#ff0000",
+              "strokeWidth": 3,
+              "strokeDasharray": "10,5"
+            },
+            "text": {
+              "text": "VPC",
+              "fontSize": 16,
+              "fill": "#cc0000"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
-        },
-        {
-          "id": "traffic-edge-1",
-          "value": "HTTPS Traffic",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "internet-actor-1",
-          "target": "loadbalancer-process-1"
-        },
-        {
-          "id": "traffic-edge-2",
-          "value": "Route Traffic",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "loadbalancer-process-1",
-          "target": "webserver-process-1"
-        },
-        {
-          "id": "traffic-edge-3",
-          "value": "Route Traffic",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "loadbalancer-process-1",
-          "target": "webserver-process-2"
-        },
-        {
-          "id": "db-edge-1",
-          "value": "Database Query",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "webserver-process-1",
-          "target": "database-store-1"
-        },
-        {
-          "id": "db-edge-2",
-          "value": "Database Query",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "webserver-process-2",
-          "target": "database-store-1"
+          "data": [
+            {
+              "key": "security_zone",
+              "value": "vpc"
+            }
+          ]
         }
       ]
     },
@@ -223,71 +290,97 @@
       "description": "Network security controls",
       "created_at": "2025-01-09T21:58:00.000Z",
       "modified_at": "2025-01-19T21:58:00.000Z",
-      "metadata": [],
       "type": "DFD-1.0.0",
+      "metadata": [
+        {
+          "key": "security_focus",
+          "value": "network"
+        }
+      ],
       "cells": [
         {
           "id": "firewall-process-1",
-          "value": "WAF",
-          "geometry": {
-            "x": 150,
-            "y": 150,
-            "width": 100,
-            "height": 60
+          "shape": "process",
+          "x": 150,
+          "y": 150,
+          "width": 100,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#e8f5e8",
+              "stroke": "#009900",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "WAF",
+              "fontSize": 14,
+              "fill": "#006600"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "protection_type",
+              "value": "web_application_firewall"
+            }
+          ]
         },
         {
           "id": "ids-process-1",
-          "value": "IDS/IPS",
-          "geometry": {
-            "x": 300,
-            "y": 150,
-            "width": 100,
-            "height": 60
+          "shape": "process",
+          "x": 300,
+          "y": 150,
+          "width": 100,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#ffe8e8",
+              "stroke": "#cc0000",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "IDS/IPS",
+              "fontSize": 12,
+              "fill": "#990000"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "detection_type",
+              "value": "intrusion_detection"
+            }
+          ]
         },
         {
           "id": "logs-store-1",
-          "value": "Security Logs",
-          "geometry": {
-            "x": 450,
-            "y": 150,
-            "width": 120,
-            "height": 60
+          "shape": "store",
+          "x": 450,
+          "y": 150,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#f0f0f0",
+              "stroke": "#666666",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Security Logs",
+              "fontSize": 12,
+              "fill": "#333333"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
-        },
-        {
-          "id": "monitoring-edge-1",
-          "value": "Security Events",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "firewall-process-1",
-          "target": "logs-store-1"
-        },
-        {
-          "id": "monitoring-edge-2",
-          "value": "Intrusion Detection",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "ids-process-1",
-          "target": "logs-store-1"
+          "data": [
+            {
+              "key": "log_type",
+              "value": "security_events"
+            }
+          ]
         }
       ]
     },
@@ -297,104 +390,125 @@
       "description": "Application data flow patterns",
       "created_at": "2025-01-08T21:58:00.000Z",
       "modified_at": "2025-01-19T21:58:00.000Z",
-      "metadata": [],
       "type": "DFD-1.0.0",
+      "metadata": [
+        {
+          "key": "architecture_pattern",
+          "value": "microservices"
+        }
+      ],
       "cells": [
         {
           "id": "api-process-1",
-          "value": "API Gateway",
-          "geometry": {
-            "x": 150,
-            "y": 200,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 150,
+          "y": 200,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#e0e0ff",
+              "stroke": "#4040ff",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "API Gateway",
+              "fontSize": 12,
+              "fill": "#2020cc"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "gateway_type",
+              "value": "api_gateway"
+            }
+          ]
         },
         {
           "id": "service-process-1",
-          "value": "Microservice A",
-          "geometry": {
-            "x": 350,
-            "y": 150,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 350,
+          "y": 150,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#f0f8ff",
+              "stroke": "#4169e1",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Microservice A",
+              "fontSize": 12,
+              "fill": "#191970"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "service_name",
+              "value": "user_service"
+            }
+          ]
         },
         {
           "id": "service-process-2",
-          "value": "Microservice B",
-          "geometry": {
-            "x": 350,
-            "y": 250,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 350,
+          "y": 250,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#f0f8ff",
+              "stroke": "#4169e1",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Microservice B",
+              "fontSize": 12,
+              "fill": "#191970"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "service_name",
+              "value": "order_service"
+            }
+          ]
         },
         {
           "id": "message-store-1",
-          "value": "Message Queue",
-          "geometry": {
-            "x": 550,
-            "y": 200,
-            "width": 120,
-            "height": 60
+          "shape": "store",
+          "x": 550,
+          "y": 200,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#fffacd",
+              "stroke": "#daa520",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Message Queue",
+              "fontSize": 12,
+              "fill": "#b8860b"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
-        },
-        {
-          "id": "api-edge-1",
-          "value": "API Calls",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "api-process-1",
-          "target": "service-process-1"
-        },
-        {
-          "id": "api-edge-2",
-          "value": "API Calls",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "api-process-1",
-          "target": "service-process-2"
-        },
-        {
-          "id": "queue-edge-1",
-          "value": "Async Messages",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "service-process-1",
-          "target": "message-store-1"
-        },
-        {
-          "id": "queue-edge-2",
-          "value": "Async Messages",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "service-process-2",
-          "target": "message-store-1"
+          "data": [
+            {
+              "key": "queue_type",
+              "value": "sqs"
+            }
+          ]
         }
       ]
     }

@@ -58,6 +58,29 @@
       ]
     }
   ],
+  "sourceCode": [
+    {
+      "id": "6ba7b810-1dad-11d1-8080-00c04fd430c8",
+      "name": "GitHub Main Repository",
+      "description": "Main application source code repository",
+      "type": "git",
+      "url": "https://github.com/ericfitz/tmi-ux.git",
+      "parameters": {
+        "refType": "branch",
+        "refValue": "main"
+      },
+      "metadata": [
+        {
+          "key": "environment",
+          "value": "production"
+        },
+        {
+          "key": "team",
+          "value": "security"
+        }
+      ]
+    }
+  ],
   "diagrams": [
     {
       "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -65,80 +88,97 @@
       "description": "User authentication process flow",
       "created_at": "2025-01-17T21:58:00.000Z",
       "modified_at": "2025-01-22T21:58:00.000Z",
-      "metadata": [],
       "type": "DFD-1.0.0",
+      "metadata": [
+        {
+          "key": "diagram_type",
+          "value": "authentication"
+        }
+      ],
       "cells": [
         {
           "id": "user-actor-1",
-          "value": "User",
-          "geometry": {
-            "x": 100,
-            "y": 200,
-            "width": 80,
-            "height": 80
+          "shape": "actor",
+          "x": 100,
+          "y": 200,
+          "width": 80,
+          "height": 80,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#ffffff",
+              "stroke": "#000000",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "User",
+              "fontSize": 14,
+              "fill": "#000000"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "trust_level",
+              "value": "external"
+            }
+          ]
         },
         {
           "id": "auth-process-1",
-          "value": "Authentication Service",
-          "geometry": {
-            "x": 250,
-            "y": 200,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 250,
+          "y": 200,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#e0f0ff",
+              "stroke": "#0066cc",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Authentication Service",
+              "fontSize": 12,
+              "fill": "#003399"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "process_type",
+              "value": "authentication"
+            }
+          ]
         },
         {
           "id": "user-store-1",
-          "value": "User Database",
-          "geometry": {
-            "x": 450,
-            "y": 200,
-            "width": 100,
-            "height": 60
+          "shape": "store",
+          "x": 450,
+          "y": 200,
+          "width": 100,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#fff0e0",
+              "stroke": "#cc6600",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "User Database",
+              "fontSize": 12,
+              "fill": "#994400"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
-        },
-        {
-          "id": "auth-edge-1",
-          "value": "Login Request",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "user-actor-1",
-          "target": "auth-process-1"
-        },
-        {
-          "id": "auth-edge-2",
-          "value": "Validate Credentials",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "auth-process-1",
-          "target": "user-store-1"
-        },
-        {
-          "id": "auth-edge-3",
-          "value": "Auth Response",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "auth-process-1",
-          "target": "user-actor-1"
+          "data": [
+            {
+              "key": "data_type",
+              "value": "user_credentials"
+            }
+          ]
         }
       ]
     },
@@ -148,71 +188,97 @@
       "description": "Data storage and retrieval process",
       "created_at": "2025-01-16T21:58:00.000Z",
       "modified_at": "2025-01-22T21:58:00.000Z",
-      "metadata": [],
       "type": "DFD-1.0.0",
+      "metadata": [
+        {
+          "key": "complexity",
+          "value": "medium"
+        }
+      ],
       "cells": [
         {
           "id": "app-process-1",
-          "value": "Application Server",
-          "geometry": {
-            "x": 150,
-            "y": 150,
-            "width": 120,
-            "height": 60
+          "shape": "process",
+          "x": 150,
+          "y": 150,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#f0f8ff",
+              "stroke": "#4169e1",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Application Server",
+              "fontSize": 12,
+              "fill": "#191970"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "service_type",
+              "value": "application"
+            }
+          ]
         },
         {
           "id": "data-store-1",
-          "value": "Primary Database",
-          "geometry": {
-            "x": 350,
-            "y": 150,
-            "width": 120,
-            "height": 60
+          "shape": "store",
+          "x": 350,
+          "y": 150,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#fff0e0",
+              "stroke": "#cc6600",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Primary Database",
+              "fontSize": 12,
+              "fill": "#994400"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
+          "data": [
+            {
+              "key": "data_type",
+              "value": "primary_data"
+            }
+          ]
         },
         {
           "id": "cache-store-1",
-          "value": "Redis Cache",
-          "geometry": {
-            "x": 350,
-            "y": 250,
-            "width": 120,
-            "height": 60
+          "shape": "store",
+          "x": 350,
+          "y": 250,
+          "width": 120,
+          "height": 60,
+          "zIndex": 1,
+          "visible": true,
+          "attrs": {
+            "body": {
+              "fill": "#ffe0cc",
+              "stroke": "#ff6600",
+              "strokeWidth": 2
+            },
+            "text": {
+              "text": "Redis Cache",
+              "fontSize": 12,
+              "fill": "#cc3300"
+            }
           },
-          "vertex": true,
-          "edge": false,
-          "parent": null,
-          "source": null,
-          "target": null
-        },
-        {
-          "id": "data-edge-1",
-          "value": "Query Data",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "app-process-1",
-          "target": "data-store-1"
-        },
-        {
-          "id": "data-edge-2",
-          "value": "Cache Lookup",
-          "vertex": false,
-          "edge": true,
-          "parent": null,
-          "source": "app-process-1",
-          "target": "cache-store-1"
+          "data": [
+            {
+              "key": "cache_type",
+              "value": "redis"
+            }
+          ]
         }
       ]
     }

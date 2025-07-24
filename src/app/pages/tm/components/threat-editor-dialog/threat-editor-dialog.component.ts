@@ -479,7 +479,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     setTimeout(() => {
       // Update dialog size to force a refresh
       this.dialogRef.updateSize();
-      this.logger.info('Force translation update triggered');
 
       // Manually trigger translation update for all keys
       const keys = [
@@ -518,17 +517,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         const floatingLabels = document.querySelectorAll(
           '.mat-form-field.mat-form-field-should-float',
         );
-        this.logger.info('Form field state:', {
-          source: this.dialogSource,
-          totalFormFields: formFields.length,
-          fieldsWithFloatingLabels: floatingLabels.length,
-          formFieldsHaveContent: Array.from(formFields).map(field => {
-            const input = field.querySelector('input, textarea');
-            return input && 'value' in input
-              ? !!(input as HTMLInputElement | HTMLTextAreaElement).value
-              : false;
-          }),
-        });
       }, 50);
 
       // Add additional diagnostics for Angular Material form field classes
@@ -545,22 +533,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         // Check if labels are visible (not having mat-form-field-empty class)
         const emptyFields = document.querySelectorAll('.mat-form-field-empty');
 
-        this.logger.info('Angular Material form field diagnostics:', {
-          source: this.dialogSource,
-          outlineFieldsCount: outlineFields.length,
-          focusedFieldsCount: focusedFields.length,
-          labelElementsCount: labelElements.length,
-          emptyFieldsCount: emptyFields.length,
-          // Check if labels have computed style of visibility: hidden or display: none
-          labelVisibility: Array.from(labelElements).map(label => {
-            const computedStyle = window.getComputedStyle(label);
-            return {
-              visibility: computedStyle.visibility,
-              display: computedStyle.display,
-              opacity: computedStyle.opacity,
-            };
-          }),
-        });
       }, 100);
 
       // Force translation of each key
@@ -570,7 +542,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
       // Add a second delayed update to ensure translations are applied
       setTimeout(() => {
-        this.logger.info('Running secondary translation update');
         this.dialogRef.updateSize();
         keys.forEach(key => {
           this.translateKey(key);
