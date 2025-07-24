@@ -106,23 +106,63 @@
       </mat-form-field>
     </div>
 
-    <!-- Issue URL field - on its own row with copy button -->
+    <!-- Issue URL field - on its own row -->
     <div class="form-field-row">
-      <div class="url-field-container">
-        <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+      <!-- Edit mode: Toggle between form input and hyperlink display -->
+      <div *ngIf="!isViewOnly" class="issue-url-container">
+        <mat-form-field 
+          appearance="outline" 
+          class="issue-url-field" 
+          floatLabel="always"
+        >
           <mat-label>{{ 'threatEditor.issueUrl' | transloco }}</mat-label>
-          <input matInput formControlName="issue_url" type="url" />
+          
+          <!-- Use ng-container with if-else to ensure exactly one control is always present -->
+          <ng-container *ngIf="shouldShowIssueUrlHyperlink(); else inputMode">
+            <input 
+              matInput
+              readonly
+              [value]="initialIssueUrlValue"
+              class="url-view-content"
+              (click)="openUrlInNewTab(initialIssueUrlValue)"
+              style="cursor: pointer; color: #1976d2; text-decoration: underline;"
+            />
+          </ng-container>
+          
+          <ng-template #inputMode>
+            <input 
+              matInput 
+              formControlName="issue_url" 
+              type="url"
+              (blur)="onIssueUrlBlur()"
+            />
+          </ng-template>
         </mat-form-field>
+        
+        <!-- Edit button outside the form field -->
         <button
           mat-icon-button
-          class="url-copy-button"
-          (click)="copyToClipboard(threatForm.get('issue_url')?.value)"
-          matTooltip="{{ 'threatEditor.copyToClipboard' | transloco }}"
-          [attr.aria-label]="'threatEditor.copyToClipboard' | transloco"
-          [disabled]="!threatForm.get('issue_url')?.value"
+          class="external-edit-button"
+          (click)="editIssueUrl()"
+          [matTooltip]="'common.edit' | transloco"
+          [attr.aria-label]="'common.edit' | transloco"
+          *ngIf="shouldShowIssueUrlHyperlink()"
         >
-          <mat-icon>content_copy</mat-icon>
+          <mat-icon>edit</mat-icon>
         </button>
+      </div>
+      
+      <!-- View-only mode: Show only hyperlink if URL exists -->
+      <div *ngIf="isViewOnly && data.threat?.issue_url" class="view-only-url">
+        <span class="url-label">{{ 'threatEditor.issueUrl' | transloco }}:</span>
+        <a 
+          [href]="data.threat?.issue_url" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="issue-url-link"
+        >
+          {{ data.threat?.issue_url }}
+        </a>
       </div>
     </div>
 
@@ -170,85 +210,6 @@
       </mat-form-field>
     </div>
 
-    <!-- Metadata section -->
-    <div class="metadata-section">
-      <div class="metadata-header">
-        <h3>{{ 'threatEditor.metadata' | transloco }}</h3>
-        <button
-          mat-icon-button
-          color="primary"
-          (click)="addMetadataItem()"
-          [matTooltip]="'threatEditor.addMetadata' | transloco"
-          *ngIf="!isViewOnly"
-        >
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-
-      <div class="table-container">
-        <table mat-table [dataSource]="metadataDataSource" #metadataTable class="metadata-table">
-          <!-- Key Column -->
-          <ng-container matColumnDef="key">
-            <th mat-header-cell *matHeaderCellDef>{{ 'threatEditor.metadataKey' | transloco }}</th>
-            <td mat-cell *matCellDef="let item; let i = index">
-              <mat-form-field class="table-field" *ngIf="!isViewOnly" floatLabel="always">
-                <input
-                  matInput
-                  [value]="item.key"
-                  (blur)="updateMetadataKey(i, $event)"
-                  placeholder="Key"
-                />
-              </mat-form-field>
-              <span *ngIf="isViewOnly">{{ item.key }}</span>
-            </td>
-          </ng-container>
-
-          <!-- Value Column -->
-          <ng-container matColumnDef="value">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ 'threatEditor.metadataValue' | transloco }}
-            </th>
-            <td mat-cell *matCellDef="let item; let i = index">
-              <mat-form-field class="table-field" *ngIf="!isViewOnly" floatLabel="always">
-                <input
-                  matInput
-                  [value]="item.value"
-                  (blur)="updateMetadataValue(i, $event)"
-                  placeholder="Value"
-                />
-              </mat-form-field>
-              <span *ngIf="isViewOnly">{{ item.value }}</span>
-            </td>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="actions-column">
-              {{ 'threatEditor.actions' | transloco }}
-            </th>
-            <td mat-cell *matCellDef="let item; let i = index" class="actions-column">
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteMetadataItem(i)"
-                [matTooltip]="'threatEditor.delete' | transloco"
-                *ngIf="!isViewOnly"
-                class="compact-button"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="metadataColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: metadataColumns"></tr>
-        </table>
-      </div>
-
-      <div *ngIf="!hasMetadata()" class="no-items-message">
-        {{ 'threatEditor.noMetadata' | transloco }}
-      </div>
-    </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

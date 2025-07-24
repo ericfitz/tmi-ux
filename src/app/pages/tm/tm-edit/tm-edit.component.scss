@@ -48,6 +48,38 @@
   }
 }
 
+// Issue URL container with form field and external edit button
+.issue-url-container {
+  display: flex;
+  align-items: center; // Center both items
+  gap: 8px;
+  
+  .issue-url-field {
+    flex: 1; // Take up remaining space
+  }
+  
+  .external-edit-button {
+    flex-shrink: 0;
+    margin-top: -20px; // Move up 20px for better vertical centering
+  }
+}
+
+
+// URL view content - readonly input styled as hyperlink
+.url-view-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
+  &:hover {
+    color: #1565c0 !important;
+  }
+
+  &:visited {
+    color: #7b1fa2 !important;
+  }
+}
+
 .diagrams-card,
 .documents-card {
   width: 100%;
@@ -168,6 +200,13 @@ mat-card-header {
     align-items: center;
     justify-content: center;
   }
+}
+
+// Specific styling for external edit button icons
+.issue-url-container .external-edit-button .mat-icon {
+  font-size: 24px; // Back to full size
+  width: 24px;
+  height: 24px;
 }
 
 .metadata-section {

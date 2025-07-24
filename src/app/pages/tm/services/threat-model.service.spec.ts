@@ -21,10 +21,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Import testing utilities
 import { waitForAsync } from '../../../../testing/async-utils';
 
-// Import mock data directly from the mocks directory
-import { mockThreatModel1 } from '../../../mocks/instances/threat-model-1';
-import { mockThreatModel2 } from '../../../mocks/instances/threat-model-2';
-import { mockThreatModel3 } from '../../../mocks/instances/threat-model-3';
+// Import mock data factory
 import { createMockThreatModel } from '../../../mocks/factories/threat-model.factory';
 
 // The Angular testing environment is initialized in src/testing/zone-setup.ts
@@ -34,14 +31,31 @@ describe('ThreatModelService', () => {
   let mockDataService: MockDataService;
   let loggerService: LoggerService;
   let httpClient: HttpClient;
+  let testThreatModel1: any;
+  let testThreatModel2: any;
+  let testThreatModel3: any;
 
   beforeEach(() => {
+    // Create test data using factory functions
+    testThreatModel1 = createMockThreatModel({
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'Test Threat Model 1'
+    });
+    testThreatModel2 = createMockThreatModel({
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      name: 'Test Threat Model 2'
+    });
+    testThreatModel3 = createMockThreatModel({
+      id: '550e8400-e29b-41d4-a716-446655440002',
+      name: 'Test Threat Model 3'
+    });
+
     // Create spy objects for the dependencies
     mockDataService = {
       getMockThreatModels: vi
         .fn()
-        .mockReturnValue([mockThreatModel1, mockThreatModel2, mockThreatModel3]),
-      getMockThreatModelById: vi.fn().mockReturnValue(mockThreatModel1),
+        .mockReturnValue([testThreatModel1, testThreatModel2, testThreatModel3]),
+      getMockThreatModelById: vi.fn().mockReturnValue(testThreatModel1),
       getMockDiagramsForThreatModel: vi.fn().mockReturnValue([]),
       getMockDiagramById: vi.fn().mockReturnValue(null),
       createThreatModel: vi.fn().mockReturnValue(
@@ -87,16 +101,16 @@ describe('ThreatModelService', () => {
     it('should return mock threat models', waitForAsync(() => {
       service.getThreatModels().subscribe(threatModels => {
         expect(threatModels.length).toBe(3);
-        expect(threatModels).toContain(mockThreatModel1);
-        expect(threatModels).toContain(mockThreatModel2);
-        expect(threatModels).toContain(mockThreatModel3);
+        expect(threatModels).toContain(testThreatModel1);
+        expect(threatModels).toContain(testThreatModel2);
+        expect(threatModels).toContain(testThreatModel3);
       });
     }));
 
     it('should return a specific mock threat model by ID', waitForAsync(() => {
-      service.getThreatModelById(mockThreatModel1.id).subscribe(threatModel => {
+      service.getThreatModelById(testThreatModel1.id).subscribe(threatModel => {
         expect(threatModel).toBeDefined();
-        expect(threatModel?.id).toBe(mockThreatModel1.id);
+        expect(threatModel?.id).toBe(testThreatModel1.id);
       });
     }));
 

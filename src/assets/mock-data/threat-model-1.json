@@ -1,0 +1,274 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "System Authentication",
+  "description": "authentication system security analysis",
+  "created_at": "2025-01-17T21:58:00.000Z",
+  "modified_at": "2025-01-22T21:58:00.000Z",
+  "owner": "user@example.com",
+  "created_by": "user@example.com",
+  "threat_model_framework": "STRIDE",
+  "issue_url": "https://issues.example.com/browse/TM-123",
+  "authorization": [
+    {
+      "subject": "user@example.com",
+      "role": "owner"
+    }
+  ],
+  "metadata": [
+    {
+      "key": "Reviewer",
+      "value": "John Doe"
+    },
+    {
+      "key": "Priority",
+      "value": "High"
+    }
+  ],
+  "documents": [
+    {
+      "id": "3ba7b810-9dad-11d1-beef-00c04fd430c8",
+      "name": "System Architecture Document",
+      "url": "https://docs.example.com/system-architecture.pdf",
+      "description": "Technical architecture documentation for the system",
+      "metadata": [
+        {
+          "key": "document_type",
+          "value": "architecture"
+        },
+        {
+          "key": "version",
+          "value": "2.1"
+        }
+      ]
+    },
+    {
+      "id": "4ba7b810-9dad-11d1-beef-00c04fd430c9",
+      "name": "Security Requirements",
+      "url": "https://docs.example.com/security-requirements.docx",
+      "description": "Security requirements and compliance documentation",
+      "metadata": [
+        {
+          "key": "document_type",
+          "value": "requirements"
+        },
+        {
+          "key": "compliance",
+          "value": "SOC2"
+        }
+      ]
+    }
+  ],
+  "diagrams": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Authentication Flow",
+      "description": "User authentication process flow",
+      "created_at": "2025-01-17T21:58:00.000Z",
+      "modified_at": "2025-01-22T21:58:00.000Z",
+      "metadata": [],
+      "type": "DFD-1.0.0",
+      "cells": [
+        {
+          "id": "user-actor-1",
+          "value": "User",
+          "geometry": {
+            "x": 100,
+            "y": 200,
+            "width": 80,
+            "height": 80
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "auth-process-1",
+          "value": "Authentication Service",
+          "geometry": {
+            "x": 250,
+            "y": 200,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "user-store-1",
+          "value": "User Database",
+          "geometry": {
+            "x": 450,
+            "y": 200,
+            "width": 100,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "auth-edge-1",
+          "value": "Login Request",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "user-actor-1",
+          "target": "auth-process-1"
+        },
+        {
+          "id": "auth-edge-2",
+          "value": "Validate Credentials",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "auth-process-1",
+          "target": "user-store-1"
+        },
+        {
+          "id": "auth-edge-3",
+          "value": "Auth Response",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "auth-process-1",
+          "target": "user-actor-1"
+        }
+      ]
+    },
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174001",
+      "name": "Data Storage Flow",
+      "description": "Data storage and retrieval process",
+      "created_at": "2025-01-16T21:58:00.000Z",
+      "modified_at": "2025-01-22T21:58:00.000Z",
+      "metadata": [],
+      "type": "DFD-1.0.0",
+      "cells": [
+        {
+          "id": "app-process-1",
+          "value": "Application Server",
+          "geometry": {
+            "x": 150,
+            "y": 150,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "data-store-1",
+          "value": "Primary Database",
+          "geometry": {
+            "x": 350,
+            "y": 150,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "cache-store-1",
+          "value": "Redis Cache",
+          "geometry": {
+            "x": 350,
+            "y": 250,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "data-edge-1",
+          "value": "Query Data",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "app-process-1",
+          "target": "data-store-1"
+        },
+        {
+          "id": "data-edge-2",
+          "value": "Cache Lookup",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "app-process-1",
+          "target": "cache-store-1"
+        }
+      ]
+    }
+  ],
+  "threats": [
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Brute Force Attack",
+      "description": "Automated password guessing attempts",
+      "created_at": "2025-01-17T21:58:00.000Z",
+      "modified_at": "2025-01-22T21:58:00.000Z",
+      "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
+      "cell_id": "auth-process-1",
+      "severity": "High",
+      "score": 7.5,
+      "priority": "High",
+      "mitigated": false,
+      "status": "Open",
+      "threat_type": "Authentication Bypass",
+      "metadata": [
+        {
+          "key": "CVSS",
+          "value": "7.5"
+        },
+        {
+          "key": "Issue ID",
+          "value": "jira-12345"
+        }
+      ]
+    },
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c9",
+      "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "SQL Injection",
+      "description": "Malicious SQL queries through input validation bypass",
+      "created_at": "2025-01-16T21:58:00.000Z",
+      "modified_at": "2025-01-22T21:58:00.000Z",
+      "diagram_id": "123e4567-e89b-12d3-a456-426614174001",
+      "cell_id": "data-store-1",
+      "severity": "Critical",
+      "score": 9.5,
+      "priority": "Critical",
+      "mitigated": false,
+      "status": "Open",
+      "threat_type": "Information Disclosure",
+      "metadata": [
+        {
+          "key": "CVSS",
+          "value": "9.5"
+        },
+        {
+          "key": "Issue ID",
+          "value": "jira-67890"
+        }
+      ]
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { LocalOAuthProviderService } from './local-oauth-provider.service';
 import { JwtToken, UserProfile, OAuthResponse, AuthError, UserRole } from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
@@ -65,6 +66,7 @@ describe('AuthService', () => {
   let httpClient: HttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
+  let localProvider: LocalOAuthProviderService;
   let localStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
 
@@ -187,11 +189,22 @@ describe('AuthService', () => {
       configurable: true,
     });
 
+    // Create mock for LocalOAuthProviderService
+    localProvider = {
+      buildAuthUrl: vi.fn().mockReturnValue('http://localhost:4200/local/auth?state=mock-state'),
+      exchangeCodeForUser: vi.fn().mockReturnValue({
+        email: 'test@example.com',
+        name: 'Test User',
+        picture: 'http://example.com/pic.jpg'
+      })
+    } as unknown as LocalOAuthProviderService;
+
     // Create the service directly with mocked dependencies
     service = new AuthService(
       router as unknown as Router,
       httpClient,
       loggerService as unknown as LoggerService,
+      localProvider,
     );
   });
 
@@ -264,93 +277,83 @@ describe('AuthService', () => {
     });
   }); /* End of Service Initialization describe block */
 
-  describe('Google OAuth Login', () => {
-    it('should initiate Google OAuth login flow', () => {
-      service.loginWithGoogle();
+  describe('OAuth Login', () => {
+    it('should initiate OAuth login flow with default provider', () => {
+      // Mock crypto to return predictable values
+      const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+      cryptoMock.getRandomValues.mockReturnValue(mockArray);
+
+      service.initiateLogin();
 
       expect(cryptoMock.getRandomValues).toHaveBeenCalled();
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
-      expect(window.location.href).toContain('https://accounts.google.com/o/oauth2/v2/auth');
-      expect(window.location.href).toContain('client_id=');
-      expect(window.location.href).toContain('state=');
-      expect(loggerService.info).toHaveBeenCalledWith('Initiating Google OAuth login flow');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'local');
+      expect(localProvider.buildAuthUrl).toHaveBeenCalledWith(expect.any(String));
+      expect(window.location.href).toBe('http://localhost:4200/local/auth?state=mock-state');
+      expect(loggerService.info).toHaveBeenCalledWith('Initiating local provider login');
     });
 
-    it('should handle missing OAuth configuration', () => {
-      // Temporarily remove OAuth config from environment
-      const originalOAuth = environment.oauth;
-      Object.defineProperty(environment, 'oauth', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      // Create a new service instance with the modified environment
-      const serviceWithoutOAuth = new AuthService(
-        router as unknown as Router,
-        httpClient,
-        loggerService as unknown as LoggerService,
-      );
-
-      const handleAuthErrorSpy = vi.spyOn(serviceWithoutOAuth, 'handleAuthError');
-
-      serviceWithoutOAuth.loginWithGoogle();
-
-      expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-        code: 'config_error',
-        message: 'Google OAuth configuration is missing',
-        retryable: false,
-      });
-
-      // Restore original OAuth config
-      Object.defineProperty(environment, 'oauth', {
-        value: originalOAuth,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('should handle errors during OAuth initialization', () => {
+    it('should handle missing provider configuration', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
-      // Make crypto throw an error
-      cryptoMock.getRandomValues.mockImplementation(() => {
-        throw new Error('Crypto error');
-      });
-
-      service.loginWithGoogle();
+      service.initiateLogin('nonexistent-provider');
 
       expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-        code: 'oauth_init_error',
-        message: 'Failed to initialize OAuth flow',
+        code: 'provider_not_found',
+        message: 'Provider nonexistent-provider is not configured',
+        retryable: false,
+      });
+    });
+
+    it('should handle errors during local auth initialization', () => {
+      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+
+      // Make localProvider throw an error
+      localProvider.buildAuthUrl = vi.fn().mockImplementation(() => {
+        throw new Error('Local provider error');
+      });
+
+      service.initiateLogin('local');
+
+      expect(handleAuthErrorSpy).toHaveBeenCalledWith({
+        code: 'local_auth_error',
+        message: 'Failed to initialize local authentication',
         retryable: true,
       });
       expect(loggerService.error).toHaveBeenCalledWith(
-        'Error initializing Google OAuth',
+        'Error initializing local authentication',
         expect.any(Error),
       );
     });
-  }); /* End of Google OAuth Login describe block */
+
+    it('should get available providers', () => {
+      const providers = service.getAvailableProviders();
+      
+      expect(providers).toEqual([
+        {
+          id: 'local',
+          name: 'Local Development',
+          icon: 'fa-solid fa-laptop-code'
+        }
+      ]);
+    });
+  }); /* End of OAuth Login describe block */
 
   describe('OAuth Callback Handling', () => {
     beforeEach(() => {
-      localStorageMock.getItem.mockReturnValue('mock-state-value');
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return 'mock-state-value';
+        if (key === 'oauth_provider') return 'local';
+        return null;
+      });
     });
 
-    it('should handle successful authentication', () => {
-      const tokenResponse = { token: mockJwtToken.token, expires_in: 3600 };
-
-      // Mock the HTTP post method
-      vi.mocked(httpClient.post).mockReturnValue(of(tokenResponse));
-
+    it('should handle successful local authentication', () => {
       const result$ = service.handleOAuthCallback(mockOAuthResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(true);
-        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/token`, {
-          code: 'mock-auth-code',
-          redirect_uri: environment.oauth?.google?.redirectUri,
-        });
+        expect(localProvider.exchangeCodeForUser).toHaveBeenCalledWith('mock-auth-code');
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile).toEqual(
           expect.objectContaining({
@@ -360,13 +363,43 @@ describe('AuthService', () => {
         );
         expect(router.navigate).toHaveBeenCalledWith(['/tm']);
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
         expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
         expect(localStorageMock.setItem).toHaveBeenCalledWith('user_profile', expect.any(String));
       });
     });
 
+    it('should handle successful external provider authentication', () => {
+      // Mock for external provider
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return 'mock-state-value';
+        if (key === 'oauth_provider') return 'google';
+        return null;
+      });
+
+      const tokenResponse = { token: mockJwtToken.token, expires_in: 3600 };
+      vi.mocked(httpClient.post).mockReturnValue(of(tokenResponse));
+
+      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+
+      result$.subscribe(result => {
+        expect(result).toBe(true);
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/token`, {
+          code: 'mock-auth-code',
+          provider: 'google',
+          redirect_uri: `${window.location.origin}/auth/callback`,
+        });
+        expect(service.isAuthenticated).toBe(true);
+        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
+      });
+    });
+
     it('should handle failed authentication due to invalid state', () => {
-      localStorageMock.getItem.mockReturnValue('different-state-value');
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return 'different-state-value';
+        if (key === 'oauth_provider') return 'local';
+        return null;
+      });
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
       const result$ = service.handleOAuthCallback(mockOAuthResponse);
@@ -381,7 +414,32 @@ describe('AuthService', () => {
       });
     });
 
+    it('should handle failed local authentication', () => {
+      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+      
+      // Make local provider return null (failed authentication)
+      localProvider.exchangeCodeForUser = vi.fn().mockReturnValue(null);
+
+      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+
+      result$.subscribe(result => {
+        expect(result).toBe(false);
+        expect(handleAuthErrorSpy).toHaveBeenCalledWith({
+          code: 'local_auth_error',
+          message: 'Failed to authenticate with local provider',
+          retryable: true,
+        });
+      });
+    });
+
     it('should handle failed authentication due to token exchange error', () => {
+      // Mock for external provider
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return 'mock-state-value';
+        if (key === 'oauth_provider') return 'google';
+        return null;
+      });
+
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
       // Mock the HTTP post method to throw an error

@@ -174,10 +174,49 @@
               </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label [transloco]="'threatModels.issueUrl'">Issue URL</mat-label>
-              <input matInput formControlName="issue_url" type="url" />
-            </mat-form-field>
+            <!-- Issue URL field with external edit button -->
+            <div class="issue-url-container">
+              <mat-form-field 
+                appearance="outline" 
+                class="issue-url-field"
+                floatLabel="always"
+              >
+                <mat-label [transloco]="'threatModels.issueUrl'">Issue URL</mat-label>
+                
+                <!-- Use ng-container with if-else to ensure exactly one control is always present -->
+                <ng-container *ngIf="shouldShowIssueUrlHyperlink(); else inputMode">
+                  <input 
+                    matInput
+                    readonly
+                    [value]="initialIssueUrlValue"
+                    class="url-view-content"
+                    (click)="openUrlInNewTab(initialIssueUrlValue)"
+                    style="cursor: pointer; color: #1976d2; text-decoration: underline;"
+                  />
+                </ng-container>
+                
+                <ng-template #inputMode>
+                  <input 
+                    matInput 
+                    formControlName="issue_url" 
+                    type="url"
+                    (blur)="onIssueUrlBlur()"
+                  />
+                </ng-template>
+              </mat-form-field>
+              
+              <!-- Edit button outside the form field -->
+              <button
+                mat-icon-button
+                class="external-edit-button"
+                (click)="editIssueUrl()"
+                [matTooltip]="'common.edit' | transloco"
+                [attr.aria-label]="'common.edit' | transloco"
+                *ngIf="shouldShowIssueUrlHyperlink()"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
           </div>
         </form>
       </mat-card-content>
@@ -342,6 +381,14 @@
             <div matListItemTitle>{{ threat.name }}</div>
             <div matListItemLine>{{ threat.description }}</div>
             <div matListItemMeta>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openThreatMetadataDialog(threat, $event)"
+                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+              >
+                <mat-icon>list</mat-icon>
+              </button>
               <button
                 mat-icon-button
                 color="warn"

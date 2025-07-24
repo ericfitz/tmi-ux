@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,13 +10,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Metadata, Threat } from '../../models/threat-model.model';
+import { Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatTable } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
 
 /**
  * Interface for threat form values
@@ -82,8 +79,6 @@ export interface ThreatEditorDialogData {
     MatCheckboxModule,
     ReactiveFormsModule,
     TranslocoModule,
-    MatTableModule,
-    MatSortModule,
   ],
   templateUrl: './threat-editor-dialog.component.html',
   styleUrls: ['./threat-editor-dialog.component.scss'],
@@ -95,6 +90,8 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   isViewOnly: boolean = false;
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
+  isEditingIssueUrl = false;
+  initialIssueUrlValue = '';
 
   // Dropdown options
   diagramOptions: DiagramOption[] = [];
@@ -103,10 +100,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
 
-  // Metadata table properties
-  metadataDataSource = new MatTableDataSource<Metadata>([]);
-  metadataColumns: string[] = ['key', 'value', 'actions'];
-  @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
 
   private langSubscription: Subscription | null = null;
   private directionSubscription: Subscription | null = null;
@@ -154,109 +147,47 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       });
   }
 
+
+
+
   /**
-   * Safely get the metadata array from the threat
-   * @returns Array of metadata or empty array if not available
+   * Enter edit mode for issue URL
    */
-  getMetadata(): Metadata[] {
-    if (!this.data.threat) {
-      this.data.threat = {
-        id: '',
-        threat_model_id: this.data.threatModelId,
-        name: '',
-        description: '',
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-        severity: 'High',
-        threat_type: 'Information Disclosure',
-        diagram_id: '',
-        cell_id: '',
-        score: undefined,
-        priority: '',
-        mitigated: false,
-        status: 'Open',
-        issue_url: '',
-        metadata: [],
-      };
-    }
-
-    if (!this.data.threat?.metadata) {
-      this.data.threat.metadata = [];
-    }
-
-    return this.data.threat.metadata || [];
+  editIssueUrl(): void {
+    this.isEditingIssueUrl = true;
+    // Focus the input field after the view updates
+    setTimeout(() => {
+      const input = document.querySelector('input[formControlName="issue_url"]') as HTMLInputElement;
+      if (input) {
+        input.focus();
+      }
+    }, 0);
   }
 
   /**
-   * Check if the threat has metadata
-   * @returns True if the threat has metadata, false otherwise
+   * Handle blur event on issue URL input
    */
-  hasMetadata(): boolean {
-    return !!this.data.threat?.metadata && this.data.threat.metadata.length > 0;
+  onIssueUrlBlur(): void {
+    // Update the initial value with the current form value
+    const currentValue = this.threatForm.get('issue_url')?.value || '';
+    this.initialIssueUrlValue = currentValue;
+    // Exit edit mode when user clicks away from the input
+    this.isEditingIssueUrl = false;
   }
 
   /**
-   * Updates the data source for the metadata table
+   * Check if we should show the hyperlink view for issue URL
    */
-  updateMetadataDataSource(): void {
-    this.metadataDataSource.data = this.getMetadata();
-    if (this.metadataTable) {
-      this.metadataTable.renderRows();
-    }
+  shouldShowIssueUrlHyperlink(): boolean {
+    return !this.isEditingIssueUrl && !!this.initialIssueUrlValue;
   }
 
   /**
-   * Adds a new metadata item
+   * Opens URL in new tab when clicked
    */
-  addMetadataItem(): void {
-    const metadata = this.getMetadata();
-    metadata.push({
-      key: '',
-      value: '',
-    });
-    this.updateMetadataDataSource();
-  }
-
-  /**
-   * Updates the key of a metadata item
-   * @param index The index of the metadata item to update
-   * @param event The blur event containing the new key value
-   */
-  updateMetadataKey(index: number, event: Event): void {
-    const metadata = this.getMetadata();
-    const input = event.target as HTMLInputElement;
-
-    if (index >= 0 && index < metadata.length) {
-      metadata[index].key = input.value;
-      this.updateMetadataDataSource();
-    }
-  }
-
-  /**
-   * Updates the value of a metadata item
-   * @param index The index of the metadata item to update
-   * @param event The blur event containing the new value
-   */
-  updateMetadataValue(index: number, event: Event): void {
-    const metadata = this.getMetadata();
-    const input = event.target as HTMLInputElement;
-
-    if (index >= 0 && index < metadata.length) {
-      metadata[index].value = input.value;
-      this.updateMetadataDataSource();
-    }
-  }
-
-  /**
-   * Deletes a metadata item
-   * @param index The index of the metadata item to delete
-   */
-  deleteMetadataItem(index: number): void {
-    const metadata = this.getMetadata();
-
-    if (index >= 0 && index < metadata.length) {
-      metadata.splice(index, 1);
-      this.updateMetadataDataSource();
+  openUrlInNewTab(url: string): void {
+    if (url && url.trim()) {
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -461,6 +392,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     // If editing or viewing, populate form with threat data
     if (this.data.threat) {
+      // Store the initial issue URL value
+      this.initialIssueUrlValue = this.data.threat.issue_url || '';
+      
       this.threatForm.patchValue({
         name: this.data.threat.name,
         description: this.data.threat.description || '',
@@ -472,7 +406,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         priority: this.data.threat.priority || '',
         mitigated: this.data.threat.mitigated || false,
         status: this.data.threat.status || 'Open',
-        issue_url: this.data.threat.issue_url || '',
+        issue_url: this.initialIssueUrlValue,
       });
 
       // If view only, disable the form
@@ -481,8 +415,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       }
     }
 
-    // Initialize metadata table data source
-    this.updateMetadataDataSource();
 
     // Force translations to be applied
     this.forceTranslationUpdate();
@@ -564,12 +496,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'threatEditor.cellId',
         'threatEditor.notAssociatedWithDiagram',
         'threatEditor.notAssociatedWithCell',
-        'threatEditor.metadata',
-        'threatEditor.metadataKey',
-        'threatEditor.metadataValue',
-        'threatEditor.actions',
-        'threatEditor.delete',
-        'threatEditor.noMetadata',
         'threatEditor.cancel',
         'threatEditor.save',
         'threatEditor.close',
@@ -723,7 +649,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       mitigated: formValues.mitigated,
       status: formValues.status || undefined,
       issue_url: formValues.issue_url || undefined,
-      metadata: this.getMetadata(),
+      metadata: this.data.threat?.metadata || [],
     });
   }
 

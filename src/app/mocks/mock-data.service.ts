@@ -1,5 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 import { LoggerService } from '../core/services/logger.service';
 
 import { ThreatModel } from '../pages/tm/models/threat-model.model';
@@ -9,10 +11,6 @@ import { createMockThreatModel } from './factories/threat-model.factory';
 import { createMockDiagram } from './factories/diagram.factory';
 import { createMockCell } from './factories/cell.factory';
 import { createMockThreat } from './factories/threat.factory';
-
-import { mockThreatModel1, mockDiagrams1 } from './instances/threat-model-1';
-import { mockThreatModel2, mockDiagrams2 } from './instances/threat-model-2';
-import { mockThreatModel3, mockDiagrams3 } from './instances/threat-model-3';
 
 /**
  * Service for managing mock data and providing a toggle mechanism
@@ -27,19 +25,25 @@ export class MockDataService implements OnDestroy {
   private _useMockData = new BehaviorSubject<boolean>(this.getInitialMockState());
 
   // Cached mock data
-  private _mockThreatModels: ThreatModel[] = [mockThreatModel1, mockThreatModel2, mockThreatModel3];
+  private _mockThreatModels: ThreatModel[] = [];
 
   // Map of all diagrams by ID for quick lookup
   private _mockDiagramsMap = new Map<string, Diagram>();
 
-  constructor(private logger: LoggerService) {
+  // Loading state
+  private _dataLoaded = false;
+
+  constructor(
+    private logger: LoggerService,
+    private http: HttpClient
+  ) {
     this.logger.debug('MockDataService initialized', {
       initialMockState: this.getInitialMockState(),
       localStorage: localStorage.getItem('useMockData')
     });
 
-    // Initialize diagrams map
-    this.initDiagramsMap();
+    // Load JSON data on initialization
+    this.loadMockData();
   }
 
   // Public observable for components to subscribe to
@@ -55,6 +59,45 @@ export class MockDataService implements OnDestroy {
     this._useMockData.next(useMock);
     localStorage.setItem('useMockData', String(useMock));
     this.logger.debug(`Mock data ${useMock ? 'enabled' : 'disabled'}`, { useMock });
+  }
+
+  /**
+   * Load mock data from JSON files
+   */
+  private loadMockData(): void {
+    if (this._dataLoaded) {
+      return;
+    }
+
+    const mockDataUrls = [
+      'assets/mock-data/threat-model-1.json',
+      'assets/mock-data/threat-model-2.json',
+      'assets/mock-data/threat-model-3.json'
+    ];
+
+    forkJoin(
+      mockDataUrls.map(url => 
+        this.http.get<ThreatModel>(url).pipe(
+          catchError(error => {
+            this.logger.error(`Failed to load mock data from ${url}`, error);
+            return of(null);
+          })
+        )
+      )
+    ).subscribe(threatModels => {
+      // Filter out null values from failed loads
+      this._mockThreatModels = threatModels.filter((tm): tm is ThreatModel => tm !== null);
+      
+      // Initialize diagrams map
+      this.initDiagramsMap();
+      
+      this._dataLoaded = true;
+      
+      this.logger.debug('Mock data loaded successfully', {
+        threatModelCount: this._mockThreatModels.length,
+        diagramCount: this._mockDiagramsMap.size
+      });
+    });
   }
 
   /**
@@ -156,22 +199,18 @@ export class MockDataService implements OnDestroy {
   }
 
   /**
-   * Initialize the diagrams map with all mock diagrams
+   * Initialize the diagrams map with all mock diagrams from loaded threat models
    */
   private initDiagramsMap(): void {
-    // Add all diagrams from mockDiagrams1
-    Object.entries(mockDiagrams1).forEach(([id, diagram]) => {
-      this._mockDiagramsMap.set(id, diagram);
-    });
-
-    // Add all diagrams from mockDiagrams2
-    Object.entries(mockDiagrams2).forEach(([id, diagram]) => {
-      this._mockDiagramsMap.set(id, diagram);
-    });
-
-    // Add all diagrams from mockDiagrams3
-    Object.entries(mockDiagrams3).forEach(([id, diagram]) => {
-      this._mockDiagramsMap.set(id, diagram);
+    this._mockDiagramsMap.clear();
+    
+    // Extract all diagrams from threat models
+    this._mockThreatModels.forEach(threatModel => {
+      if (threatModel.diagrams) {
+        threatModel.diagrams.forEach(diagram => {
+          this._mockDiagramsMap.set(diagram.id, diagram);
+        });
+      }
     });
 
     this.logger.debug(`Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`);

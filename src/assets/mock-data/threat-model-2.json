@@ -1,0 +1,482 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440001",
+  "name": "Cloud Infrastructure Threat Model",
+  "description": "Security analysis for cloud deployment",
+  "created_at": "2025-01-10T21:58:00.000Z",
+  "modified_at": "2025-01-19T21:58:00.000Z",
+  "owner": "user@example.com",
+  "created_by": "user@example.com",
+  "threat_model_framework": "CIA",
+  "issue_url": "https://issues.example.com/browse/TM-124",
+  "authorization": [
+    {
+      "subject": "user@example.com",
+      "role": "owner"
+    },
+    {
+      "subject": "devops@example.com",
+      "role": "writer"
+    },
+    {
+      "subject": "security@example.com",
+      "role": "reader"
+    }
+  ],
+  "metadata": [
+    {
+      "key": "Environment",
+      "value": "Production"
+    },
+    {
+      "key": "Cloud Provider",
+      "value": "AWS"
+    },
+    {
+      "key": "Region",
+      "value": "us-east-1"
+    }
+  ],
+  "documents": [
+    {
+      "id": "5ba7b810-9dad-11d1-beef-00c04fd430ca",
+      "name": "Cloud Security Playbook",
+      "url": "https://docs.example.com/cloud-security-playbook.pdf",
+      "description": "Cloud security best practices and procedures",
+      "metadata": [
+        {
+          "key": "document_type",
+          "value": "playbook"
+        },
+        {
+          "key": "cloud_provider",
+          "value": "AWS"
+        }
+      ]
+    },
+    {
+      "id": "5ba7b810-9dad-11d1-beef-00c04fd430cb",
+      "name": "Infrastructure as Code Templates",
+      "url": "https://github.com/example/infrastructure-templates",
+      "description": "Terraform templates for secure cloud infrastructure",
+      "metadata": [
+        {
+          "key": "document_type",
+          "value": "code"
+        },
+        {
+          "key": "tool",
+          "value": "terraform"
+        }
+      ]
+    }
+  ],
+  "diagrams": [
+    {
+      "id": "223e4567-e89b-12d3-a456-426614174000",
+      "name": "Cloud Infrastructure",
+      "description": "Cloud deployment architecture",
+      "created_at": "2025-01-10T21:58:00.000Z",
+      "modified_at": "2025-01-19T21:58:00.000Z",
+      "metadata": [],
+      "type": "DFD-1.0.0",
+      "cells": [
+        {
+          "id": "internet-actor-1",
+          "value": "Internet Users",
+          "geometry": {
+            "x": 50,
+            "y": 200,
+            "width": 80,
+            "height": 80
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "loadbalancer-process-1",
+          "value": "Load Balancer",
+          "geometry": {
+            "x": 200,
+            "y": 200,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "webserver-process-1",
+          "value": "Web Server",
+          "geometry": {
+            "x": 400,
+            "y": 150,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "webserver-process-2",
+          "value": "Web Server",
+          "geometry": {
+            "x": 400,
+            "y": 250,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "database-store-1",
+          "value": "RDS Database",
+          "geometry": {
+            "x": 600,
+            "y": 200,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "vpc-boundary-1",
+          "value": "VPC",
+          "geometry": {
+            "x": 150,
+            "y": 100,
+            "width": 600,
+            "height": 250
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "traffic-edge-1",
+          "value": "HTTPS Traffic",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "internet-actor-1",
+          "target": "loadbalancer-process-1"
+        },
+        {
+          "id": "traffic-edge-2",
+          "value": "Route Traffic",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "loadbalancer-process-1",
+          "target": "webserver-process-1"
+        },
+        {
+          "id": "traffic-edge-3",
+          "value": "Route Traffic",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "loadbalancer-process-1",
+          "target": "webserver-process-2"
+        },
+        {
+          "id": "db-edge-1",
+          "value": "Database Query",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "webserver-process-1",
+          "target": "database-store-1"
+        },
+        {
+          "id": "db-edge-2",
+          "value": "Database Query",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "webserver-process-2",
+          "target": "database-store-1"
+        }
+      ]
+    },
+    {
+      "id": "223e4567-e89b-12d3-a456-426614174001",
+      "name": "Network Security",
+      "description": "Network security controls",
+      "created_at": "2025-01-09T21:58:00.000Z",
+      "modified_at": "2025-01-19T21:58:00.000Z",
+      "metadata": [],
+      "type": "DFD-1.0.0",
+      "cells": [
+        {
+          "id": "firewall-process-1",
+          "value": "WAF",
+          "geometry": {
+            "x": 150,
+            "y": 150,
+            "width": 100,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "ids-process-1",
+          "value": "IDS/IPS",
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 100,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "logs-store-1",
+          "value": "Security Logs",
+          "geometry": {
+            "x": 450,
+            "y": 150,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "monitoring-edge-1",
+          "value": "Security Events",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "firewall-process-1",
+          "target": "logs-store-1"
+        },
+        {
+          "id": "monitoring-edge-2",
+          "value": "Intrusion Detection",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "ids-process-1",
+          "target": "logs-store-1"
+        }
+      ]
+    },
+    {
+      "id": "223e4567-e89b-12d3-a456-426614174002",
+      "name": "Data Flow",
+      "description": "Application data flow patterns",
+      "created_at": "2025-01-08T21:58:00.000Z",
+      "modified_at": "2025-01-19T21:58:00.000Z",
+      "metadata": [],
+      "type": "DFD-1.0.0",
+      "cells": [
+        {
+          "id": "api-process-1",
+          "value": "API Gateway",
+          "geometry": {
+            "x": 150,
+            "y": 200,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "service-process-1",
+          "value": "Microservice A",
+          "geometry": {
+            "x": 350,
+            "y": 150,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "service-process-2",
+          "value": "Microservice B",
+          "geometry": {
+            "x": 350,
+            "y": 250,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "message-store-1",
+          "value": "Message Queue",
+          "geometry": {
+            "x": 550,
+            "y": 200,
+            "width": 120,
+            "height": 60
+          },
+          "vertex": true,
+          "edge": false,
+          "parent": null,
+          "source": null,
+          "target": null
+        },
+        {
+          "id": "api-edge-1",
+          "value": "API Calls",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "api-process-1",
+          "target": "service-process-1"
+        },
+        {
+          "id": "api-edge-2",
+          "value": "API Calls",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "api-process-1",
+          "target": "service-process-2"
+        },
+        {
+          "id": "queue-edge-1",
+          "value": "Async Messages",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "service-process-1",
+          "target": "message-store-1"
+        },
+        {
+          "id": "queue-edge-2",
+          "value": "Async Messages",
+          "vertex": false,
+          "edge": true,
+          "parent": null,
+          "source": "service-process-2",
+          "target": "message-store-1"
+        }
+      ]
+    }
+  ],
+  "threats": [
+    {
+      "id": "7ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "threat_model_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "DDoS Attack",
+      "description": "Distributed denial of service attack overwhelming infrastructure",
+      "created_at": "2025-01-10T21:58:00.000Z",
+      "modified_at": "2025-01-19T21:58:00.000Z",
+      "diagram_id": "223e4567-e89b-12d3-a456-426614174000",
+      "cell_id": "loadbalancer-process-1",
+      "severity": "High",
+      "score": 7.8,
+      "priority": "High",
+      "mitigated": false,
+      "status": "Open",
+      "threat_type": "Denial of Service",
+      "metadata": [
+        {
+          "key": "CVSS",
+          "value": "7.8"
+        },
+        {
+          "key": "Issue ID",
+          "value": "jira-11111"
+        }
+      ]
+    },
+    {
+      "id": "7ba7b810-9dad-11d1-80b4-00c04fd430c9",
+      "threat_model_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Data Exfiltration",
+      "description": "Unauthorized data extraction from cloud storage",
+      "created_at": "2025-01-09T21:58:00.000Z",
+      "modified_at": "2025-01-19T21:58:00.000Z",
+      "diagram_id": "223e4567-e89b-12d3-a456-426614174000",
+      "cell_id": "database-store-1",
+      "severity": "Critical",
+      "score": 8.9,
+      "priority": "Critical",
+      "mitigated": false,
+      "status": "Open",
+      "threat_type": "Information Disclosure",
+      "metadata": [
+        {
+          "key": "CVSS",
+          "value": "8.9"
+        },
+        {
+          "key": "Issue ID",
+          "value": "jira-22222"
+        }
+      ]
+    },
+    {
+      "id": "7ba7b810-9dad-11d1-80b4-00c04fd430ca",
+      "threat_model_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Privilege Escalation",
+      "description": "Unauthorized elevation of access privileges within cloud environment",
+      "created_at": "2025-01-08T21:58:00.000Z",
+      "modified_at": "2025-01-19T21:58:00.000Z",
+      "diagram_id": "223e4567-e89b-12d3-a456-426614174002",
+      "cell_id": "api-process-1",
+      "severity": "High",
+      "score": 7.2,
+      "priority": "Medium",
+      "mitigated": true,
+      "status": "Mitigated",
+      "threat_type": "Elevation of Privilege",
+      "metadata": [
+        {
+          "key": "CVSS",
+          "value": "7.2"
+        },
+        {
+          "key": "Issue ID",
+          "value": "jira-33333"
+        }
+      ]
+    }
+  ]
+}

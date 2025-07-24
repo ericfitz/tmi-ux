@@ -254,8 +254,9 @@ export class DfdEventHandlersService {
         };
 
         const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
-          width: '900px',
+          width: '650px',
           maxHeight: '90vh',
+          panelClass: 'threat-editor-dialog-650',
           data: dialogData,
         });
 

@@ -73,6 +73,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   diagrams: Diagram[] = [];
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
+  isEditingIssueUrl = false;
+  initialIssueUrlValue = '';
 
   private _subscriptions = new Subscription();
 
@@ -110,6 +112,47 @@ export class TmEditComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Enter edit mode for issue URL
+   */
+  editIssueUrl(): void {
+    this.isEditingIssueUrl = true;
+    // Focus the input field after the view updates
+    setTimeout(() => {
+      const input = document.querySelector('input[formControlName="issue_url"]') as HTMLInputElement;
+      if (input) {
+        input.focus();
+      }
+    }, 0);
+  }
+
+  /**
+   * Handle blur event on issue URL input
+   */
+  onIssueUrlBlur(): void {
+    // Update the initial value with the current form value
+    const currentValue = this.threatModelForm.get('issue_url')?.value || '';
+    this.initialIssueUrlValue = currentValue;
+    // Exit edit mode when user clicks away from the input
+    this.isEditingIssueUrl = false;
+  }
+
+  /**
+   * Check if we should show the hyperlink view for issue URL
+   */
+  shouldShowIssueUrlHyperlink(): boolean {
+    return !this.isEditingIssueUrl && !!this.initialIssueUrlValue && this.initialIssueUrlValue.trim() !== '';
+  }
+
+  /**
+   * Opens URL in new tab when clicked
+   */
+  openUrlInNewTab(url: string): void {
+    if (url && url.trim()) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
   ngOnInit(): void {
     // Subscribe to language changes
     this._subscriptions.add(
@@ -135,11 +178,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this.threatModelService.getThreatModelById(id).subscribe(threatModel => {
         if (threatModel) {
           this.threatModel = threatModel;
+          // Store the initial issue URL value
+          this.initialIssueUrlValue = threatModel.issue_url || '';
+          
           this.threatModelForm.patchValue({
             name: threatModel.name,
             description: threatModel.description || '',
             threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
-            issue_url: threatModel.issue_url || '',
+            issue_url: this.initialIssueUrlValue,
           });
 
           // Update framework control disabled state based on threats
@@ -176,6 +222,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
             threat_model_framework: this.threatModel.threat_model_framework,
             issue_url: this.threatModel.issue_url || '',
           });
+          
+          // Store the initial issue URL value for new models
+          this.initialIssueUrlValue = this.threatModel.issue_url || '';
 
           // Update framework control disabled state based on threats
           this.updateFrameworkControlState();
@@ -241,8 +290,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
-      width: '900px',
+      width: '650px',
       maxHeight: '90vh',
+      panelClass: 'threat-editor-dialog-650',
       data: dialogData,
     });
 
@@ -830,6 +880,56 @@ export class TmEditComponent implements OnInit, OnDestroy {
               diagramId: diagram.id, 
               metadata: result 
             });
+          }
+        }
+      }),
+    );
+  }
+
+  /**
+   * Opens the metadata dialog for a specific threat
+   */
+  openThreatMetadataDialog(threat: Threat, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const dialogData: MetadataDialogData = {
+      metadata: threat.metadata || [],
+      isReadOnly: false,
+    };
+    
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+    
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && this.threatModel) {
+          // Update the threat metadata in the local threats array
+          const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
+          if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
+            this.threatModel.threats[threatIndex].metadata = result;
+            this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
+            this.threatModel.modified_at = new Date().toISOString();
+            
+            this.logger.info('Updated threat metadata', { 
+              threatId: threat.id,
+              threatName: threat.name,
+              metadata: result 
+            });
+            
+            // Update the threat model
+            this._subscriptions.add(
+              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
+                if (updatedModel) {
+                  this.threatModel = updatedModel;
+                }
+              }),
+            );
           }
         }
       }),
