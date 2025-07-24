@@ -1,0 +1,17 @@
+{
+  "framework-name": "CIA",
+  "threat-types": [
+    {
+      "name": "Confidentiality",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Integrity",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Availability",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    }
+  ]
+}

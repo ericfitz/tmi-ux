@@ -1,0 +1,29 @@
+{
+  "framework-name": "STRIDE",
+  "threat-types": [
+    {
+      "name": "Spoofing",
+      "applies-to": ["Actor", "Process"]
+    },
+    {
+      "name": "Tampering",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Repudiation",
+      "applies-to": ["Actor", "Store", "Process"]
+    },
+    {
+      "name": "Information Disclosure",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Denial of Service",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Elevation of Privilege",
+      "applies-to": ["Process"]
+    }
+  ]
+}

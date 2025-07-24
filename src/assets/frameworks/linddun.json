@@ -1,0 +1,33 @@
+{
+  "framework-name": "LINDDUN",
+  "threat-types": [
+    {
+      "name": "Linkability",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Identifiability",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Non-Repudiation",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Detectability",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Disclosure of Information",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Unawareness",
+      "applies-to": ["Actor"]
+    },
+    {
+      "name": "Non-Compliance",
+      "applies-to": ["Store", "Flow", "Process"]
+    }
+  ]
+}

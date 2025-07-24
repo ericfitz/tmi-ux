@@ -1,0 +1,37 @@
+{
+  "framework-name": "PLOT4ai",
+  "threat-types": [
+    {
+      "name": "Technique & Processes",
+      "applies-to": ["Store", "Flow", "Process"]
+    },
+    {
+      "name": "Accessibility",
+      "applies-to": ["Actor", "Store", "Process"]
+    },
+    {
+      "name": "Identifiability & Linkability",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Security",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Safety",
+      "applies-to": ["Actor"]
+    },
+    {
+      "name": "Unawareness",
+      "applies-to": ["Actor"]
+    },
+    {
+      "name": "Ethics & Human Rights",
+      "applies-to": ["Actor"]
+    },
+    {
+      "name": "Non-Compliance",
+      "applies-to": ["Store", "Flow", "Process"]
+    }
+  ]
+}
