@@ -33,12 +33,6 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     const startTime = Date.now();
     const validationConfig = { ...DEFAULT_VALIDATION_CONFIG, ...config };
     
-    this.logger.debug('Starting ThreatModel validation', {
-      threatModelId: threatModel?.id,
-      threatModelName: threatModel?.name,
-      config: validationConfig
-    });
-
     const context: ValidationContext = {
       object: threatModel,
       currentPath: '',
@@ -49,6 +43,11 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     const allWarnings: ValidationResult['warnings'] = [];
 
     try {
+      this.logger.debug('Starting ThreatModel validation', {
+        threatModelId: threatModel?.id,
+        threatModelName: threatModel?.name,
+        config: validationConfig
+      });
       // 1. Schema validation
       const schemaErrors = this.schemaValidator.validateThreatModel(threatModel, context);
       this.categorizeErrors(schemaErrors, allErrors, allWarnings);

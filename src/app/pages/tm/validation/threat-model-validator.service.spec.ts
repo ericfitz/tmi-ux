@@ -1,34 +1,44 @@
-/**
- * Comprehensive tests for the ThreatModel validation system
- */
+// This project uses vitest for all unit tests, with native vitest syntax
+// This project uses cypress for all integration tests
+// Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
+// Execute all tests using: "pnpm run test"
+// Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
+// Execute all tests for a component by using "pnpm run test:<componentname>"
+// Do not disable or skip failing tests, ask the user what to do
 
-import { TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
+import '@angular/compiler';
+
+import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { ThreatModelValidatorService } from './threat-model-validator.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ValidationConfig } from './types';
 
+// Mock interfaces for type safety
+interface MockLoggerService {
+  debug: ReturnType<typeof vi.fn>;
+  info: ReturnType<typeof vi.fn>;
+  warn: ReturnType<typeof vi.fn>;
+  error: ReturnType<typeof vi.fn>;
+}
+
 describe('ThreatModelValidatorService', () => {
   let service: ThreatModelValidatorService;
-  let mockLogger: any;
+  let mockLogger: MockLoggerService;
 
   beforeEach(() => {
-    const loggerSpy = {
+    // Clear mocks before each test
+    vi.clearAllMocks();
+
+    // Create mock for LoggerService
+    mockLogger = {
       debug: vi.fn(),
       info: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
     };
 
-    TestBed.configureTestingModule({
-      providers: [
-        ThreatModelValidatorService,
-        { provide: LoggerService, useValue: loggerSpy }
-      ]
-    });
-
-    service = TestBed.inject(ThreatModelValidatorService);
-    mockLogger = TestBed.inject(LoggerService);
+    // Create the service directly with mocked dependencies
+    service = new ThreatModelValidatorService(mockLogger as unknown as LoggerService);
   });
 
   it('should be created', () => {
@@ -58,7 +68,7 @@ describe('ThreatModelValidatorService', () => {
       const result = service.validate(validThreatModel);
 
       expect(result.valid).toBe(true);
-      expect(result.errors).toHaveSize(0);
+      expect(result.errors).toHaveLength(0);
       expect(result.metadata.timestamp).toBeDefined();
       expect(result.metadata.duration).toBeGreaterThanOrEqual(0);
     });
@@ -202,7 +212,7 @@ describe('ThreatModelValidatorService', () => {
       const result = service.validate(invalidThreatModel, config);
 
       expect(result.valid).toBe(false);
-      expect(result.warnings).toHaveSize(0); // Warnings excluded
+      expect(result.warnings).toHaveLength(0); // Warnings excluded
     });
 
     it('should handle validation exceptions gracefully', () => {
@@ -210,7 +220,8 @@ describe('ThreatModelValidatorService', () => {
       const malformedObject = {
         get id() {
           throw new Error('Getter error');
-        }
+        },
+        name: 'Test'
       };
 
       const result = service.validate(malformedObject);
@@ -235,9 +246,12 @@ describe('ThreatModelValidatorService', () => {
         authorization: [
           { subject: 'test@example.com', role: 'owner' }
         ],
+        metadata: [],
+        documents: [],
+        threats: [],
         diagrams: [
           {
-            id: 'diagram-1',
+            id: '550e8400-e29b-41d4-a716-446655440001',
             name: 'Test Diagram',
             type: 'UNSUPPORTED-TYPE', // This would fail diagram validation but not schema
             created_at: '2025-01-01T00:00:00Z',
