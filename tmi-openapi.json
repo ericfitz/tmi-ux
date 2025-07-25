@@ -2475,66 +2475,6 @@
               "type": "string"
             },
             "description": "Filter by owner username or email"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Filter by threat model name (partial match)"
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Filter by threat model description (partial match)"
-          },
-          {
-            "name": "issue_url",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Filter by issue URL (partial match)"
-          },
-          {
-            "name": "created_after",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter threat models created after this date (RFC3339 format)"
-          },
-          {
-            "name": "created_before",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter threat models created before this date (RFC3339 format)"
-          },
-          {
-            "name": "modified_after",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter threat models modified after this date (RFC3339 format)"
-          },
-          {
-            "name": "modified_before",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter threat models modified before this date (RFC3339 format)"
           }
         ],
         "responses": {
