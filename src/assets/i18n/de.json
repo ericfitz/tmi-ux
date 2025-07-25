@@ -224,6 +224,17 @@
     "lastModified": "Zuletzt geändert: {{date}}",
     "metadata": "Metadaten",
     "metadataButton": "Metadaten verwalten",
+    "metadataDialog": {
+      "title": "Metadaten verwalten",
+      "objectTypes": {
+        "ThreatModel": "Bedrohungsmodell",
+        "Diagram": "Diagramm",
+        "Document": "Dokument",
+        "Threat": "Bedrohung",
+        "SourceCode": "Quellcode",
+        "Cell": "Zelle"
+      }
+    },
     "metadataKey": "Schlüssel",
     "metadataTooltip": "Metadaten verwalten",
     "metadataValue": "Wert",

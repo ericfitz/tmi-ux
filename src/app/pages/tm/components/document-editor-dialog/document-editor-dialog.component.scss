@@ -9,8 +9,8 @@
 .form-field-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 4px;
+  margin-top: 4px;
   margin-bottom: 8px;
 }
 
@@ -18,15 +18,15 @@
   width: 100%;
 }
 
-// Add margin to the form field label
+// Reduced margin to the form field label
 .mat-mdc-form-field {
-  margin-top: 8px;
+  margin-top: 2px;
 }
 
 mat-dialog-content {
   min-width: 300px;
   padding: 20px 24px;
-  padding-top: 16px; // Add padding to the top of the dialog content
+  padding-top: 4px; // Reduced padding to the top of the dialog content
 }
 
 mat-dialog-actions {

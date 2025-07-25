@@ -961,6 +961,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: MetadataDialogData = {
       metadata: sourceCode.metadata || [],
       isReadOnly: false,
+      objectType: 'SourceCode',
+      objectName: sourceCode.name,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1008,6 +1010,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: MetadataDialogData = {
       metadata: document.metadata || [],
       isReadOnly: false,
+      objectType: 'Document',
+      objectName: document.name,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1100,6 +1104,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: MetadataDialogData = {
       metadata: this.threatModel.metadata || [],
       isReadOnly: false, // You can add logic here to determine if user has edit permissions
+      objectType: 'ThreatModel',
+      objectName: this.threatModel.name,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1139,6 +1145,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: MetadataDialogData = {
       metadata: diagram.metadata || [],
       isReadOnly: false,
+      objectType: 'Diagram',
+      objectName: diagram.name,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1181,6 +1189,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: MetadataDialogData = {
       metadata: threat.metadata || [],
       isReadOnly: false,
+      objectType: 'Threat',
+      objectName: threat.name,
     };
     
     const dialogRef = this.dialog.open(MetadataDialogComponent, {

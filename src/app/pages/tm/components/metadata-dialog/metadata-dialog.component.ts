@@ -11,6 +11,8 @@ import { Metadata } from '../../models/threat-model.model';
 export interface MetadataDialogData {
   metadata: Metadata[];
   isReadOnly?: boolean;
+  objectType?: string;
+  objectName?: string;
 }
 
 @Component({
@@ -26,6 +28,15 @@ export interface MetadataDialogData {
         min-width: 500px;
       }
 
+      .dialog-subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.6);
+        margin: -12px 24px 4px 24px;
+        padding: 0;
+        line-height: 1.4;
+      }
+
       .metadata-content {
         min-height: 200px;
         max-height: 60vh;
@@ -34,7 +45,7 @@ export interface MetadataDialogData {
       }
 
       .table-container {
-        margin: 16px 0;
+        margin: 4px 0;
         width: 100%;
         overflow-x: auto;
       }
@@ -44,22 +55,103 @@ export interface MetadataDialogData {
         min-width: 400px;
       }
 
+      /* Ensure table rows are compact */
+      .metadata-table .mat-mdc-row,
+      .metadata-table .mat-mdc-header-row {
+        height: auto !important;
+        min-height: auto !important;
+      }
+
       .table-field {
         width: 100%;
         min-width: 120px;
+        margin: 0 !important;
+      }
+
+      /* Override Material form field heights aggressively with ng-deep */
+      ::ng-deep .metadata-table .table-field.mat-mdc-form-field {
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+      }
+
+      ::ng-deep .metadata-table .table-field .mat-mdc-form-field-wrapper {
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+        padding: 0 !important;
       }
 
       .table-field .mat-mdc-form-field-wrapper {
-        padding-bottom: 0;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 32px !important;
       }
 
-      .table-field .mat-mdc-form-field-infix {
-        min-height: 40px;
-        padding: 8px 0;
+      /* Target all wrapper elements aggressively with ng-deep */
+      ::ng-deep .metadata-table .table-field .mat-mdc-text-field-wrapper {
+        padding: 0 4px !important;
+        margin: 0 !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+      }
+
+      ::ng-deep .metadata-table .table-field .mat-mdc-form-field-flex {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+        align-items: center !important;
+      }
+
+      .table-field .mat-mdc-form-field-subscript-wrapper {
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: none !important;
+        line-height: 0 !important;
+      }
+
+      ::ng-deep .metadata-table .table-field .mat-mdc-form-field-infix {
+        min-height: 24px !important;
+        height: 24px !important;
+        max-height: 24px !important;
+        padding: 0 4px !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+
+      /* Input element itself - minimize all spacing around text */
+      ::ng-deep .metadata-table .table-field input.mat-mdc-input-element {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 20px !important;
+        max-height: 20px !important;
+        line-height: 20px !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
       }
 
       .table-field input {
         font-size: 14px;
+        vertical-align: top !important;
+      }
+
+      /* Remove any default Material outline styling that adds space */
+      .table-field .mdc-notched-outline {
+        border: 1px solid rgba(0, 0, 0, 0.38) !important;
+      }
+
+      .table-field .mdc-notched-outline__leading,
+      .table-field .mdc-notched-outline__notch,
+      .table-field .mdc-notched-outline__trailing {
+        border-top: 1px solid rgba(0, 0, 0, 0.38) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.38) !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
 
       /* Make key and value columns equal width */
@@ -76,15 +168,40 @@ export interface MetadataDialogData {
         text-align: center;
       }
 
+      .mat-column-actions .mat-mdc-icon-button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 28px !important;
+        width: 28px !important;
+        transform: translateY(-2px) !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+      }
+
       .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 8px 4px;
+        vertical-align: middle;
+      }
+
+      .mat-mdc-cell {
+        height: 34px !important;
+        padding: 1px 4px !important;
+        vertical-align: middle !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+      }
+
+      .mat-mdc-header-cell {
+        height: 32px !important;
+        padding: 2px 4px !important;
+        vertical-align: middle !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
       }
 
       .no-items-message {
         text-align: center;
         color: rgba(0, 0, 0, 0.6);
-        padding: 32px;
+        padding: 16px;
         font-style: italic;
       }
 

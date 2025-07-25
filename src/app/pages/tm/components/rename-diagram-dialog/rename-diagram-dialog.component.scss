@@ -12,20 +12,12 @@
   width: 100%;
 }
 
-.diagram-id {
-  margin-bottom: 16px;
-  padding: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  font-family: monospace;
-  word-break: break-all;
-}
-
-.id-label {
-  font-weight: 500;
-  margin-right: 8px;
-}
-
-.id-value {
-  color: #555;
+.dialog-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(0 0 0 / 60%);
+  margin: -12px 24px 8px;
+  padding: 0;
+  line-height: 1.4;
+  font-family: 'Roboto Mono', monospace;
 }

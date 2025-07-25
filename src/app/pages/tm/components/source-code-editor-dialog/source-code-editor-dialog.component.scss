@@ -1,7 +1,7 @@
 .dialog-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 4px;
   width: 100%;
   max-width: 600px;
 }
@@ -9,8 +9,8 @@
 .form-field-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 .full-width {
@@ -18,20 +18,25 @@
 }
 
 .parameters-section {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 2px;
+  padding-top: 4px;
   border-top: 1px solid var(--mat-divider-color);
 
   h3 {
-    margin: 0 0 16px;
+    margin: 0 0 8px;
     font-size: 16px;
     font-weight: 500;
     color: var(--mat-text-primary);
   }
+
+  /* Add extra margin before the sub-path field */
+  mat-form-field:last-child {
+    margin-top: 8px;
+  }
 }
 
 mat-dialog-content {
-  padding: 24px;
+  padding: 4px 24px 24px;
   overflow-y: auto;
   max-height: 70vh;
 }

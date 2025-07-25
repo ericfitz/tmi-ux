@@ -224,6 +224,17 @@
     "lastModified": "แก้ไขล่าสุด: {{date}}",
     "metadata": "ข้อมูลเมตา",
     "metadataButton": "จัดการข้อมูลเมตา",
+    "metadataDialog": {
+      "title": "จัดการข้อมูลเมตา",
+      "objectTypes": {
+        "ThreatModel": "แบบจำลองภัยคุกคาม",
+        "Diagram": "แผนภาพ",
+        "Document": "เอกสาร",
+        "Threat": "ภัยคุกคาม",
+        "SourceCode": "ซอร์สโค้ด",
+        "Cell": "เซลล์"
+      }
+    },
     "metadataKey": "คีย์",
     "metadataTooltip": "จัดการข้อมูลเมตา",
     "metadataValue": "ค่า",

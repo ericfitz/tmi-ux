@@ -114,14 +114,14 @@ mat-card-header {
 .threat-model-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .form-fields-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-top: 8px;
+  margin-top: 4px;
 
   @media (width < 768px) {
     grid-template-columns: 1fr;

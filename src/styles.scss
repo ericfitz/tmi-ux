@@ -68,18 +68,21 @@ html[dir='rtl'] {
   margin-bottom: 16px;
 }
 
-// Threat Editor Dialog specific width
+// Threat Editor Dialog specific width and height
 .threat-editor-dialog-650 {
   width: 650px !important;
   max-width: 650px !important;
+  min-height: 550px !important;
 }
 
 .threat-editor-dialog-650 .mat-mdc-dialog-container {
   width: 650px !important;
   max-width: 650px !important;
+  min-height: 550px !important;
 }
 
 .threat-editor-dialog-650 .mat-mdc-dialog-surface {
   width: 650px !important;
   max-width: 650px !important;
+  min-height: 550px !important;
 }

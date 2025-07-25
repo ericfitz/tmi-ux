@@ -603,7 +603,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Manage metadata for the selected cell (placeholder for now)
+   * Manage metadata for the selected cell
    */
   manageMetadata(): void {
     if (!this.hasExactlyOneSelectedCell) {
@@ -618,32 +618,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const cell = selectedCells[0];
-    this.logger.info('Manage metadata clicked for cell', { cellId: cell.id });
-    
-    // TODO: Implement metadata management functionality
-  }
-
-  /**
-   * Opens the metadata dialog for the selected cell
-   */
-  openCellMetadataDialog(): void {
-    if (!this.hasExactlyOneSelectedCell) {
-      this.logger.warn('Cannot open metadata dialog: no single cell selected');
-      return;
-    }
-
-    // Get the selected cell from the graph adapter
-    const selectedCells = this.x6GraphAdapter.getSelectedCells();
-    if (selectedCells.length !== 1) {
-      return;
-    }
-
-    const cell = selectedCells[0];
     const cellData = cell.getData() || {};
     
+    // Convert metadata from object format to array format for the dialog
+    const metadataArray: Metadata[] = [];
+    if (cellData.metadata && typeof cellData.metadata === 'object') {
+      Object.entries(cellData.metadata).forEach(([key, value]) => {
+        metadataArray.push({ key, value: String(value) });
+      });
+    }
+    
+    // Get the cell label using the utility function
+    const cellLabel = (cell as any).getLabel() || '';
+    
     const dialogData: MetadataDialogData = {
-      metadata: cellData.metadata || [],
+      metadata: metadataArray,
       isReadOnly: false,
+      objectType: 'Cell',
+      objectName: cellLabel,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -657,15 +649,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && cell) {
+          // Convert metadata from array format back to object format for storage
+          const metadataObject: { [key: string]: string } = {};
+          result.forEach(item => {
+            if (item.key && item.key.trim()) {
+              metadataObject[item.key] = item.value || '';
+            }
+          });
+          
           // Update the cell metadata
-          const updatedData = { ...cellData, metadata: result };
+          const updatedData = { ...cellData, metadata: metadataObject };
           cell.setData(updatedData);
           
-          this.logger.info('Updated cell metadata', { cellId: cell.id, metadata: result });
+          this.logger.info('Updated cell metadata', { cellId: cell.id, metadata: metadataObject });
         }
       }),
     );
   }
+
 
   /**
    * Closes the diagram and navigates back to the threat model editor page

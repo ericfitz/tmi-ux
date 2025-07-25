@@ -224,6 +224,17 @@
     "lastModified": "آخر تعديل: {{date}}",
     "metadata": "البيانات الوصفية",
     "metadataButton": "إدارة البيانات الوصفية",
+    "metadataDialog": {
+      "title": "إدارة البيانات الوصفية",
+      "objectTypes": {
+        "ThreatModel": "نموذج التهديد",
+        "Diagram": "مخطط",
+        "Document": "وثيقة",
+        "Threat": "تهديد",
+        "SourceCode": "كود المصدر",
+        "Cell": "خلية"
+      }
+    },
     "metadataKey": "المفتاح",
     "metadataTooltip": "إدارة البيانات الوصفية",
     "metadataValue": "القيمة",

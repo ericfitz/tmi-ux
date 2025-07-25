@@ -224,6 +224,17 @@
     "lastModified": "最后修改: {{date}}",
     "metadata": "元数据",
     "metadataButton": "管理元数据",
+    "metadataDialog": {
+      "title": "管理元数据",
+      "objectTypes": {
+        "ThreatModel": "威胁模型",
+        "Diagram": "图表",
+        "Document": "文档",
+        "Threat": "威胁",
+        "SourceCode": "源代码",
+        "Cell": "单元格"
+      }
+    },
     "metadataKey": "键",
     "metadataTooltip": "管理元数据",
     "metadataValue": "值",

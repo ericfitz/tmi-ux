@@ -1,11 +1,10 @@
 <h2 mat-dialog-title>{{ 'threatModels.renameDiagram' | transloco }}</h2>
+<div class="dialog-subtitle">
+  {{ 'threatModels.idLabel' | transloco }} {{ diagramId }}
+</div>
 <mat-dialog-content>
   <form [formGroup]="diagramForm" class="dialog-form">
     <div class="form-field-container">
-      <div class="diagram-id">
-        <span class="id-label">{{ 'threatModels.idLabel' | transloco }}:</span>
-        <span class="id-value">{{ diagramId }}</span>
-      </div>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
         <input matInput formControlName="name" />
