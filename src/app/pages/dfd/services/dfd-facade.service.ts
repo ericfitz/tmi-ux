@@ -1,3 +1,21 @@
+/**
+ * DFD Facade Service
+ * 
+ * This service provides a unified interface for DFD component operations by coordinating
+ * multiple specialized services. It implements the Facade pattern to simplify component dependencies.
+ * 
+ * Key functionality:
+ * - Coordinates node operations (creation, deletion, manipulation) via DfdNodeService
+ * - Manages edge operations (connection validation, creation, vertices) via DfdEdgeService
+ * - Handles event processing (keyboard, mouse, context menu) via DfdEventHandlersService
+ * - Provides diagram export capabilities via DfdExportService
+ * - Manages diagram loading and data operations via DfdDiagramService
+ * - Simplifies component architecture by reducing direct service dependencies
+ * - Provides consistent API for all DFD operations from a single entry point
+ * - Coordinates cross-service operations that require multiple service interactions
+ * - Maintains separation of concerns while providing unified functionality
+ */
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Edge, Node, Graph } from '@antv/x6';
@@ -287,5 +305,21 @@ export class DfdFacadeService {
    */
   canShapesConnect(sourceShape: string, targetShape: string): boolean {
     return this.edgeService.canShapesConnect(sourceShape, targetShape);
+  }
+
+  // ===============================
+  // Diagram Loading Operations
+  // ===============================
+
+  /**
+   * Load multiple diagram cells with proper history suppression and port visibility management
+   */
+  loadDiagramCellsBatch(
+    cells: any[], 
+    graph: Graph, 
+    diagramId: string, 
+    nodeConfigurationService: any
+  ): void {
+    this.diagramService.loadDiagramCellsBatch(cells, graph, diagramId, nodeConfigurationService);
   }
 }

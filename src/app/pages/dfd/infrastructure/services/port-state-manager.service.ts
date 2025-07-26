@@ -50,6 +50,22 @@ export class PortStateManagerService {
   }
 
   /**
+   * Safely set port visibility with history suppression
+   * This ensures ALL port visibility changes go through proper history management
+   */
+  private _setPortVisibility(
+    graph: Graph,
+    node: any,
+    portId: string,
+    visibility: 'visible' | 'hidden',
+    operationName: string
+  ): void {
+    this._executePortOperation(graph, operationName, () => {
+      node.setPortProp(portId, 'attrs/circle/style/visibility', visibility);
+    });
+  }
+
+  /**
    * Update port visibility for a specific node based on connection status
    */
   updateNodePortVisibility(graph: Graph, node: Node): void {
@@ -305,9 +321,8 @@ export class PortStateManagerService {
 
     // Show ports on node hover
     graph.on('node:mouseenter', ({ node }) => {
-      // Batch port visibility changes (history filtering will exclude these from history)
-      graph.batchUpdate(() => {
-        const ports = node.getPorts();
+      const ports = node.getPorts();
+      this._executePortOperation(graph, `show-ports-hover-${node.id}`, () => {
         ports.forEach(port => {
           node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
         });
@@ -316,9 +331,8 @@ export class PortStateManagerService {
 
     // Hide ports on node leave (unless connecting or connected)
     graph.on('node:mouseleave', ({ node }) => {
-      // Batch port visibility changes (history filtering will exclude these from history)
-      graph.batchUpdate(() => {
-        const ports = node.getPorts();
+      const ports = node.getPorts();
+      this._executePortOperation(graph, `hide-ports-hover-leave-${node.id}`, () => {
         ports.forEach(port => {
           // Only hide ports that are not connected
           if (!this.isPortConnected(graph, node.id, port.id!)) {
@@ -333,22 +347,24 @@ export class PortStateManagerService {
 
   /**
    * Show all ports for a specific node (called by X6SelectionAdapter during hover)
-   * Note: This is called from within history-suppressed contexts, so no additional suppression needed
+   * Now properly wrapped with history suppression for consistency
    */
-  showNodePorts(node: any): void {
-    if (!node) return;
+  showNodePorts(graph: Graph, node: any): void {
+    if (!graph || !node) return;
     
     const ports = node.getPorts();
     if (!ports) return;
     
-    ports.forEach((port: any) => {
-      node.setPortProp(port.id, 'attrs/circle/style/visibility', 'visible');
+    this._executePortOperation(graph, `show-node-ports-${node.id}`, () => {
+      ports.forEach((port: any) => {
+        node.setPortProp(port.id, 'attrs/circle/style/visibility', 'visible');
+      });
     });
   }
 
   /**
    * Hide unconnected ports for a specific node (called by X6SelectionAdapter during hover leave)
-   * Note: This is called from within history-suppressed contexts, so no additional suppression needed
+   * Now properly wrapped with history suppression for consistency
    */
   hideUnconnectedNodePorts(graph: Graph, node: any): void {
     if (!graph || !node) return;
@@ -356,11 +372,13 @@ export class PortStateManagerService {
     const ports = node.getPorts();
     if (!ports) return;
     
-    ports.forEach((port: any) => {
-      // Only hide ports that are not connected
-      if (!this.isPortConnected(graph, node.id, port.id)) {
-        node.setPortProp(port.id, 'attrs/circle/style/visibility', 'hidden');
-      }
+    this._executePortOperation(graph, `hide-unconnected-ports-${node.id}`, () => {
+      ports.forEach((port: any) => {
+        // Only hide ports that are not connected
+        if (!this.isPortConnected(graph, node.id, port.id)) {
+          node.setPortProp(port.id, 'attrs/circle/style/visibility', 'hidden');
+        }
+      });
     });
   }
 

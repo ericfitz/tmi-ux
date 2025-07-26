@@ -1,3 +1,19 @@
+/**
+ * Application Configuration
+ * 
+ * This file defines the main application configuration for the Angular standalone application.
+ * It configures all global providers and services needed throughout the application.
+ * 
+ * Key functionality:
+ * - Configures routing with component input binding support
+ * - Sets up HTTP client with fetch API and JWT interceptors
+ * - Provides animations support for Angular Material components
+ * - Configures internationalization with Transloco and locale support
+ * - Sets up zone.js change detection with event coalescing for performance
+ * - Determines locale from user preferences with fallback to English
+ * - Registers JWT interceptor for automatic token attachment to HTTP requests
+ */
+
 import {
   provideHttpClient,
   withInterceptorsFromDi,

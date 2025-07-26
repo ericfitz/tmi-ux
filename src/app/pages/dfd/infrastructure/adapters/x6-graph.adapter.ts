@@ -1,3 +1,24 @@
+/**
+ * X6 Graph Adapter
+ * 
+ * This adapter provides the main interface between the DFD application and the AntV X6 graph library.
+ * It handles graph initialization, configuration, and core graph operations.
+ * 
+ * Key functionality:
+ * - Initializes and configures the X6 graph with all necessary plugins and settings
+ * - Provides graph lifecycle management (creation, disposal, cleanup)
+ * - Coordinates with specialized adapters for embedding, z-order, history, and selection
+ * - Manages graph events and provides reactive observables for component integration
+ * - Handles node and edge creation with proper validation and configuration
+ * - Implements port state management and visual feedback systems
+ * - Provides export functionality for multiple formats via X6 export plugin
+ * - Manages graph resizing and responsive layout adjustments
+ * - Coordinates with domain services for business logic integration
+ * - Provides cell manipulation methods with proper error handling
+ * - Implements clipboard operations and keyboard shortcut handling
+ * - Manages graph plugins (snapline, transform, history, export)
+ */
+
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

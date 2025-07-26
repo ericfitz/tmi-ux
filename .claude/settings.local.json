@@ -22,7 +22,8 @@
       "Bash(python3:*)",
       "Bash(for:*)",
       "Bash(do echo \"Processing $file\")",
-      "Bash(done)"
+      "Bash(done)",
+      "WebFetch(domain:x6.antv.vision)"
     ]
   },
   "enableAllProjectMcpServers": false

@@ -112,7 +112,7 @@ export class X6SelectionAdapter {
 
           // Show ports for nodes during hover (if port state manager available)
           if (cell.isNode() && this.portStateManager) {
-            this.portStateManager.showNodePorts(cell);
+            this.portStateManager.showNodePorts(graph, cell);
           }
         });
       }

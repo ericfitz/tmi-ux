@@ -1,3 +1,22 @@
+/**
+ * Threat Model Management Component
+ * 
+ * This component provides the main interface for threat model management and overview.
+ * It displays threat model lists, collaboration sessions, and provides navigation to editing features.
+ * 
+ * Key functionality:
+ * - Displays comprehensive list of available threat models with search and filtering
+ * - Shows active collaboration sessions with real-time updates
+ * - Provides threat model creation, editing, and deletion capabilities
+ * - Handles navigation to threat model editing and diagram creation workflows
+ * - Manages threat model sharing and collaboration features
+ * - Supports internationalization for multi-language threat model management
+ * - Provides responsive design for various screen sizes and devices
+ * - Implements role-based access control for threat model operations
+ * - Shows threat model metadata and status information
+ * - Supports bulk operations and batch processing for threat models
+ */
+
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,

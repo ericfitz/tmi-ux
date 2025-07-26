@@ -1,3 +1,17 @@
+/**
+ * Application Bootstrap Entry Point
+ * 
+ * This file serves as the main entry point for the Angular application.
+ * It bootstraps the standalone AppComponent and handles initial application setup.
+ * 
+ * Key functionality:
+ * - Bootstraps the Angular application using the standalone component pattern
+ * - Registers locale data for internationalization support (en, de, zh, ar, th)
+ * - Sets up RTL (right-to-left) text direction for Arabic language
+ * - Provides error handling for application bootstrap failures
+ * - Uses self-executing async function to avoid global scope pollution
+ */
+
 import { bootstrapApplication } from '@angular/platform-browser';
 
 import { AppComponent } from './app/app.component';

@@ -1,3 +1,23 @@
+/**
+ * Mock Data Service
+ * 
+ * This service provides comprehensive mock data management for development and testing.
+ * It centralizes all mock data creation and provides a toggle mechanism for switching
+ * between mock and real API data.
+ * 
+ * Key functionality:
+ * - Provides toggle mechanism between mock data and real API data
+ * - Manages comprehensive mock threat model data with realistic content
+ * - Includes factory methods for creating customized mock objects
+ * - Supports mock diagram data with nodes, edges, and metadata
+ * - Provides mock threat data for security modeling scenarios
+ * - Handles mock cell data for data flow diagram components
+ * - Persists mock data toggle state in localStorage for development convenience
+ * - Provides observable interface for reactive mock data state management
+ * - Includes realistic threat modeling scenarios for comprehensive testing
+ * - Supports dynamic mock data generation with UUIDs and timestamps
+ */
+
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';

@@ -1,3 +1,25 @@
+/**
+ * Data Flow Diagram (DFD) Component
+ * 
+ * This is the main component for the Data Flow Diagram editor page.
+ * It provides a comprehensive diagram editing environment using the X6 graph library.
+ * 
+ * Key functionality:
+ * - Renders interactive data flow diagrams with nodes (actors, processes, stores) and edges
+ * - Supports real-time collaboration with multiple users via WebSocket integration
+ * - Provides comprehensive toolbar with node creation, editing, and export tools
+ * - Implements context menu for cell-specific operations (delete, edit, add threats)
+ * - Manages diagram loading from threat models with proper history suppression
+ * - Handles keyboard shortcuts for common operations (delete, undo, redo)
+ * - Supports drag-and-drop node creation and edge connection validation
+ * - Provides port visibility management and visual feedback systems
+ * - Implements z-order operations for layering control
+ * - Handles window resize events for responsive graph sizing
+ * - Manages authentication and access control for diagram operations
+ * - Supports metadata editing and threat association for diagram elements
+ * - Provides export functionality for multiple formats (PNG, JPG, SVG)
+ */
+
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -415,7 +437,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Load diagram cells into the graph
+   * Load diagram cells into the graph with proper history suppression and port visibility management
    */
   private loadDiagramCells(cells: any[]): void {
     try {
@@ -427,37 +449,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.logger.info('Loading diagram cells into graph', { cellCount: cells.length });
 
-      // Add cells to graph based on their type (nodes vs edges)
-      cells.forEach(cell => {
-        try {
-          const convertedCell = this.convertMockCellToX6Format(cell);
-          
-          // Use appropriate X6 method based on cell type
-          if (cell.shape === 'edge') {
-            // Handle edges separately if needed
-            graph.addEdge(convertedCell);
-          } else {
-            // Handle all node types (actor, process, store, security-boundary, etc.)
-            graph.addNode(convertedCell);
-          }
-          
-          this.logger.debug('Successfully added cell to graph', { 
-            cellId: cell.id, 
-            cellShape: cell.shape 
-          });
-        } catch (error) {
-          this.logger.error('Error adding individual cell to graph', { 
-            cellId: cell.id, 
-            cellShape: cell.shape, 
-            error 
-          });
-        }
-      });
-      
-      // Fit the graph to show all content
-      graph.centerContent();
-      
+      // Use the facade service to handle batch loading with proper history management
+      this.facade.loadDiagramCellsBatch(cells, graph, this.dfdId || 'default-diagram', this.nodeConfigurationService);
       this.logger.info('Successfully loaded diagram cells into graph');
+      this.cdr.markForCheck();
       
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);
@@ -466,8 +461,22 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Convert mock diagram cell data to proper X6 format with correct styling and ports
+   * Handles both nodes and edges
    */
   private convertMockCellToX6Format(mockCell: any): any {
+    // Handle edges
+    if (mockCell.shape === 'edge' || mockCell.edge === true) {
+      return this.convertMockEdgeToX6Format(mockCell);
+    }
+    
+    // Handle nodes
+    return this.convertMockNodeToX6Format(mockCell);
+  }
+
+  /**
+   * Convert mock node data to proper X6 format
+   */
+  private convertMockNodeToX6Format(mockCell: any): any {
     // Get the node type from the shape (actor, process, store, security-boundary)
     const nodeType = mockCell.shape as NodeType;
     
@@ -475,19 +484,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const x6Shape = getX6ShapeForNodeType(nodeType);
     
     // Extract label from mock data attrs.text.text if available, otherwise use default
-    const label = mockCell.attrs?.text?.text || this.getDefaultLabelForType(nodeType);
+    const label = mockCell.attrs?.text?.text || mockCell.value || this.getDefaultLabelForType(nodeType);
     
     // Get proper port configuration for this node type
     const portConfig = this.nodeConfigurationService.getNodePorts(nodeType);
+    
+    // Handle position from either direct properties or geometry object
+    const x = mockCell.x ?? mockCell.geometry?.x ?? 0;
+    const y = mockCell.y ?? mockCell.geometry?.y ?? 0;
+    const width = mockCell.width ?? mockCell.geometry?.width ?? 80;
+    const height = mockCell.height ?? mockCell.geometry?.height ?? 80;
     
     // Create base configuration with default styling (no custom colors)
     const cellConfig: any = {
       id: mockCell.id,
       shape: x6Shape,
-      x: mockCell.x,
-      y: mockCell.y,
-      width: mockCell.width,
-      height: mockCell.height,
+      x,
+      y,
+      width,
+      height,
       label,
       zIndex: mockCell.zIndex || 1,
       ports: portConfig,
@@ -508,6 +523,93 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Convert mock edge data to proper X6 format
+   */
+  private convertMockEdgeToX6Format(mockCell: any): any {
+    // Handle different source/target formats
+    let source: any;
+    let target: any;
+    
+    if (mockCell.source && typeof mockCell.source === 'object') {
+      // New format: { cell: 'id', port?: 'portId' }
+      source = mockCell.source;
+    } else {
+      // Legacy format: string IDs or separate properties
+      source = {
+        cell: mockCell.source || mockCell.sourceNodeId,
+        port: mockCell.sourcePortId || 'right' // Default to right port
+      };
+    }
+    
+    if (mockCell.target && typeof mockCell.target === 'object') {
+      // New format: { cell: 'id', port?: 'portId' }
+      target = mockCell.target;
+    } else {
+      // Legacy format: string IDs or separate properties
+      target = {
+        cell: mockCell.target || mockCell.targetNodeId,
+        port: mockCell.targetPortId || 'left' // Default to left port
+      };
+    }
+    
+    // Create edge configuration
+    const edgeConfig: any = {
+      id: mockCell.id,
+      shape: 'edge',
+      source,
+      target,
+      zIndex: mockCell.zIndex || 1,
+      attrs: {
+        line: {
+          stroke: '#000000',
+          strokeWidth: 2,
+          targetMarker: {
+            name: 'classic',
+            size: 8
+          }
+        }
+      }
+    };
+    
+    // Add custom attributes if present
+    if (mockCell.attrs) {
+      edgeConfig.attrs = { ...edgeConfig.attrs, ...mockCell.attrs };
+    }
+    
+    // Add vertices if present
+    if (mockCell.vertices && Array.isArray(mockCell.vertices)) {
+      edgeConfig.vertices = mockCell.vertices;
+    }
+    
+    // Add labels if present
+    if (mockCell.labels && Array.isArray(mockCell.labels)) {
+      edgeConfig.labels = mockCell.labels;
+    } else if (mockCell.value) {
+      // Convert legacy value to label
+      edgeConfig.labels = [{
+        attrs: {
+          text: {
+            text: mockCell.value
+          }
+        }
+      }];
+    }
+    
+    // Add metadata if present
+    if (mockCell.data && Array.isArray(mockCell.data)) {
+      const metadata: any = {};
+      mockCell.data.forEach((item: any) => {
+        if (item.key && item.value) {
+          metadata[item.key] = item.value;
+        }
+      });
+      edgeConfig.data = { metadata };
+    }
+    
+    return edgeConfig;
+  }
+
+  /**
    * Get default label for node type
    */
   private getDefaultLabelForType(nodeType: NodeType): string {
@@ -520,6 +622,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'Data Store';
       case 'security-boundary':
         return 'Trust Boundary';
+      case 'text-box':
+        return 'Text';
       default:
         return 'Element';
     }

@@ -1,3 +1,20 @@
+/**
+ * API Service
+ * 
+ * This service provides a centralized interface for making HTTP requests to the TMI backend API.
+ * It handles error processing, authentication integration, and request logging.
+ * 
+ * Key functionality:
+ * - Provides generic HTTP methods (GET, POST, PUT, DELETE) with consistent error handling
+ * - Integrates with authentication service for automatic token handling via JWT interceptor
+ * - Handles API errors with automatic retry logic and user-friendly error messages
+ * - Logs all API requests for debugging and monitoring
+ * - Supports query parameters and request body serialization
+ * - Provides specialized error handling for authentication failures
+ * - Uses environment configuration for base API URL
+ * - Handles timeout and network connectivity issues gracefully
+ */
+
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';

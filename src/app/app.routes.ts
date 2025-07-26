@@ -1,3 +1,19 @@
+/**
+ * Application Route Configuration
+ * 
+ * This file defines the main routing configuration for the Angular application.
+ * It uses lazy loading for optimal performance and implements route guards for access control.
+ * 
+ * Key functionality:
+ * - Configures lazy-loaded routes for all main application pages
+ * - Implements authentication guards to protect secured routes
+ * - Uses webpack chunk names for optimized bundle splitting
+ * - Provides fallback wildcard route for unmatched URLs
+ * - Sets up OAuth callback and authentication flow routes
+ * - Protects threat modeling (tm) routes with authentication
+ * - Includes public routes for about, privacy, and terms of service pages
+ */
+
 import { Routes } from '@angular/router';
 
 import { authGuard } from './auth/guards/auth.guard';

@@ -1,3 +1,22 @@
+/**
+ * Authentication Service
+ * 
+ * This service handles all authentication-related functionality for the TMI application.
+ * It manages OAuth flows, JWT token storage, user profiles, and session management.
+ * 
+ * Key functionality:
+ * - Supports multiple OAuth providers (Google, GitHub, etc.) configured via environment
+ * - Provides local development authentication for testing
+ * - Manages JWT token storage and validation with automatic expiration checking
+ * - Handles OAuth callback processing with CSRF protection via state parameter
+ * - Provides reactive authentication state through observables
+ * - Supports role-based access control (placeholder implementation)
+ * - Includes session extension for test users during development
+ * - Manages user profile data and provides convenient access methods
+ * - Handles authentication errors with retry capabilities
+ * - Provides backward compatibility for legacy components
+ */
+
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';

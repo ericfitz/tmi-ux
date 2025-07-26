@@ -1,3 +1,22 @@
+/**
+ * Threat Model Service
+ * 
+ * This service manages all threat model data operations including CRUD operations,
+ * diagram management, and coordination between mock and real API data sources.
+ * 
+ * Key functionality:
+ * - Provides comprehensive threat model CRUD operations (create, read, update, delete)
+ * - Manages diagram operations within threat models (create, rename, delete diagrams)
+ * - Supports both mock data (for development/testing) and real API integration
+ * - Handles threat model validation and business rule enforcement
+ * - Manages threat model metadata and authorization information
+ * - Provides reactive data access through observables for component integration
+ * - Implements error handling and logging for all operations
+ * - Supports threat model collaboration and sharing features
+ * - Manages threat model persistence and synchronization
+ * - Provides search and filtering capabilities for threat model discovery
+ */
+
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';

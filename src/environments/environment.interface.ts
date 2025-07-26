@@ -1,4 +1,20 @@
 /**
+ * Environment Configuration Interface
+ * 
+ * This file defines TypeScript interfaces for environment configuration across all deployment environments.
+ * It provides type safety and documentation for all environment variables and OAuth provider settings.
+ * 
+ * Key functionality:
+ * - Defines Environment interface with all configuration options
+ * - Provides OAuthProvider interface for authentication provider configuration
+ * - Supports OAuth authentication with multiple providers (Google, GitHub, etc.)
+ * - Includes local development provider for testing
+ * - Configures TLS/HTTPS settings for production deployments
+ * - Defines logging levels and component-specific debug options
+ * - Supports operator contact information and server configuration
+ */
+
+/**
  * OAuth provider configuration
  */
 export interface OAuthProvider {

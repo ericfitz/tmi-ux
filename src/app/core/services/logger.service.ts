@@ -1,3 +1,20 @@
+/**
+ * Logging Service
+ * 
+ * This service provides centralized logging functionality for the entire application.
+ * It supports configurable log levels and component-specific debug logging.
+ * 
+ * Key functionality:
+ * - Provides standardized logging with ISO8601 timestamps
+ * - Supports configurable log levels (DEBUG, INFO, WARNING, ERROR)
+ * - Enables component-specific debug logging via environment configuration
+ * - Filters logs based on environment settings for performance
+ * - Provides specialized logging methods for variable initialization tracking
+ * - Uses console.log methods with appropriate styling for different log levels
+ * - Supports structured logging with context objects
+ * - Automatically includes environment-based log level filtering
+ */
+
 import { Injectable } from '@angular/core';
 
 import { environment } from '../../../environments/environment';

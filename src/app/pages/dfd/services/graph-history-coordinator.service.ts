@@ -62,6 +62,7 @@ export const HISTORY_OPERATION_TYPES = {
   TOOL_DELETION: 'tool-deletion',
   NODE_POSITIONING: 'node-positioning',
   NODE_RESIZING: 'node-resizing',
+  DIAGRAM_LOAD: 'diagram-load',
   
   // Grouping operations (structural)
   GROUP_CREATION: 'group-creation',
