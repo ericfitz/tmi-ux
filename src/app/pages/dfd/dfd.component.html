@@ -132,15 +132,6 @@
         >
       </button>
 
-      <button mat-icon-button [disabled]="true" [matTooltip]="'common.save' | transloco">
-        <mat-icon
-          fontSet="material-symbols-outlined"
-          fontWeight="100"
-          style="font-variation-settings: 'FILL' 0"
-          >save</mat-icon
-        >
-      </button>
-
       <button
         mat-icon-button
         [matMenuTriggerFor]="exportMenu"
@@ -215,6 +206,29 @@
       <button mat-menu-item (click)="addInverseConnection()" *ngIf="isRightClickedCellEdge()">
         <mat-icon>swap_horiz</mat-icon>
         <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="deleteSelected()" [disabled]="!hasSelectedCells">
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >delete</mat-icon
+        >
+        <span>{{ 'editor.toolbar.tooltips.deleteSelected' | transloco }}</span>
+      </button>
+      <button 
+        mat-menu-item 
+        (click)="openThreatEditor()" 
+        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox || selectedCellIsSecurityBoundary"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >skull</mat-icon
+        >
+        <span>{{ 'editor.toolbar.tooltips.addThreat' | transloco }}</span>
       </button>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="showCellProperties()">
