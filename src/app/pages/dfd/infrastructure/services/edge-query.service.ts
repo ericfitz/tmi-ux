@@ -1,3 +1,24 @@
+/**
+ * Edge Query Service
+ * 
+ * This service provides specialized edge query operations for the X6 graph.
+ * It handles edge lookups, filtering, and relationship queries efficiently.
+ * 
+ * Key functionality:
+ * - Provides read-only edge query operations for graph analysis
+ * - Finds edges connected to specific nodes or ports
+ * - Performs efficient edge filtering and searching operations
+ * - Analyzes port connection states and relationships
+ * - Supports edge validation and connectivity checking
+ * - Provides edge grouping and categorization functionality
+ * - Handles complex edge relationship queries
+ * - Supports edge path finding and traversal operations
+ * - Provides edge statistics and analysis capabilities
+ * - Integrates with port state management for visibility decisions
+ * - Offers performance-optimized edge lookup algorithms
+ * - Supports edge metadata and property queries
+ */
+
 import { Injectable } from '@angular/core';
 import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';

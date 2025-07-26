@@ -1,3 +1,24 @@
+/**
+ * User Presence List Component
+ * 
+ * This component manages and displays a list of user presence indicators for all users
+ * currently participating in a collaborative DFD editing session.
+ * 
+ * Key functionality:
+ * - Displays multiple user presence indicators in a organized list
+ * - Shows real-time updates of all active collaborators
+ * - Provides configurable display modes (horizontal, vertical, grid)
+ * - Supports different sizing options (small, medium, large)
+ * - Shows user count and session statistics
+ * - Handles user joining and leaving events
+ * - Provides filtering and sorting capabilities for user lists
+ * - Tracks user presence changes with reactive observables
+ * - Supports both detailed and compact view modes
+ * - Integrates with collaboration application service
+ * - Provides keyboard navigation and accessibility features
+ * - Handles empty states and loading indicators
+ */
+
 import { Component, Input, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subject } from 'rxjs';

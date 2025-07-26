@@ -3,7 +3,7 @@ import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { PortStateManagerService } from './port-state-manager.service';
-import { DFD_STYLING } from '../../constants/styling-constants';
+import { X6CoreOperationsService } from './x6-core-operations.service';
 
 /**
  * Consolidated Edge Service
@@ -23,6 +23,7 @@ export class EdgeService {
   constructor(
     private readonly _logger: LoggerService,
     private readonly _portStateManager: PortStateManagerService,
+    private readonly _x6CoreOps: X6CoreOperationsService,
   ) {}
 
   /**
@@ -65,11 +66,15 @@ export class EdgeService {
       visible: edgeInfo.visible,
     };
 
-    const x6Edge = graph.addEdge(edgeParams);
+    const x6Edge = this._x6CoreOps.addEdge(graph, edgeParams);
+
+    if (!x6Edge) {
+      throw new Error(`Failed to create edge with ID: ${edgeInfo.id}`);
+    }
 
     // Set metadata using X6 cell extensions
-    if (edgeInfo.data && x6Edge.setMetadata) {
-      x6Edge.setMetadata(edgeInfo.data);
+    if (edgeInfo.data && (x6Edge as any).setMetadata) {
+      (x6Edge as any).setMetadata(edgeInfo.data);
     }
 
     // Update port visibility if requested using dedicated port manager
@@ -80,7 +85,7 @@ export class EdgeService {
     this._logger.debug('Edge created successfully', {
       edgeId: edgeInfo.id,
       edgeCreated: !!x6Edge,
-      metadataSet: !!(edgeInfo.data && x6Edge.setMetadata),
+      metadataSet: !!(edgeInfo.data && (x6Edge as any).setMetadata),
     });
 
     return x6Edge;
@@ -129,34 +134,16 @@ export class EdgeService {
     }
 
     if (updates.labels !== undefined) {
+      // Direct labels array update for complex label configurations
       edge.setLabels(updates.labels);
     }
 
     if (updates.label !== undefined) {
       // Use X6 cell extensions for unified label handling
-      if ((edge as any).setUnifiedLabel) {
-        (edge as any).setUnifiedLabel(updates.label);
+      if ((edge as any).setLabel) {
+        (edge as any).setLabel(updates.label);
       } else {
-        // Fallback to setting labels array
-        edge.setLabels([
-          {
-            position: 0.5,
-            attrs: {
-              text: {
-                text: updates.label,
-                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                fill: '#333',
-                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                textAnchor: 'middle',
-                dominantBaseline: 'middle',
-              },
-              rect: {
-                fill: '#ffffff',
-                stroke: 'none',
-              },
-            },
-          },
-        ]);
+        this._logger.warn('Edge does not support setLabel method', { edgeId: edge.id });
       }
     }
 
@@ -206,7 +193,7 @@ export class EdgeService {
       const sourceNodeId = edge.getSourceCellId();
       const targetNodeId = edge.getTargetCellId();
 
-      graph.removeEdge(edge);
+      this._x6CoreOps.removeCellObject(graph, edge);
 
       // Update port visibility for affected nodes after removal
       // This ensures the service works independently, while the event handler

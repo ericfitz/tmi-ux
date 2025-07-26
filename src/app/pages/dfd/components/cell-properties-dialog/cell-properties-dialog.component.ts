@@ -1,3 +1,19 @@
+/**
+ * Cell Properties Dialog Component
+ * 
+ * This component provides a dialog for viewing and debugging X6 cell properties in JSON format.
+ * It's primarily used for development and debugging purposes to inspect cell state.
+ * 
+ * Key functionality:
+ * - Displays complete X6 cell object as formatted JSON
+ * - Provides read-only view of cell properties for debugging
+ * - Shows cell ID, shape, position, size, and other attributes
+ * - Includes cell metadata, styling, and configuration data
+ * - Uses Material Design dialog with syntax highlighting
+ * - Supports copying cell data for external analysis
+ * - Helps developers understand X6 cell structure and state
+ */
+
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';

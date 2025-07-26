@@ -1,9 +1,22 @@
 /**
  * DFD Styling Constants
- *
- * Centralized styling constants for DFD components to ensure consistency
- * between implementation and testing. These constants should be used by
- * all adapters, services, and tests to avoid hardcoded styling values.
+ * 
+ * This file contains centralized styling constants for DFD components to ensure
+ * visual consistency across the entire application and testing infrastructure.
+ * 
+ * Key functionality:
+ * - Defines default styling values for nodes, edges, and visual elements
+ * - Provides selection and highlighting style configurations
+ * - Centralizes color palettes and theming constants
+ * - Includes port styling and state-based visual configurations
+ * - Defines animation and transition timing constants
+ * - Provides font families and typography settings
+ * - Includes grid and layout spacing constants
+ * - Defines zoom and scale-related styling parameters
+ * - Provides accessibility-compliant color contrast ratios
+ * - Includes shape-specific styling overrides and templates
+ * - Centralizes all hardcoded styling values to prevent inconsistencies
+ * - Supports responsive design and mobile-friendly configurations
  */
 
 /**

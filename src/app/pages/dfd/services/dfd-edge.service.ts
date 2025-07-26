@@ -1,3 +1,26 @@
+/**
+ * DFD Edge Service
+ * 
+ * This service provides comprehensive edge management functionality for DFD diagrams.
+ * It handles edge creation, validation, and operations with connection rule enforcement.
+ * 
+ * Key functionality:
+ * - Manages edge creation and validation according to DFD rules
+ * - Provides connection validation for different node type combinations
+ * - Handles edge routing and automatic path calculation
+ * - Manages edge styling and visual properties
+ * - Coordinates with X6GraphAdapter for graph-specific edge operations
+ * - Implements DFD-specific connection rules and constraints
+ * - Provides edge manipulation operations (vertices, labels, styling)
+ * - Handles inverse connection creation for bi-directional flows
+ * - Manages edge metadata and custom properties
+ * - Provides edge validation and business rule enforcement
+ * - Supports edge templates and styling configurations
+ * - Integrates with visual effects service for edge animations
+ * - Handles magnet and port validation for connection endpoints
+ * - Manages edge lifecycle events and state changes
+ */
+
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -317,26 +340,12 @@ export class DfdEdgeService {
    */
   updateEdgeLabel(edge: Edge, label: string): void {
     try {
-      edge.setLabels([
-        {
-          attrs: {
-            text: {
-              text: label,
-              fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-              fill: '#333',
-              fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-            },
-            rect: {
-              fill: 'white',
-              stroke: '#ccc',
-              strokeWidth: 1,
-              rx: 3,
-              ry: 3,
-            },
-          },
-          position: 0.5,
-        },
-      ]);
+      // Use standardized setLabel method from x6-cell-extensions
+      if ((edge as any).setLabel) {
+        (edge as any).setLabel(label);
+      } else {
+        this.logger.warn('Edge does not support setLabel method', { edgeId: edge.id });
+      }
 
       this.logger.info('Edge label updated', { edgeId: edge.id, label });
     } catch (error) {
@@ -349,7 +358,12 @@ export class DfdEdgeService {
    */
   removeEdgeLabel(edge: Edge): void {
     try {
-      edge.setLabels([]);
+      // Use standardized setLabel method to set empty label
+      if ((edge as any).setLabel) {
+        (edge as any).setLabel('');
+      } else {
+        this.logger.warn('Edge does not support setLabel method', { edgeId: edge.id });
+      }
       this.logger.info('Edge label removed', { edgeId: edge.id });
     } catch (error) {
       this.logger.error('Failed to remove edge label', { error, edgeId: edge.id });
@@ -361,16 +375,13 @@ export class DfdEdgeService {
    */
   getEdgeLabel(edge: Edge): string {
     try {
-      const labels = edge.getLabels();
-      if (labels && labels.length > 0) {
-        const firstLabel = labels[0];
-        const textAttr = firstLabel.attrs?.['text'];
-        if (textAttr && typeof textAttr === 'object' && 'text' in textAttr) {
-          const textValue = textAttr['text'];
-          return typeof textValue === 'string' ? textValue : '';
-        }
+      // Use standardized getLabel method from x6-cell-extensions
+      if ((edge as any).getLabel) {
+        return (edge as any).getLabel();
+      } else {
+        this.logger.warn('Edge does not support getLabel method', { edgeId: edge.id });
+        return '';
       }
-      return '';
     } catch (error) {
       this.logger.error('Failed to get edge label', { error, edgeId: edge.id });
       return '';

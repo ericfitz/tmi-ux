@@ -11,7 +11,9 @@ import { EdgeService } from './edge.service';
 import { EdgeQueryService } from './edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { PortStateManagerService } from './port-state-manager.service';
+import { X6CoreOperationsService } from './x6-core-operations.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService only (cross-cutting concern)
@@ -26,12 +28,16 @@ describe('EdgeService - X6 Integration Tests', () => {
   let service: EdgeService;
   let queryService: EdgeQueryService;
   let portStateManager: PortStateManagerService;
+  let x6CoreOps: X6CoreOperationsService;
   let graph: Graph;
   let sourceNode: Node;
   let targetNode: Node;
   let mockLogger: MockLoggerService;
 
   beforeEach(() => {
+    // Initialize X6 cell extensions
+    initializeX6CellExtensions();
+    
     // Create mock for LoggerService (cross-cutting concern)
     mockLogger = {
       info: vi.fn(),
@@ -46,10 +52,12 @@ describe('EdgeService - X6 Integration Tests', () => {
       queryService,
       mockLogger as unknown as LoggerService,
     );
+    x6CoreOps = new X6CoreOperationsService(mockLogger as unknown as LoggerService);
     // Create EdgeService with real port management services
     service = new EdgeService(
       mockLogger as unknown as LoggerService,
       portStateManager,
+      x6CoreOps,
     );
 
     // Create real X6 graph instance
@@ -174,8 +182,8 @@ describe('EdgeService - X6 Integration Tests', () => {
     it('should update edge label', () => {
       service.updateEdge(edge, { label: 'Updated Flow' });
 
-      const labels = edge.getLabels();
-      expect(labels[0]?.attrs?.['text']?.['text']).toBe('Updated Flow');
+      // Use standardized getLabel method
+      expect((edge as any).getLabel()).toBe('Updated Flow');
     });
 
     it('should update edge vertices', () => {

@@ -15,6 +15,8 @@ import { GraphHistoryCoordinator } from '../../services/graph-history-coordinato
 import { X6HistoryManager } from './x6-history-manager';
 import { registerCustomShapes } from './x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { X6CoreOperationsService } from '../services/x6-core-operations.service';
+import { EdgeService } from '../services/edge.service';
 
 // Mock logger service
 class MockLoggerService {
@@ -108,6 +110,8 @@ describe('X6SelectionAdapter', () => {
   let selectionService: SelectionService;
   let historyCoordinator: GraphHistoryCoordinator;
   let historyManager: X6HistoryManager;
+  let x6CoreOps: X6CoreOperationsService;
+  let edgeService: EdgeService;
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -134,7 +138,14 @@ describe('X6SelectionAdapter', () => {
     selectionService = new SelectionService(mockLogger as any);
     historyManager = new X6HistoryManager(mockLogger as any);
     historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as any);
-    adapter = new X6SelectionAdapter(mockLogger as any, selectionService, historyCoordinator);
+    x6CoreOps = new X6CoreOperationsService(mockLogger as any);
+    
+    // Create mock services for EdgeService
+    edgeService = {
+      removeEdge: vi.fn().mockReturnValue(true)
+    } as any;
+    
+    adapter = new X6SelectionAdapter(mockLogger as any, selectionService, historyCoordinator, x6CoreOps, edgeService);
 
     // Initialize plugins
     adapter.initializePlugins(graph);
@@ -557,19 +568,22 @@ describe('X6SelectionAdapter', () => {
       expect(deletionCallback).toHaveBeenCalledWith(node);
     });
 
-    it('should delete selected cells programmatically', () => {
+    it('should delete selected cells programmatically using appropriate services', () => {
       // Select cells
       graph.select([node, edge]);
 
-      // Mock removeCell
-      graph.removeCell = vi.fn();
+      // Mock X6CoreOperationsService.removeCellObject for nodes
+      x6CoreOps.removeCellObject = vi.fn();
 
       // Delete selected
       adapter.deleteSelected(graph);
 
-      // Verify cells removed
-      expect(graph.removeCell).toHaveBeenCalledWith(node);
-      expect(graph.removeCell).toHaveBeenCalledWith(edge);
+      // Verify EdgeService.removeEdge called for edge
+      expect(edgeService.removeEdge).toHaveBeenCalledWith(graph, edge.id);
+      
+      // Verify X6CoreOperationsService.removeCellObject called for node
+      expect(x6CoreOps.removeCellObject).toHaveBeenCalledWith(graph, node);
+      
       expect(mockLogger.info).toHaveBeenCalledWith('Deleted selected cells', { count: 2 });
     });
 
@@ -577,14 +591,16 @@ describe('X6SelectionAdapter', () => {
       // Ensure no selection
       adapter.clearSelection(graph);
 
-      // Mock removeCell
-      graph.removeCell = vi.fn();
+      // Mock services
+      x6CoreOps.removeCellObject = vi.fn();
+      vi.clearAllMocks();
 
       // Attempt deletion
       adapter.deleteSelected(graph);
 
       // Verify no cells removed
-      expect(graph.removeCell).not.toHaveBeenCalled();
+      expect(x6CoreOps.removeCellObject).not.toHaveBeenCalled();
+      expect(edgeService.removeEdge).not.toHaveBeenCalled();
       expect(mockLogger.info).toHaveBeenCalledWith('No cells selected for deletion');
     });
   });

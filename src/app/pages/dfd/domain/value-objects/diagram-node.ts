@@ -1,3 +1,23 @@
+/**
+ * Diagram Node Domain Model
+ * 
+ * This file defines the DiagramNode entity which represents a node in the DFD domain layer.
+ * It encapsulates node data, state, and behavior following domain-driven design principles.
+ * 
+ * Key functionality:
+ * - Encapsulates NodeInfo data with additional domain behavior
+ * - Manages node selection and highlighting states
+ * - Tracks connected edge relationships for graph integrity
+ * - Provides node validation and business rule enforcement
+ * - Supports node positioning and sizing operations
+ * - Implements serialization for persistence and API communication
+ * - Provides node cloning and copying capabilities
+ * - Manages node metadata and custom properties
+ * - Integrates with X6 graph library through shape property
+ * - Supports node lifecycle events and state transitions
+ * - Maintains immutability where appropriate for data integrity
+ */
+
 import { NodeInfo } from './node-info';
 import { Point } from './point';
 

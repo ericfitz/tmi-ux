@@ -1,3 +1,24 @@
+/**
+ * X6 Embedding Adapter
+ * 
+ * This adapter handles node embedding functionality within the X6 graph library,
+ * enabling nodes to be contained within other nodes (parent-child relationships).
+ * 
+ * Key functionality:
+ * - Manages parent-child node relationships in X6 graph structure
+ * - Handles automatic node embedding when nodes are dragged over containers
+ * - Implements embedding validation rules for different node types
+ * - Provides embedding/unembedding operations with proper event handling
+ * - Manages z-order adjustments for embedded nodes
+ * - Coordinates with EmbeddingService for business logic validation
+ * - Handles visual feedback during embedding operations
+ * - Supports automatic layout adjustments for embedded nodes
+ * - Manages embedding constraints and business rules
+ * - Provides embedding state queries and validation
+ * - Integrates with X6 event system for drag-and-drop operations
+ * - Handles embedding persistence and restoration
+ */
+
 import { Injectable } from '@angular/core';
 import { Graph, Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';

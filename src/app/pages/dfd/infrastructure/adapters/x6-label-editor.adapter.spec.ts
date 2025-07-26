@@ -10,6 +10,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { X6LabelEditorAdapter } from './x6-label-editor.adapter';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 
 // Mock SVG methods for X6 compatibility
 Object.defineProperty(SVGElement.prototype, 'getScreenCTM', {
@@ -45,6 +46,9 @@ describe('X6LabelEditorAdapter', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
+    // Initialize X6 cell extensions
+    initializeX6CellExtensions();
+    
     // Create mock logger
     mockLogger = {
       info: vi.fn(),
@@ -130,7 +134,7 @@ describe('X6LabelEditorAdapter', () => {
         width: 100,
         height: 50,
         attrs: {
-          label: {
+          text: {
             text: 'Test Node',
           },
         },
@@ -343,7 +347,7 @@ describe('X6LabelEditorAdapter', () => {
         width: 100,
         height: 50,
         attrs: {
-          label: {
+          text: {
             text: 'Original Text',
           },
         },
@@ -363,7 +367,7 @@ describe('X6LabelEditorAdapter', () => {
 
       expect(preventDefaultSpy).toHaveBeenCalled();
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Updated Text');
+      expect(node.getAttrByPath('text/text')).toBe('Updated Text');
     });
 
     it('should cancel editing on Escape key', () => {
@@ -377,7 +381,7 @@ describe('X6LabelEditorAdapter', () => {
 
       expect(preventDefaultSpy).toHaveBeenCalled();
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Original Text'); // Should remain unchanged
+      expect(node.getAttrByPath('text/text')).toBe('Original Text'); // Should remain unchanged
     });
 
     it('should finish editing on blur event', () => {
@@ -387,7 +391,7 @@ describe('X6LabelEditorAdapter', () => {
       input.dispatchEvent(new Event('blur'));
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Blur Updated Text');
+      expect(node.getAttrByPath('text/text')).toBe('Blur Updated Text');
     });
 
     it('should handle global Escape key when editing', () => {
@@ -398,7 +402,7 @@ describe('X6LabelEditorAdapter', () => {
       document.dispatchEvent(globalEscapeEvent);
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Original Text'); // Should remain unchanged
+      expect(node.getAttrByPath('text/text')).toBe('Original Text'); // Should remain unchanged
     });
 
     it('should ignore global Escape key when not editing', () => {
@@ -438,7 +442,7 @@ describe('X6LabelEditorAdapter', () => {
         width: 100,
         height: 50,
         attrs: {
-          label: {
+          text: {
             text: 'Node Text',
           },
         },
@@ -476,7 +480,7 @@ describe('X6LabelEditorAdapter', () => {
       adapter.finishCurrentEditing(graph);
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('New Node Text');
+      expect(node.getAttrByPath('text/text')).toBe('New Node Text');
       expect(mockLogger.info).toHaveBeenCalledWith('Finished label editing', {
         cellId: node.id,
         newText: 'New Node Text',
@@ -505,7 +509,7 @@ describe('X6LabelEditorAdapter', () => {
       adapter.cancelCurrentEditing(graph);
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Node Text'); // Should remain original
+      expect(node.getAttrByPath('text/text')).toBe('Node Text'); // Should remain original
       expect(mockLogger.info).toHaveBeenCalledWith('Cancelled label editing', {
         cellId: node.id,
       });
@@ -533,7 +537,7 @@ describe('X6LabelEditorAdapter', () => {
       graph.trigger('blank:click');
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Blank Click Text');
+      expect(node.getAttrByPath('text/text')).toBe('Blank Click Text');
     });
 
     it('should clean up editing element after commit', () => {
@@ -570,7 +574,7 @@ describe('X6LabelEditorAdapter', () => {
         width: 100,
         height: 50,
         attrs: {
-          label: {
+          text: {
             text: 'API Test',
           },
         },
@@ -593,7 +597,7 @@ describe('X6LabelEditorAdapter', () => {
       adapter.finishCurrentEditing(graph);
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('Programmatic Finish');
+      expect(node.getAttrByPath('text/text')).toBe('Programmatic Finish');
     });
 
     it('should cancel editing programmatically', () => {
@@ -605,7 +609,7 @@ describe('X6LabelEditorAdapter', () => {
       adapter.cancelCurrentEditing(graph);
 
       expect(adapter.isEditing()).toBe(false);
-      expect(node.getAttrByPath('label/text')).toBe('API Test'); // Should remain original
+      expect(node.getAttrByPath('text/text')).toBe('API Test'); // Should remain original
     });
 
     it('should return current editing state', () => {
@@ -645,7 +649,7 @@ describe('X6LabelEditorAdapter', () => {
         y: 100,
         width: 100,
         height: 50,
-        attrs: { label: { text: 'Node 1' } },
+        attrs: { text: { text: 'Node 1' } },
       });
 
       const node2 = graph.addNode({
@@ -654,7 +658,7 @@ describe('X6LabelEditorAdapter', () => {
         y: 200,
         width: 100,
         height: 50,
-        attrs: { label: { text: 'Node 2' } },
+        attrs: { text: { text: 'Node 2' } },
       });
 
       // Start editing first node
@@ -666,7 +670,7 @@ describe('X6LabelEditorAdapter', () => {
       adapter.editCell(graph, node2);
 
       expect(adapter.getCurrentEditingCell()).toBe(node2);
-      expect(node1.getAttrByPath('label/text')).toBe('Modified Node 1'); // Should be saved
+      expect(node1.getAttrByPath('text/text')).toBe('Modified Node 1'); // Should be saved
     });
 
     it('should handle missing graph container', () => {

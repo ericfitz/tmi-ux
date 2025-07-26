@@ -10,6 +10,9 @@ import {
   GraphHistoryCoordinator,
   HISTORY_OPERATION_TYPES,
 } from '../../services/graph-history-coordinator.service';
+import { X6CoreOperationsService } from '../services/x6-core-operations.service';
+// Note: DfdNodeService will be used for node deletion when removeNode method is available
+import { EdgeService } from '../services/edge.service';
 
 /**
  * X6 Selection Adapter
@@ -32,6 +35,8 @@ export class X6SelectionAdapter {
     private logger: LoggerService,
     private selectionService: SelectionService,
     private historyCoordinator: GraphHistoryCoordinator,
+    private x6CoreOps: X6CoreOperationsService,
+    private edgeService: EdgeService,
   ) {}
 
   /**
@@ -229,7 +234,14 @@ export class X6SelectionAdapter {
       HISTORY_OPERATION_TYPES.CELL_DELETION,
       () => {
         selectedCells.forEach(cell => {
-          graph.removeCell(cell);
+          if (cell.isEdge()) {
+            // Use EdgeService for edge deletions (handles business logic and port visibility)
+            this.edgeService.removeEdge(graph, cell.id);
+          } else {
+            // Use X6CoreOperationsService for node deletions 
+            // TODO: Replace with nodeService.removeNode() when DfdNodeService has removeNode method
+            this.x6CoreOps.removeCellObject(graph, cell);
+          }
         });
       },
       {
@@ -274,6 +286,9 @@ export class X6SelectionAdapter {
         node.setPosition(position.x, position.y);
       }
 
+      // For paste operations, use direct X6 addCell to preserve complex cell configurations
+      // This is acceptable here as paste is a complex operation that needs to preserve
+      // exact cell structure and relationships during copy/paste operations
       graph.addCell(cell);
       pastedCells.push(cell);
     });
@@ -303,8 +318,12 @@ export class X6SelectionAdapter {
       graph,
       HISTORY_OPERATION_TYPES.GROUP_CREATION,
       () => {
-        // Create group node using X6
-        const createdGroupNode = graph.addNode(groupConfig);
+        // Create group node using X6CoreOperationsService
+        const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
+        
+        if (!createdGroupNode) {
+          throw new Error('Failed to create group node');
+        }
 
         // Add nodes to group
         selectedNodes.forEach(node => {
@@ -342,8 +361,8 @@ export class X6SelectionAdapter {
               node.removeChild(child);
             });
 
-            // Remove the group node
-            graph.removeCell(node);
+            // Remove the group node using X6CoreOperationsService
+            this.x6CoreOps.removeCellObject(graph, node);
 
             this.logger.info('Ungrouped node', {
               groupId: node.id,

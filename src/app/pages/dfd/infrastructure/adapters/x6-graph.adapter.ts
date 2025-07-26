@@ -52,6 +52,7 @@ import {
   GraphHistoryCoordinator,
   HISTORY_OPERATION_TYPES,
 } from '../../services/graph-history-coordinator.service';
+import { X6CoreOperationsService } from '../services/x6-core-operations.service';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './x6-shape-definitions';
@@ -128,6 +129,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _x6EventLogger: X6EventLoggerService,
     private readonly _edgeService: DfdEdgeService,
     private readonly _historyCoordinator: GraphHistoryCoordinator,
+    private readonly _x6CoreOps: X6CoreOperationsService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -492,7 +494,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       graph,
       HISTORY_OPERATION_TYPES.NODE_CREATION_DOMAIN,
       () => {
-        const createdNode = graph.addNode({
+        const createdNode = this._x6CoreOps.addNode(graph, {
           id: node.id,
           x: node.position.x,
           y: node.position.y,
@@ -510,6 +512,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           ports: nodePorts as any,
           zIndex: 1, // Temporary z-index, will be set properly below
         });
+
+        if (!createdNode) {
+          throw new Error(`Failed to create node with ID: ${node.id}`);
+        }
 
         // Validate that the X6 node was created with the correct shape
         this._edgeService.validateX6NodeShape(createdNode);
@@ -537,7 +543,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const node = graph.getCellById(nodeId) as Node;
 
     if (node && node.isNode()) {
-      graph.removeNode(node);
+      this._x6CoreOps.removeCellObject(graph, node);
     }
   }
 
@@ -579,7 +585,11 @@ export class X6GraphAdapter implements IGraphAdapter {
           visible: edgeData.visible,
         };
 
-        const createdEdge = graph.addEdge(edgeParams);
+        const createdEdge = this._x6CoreOps.addEdge(graph, edgeParams);
+
+        if (!createdEdge) {
+          throw new Error(`Failed to create edge with ID: ${edgeData.id}`);
+        }
 
         // Set metadata using X6 cell extensions
         if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
@@ -610,7 +620,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     if (edge && edge.isEdge()) {
       // Remove the edge - port visibility will be updated by the EdgeService
-      graph.removeEdge(edge);
+      this._x6CoreOps.removeCellObject(graph, edge);
     }
   }
 
@@ -1033,7 +1043,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         // Remove invalid edges
         setTimeout(() => {
           if (this._graph && this._graph.getCellById(edge.id)) {
-            this._graph.removeCell(edge);
+            this._x6CoreOps.removeCellObject(this._graph, edge);
           }
         }, 0);
       }
@@ -1369,7 +1379,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         this._graph,
         HISTORY_OPERATION_TYPES.TOOL_DELETION,
         () => {
-          this._graph!.removeCell(cell);
+          this._x6CoreOps.removeCellObject(this._graph!, cell);
         },
         {
           includePortVisibility: false, // Suppress port visibility changes from history

@@ -1,3 +1,24 @@
+/**
+ * Port State Manager Service
+ * 
+ * This service manages port visibility state and connection tracking for DFD nodes.
+ * It centralizes port-related logic and coordinates with history management.
+ * 
+ * Key functionality:
+ * - Manages port visibility state for all nodes in the graph
+ * - Tracks port connection states and updates visibility accordingly
+ * - Coordinates with EdgeQueryService to determine port connectivity
+ * - Provides history suppression for port visibility changes
+ * - Implements port state caching for performance optimization
+ * - Handles mouse enter/leave events for dynamic port visibility
+ * - Provides methods to show/hide ports based on connection status
+ * - Manages port state synchronization across node operations
+ * - Supports bulk port operations for graph-wide updates
+ * - Integrates with GraphHistoryCoordinator for proper undo/redo behavior
+ * - Provides debugging and logging for port state management
+ * - Handles port state restoration during diagram loading
+ */
+
 import { Injectable } from '@angular/core';
 import { Node, Edge, Graph } from '@antv/x6';
 import { PortConnectionState } from '../../utils/x6-cell-extensions';

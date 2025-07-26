@@ -1,3 +1,21 @@
+/**
+ * User Presence Domain Model
+ * 
+ * This file defines the domain model for user presence in collaborative DFD editing sessions.
+ * It provides types and interfaces for tracking user activity, status, and real-time collaboration.
+ * 
+ * Key functionality:
+ * - Defines presence status enumeration (online, away, offline)
+ * - Provides user activity tracking (viewing, editing, selecting, idle)
+ * - Models cursor state with position and selection information
+ * - Defines user presence aggregate with status and activity data
+ * - Supports real-time collaboration features with timestamp tracking
+ * - Includes viewport information for collaborative awareness
+ * - Provides typing for collaborative editing state management
+ * - Integrates with User domain model for complete user information
+ * - Supports serialization for WebSocket communication
+ */
+
 import { Point } from '../value-objects/point';
 import { User } from './user';
 

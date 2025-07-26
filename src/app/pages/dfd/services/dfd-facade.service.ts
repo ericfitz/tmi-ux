@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 import { Edge, Node, Graph } from '@antv/x6';
 import { ConnectionValidationArgs, MagnetValidationArgs } from './dfd-edge.service';
 import { NodeType } from '../domain/value-objects/node-info';
-import { DfdNodeService } from './dfd-node.service';
+import { DfdNodeService } from '../infrastructure/services/node.service';
 import { DfdEdgeService } from './dfd-edge.service';
 import { DfdEventHandlersService } from './dfd-event-handlers.service';
 import { DfdExportService } from './dfd-export.service';

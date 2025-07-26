@@ -8,6 +8,10 @@ import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
 import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
 import { HISTORY_OPERATION_TYPES } from './graph-history-coordinator.service';
 import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
+import { DfdNodeService } from '../infrastructure/services/node.service';
+import { EdgeService } from '../infrastructure/services/edge.service';
+import { NodeInfo, NodeType } from '../domain/value-objects/node-info';
+import { EdgeInfo } from '../domain/value-objects/edge-info';
 
 /**
  * Interface for diagram data
@@ -39,6 +43,8 @@ export class DfdDiagramService {
     private threatModelService: ThreatModelService,
     private historyCoordinator: GraphHistoryCoordinator,
     private portStateManager: PortStateManagerService,
+    private nodeService: DfdNodeService,
+    private edgeService: EdgeService,
   ) {}
 
   /**
@@ -183,7 +189,14 @@ export class DfdDiagramService {
           // Add nodes first, then edges (to ensure proper dependencies)
           nodes.forEach(nodeConfig => {
             try {
-              const node = graph.addNode(nodeConfig);
+              // Convert X6 config to NodeInfo domain object
+              const nodeInfo = this.convertX6ConfigToNodeInfo(nodeConfig);
+              // Use infrastructure service instead of direct X6 call
+              const node = this.nodeService.createNodeFromInfo(graph, nodeInfo, {
+                ensureVisualRendering: true,
+                updatePortVisibility: false, // Will be handled in batch after all nodes/edges
+                suppressHistory: true // Already in atomic operation
+              });
               // Apply zIndex after adding to ensure proper ordering
               if (nodeConfig.zIndex !== undefined) {
                 node.setZIndex(nodeConfig.zIndex);
@@ -198,7 +211,13 @@ export class DfdDiagramService {
           
           edges.forEach(edgeConfig => {
             try {
-              const edge = graph.addEdge(edgeConfig);
+              // Convert X6 config to EdgeInfo domain object
+              const edgeInfo = this.convertX6ConfigToEdgeInfo(edgeConfig);
+              // Use infrastructure service instead of direct X6 call
+              const edge = this.edgeService.createEdge(graph, edgeInfo, {
+                ensureVisualRendering: true,
+                updatePortVisibility: false // Will be handled in batch after all nodes/edges
+              });
               // Apply zIndex after adding to ensure proper ordering
               if (edgeConfig.zIndex !== undefined) {
                 edge.setZIndex(edgeConfig.zIndex);
@@ -276,7 +295,8 @@ export class DfdDiagramService {
     // Get the correct X6 shape name
     const x6Shape = getX6ShapeForNodeType(nodeType);
     
-    // Extract label from various possible locations
+    // Extract label from various possible import format locations
+    // Note: This is for import/conversion, not live X6 cell manipulation
     const label = mockCell.attrs?.text?.text || mockCell.value || mockCell.label || this.getDefaultLabelForType(nodeType);
     
     // Get proper port configuration for this node type
@@ -374,7 +394,8 @@ export class DfdDiagramService {
       edgeConfig.vertices = mockCell.vertices;
     }
     
-    // Add labels if present
+    // Add labels if present (import/conversion logic)
+    // Note: This creates X6 configuration, not live cell manipulation
     if (mockCell.labels && Array.isArray(mockCell.labels)) {
       edgeConfig.labels = mockCell.labels;
     } else if (mockCell.value) {
@@ -419,6 +440,74 @@ export class DfdDiagramService {
         return 'Text';
       default:
         return 'Element';
+    }
+  }
+
+  /**
+   * Convert X6 node config to NodeInfo domain object
+   */
+  private convertX6ConfigToNodeInfo(nodeConfig: any): NodeInfo {
+    // Extract metadata from data field
+    const metadata = nodeConfig.data?.metadata || {};
+    
+    return NodeInfo.create({
+      id: nodeConfig.id,
+      type: this.mapShapeToNodeType(nodeConfig.shape),
+      position: { x: nodeConfig.x, y: nodeConfig.y },
+      width: nodeConfig.width,
+      height: nodeConfig.height,
+      label: nodeConfig.label || '',
+      metadata
+    });
+  }
+
+  /**
+   * Convert X6 edge config to EdgeInfo domain object  
+   */
+  private convertX6ConfigToEdgeInfo(edgeConfig: any): EdgeInfo {
+    // Extract label from labels array or direct label property
+    let label = '';
+    if (edgeConfig.labels && edgeConfig.labels.length > 0) {
+      const firstLabel = edgeConfig.labels[0];
+      if (firstLabel.attrs?.text?.text) {
+        label = firstLabel.attrs.text.text;
+      }
+    } else if (edgeConfig.label) {
+      label = edgeConfig.label;
+    }
+
+    // Extract metadata from data field
+    const metadata = edgeConfig.data?.metadata || {};
+
+    return EdgeInfo.create({
+      id: edgeConfig.id,
+      sourceNodeId: edgeConfig.source.cell,
+      targetNodeId: edgeConfig.target.cell,
+      sourcePortId: edgeConfig.source.port,
+      targetPortId: edgeConfig.target.port,
+      label,
+      vertices: edgeConfig.vertices || [],
+      metadata
+    });
+  }
+
+  /**
+   * Map X6 shape name back to NodeType for domain object creation
+   */
+  private mapShapeToNodeType(shape: string): NodeType {
+    switch (shape) {
+      case 'rect':
+        return 'actor'; // Default for rect shapes
+      case 'ellipse':
+        return 'process';
+      case 'store':
+        return 'store';
+      case 'security-boundary':
+        return 'security-boundary';
+      case 'text-box':
+        return 'text-box';
+      default:
+        return 'actor'; // Fallback
     }
   }
 }

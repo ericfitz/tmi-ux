@@ -59,7 +59,7 @@ import { EmbeddingService } from './infrastructure/services/embedding.service';
 
 // Import the facade service and remaining infrastructure
 import { DfdFacadeService } from './services/dfd-facade.service';
-import { DfdNodeService } from './services/dfd-node.service';
+import { DfdNodeService } from './infrastructure/services/node.service';
 import { DfdEdgeService } from './services/dfd-edge.service';
 import { DfdEventHandlersService } from './services/dfd-event-handlers.service';
 import { DfdExportService } from './services/dfd-export.service';
@@ -483,7 +483,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Get the correct X6 shape name
     const x6Shape = getX6ShapeForNodeType(nodeType);
     
-    // Extract label from mock data attrs.text.text if available, otherwise use default
+    // Extract label from various possible import format locations  
+    // Note: This is for import/conversion, not live X6 cell manipulation
     const label = mockCell.attrs?.text?.text || mockCell.value || this.getDefaultLabelForType(nodeType);
     
     // Get proper port configuration for this node type
@@ -581,7 +582,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       edgeConfig.vertices = mockCell.vertices;
     }
     
-    // Add labels if present
+    // Add labels if present (import/conversion logic)
+    // Note: This creates X6 configuration, not live cell manipulation
     if (mockCell.labels && Array.isArray(mockCell.labels)) {
       edgeConfig.labels = mockCell.labels;
     } else if (mockCell.value) {

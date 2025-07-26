@@ -1,3 +1,22 @@
+/**
+ * User Presence Indicator Component
+ * 
+ * This component displays a visual indicator for a single user's presence and activity
+ * in the collaborative DFD editing environment.
+ * 
+ * Key functionality:
+ * - Displays user avatar with initials and personalized color
+ * - Shows real-time presence status (online, away, offline)
+ * - Indicates current user activity (editing, viewing, selecting)
+ * - Provides visual status indicators with color-coded dots
+ * - Shows user name and detailed presence information
+ * - Supports condensed and expanded display modes
+ * - Handles user activity transitions and status changes
+ * - Provides hover states and interactive feedback
+ * - Integrates with collaboration domain models
+ * - Uses consistent styling with Material Design principles
+ */
+
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

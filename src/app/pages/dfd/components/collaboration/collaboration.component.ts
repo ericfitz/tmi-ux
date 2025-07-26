@@ -1,3 +1,23 @@
+/**
+ * DFD Collaboration Component
+ * 
+ * This component provides real-time collaboration features for the Data Flow Diagram editor.
+ * It manages user presence, session sharing, and collaborative editing capabilities.
+ * 
+ * Key functionality:
+ * - Displays real-time user presence indicators showing who is currently editing
+ * - Manages collaboration sessions with session creation and joining capabilities
+ * - Provides user avatars and status indicators for active collaborators
+ * - Handles session invitations via shareable links and session codes
+ * - Shows real-time cursor positions and user actions
+ * - Manages user permissions and collaboration roles
+ * - Provides session management (start, stop, leave session)
+ * - Integrates with WebSocket service for real-time communication
+ * - Handles collaboration conflicts and synchronization
+ * - Supports session notifications and status updates
+ * - Provides collaborative awareness features for enhanced teamwork
+ */
+
 import { CommonModule } from '@angular/common';
 import {
   Component,

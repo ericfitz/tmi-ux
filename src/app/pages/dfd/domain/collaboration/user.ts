@@ -1,4 +1,23 @@
 /**
+ * User Domain Model
+ * 
+ * This file defines the User domain model for collaborative DFD editing.
+ * It represents a user entity with identity, visual properties, and validation.
+ * 
+ * Key functionality:
+ * - Defines User entity with ID, name, email, avatar, and color properties
+ * - Provides factory methods for user creation with generated colors
+ * - Supports JSON serialization and deserialization for API communication
+ * - Generates consistent user colors based on user ID hash
+ * - Provides user initials calculation for avatar display
+ * - Includes comprehensive validation for required fields and email format
+ * - Supports equality comparison between user instances
+ * - Immutable design with readonly properties for data integrity
+ * - Color palette specifically chosen for good contrast and visibility
+ * - Integrates with collaboration presence system
+ */
+
+/**
  * Represents a user in the collaboration system
  */
 export class User {

@@ -228,24 +228,15 @@ export class X6LabelEditorAdapter {
    * Get current label text from a cell
    */
   private getCurrentLabelText(cell: Cell): string {
-    if (cell.isNode()) {
-      const node = cell;
-      const attrs = node.getAttrs() || {};
-      const labelAttrs = attrs['label'] as any;
-      return labelAttrs?.['text'] || '';
-    } else if (cell.isEdge()) {
-      const edge = cell;
-      const labels = edge.getLabels() || [];
-      if (labels.length > 0) {
-        const labelAttrs = labels[0].attrs as any;
-        const textAttrs = labelAttrs?.['text'];
-        const textValue = textAttrs?.['text'];
-        return typeof textValue === 'string' ? textValue : '';
-      }
+    // Use standardized getLabel method from x6-cell-extensions
+    if ((cell as any).getLabel) {
+      const labelText = (cell as any).getLabel();
+      // Ensure we return a string, not undefined
+      return typeof labelText === 'string' ? labelText : '';
+    } else {
+      this.logger.warn('Cell does not support getLabel method', { cellId: cell.id });
       return '';
     }
-
-    return '';
   }
 
   /**
@@ -319,32 +310,11 @@ export class X6LabelEditorAdapter {
    * Update cell label with new text
    */
   private updateCellLabel(cell: Cell, newText: string): void {
-    if (cell.isNode()) {
-      const node = cell;
-      const currentAttrs = node.getAttrs() || {};
-
-      const updatedAttrs = {
-        ...currentAttrs,
-        label: {
-          ...((currentAttrs['label'] as any) || {}),
-          text: newText,
-        },
-      };
-
-      node.setAttrs(updatedAttrs);
-    } else if (cell.isEdge()) {
-      const edge = cell;
-
-      // Update or create label
-      edge.setLabels([
-        {
-          attrs: {
-            text: {
-              text: newText,
-            },
-          },
-        },
-      ]);
+    // Use standardized setLabel method from x6-cell-extensions
+    if ((cell as any).setLabel) {
+      (cell as any).setLabel(newText);
+    } else {
+      this.logger.warn('Cell does not support setLabel method', { cellId: cell.id });
     }
   }
 

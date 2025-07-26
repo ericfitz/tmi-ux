@@ -1,15 +1,38 @@
+/**
+ * Node Service
+ * 
+ * This service provides comprehensive node management functionality for DFD diagrams.
+ * It handles node creation, manipulation, and operations with proper history coordination.
+ * 
+ * Key functionality:
+ * - Provides node creation operations with different node types (actor, process, store, etc.)
+ * - Manages node positioning and automatic layout algorithms
+ * - Handles node configuration and default properties setup
+ * - Coordinates with X6GraphAdapter for graph-specific node operations
+ * - Integrates with GraphHistoryCoordinator for proper undo/redo support
+ * - Manages node visual effects and styling operations
+ * - Provides node validation and business rule enforcement
+ * - Handles node z-order management and layering operations
+ * - Supports node duplication and template-based creation
+ * - Manages node metadata and custom properties
+ * - Provides internationalization support for node labels
+ * - Integrates with visual effects service for node animations
+ * - Handles node lifecycle events and state management
+ */
+
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { TranslocoService } from '@jsverse/transloco';
-import { LoggerService } from '../../../core/services/logger.service';
-import { NodeType } from '../domain/value-objects/node-info';
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
-import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
-import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
-import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from './graph-history-coordinator.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
+import { X6GraphAdapter } from '../adapters/x6-graph.adapter';
+import { X6ZOrderAdapter } from '../adapters/x6-z-order.adapter';
+import { NodeConfigurationService } from './node-configuration.service';
+import { VisualEffectsService } from './visual-effects.service';
+import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
+import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import { X6CoreOperationsService } from './x6-core-operations.service';
 
 /**
  * Consolidated service for node creation, management, and operations in DFD diagrams
@@ -27,6 +50,7 @@ export class DfdNodeService {
     private nodeConfigurationService: NodeConfigurationService,
     private visualEffectsService: VisualEffectsService,
     private historyCoordinator: GraphHistoryCoordinator,
+    private x6CoreOps: X6CoreOperationsService,
   ) {}
 
   // ========================================
@@ -137,7 +161,10 @@ export class DfdNodeService {
         HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
         // Structural changes (recorded in history)
         () => {
-          const node = graph.addNode(nodeConfig);
+          const node = this.x6CoreOps.addNode(graph, nodeConfig);
+          if (!node) {
+            throw new Error(`Failed to create node with ID: ${nodeId}`);
+          }
           // Apply proper z-index using ZOrderService after node creation
           this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
           createdNode = node; // Capture the created node for visual effects
@@ -260,5 +287,96 @@ export class DfdNodeService {
     }
   }
 
+  /**
+   * Create a node from NodeInfo domain object for diagram loading
+   * Used by diagram service for batch loading operations
+   */
+  createNodeFromInfo(
+    graph: any,
+    nodeInfo: NodeInfo,
+    options: {
+      ensureVisualRendering?: boolean;
+      updatePortVisibility?: boolean;
+      suppressHistory?: boolean;
+    } = {}
+  ): any {
+    const { ensureVisualRendering = true, suppressHistory = false } = options;
+
+    this.logger.info('Creating node from NodeInfo domain object', {
+      nodeId: nodeInfo.id,
+      nodeType: nodeInfo.type,
+      position: nodeInfo.position,
+      suppressHistory
+    });
+
+    try {
+      // Convert NodeInfo to X6 node configuration
+      const nodeConfig = this.convertNodeInfoToX6Config(nodeInfo);
+
+      // Add node directly to X6 graph
+      const node = this.x6CoreOps.addNode(graph, nodeConfig);
+
+      if (!node) {
+        throw new Error(`Failed to create node with ID: ${nodeInfo.id}`);
+      }
+
+      // Apply proper z-index using ZOrderService after node creation
+      if (!suppressHistory) {
+        this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+      }
+
+      // Apply visual effects if not suppressed
+      if (ensureVisualRendering && !suppressHistory) {
+        this.visualEffectsService.applyCreationHighlight(node, graph);
+      }
+
+      this.logger.debug('Node created successfully from NodeInfo', {
+        nodeId: nodeInfo.id,
+        nodeCreated: !!node,
+        suppressHistory
+      });
+
+      return node;
+    } catch (error) {
+      this.logger.error('Error creating node from NodeInfo', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convert NodeInfo domain object to X6 node configuration
+   * Private method used by createNodeFromInfo
+   */
+  private convertNodeInfoToX6Config(nodeInfo: NodeInfo): any {
+    const x6Shape = getX6ShapeForNodeType(nodeInfo.type);
+
+    // Base configuration
+    const nodeConfig: any = {
+      id: nodeInfo.id,
+      shape: x6Shape,
+      x: nodeInfo.position.x,
+      y: nodeInfo.position.y,
+      width: nodeInfo.width,
+      height: nodeInfo.height,
+      label: nodeInfo.label,
+      zIndex: nodeInfo.zIndex || this.nodeConfigurationService.getNodeZIndex(nodeInfo.type),
+    };
+
+    // Use NodeConfigurationService to get the correct port configuration for this node type
+    const portConfig = this.nodeConfigurationService.getNodePorts(nodeInfo.type);
+    nodeConfig.ports = portConfig;
+
+    // Add metadata if present
+    const metadataRecord = nodeInfo.getMetadataAsRecord();
+    if (metadataRecord && Object.keys(metadataRecord).length > 0) {
+      const metadataArray = Object.entries(metadataRecord).map(([key, value]) => ({
+        key,
+        value
+      }));
+      nodeConfig.data = { metadata: metadataArray };
+    }
+
+    return nodeConfig;
+  }
 
 }

@@ -1,3 +1,24 @@
+/**
+ * WebSocket Adapter
+ * 
+ * This adapter provides WebSocket communication infrastructure for real-time collaboration
+ * in the DFD editor. It handles connection management and message routing.
+ * 
+ * Key functionality:
+ * - Manages WebSocket connection lifecycle (connect, disconnect, reconnect)
+ * - Provides connection state monitoring with reactive observables
+ * - Handles message serialization and deserialization for collaboration events
+ * - Implements automatic reconnection with exponential backoff
+ * - Provides type-safe message routing for different collaboration events
+ * - Manages session joining and leaving for collaborative editing
+ * - Handles user presence updates and cursor position synchronization
+ * - Supports command execution and event broadcasting
+ * - Provides error handling and connection recovery mechanisms
+ * - Implements heartbeat/ping-pong for connection health monitoring
+ * - Supports message queuing for offline scenarios
+ * - Provides logging and debugging for WebSocket communication
+ */
+
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';

@@ -1,3 +1,24 @@
+/**
+ * X6 Cell Extensions
+ * 
+ * This file provides extensions and utility functions for X6 Cell objects,
+ * adding consistent interfaces and behavior across different cell types.
+ * 
+ * Key functionality:
+ * - Extends X6 Cell prototype with custom methods for DFD-specific operations
+ * - Provides unified interfaces for cell metadata management
+ * - Adds consistent label and text handling across node and edge types
+ * - Implements port connection state tracking and management
+ * - Provides cell type detection and validation utilities
+ * - Adds application-specific data management for cells
+ * - Implements selection and highlighting state management
+ * - Provides cell styling and visual property management
+ * - Adds serialization and persistence utilities for cell data
+ * - Implements cell validation and business rule checking
+ * - Provides cell relationship and connectivity utilities
+ * - Initializes cell extensions on application startup
+ */
+
 import { Cell, Edge } from '@antv/x6';
 import { DFD_STYLING } from '../constants/styling-constants';
 
@@ -121,7 +142,8 @@ export function initializeX6CellExtensions(): void {
   (Cell.prototype as any).getLabel = function (): string {
     if (this.isNode()) {
       // For nodes, get from text attribute
-      return this.getAttrByPath('text/text') || '';
+      const textValue = this.getAttrByPath('text/text');
+      return (typeof textValue === 'string' ? textValue : '') || '';
     } else if (this.isEdge()) {
       // For edges, get from the first label
       const labels = (this as Edge).getLabels();
