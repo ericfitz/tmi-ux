@@ -75,6 +75,10 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from '../tm/components/metadata-dialog/metadata-dialog.component';
+import {
+  X6HistoryDialogComponent,
+  X6HistoryDialogData,
+} from './components/x6-history-dialog/x6-history-dialog.component';
 import { Metadata } from '../tm/models/threat-model.model';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
@@ -721,6 +725,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   showCellProperties(): void {
     this.facade.showCellProperties();
+  }
+
+  /**
+   * Shows the X6 history dialog with the rendered JSON of the graph history
+   */
+  showHistory(): void {
+    const graph = this.x6GraphAdapter.getGraph();
+    if (!graph) {
+      this.logger.warn('Cannot show history: graph not initialized');
+      return;
+    }
+
+    const dialogData: X6HistoryDialogData = {
+      graph: graph,
+    };
+
+    this.dialog.open(X6HistoryDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
   }
 
   /**

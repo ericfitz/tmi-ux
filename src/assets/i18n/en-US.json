@@ -207,6 +207,7 @@
     "details": "Threat Model Details",
     "diagramId": "Diagram ID",
     "diagramName": "Diagram Name",
+    "diagramType": "Diagram Type",
     "diagrams": "Diagrams",
     "diagramsCount": "diagrams",
     "documentDescription": "Description",

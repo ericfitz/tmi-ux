@@ -514,16 +514,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((diagramName: string | undefined) => {
-        if (diagramName && this.threatModel) {
-          // Create a new diagram with UUID and name
+      dialogRef.afterClosed().subscribe((diagramData: { name: string; type: string } | undefined) => {
+        if (diagramData && this.threatModel) {
+          // Create a new diagram with UUID, name, and type
           const now = new Date().toISOString();
           const newDiagram: Diagram = {
             id: uuidv4(),
-            name: diagramName,
+            name: diagramData.name,
             created_at: now,
             modified_at: now,
-            type: 'DFD-1.0.0',
+            type: diagramData.type,
           };
 
           // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility

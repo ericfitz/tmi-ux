@@ -93,6 +93,13 @@
     <div class="toolbar-group">
       <button
         mat-icon-button
+        (click)="showHistory()"
+        [matTooltip]="'Show X6 History'"
+      >
+        <mat-icon>history</mat-icon>
+      </button>
+      <button
+        mat-icon-button
         (click)="undo()"
         [disabled]="!canUndo"
         [matTooltip]="'editor.toolbar.tooltips.undo' | transloco"

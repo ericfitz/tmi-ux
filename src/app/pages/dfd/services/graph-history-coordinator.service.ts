@@ -126,11 +126,26 @@ export class GraphHistoryCoordinator {
     
     // Port visibility patterns (regex)
     portVisibilityPatterns: [
-      /^ports\/.*\/attrs\/circle\/style\/visibility$/,
+      // Match port visibility changes in groups structure: ports/groups/*/attrs/circle/style/visibility
+      /^ports\/groups\/.*\/attrs\/circle\/style\/visibility$/,
+      /^ports\/groups\/.*\/attrs\/.*\/style\/visibility$/,
+      
+      // Match port visibility in items structure: ports/items/*/attrs/circle/style/visibility  
+      /^ports\/items\/.*\/attrs\/circle\/style\/visibility$/,
+      /^ports\/items\/.*\/attrs\/.*\/style\/visibility$/,
+      
+      // Match any port attribute changes (broader catch-all)
       /^ports\/.*\/attrs\/.*$/,
+      
+      // Legacy patterns for other port structures
       /^attrs\/circle\/style\/visibility$/,
       /^attrs\/ports\/.*$/,
-      /^ports\/items\/.*\/attrs\/.*$/
+      
+      // Dot notation versions (in case X6 reports with dots)
+      /^ports\.groups\..*\.attrs\.circle\.style\.visibility$/,
+      /^ports\.groups\..*\.attrs\..*\.style\.visibility$/,
+      /^ports\.items\..*\.attrs\.circle\.style\.visibility$/,
+      /^ports\.items\..*\.attrs\..*\.style\.visibility$/
     ]
   };
 
@@ -308,9 +323,16 @@ export class GraphHistoryCoordinator {
 
     // Check port visibility patterns
     if (!includePortVisibility) {
-      return this.historyFilters.portVisibilityPatterns.some(pattern => 
+      const isPortVisibility = this.historyFilters.portVisibilityPatterns.some(pattern => 
         pattern.test(attributePath)
       );
+      
+      // Debug logging for port visibility filtering
+      if (attributePath.includes('port') || attributePath.includes('visibility')) {
+        this.loggerService.debug(`Port visibility check: "${attributePath}" -> excluded: ${isPortVisibility}`);
+      }
+      
+      return isPortVisibility;
     }
 
     return false;

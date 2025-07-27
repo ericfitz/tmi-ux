@@ -1793,6 +1793,25 @@ export class X6GraphAdapter implements IGraphAdapter {
         this.logger.debug('Including attribute changes - not all visual');
       }
 
+      // Handle port changes - check if they're only visibility changes
+      if (args.key === 'ports' && args.options && args.options.propertyPath) {
+        const propertyPath = args.options.propertyPath;
+        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute(propertyPath, {
+          includePortVisibility: false,
+          includeVisualEffects: false,
+          includeHighlighting: false,
+          includeToolChanges: false
+        });
+        
+        this.logger.debug(`Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`);
+        
+        if (isPortVisibilityOnly) {
+          this.logger.debug('Excluding port visibility change');
+          return false; // Don't add to history
+        }
+        this.logger.debug('Including port change - not visibility only');
+      }
+
       // For other cell:change:* events, allow them unless they're specifically excluded
       this.logger.debug('Including cell:change:* event with key:', args.key);
       return true;

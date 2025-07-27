@@ -3,6 +3,16 @@
   <form [formGroup]="diagramForm" class="dialog-form">
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'threatModels.diagramType' | transloco }}</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let type of diagramTypes" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
         <input matInput formControlName="name" />
         <mat-error *ngIf="diagramForm.get('name')?.hasError('required')">
