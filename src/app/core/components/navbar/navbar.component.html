@@ -28,10 +28,23 @@
       </mat-menu>
     </div>
 
-    <!-- Right side: Mock data toggle, User info and logout button -->
+    <!-- Right side: Mock data toggle, Server status, User info and logout button -->
     <div class="navbar-right">
       <!-- Mock data toggle in development mode -->
       <app-mock-data-toggle *ngIf="isDevelopmentMode"></app-mock-data-toggle>
+
+      <!-- Server connection indicator -->
+      <span 
+        [matTooltip]="getServerStatusTooltipKey() | transloco"
+        matTooltipPosition="below"
+        style="display: inline-block;">
+        <button 
+          mat-icon-button 
+          [class]="getServerStatusIconClass()"
+          disabled>
+          <mat-icon>{{ getServerStatusIcon() }}</mat-icon>
+        </button>
+      </span>
 
       <!-- User info and logout when authenticated -->
       <ng-container *ngIf="isAuthenticated">

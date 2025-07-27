@@ -14,6 +14,7 @@ import { FeedbackMaterialModule } from '../../../shared/material/feedback-materi
 import { AuthService } from '../../../auth/services/auth.service';
 import { LanguageService, Language } from '../../../i18n/language.service';
 import { LoggerService } from '../../services/logger.service';
+import { ServerConnectionService, ServerConnectionStatus } from '../../services/server-connection.service';
 
 // Import the MockDataToggleComponent
 import { MockDataToggleComponent } from '../mock-data-toggle/mock-data-toggle.component';
@@ -46,10 +47,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   languages: Language[] = [];
   currentLanguage!: Language;
 
+  // Server connection status
+  serverConnectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED;
+  ServerConnectionStatus = ServerConnectionStatus; // Expose enum to template
+
   // Subscriptions
   private authSubscription: Subscription | null = null;
   private usernameSubscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
+  private serverConnectionSubscription: Subscription | null = null;
 
   constructor(
     private router: Router,
@@ -57,6 +63,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private languageService: LanguageService,
     private dialog: MatDialog,
     private logger: LoggerService,
+    private serverConnectionService: ServerConnectionService,
   ) {
     // Get available languages
     this.languages = this.languageService.getAvailableLanguages();
@@ -79,6 +86,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.languageSubscription = this.languageService.currentLanguage$.subscribe(language => {
       this.currentLanguage = language;
     });
+
+    // Subscribe to server connection status
+    this.serverConnectionSubscription = this.serverConnectionService.connectionStatus$.subscribe(status => {
+      this.serverConnectionStatus = status;
+    });
   }
 
   ngOnDestroy(): void {
@@ -93,6 +105,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     if (this.languageSubscription) {
       this.languageSubscription.unsubscribe();
+    }
+
+    if (this.serverConnectionSubscription) {
+      this.serverConnectionSubscription.unsubscribe();
     }
   }
 
@@ -130,5 +146,53 @@ export class NavbarComponent implements OnInit, OnDestroy {
       width: '400px',
       disableClose: false,
     });
+  }
+
+  /**
+   * Get the appropriate Material icon for the current server connection status
+   */
+  getServerStatusIcon(): string {
+    switch (this.serverConnectionStatus) {
+      case ServerConnectionStatus.NOT_CONFIGURED:
+        return 'cloud';
+      case ServerConnectionStatus.ERROR:
+        return 'cloud_off';
+      case ServerConnectionStatus.CONNECTED:
+        return 'cloud_done';
+      default:
+        return 'cloud';
+    }
+  }
+
+  /**
+   * Get the appropriate CSS class for the server connection status icon
+   */
+  getServerStatusIconClass(): string {
+    switch (this.serverConnectionStatus) {
+      case ServerConnectionStatus.NOT_CONFIGURED:
+        return 'server-status-not-configured';
+      case ServerConnectionStatus.ERROR:
+        return 'server-status-error';
+      case ServerConnectionStatus.CONNECTED:
+        return 'server-status-connected';
+      default:
+        return 'server-status-not-configured';
+    }
+  }
+
+  /**
+   * Get the appropriate localization key for the server connection status tooltip
+   */
+  getServerStatusTooltipKey(): string {
+    switch (this.serverConnectionStatus) {
+      case ServerConnectionStatus.NOT_CONFIGURED:
+        return 'navbar.serverStatus.noServerConfigured';
+      case ServerConnectionStatus.ERROR:
+        return 'navbar.serverStatus.serverConnectionError';
+      case ServerConnectionStatus.CONNECTED:
+        return 'navbar.serverStatus.serverConnected';
+      default:
+        return 'navbar.serverStatus.noServerConfigured';
+    }
   }
 }

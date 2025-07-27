@@ -155,6 +155,11 @@
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
     "logoutButton": "Logout",
+    "serverStatus": {
+      "noServerConfigured": "No Server Configured",
+      "serverConnected": "Server Connected",
+      "serverConnectionError": "Server Connection Error"
+    },
     "userProfileTooltip": "{{email}}",
     "username": "{{username}}"
   },
