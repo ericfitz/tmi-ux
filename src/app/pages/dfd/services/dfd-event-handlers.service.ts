@@ -541,7 +541,7 @@ export class DfdEventHandlersService {
   setCellLabel(cell: Cell, text: string): boolean {
     const oldLabel = this.getCellLabel(cell);
     
-    this.logger.debugComponent('DFD', '[CellLabelService] Attempting to set label', {
+    this.logger.debugComponent('DfdEventHandlers', 'Attempting to set label', {
       cellId: cell.id,
       isNode: cell.isNode(),
       currentLabel: oldLabel,
@@ -555,7 +555,7 @@ export class DfdEventHandlersService {
 
     // Only proceed if the label actually changed
     if (oldLabel === text) {
-      this.logger.debugComponent('DFD', '[CellLabelService] Label unchanged, skipping update', {
+      this.logger.debugComponent('DfdEventHandlers', 'Label unchanged, skipping update', {
         cellId: cell.id,
         label: text,
       });

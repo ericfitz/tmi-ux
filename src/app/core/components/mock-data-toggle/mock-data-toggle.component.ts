@@ -50,7 +50,7 @@ export class MockDataToggleComponent implements OnInit {
 
   ngOnInit(): void {
     this.useMockData$ = this.mockDataService.useMockData$;
-    this.logger.debug('MockDataToggleComponent initialized');
+    this.logger.debugComponent('MockDataToggle', 'MockDataToggleComponent initialized');
   }
 
   /**

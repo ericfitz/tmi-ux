@@ -52,7 +52,8 @@ export class VisualEffectsService {
 
     // Don't apply if cell already has an active effect or is selected
     if (this.activeEffects.has(cell.id) || this.isCellSelected(cell)) {
-      this.logger.debug(
+      this.logger.debugComponent(
+        'DFD',
         '[VisualEffects] Skipping creation highlight - cell has existing effect or is selected',
         {
           cellId: cell.id,
@@ -106,7 +107,7 @@ export class VisualEffectsService {
         // Clean up tracking
         this.activeEffects.delete(cell.id);
 
-        this.logger.debug('[VisualEffects] Removed visual effects', { cellId: cell.id });
+        this.logger.debugComponent('DfdVisualEffects', 'Removed visual effects', { cellId: cell.id });
       } finally {
         // Re-enable history if we disabled it
         this._enableHistoryIfAvailable(graph, historyWasDisabled);
@@ -129,7 +130,7 @@ export class VisualEffectsService {
       if (effect.timer) {
         clearInterval(effect.timer);
       }
-      this.logger.debug('[VisualEffects] Cleaned up effect during service cleanup', { cellId });
+      this.logger.debugComponent('DfdVisualEffects', 'Cleaned up effect during service cleanup', { cellId });
     });
     this.activeEffects.clear();
   }
@@ -155,7 +156,7 @@ export class VisualEffectsService {
     // Disable history for the entire animation lifecycle
     const historyWasDisabled = this._disableHistoryIfAvailable(graph);
 
-    this.logger.debug('[VisualEffects] Starting fade animation', {
+    this.logger.debugComponent('DfdVisualEffects', 'Starting fade animation', {
       cellId: cell.id,
       color,
       startTime,
@@ -182,7 +183,7 @@ export class VisualEffectsService {
         // Re-enable history now that animation is complete
         this._enableHistoryIfAvailable(graph, historyWasDisabled);
 
-        this.logger.debug('[VisualEffects] Creation highlight fade complete, history re-enabled', {
+        this.logger.debugComponent('DfdVisualEffects', 'Creation highlight fade complete, history re-enabled', {
           cellId: cell.id,
         });
         return;
@@ -199,7 +200,7 @@ export class VisualEffectsService {
     };
 
     // Apply initial bright effect immediately (no delay)
-    this.logger.debug('[VisualEffects] Applying initial bright effect', {
+    this.logger.debugComponent('DfdVisualEffects', 'Applying initial bright effect', {
       cellId: cell.id,
       opacity: 0.9,
       color,
@@ -278,7 +279,7 @@ export class VisualEffectsService {
    * Remove all visual effects from a cell
    */
   private removeAllEffectsFromCell(cell: Cell): void {
-    this.logger.debug('[VisualEffects] Removing all effects from cell', { cellId: cell.id });
+    this.logger.debugComponent('DfdVisualEffects', 'Removing all effects from cell', { cellId: cell.id });
 
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -322,7 +323,7 @@ export class VisualEffectsService {
         return DFD_STYLING_HELPERS.isSelectionFilter(filter as string);
       }
     } catch (error) {
-      this.logger.debug('[VisualEffects] Error checking selection state', {
+      this.logger.debugComponent('DfdVisualEffects', 'Error checking selection state', {
         cellId: cell.id,
         error,
       });
@@ -366,7 +367,7 @@ export class VisualEffectsService {
       }
     }
 
-    this.logger.debug('[VisualEffects] Attempting to disable history', {
+    this.logger.debugComponent('DfdVisualEffects', 'Attempting to disable history', {
       hasGraph: !!graph,
       hasHistory: !!(graph && graph.history),
       hasHistoryPlugin: !!historyPlugin,
@@ -386,13 +387,14 @@ export class VisualEffectsService {
     if (historyPlugin && typeof historyPlugin.disable === 'function') {
       try {
         historyPlugin.disable();
-        this.logger.debug('[VisualEffects] History tracking disabled for visual effects');
+        this.logger.debugComponent('DfdVisualEffects', 'History tracking disabled for visual effects');
         return true;
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to disable history tracking', { error });
       }
     } else {
-      this.logger.debug(
+      this.logger.debugComponent(
+        'DFD',
         '[VisualEffects] History disable not available - history plugin may not be enabled yet',
       );
     }
@@ -438,12 +440,13 @@ export class VisualEffectsService {
     if (historyPlugin && typeof historyPlugin.enable === 'function') {
       try {
         historyPlugin.enable();
-        this.logger.debug('[VisualEffects] History tracking re-enabled after visual effects');
+        this.logger.debugComponent('DfdVisualEffects', 'History tracking re-enabled after visual effects');
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to re-enable history tracking', { error });
       }
     } else {
-      this.logger.debug(
+      this.logger.debugComponent(
+        'DFD',
         '[VisualEffects] History enable not available - history plugin may not be enabled yet',
       );
     }

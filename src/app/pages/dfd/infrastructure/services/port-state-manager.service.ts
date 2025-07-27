@@ -138,7 +138,7 @@ export class PortStateManagerService {
       lastUpdated: new Date(),
     });
 
-    this._logger.debug('Updated node port visibility', {
+    this._logger.debugComponent('DfdPortStateManager', 'Updated node port visibility', {
       nodeId: node.id,
       totalPorts: ports.length,
       connectedPorts: connectedPorts.size,
@@ -173,7 +173,7 @@ export class PortStateManagerService {
         });
       });
 
-      this._logger.debug('Showed all ports on all nodes', {
+      this._logger.debugComponent('DfdPortStateManager', 'Showed all ports on all nodes', {
         nodeCount: nodes.length,
       });
     });
@@ -194,7 +194,7 @@ export class PortStateManagerService {
         this._updateNodePortVisibilityInternal(graph, node);
       });
 
-      this._logger.debug('Hid unconnected ports on all nodes', {
+      this._logger.debugComponent('DfdPortStateManager', 'Hid unconnected ports on all nodes', {
         nodeCount: nodes.length,
       });
     });
@@ -214,7 +214,7 @@ export class PortStateManagerService {
       const sourcePortId = edge.getSourcePortId();
       const targetPortId = edge.getTargetPortId();
 
-      this._logger.debug('Ensuring connected ports are visible for edge', {
+      this._logger.debugComponent('DfdPortStateManager', 'Ensuring connected ports are visible for edge', {
         edgeId: edge.id,
         sourceCellId,
         targetCellId,
@@ -233,7 +233,7 @@ export class PortStateManagerService {
             sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
             this._updatePortStateCache(sourceNode.id, sourcePortId, true, true);
 
-            this._logger.debug('Made source port visible', {
+            this._logger.debugComponent('DfdPortStateManager', 'Made source port visible', {
               edgeId: edge.id,
               sourceNodeId: sourceCellId,
               sourcePortId,
@@ -260,7 +260,7 @@ export class PortStateManagerService {
             targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
             this._updatePortStateCache(targetNode.id, targetPortId, true, true);
 
-            this._logger.debug('Made target port visible', {
+            this._logger.debugComponent('DfdPortStateManager', 'Made target port visible', {
               edgeId: edge.id,
               targetNodeId: targetCellId,
               targetPortId,
@@ -311,7 +311,7 @@ export class PortStateManagerService {
         this._updateNodePortVisibilityInternal(graph, node);
       });
 
-      this._logger.debug('Updated port visibility after connection change', {
+      this._logger.debugComponent('DfdPortStateManager', 'Updated port visibility after connection change', {
         nodeCount: nodes.length,
       });
     });
@@ -322,7 +322,7 @@ export class PortStateManagerService {
    */
   clearPortStates(): void {
     this._portStates.clear();
-    this._logger.debug('Cleared all port state cache');
+    this._logger.debugComponent('DfdPortStateManager', 'Cleared all port state cache');
   }
 
   /**
@@ -363,7 +363,7 @@ export class PortStateManagerService {
       });
     });
 
-    this._logger.debug('Port visibility behavior setup completed');
+    this._logger.debugComponent('DfdPortStateManager', 'Port visibility behavior setup completed');
   }
 
   /**

@@ -548,7 +548,7 @@ export class DfdEdgeService {
   isMagnetValid(args: MagnetValidationArgs): boolean {
     const magnet = args.magnet;
     if (!magnet) {
-      this.logger.debugComponent('DFD', '[Edge Creation] isMagnetValid: no magnet found');
+      this.logger.debugComponent('DfdEdge', 'isMagnetValid: no magnet found');
       return false;
     }
 
@@ -556,7 +556,7 @@ export class DfdEdgeService {
     const magnetAttr = magnet.getAttribute('magnet');
     const isValid = magnetAttr === 'true' || magnetAttr === 'active';
 
-    this.logger.debugComponent('DFD', '[Edge Creation] isMagnetValid result', {
+    this.logger.debugComponent('DfdEdge', 'isMagnetValid result', {
       magnetAttribute: magnetAttr,
       portGroup: magnet.getAttribute('port-group'),
       isValid,
@@ -573,12 +573,12 @@ export class DfdEdgeService {
 
     // Prevent creating an edge if source and target are the same port on the same node
     if (sourceView === targetView && sourceMagnet === targetMagnet) {
-      this.logger.debugComponent('DFD', '[Edge Creation] Connection rejected: same port on same node');
+      this.logger.debugComponent('DfdEdge', 'Connection rejected: same port on same node');
       return false;
     }
 
     if (!targetMagnet || !sourceMagnet) {
-      this.logger.debugComponent('DFD', '[Edge Creation] isConnectionValid: missing magnet', {
+      this.logger.debugComponent('DfdEdge', 'isConnectionValid: missing magnet', {
         hasSourceMagnet: !!sourceMagnet,
         hasTargetMagnet: !!targetMagnet,
       });
@@ -590,14 +590,14 @@ export class DfdEdgeService {
     const targetPortGroup = targetMagnet.getAttribute('port-group');
 
     if (!sourcePortGroup || !targetPortGroup) {
-      this.logger.debugComponent('DFD', '[Edge Creation] isConnectionValid: missing port groups', {
+      this.logger.debugComponent('DfdEdge', 'isConnectionValid: missing port groups', {
         sourcePortGroup,
         targetPortGroup,
       });
       return false;
     }
 
-    this.logger.debugComponent('DFD', '[Edge Creation] Connection validation passed');
+    this.logger.debugComponent('DfdEdge', 'Connection validation passed');
     return true;
   }
 

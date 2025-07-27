@@ -63,6 +63,7 @@ describe('VisualEffectsService', () => {
       warn: vi.fn(),
       error: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
     };
 
     // Create service directly with mock logger
@@ -131,7 +132,8 @@ describe('VisualEffectsService', () => {
 
       service.applyCreationHighlight(mockNode as unknown as Node);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DFD',
         '[VisualEffects] Skipping creation highlight - cell has existing effect or is selected',
         { cellId: 'node1' },
       );
@@ -319,7 +321,8 @@ describe('VisualEffectsService', () => {
 
       service.applyCreationHighlight(mockNode as unknown as Node);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DFD',
         '[VisualEffects] Skipping creation highlight - cell has existing effect or is selected',
         { cellId: 'node1' },
       );
@@ -335,7 +338,8 @@ describe('VisualEffectsService', () => {
 
       service.applyCreationHighlight(mockTextBox as unknown as Node);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DFD',
         '[VisualEffects] Skipping creation highlight - cell has existing effect or is selected',
         { cellId: 'textbox1' },
       );
@@ -352,7 +356,8 @@ describe('VisualEffectsService', () => {
 
       service.applyCreationHighlight(mockEdge as unknown as Edge);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DFD',
         '[VisualEffects] Skipping creation highlight - cell has existing effect or is selected',
         { cellId: 'edge1' },
       );
@@ -369,7 +374,8 @@ describe('VisualEffectsService', () => {
       // Should not throw error and should still apply highlight
       service.applyCreationHighlight(mockNode as unknown as Node);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DFD',
         '[VisualEffects] Error checking selection state',
         expect.objectContaining({
           cellId: 'node1',

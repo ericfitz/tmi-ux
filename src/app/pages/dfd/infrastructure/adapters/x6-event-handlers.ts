@@ -230,7 +230,7 @@ export class X6EventHandlers {
     // Drag events
     graph.on('node:move', ({ node, e: _e }) => {
       const position = node.getPosition();
-      this.logger.debug('Node moving', {
+      this.logger.debugComponent('X6EventHandlers', 'Node moving', {
         nodeId: node.id,
         x: position.x,
         y: position.y,
@@ -249,7 +249,7 @@ export class X6EventHandlers {
     // Resize events
     graph.on('node:resize', ({ node, e: _e }) => {
       const size = node.getSize();
-      this.logger.debug('Node resizing', {
+      this.logger.debugComponent('X6EventHandlers', 'Node resizing', {
         nodeId: node.id,
         width: size.width,
         height: size.height,
@@ -299,7 +299,7 @@ export class X6EventHandlers {
    */
   setupPerformanceEvents(graph: Graph): void {
     graph.on('render:start', () => {
-      this.logger.debug('Render started');
+      this.logger.debugComponent('X6EventHandlers', 'Render started');
     });
 
     graph.on('render:done', () => {
@@ -308,11 +308,11 @@ export class X6EventHandlers {
 
     // Monitor large operations
     graph.on('batch:start', () => {
-      this.logger.debug('Batch operation started');
+      this.logger.debugComponent('X6EventHandlers', 'Batch operation started');
     });
 
     graph.on('batch:stop', () => {
-      this.logger.debug('Batch operation completed');
+      this.logger.debugComponent('X6EventHandlers', 'Batch operation completed');
     });
 
     this.logger.info('Performance events setup completed');

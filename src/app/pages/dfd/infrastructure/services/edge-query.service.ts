@@ -331,7 +331,7 @@ export class EdgeQueryService {
         issues: validationResults,
       });
     } else {
-      this._logger.debug('Edge connection validation passed', {
+      this._logger.debugComponent('DfdEdgeQuery', 'Edge connection validation passed', {
         totalEdges: edges.length,
       });
     }

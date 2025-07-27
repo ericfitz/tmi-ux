@@ -73,7 +73,7 @@ export class X6TooltipAdapter {
     this.tooltipElement.style.top = `${position.y}px`;
     this.tooltipElement.style.display = 'block';
 
-    this.logger.debugComponent('DFD', '[X6TooltipAdapter] Tooltip shown', {
+    this.logger.debugComponent('X6Tooltip', 'Tooltip shown', {
       content: formattedContent,
       position,
     });
@@ -122,7 +122,7 @@ export class X6TooltipAdapter {
     `;
 
     graph.container.appendChild(this.tooltipElement);
-    this.logger.debugComponent('DFD', '[X6TooltipAdapter] Tooltip element created');
+    this.logger.debugComponent('X6Tooltip', 'Tooltip element created');
   }
 
   /**
@@ -172,6 +172,6 @@ export class X6TooltipAdapter {
       this.hideTooltip();
     });
 
-    this.logger.debugComponent('DFD', '[X6TooltipAdapter] Port tooltip events set up');
+    this.logger.debugComponent('X6Tooltip', 'Port tooltip events set up');
   }
 }

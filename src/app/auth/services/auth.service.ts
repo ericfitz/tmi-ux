@@ -197,7 +197,7 @@ export class AuthService {
         this.userProfileSubject.next(null);
       }
 
-      this.logger.debug(
+      this.logger.debugComponent('Auth',
         `Auth status checked: authenticated=${isAuthenticated}, user=${this.userEmail}`,
       );
     } catch (error) {
@@ -400,7 +400,7 @@ export class AuthService {
    * @returns Observable with JWT token
    */
   private exchangeCodeForToken(code: string, providerId: string | null): Observable<JwtToken> {
-    this.logger.debug(`Exchanging authorization code for token via ${providerId}`);
+    this.logger.debugComponent('Auth', `Exchanging authorization code for token via ${providerId}`);
 
     return this.http.post<{ token: string; expires_in: number }>(
       `${environment.apiUrl}/auth/token`, 
@@ -498,7 +498,7 @@ export class AuthService {
    * @param token JWT token
    */
   private storeToken(token: JwtToken): void {
-    this.logger.debug('Storing JWT token');
+    this.logger.debugComponent('Auth', 'Storing JWT token');
     localStorage.setItem(this.tokenStorageKey, JSON.stringify(token));
     this.jwtTokenSubject.next(token);
   }
@@ -532,7 +532,7 @@ export class AuthService {
    * @param profile User profile
    */
   private storeUserProfile(profile: UserProfile): void {
-    this.logger.debug('Storing user profile');
+    this.logger.debugComponent('Auth', 'Storing user profile');
     localStorage.setItem(this.profileStorageKey, JSON.stringify(profile));
   }
 
@@ -577,7 +577,7 @@ export class AuthService {
 
     // Clear authentication data immediately for test users or when server is unavailable
     if (this.isTestUser) {
-      this.logger.debug('Skipping server logout for test user');
+      this.logger.debugComponent('Auth', 'Skipping server logout for test user');
       this.clearAuthData();
       this.logger.info('Test user logged out successfully');
       void this.router.navigate(['/']);

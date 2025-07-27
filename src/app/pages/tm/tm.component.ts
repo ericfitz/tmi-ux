@@ -77,10 +77,10 @@ export class TmComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.logger.debug('TmComponent.ngOnInit called');
+    this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
     this.subscription = this.threatModelService.getThreatModels().subscribe(models => {
       this.threatModels = models;
-      this.logger.debug('TmComponent received threat models', { 
+      this.logger.debugComponent('TM', 'TmComponent received threat models', { 
         count: models.length,
         models: models.map(tm => ({ id: tm.id, name: tm.name }))
       });
@@ -204,7 +204,7 @@ export class TmComponent implements OnInit, OnDestroy {
 
       // Check if File System Access API is supported
       if ('showOpenFilePicker' in window) {
-        this.logger.debug('Using File System Access API');
+        this.logger.debugComponent('TM', 'Using File System Access API');
         
         const [handle] = await window.showOpenFilePicker({
           types: [
@@ -222,7 +222,7 @@ export class TmComponent implements OnInit, OnDestroy {
         file = await fileHandle.getFile();
       } else {
         // Fallback for browsers that don't support File System Access API
-        this.logger.debug('Using fallback file input method');
+        this.logger.debugComponent('TM', 'Using fallback file input method');
         file = await this.selectFileViaInput();
       }
 
@@ -242,7 +242,7 @@ export class TmComponent implements OnInit, OnDestroy {
     } catch (error) {
       // Check if user cancelled the operation
       if (error instanceof DOMException && error.name === 'AbortError') {
-        this.logger.debug('File selection cancelled by user');
+        this.logger.debugComponent('TM', 'File selection cancelled by user');
         return;
       }
       

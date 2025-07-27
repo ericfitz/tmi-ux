@@ -232,7 +232,7 @@ export class DfdDiagramService {
             }
           });
           
-          this.logger.debug('Batch loaded cells into graph', {
+          this.logger.debugComponent('DfdDiagram', 'Batch loaded cells into graph', {
             totalCells: convertedCells.length,
             nodes: nodes.length,
             edges: edges.length
@@ -255,7 +255,7 @@ export class DfdDiagramService {
         () => {
           // Hide unconnected ports on all nodes
           this.portStateManager.hideUnconnectedPorts(graph);
-          this.logger.debug('Updated port visibility after diagram load');
+          this.logger.debugComponent('DfdDiagram', 'Updated port visibility after diagram load');
         }
       );
 
@@ -655,7 +655,7 @@ export class DfdDiagramService {
       }
     });
     
-    this.logger.debug('Converted graph to cells format', { cellCount: cells.length });
+    this.logger.debugComponent('DfdDiagram', 'Converted graph to cells format', { cellCount: cells.length });
     return cells;
   }
 

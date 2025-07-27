@@ -329,7 +329,7 @@ export class DfdNodeService {
         this.visualEffectsService.applyCreationHighlight(node, graph);
       }
 
-      this.logger.debug('Node created successfully from NodeInfo', {
+      this.logger.debugComponent('DfdNodeService', 'Node created successfully from NodeInfo', {
         nodeId: nodeInfo.id,
         nodeCreated: !!node,
         suppressHistory

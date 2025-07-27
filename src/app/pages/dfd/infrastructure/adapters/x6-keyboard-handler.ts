@@ -99,7 +99,7 @@ export class X6KeyboardHandler {
       return;
     }
 
-    this.logger.debugComponent('DFD', 'Node drag started (handleNodeMouseDown)', {
+    this.logger.debugComponent('X6Keyboard', 'Node drag started (handleNodeMouseDown)', {
       nodeId: node.id,
     });
     this._isDragging = true;
@@ -136,7 +136,7 @@ export class X6KeyboardHandler {
       return;
     }
 
-    this.logger.debugComponent('DFD', 'Node drag ended (handleNodeMouseUp)', { nodeId: node.id });
+    this.logger.debugComponent('X6Keyboard', 'Node drag ended (handleNodeMouseUp)', { nodeId: node.id });
     if (this._isDragging) {
       this._isDragging = false;
       this._updateSnapToGrid();

@@ -28,10 +28,10 @@ export const authGuard: CanActivateFn = (route, state) => {
     take(1),
     map(isAuthenticated => {
       if (isAuthenticated) {
-        logger.debug('User is authenticated, allowing access');
+        logger.debugComponent('AuthGuard', 'User is authenticated, allowing access');
         return true;
       } else {
-        logger.debug('User is not authenticated, redirecting to login page');
+        logger.debugComponent('AuthGuard', 'User is not authenticated, redirecting to login page');
         void router.navigate(['/login'], {
           queryParams: {
             returnUrl: state.url,

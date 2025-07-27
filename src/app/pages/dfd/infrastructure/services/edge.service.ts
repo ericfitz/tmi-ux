@@ -87,7 +87,7 @@ export class EdgeService {
       this._portStateManager.ensureConnectedPortsVisible(graph, x6Edge);
     }
 
-    this._logger.debug('Edge created successfully', {
+    this._logger.debugComponent('DfdEdgeService', 'Edge created successfully', {
       edgeId: edgeInfo.id,
       edgeCreated: !!x6Edge,
       metadataSet: !!(edgeInfo.data && (x6Edge as any).setMetadata),
@@ -181,7 +181,7 @@ export class EdgeService {
       }
     }
 
-    this._logger.debug('Edge updated successfully', {
+    this._logger.debugComponent('DfdEdgeService', 'Edge updated successfully', {
       edgeId: edge.id,
       updatedProperties: Object.keys(updates),
     });
@@ -217,7 +217,7 @@ export class EdgeService {
         }
       }
 
-      this._logger.debug('Edge removed successfully', { edgeId });
+      this._logger.debugComponent('DfdEdgeService', 'Edge removed successfully', { edgeId });
       return true;
     }
 
@@ -250,7 +250,7 @@ export class EdgeService {
     const hasLineAttrs = attrs?.['line'] && typeof attrs['line'] === 'object';
 
     if (!hasWrapAttrs || !hasLineAttrs) {
-      this._logger.debug('Adding missing edge attrs for visual rendering', {
+      this._logger.debugComponent('DfdEdgeService', 'Adding missing edge attrs for visual rendering', {
         hasWrapAttrs,
         hasLineAttrs,
         originalAttrs: attrs,
@@ -326,7 +326,7 @@ export class EdgeService {
       if (sourceNode && sourceNode.isNode()) {
         const sourcePorts = sourceNode.getPorts();
         const sourcePortExists = sourcePorts.some((port: any) => port.id === sourcePortId);
-        this._logger.debug('Source node verification', {
+        this._logger.debugComponent('DfdEdgeService', 'Source node verification', {
           edgeId: edgeInfo.id,
           sourceNodeId,
           sourcePortId,
@@ -349,7 +349,7 @@ export class EdgeService {
       if (targetNode && targetNode.isNode()) {
         const targetPorts = targetNode.getPorts();
         const targetPortExists = targetPorts.some((port: any) => port.id === targetPortId);
-        this._logger.debug('Target node verification', {
+        this._logger.debugComponent('DfdEdgeService', 'Target node verification', {
           edgeId: edgeInfo.id,
           targetNodeId,
           targetPortId,

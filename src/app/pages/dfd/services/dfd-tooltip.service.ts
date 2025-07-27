@@ -39,7 +39,7 @@ export class DfdTooltipService {
       // Get the port object using X6's getPort method
       const portObj = (node as any).getPort(String(portId)) as PortObject;
       if (!portObj) {
-        this.logger.debugComponent('DFD', '[TooltipService] Port object not found', {
+        this.logger.debugComponent('DfdTooltip', 'Port object not found', {
           nodeId: node.id,
           portId,
         });
@@ -54,7 +54,7 @@ export class DfdTooltipService {
         labelText = String(portId);
       }
 
-      this.logger.debugComponent('DFD', '[TooltipService] Generated port tooltip content', {
+      this.logger.debugComponent('DfdTooltip', 'Generated port tooltip content', {
         nodeId: node.id,
         portId,
         content: labelText,

@@ -33,7 +33,7 @@ export class ReauthDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.logger.debug('ReauthDialogComponent initialized', this.data);
+    this.logger.debugComponent('ReauthDialog', 'ReauthDialogComponent initialized', this.data);
   }
 
   reauthenticate(): void {
@@ -73,7 +73,7 @@ export class ReauthDialogComponent implements OnInit {
   }
 
   cancel(): void {
-    this.logger.debug('Re-authentication cancelled');
+    this.logger.debugComponent('ReauthDialog', 'Re-authentication cancelled');
     this.dialogRef.close(false);
   }
 

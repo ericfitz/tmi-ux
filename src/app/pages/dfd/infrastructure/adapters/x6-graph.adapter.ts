@@ -326,7 +326,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           });
         },
         createEdge: () => {
-          this.logger.debugComponent('DFD', '[Edge Creation] createEdge called');
+          this.logger.debugComponent('X6Graph', 'createEdge called');
 
           // Generate UUID type 4 for UX-created edges
           const edgeId = uuidv4();
@@ -401,7 +401,7 @@ export class X6GraphAdapter implements IGraphAdapter {
             zIndex: 1, // Temporary z-index, will be set properly when connected
           });
 
-          this.logger.debugComponent('DFD', '[Edge Creation] createEdge - Initial labels config:', {
+          this.logger.debugComponent('X6Graph', 'createEdge - Initial labels config:', {
             labels: edge.labels,
           });
           this.logger.debugComponent(
@@ -734,15 +734,15 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   debugEdgeRendering(): void {
     if (!this._graph) {
-      this.logger.debugComponent('DFD', '[Edge Debug] No graph instance');
+      this.logger.debugComponent('X6Graph', 'No graph instance');
       return;
     }
 
     const edges = this._graph.getEdges();
-    this.logger.debugComponent('DFD', `[Edge Debug] Found ${edges.length} edges`);
+    this.logger.debugComponent('X6Graph', `[Edge Debug] Found ${edges.length} edges`);
 
     edges.forEach((edge, index) => {
-      this.logger.debugComponent('DFD', `[Edge Debug] Edge ${index + 1}:`, {
+      this.logger.debugComponent('X6Graph', `[Edge Debug] Edge ${index + 1}:`, {
         id: edge.id,
         shape: edge.shape,
         source: edge.getSourceCellId(),
@@ -894,7 +894,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         current?: { x: number; y: number };
         previous?: { x: number; y: number };
       }) => {
-        this.logger.debugComponent('DFD', 'node:moved event fired', {
+        this.logger.debugComponent('X6Graph', 'node:moved event fired', {
           nodeId: node.id,
           current: current,
           previous: previous,
@@ -967,7 +967,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Edge lifecycle events for proper edge creation handling
     this._graph.on('edge:connecting', ({ edge }: { edge: Edge }) => {
-      this.logger.debugComponent('DFD', '[Edge Creation] edge:connecting event', {
+      this.logger.debugComponent('X6Graph', 'edge:connecting event', {
         edgeId: edge.id,
         sourceId: edge.getSourceCellId(),
         targetId: edge.getTargetCellId(),
@@ -986,7 +986,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
 
     this._graph.on('edge:connected', ({ edge }: { edge: Edge }) => {
-      this.logger.debugComponent('DFD', '[Edge Creation] edge:connected event', {
+      this.logger.debugComponent('X6Graph', 'edge:connected event', {
         edgeId: edge.id,
         sourceId: edge.getSourceCellId(),
         targetId: edge.getTargetCellId(),
@@ -1032,11 +1032,11 @@ export class X6GraphAdapter implements IGraphAdapter {
           }
 
           // Simplified flow without command bus - just emit the edge added event
-          this.logger.debugComponent('DFD', '[Edge Creation] Emitting edge added event');
+          this.logger.debugComponent('X6Graph', 'Emitting edge added event');
           this._edgeAdded$.next(edge);
         }, 50); // Small delay to ensure connection is fully established
       } else {
-        this.logger.debugComponent('DFD', '[Edge Creation] Invalid edge, removing', {
+        this.logger.debugComponent('X6Graph', 'Invalid edge, removing', {
           hasSource: !!sourceId,
           hasTarget: !!targetId,
         });
@@ -1050,7 +1050,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
 
     this._graph.on('edge:disconnected', ({ edge }: { edge: Edge }) => {
-      this.logger.debugComponent('DFD', '[Edge Creation] edge:disconnected event', {
+      this.logger.debugComponent('X6Graph', 'edge:disconnected event', {
         edgeId: edge.id,
       });
 
@@ -1068,7 +1068,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Edge events - handle addition and removal
     this._graph.on('edge:added', ({ edge }: { edge: Edge }) => {
-      this.logger.debugComponent('DFD', '[Edge Creation] edge:added event', {
+      this.logger.debugComponent('X6Graph', 'edge:added event', {
         edgeId: edge.id,
         sourceId: edge.getSourceCellId(),
         targetId: edge.getTargetCellId(),
@@ -1169,7 +1169,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Context menu events
     this._graph.on('cell:contextmenu', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
       e.preventDefault();
-      this.logger.debugComponent('DFD', 'Cell context menu triggered', { cellId: cell.id });
+      this.logger.debugComponent('X6Graph', 'Cell context menu triggered', { cellId: cell.id });
 
       // Emit context menu event for the DFD component to handle
       this._cellContextMenu$.next({
@@ -1181,7 +1181,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Double-click events for label editing
     this._graph.on('cell:dblclick', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
-      this.logger.debugComponent('DFD', 'Cell double-click triggered', { cellId: cell.id });
+      this.logger.debugComponent('X6Graph', 'Cell double-click triggered', { cellId: cell.id });
 
       // Check if the double-click is on a tool element (like arrowhead)
       const target = e.target as HTMLElement;
@@ -1245,14 +1245,14 @@ export class X6GraphAdapter implements IGraphAdapter {
     });
 
     if (edgeRules.length > 0) {
-      this.logger.debugComponent('DFD', '[Edge Debug] CSS rules affecting edges:', edgeRules);
+      this.logger.debugComponent('X6Graph', 'CSS rules affecting edges:', edgeRules);
     }
 
     // Also check inline styles on the graph container
     const graphContainer = this._graph.container;
     const svgElement = graphContainer.querySelector('svg');
     if (svgElement) {
-      this.logger.debugComponent('DFD', '[Edge Debug] SVG element styles:', {
+      this.logger.debugComponent('X6Graph', 'SVG element styles:', {
         style: svgElement.getAttribute('style'),
         className: svgElement.getAttribute('class'),
       });
@@ -1514,7 +1514,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Use X6's native coordinate transformation methods
     const cellView = this._graph.findViewByCell(cell);
     if (!cellView) {
-      this.logger.debugComponent('DFD', 'Could not find cell view for editor', { cellId: cell.id });
+      this.logger.debugComponent('X6Graph', 'Could not find cell view for editor', { cellId: cell.id });
       return;
     }
 
@@ -1557,7 +1557,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       const newText = textarea.value.trim();
       if (newText !== this.getCellLabel(cell)) {
         this.setCellLabel(cell, newText);
-        this.logger.debugComponent('DFD', 'Label updated via custom editor', {
+        this.logger.debugComponent('X6Graph', 'Label updated via custom editor', {
           cellId: cell.id,
           newText,
         });
@@ -1566,7 +1566,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     };
 
     const cancelEdit = (): void => {
-      this.logger.debugComponent('DFD', 'Label edit canceled', { cellId: cell.id });
+      this.logger.debugComponent('X6Graph', 'Label edit canceled', { cellId: cell.id });
       this._removeExistingEditor();
     };
 
@@ -1596,7 +1596,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Store reference for cleanup
     this._currentEditor = textarea;
 
-    this.logger.debugComponent('DFD', 'Custom label editor created and focused', {
+    this.logger.debugComponent('X6Graph', 'Custom label editor created and focused', {
       cellId: cell.id,
       editorPosition: { x: editorX, y: editorY },
     });
@@ -1722,9 +1722,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Only emit and log if the state has actually changed
     if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
       this._historyChanged$.next({ canUndo, canRedo });
-      this.logger.debugComponent('DFD', 'History state changed', { canUndo, canRedo });
+      this.logger.debugComponent('X6Graph', 'History state changed', { canUndo, canRedo });
     } else {
-      this.logger.debugComponent('DFD', 'History state changed', { canUndo, canRedo });
+      this.logger.debugComponent('X6Graph', 'History state changed', { canUndo, canRedo });
 
       // Update previous state tracking
       this._previousCanUndo = canUndo;
@@ -1753,7 +1753,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Completely exclude tools from history
     if (event === 'cell:change:tools') {
-      this.logger.debug('Excluding tools event');
+      this.logger.debugComponent('X6Graph', 'Excluding tools event');
       return false;
     }
 
@@ -1763,13 +1763,13 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Exclude tool changes
       if (args.key === 'tools') {
-        this.logger.debug('Excluding tools key change');
+        this.logger.debugComponent('X6Graph', 'Excluding tools key change');
         return false;
       }
 
       // Exclude zIndex changes (usually for visual layering)
       if (args.key === 'zIndex') {
-        this.logger.debug('Excluding zIndex change');
+        this.logger.debugComponent('X6Graph', 'Excluding zIndex change');
         return false;
       }
 
@@ -1777,20 +1777,20 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (args.key === 'attrs' && args.current && args.previous) {
         // Instead of checking all current attributes, check what actually changed
         const actualChanges = this._findActualAttributeChanges(args.current, args.previous);
-        this.logger.debug('Actual attribute changes detected:', actualChanges);
+        this.logger.debugComponent('X6Graph', 'Actual attribute changes detected:', actualChanges);
 
         // Check if all actual changes are visual-only
         const isOnlyVisualAttributes = actualChanges.every(changePath => {
           const isExcluded = this._historyCoordinator.shouldExcludeAttribute(changePath);
-          this.logger.debug(`Checking ${changePath}: excluded=${isExcluded}`);
+          this.logger.debugComponent('X6Graph', `Checking ${changePath}: excluded=${isExcluded}`);
           return isExcluded;
         });
 
         if (isOnlyVisualAttributes) {
-          this.logger.debug('Excluding visual-only attribute changes');
+          this.logger.debugComponent('X6Graph', 'Excluding visual-only attribute changes');
           return false; // Don't add to history
         }
-        this.logger.debug('Including attribute changes - not all visual');
+        this.logger.debugComponent('X6Graph', 'Including attribute changes - not all visual');
       }
 
       // Handle port changes - check if they're only visibility changes
@@ -1803,23 +1803,23 @@ export class X6GraphAdapter implements IGraphAdapter {
           includeToolChanges: false
         });
         
-        this.logger.debug(`Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`);
+        this.logger.debugComponent('X6Graph', `Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`);
         
         if (isPortVisibilityOnly) {
-          this.logger.debug('Excluding port visibility change');
+          this.logger.debugComponent('X6Graph', 'Excluding port visibility change');
           return false; // Don't add to history
         }
-        this.logger.debug('Including port change - not visibility only');
+        this.logger.debugComponent('X6Graph', 'Including port change - not visibility only');
       }
 
       // For other cell:change:* events, allow them unless they're specifically excluded
-      this.logger.debug('Including cell:change:* event with key:', args.key);
+      this.logger.debugComponent('X6Graph', 'Including cell:change:* event with key:', args.key);
       return true;
     }
 
 
     // Allow all other changes (position, size, labels, structure)
-    this.logger.debug('Including other event type:', event);
+    this.logger.debugComponent('X6Graph', 'Including other event type:', event);
     return true;
   }
 

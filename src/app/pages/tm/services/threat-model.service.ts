@@ -44,7 +44,7 @@ export class ThreatModelService implements OnDestroy {
     // Subscribe to the mock data toggle
     this._subscription = this.mockDataService.useMockData$.subscribe(useMock => {
       this._useMockData = useMock;
-      this.logger.debug(`ThreatModelService using mock data: ${useMock}`, {
+      this.logger.debugComponent('ThreatModelService', `ThreatModelService using mock data: ${useMock}`, {
         useMock, 
         threatModelsCount: useMock ? this.mockDataService.getMockThreatModels().length : 0
       });
@@ -52,13 +52,13 @@ export class ThreatModelService implements OnDestroy {
       // Initialize threat models based on the mock data setting
       if (useMock) {
         this._threatModels = [...this.mockDataService.getMockThreatModels()];
-        this.logger.debug('ThreatModelService loaded mock threat models', { 
+        this.logger.debugComponent('ThreatModelService', 'ThreatModelService loaded mock threat models', { 
           count: this._threatModels.length,
           models: this._threatModels.map(tm => ({ id: tm.id, name: tm.name }))
         });
       } else {
         this._threatModels = []; // Will be populated from API when needed
-        this.logger.debug('ThreatModelService using API mode (empty models)');
+        this.logger.debugComponent('ThreatModelService', 'ThreatModelService using API mode (empty models)');
       }
     });
   }
@@ -67,19 +67,19 @@ export class ThreatModelService implements OnDestroy {
    * Get all threat models
    */
   getThreatModels(): Observable<ThreatModel[]> {
-    this.logger.debug('ThreatModelService.getThreatModels called', { 
+    this.logger.debugComponent('ThreatModelService', 'ThreatModelService.getThreatModels called', { 
       useMockData: this._useMockData,
       threatModelsCount: this._threatModels.length,
       models: this._threatModels.map(tm => ({ id: tm.id, name: tm.name }))
     });
     
     if (this._useMockData) {
-      this.logger.debug('Returning mock threat models');
+      this.logger.debugComponent('ThreatModelService', 'Returning mock threat models');
       return of(this._threatModels);
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug('Fetching threat models from API');
+    this.logger.debugComponent('ThreatModelService', 'Fetching threat models from API');
     return this.http.get<ThreatModel[]>('/api/threat-models').pipe(
       catchError(error => {
         this.logger.error('Error fetching threat models', error);
@@ -93,13 +93,13 @@ export class ThreatModelService implements OnDestroy {
    */
   getThreatModelById(id: string): Observable<ThreatModel | undefined> {
     if (this._useMockData) {
-      this.logger.debug(`Returning mock threat model with ID: ${id}`);
+      this.logger.debugComponent('ThreatModelService', `Returning mock threat model with ID: ${id}`);
       const threatModel = this._threatModels.find(tm => tm.id === id);
       return of(threatModel);
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug(`Fetching threat model with ID: ${id} from API`);
+    this.logger.debugComponent('ThreatModelService', `Fetching threat model with ID: ${id} from API`);
     return this.http.get<ThreatModel>(`/api/threat-models/${id}`).pipe(
       catchError(error => {
         this.logger.error(`Error fetching threat model with ID: ${id}`, error);
@@ -113,12 +113,12 @@ export class ThreatModelService implements OnDestroy {
    */
   getDiagramsForThreatModel(threatModelId: string): Observable<Diagram[]> {
     if (this._useMockData) {
-      this.logger.debug(`Returning mock diagrams for threat model with ID: ${threatModelId}`);
+      this.logger.debugComponent('ThreatModelService', `Returning mock diagrams for threat model with ID: ${threatModelId}`);
       return of(this.mockDataService.getMockDiagramsForThreatModel(threatModelId));
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug(`Fetching diagrams for threat model with ID: ${threatModelId} from API`);
+    this.logger.debugComponent('ThreatModelService', `Fetching diagrams for threat model with ID: ${threatModelId} from API`);
     return this.http.get<Diagram[]>(`/api/threat-models/${threatModelId}/diagrams`).pipe(
       catchError(error => {
         this.logger.error(
@@ -135,12 +135,12 @@ export class ThreatModelService implements OnDestroy {
    */
   getDiagramById(threatModelId: string, diagramId: string): Observable<Diagram | undefined> {
     if (this._useMockData) {
-      this.logger.debug(`Returning mock diagram with ID: ${diagramId}`);
+      this.logger.debugComponent('ThreatModelService', `Returning mock diagram with ID: ${diagramId}`);
       return of(this.mockDataService.getMockDiagramById(diagramId));
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug(`Fetching diagram with ID: ${diagramId} from API`);
+    this.logger.debugComponent('ThreatModelService', `Fetching diagram with ID: ${diagramId} from API`);
     return this.http.get<Diagram>(`/api/threat-models/${threatModelId}/diagrams/${diagramId}`).pipe(
       catchError(error => {
         this.logger.error(`Error fetching diagram with ID: ${diagramId}`, error);
@@ -159,7 +159,7 @@ export class ThreatModelService implements OnDestroy {
     issueUrl?: string,
   ): Observable<ThreatModel> {
     if (this._useMockData) {
-      this.logger.debug('Creating mock threat model');
+      this.logger.debugComponent('ThreatModelService', 'Creating mock threat model');
 
       const now = new Date().toISOString();
       const currentUser = 'user@example.com'; // Would come from auth service in real implementation
@@ -190,7 +190,7 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug('Creating threat model via API');
+    this.logger.debugComponent('ThreatModelService', 'Creating threat model via API');
     const body = {
       name,
       description,
@@ -228,7 +228,7 @@ export class ThreatModelService implements OnDestroy {
       // Add to local mock data
       this._threatModels.push(importedModel);
       
-      this.logger.debug('Imported threat model to mock data', { 
+      this.logger.debugComponent('ThreatModelService', 'Imported threat model to mock data', { 
         newId: importedModel.id, 
         name: importedModel.name,
         totalCount: this._threatModels.length 
@@ -237,7 +237,7 @@ export class ThreatModelService implements OnDestroy {
       return of(importedModel);
     } else {
       // For API mode, send the data to the backend
-      this.logger.debug('Sending threat model to API for import');
+      this.logger.debugComponent('ThreatModelService', 'Sending threat model to API for import');
       
       return this.http.post<ThreatModel>('/api/threat-models/import', data).pipe(
         catchError(error => {
@@ -253,7 +253,7 @@ export class ThreatModelService implements OnDestroy {
    */
   updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
     if (this._useMockData) {
-      this.logger.debug(`Updating mock threat model with ID: ${threatModel.id}`);
+      this.logger.debugComponent('ThreatModelService', `Updating mock threat model with ID: ${threatModel.id}`);
 
       const index = this._threatModels.findIndex(tm => tm.id === threatModel.id);
       if (index !== -1) {
@@ -266,7 +266,7 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug(`Updating threat model with ID: ${threatModel.id} via API`);
+    this.logger.debugComponent('ThreatModelService', `Updating threat model with ID: ${threatModel.id} via API`);
     return this.http.put<ThreatModel>(`/api/threat-models/${threatModel.id}`, threatModel).pipe(
       catchError(error => {
         this.logger.error(`Error updating threat model with ID: ${threatModel.id}`, error);
@@ -280,7 +280,7 @@ export class ThreatModelService implements OnDestroy {
    */
   deleteThreatModel(id: string): Observable<boolean> {
     if (this._useMockData) {
-      this.logger.debug(`Deleting mock threat model with ID: ${id}`);
+      this.logger.debugComponent('ThreatModelService', `Deleting mock threat model with ID: ${id}`);
 
       const initialLength = this._threatModels.length;
       this._threatModels = this._threatModels.filter(tm => tm.id !== id);
@@ -288,7 +288,7 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // In a real implementation, this would call the API
-    this.logger.debug(`Deleting threat model with ID: ${id} via API`);
+    this.logger.debugComponent('ThreatModelService', `Deleting threat model with ID: ${id} via API`);
     return this.http.delete<boolean>(`/api/threat-models/${id}`).pipe(
       catchError(error => {
         this.logger.error(`Error deleting threat model with ID: ${id}`, error);

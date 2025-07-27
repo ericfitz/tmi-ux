@@ -16,7 +16,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
     take(1),
     map(userProfile => {
       if (!userProfile) {
-        logger.debug('User profile not found, redirecting to login');
+        logger.debugComponent('RoleGuard', 'User profile not found, redirecting to login');
         void router.navigate(['/login'], {
           queryParams: { returnUrl: state.url, reason: 'no_profile' },
         });
@@ -26,7 +26,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
       // For now, we'll assume all authenticated users have all roles
       // In a real implementation, we would check userProfile.roles against requiredRole
       if (authService.hasRole(requiredRole)) {
-        logger.debug(`User has required role: ${requiredRole}, allowing access`);
+        logger.debugComponent('RoleGuard', `User has required role: ${requiredRole}, allowing access`);
         return true;
       } else {
         logger.warn(

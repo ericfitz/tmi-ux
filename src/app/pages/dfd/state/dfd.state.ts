@@ -118,7 +118,7 @@ export class DfdStateStore {
     this._state.next(newState);
 
     if (source) {
-      this.logger.debug(`State updated from ${source}`, {
+      this.logger.debugComponent('DfdState', `State updated from ${source}`, {
         update,
         currentState: this.getLogSafeState(currentState),
         newState: this.getLogSafeState(newState),

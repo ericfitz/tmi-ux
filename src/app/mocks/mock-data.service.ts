@@ -57,7 +57,7 @@ export class MockDataService implements OnDestroy {
     private logger: LoggerService,
     private http: HttpClient
   ) {
-    this.logger.debug('MockDataService initialized', {
+    this.logger.debugComponent('MockData', 'MockDataService initialized', {
       initialMockState: this.getInitialMockState(),
       localStorage: localStorage.getItem('useMockData')
     });
@@ -78,7 +78,7 @@ export class MockDataService implements OnDestroy {
   toggleMockData(useMock: boolean): void {
     this._useMockData.next(useMock);
     localStorage.setItem('useMockData', String(useMock));
-    this.logger.debug(`Mock data ${useMock ? 'enabled' : 'disabled'}`, { useMock });
+    this.logger.debugComponent('MockData', `Mock data ${useMock ? 'enabled' : 'disabled'}`, { useMock });
   }
 
   /**
@@ -113,7 +113,7 @@ export class MockDataService implements OnDestroy {
       
       this._dataLoaded = true;
       
-      this.logger.debug('Mock data loaded successfully', {
+      this.logger.debugComponent('MockData', 'Mock data loaded successfully', {
         threatModelCount: this._mockThreatModels.length,
         diagramCount: this._mockDiagramsMap.size
       });
@@ -233,7 +233,7 @@ export class MockDataService implements OnDestroy {
       }
     });
 
-    this.logger.debug(`Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`);
+    this.logger.debugComponent('MockData', `Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`);
   }
 
   /**

@@ -54,7 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.info('Application initialized');
-    this.logger.debug('Environment configuration', environment);
+    this.logger.debugComponent('App', 'Environment configuration', environment);
 
     // Log application startup with environment info
     this.logger.info(`Running in ${environment.production ? 'production' : 'development'} mode`);
@@ -63,13 +63,13 @@ export class AppComponent implements OnInit, OnDestroy {
     // Subscribe to authentication state
     this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
-      this.logger.debug(`Authentication status: ${isAuthenticated}`);
+      this.logger.debugComponent('App', `Authentication status: ${isAuthenticated}`);
     });
 
     // Subscribe to user profile changes
     this.userProfileSubscription = this.authService.userProfile$.subscribe(userProfile => {
       this.userProfile = userProfile;
-      this.logger.debug('User profile updated:', userProfile);
+      this.logger.debugComponent('App', 'User profile updated:', userProfile);
     });
   }
 

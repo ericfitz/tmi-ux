@@ -615,7 +615,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         this.translocoService.load(currentLang).subscribe({
           next: () => {
             const retryTranslation = this.translocoService.translate(key);
-            this.logger.debug(`Retry translation for ${key}: ${retryTranslation}`);
+            this.logger.debugComponent('ThreatEditorDialog', `Retry translation for ${key}: ${retryTranslation}`);
           },
           error: (err: unknown) => {
             const errorMessage = err instanceof Error ? err.message : String(err);

@@ -184,7 +184,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             count: frameworks.length,
             frameworks: frameworks.map(f => f.name),
           });
-          this.logger.debug('Framework details loaded', {
+          this.logger.debugComponent('TmEdit', 'Framework details loaded', {
             frameworks: frameworks.map(f => ({
               name: f.name,
               threatTypeCount: f.threatTypes.length,
@@ -1307,7 +1307,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const filename = `${sanitizedName}-threat-model.json`;
     
-    this.logger.debug('Generated threat model filename', { 
+    this.logger.debugComponent('TmEdit', 'Generated threat model filename', { 
       originalName: threatModelName,
       sanitizedName,
       filename 
@@ -1323,7 +1323,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Check if File System Access API is supported
     if ('showSaveFilePicker' in window) {
       try {
-        this.logger.debug('Using File System Access API for threat model save');
+        this.logger.debugComponent('TmEdit', 'Using File System Access API for threat model save');
         const fileHandle = await window.showSaveFilePicker({
           suggestedName: filename,
           types: [{
@@ -1341,7 +1341,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       } catch (error) {
         // Handle File System Access API errors
         if (error instanceof DOMException && error.name === 'AbortError') {
-          this.logger.debug('Threat model save cancelled by user');
+          this.logger.debugComponent('TmEdit', 'Threat model save cancelled by user');
           return; // User cancelled, exit without fallback
         } else {
           this.logger.warn('File System Access API failed, falling back to download method', error);
@@ -1349,7 +1349,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      this.logger.debug('File System Access API not supported, using fallback download method');
+      this.logger.debugComponent('TmEdit', 'File System Access API not supported, using fallback download method');
     }
 
     // Fallback method for unsupported browsers or API failures
