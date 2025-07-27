@@ -21,7 +21,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { LoggerService } from '../core/services/logger.service';
 
 import { ThreatModel } from '../pages/tm/models/threat-model.model';
@@ -49,6 +49,9 @@ export class MockDataService implements OnDestroy {
 
   // Map of all diagrams by ID for quick lookup
   private _mockDiagramsMap = new Map<string, Diagram>();
+  
+  // Mapping of threat model UUID to mock file name
+  private _uuidToFileNameMap = new Map<string, string>();
 
   // Loading state
   private _dataLoaded = false;
@@ -77,6 +80,24 @@ export class MockDataService implements OnDestroy {
   }
 
   /**
+   * Check if a threat model ID corresponds to one of the mock data files
+   * @param threatModelId The threat model ID to check
+   * @returns true if this is a mock threat model
+   */
+  isMockThreatModel(threatModelId: string): boolean {
+    return this._uuidToFileNameMap.has(threatModelId);
+  }
+
+  /**
+   * Get the mock data file name for a given threat model ID
+   * @param threatModelId The threat model ID
+   * @returns The corresponding mock data file name, or null if not found
+   */
+  getMockDataFileName(threatModelId: string): string | null {
+    return this._uuidToFileNameMap.get(threatModelId) || null;
+  }
+
+  /**
    * Toggle the use of mock data
    * @param useMock Boolean indicating whether to use mock data
    */
@@ -101,17 +122,30 @@ export class MockDataService implements OnDestroy {
     ];
 
     forkJoin(
-      mockDataUrls.map(url => 
+      mockDataUrls.map((url, index) => 
         this.http.get<ThreatModel>(url).pipe(
           catchError(error => {
             this.logger.error(`Failed to load mock data from ${url}`, error);
             return of(null);
           })
+        ).pipe(
+          map(threatModel => ({
+            threatModel,
+            fileName: url.split('/').pop() || `threat-model-${index + 1}.json`
+          }))
         )
       )
-    ).subscribe(threatModels => {
-      // Filter out null values from failed loads
-      this._mockThreatModels = threatModels.filter((tm): tm is ThreatModel => tm !== null);
+    ).subscribe(results => {
+      // Filter out null values from failed loads and build UUID mapping
+      this._mockThreatModels = [];
+      this._uuidToFileNameMap.clear();
+      
+      results.forEach(result => {
+        if (result.threatModel) {
+          this._mockThreatModels.push(result.threatModel);
+          this._uuidToFileNameMap.set(result.threatModel.id, result.fileName);
+        }
+      });
       
       // Initialize diagrams map
       this.initDiagramsMap();

@@ -1498,38 +1498,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     // Check if this is one of the mock threat models
-    return this.isMockThreatModel(this.threatModel.id);
-  }
-
-  /**
-   * Check if a threat model ID corresponds to one of the mock data files
-   * @param threatModelId The threat model ID to check
-   * @returns true if this is a mock threat model
-   */
-  private isMockThreatModel(threatModelId: string): boolean {
-    // The mock data service loads threat models with these specific IDs
-    const mockThreatModelIds = [
-      '550e8400-e29b-41d4-a716-446655440000', // threat-model-1.json
-      '550e8400-e29b-41d4-a716-446655440001', // threat-model-2.json  
-      '550e8400-e29b-41d4-a716-446655440002'  // threat-model-3.json
-    ];
-    
-    return mockThreatModelIds.includes(threatModelId);
-  }
-
-  /**
-   * Get the mock data file name for a given threat model ID
-   * @param threatModelId The threat model ID
-   * @returns The corresponding mock data file name
-   */
-  private getMockDataFileName(threatModelId: string): string {
-    const idToFileMap: Record<string, string> = {
-      '550e8400-e29b-41d4-a716-446655440000': 'threat-model-1.json',
-      '550e8400-e29b-41d4-a716-446655440001': 'threat-model-2.json',
-      '550e8400-e29b-41d4-a716-446655440002': 'threat-model-3.json'
-    };
-    
-    return idToFileMap[threatModelId] || 'unknown-threat-model.json';
+    return this.mockDataService.isMockThreatModel(this.threatModel.id);
   }
 
   /**
@@ -1556,8 +1525,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
       // Apply form changes to the threat model before saving
       this.applyFormChangesToThreatModel();
 
-      // Get the mock data file name
-      const mockFileName = this.getMockDataFileName(this.threatModel.id);
+      // Get the mock data file name from the service
+      const mockFileName = this.mockDataService.getMockDataFileName(this.threatModel.id);
+      
+      if (!mockFileName) {
+        this.logger.warn('Cannot determine mock data file name for threat model', {
+          threatModelId: this.threatModel.id
+        });
+        return;
+      }
       
       // Serialize the complete threat model as JSON with proper formatting
       const jsonContent = JSON.stringify(this.threatModel, null, 2);
@@ -1577,14 +1553,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
       // Clean up the object URL
       URL.revokeObjectURL(url);
 
-      this.logger.info('Mock data file created for download', { 
+      this.logger.debugComponent('TmEdit', 'Mock data file created for download', { 
         fileName: mockFileName,
         instruction: `Replace src/assets/mock-data/${mockFileName} with the downloaded file`
       });
 
       // Show success message to user in console (development only)
-      this.logger.info(`Mock data file created: ${mockFileName}`);
-      this.logger.info(`Replace src/assets/mock-data/${mockFileName} with the downloaded file to update mock data`);
+      this.logger.debugComponent('TmEdit', `Mock data file created: ${mockFileName}`);
+      this.logger.debugComponent('TmEdit', `Replace src/assets/mock-data/${mockFileName} with the downloaded file to update mock data`);
       
     } catch (error) {
       this.logger.error('Error saving threat model to mock data file', error);
