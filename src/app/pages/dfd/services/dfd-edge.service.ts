@@ -65,9 +65,9 @@ export class DfdEdgeService {
    * DFD connection rules - which shapes can connect to which other shapes
    */
   private readonly connectionRules: Record<string, string[]> = {
-    'dfd-process': ['dfd-datastore', 'dfd-external-entity', 'dfd-process'],
-    'dfd-datastore': ['dfd-process'],
-    'dfd-external-entity': ['dfd-process'],
+    'process': ['store', 'actor', 'process'],
+    'store': ['process'],
+    'actor': ['process'],
   };
 
   constructor(
@@ -310,8 +310,8 @@ export class DfdEdgeService {
         edgeId: createdEdge.id,
         sourceNodeId,
         targetNodeId,
-        sourcePortId: edgeInfo.sourcePortId,
-        targetPortId: edgeInfo.targetPortId,
+        sourcePortId: edgeInfo.source.port,
+        targetPortId: edgeInfo.target.port,
         label,
       });
 
@@ -657,7 +657,7 @@ export class DfdEdgeService {
     }
 
     // Validate the shape matches expected X6 shape names
-    const expectedX6Shapes = ['dfd-process', 'dfd-datastore', 'dfd-external-entity', 'security-boundary', 'text-box'];
+    const expectedX6Shapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     if (!expectedX6Shapes.includes(nodeShape)) {
       this.logger.warn('X6 node created with unexpected shape', {
         nodeId,

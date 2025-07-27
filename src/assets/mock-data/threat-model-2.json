@@ -281,6 +281,186 @@
               "value": "vpc"
             }
           ]
+        },
+        {
+          "id": "edge-1",
+          "shape": "edge",
+          "source": {
+            "cell": "internet-actor-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "loadbalancer-process-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "HTTP requests",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "web_requests"
+            }
+          ]
+        },
+        {
+          "id": "edge-2",
+          "shape": "edge",
+          "source": {
+            "cell": "loadbalancer-process-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "webserver-process-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "load balanced requests",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "balanced_requests"
+            }
+          ]
+        },
+        {
+          "id": "edge-3",
+          "shape": "edge",
+          "source": {
+            "cell": "loadbalancer-process-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "webserver-process-2",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [
+            {
+              "x": 350,
+              "y": 280
+            }
+          ],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "load balanced requests",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "balanced_requests"
+            }
+          ]
+        },
+        {
+          "id": "edge-4",
+          "shape": "edge",
+          "source": {
+            "cell": "webserver-process-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "database-store-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "database queries",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "db_queries"
+            }
+          ]
+        },
+        {
+          "id": "edge-5",
+          "shape": "edge",
+          "source": {
+            "cell": "webserver-process-2",
+            "port": "right"
+          },
+          "target": {
+            "cell": "database-store-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [
+            {
+              "x": 580,
+              "y": 280
+            }
+          ],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "database queries",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "db_queries"
+            }
+          ]
         }
       ]
     },

@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "TMI (Threat Modeling Improved) API",
-    "description": "A RESTful API for collaborative threat modeling.",
+    "description": "A RESTful API for collaborative threat modeling with full X6 graph library compatibility. This API provides schemas that align with AntV X6 cell object models for seamless integration with modern diagramming libraries.",
     "version": "1.0.0"
   },
   "externalDocs": {
@@ -424,7 +424,7 @@
       },
       "Cell": {
         "type": "object",
-        "description": "Base schema for all diagram cells (nodes and edges) following X6 structure",
+        "description": "Base schema for all diagram cells (nodes and edges) fully compatible with AntV X6 graph library. This schema includes all X6 native properties plus convenience properties for easier integration. X6-specific properties like markup, tools, router, and connector are supported for advanced customization.",
         "discriminator": {
           "propertyName": "shape"
         },
@@ -454,11 +454,35 @@
             "default": true
           },
           "data": {
+            "type": "object",
+            "description": "Flexible data storage compatible with X6, with reserved metadata namespace",
+            "properties": {
+              "_metadata": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "description": "Reserved namespace for structured business metadata"
+              }
+            },
+            "additionalProperties": true,
+            "default": {
+              "_metadata": []
+            }
+          },
+          "markup": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Metadata"
+              "$ref": "#/components/schemas/MarkupElement"
             },
-            "description": "Application-specific metadata stored with the cell"
+            "description": "SVG/HTML markup definition for custom shape rendering in X6"
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CellTool"
+            },
+            "description": "Interactive tools attached to the cell for user interaction"
           }
         }
       },
@@ -469,7 +493,7 @@
           },
           {
             "type": "object",
-            "description": "A diagram node representing an entity, process, store, or boundary",
+            "description": "A diagram node representing an entity, process, store, or boundary. Fully compatible with X6 Node objects and supports both X6 native properties (markup, tools) and convenience properties (label, position, size, style) for easier integration.",
             "required": ["x", "y", "width", "height"],
             "properties": {
               "shape": {
@@ -514,6 +538,74 @@
                 "description": "ID of the parent cell for nested/grouped nodes (UUID)",
                 "nullable": true,
                 "maxLength": 36
+              },
+              "label": {
+                "type": "string",
+                "description": "Convenience property: Simple text label that automatically creates appropriate attrs.text.text structure",
+                "maxLength": 256
+              },
+              "position": {
+                "type": "object",
+                "description": "Convenience property: Position as a single object (alternative to separate x/y properties)",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "X coordinate"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "Y coordinate"
+                  }
+                },
+                "required": ["x", "y"]
+              },
+              "size": {
+                "type": "object",
+                "description": "Convenience property: Size as a single object (alternative to separate width/height properties)",
+                "properties": {
+                  "width": {
+                    "type": "number",
+                    "description": "Width in pixels",
+                    "minimum": 40
+                  },
+                  "height": {
+                    "type": "number",
+                    "description": "Height in pixels",
+                    "minimum": 30
+                  }
+                },
+                "required": ["width", "height"]
+              },
+              "style": {
+                "type": "object",
+                "description": "Convenience property: Simplified styling options that automatically create appropriate attrs structure",
+                "properties": {
+                  "fill": {
+                    "type": "string",
+                    "description": "Background fill color",
+                    "maxLength": 32
+                  },
+                  "stroke": {
+                    "type": "string",
+                    "description": "Border/outline color",
+                    "maxLength": 32
+                  },
+                  "strokeWidth": {
+                    "type": "number",
+                    "description": "Border/outline width in pixels",
+                    "minimum": 0
+                  },
+                  "fontSize": {
+                    "type": "number",
+                    "description": "Text font size in pixels",
+                    "minimum": 1
+                  },
+                  "fontColor": {
+                    "type": "string",
+                    "description": "Text color",
+                    "maxLength": 32
+                  }
+                }
               }
             },
             "example": {
@@ -547,7 +639,38 @@
                   { "id": "port_out_1", "group": "out" }
                 ]
               },
-              "data": []
+              "data": {
+                "_metadata": [
+                  { "key": "category", "value": "business-process" },
+                  { "key": "owner", "value": "engineering-team" }
+                ],
+                "customValidation": {
+                  "rules": ["required-input", "sanitize-output"],
+                  "level": "strict"
+                }
+              },
+              "markup": [
+                {
+                  "tagName": "rect",
+                  "selector": "body",
+                  "attrs": {
+                    "rx": 5,
+                    "ry": 5
+                  }
+                },
+                {
+                  "tagName": "text",
+                  "selector": "label"
+                }
+              ],
+              "tools": [
+                {
+                  "name": "boundary",
+                  "args": {
+                    "padding": 5
+                  }
+                }
+              ]
             }
           }
         ]
@@ -559,7 +682,7 @@
           },
           {
             "type": "object",
-            "description": "A diagram edge representing a connection or data flow between nodes",
+            "description": "A diagram edge representing a connection or data flow between nodes. Fully compatible with X6 Edge objects and supports X6 routing algorithms (manhattan, orth, oneSide, metro, er), connector styles (normal, rounded, smooth, jumpover), custom markup, tools, and convenience properties (label, style) for easier integration.",
             "required": ["source", "target"],
             "properties": {
               "shape": {
@@ -592,6 +715,54 @@
                   "$ref": "#/components/schemas/Point"
                 },
                 "description": "Intermediate waypoints for edge routing"
+              },
+              "router": {
+                "$ref": "#/components/schemas/EdgeRouter",
+                "description": "Edge routing algorithm configuration for path calculation"
+              },
+              "connector": {
+                "$ref": "#/components/schemas/EdgeConnector",
+                "description": "Edge connector style configuration for visual appearance"
+              },
+              "defaultLabel": {
+                "$ref": "#/components/schemas/EdgeLabel",
+                "description": "Default label configuration applied to edges without explicit labels"
+              },
+              "label": {
+                "type": "string",
+                "description": "Convenience property: Simple text label that automatically creates appropriate attrs.text.text structure",
+                "maxLength": 256
+              },
+              "style": {
+                "type": "object",
+                "description": "Convenience property: Simplified styling options that automatically create appropriate attrs structure",
+                "properties": {
+                  "stroke": {
+                    "type": "string",
+                    "description": "Line color",
+                    "maxLength": 32
+                  },
+                  "strokeWidth": {
+                    "type": "number",
+                    "description": "Line width in pixels",
+                    "minimum": 0
+                  },
+                  "strokeDasharray": {
+                    "type": "string",
+                    "description": "Line dash pattern (e.g., '5 5' for dashed)",
+                    "maxLength": 64
+                  },
+                  "fontSize": {
+                    "type": "number",
+                    "description": "Label font size in pixels",
+                    "minimum": 1
+                  },
+                  "fontColor": {
+                    "type": "string",
+                    "description": "Label text color",
+                    "maxLength": 32
+                  }
+                }
               }
             },
             "example": {
@@ -629,7 +800,29 @@
                 }
               ],
               "vertices": [],
-              "data": []
+              "data": {
+                "_metadata": [
+                  { "key": "flow-type", "value": "data" },
+                  { "key": "sensitivity", "value": "public" }
+                ],
+                "routingHints": {
+                  "preferredPath": "shortest",
+                  "avoidOverlap": true
+                }
+              },
+              "router": {
+                "name": "manhattan",
+                "args": {
+                  "step": 10,
+                  "padding": 20
+                }
+              },
+              "connector": {
+                "name": "rounded",
+                "args": {
+                  "radius": 5
+                }
+              }
             }
           }
         ]
@@ -1430,6 +1623,166 @@
           }
         },
         "required": ["data", "pagination"]
+      },
+      "MarkupElement": {
+        "type": "object",
+        "description": "SVG/HTML markup element for custom shape definitions in X6",
+        "required": ["tagName"],
+        "properties": {
+          "tagName": {
+            "type": "string",
+            "description": "SVG or HTML tag name (e.g., 'rect', 'circle', 'path', 'text')",
+            "example": "rect"
+          },
+          "selector": {
+            "type": "string",
+            "description": "CSS selector for targeting this element in styling",
+            "example": "body"
+          },
+          "attrs": {
+            "type": "object",
+            "description": "Element attributes and styling properties",
+            "additionalProperties": true,
+            "example": {
+              "fill": "#ffffff",
+              "stroke": "#000000",
+              "stroke-width": 2
+            }
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarkupElement"
+            },
+            "description": "Nested child elements"
+          }
+        }
+      },
+      "CellTool": {
+        "type": "object",
+        "description": "Interactive tool configuration for X6 cells",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Tool identifier (e.g., 'boundary', 'button', 'remove')",
+            "example": "button"
+          },
+          "args": {
+            "type": "object",
+            "description": "Tool-specific configuration arguments",
+            "additionalProperties": true,
+            "example": {
+              "x": 10,
+              "y": 10,
+              "markup": "<circle r='5' fill='red'/>"
+            }
+          }
+        }
+      },
+      "EdgeRouter": {
+        "oneOf": [
+          {
+            "type": "string",
+            "enum": ["normal", "orth", "oneSide", "manhattan", "metro", "er"],
+            "description": "Built-in router name"
+          },
+          {
+            "type": "object",
+            "description": "Router with custom configuration",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["normal", "orth", "oneSide", "manhattan", "metro", "er"],
+                "description": "Router algorithm name"
+              },
+              "args": {
+                "type": "object",
+                "description": "Router-specific arguments",
+                "additionalProperties": true,
+                "properties": {
+                  "padding": {
+                    "type": "number",
+                    "description": "Padding around obstacles for routing"
+                  },
+                  "step": {
+                    "type": "number",
+                    "description": "Grid step size for orthogonal routing"
+                  },
+                  "directions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["top", "right", "bottom", "left"]
+                    },
+                    "description": "Allowed routing directions"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "description": "Edge routing algorithm configuration for pathfinding",
+        "example": {
+          "name": "manhattan",
+          "args": {
+            "step": 10,
+            "padding": 20
+          }
+        }
+      },
+      "EdgeConnector": {
+        "oneOf": [
+          {
+            "type": "string",
+            "enum": ["normal", "rounded", "smooth", "jumpover"],
+            "description": "Built-in connector name"
+          },
+          {
+            "type": "object",
+            "description": "Connector with custom configuration",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["normal", "rounded", "smooth", "jumpover"],
+                "description": "Connector style name"
+              },
+              "args": {
+                "type": "object",
+                "description": "Connector-specific arguments",
+                "additionalProperties": true,
+                "properties": {
+                  "radius": {
+                    "type": "number",
+                    "description": "Radius for rounded connectors"
+                  },
+                  "precision": {
+                    "type": "number",
+                    "description": "Precision for smooth connectors"
+                  },
+                  "size": {
+                    "type": "number",
+                    "description": "Jump size for jumpover connectors"
+                  },
+                  "jump": {
+                    "type": "string",
+                    "enum": ["arc", "gap", "cubic"],
+                    "description": "Jump style for jumpover connectors"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "description": "Edge connector style configuration for visual appearance",
+        "example": {
+          "name": "rounded",
+          "args": {
+            "radius": 10
+          }
+        }
       }
     },
     "responses": {

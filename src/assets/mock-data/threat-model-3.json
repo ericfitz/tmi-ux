@@ -387,6 +387,215 @@
               "value": "server"
             }
           ]
+        },
+        {
+          "id": "edge-1",
+          "shape": "edge",
+          "source": {
+            "cell": "mobile-cell-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "mobile-cell-2",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "user interactions",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "user_input"
+            }
+          ]
+        },
+        {
+          "id": "edge-2",
+          "shape": "edge",
+          "source": {
+            "cell": "mobile-cell-2",
+            "port": "bottom"
+          },
+          "target": {
+            "cell": "mobile-cell-3",
+            "port": "top"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "local data",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "local_storage"
+            }
+          ]
+        },
+        {
+          "id": "edge-3",
+          "shape": "edge",
+          "source": {
+            "cell": "mobile-cell-2",
+            "port": "right"
+          },
+          "target": {
+            "cell": "mobile-cell-4",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "API requests",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "api_calls"
+            }
+          ]
+        },
+        {
+          "id": "edge-4",
+          "shape": "edge",
+          "source": {
+            "cell": "mobile-cell-4",
+            "port": "right"
+          },
+          "target": {
+            "cell": "mobile-cell-5",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "auth requests",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "authentication"
+            }
+          ]
+        },
+        {
+          "id": "edge-5",
+          "shape": "edge",
+          "source": {
+            "cell": "mobile-cell-4",
+            "port": "right"
+          },
+          "target": {
+            "cell": "mobile-cell-6",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [
+            {
+              "x": 620,
+              "y": 270
+            }
+          ],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "business requests",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "business_logic"
+            }
+          ]
+        },
+        {
+          "id": "edge-6",
+          "shape": "edge",
+          "source": {
+            "cell": "mobile-cell-6",
+            "port": "right"
+          },
+          "target": {
+            "cell": "mobile-cell-7",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "data queries",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "database_access"
+            }
+          ]
         }
       ]
     }

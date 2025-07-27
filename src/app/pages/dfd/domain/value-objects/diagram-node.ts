@@ -60,14 +60,14 @@ export class DiagramNode {
    * Gets the node label
    */
   get label(): string {
-    return this._data.label;
+    return this._data.attrs?.text?.text || '';
   }
 
   /**
    * Gets the node position
    */
   get position(): Point {
-    return new Point(this._data.position.x, this._data.position.y);
+    return new Point(this._data.x, this._data.y);
   }
 
   /**

@@ -2,6 +2,7 @@ import { Point } from './point';
 import { NodeAttrs, createDefaultNodeAttrs } from './node-attrs';
 import { PortConfiguration, createDefaultPortConfiguration } from './port-configuration';
 import { Metadata } from './metadata';
+import { MarkupElement, CellTool } from './x6-types';
 
 /**
  * Node types supported in the DFD diagram
@@ -26,9 +27,11 @@ export class NodeInfo {
     public readonly visible: boolean = true,
     public readonly attrs: NodeAttrs = createDefaultNodeAttrs('process'),
     public readonly ports: PortConfiguration = createDefaultPortConfiguration('process'),
-    public readonly data: Metadata[] = [],
+    public readonly data: { _metadata: Metadata[]; [key: string]: any } = { _metadata: [] },
     public readonly angle: number = 0,
     public readonly parent?: string | null,
+    public readonly markup?: MarkupElement[],
+    public readonly tools?: CellTool[],
   ) {
     this._validate();
   }
@@ -41,80 +44,108 @@ export class NodeInfo {
   }
 
   /**
-   * Gets the position as a Point object for backward compatibility
+   * Gets the node position as a Point object
    */
   get position(): Point {
     return new Point(this.x, this.y);
   }
 
   /**
-   * Gets the size as an object for backward compatibility
-   */
-  get size(): { width: number; height: number } {
-    return { width: this.width, height: this.height };
-  }
-
-  /**
-   * Gets the label from attrs.text.text for backward compatibility
+   * Gets the node label from attrs
    */
   get label(): string {
-    const textAttr = this.attrs?.text;
-    return textAttr?.text || '';
+    return this.attrs?.text?.text || '';
   }
 
   /**
-   * Creates NodeInfo from a plain object (supports both new and legacy formats)
+   * Gets the structured business metadata array
+   */
+  get metadata(): Metadata[] {
+    return this.data._metadata || [];
+  }
+
+  /**
+   * Gets custom data (excluding reserved metadata namespace)
+   */
+  getCustomData(): Record<string, any> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _metadata: _, ...customData } = this.data;
+    return customData;
+  }
+
+
+  /**
+   * Creates NodeInfo from a plain object
    */
   static fromJSON(data: {
     id: string;
     shape?: NodeType;
-    type?: NodeType;
+    type?: NodeType; // Legacy field
     x?: number;
     y?: number;
-    position?: { x: number; y: number };
+    position?: { x: number; y: number }; // Legacy field
     width?: number;
     height?: number;
-    size?: { width: number; height: number };
-    label?: string;
+    size?: { width: number; height: number }; // Legacy field
+    label?: string; // Legacy field
     attrs?: NodeAttrs;
     ports?: PortConfiguration;
     zIndex?: number;
     visible?: boolean;
     angle?: number;
     parent?: string | null;
-    data?: Metadata[];
-    metadata?: Metadata[] | Record<string, string>;
+    data?: { _metadata: Metadata[]; [key: string]: any };
+    metadata?: Record<string, string>; // Legacy field
+    markup?: MarkupElement[];
+    tools?: CellTool[];
+    style?: {
+      fill?: string;
+      stroke?: string;
+      strokeWidth?: number;
+      fontSize?: number;
+      fontColor?: string;
+    };
   }): NodeInfo {
-    // Handle both new OpenAPI format and legacy format
-    const shape = (data.shape || data.type || 'process');
+    const shape = data.shape || data.type || 'process';
     const x = data.x ?? data.position?.x ?? 0;
     const y = data.y ?? data.position?.y ?? 0;
     const width = data.width ?? data.size?.width ?? 120;
     const height = data.height ?? data.size?.height ?? 60;
     
-    // Handle attrs - if label provided, use it; otherwise use existing attrs or create default
-    let attrs: NodeAttrs;
-    if (data.attrs) {
-      attrs = data.attrs;
-      if (data.label && attrs.text) {
-        attrs = { ...attrs, text: { ...attrs.text, text: data.label } };
-      }
-    } else {
+    // Handle legacy label parameter and style convenience property
+    let attrs = data.attrs;
+    if (!attrs && data.label) {
       attrs = createDefaultNodeAttrs(shape, data.label);
+    } else if (!attrs) {
+      attrs = createDefaultNodeAttrs(shape);
     }
 
-    // Handle ports
+    // Apply style convenience properties if provided
+    if (data.style && attrs) {
+      attrs = {
+        ...attrs,
+        body: {
+          ...attrs.body,
+          ...(data.style.fill && { fill: data.style.fill }),
+          ...(data.style.stroke && { stroke: data.style.stroke }),
+          ...(data.style.strokeWidth !== undefined && { strokeWidth: data.style.strokeWidth }),
+        },
+        text: {
+          ...attrs.text,
+          ...(data.style.fontSize !== undefined && { fontSize: data.style.fontSize }),
+          ...(data.style.fontColor && { fill: data.style.fontColor }),
+        },
+      };
+    }
+    
     const ports = data.ports || createDefaultPortConfiguration(shape);
-
-    // Convert metadata if it's in legacy Record format
-    let metadata: Metadata[] = [];
-    const metadataSource = data.data || data.metadata;
-    if (metadataSource) {
-      if (Array.isArray(metadataSource)) {
-        metadata = metadataSource;
-      } else {
-        metadata = Object.entries(metadataSource).map(([key, value]) => ({ key, value }));
-      }
+    
+    // Handle hybrid data format or legacy metadata
+    let hybridData = data.data || { _metadata: [] };
+    if (!data.data && data.metadata) {
+      // Convert legacy metadata to hybrid format
+      const metadataArray = Object.entries(data.metadata).map(([key, value]) => ({ key, value }));
+      hybridData = { _metadata: metadataArray };
     }
 
     return new NodeInfo(
@@ -124,50 +155,22 @@ export class NodeInfo {
       y,
       width,
       height,
-      data.zIndex ?? 1,
+      data.zIndex ?? NodeInfo.getDefaultZIndex(shape),
       data.visible ?? true,
       attrs,
       ports,
-      metadata,
+      hybridData,
       data.angle ?? 0,
       data.parent,
+      data.markup,
+      data.tools,
     );
   }
 
-  /**
-   * Creates NodeInfo from legacy format for backward compatibility
-   */
-  static fromLegacyJSON(data: {
-    id: string;
-    type: NodeType;
-    label: string;
-    position: { x: number; y: number };
-    width: number;
-    height: number;
-    metadata?: Record<string, string>;
-  }): NodeInfo {
-    const metadataEntries = data.metadata
-      ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
-      : [];
-
-    return new NodeInfo(
-      data.id,
-      data.type,
-      data.position.x,
-      data.position.y,
-      data.width,
-      data.height,
-      1,
-      true,
-      createDefaultNodeAttrs(data.type, data.label),
-      createDefaultPortConfiguration(data.type),
-      metadataEntries,
-    );
-  }
 
   /**
    * Creates a new NodeInfo instance from a plain object.
-   * This is a factory method for creating new instances, similar to fromJSON but for new data.
+   * This is a factory method for creating new instances.
    */
   static create(data: {
     id: string;
@@ -177,8 +180,30 @@ export class NodeInfo {
     width: number;
     height: number;
     metadata?: Record<string, string>;
+    customData?: Record<string, any>;
   }): NodeInfo {
-    return NodeInfo.fromLegacyJSON(data);
+    const metadataEntries = data.metadata
+      ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
+      : [];
+
+    const hybridData = {
+      _metadata: metadataEntries,
+      ...(data.customData || {})
+    };
+
+    return new NodeInfo(
+      data.id,
+      data.type,
+      data.position.x,
+      data.position.y,
+      data.width,
+      data.height,
+      NodeInfo.getDefaultZIndex(data.type),
+      true,
+      createDefaultNodeAttrs(data.type, data.label),
+      createDefaultPortConfiguration(data.type),
+      hybridData,
+    );
   }
 
   /**
@@ -200,11 +225,11 @@ export class NodeInfo {
       position.y,
       defaultDimensions.width,
       defaultDimensions.height,
-      1,
+      NodeInfo.getDefaultZIndex(type),
       true,
       createDefaultNodeAttrs(type, defaultLabel),
       createDefaultPortConfiguration(type),
-      [],
+      { _metadata: [] },
     );
   }
 
@@ -225,6 +250,20 @@ export class NodeInfo {
         return { width: 100, height: 40 };
       default:
         return { width: 120, height: 60 };
+    }
+  }
+
+  /**
+   * Gets default zIndex for a node type
+   */
+  private static getDefaultZIndex(type: NodeType): number {
+    switch (type) {
+      case 'security-boundary':
+        return 1; // Security boundaries stay behind other nodes
+      case 'text-box':
+        return 20; // text-boxes appear above all other shapes
+      default:
+        return 10; // Default z-index for regular nodes (process, store, actor)
     }
   }
 
@@ -314,6 +353,8 @@ export class NodeInfo {
       this.data,
       this.angle,
       this.parent,
+      this.markup,
+      this.tools,
     );
   }
 
@@ -387,13 +428,15 @@ export class NodeInfo {
     let newMetadata: Metadata[];
 
     if (Array.isArray(metadata)) {
-      // Already in correct format
-      newMetadata = [...this.data, ...metadata];
+      newMetadata = metadata;
     } else {
-      // Convert from legacy Record format
-      const additionalEntries = Object.entries(metadata).map(([key, value]) => ({ key, value }));
-      newMetadata = [...this.data, ...additionalEntries];
+      newMetadata = Object.entries(metadata).map(([key, value]) => ({ key, value }));
     }
+
+    const newData = {
+      ...this.data,
+      _metadata: newMetadata
+    };
 
     return new NodeInfo(
       this.id,
@@ -406,9 +449,67 @@ export class NodeInfo {
       this.visible,
       this.attrs,
       this.ports,
-      newMetadata,
+      newData,
       this.angle,
       this.parent,
+      this.markup,
+      this.tools,
+    );
+  }
+
+  /**
+   * Creates a new NodeInfo with updated custom data
+   */
+  withCustomData(key: string, value: any): NodeInfo {
+    const newData = {
+      ...this.data,
+      [key]: value
+    };
+
+    return new NodeInfo(
+      this.id,
+      this.shape,
+      this.x,
+      this.y,
+      this.width,
+      this.height,
+      this.zIndex,
+      this.visible,
+      this.attrs,
+      this.ports,
+      newData,
+      this.angle,
+      this.parent,
+      this.markup,
+      this.tools,
+    );
+  }
+
+  /**
+   * Creates a new NodeInfo with multiple custom data updates
+   */
+  withCustomDataBatch(customData: Record<string, any>): NodeInfo {
+    const newData = {
+      ...this.data,
+      ...customData
+    };
+
+    return new NodeInfo(
+      this.id,
+      this.shape,
+      this.x,
+      this.y,
+      this.width,
+      this.height,
+      this.zIndex,
+      this.visible,
+      this.attrs,
+      this.ports,
+      newData,
+      this.angle,
+      this.parent,
+      this.markup,
+      this.tools,
     );
   }
 
@@ -430,6 +531,8 @@ export class NodeInfo {
       this.data,
       this.angle,
       this.parent,
+      this.markup,
+      this.tools,
     );
   }
 
@@ -451,6 +554,8 @@ export class NodeInfo {
       this.data,
       angle,
       this.parent,
+      this.markup,
+      this.tools,
     );
   }
 
@@ -472,6 +577,8 @@ export class NodeInfo {
       this.data,
       this.angle,
       parent,
+      this.markup,
+      this.tools,
     );
   }
 
@@ -496,7 +603,7 @@ export class NodeInfo {
    * Gets metadata as Record for backward compatibility
    */
   getMetadataAsRecord(): Record<string, string> {
-    return this.data.reduce(
+    return this.metadata.reduce(
       (acc, entry) => {
         acc[entry.key] = entry.value;
         return acc;
@@ -512,7 +619,7 @@ export class NodeInfo {
     return (
       this.id === other.id &&
       this.shape === other.shape &&
-      this.label === other.label &&
+      (this.attrs?.text?.text || '') === (other.attrs?.text?.text || '') &&
       this.x === other.x &&
       this.y === other.y &&
       this.width === other.width &&
@@ -529,7 +636,7 @@ export class NodeInfo {
    * Returns a string representation of the node info
    */
   toString(): string {
-    return `NodeInfo(${this.id}, ${this.shape}, "${this.label}")`;
+    return `NodeInfo(${this.id}, ${this.shape}, "${this.attrs?.text?.text || ''}")`;
   }
 
   /**
@@ -546,9 +653,11 @@ export class NodeInfo {
     visible: boolean;
     attrs: NodeAttrs;
     ports: PortConfiguration;
-    data: Metadata[];
+    data: { _metadata: Metadata[]; [key: string]: any };
     angle: number;
     parent?: string | null;
+    markup?: MarkupElement[];
+    tools?: CellTool[];
   } {
     return {
       id: this.id,
@@ -564,31 +673,11 @@ export class NodeInfo {
       data: this.data,
       angle: this.angle,
       parent: this.parent,
+      markup: this.markup,
+      tools: this.tools,
     };
   }
 
-  /**
-   * Converts to legacy JSON format for backward compatibility
-   */
-  toLegacyJSON(): {
-    id: string;
-    type: NodeType;
-    label: string;
-    position: { x: number; y: number };
-    width: number;
-    height: number;
-    metadata: Record<string, string>;
-  } {
-    return {
-      id: this.id,
-      type: this.shape,
-      label: this.label,
-      position: { x: this.x, y: this.y },
-      width: this.width,
-      height: this.height,
-      metadata: this.getMetadataAsRecord(),
-    };
-  }
 
   /**
    * Validates the node info
@@ -606,7 +695,8 @@ export class NodeInfo {
       throw new Error(`Invalid node shape: ${String(this.shape)}`);
     }
 
-    if (!this.label || this.label.trim().length === 0) {
+    const label = this.attrs?.text?.text || '';
+    if (!label || label.trim().length === 0) {
       throw new Error('Node label cannot be empty');
     }
 
@@ -625,6 +715,46 @@ export class NodeInfo {
     if (!Number.isFinite(this.angle)) {
       throw new Error('Node angle must be a finite number');
     }
+
+    // Validate X6-specific properties
+    this._validateX6Properties();
+  }
+
+  /**
+   * Validates X6-specific properties
+   */
+  private _validateX6Properties(): void {
+    // Validate markup structure
+    if (this.markup) {
+      this.markup.forEach((element, index) => {
+        if (!element.tagName || typeof element.tagName !== 'string') {
+          throw new Error(`Markup element at index ${index} must have a valid tagName`);
+        }
+        if (element.selector && typeof element.selector !== 'string') {
+          throw new Error(`Markup element at index ${index} selector must be a string`);
+        }
+        if (element.attrs && typeof element.attrs !== 'object') {
+          throw new Error(`Markup element at index ${index} attrs must be an object`);
+        }
+        if (element.children) {
+          if (!Array.isArray(element.children)) {
+            throw new Error(`Markup element at index ${index} children must be an array`);
+          }
+        }
+      });
+    }
+
+    // Validate tools structure
+    if (this.tools) {
+      this.tools.forEach((tool, index) => {
+        if (!tool.name || typeof tool.name !== 'string') {
+          throw new Error(`Tool at index ${index} must have a valid name`);
+        }
+        if (tool.args && typeof tool.args !== 'object') {
+          throw new Error(`Tool at index ${index} args must be an object`);
+        }
+      });
+    }
   }
 
   /**
@@ -637,18 +767,29 @@ export class NodeInfo {
   /**
    * Checks if metadata arrays are equal
    */
-  private metadataEquals(other: Metadata[]): boolean {
-    if (this.data.length !== other.length) {
+  private metadataEquals(other: { _metadata: Metadata[]; [key: string]: any }): boolean {
+    const thisMetadata = this.metadata;
+    const otherMetadata = other._metadata || [];
+    
+    if (thisMetadata.length !== otherMetadata.length) {
       return false;
     }
 
     // Sort both arrays by key for comparison
-    const thisSorted = [...this.data].sort((a, b) => a.key.localeCompare(b.key));
-    const otherSorted = [...other].sort((a, b) => a.key.localeCompare(b.key));
+    const thisSorted = [...thisMetadata].sort((a, b) => a.key.localeCompare(b.key));
+    const otherSorted = [...otherMetadata].sort((a, b) => a.key.localeCompare(b.key));
 
-    return thisSorted.every((entry, index) => {
+    // Check metadata equality
+    const metadataEqual = thisSorted.every((entry, index) => {
       const otherEntry = otherSorted[index];
       return entry.key === otherEntry.key && entry.value === otherEntry.value;
     });
+    
+    // Check custom data equality (excluding _metadata)
+    const thisCustomData = this.getCustomData();
+    const otherCustomData = { ...other };
+    delete (otherCustomData as any)._metadata;
+    
+    return metadataEqual && JSON.stringify(thisCustomData) === JSON.stringify(otherCustomData);
   }
 }

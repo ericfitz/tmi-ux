@@ -9,7 +9,6 @@ import { ZOrderService } from '../services/z-order.service';
  * Works with ZOrderService for business logic
  *
  * Uses X6's standard 'shape' property for node type determination.
- * The deprecated 'data.type' property is no longer used.
  */
 @Injectable()
 export class X6ZOrderAdapter {
@@ -401,7 +400,7 @@ export class X6ZOrderAdapter {
   /**
    * Apply proper z-index for newly created nodes based on node shape and context
    * Rule: New nodes get z-index based on their shape - security boundaries (1), regular nodes (10), text-boxes (20)
-   * Uses X6's standard 'shape' property for type determination (not deprecated 'data.type')
+   * Uses X6's standard 'shape' property for type determination
    */
   applyNodeCreationZIndex(graph: Graph, node: Node): void {
     // Get node type using getNodeTypeInfo for reliable node type detection

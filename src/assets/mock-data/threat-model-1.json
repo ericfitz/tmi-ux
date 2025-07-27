@@ -179,6 +179,113 @@
               "value": "user_credentials"
             }
           ]
+        },
+        {
+          "id": "edge-1",
+          "shape": "edge",
+          "source": {
+            "cell": "user-actor-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "auth-process-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "login request",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "authentication_request"
+            }
+          ]
+        },
+        {
+          "id": "edge-2",
+          "shape": "edge",
+          "source": {
+            "cell": "auth-process-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "user-store-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "verify credentials",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "credential_lookup"
+            }
+          ]
+        },
+        {
+          "id": "edge-3",
+          "shape": "edge",
+          "source": {
+            "cell": "auth-process-1",
+            "port": "left"
+          },
+          "target": {
+            "cell": "user-actor-1",
+            "port": "right"
+          },
+          "zIndex": 1,
+          "vertices": [
+            {
+              "x": 200,
+              "y": 280
+            }
+          ],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "auth response",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "authentication_response"
+            }
+          ]
         }
       ]
     },
@@ -277,6 +384,74 @@
             {
               "key": "cache_type",
               "value": "redis"
+            }
+          ]
+        },
+        {
+          "id": "edge-4",
+          "shape": "edge",
+          "source": {
+            "cell": "app-process-1",
+            "port": "right"
+          },
+          "target": {
+            "cell": "data-store-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "read/write data",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "database_operations"
+            }
+          ]
+        },
+        {
+          "id": "edge-5",
+          "shape": "edge",
+          "source": {
+            "cell": "app-process-1",
+            "port": "bottom"
+          },
+          "target": {
+            "cell": "cache-store-1",
+            "port": "left"
+          },
+          "zIndex": 1,
+          "vertices": [],
+          "labels": [
+            {
+              "position": 0.5,
+              "attrs": {
+                "text": {
+                  "text": "cache operations",
+                  "fontSize": 12,
+                  "fill": "#000000",
+                  "textAnchor": "middle",
+                  "textVerticalAnchor": "middle"
+                }
+              }
+            }
+          ],
+          "data": [
+            {
+              "key": "data_flow",
+              "value": "cache_operations"
             }
           ]
         }

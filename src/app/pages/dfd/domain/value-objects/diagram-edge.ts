@@ -35,35 +35,35 @@ export class DiagramEdge {
    * Gets the source node ID
    */
   get sourceNodeId(): string {
-    return this._data.sourceNodeId;
+    return this._data.source.cell;
   }
 
   /**
    * Gets the target node ID
    */
   get targetNodeId(): string {
-    return this._data.targetNodeId;
+    return this._data.target.cell;
   }
 
   /**
    * Gets the source port ID
    */
   get sourcePortId(): string | undefined {
-    return this._data.sourcePortId;
+    return this._data.source.port;
   }
 
   /**
    * Gets the target port ID
    */
   get targetPortId(): string | undefined {
-    return this._data.targetPortId;
+    return this._data.target.port;
   }
 
   /**
    * Gets the edge label
    */
   get label(): string | undefined {
-    return this._data.label;
+    return this._data.attrs?.text?.text;
   }
 
   /**

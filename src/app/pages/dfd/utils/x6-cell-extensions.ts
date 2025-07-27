@@ -21,6 +21,7 @@
 
 import { Cell, Edge } from '@antv/x6';
 import { DFD_STYLING } from '../constants/styling-constants';
+import { Metadata } from '../domain/value-objects/metadata';
 
 /**
  * X6 Cell Extensions
@@ -34,13 +35,6 @@ import { DFD_STYLING } from '../constants/styling-constants';
  * - Provide consistent API regardless of cell type
  */
 
-/**
- * Interface for application metadata entries
- */
-export interface MetadataEntry {
-  key: string;
-  value: string;
-}
 
 /**
  * Node type information interface
@@ -329,7 +323,7 @@ export class CellUtils {
    * Validates that metadata contains only application-specific data
    * Returns true if metadata is valid (no X6 native properties)
    */
-  static validateMetadata(metadata: MetadataEntry[]): boolean {
+  static validateMetadata(metadata: Metadata[]): boolean {
     const x6NativeProperties = [
       'position',
       'size',
@@ -361,7 +355,7 @@ export class CellUtils {
    * Filters out any X6 native properties from metadata
    * Returns clean metadata array with only application-specific data
    */
-  static cleanMetadata(metadata: MetadataEntry[]): MetadataEntry[] {
+  static cleanMetadata(metadata: Metadata[]): Metadata[] {
     const x6NativeProperties = [
       'position',
       'size',

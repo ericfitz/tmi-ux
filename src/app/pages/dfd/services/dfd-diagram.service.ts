@@ -321,15 +321,16 @@ export class DfdDiagramService {
       ports: portConfig,
     };
 
-    // Add metadata if present
-    if (mockCell.data && Array.isArray(mockCell.data)) {
-      const metadata: any = {};
-      mockCell.data.forEach((item: any) => {
-        if (item.key && item.value) {
-          metadata[item.key] = item.value;
-        }
-      });
-      cellConfig.data = { metadata };
+    // Add hybrid data format if present
+    if (mockCell.data) {
+      if (Array.isArray(mockCell.data)) {
+        // Legacy format: convert array of {key, value} to hybrid format
+        const metadataArray = mockCell.data.filter((item: any) => item.key && item.value);
+        cellConfig.data = { _metadata: metadataArray };
+      } else {
+        // Already in hybrid format or custom object
+        cellConfig.data = mockCell.data;
+      }
     }
 
     return cellConfig;
@@ -409,15 +410,16 @@ export class DfdDiagramService {
       }];
     }
     
-    // Add metadata if present
-    if (mockCell.data && Array.isArray(mockCell.data)) {
-      const metadata: any = {};
-      mockCell.data.forEach((item: any) => {
-        if (item.key && item.value) {
-          metadata[item.key] = item.value;
-        }
-      });
-      edgeConfig.data = { metadata };
+    // Add hybrid data format if present
+    if (mockCell.data) {
+      if (Array.isArray(mockCell.data)) {
+        // Legacy format: convert array of {key, value} to hybrid format
+        const metadataArray = mockCell.data.filter((item: any) => item.key && item.value);
+        edgeConfig.data = { _metadata: metadataArray };
+      } else {
+        // Already in hybrid format or custom object
+        edgeConfig.data = mockCell.data;
+      }
     }
     
     return edgeConfig;
@@ -447,17 +449,29 @@ export class DfdDiagramService {
    * Convert X6 node config to NodeInfo domain object
    */
   private convertX6ConfigToNodeInfo(nodeConfig: any): NodeInfo {
-    // Extract metadata from data field
-    const metadata = nodeConfig.data?.metadata || {};
+    // Extract hybrid data format (metadata + custom data)
+    const hybridData = nodeConfig.data || { _metadata: [] };
     
-    return NodeInfo.create({
+    // Handle legacy format conversion if needed
+    if (hybridData._metadata) {
+      // New hybrid format - data is already in correct format
+      // No conversion needed
+    } else if (hybridData.metadata) {
+      // Legacy format - convert to new format if needed
+      // For now, keep as-is
+    }
+    
+    return NodeInfo.fromJSON({
       id: nodeConfig.id,
-      type: this.mapShapeToNodeType(nodeConfig.shape),
-      position: { x: nodeConfig.x, y: nodeConfig.y },
+      shape: this.mapShapeToNodeType(nodeConfig.shape),
+      x: nodeConfig.x,
+      y: nodeConfig.y,
       width: nodeConfig.width,
       height: nodeConfig.height,
       label: nodeConfig.label || '',
-      metadata
+      data: hybridData,
+      markup: nodeConfig.markup,
+      tools: nodeConfig.tools
     });
   }
 
@@ -476,19 +490,215 @@ export class DfdDiagramService {
       label = edgeConfig.label;
     }
 
-    // Extract metadata from data field
-    const metadata = edgeConfig.data?.metadata || {};
+    // Extract hybrid data format (metadata + custom data)
+    const hybridData = edgeConfig.data || { _metadata: [] };
+    
+    // Handle legacy format conversion if needed
+    if (hybridData._metadata) {
+      // New hybrid format - data is already in correct format
+      // No conversion needed
+    } else if (hybridData.metadata) {
+      // Legacy format - convert to new format if needed
+      // For now, keep as-is
+    }
 
-    return EdgeInfo.create({
+    return EdgeInfo.fromJSON({
       id: edgeConfig.id,
-      sourceNodeId: edgeConfig.source.cell,
-      targetNodeId: edgeConfig.target.cell,
-      sourcePortId: edgeConfig.source.port,
-      targetPortId: edgeConfig.target.port,
+      source: edgeConfig.source,
+      target: edgeConfig.target,
       label,
       vertices: edgeConfig.vertices || [],
-      metadata
+      data: hybridData,
+      markup: edgeConfig.markup,
+      tools: edgeConfig.tools,
+      router: edgeConfig.router,
+      connector: edgeConfig.connector,
+      defaultLabel: edgeConfig.defaultLabel
     });
+  }
+
+  /**
+   * Save diagram changes back to the threat model
+   */
+  saveDiagramChanges(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
+    this.logger.info('Saving diagram changes back to threat model', { diagramId, threatModelId });
+
+    return this.threatModelService.getThreatModelById(threatModelId).pipe(
+      map(threatModel => {
+        if (!threatModel) {
+          throw new Error(`Threat model with ID ${threatModelId} not found`);
+        }
+
+        // Find the diagram within the threat model
+        const diagramIndex = threatModel.diagrams?.findIndex(d => d.id === diagramId);
+        if (diagramIndex === -1 || diagramIndex === undefined) {
+          throw new Error(`Diagram with ID ${diagramId} not found in threat model`);
+        }
+
+        // Convert current graph state to cells format
+        const cells = this.convertGraphToCellsFormat(graph);
+        
+        // Update the diagram with new cells data
+        if (threatModel.diagrams) {
+          threatModel.diagrams[diagramIndex] = {
+            ...threatModel.diagrams[diagramIndex],
+            cells,
+            modified_at: new Date().toISOString()
+          };
+        }
+
+        // Save the updated threat model
+        this.threatModelService.updateThreatModel(threatModel).subscribe({
+          next: () => {
+            this.logger.info('Successfully saved diagram changes to threat model', { 
+              diagramId, 
+              threatModelId,
+              cellCount: cells.length 
+            });
+          },
+          error: (error) => {
+            this.logger.error('Failed to save threat model after diagram update', error);
+          }
+        });
+
+        return true;
+      }),
+      catchError(error => {
+        this.logger.error('Error saving diagram changes', error);
+        return of(false);
+      })
+    );
+  }
+
+  /**
+   * Convert current graph state to cells format for saving
+   */
+  private convertGraphToCellsFormat(graph: Graph): any[] {
+    const cells: any[] = [];
+    
+    // Get all cells from the graph
+    const graphCells = graph.getCells();
+    
+    graphCells.forEach(cell => {
+      try {
+        if (cell.isNode()) {
+          // Convert node to cell format
+          const nodeCell = {
+            id: cell.id,
+            shape: this.mapX6ShapeToNodeType(cell.shape),
+            x: cell.position().x,
+            y: cell.position().y,
+            width: cell.size().width,
+            height: cell.size().height,
+            zIndex: cell.getZIndex(),
+            visible: true,
+            attrs: {
+              body: {
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeWidth: 2
+              },
+              text: {
+                text: (cell as any).getLabel ? (cell as any).getLabel() : (cell.getAttrs() as any)?.text?.text || '',
+                fontSize: 14,
+                fill: '#000000'
+              }
+            },
+            data: this.convertCellDataToArray(cell.getData())
+          };
+          cells.push(nodeCell);
+        } else if (cell.isEdge()) {
+          // Convert edge to cell format
+          const source = cell.getSource();
+          const target = cell.getTarget();
+          
+          const edgeCell: any = {
+            id: cell.id,
+            shape: 'edge',
+            source: {
+              cell: (source as any).cell,
+              port: (source as any).port
+            },
+            target: {
+              cell: (target as any).cell,
+              port: (target as any).port
+            },
+            vertices: cell.getVertices(),
+            zIndex: cell.getZIndex(),
+            attrs: {
+              line: {
+                stroke: '#000000',
+                strokeWidth: 2,
+                targetMarker: {
+                  name: 'classic',
+                  size: 8
+                }
+              }
+            },
+            data: this.convertCellDataToArray(cell.getData())
+          };
+          
+          // Add labels if present
+          const labels = (cell as any).getLabels ? (cell as any).getLabels() : [];
+          if (labels && labels.length > 0) {
+            edgeCell.labels = labels;
+          }
+          
+          cells.push(edgeCell);
+        }
+      } catch (error) {
+        this.logger.error('Error converting cell to save format', { 
+          cellId: cell.id, 
+          cellType: cell.isNode() ? 'node' : 'edge',
+          error 
+        });
+      }
+    });
+    
+    this.logger.debug('Converted graph to cells format', { cellCount: cells.length });
+    return cells;
+  }
+
+  /**
+   * Convert cell data from object format to array format for saving
+   */
+  private convertCellDataToArray(cellData: any): any {
+    // Return the hybrid data format directly
+    if (cellData && cellData._metadata) {
+      // Already in hybrid format
+      return cellData;
+    } else if (cellData && cellData.metadata && typeof cellData.metadata === 'object') {
+      // Legacy format - convert to hybrid format
+      const metadataArray: any[] = [];
+      Object.entries(cellData.metadata).forEach(([key, value]) => {
+        metadataArray.push({ key, value: String(value) });
+      });
+      return { _metadata: metadataArray };
+    }
+    
+    // Default empty hybrid format
+    return { _metadata: [] };
+  }
+
+  /**
+   * Map X6 shape back to the original node type for saving
+   */
+  private mapX6ShapeToNodeType(shape: string): string {
+    // This maps X6 shapes back to the original node types used in the mock data
+    switch (shape) {
+      case 'rect':
+        return 'actor';
+      case 'ellipse':
+        return 'process';
+      case 'store':
+        return 'store';
+      case 'security-boundary':
+        return 'security-boundary';
+      case 'text-box':
+        return 'text-box';
+      default:
+        return 'actor'; // Fallback
+    }
   }
 
   /**

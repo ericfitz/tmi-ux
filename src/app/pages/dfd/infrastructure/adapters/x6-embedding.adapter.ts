@@ -588,11 +588,4 @@ export class X6EmbeddingAdapter {
     return shapeColorMap[shape] || '#FFFFFF';
   }
 
-  /**
-   * Get default fill color for node type (legacy method, consider removing)
-   */
-  private getDefaultFillColorForType(nodeType: string): string {
-    // Now delegate to the shape-based method since it's more accurate
-    return this._getOriginalFillColorForShape(nodeType);
-  }
 }

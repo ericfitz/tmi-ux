@@ -333,6 +333,28 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Save diagram changes before destroying if possible
+    if (this.threatModelId && this.dfdId && this._isInitialized) {
+      const graph = this.x6GraphAdapter.getGraph();
+      if (graph) {
+        // Perform synchronous save attempt (best effort)
+        try {
+          this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
+            next: (success) => {
+              if (success) {
+                this.logger.info('Diagram changes saved on component destroy');
+              }
+            },
+            error: (error) => {
+              this.logger.warn('Could not save diagram changes on component destroy', error);
+            }
+          });
+        } catch (error) {
+          this.logger.warn('Error attempting to save diagram changes on destroy', error);
+        }
+      }
+    }
+
     // Disconnect the mutation observer
     if (this._observer) {
       this._observer.disconnect();
@@ -778,6 +800,38 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Closes the diagram and navigates back to the threat model editor page
    */
   closeDiagram(): void {
+    // Save diagram changes before closing if we have the necessary IDs
+    if (this.threatModelId && this.dfdId && this._isInitialized) {
+      const graph = this.x6GraphAdapter.getGraph();
+      if (graph) {
+        this.logger.info('Saving diagram changes before closing', {
+          threatModelId: this.threatModelId,
+          dfdId: this.dfdId
+        });
+        
+        this._subscriptions.add(
+          this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
+            next: (success) => {
+              if (success) {
+                this.logger.info('Diagram changes saved successfully');
+              } else {
+                this.logger.warn('Failed to save diagram changes');
+              }
+              // Navigate away regardless of save success/failure
+              this.facade.closeDiagram(this.threatModelId, this.dfdId);
+            },
+            error: (error) => {
+              this.logger.error('Error saving diagram changes', error);
+              // Navigate away even if save failed
+              this.facade.closeDiagram(this.threatModelId, this.dfdId);
+            }
+          })
+        );
+        return;
+      }
+    }
+    
+    // If we don't have the necessary data or graph is not initialized, just close
     this.facade.closeDiagram(this.threatModelId, this.dfdId);
   }
 

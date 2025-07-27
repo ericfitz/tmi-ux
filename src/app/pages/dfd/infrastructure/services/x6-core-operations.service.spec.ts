@@ -6,7 +6,7 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
-import { Graph, Node, Edge, Cell } from '@antv/x6';
+import { Graph, Node, Edge } from '@antv/x6';
 import { X6CoreOperationsService, NodeCreationConfig, EdgeCreationConfig } from './x6-core-operations.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
@@ -226,7 +226,7 @@ describe('X6CoreOperationsService', () => {
           width: 120,
           height: 80,
         });
-        const edge = graph.addEdge({
+        graph.addEdge({
           id: 'test-edge',
           source: testNode,
           target: targetNode,
@@ -368,10 +368,8 @@ describe('X6CoreOperationsService', () => {
     });
 
     describe('removeEdge', () => {
-      let testEdge: Edge;
-
       beforeEach(() => {
-        testEdge = graph.addEdge({
+        graph.addEdge({
           id: 'remove-test-edge',
           source: sourceNode,
           target: targetNode,
@@ -525,7 +523,6 @@ describe('X6CoreOperationsService', () => {
 
   describe('Utility Operations', () => {
     let testNode: Node;
-    let testEdge: Edge;
 
     beforeEach(() => {
       testNode = graph.addNode({
@@ -544,7 +541,7 @@ describe('X6CoreOperationsService', () => {
         width: 120,
         height: 80,
       });
-      testEdge = graph.addEdge({
+      graph.addEdge({
         id: 'utility-test-edge',
         source: testNode,
         target: targetNode,
@@ -658,7 +655,7 @@ describe('X6CoreOperationsService', () => {
         width: 120,
         height: 80,
       });
-      const testEdge = graph.addEdge({
+      graph.addEdge({
         id: 'remove-error-edge',
         source: testNode,
         target: targetNode,
@@ -730,7 +727,7 @@ describe('X6CoreOperationsService', () => {
         width: 120,
         height: 80,
       });
-      const testEdge = workingGraph.addEdge({
+      workingGraph.addEdge({
         id: 'log-test-edge',
         source: testNode,
         target: targetNode,

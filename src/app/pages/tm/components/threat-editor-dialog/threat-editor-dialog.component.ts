@@ -568,28 +568,18 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         cellId: this.translocoService.translate('threatEditor.cellId'),
       });
 
-      // Check if form fields have the floating label class
+      // Diagnostic check for form field classes
       setTimeout(() => {
-        const formFields = document.querySelectorAll('.mat-form-field');
-        const floatingLabels = document.querySelectorAll(
-          '.mat-form-field.mat-form-field-should-float',
-        );
+        document.querySelectorAll('.mat-form-field');
+        document.querySelectorAll('.mat-form-field.mat-form-field-should-float');
       }, 50);
 
-      // Add additional diagnostics for Angular Material form field classes
+      // Additional diagnostics for Angular Material form field classes
       setTimeout(() => {
-        // Check for mat-form-field-appearance-outline class
-        const outlineFields = document.querySelectorAll('.mat-form-field-appearance-outline');
-
-        // Check for mat-focused class
-        const focusedFields = document.querySelectorAll('.mat-focused');
-
-        // Check for mat-form-field-label elements
-        const labelElements = document.querySelectorAll('.mat-form-field-label');
-
-        // Check if labels are visible (not having mat-form-field-empty class)
-        const emptyFields = document.querySelectorAll('.mat-form-field-empty');
-
+        document.querySelectorAll('.mat-form-field-appearance-outline');
+        document.querySelectorAll('.mat-focused');
+        document.querySelectorAll('.mat-form-field-label');
+        document.querySelectorAll('.mat-form-field-empty');
       }, 100);
 
       // Force translation of each key

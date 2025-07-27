@@ -209,7 +209,6 @@ export class DfdNodeService {
       width: 120,
       height: 80,
       label,
-      // Remove data.type - use shape property instead for type determination
       zIndex: 1, // Temporary z-index, will be set properly after node creation
     };
 
@@ -305,7 +304,7 @@ export class DfdNodeService {
     this.logger.info('Creating node from NodeInfo domain object', {
       nodeId: nodeInfo.id,
       nodeType: nodeInfo.type,
-      position: nodeInfo.position,
+      position: { x: nodeInfo.x, y: nodeInfo.y },
       suppressHistory
     });
 
@@ -354,11 +353,11 @@ export class DfdNodeService {
     const nodeConfig: any = {
       id: nodeInfo.id,
       shape: x6Shape,
-      x: nodeInfo.position.x,
-      y: nodeInfo.position.y,
+      x: nodeInfo.x,
+      y: nodeInfo.y,
       width: nodeInfo.width,
       height: nodeInfo.height,
-      label: nodeInfo.label,
+      label: nodeInfo.attrs?.text?.text || '',
       zIndex: nodeInfo.zIndex || this.nodeConfigurationService.getNodeZIndex(nodeInfo.type),
     };
 
@@ -366,14 +365,15 @@ export class DfdNodeService {
     const portConfig = this.nodeConfigurationService.getNodePorts(nodeInfo.type);
     nodeConfig.ports = portConfig;
 
-    // Add metadata if present
-    const metadataRecord = nodeInfo.getMetadataAsRecord();
-    if (metadataRecord && Object.keys(metadataRecord).length > 0) {
-      const metadataArray = Object.entries(metadataRecord).map(([key, value]) => ({
-        key,
-        value
-      }));
-      nodeConfig.data = { metadata: metadataArray };
+    // Add hybrid data (metadata + custom data) if present
+    nodeConfig.data = nodeInfo.data;
+
+    // Add X6-specific properties if present
+    if (nodeInfo.markup) {
+      nodeConfig.markup = nodeInfo.markup;
+    }
+    if (nodeInfo.tools) {
+      nodeConfig.tools = nodeInfo.tools;
     }
 
     return nodeConfig;

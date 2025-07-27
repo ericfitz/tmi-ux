@@ -593,7 +593,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Set metadata using X6 cell extensions
         if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
-          edgeData.data.forEach((entry: any) => {
+          edgeData.data['forEach']((entry: any) => {
             (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
           });
         }
@@ -1798,36 +1798,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       return true;
     }
 
-    // Handle legacy cell:change:attrs events (in case any still exist)
-    if (event === 'cell:change:attrs' && args.current) {
-      const changedAttrs = Object.keys(args.current);
-
-      // Check if this change only affects excluded visual/tool attributes
-      const isOnlyVisualAttributes = changedAttrs.every(attrGroup => {
-        // First check if the top-level attribute is excluded
-        if (this._historyCoordinator.shouldExcludeAttribute(attrGroup)) {
-          return true;
-        }
-
-        // Then check nested attributes (e.g., body/filter, line/strokeWidth)
-        const groupData = args.current[attrGroup];
-        if (!groupData || typeof groupData !== 'object') {
-          // If it's not an object and not in excluded list, it's not visual-only
-          return false;
-        }
-
-        const groupKeys = Object.keys(groupData);
-        // Check if all changes in this group are visual-only
-        return groupKeys.every(key => {
-          const attrPath = `${attrGroup}/${key}`;
-          return this._historyCoordinator.shouldExcludeAttribute(attrPath);
-        });
-      });
-
-      if (isOnlyVisualAttributes) {
-        return false; // Don't add to history
-      }
-    }
 
     // Allow all other changes (position, size, labels, structure)
     this.logger.debug('Including other event type:', event);

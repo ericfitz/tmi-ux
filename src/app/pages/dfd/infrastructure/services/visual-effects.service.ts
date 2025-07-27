@@ -211,60 +211,6 @@ export class VisualEffectsService {
     this.activeEffects.set(cell.id, activeEffect);
   }
 
-  /**
-   * Apply fade effect with given opacity (legacy method with batching)
-   */
-  private applyFadeEffect(
-    cell: Cell,
-    opacity: number,
-    color: { r: number; g: number; b: number },
-    graph?: any,
-  ): void {
-    // Batch visual effect changes to exclude them from history
-    const applyVisualEffect = () => {
-      if (cell.isNode()) {
-        // Use getNodeTypeInfo for reliable node type detection
-        const nodeTypeInfo = (cell as any).getNodeTypeInfo();
-        const nodeType = nodeTypeInfo?.type || 'unknown';
-
-        if (nodeType === 'text-box') {
-          if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
-            // Remove both filter and fill effects
-            cell.attr('text/filter', 'none');
-            cell.attr('body/fill', 'transparent'); // Restore default transparent fill
-          } else {
-            // IMPORTANT: Apply fill FIRST, then drop shadow, so shadow is visible against the background
-            const fillColorString = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`; // Lower opacity for fill
-            cell.attr('body/fill', fillColorString);
-            
-            const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
-            cell.attr('text/filter', filterValue);
-          }
-        } else {
-          if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
-            cell.attr('body/filter', 'none');
-          } else {
-            const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
-            cell.attr('body/filter', filterValue);
-          }
-        }
-      } else if (cell.isEdge()) {
-        if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
-          cell.attr('line/filter', 'none');
-        } else {
-          const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
-          cell.attr('line/filter', filterValue);
-        }
-      }
-    };
-
-    // Use batching if graph is available, otherwise apply directly
-    if (graph && typeof graph.batchUpdate === 'function') {
-      graph.batchUpdate(applyVisualEffect);
-    } else {
-      applyVisualEffect();
-    }
-  }
 
   /**
    * Apply fade effect directly without any batching or history considerations

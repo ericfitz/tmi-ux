@@ -14,11 +14,6 @@ export interface Metadata {
   value: string;
 }
 
-/**
- * Legacy alias for backward compatibility
- * @deprecated Use Metadata instead
- */
-export type MetadataEntry = Metadata;
 
 /**
  * Converts an array of Metadata entries to a Record object

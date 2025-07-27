@@ -192,101 +192,7 @@ describe('DiagramInfo', () => {
       expect(diagramInfo.getMetadataAsRecord()).toEqual({ category: 'test' });
     });
 
-    it('should create DiagramInfo from legacy format with separate nodes/edges', () => {
-      // Arrange
-      const json = {
-        id: 'diagram-1',
-        name: 'Test Diagram',
-        type: 'DFD-1.0.0' as DiagramType,
-        created_at: '2024-01-01T10:00:00Z',
-        modified_at: '2024-01-01T11:00:00Z',
-        nodes: [
-          {
-            id: 'node-1',
-            type: 'process',
-            label: 'Process',
-            position: { x: 100, y: 100 },
-            width: 120,
-            height: 60,
-          },
-          {
-            id: 'node-2',
-            type: 'actor',
-            label: 'Actor',
-            position: { x: 200, y: 100 },
-            width: 120,
-            height: 60,
-          },
-        ],
-        edges: [
-          {
-            id: 'edge-1',
-            sourceNodeId: 'node-1',
-            targetNodeId: 'node-2',
-            label: 'Data Flow',
-          },
-        ],
-        metadata: { category: 'test' },
-      };
 
-      // Act
-      const diagramInfo = DiagramInfo.fromJSON(json);
-
-      // Assert
-      expect(diagramInfo.id).toBe('diagram-1');
-      expect(diagramInfo.name).toBe('Test Diagram');
-      expect(diagramInfo.nodes).toHaveLength(2);
-      expect(diagramInfo.edges).toHaveLength(1);
-      expect(diagramInfo.getMetadataAsRecord()).toEqual({ category: 'test' });
-    });
-
-    it('should create DiagramInfo from legacy format', () => {
-      // Arrange
-      const json = {
-        id: 'diagram-1',
-        name: 'Legacy Diagram',
-        description: 'A legacy diagram',
-        nodes: [
-          {
-            id: 'node-1',
-            type: 'process',
-            label: 'Process',
-            position: { x: 100, y: 100 },
-            width: 120,
-            height: 60,
-          },
-          {
-            id: 'node-2',
-            type: 'actor',
-            label: 'Actor',
-            position: { x: 200, y: 100 },
-            width: 120,
-            height: 60,
-          },
-        ],
-        edges: [
-          {
-            id: 'edge-1',
-            sourceNodeId: 'node-1',
-            targetNodeId: 'node-2',
-            label: 'Data Flow',
-          },
-        ],
-        metadata: { category: 'legacy' },
-      };
-
-      // Act
-      const diagramInfo = DiagramInfo.fromLegacyJSON(json);
-
-      // Assert
-      expect(diagramInfo.id).toBe('diagram-1');
-      expect(diagramInfo.name).toBe('Legacy Diagram');
-      expect(diagramInfo.type).toBe('DFD-1.0.0');
-      expect(diagramInfo.description).toBe('A legacy diagram');
-      expect(diagramInfo.nodes).toHaveLength(2);
-      expect(diagramInfo.edges).toHaveLength(1);
-      expect(diagramInfo.getMetadataAsRecord()).toEqual({ category: 'legacy' });
-    });
 
     it('should create default DiagramInfo', () => {
       // Act
@@ -463,8 +369,8 @@ describe('DiagramInfo', () => {
       // Assert
       expect(edge).toBeDefined();
       expect(edge?.id).toBe('edge-1');
-      expect(edge?.sourceNodeId).toBe('node-1');
-      expect(edge?.targetNodeId).toBe('node-2');
+      expect(edge?.source.cell).toBe('node-1');
+      expect(edge?.target.cell).toBe('node-2');
     });
 
     it('should get cell by ID', () => {
@@ -586,22 +492,6 @@ describe('DiagramInfo', () => {
       expect(json.cells).toHaveLength(1);
     });
 
-    it('should serialize to legacy JSON correctly', () => {
-      // Act
-      const json = diagramInfo.toLegacyJSON();
-
-      // Assert
-      expect(json).toEqual({
-        id: 'diagram-1',
-        name: 'Test Diagram',
-        description: 'A test diagram',
-        nodes: expect.any(Array),
-        edges: expect.any(Array),
-        metadata: { category: 'test' },
-      });
-      expect(json.nodes).toHaveLength(1);
-      expect(json.edges).toHaveLength(0);
-    });
   });
 
   describe('Validation', () => {

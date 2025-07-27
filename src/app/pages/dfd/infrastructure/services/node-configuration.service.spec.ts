@@ -40,10 +40,10 @@ describe('NodeConfigurationService', () => {
         expect(result.items).toBeDefined();
         expect(result.items.length).toBe(4); // top, right, bottom, left
         expect(result.items).toEqual([
-          { group: 'top' },
-          { group: 'right' },
-          { group: 'bottom' },
-          { group: 'left' },
+          { group: 'top', id: 'top' },
+          { group: 'right', id: 'right' },
+          { group: 'bottom', id: 'bottom' },
+          { group: 'left', id: 'left' },
         ]);
       });
     });

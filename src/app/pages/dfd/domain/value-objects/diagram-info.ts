@@ -61,8 +61,6 @@ export class DiagramInfo {
     description?: string;
     metadata?: Metadata[] | Record<string, string>;
     cells?: any[];
-    nodes?: any[];
-    edges?: any[];
   }): DiagramInfo {
     // Handle date parsing
     const createdAt = DiagramInfo.parseDate(data.created_at || data.createdAt);
@@ -79,26 +77,18 @@ export class DiagramInfo {
     }
 
     // Handle cells conversion
-    let cells: DiagramCell[] = [];
-    if (data.cells) {
-      cells = data.cells.map(cellData => {
-        // Check if it's a node or edge based on structure
-        if (cellData.source && cellData.target) {
-          // It's an edge
-          return EdgeInfo.fromJSON(cellData);
-        } else if (cellData.shape && cellData.x !== undefined && cellData.y !== undefined) {
-          // It's a node
-          return NodeInfo.fromJSON(cellData);
-        } else {
-          throw new Error(`Invalid cell data: ${JSON.stringify(cellData)}`);
-        }
-      });
-    } else if (data.nodes || data.edges) {
-      // Legacy format with separate nodes and edges arrays
-      const nodes = (data.nodes || []).map(nodeData => NodeInfo.fromJSON(nodeData));
-      const edges = (data.edges || []).map(edgeData => EdgeInfo.fromJSON(edgeData));
-      cells = [...nodes, ...edges];
-    }
+    const cells: DiagramCell[] = (data.cells || []).map(cellData => {
+      // Check if it's a node or edge based on structure
+      if (cellData.source && cellData.target) {
+        // It's an edge
+        return EdgeInfo.fromJSON(cellData);
+      } else if (cellData.shape && cellData.x !== undefined && cellData.y !== undefined) {
+        // It's a node
+        return NodeInfo.fromJSON(cellData);
+      } else {
+        throw new Error(`Invalid cell data: ${JSON.stringify(cellData)}`);
+      }
+    });
 
     return new DiagramInfo(
       data.id,
@@ -112,37 +102,6 @@ export class DiagramInfo {
     );
   }
 
-  /**
-   * Creates DiagramInfo from legacy format for backward compatibility
-   */
-  static fromLegacyJSON(data: {
-    id: string;
-    name: string;
-    description?: string;
-    nodes: any[];
-    edges: any[];
-    metadata?: Record<string, string>;
-  }): DiagramInfo {
-    const now = new Date();
-    const nodes = data.nodes.map(nodeData => NodeInfo.fromLegacyJSON(nodeData));
-    const edges = data.edges.map(edgeData => EdgeInfo.fromLegacyJSON(edgeData));
-    const cells: DiagramCell[] = [...nodes, ...edges];
-
-    const metadata: Metadata[] = data.metadata
-      ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
-      : [];
-
-    return new DiagramInfo(
-      data.id,
-      data.name,
-      'DFD-1.0.0',
-      now,
-      now,
-      data.description,
-      metadata,
-      cells,
-    );
-  }
 
   /**
    * Creates a default DiagramInfo
@@ -401,26 +360,6 @@ export class DiagramInfo {
     };
   }
 
-  /**
-   * Converts to legacy JSON format for backward compatibility
-   */
-  toLegacyJSON(): {
-    id: string;
-    name: string;
-    description?: string;
-    nodes: any[];
-    edges: any[];
-    metadata: Record<string, string>;
-  } {
-    return {
-      id: this.id,
-      name: this.name,
-      description: this.description,
-      nodes: this.nodes.map(node => node.toLegacyJSON()),
-      edges: this.edges.map(edge => edge.toLegacyJSON()),
-      metadata: this.getMetadataAsRecord(),
-    };
-  }
 
   /**
    * Validates the diagram info
@@ -466,14 +405,14 @@ export class DiagramInfo {
 
     // Validate edge references exist
     this.edges.forEach(edge => {
-      const sourceExists = this.nodes.some(node => node.id === edge.sourceNodeId);
-      const targetExists = this.nodes.some(node => node.id === edge.targetNodeId);
+      const sourceExists = this.nodes.some(node => node.id === edge.source.cell);
+      const targetExists = this.nodes.some(node => node.id === edge.target.cell);
 
       if (!sourceExists) {
-        throw new Error(`Edge ${edge.id} references non-existent source node: ${edge.sourceNodeId}`);
+        throw new Error(`Edge ${edge.id} references non-existent source node: ${edge.source.cell}`);
       }
       if (!targetExists) {
-        throw new Error(`Edge ${edge.id} references non-existent target node: ${edge.targetNodeId}`);
+        throw new Error(`Edge ${edge.id} references non-existent target node: ${edge.target.cell}`);
       }
     });
   }

@@ -58,12 +58,17 @@ export class EdgeService {
       source: edgeInfo.source,
       target: edgeInfo.target,
       shape: edgeInfo.shape,
-      markup: this._getEdgeMarkup(),
+      markup: edgeInfo.markup || this._getEdgeMarkup(),
       attrs,
       labels: edgeInfo.labels,
       vertices: edgeInfo.vertices,
       zIndex: edgeInfo.zIndex,
       visible: edgeInfo.visible,
+      data: edgeInfo.data,
+      router: edgeInfo.router,
+      connector: edgeInfo.connector,
+      defaultLabel: edgeInfo.defaultLabel,
+      tools: edgeInfo.tools,
     };
 
     const x6Edge = this._x6CoreOps.addEdge(graph, edgeParams);

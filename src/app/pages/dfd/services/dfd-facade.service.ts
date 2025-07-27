@@ -322,4 +322,11 @@ export class DfdFacadeService {
   ): void {
     this.diagramService.loadDiagramCellsBatch(cells, graph, diagramId, nodeConfigurationService);
   }
+
+  /**
+   * Save diagram changes back to the threat model
+   */
+  saveDiagramChanges(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
+    return this.diagramService.saveDiagramChanges(graph, diagramId, threatModelId);
+  }
 }

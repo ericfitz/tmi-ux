@@ -45,8 +45,10 @@ describe('NodeInfo', () => {
       expect(nodeInfo.y).toBe(y);
       expect(nodeInfo.width).toBe(width);
       expect(nodeInfo.height).toBe(height);
-      expect(nodeInfo.position).toEqual(new Point(x, y));
-      expect(nodeInfo.size).toEqual({ width, height });
+      expect(nodeInfo.x).toBe(x);
+      expect(nodeInfo.y).toBe(y);
+      expect(nodeInfo.width).toBe(width);
+      expect(nodeInfo.height).toBe(height);
       expect(nodeInfo.attrs).toBe(attrs);
       expect(nodeInfo.ports).toBe(ports);
       expect(nodeInfo.zIndex).toBe(zIndex);
@@ -54,7 +56,7 @@ describe('NodeInfo', () => {
       expect(nodeInfo.data).toBe(metadata);
       expect(nodeInfo.angle).toBe(angle);
       expect(nodeInfo.parent).toBe(parent);
-      expect(nodeInfo.label).toBe('Test Process');
+      expect(nodeInfo.attrs?.text?.text).toBe('Test Process');
     });
 
     it('should create NodeInfo with minimal parameters', () => {
@@ -74,10 +76,10 @@ describe('NodeInfo', () => {
       // Assert
       expect(nodeInfo.id).toBe('node-1');
       expect(nodeInfo.shape).toBe('process');
-      expect(nodeInfo.label).toBe('Process');
+      expect(nodeInfo.attrs?.text?.text).toBe('Process');
       expect(nodeInfo.zIndex).toBe(1);
       expect(nodeInfo.visible).toBe(true);
-      expect(nodeInfo.data).toEqual([]);
+      expect(nodeInfo.data).toEqual({ _metadata: [] });
       expect(nodeInfo.angle).toBe(0);
       expect(nodeInfo.parent).toBe(undefined);
     });
@@ -164,7 +166,7 @@ describe('NodeInfo', () => {
         attrs: createDefaultNodeAttrs('process', 'My Process'),
         angle: 45,
         parent: 'parent-1',
-        data: [{ key: 'category', value: 'business' }, { key: 'priority', value: 'high' }] as Metadata[],
+        data: { _metadata: [{ key: 'category', value: 'business' }, { key: 'priority', value: 'high' }] },
       };
 
       // Act
@@ -177,9 +179,11 @@ describe('NodeInfo', () => {
       expect(nodeInfo.y).toBe(200);
       expect(nodeInfo.width).toBe(140);
       expect(nodeInfo.height).toBe(80);
-      expect(nodeInfo.position).toEqual(new Point(150, 200));
-      expect(nodeInfo.size).toEqual({ width: 140, height: 80 });
-      expect(nodeInfo.label).toBe('My Process');
+      expect(nodeInfo.x).toBe(150);
+      expect(nodeInfo.y).toBe(200);
+      expect(nodeInfo.width).toBe(140);
+      expect(nodeInfo.height).toBe(80);
+      expect(nodeInfo.attrs?.text?.text).toBe('My Process');
       expect(nodeInfo.zIndex).toBe(3);
       expect(nodeInfo.visible).toBe(true);
       expect(nodeInfo.angle).toBe(45);
@@ -206,38 +210,16 @@ describe('NodeInfo', () => {
       // Assert
       expect(nodeInfo.id).toBe('node-1');
       expect(nodeInfo.shape).toBe('process');
-      expect(nodeInfo.position).toEqual(new Point(150, 200));
-      expect(nodeInfo.size).toEqual({ width: 140, height: 80 });
-      expect(nodeInfo.label).toBe('My Process');
+      expect(nodeInfo.x).toBe(150);
+      expect(nodeInfo.y).toBe(200);
+      expect(nodeInfo.width).toBe(140);
+      expect(nodeInfo.height).toBe(80);
+      expect(nodeInfo.attrs?.text?.text).toBe('My Process');
       expect(nodeInfo.zIndex).toBe(3);
       expect(nodeInfo.visible).toBe(true);
       expect(nodeInfo.getMetadataAsRecord()).toEqual({ category: 'business', priority: 'high' });
     });
 
-    it('should create NodeInfo from legacy JSON', () => {
-      // Arrange
-      const json = {
-        id: 'node-1',
-        type: 'actor' as NodeType,
-        label: 'User',
-        position: { x: 50, y: 75 },
-        width: 120,
-        height: 60,
-        metadata: { role: 'external' },
-      };
-
-      // Act
-      const nodeInfo = NodeInfo.fromLegacyJSON(json);
-
-      // Assert
-      expect(nodeInfo.id).toBe('node-1');
-      expect(nodeInfo.shape).toBe('actor');
-      expect(nodeInfo.label).toBe('User');
-      expect(nodeInfo.position).toEqual({ x: 50, y: 75 });
-      expect(nodeInfo.width).toBe(120);
-      expect(nodeInfo.height).toBe(60);
-      expect(nodeInfo.getMetadataAsRecord()).toEqual({ role: 'external' });
-    });
 
     it('should create NodeInfo using create method', () => {
       // Arrange
@@ -257,7 +239,7 @@ describe('NodeInfo', () => {
       // Assert
       expect(nodeInfo.id).toBe('node-1');
       expect(nodeInfo.shape).toBe('store');
-      expect(nodeInfo.label).toBe('Database');
+      expect(nodeInfo.attrs?.text?.text).toBe('Database');
     });
 
     it('should create default NodeInfo', () => {
@@ -273,7 +255,7 @@ describe('NodeInfo', () => {
       expect(nodeInfo.position).toEqual({ x: 100, y: 100 });
       expect(nodeInfo.width).toBe(140); // Default process width
       expect(nodeInfo.height).toBe(80); // Default process height
-      expect(nodeInfo.label).toBe('Process'); // Default English label
+      expect(nodeInfo.attrs?.text?.text).toBe('Process'); // Default English label
     });
   });
 
@@ -292,7 +274,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Original Process'),
         createDefaultPortConfiguration('process'),
-        [{ key: 'category', value: 'business' }]
+        { _metadata: [{ key: 'category', value: 'business' }] }
       );
     });
 
@@ -305,9 +287,11 @@ describe('NodeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalNodeInfo);
-      expect(updated.position).toEqual(new Point(200, 150));
+      expect(updated.x).toBe(200);
+      expect(updated.y).toBe(150);
       expect(updated.id).toBe(originalNodeInfo.id);
-      expect(originalNodeInfo.position).toEqual(new Point(100, 100)); // Original unchanged
+      expect(originalNodeInfo.x).toBe(100);
+      expect(originalNodeInfo.y).toBe(100); // Original unchanged
     });
 
     it('should create new NodeInfo with updated label', () => {
@@ -319,9 +303,9 @@ describe('NodeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalNodeInfo);
-      expect(updated.label).toBe(newLabel);
+      expect(updated.attrs?.text?.text).toBe(newLabel);
       expect(updated.id).toBe(originalNodeInfo.id);
-      expect(originalNodeInfo.label).toBe('Original Process'); // Original unchanged
+      expect(originalNodeInfo.attrs?.text?.text).toBe('Original Process'); // Original unchanged
     });
 
     it('should create new NodeInfo with updated width', () => {
@@ -378,7 +362,6 @@ describe('NodeInfo', () => {
       // Assert
       expect(updated).not.toBe(originalNodeInfo);
       expect(updated.getMetadataAsRecord()).toEqual({
-        category: 'business',
         priority: 'high',
         owner: 'team-alpha',
       });
@@ -397,9 +380,8 @@ describe('NodeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalNodeInfo);
-      expect(updated.data).toHaveLength(3); // Original + 2 new entries
+      expect(updated.metadata).toHaveLength(2); // New metadata entries
       expect(updated.getMetadataAsRecord()).toEqual({
-        category: 'business',
         priority: 'high',
         owner: 'team-alpha',
       });
@@ -449,7 +431,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Test Process'),
         createDefaultPortConfiguration('process'),
-        [{ key: 'category', value: 'business' }]
+        { _metadata: [{ key: 'category', value: 'business' }] }
       );
     });
 
@@ -492,7 +474,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Test Process'),
         createDefaultPortConfiguration('process'),
-        [{ key: 'category', value: 'business' }]
+        { _metadata: [{ key: 'category', value: 'business' }] }
       );
       const different = new NodeInfo(
         'node-2',
@@ -505,7 +487,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Test Process'),
         createDefaultPortConfiguration('process'),
-        [{ key: 'category', value: 'business' }]
+        { _metadata: [{ key: 'category', value: 'business' }] }
       );
 
       // Act & Assert
@@ -536,26 +518,11 @@ describe('NodeInfo', () => {
       expect(json.visible).toBe(true);
       expect(json.attrs).toBeDefined();
       expect(json.ports).toBeDefined();
-      expect(json.data).toEqual([{ key: 'category', value: 'business' }]);
+      expect(json.data).toEqual({ _metadata: [{ key: 'category', value: 'business' }] });
       expect(json.angle).toBe(0);
       expect(json.parent).toBeUndefined();
     });
 
-    it('should serialize to legacy JSON correctly', () => {
-      // Act
-      const json = nodeInfo.toLegacyJSON();
-
-      // Assert
-      expect(json).toEqual({
-        id: 'node-1',
-        type: 'process',
-        label: 'Test Process',
-        position: { x: 100, y: 100 },
-        width: 120,
-        height: 60,
-        metadata: { category: 'business' },
-      });
-    });
   });
 
   describe('Default Dimensions and Labels', () => {
@@ -582,8 +549,216 @@ describe('NodeInfo', () => {
 
       types.forEach((type, index) => {
         const nodeInfo = NodeInfo.createDefault(`node-${index}`, type, new Point(0, 0));
-        expect(nodeInfo.label).toBe(expectedLabels[index]);
+        expect(nodeInfo.attrs?.text?.text).toBe(expectedLabels[index]);
       });
+    });
+  });
+
+  describe('X6 Properties', () => {
+    it('should create NodeInfo with markup property', () => {
+      // Arrange
+      const markup = [
+        {
+          tagName: 'rect',
+          selector: 'body',
+          attrs: { fill: '#ffffff', stroke: '#000000' }
+        },
+        {
+          tagName: 'text',
+          selector: 'label',
+          attrs: { fontSize: 14, fill: '#000000' }
+        }
+      ];
+
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 60,
+        label: 'Test Process',
+        markup
+      });
+
+      // Assert
+      expect(nodeInfo.markup).toEqual(markup);
+      expect(nodeInfo.toJSON().markup).toEqual(markup);
+    });
+
+    it('should create NodeInfo with tools property', () => {
+      // Arrange
+      const tools = [
+        { name: 'boundary', args: { distance: 20 } },
+        { name: 'remove', args: { x: 10, y: 10 } }
+      ];
+
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 60,
+        label: 'Test Process',
+        tools
+      });
+
+      // Assert
+      expect(nodeInfo.tools).toEqual(tools);
+      expect(nodeInfo.toJSON().tools).toEqual(tools);
+    });
+
+    it('should handle undefined X6 properties gracefully', () => {
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 60,
+        label: 'Test Process'
+      });
+
+      // Assert
+      expect(nodeInfo.markup).toBeUndefined();
+      expect(nodeInfo.tools).toBeUndefined();
+      expect(nodeInfo.toJSON().markup).toBeUndefined();
+      expect(nodeInfo.toJSON().tools).toBeUndefined();
+    });
+
+    it('should preserve X6 properties in with* methods', () => {
+      // Arrange
+      const markup = [{ tagName: 'rect', selector: 'body' }];
+      const tools = [{ name: 'boundary' }];
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 60,
+        label: 'Test Process',
+        markup,
+        tools
+      });
+
+      // Act
+      const updatedNodeInfo = nodeInfo.withLabel('Updated Label');
+
+      // Assert
+      expect(updatedNodeInfo.markup).toEqual(markup);
+      expect(updatedNodeInfo.tools).toEqual(tools);
+      expect(updatedNodeInfo.attrs?.text?.text).toBe('Updated Label');
+    });
+
+    it('should handle style convenience property', () => {
+      // Arrange
+      const style = {
+        fill: '#ff0000',
+        stroke: '#000000',
+        strokeWidth: 3,
+        fontSize: 16,
+        fontColor: '#333333'
+      };
+
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 60,
+        label: 'Test Process',
+        style
+      });
+
+      // Assert
+      expect(nodeInfo.attrs?.body?.fill).toBe('#ff0000');
+      expect(nodeInfo.attrs?.body?.stroke).toBe('#000000');
+      expect(nodeInfo.attrs?.body?.strokeWidth).toBe(3);
+      expect(nodeInfo.attrs?.text?.fontSize).toBe(16);
+      expect(nodeInfo.attrs?.text?.fill).toBe('#333333');
+    });
+
+    it('should handle position convenience property', () => {
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        position: { x: 150, y: 200 },
+        width: 120,
+        height: 60,
+        label: 'Test Process'
+      });
+
+      // Assert
+      expect(nodeInfo.x).toBe(150);
+      expect(nodeInfo.y).toBe(200);
+    });
+
+    it('should handle size convenience property', () => {
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100,
+        y: 100,
+        size: { width: 200, height: 100 },
+        label: 'Test Process'
+      });
+
+      // Assert
+      expect(nodeInfo.width).toBe(200);
+      expect(nodeInfo.height).toBe(100);
+    });
+  });
+
+  describe('X6 Validation', () => {
+    it('should validate markup structure', () => {
+      // Act & Assert
+      expect(() => {
+        NodeInfo.fromJSON({
+          id: 'test-node',
+          shape: 'process',
+          x: 100, y: 100, width: 120, height: 60,
+          label: 'Test Process',
+          markup: [{ tagName: '', selector: 'body' }] // Invalid: empty tagName
+        });
+      }).toThrow('Markup element at index 0 must have a valid tagName');
+    });
+
+    it('should validate tools structure', () => {
+      // Act & Assert
+      expect(() => {
+        NodeInfo.fromJSON({
+          id: 'test-node',
+          shape: 'process',
+          x: 100, y: 100, width: 120, height: 60,
+          label: 'Test Process',
+          tools: [{ name: '', args: {} }] // Invalid: empty name
+        });
+      }).toThrow('Tool at index 0 must have a valid name');
+    });
+
+    it('should accept valid markup and tools', () => {
+      // Act
+      const nodeInfo = NodeInfo.fromJSON({
+        id: 'test-node',
+        shape: 'process',
+        x: 100, y: 100, width: 120, height: 60,
+        label: 'Test Process',
+        markup: [{ tagName: 'rect', selector: 'body', attrs: { fill: '#fff' } }],
+        tools: [{ name: 'boundary', args: { distance: 10 } }]
+      });
+
+      // Assert
+      expect(nodeInfo.markup).toHaveLength(1);
+      expect(nodeInfo.tools).toHaveLength(1);
     });
   });
 });

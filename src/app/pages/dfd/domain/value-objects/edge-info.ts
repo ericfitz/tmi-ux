@@ -3,6 +3,7 @@ import { EdgeTerminal } from './edge-terminal';
 import { EdgeAttrs } from './edge-attrs';
 import { EdgeLabel } from './edge-label';
 import { Metadata } from './metadata';
+import { MarkupElement, CellTool, EdgeRouter, EdgeConnector } from './x6-types';
 
 /**
  * Edge info value object representing the domain model for diagram edges
@@ -20,122 +21,93 @@ export class EdgeInfo {
     public readonly attrs: EdgeAttrs = {},
     public readonly labels: EdgeLabel[] = [],
     public readonly vertices: Point[] = [],
-    public readonly data: Metadata[] = [],
+    public readonly data: { _metadata: Metadata[]; [key: string]: any } = { _metadata: [] },
+    public readonly markup?: MarkupElement[],
+    public readonly tools?: CellTool[],
+    public readonly router?: EdgeRouter,
+    public readonly connector?: EdgeConnector,
+    public readonly defaultLabel?: EdgeLabel,
   ) {
     this._validate();
   }
 
   /**
-   * Gets the source node ID for backward compatibility
+   * Gets the structured business metadata array
    */
-  get sourceNodeId(): string {
-    return this.source.cell;
+  get metadata(): Metadata[] {
+    return this.data._metadata || [];
   }
 
   /**
-   * Gets the target node ID for backward compatibility
+   * Gets custom data (excluding reserved metadata namespace)
    */
-  get targetNodeId(): string {
-    return this.target.cell;
+  getCustomData(): Record<string, any> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _metadata: _, ...customData } = this.data;
+    return customData;
   }
 
-  /**
-   * Gets the source port ID for backward compatibility
-   */
-  get sourcePortId(): string | undefined {
-    return this.source.port;
-  }
 
   /**
-   * Gets the target port ID for backward compatibility
-   */
-  get targetPortId(): string | undefined {
-    return this.target.port;
-  }
-
-  /**
-   * Gets the label from attrs.text.text or labels for backward compatibility
-   */
-  get label(): string | undefined {
-    // First try to get from attrs.text.text
-    const textAttr = this.attrs?.text;
-    if (textAttr?.text) {
-      return textAttr.text;
-    }
-
-    // Fallback to first label
-    if (this.labels && this.labels.length > 0) {
-      const firstLabel = this.labels[0];
-      if (firstLabel.attrs?.text?.text) {
-        return firstLabel.attrs.text.text;
-      }
-    }
-
-    return undefined;
-  }
-
-  /**
-   * Creates EdgeInfo from a plain object (supports both new and legacy formats)
+   * Creates EdgeInfo from a plain object
    */
   static fromJSON(data: {
     id: string;
     shape?: string;
-    source?: EdgeTerminal | string;
-    target?: EdgeTerminal | string;
-    sourceNodeId?: string;
-    targetNodeId?: string;
-    sourcePortId?: string;
-    targetPortId?: string;
+    source?: EdgeTerminal;
+    target?: EdgeTerminal;
+    sourceNodeId?: string; // Legacy field
+    targetNodeId?: string; // Legacy field
+    sourcePortId?: string; // Legacy field
+    targetPortId?: string; // Legacy field
     label?: string;
     attrs?: EdgeAttrs;
     labels?: EdgeLabel[];
     vertices?: Point[] | Array<{ x: number; y: number }>;
     zIndex?: number;
     visible?: boolean;
-    data?: Metadata[];
-    metadata?: Metadata[] | Record<string, string>;
+    data?: { _metadata: Metadata[]; [key: string]: any };
+    metadata?: Record<string, string>; // Legacy field
+    markup?: MarkupElement[];
+    tools?: CellTool[];
+    router?: EdgeRouter;
+    connector?: EdgeConnector;
+    defaultLabel?: EdgeLabel;
+    style?: {
+      stroke?: string;
+      strokeWidth?: number;
+      strokeDasharray?: string;
+      fontSize?: number;
+      fontColor?: string;
+    };
   }): EdgeInfo {
-    // Handle format conversion for source
+    // Handle source terminal (new vs legacy format)
     let source: EdgeTerminal;
     if (data.source) {
-      if (typeof data.source === 'string') {
-        // Legacy format: source was a string (cell ID)
-        source = { cell: data.source };
-      } else {
-        // New format: source is EdgeTerminal
-        source = data.source;
-      }
+      source = data.source;
     } else if (data.sourceNodeId) {
-      // Legacy format: separate sourceNodeId/sourcePortId
       source = {
         cell: data.sourceNodeId,
-        port: data.sourcePortId,
+        port: data.sourcePortId || 'right'
       };
     } else {
-      throw new Error('Either source or sourceNodeId must be provided');
+      throw new Error('Source information is required');
     }
 
-    // Handle format conversion for target
+    // Handle target terminal (new vs legacy format)
     let target: EdgeTerminal;
     if (data.target) {
-      if (typeof data.target === 'string') {
-        // Legacy format: target was a string (cell ID)
-        target = { cell: data.target };
-      } else {
-        // New format: target is EdgeTerminal
-        target = data.target;
-      }
+      target = data.target;
     } else if (data.targetNodeId) {
-      // Legacy format: separate targetNodeId/targetPortId
       target = {
         cell: data.targetNodeId,
-        port: data.targetPortId,
+        port: data.targetPortId || 'left'
       };
     } else {
-      throw new Error('Either target or targetNodeId must be provided');
+      throw new Error('Target information is required');
     }
 
-    // Handle attrs
+    // Handle attrs and style convenience property
     let attrs: EdgeAttrs = data.attrs || {};
     if (data.label && !attrs.text?.text) {
       attrs = {
@@ -144,23 +116,38 @@ export class EdgeInfo {
       };
     }
 
+    // Apply style convenience properties if provided
+    if (data.style) {
+      attrs = {
+        ...attrs,
+        line: {
+          ...attrs.line,
+          ...(data.style.stroke && { stroke: data.style.stroke }),
+          ...(data.style.strokeWidth !== undefined && { strokeWidth: data.style.strokeWidth }),
+          ...(data.style.strokeDasharray && { strokeDasharray: data.style.strokeDasharray }),
+        },
+        text: {
+          ...attrs.text,
+          ...(data.style.fontSize !== undefined && { fontSize: data.style.fontSize }),
+          ...(data.style.fontColor && { fill: data.style.fontColor }),
+        },
+      };
+    }
+
     // Handle labels
     const labels: EdgeLabel[] = data.labels || [];
 
-    // Handle vertices - convert from legacy format if needed
+    // Handle vertices
     const vertices: Point[] = (data.vertices || []).map(v => 
       v instanceof Point ? v : new Point(v.x, v.y)
     );
 
-    // Convert metadata if needed
-    let metadata: Metadata[] = [];
-    const metadataSource = data.data || data.metadata;
-    if (metadataSource) {
-      if (Array.isArray(metadataSource)) {
-        metadata = metadataSource;
-      } else {
-        metadata = Object.entries(metadataSource).map(([key, value]) => ({ key, value }));
-      }
+    // Handle hybrid data format or legacy metadata
+    let hybridData = data.data || { _metadata: [] };
+    if (!data.data && data.metadata) {
+      // Convert legacy metadata to hybrid format
+      const metadataArray = Object.entries(data.metadata).map(([key, value]) => ({ key, value }));
+      hybridData = { _metadata: metadataArray };
     }
 
     return new EdgeInfo(
@@ -173,14 +160,21 @@ export class EdgeInfo {
       attrs,
       labels,
       vertices,
-      metadata,
+      hybridData,
+      data.markup,
+      data.tools,
+      data.router,
+      data.connector,
+      data.defaultLabel,
     );
   }
 
+
   /**
-   * Creates EdgeInfo from legacy format for backward compatibility
+   * Creates a new EdgeInfo instance from a plain object.
+   * This is a factory method for creating new instances.
    */
-  static fromLegacyJSON(data: {
+  static create(data: {
     id: string;
     sourceNodeId: string;
     targetNodeId: string;
@@ -189,15 +183,20 @@ export class EdgeInfo {
     label?: string;
     vertices?: Array<{ x: number; y: number }>;
     metadata?: Record<string, string>;
+    customData?: Record<string, any>;
   }): EdgeInfo {
+    // Assign default ports if not specified
+    const sourcePortId = data.sourcePortId || 'right';
+    const targetPortId = data.targetPortId || 'left';
+
     const source: EdgeTerminal = {
       cell: data.sourceNodeId,
-      port: data.sourcePortId,
+      port: sourcePortId,
     };
 
     const target: EdgeTerminal = {
       cell: data.targetNodeId,
-      port: data.targetPortId,
+      port: targetPortId,
     };
 
     const attrs: EdgeAttrs = data.label ? { text: { text: data.label } } : {};
@@ -207,6 +206,11 @@ export class EdgeInfo {
     const metadataEntries: Metadata[] = data.metadata
       ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
       : [];
+
+    const hybridData = {
+      _metadata: metadataEntries,
+      ...(data.customData || {})
+    };
 
     return new EdgeInfo(
       data.id,
@@ -218,33 +222,8 @@ export class EdgeInfo {
       attrs,
       [],
       vertices,
-      metadataEntries,
+      hybridData,
     );
-  }
-
-  /**
-   * Creates a new EdgeInfo instance from a plain object.
-   * This is a factory method for creating new instances, similar to fromJSON but for new data.
-   */
-  static create(data: {
-    id: string;
-    sourceNodeId: string;
-    targetNodeId: string;
-    sourcePortId?: string;
-    targetPortId?: string;
-    label?: string;
-    vertices?: Array<{ x: number; y: number }>;
-    metadata?: Record<string, string>;
-  }): EdgeInfo {
-    // Assign default ports if not specified
-    const sourcePortId = data.sourcePortId || 'right';
-    const targetPortId = data.targetPortId || 'left';
-
-    return EdgeInfo.fromLegacyJSON({
-      ...data,
-      sourcePortId,
-      targetPortId,
-    });
   }
 
   /**
@@ -299,6 +278,11 @@ export class EdgeInfo {
       this.labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -320,6 +304,11 @@ export class EdgeInfo {
       this.labels,
       pointVertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -359,13 +348,15 @@ export class EdgeInfo {
     let newMetadata: Metadata[];
 
     if (Array.isArray(metadata)) {
-      // Already in correct format
-      newMetadata = [...this.data, ...metadata];
+      newMetadata = metadata;
     } else {
-      // Convert from Record format
-      const additionalEntries = Object.entries(metadata).map(([key, value]) => ({ key, value }));
-      newMetadata = [...this.data, ...additionalEntries];
+      newMetadata = Object.entries(metadata).map(([key, value]) => ({ key, value }));
     }
+
+    const newData = {
+      ...this.data,
+      _metadata: newMetadata
+    };
 
     return new EdgeInfo(
       this.id,
@@ -377,7 +368,12 @@ export class EdgeInfo {
       this.attrs,
       this.labels,
       this.vertices,
-      newMetadata,
+      newData,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -397,6 +393,11 @@ export class EdgeInfo {
       this.labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -416,6 +417,67 @@ export class EdgeInfo {
       this.labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
+    );
+  }
+
+  /**
+   * Creates a new EdgeInfo with updated custom data
+   */
+  withCustomData(key: string, value: any): EdgeInfo {
+    const newData = {
+      ...this.data,
+      [key]: value
+    };
+
+    return new EdgeInfo(
+      this.id,
+      this.shape,
+      this.source,
+      this.target,
+      this.zIndex,
+      this.visible,
+      this.attrs,
+      this.labels,
+      this.vertices,
+      newData,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
+    );
+  }
+
+  /**
+   * Creates a new EdgeInfo with multiple custom data updates
+   */
+  withCustomDataBatch(customData: Record<string, any>): EdgeInfo {
+    const newData = {
+      ...this.data,
+      ...customData
+    };
+
+    return new EdgeInfo(
+      this.id,
+      this.shape,
+      this.source,
+      this.target,
+      this.zIndex,
+      this.visible,
+      this.attrs,
+      this.labels,
+      this.vertices,
+      newData,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -434,6 +496,11 @@ export class EdgeInfo {
       this.labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -450,6 +517,7 @@ export class EdgeInfo {
     zIndex?: number;
     visible?: boolean;
     metadata?: Metadata[] | Record<string, string>;
+    customData?: Record<string, any>;
     label?: string; // Convenience property that updates attrs.text.text
   }): EdgeInfo {
     // Handle label convenience property
@@ -458,14 +526,23 @@ export class EdgeInfo {
       newAttrs = { ...newAttrs, text: { ...newAttrs.text, text: updates.label } };
     }
 
-    // Handle metadata format conversion
-    let newMetadata = this.data;
-    if (updates.metadata !== undefined) {
-      if (Array.isArray(updates.metadata)) {
-        newMetadata = updates.metadata;
-      } else {
-        newMetadata = Object.entries(updates.metadata).map(([key, value]) => ({ key, value }));
+    // Handle hybrid data updates
+    let newData = this.data;
+    if (updates.metadata !== undefined || updates.customData !== undefined) {
+      let newMetadata = this.metadata;
+      if (updates.metadata !== undefined) {
+        if (Array.isArray(updates.metadata)) {
+          newMetadata = updates.metadata;
+        } else {
+          newMetadata = Object.entries(updates.metadata).map(([key, value]) => ({ key, value }));
+        }
       }
+      
+      newData = {
+        ...this.data,
+        ...(updates.customData || {}),
+        _metadata: newMetadata
+      };
     }
 
     // Handle vertices conversion
@@ -483,7 +560,12 @@ export class EdgeInfo {
       newAttrs,
       updates.labels ?? this.labels,
       newVertices,
-      newMetadata,
+      newData,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -491,7 +573,7 @@ export class EdgeInfo {
    * Checks if this edge connects to the specified node
    */
   connectsToNode(nodeId: string): boolean {
-    return this.sourceNodeId === nodeId || this.targetNodeId === nodeId;
+    return this.source.cell === nodeId || this.target.cell === nodeId;
   }
 
   /**
@@ -499,8 +581,8 @@ export class EdgeInfo {
    */
   usesPort(nodeId: string, portId: string): boolean {
     return (
-      (this.sourceNodeId === nodeId && this.sourcePortId === portId) ||
-      (this.targetNodeId === nodeId && this.targetPortId === portId)
+      (this.source.cell === nodeId && this.source.port === portId) ||
+      (this.target.cell === nodeId && this.target.port === portId)
     );
   }
 
@@ -546,7 +628,7 @@ export class EdgeInfo {
    * Returns a string representation of the edge info
    */
   toString(): string {
-    return `EdgeInfo(${this.id}, ${this.sourceNodeId} -> ${this.targetNodeId})`;
+    return `EdgeInfo(${this.id}, ${this.source.cell} -> ${this.target.cell})`;
   }
 
   /**
@@ -562,7 +644,12 @@ export class EdgeInfo {
     attrs: EdgeAttrs;
     labels: EdgeLabel[];
     vertices: Point[];
-    data: Metadata[];
+    data: { _metadata: Metadata[]; [key: string]: any };
+    markup?: MarkupElement[];
+    tools?: CellTool[];
+    router?: EdgeRouter;
+    connector?: EdgeConnector;
+    defaultLabel?: EdgeLabel;
   } {
     return {
       id: this.id,
@@ -575,33 +662,14 @@ export class EdgeInfo {
       labels: this.labels,
       vertices: this.vertices,
       data: this.data,
+      markup: this.markup,
+      tools: this.tools,
+      router: this.router,
+      connector: this.connector,
+      defaultLabel: this.defaultLabel,
     };
   }
 
-  /**
-   * Converts to legacy JSON format for backward compatibility
-   */
-  toLegacyJSON(): {
-    id: string;
-    sourceNodeId: string;
-    targetNodeId: string;
-    sourcePortId?: string;
-    targetPortId?: string;
-    label?: string;
-    vertices: Array<{ x: number; y: number }>;
-    metadata: Record<string, string>;
-  } {
-    return {
-      id: this.id,
-      sourceNodeId: this.sourceNodeId,
-      targetNodeId: this.targetNodeId,
-      sourcePortId: this.sourcePortId,
-      targetPortId: this.targetPortId,
-      label: this.label,
-      vertices: this.vertices.map(v => ({ x: v.x, y: v.y })),
-      metadata: this.getMetadataAsRecord(),
-    };
-  }
 
 
   /**
@@ -609,7 +677,7 @@ export class EdgeInfo {
    */
   getMetadataAsRecord(): Record<string, string> {
     const record: Record<string, string> = {};
-    this.data.forEach(entry => {
+    this.metadata.forEach(entry => {
       record[entry.key] = entry.value;
     });
     return record;
@@ -630,6 +698,11 @@ export class EdgeInfo {
       this.labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -648,6 +721,11 @@ export class EdgeInfo {
       this.labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -666,6 +744,11 @@ export class EdgeInfo {
       labels,
       this.vertices,
       this.data,
+      this.markup,
+      this.tools,
+      this.router,
+      this.connector,
+      this.defaultLabel,
     );
   }
 
@@ -709,15 +792,15 @@ export class EdgeInfo {
       throw new Error('Edge shape cannot be empty');
     }
 
-    if (!this.sourceNodeId || this.sourceNodeId.trim().length === 0) {
+    if (!this.source.cell || this.source.cell.trim().length === 0) {
       throw new Error('Source node ID cannot be empty');
     }
 
-    if (!this.targetNodeId || this.targetNodeId.trim().length === 0) {
+    if (!this.target.cell || this.target.cell.trim().length === 0) {
       throw new Error('Target node ID cannot be empty');
     }
 
-    if (this.sourceNodeId === this.targetNodeId && this.sourcePortId === this.targetPortId) {
+    if (this.source.cell === this.target.cell && this.source.port === this.target.port) {
       throw new Error('Self-loops to the same port are not allowed');
     }
 
@@ -739,6 +822,102 @@ export class EdgeInfo {
     if (!this.target.cell || this.target.cell.trim().length === 0) {
       throw new Error('Target cell ID cannot be empty');
     }
+
+    // Validate X6-specific properties
+    this._validateX6Properties();
+  }
+
+  /**
+   * Validates X6-specific properties
+   */
+  private _validateX6Properties(): void {
+    // Validate markup structure
+    if (this.markup) {
+      this.markup.forEach((element, index) => {
+        if (!element.tagName || typeof element.tagName !== 'string') {
+          throw new Error(`Edge markup element at index ${index} must have a valid tagName`);
+        }
+        if (element.selector && typeof element.selector !== 'string') {
+          throw new Error(`Edge markup element at index ${index} selector must be a string`);
+        }
+        if (element.attrs && typeof element.attrs !== 'object') {
+          throw new Error(`Edge markup element at index ${index} attrs must be an object`);
+        }
+        if (element.children) {
+          if (!Array.isArray(element.children)) {
+            throw new Error(`Edge markup element at index ${index} children must be an array`);
+          }
+        }
+      });
+    }
+
+    // Validate tools structure
+    if (this.tools) {
+      this.tools.forEach((tool, index) => {
+        if (!tool.name || typeof tool.name !== 'string') {
+          throw new Error(`Edge tool at index ${index} must have a valid name`);
+        }
+        if (tool.args && typeof tool.args !== 'object') {
+          throw new Error(`Edge tool at index ${index} args must be an object`);
+        }
+      });
+    }
+
+    // Validate router configuration
+    if (this.router) {
+      if (typeof this.router === 'string') {
+        const validRouters = ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'];
+        if (!validRouters.includes(this.router)) {
+          throw new Error(`Invalid router type: ${this.router}. Must be one of: ${validRouters.join(', ')}`);
+        }
+      } else if (typeof this.router === 'object') {
+        const validRouters = ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'];
+        if (!this.router.name || !validRouters.includes(this.router.name)) {
+          throw new Error(`Invalid router name: ${this.router.name}. Must be one of: ${validRouters.join(', ')}`);
+        }
+        if (this.router.args && typeof this.router.args !== 'object') {
+          throw new Error('Router args must be an object');
+        }
+      } else {
+        throw new Error('Router must be a string or object with name property');
+      }
+    }
+
+    // Validate connector configuration
+    if (this.connector) {
+      if (typeof this.connector === 'string') {
+        const validConnectors = ['normal', 'rounded', 'smooth', 'jumpover'];
+        if (!validConnectors.includes(this.connector)) {
+          throw new Error(`Invalid connector type: ${this.connector}. Must be one of: ${validConnectors.join(', ')}`);
+        }
+      } else if (typeof this.connector === 'object') {
+        const validConnectors = ['normal', 'rounded', 'smooth', 'jumpover'];
+        if (!this.connector.name || !validConnectors.includes(this.connector.name)) {
+          throw new Error(`Invalid connector name: ${this.connector.name}. Must be one of: ${validConnectors.join(', ')}`);
+        }
+        if (this.connector.args && typeof this.connector.args !== 'object') {
+          throw new Error('Connector args must be an object');
+        }
+      } else {
+        throw new Error('Connector must be a string or object with name property');
+      }
+    }
+
+    // Validate defaultLabel structure
+    if (this.defaultLabel) {
+      if (typeof this.defaultLabel !== 'object') {
+        throw new Error('Default label must be an object');
+      }
+      if (this.defaultLabel.position !== undefined) {
+        if (typeof this.defaultLabel.position !== 'number' || 
+            this.defaultLabel.position < 0 || this.defaultLabel.position > 1) {
+          throw new Error('Default label position must be a number between 0 and 1');
+        }
+      }
+      if (this.defaultLabel.attrs && typeof this.defaultLabel.attrs !== 'object') {
+        throw new Error('Default label attrs must be an object');
+      }
+    }
   }
 
   /**
@@ -757,18 +936,29 @@ export class EdgeInfo {
   /**
    * Checks if metadata arrays are equal
    */
-  private metadataEquals(other: Metadata[]): boolean {
-    if (this.data.length !== other.length) {
+  private metadataEquals(other: { _metadata: Metadata[]; [key: string]: any }): boolean {
+    const thisMetadata = this.metadata;
+    const otherMetadata = other._metadata || [];
+    
+    if (thisMetadata.length !== otherMetadata.length) {
       return false;
     }
 
     // Sort both arrays by key for comparison
-    const thisSorted = [...this.data].sort((a, b) => a.key.localeCompare(b.key));
-    const otherSorted = [...other].sort((a, b) => a.key.localeCompare(b.key));
+    const thisSorted = [...thisMetadata].sort((a, b) => a.key.localeCompare(b.key));
+    const otherSorted = [...otherMetadata].sort((a, b) => a.key.localeCompare(b.key));
 
-    return thisSorted.every((entry, index) => {
+    // Check metadata equality
+    const metadataEqual = thisSorted.every((entry, index) => {
       const otherEntry = otherSorted[index];
       return entry.key === otherEntry.key && entry.value === otherEntry.value;
     });
+    
+    // Check custom data equality (excluding _metadata)
+    const thisCustomData = this.getCustomData();
+    const otherCustomData = { ...other };
+    delete (otherCustomData as any)._metadata;
+    
+    return metadataEqual && JSON.stringify(thisCustomData) === JSON.stringify(otherCustomData);
   }
 }

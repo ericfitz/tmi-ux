@@ -55,11 +55,11 @@ describe('EdgeInfo', () => {
       expect(edgeInfo.shape).toBe(shape);
       expect(edgeInfo.source).toEqual(source);
       expect(edgeInfo.target).toEqual(target);
-      expect(edgeInfo.sourceNodeId).toBe('source');
-      expect(edgeInfo.targetNodeId).toBe('target');
-      expect(edgeInfo.sourcePortId).toBe('out-port');
-      expect(edgeInfo.targetPortId).toBe('in-port');
-      expect(edgeInfo.label).toBe('Data Flow');
+      expect(edgeInfo.source.cell).toBe('source');
+      expect(edgeInfo.target.cell).toBe('target');
+      expect(edgeInfo.source.port).toBe('out-port');
+      expect(edgeInfo.target.port).toBe('in-port');
+      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
       expect(edgeInfo.vertices).toEqual(vertices);
       expect(edgeInfo.zIndex).toBe(zIndex);
       expect(edgeInfo.visible).toBe(visible);
@@ -75,15 +75,15 @@ describe('EdgeInfo', () => {
       // Assert
       expect(edgeInfo.id).toBe('edge-1');
       expect(edgeInfo.shape).toBe('edge');
-      expect(edgeInfo.sourceNodeId).toBe('source');
-      expect(edgeInfo.targetNodeId).toBe('target');
-      expect(edgeInfo.sourcePortId).toBeUndefined();
-      expect(edgeInfo.targetPortId).toBeUndefined();
-      expect(edgeInfo.label).toBeUndefined();
+      expect(edgeInfo.source.cell).toBe('source');
+      expect(edgeInfo.target.cell).toBe('target');
+      expect(edgeInfo.source.port).toBeUndefined();
+      expect(edgeInfo.target.port).toBeUndefined();
+      expect(edgeInfo.attrs?.text?.text).toBeUndefined();
       expect(edgeInfo.vertices).toEqual([]);
       expect(edgeInfo.zIndex).toBe(1);
       expect(edgeInfo.visible).toBe(true);
-      expect(edgeInfo.data).toEqual([]);
+      expect(edgeInfo.data).toEqual({ _metadata: [] });
     });
 
     it('should throw error for empty ID', () => {
@@ -163,11 +163,11 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(edgeInfo.id).toBe('edge-1');
-      expect(edgeInfo.sourceNodeId).toBe('source');
-      expect(edgeInfo.targetNodeId).toBe('target');
-      expect(edgeInfo.sourcePortId).toBe('out-port');
-      expect(edgeInfo.targetPortId).toBe('in-port');
-      expect(edgeInfo.label).toBe('Data Flow');
+      expect(edgeInfo.source.cell).toBe('source');
+      expect(edgeInfo.target.cell).toBe('target');
+      expect(edgeInfo.source.port).toBe('out-port');
+      expect(edgeInfo.target.port).toBe('in-port');
+      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
       expect(edgeInfo.vertices).toHaveLength(2);
       expect(edgeInfo.vertices[0].x).toBe(150);
       expect(edgeInfo.vertices[0].y).toBe(150);
@@ -198,11 +198,11 @@ describe('EdgeInfo', () => {
       // Assert
       expect(edgeInfo.id).toBe('edge-1');
       expect(edgeInfo.shape).toBe('edge');
-      expect(edgeInfo.sourceNodeId).toBe('source');
-      expect(edgeInfo.targetNodeId).toBe('target');
-      expect(edgeInfo.sourcePortId).toBe('out-port');
-      expect(edgeInfo.targetPortId).toBe('in-port');
-      expect(edgeInfo.label).toBe('Data Flow');
+      expect(edgeInfo.source.cell).toBe('source');
+      expect(edgeInfo.target.cell).toBe('target');
+      expect(edgeInfo.source.port).toBe('out-port');
+      expect(edgeInfo.target.port).toBe('in-port');
+      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
       expect(edgeInfo.zIndex).toBe(2);
       expect(edgeInfo.visible).toBe(true);
       expect(edgeInfo.vertices).toHaveLength(2);
@@ -216,11 +216,11 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(edgeInfo.id).toBe('edge-1');
-      expect(edgeInfo.sourceNodeId).toBe('source');
-      expect(edgeInfo.targetNodeId).toBe('target');
-      expect(edgeInfo.label).toBe('Data Flow');
-      expect(edgeInfo.sourcePortId).toBe('right');
-      expect(edgeInfo.targetPortId).toBe('left');
+      expect(edgeInfo.source.cell).toBe('source');
+      expect(edgeInfo.target.cell).toBe('target');
+      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
+      expect(edgeInfo.source.port).toBe('right');
+      expect(edgeInfo.target.port).toBe('left');
     });
 
     it('should create EdgeInfo with ports', () => {
@@ -236,11 +236,11 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(edgeInfo.id).toBe('edge-1');
-      expect(edgeInfo.sourceNodeId).toBe('source');
-      expect(edgeInfo.targetNodeId).toBe('target');
-      expect(edgeInfo.sourcePortId).toBe('out-port');
-      expect(edgeInfo.targetPortId).toBe('in-port');
-      expect(edgeInfo.label).toBe('Data Flow');
+      expect(edgeInfo.source.cell).toBe('source');
+      expect(edgeInfo.target.cell).toBe('target');
+      expect(edgeInfo.source.port).toBe('out-port');
+      expect(edgeInfo.target.port).toBe('in-port');
+      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
     });
   });
 
@@ -264,7 +264,7 @@ describe('EdgeInfo', () => {
         attrs,
         [],
         vertices,
-        metadata,
+        { _metadata: metadata },
       );
     });
 
@@ -277,9 +277,9 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalEdgeInfo);
-      expect(updated.label).toBe(newLabel);
+      expect(updated.attrs?.text?.text).toBe(newLabel);
       expect(updated.id).toBe(originalEdgeInfo.id);
-      expect(originalEdgeInfo.label).toBe('Original Label'); // Original unchanged
+      expect(originalEdgeInfo.attrs?.text?.text).toBe('Original Label'); // Original unchanged
     });
 
     it('should create new EdgeInfo with updated vertices', () => {
@@ -357,7 +357,6 @@ describe('EdgeInfo', () => {
       // Assert
       expect(updated).not.toBe(originalEdgeInfo);
       expect(updated.getMetadataAsRecord()).toEqual({
-        style: 'solid',
         color: '#blue',
         thickness: '2px',
       });
@@ -376,9 +375,8 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalEdgeInfo);
-      expect(updated.data).toHaveLength(3); // Original + 2 new entries
+      expect(updated.metadata).toHaveLength(2); // New metadata entries
       expect(updated.getMetadataAsRecord()).toEqual({
-        style: 'solid',
         color: '#blue',
         thickness: '2px',
       });
@@ -394,10 +392,10 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalEdgeInfo);
-      expect(updated.sourceNodeId).toBe(newSourceId);
-      expect(updated.sourcePortId).toBe(newSourcePortId);
-      expect(updated.targetNodeId).toBe(originalEdgeInfo.targetNodeId);
-      expect(originalEdgeInfo.sourceNodeId).toBe('source'); // Original unchanged
+      expect(updated.source.cell).toBe(newSourceId);
+      expect(updated.source.port).toBe(newSourcePortId);
+      expect(updated.target.cell).toBe(originalEdgeInfo.target.cell);
+      expect(originalEdgeInfo.source.cell).toBe('source'); // Original unchanged
     });
 
     it('should create new EdgeInfo with updated target', () => {
@@ -410,10 +408,10 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalEdgeInfo);
-      expect(updated.targetNodeId).toBe(newTargetId);
-      expect(updated.targetPortId).toBe(newTargetPortId);
+      expect(updated.target.cell).toBe(newTargetId);
+      expect(updated.target.port).toBe(newTargetPortId);
       expect(updated.sourceNodeId).toBe(originalEdgeInfo.sourceNodeId);
-      expect(originalEdgeInfo.targetNodeId).toBe('target'); // Original unchanged
+      expect(originalEdgeInfo.target.cell).toBe('target'); // Original unchanged
     });
   });
 
@@ -440,7 +438,7 @@ describe('EdgeInfo', () => {
         attrs,
         [],
         vertices,
-        metadata,
+        { _metadata: metadata },
       );
     });
 
@@ -502,7 +500,7 @@ describe('EdgeInfo', () => {
         attrs,
         [],
         vertices,
-        metadata,
+        { _metadata: metadata },
       );
       const different = new EdgeInfo(
         'edge-2',
@@ -514,7 +512,7 @@ describe('EdgeInfo', () => {
         attrs,
         [],
         vertices,
-        metadata,
+        { _metadata: metadata },
       );
 
       // Act & Assert
@@ -545,28 +543,9 @@ describe('EdgeInfo', () => {
       expect(json.labels).toEqual([]);
       expect(json.vertices).toHaveLength(2);
       expect(json.vertices[0]).toBeInstanceOf(Point);
-      expect(json.data).toEqual([{ key: 'style', value: 'solid' }]);
+      expect(json.data).toEqual({ _metadata: [{ key: 'style', value: 'solid' }] });
     });
 
-    it('should serialize to legacy JSON correctly', () => {
-      // Act
-      const json = edgeInfo.toLegacyJSON();
-
-      // Assert
-      expect(json).toEqual({
-        id: 'edge-1',
-        sourceNodeId: 'source',
-        targetNodeId: 'target',
-        sourcePortId: 'out-port',
-        targetPortId: 'in-port',
-        label: 'Data Flow',
-        vertices: [
-          { x: 100, y: 100 },
-          { x: 200, y: 200 },
-        ],
-        metadata: { style: 'solid' },
-      });
-    });
 
     it('should convert metadata to Record format', () => {
       // Act
@@ -588,7 +567,7 @@ describe('EdgeInfo', () => {
       const edgeInfo = new EdgeInfo('edge-1', 'edge', source, target, 1, true, attrs);
 
       // Act & Assert
-      expect(edgeInfo.label).toBe('Label from attrs');
+      expect(edgeInfo.attrs?.text?.text).toBe('Label from attrs');
     });
 
     it('should return undefined when no label is present', () => {
@@ -598,7 +577,7 @@ describe('EdgeInfo', () => {
       const edgeInfo = new EdgeInfo('edge-1', 'edge', source, target);
 
       // Act & Assert
-      expect(edgeInfo.label).toBeUndefined();
+      expect(edgeInfo.attrs?.text?.text).toBeUndefined();
     });
 
     it('should handle complex attrs structure', () => {
@@ -612,7 +591,276 @@ describe('EdgeInfo', () => {
       const edgeInfo = new EdgeInfo('edge-1', 'edge', source, target, 1, true, attrs);
 
       // Act & Assert
-      expect(edgeInfo.label).toBe('Complex Label');
+      expect(edgeInfo.attrs?.text?.text).toBe('Complex Label');
+    });
+  });
+
+  describe('X6 Properties', () => {
+    it('should create EdgeInfo with markup property', () => {
+      // Arrange
+      const markup = [
+        {
+          tagName: 'path',
+          selector: 'line',
+          attrs: { stroke: '#000000', strokeWidth: 2 }
+        },
+        {
+          tagName: 'text',
+          selector: 'label',
+          attrs: { fontSize: 12, fill: '#333333' }
+        }
+      ];
+
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        markup
+      });
+
+      // Assert
+      expect(edgeInfo.markup).toEqual(markup);
+      expect(edgeInfo.toJSON().markup).toEqual(markup);
+    });
+
+    it('should create EdgeInfo with tools property', () => {
+      // Arrange
+      const tools = [
+        { name: 'vertices', args: { distance: 20 } },
+        { name: 'segments', args: { precision: 2 } }
+      ];
+
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        tools
+      });
+
+      // Assert
+      expect(edgeInfo.tools).toEqual(tools);
+      expect(edgeInfo.toJSON().tools).toEqual(tools);
+    });
+
+    it('should create EdgeInfo with router property', () => {
+      // Arrange
+      const router = {
+        name: 'manhattan' as const,
+        args: { padding: 10, step: 20 }
+      };
+
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        router
+      });
+
+      // Assert
+      expect(edgeInfo.router).toEqual(router);
+      expect(edgeInfo.toJSON().router).toEqual(router);
+    });
+
+    it('should create EdgeInfo with string router', () => {
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        router: 'orth'
+      });
+
+      // Assert
+      expect(edgeInfo.router).toBe('orth');
+      expect(edgeInfo.toJSON().router).toBe('orth');
+    });
+
+    it('should create EdgeInfo with connector property', () => {
+      // Arrange
+      const connector = {
+        name: 'rounded' as const,
+        args: { radius: 10 }
+      };
+
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        connector
+      });
+
+      // Assert
+      expect(edgeInfo.connector).toEqual(connector);
+      expect(edgeInfo.toJSON().connector).toEqual(connector);
+    });
+
+    it('should create EdgeInfo with defaultLabel property', () => {
+      // Arrange
+      const defaultLabel = {
+        position: 0.5,
+        attrs: {
+          text: { fontSize: 14, fill: '#000000' },
+          rect: { fill: '#ffffff', stroke: '#cccccc' }
+        }
+      };
+
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        defaultLabel
+      });
+
+      // Assert
+      expect(edgeInfo.defaultLabel).toEqual(defaultLabel);
+      expect(edgeInfo.toJSON().defaultLabel).toEqual(defaultLabel);
+    });
+
+    it('should handle undefined X6 properties gracefully', () => {
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' }
+      });
+
+      // Assert
+      expect(edgeInfo.markup).toBeUndefined();
+      expect(edgeInfo.tools).toBeUndefined();
+      expect(edgeInfo.router).toBeUndefined();
+      expect(edgeInfo.connector).toBeUndefined();
+      expect(edgeInfo.defaultLabel).toBeUndefined();
+    });
+
+    it('should preserve X6 properties in with* methods', () => {
+      // Arrange
+      const markup = [{ tagName: 'path', selector: 'line' }];
+      const tools = [{ name: 'vertices' }];
+      const router = 'manhattan' as const;
+      const connector = 'rounded' as const;
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        markup,
+        tools,
+        router,
+        connector
+      });
+
+      // Act
+      const updatedEdgeInfo = edgeInfo.withLabel('Updated Label');
+
+      // Assert
+      expect(updatedEdgeInfo.markup).toEqual(markup);
+      expect(updatedEdgeInfo.tools).toEqual(tools);
+      expect(updatedEdgeInfo.router).toEqual(router);
+      expect(updatedEdgeInfo.connector).toEqual(connector);
+      expect(updatedEdgeInfo.attrs?.text?.text).toBe('Updated Label');
+    });
+
+    it('should handle style convenience property', () => {
+      // Arrange
+      const style = {
+        stroke: '#ff0000',
+        strokeWidth: 3,
+        strokeDasharray: '10 5',
+        fontSize: 14,
+        fontColor: '#333333'
+      };
+
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        label: 'Test Edge',
+        style
+      });
+
+      // Assert
+      expect(edgeInfo.attrs?.line?.stroke).toBe('#ff0000');
+      expect(edgeInfo.attrs?.line?.strokeWidth).toBe(3);
+      expect(edgeInfo.attrs?.line?.strokeDasharray).toBe('10 5');
+      expect(edgeInfo.attrs?.text?.fontSize).toBe(14);
+      expect(edgeInfo.attrs?.text?.fill).toBe('#333333');
+    });
+
+    it('should handle label convenience property', () => {
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        label: 'Simple Label'
+      });
+
+      // Assert
+      expect(edgeInfo.attrs?.text?.text).toBe('Simple Label');
+    });
+  });
+
+  describe('X6 Validation', () => {
+    it('should validate router types', () => {
+      // Act & Assert
+      expect(() => {
+        EdgeInfo.fromJSON({
+          id: 'test-edge',
+          source: { cell: 'source-node' },
+          target: { cell: 'target-node' },
+          router: 'invalid-router' as any // Invalid router type
+        });
+      }).toThrow('Invalid router type: invalid-router');
+    });
+
+    it('should validate connector types', () => {
+      // Act & Assert
+      expect(() => {
+        EdgeInfo.fromJSON({
+          id: 'test-edge',
+          source: { cell: 'source-node' },
+          target: { cell: 'target-node' },
+          connector: 'invalid-connector' as any // Invalid connector type
+        });
+      }).toThrow('Invalid connector type: invalid-connector');
+    });
+
+    it('should validate defaultLabel position', () => {
+      // Act & Assert
+      expect(() => {
+        EdgeInfo.fromJSON({
+          id: 'test-edge',
+          source: { cell: 'source-node' },
+          target: { cell: 'target-node' },
+          defaultLabel: { position: 2.0 } // Invalid: position > 1
+        });
+      }).toThrow('Default label position must be a number between 0 and 1');
+    });
+
+    it('should accept valid X6 configurations', () => {
+      // Act
+      const edgeInfo = EdgeInfo.fromJSON({
+        id: 'test-edge',
+        source: { cell: 'source-node' },
+        target: { cell: 'target-node' },
+        router: 'manhattan',
+        connector: 'rounded',
+        defaultLabel: { position: 0.5, attrs: { text: { fontSize: 12 } } },
+        markup: [{ tagName: 'path', selector: 'line' }],
+        tools: [{ name: 'vertices', args: { distance: 20 } }]
+      });
+
+      // Assert
+      expect(edgeInfo.router).toBe('manhattan');
+      expect(edgeInfo.connector).toBe('rounded');
+      expect(edgeInfo.defaultLabel?.position).toBe(0.5);
+      expect(edgeInfo.markup).toHaveLength(1);
+      expect(edgeInfo.tools).toHaveLength(1);
     });
   });
 });
