@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { FeedbackMaterialModule } from '../../../shared/material/feedback-material.module';
 import { FormMaterialModule } from '../../../shared/material/form-material.module';
 import { CoreMaterialModule } from '../../../shared/material/core-material.module';
+import { LoggerService } from '../../services/logger.service';
 
 export interface UserPreferences {
   animations: boolean;
@@ -57,6 +58,7 @@ export class UserPreferencesDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: unknown,
+    private logger: LoggerService,
   ) {
     this.preferences = this.loadPreferences();
   }
@@ -67,7 +69,7 @@ export class UserPreferencesDialogComponent {
       try {
         return JSON.parse(stored) as UserPreferences;
       } catch (e) {
-        console.error('Error parsing user preferences:', e);
+        this.logger.error('Error parsing user preferences:', e);
       }
     }
     

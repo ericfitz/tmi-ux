@@ -646,7 +646,7 @@ describe('EdgeQueryService', () => {
       const validationResults = service.validateEdgeConnections(graph);
 
       expect(validationResults).toHaveLength(0);
-      expect(mockLogger.debug).toHaveBeenCalledWith('Edge connection validation passed', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdEdgeQuery', 'Edge connection validation passed', {
         totalEdges: 1,
       });
     });

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
  * X6 Event Logger Service
@@ -14,6 +15,8 @@ export class X6EventLoggerService {
   private _isEnabled = false;
   private _maxLogEntries = 1000; // Prevent memory issues
   private _logFileName = 'x6-events.log';
+
+  constructor(private logger: LoggerService) {}
 
   /**
    * Initialize X6 event logging for the given graph
@@ -468,10 +471,10 @@ export class X6EventLoggerService {
       this._logEntries = this._logEntries.slice(-this._maxLogEntries / 2);
     }
 
-    // In a browser environment, we'll use console.info with a specific prefix
-    // for easy filtering. In a Node.js environment, this could write to a file.
+    // Use debugComponent for X6 event logging to provide component context
+    // This allows for better filtering and organization of X6-specific logs
 
-    console.info(`[X6_EVENT_LOG] ${logLine}`);
+    this.logger.debugComponent('X6EventLogger', logLine);
   }
 
   /**

@@ -1,13 +1,13 @@
 /**
  * X6 Core Operations Service
- * 
+ *
  * This service provides low-level X6 graph operations that can be used by both
  * the X6GraphAdapter and domain services (NodeService, EdgeService) without
  * creating circular dependencies.
- * 
+ *
  * Key functionality:
  * - Direct X6 node creation, removal, and manipulation
- * - Direct X6 edge creation, removal, and manipulation  
+ * - Direct X6 edge creation, removal, and manipulation
  * - Direct X6 cell operations for generic operations
  * - Minimal business logic - focuses on X6 API operations
  * - Type-safe wrappers around X6 methods
@@ -82,33 +82,33 @@ export class X6CoreOperationsService {
   addNode(
     graph: Graph,
     config: NodeCreationConfig,
-    options: CoreOperationOptions = {}
+    options: CoreOperationOptions = {},
   ): Node | null {
     const { suppressErrors = false, logOperation = true } = options;
 
     try {
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Adding node', {
+        this.logger.debugComponent('X6CoreOperations', 'Adding node', {
           nodeId: config.id,
           shape: config.shape,
-          position: { x: config.x, y: config.y }
+          position: { x: config.x, y: config.y },
         });
       }
 
       const node = graph.addNode(config);
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Node added successfully', {
+        this.logger.debugComponent('X6CoreOperations', 'Node added successfully', {
           nodeId: config.id,
-          cellId: node.id
+          cellId: node.id,
         });
       }
 
       return node;
     } catch (error) {
-      this.logger.error('X6 Core: Error adding node', {
+      this.logger.error('Error adding node', {
         nodeId: config.id,
-        error
+        error,
       });
 
       if (!suppressErrors) {
@@ -121,38 +121,34 @@ export class X6CoreOperationsService {
   /**
    * Remove a node from the X6 graph
    */
-  removeNode(
-    graph: Graph,
-    nodeId: string,
-    options: CoreOperationOptions = {}
-  ): boolean {
+  removeNode(graph: Graph, nodeId: string, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
     try {
       const node = graph.getCellById(nodeId);
-      
+
       if (!node || !node.isNode()) {
         if (logOperation) {
-          this.logger.warn('X6 Core: Node not found for removal', { nodeId });
+          this.logger.warn('Node not found for removal', { nodeId });
         }
         return false;
       }
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Removing node', { nodeId });
+        this.logger.debugComponent('X6CoreOperations', 'Removing node', { nodeId });
       }
 
       graph.removeNode(node);
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Node removed successfully', { nodeId });
+        this.logger.debugComponent('X6CoreOperations', 'Node removed successfully', { nodeId });
       }
 
       return true;
     } catch (error) {
-      this.logger.error('X6 Core: Error removing node', {
+      this.logger.error('Error removing node', {
         nodeId,
-        error
+        error,
       });
 
       if (!suppressErrors) {
@@ -163,7 +159,7 @@ export class X6CoreOperationsService {
   }
 
   // ===============================
-  // Edge Operations  
+  // Edge Operations
   // ===============================
 
   /**
@@ -172,33 +168,33 @@ export class X6CoreOperationsService {
   addEdge(
     graph: Graph,
     config: EdgeCreationConfig,
-    options: CoreOperationOptions = {}
+    options: CoreOperationOptions = {},
   ): Edge | null {
     const { suppressErrors = false, logOperation = true } = options;
 
     try {
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Adding edge', {
+        this.logger.debugComponent('X6CoreOperations', 'Adding edge', {
           edgeId: config.id,
           source: config.source,
-          target: config.target
+          target: config.target,
         });
       }
 
       const edge = graph.addEdge(config);
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Edge added successfully', {
+        this.logger.debugComponent('X6CoreOperations', 'Edge added successfully', {
           edgeId: config.id,
-          cellId: edge.id
+          cellId: edge.id,
         });
       }
 
       return edge;
     } catch (error) {
-      this.logger.error('X6 Core: Error adding edge', {
+      this.logger.error('Error adding edge', {
         edgeId: config.id,
-        error
+        error,
       });
 
       if (!suppressErrors) {
@@ -211,38 +207,34 @@ export class X6CoreOperationsService {
   /**
    * Remove an edge from the X6 graph
    */
-  removeEdge(
-    graph: Graph,
-    edgeId: string,
-    options: CoreOperationOptions = {}
-  ): boolean {
+  removeEdge(graph: Graph, edgeId: string, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
     try {
       const edge = graph.getCellById(edgeId);
-      
+
       if (!edge || !edge.isEdge()) {
         if (logOperation) {
-          this.logger.warn('X6 Core: Edge not found for removal', { edgeId });
+          this.logger.warn('Edge not found for removal', { edgeId });
         }
         return false;
       }
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Removing edge', { edgeId });
+        this.logger.debugComponent('X6CoreOperations', 'Removing edge', { edgeId });
       }
 
       graph.removeEdge(edge);
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Edge removed successfully', { edgeId });
+        this.logger.debugComponent('X6CoreOperations', 'Edge removed successfully', { edgeId });
       }
 
       return true;
     } catch (error) {
-      this.logger.error('X6 Core: Error removing edge', {
+      this.logger.error('Error removing edge', {
         edgeId,
-        error
+        error,
       });
 
       if (!suppressErrors) {
@@ -259,41 +251,37 @@ export class X6CoreOperationsService {
   /**
    * Remove a cell (node or edge) from the X6 graph
    */
-  removeCell(
-    graph: Graph,
-    cellId: string,
-    options: CoreOperationOptions = {}
-  ): boolean {
+  removeCell(graph: Graph, cellId: string, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
     try {
       const cell = graph.getCellById(cellId);
-      
+
       if (!cell) {
         if (logOperation) {
-          this.logger.warn('X6 Core: Cell not found for removal', { cellId });
+          this.logger.warn('Cell not found for removal', { cellId });
         }
         return false;
       }
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Removing cell', {
+        this.logger.debugComponent('X6CoreOperations', 'Removing cell', {
           cellId,
-          cellType: cell.isNode() ? 'node' : 'edge'
+          cellType: cell.isNode() ? 'node' : 'edge',
         });
       }
 
       graph.removeCell(cell);
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Cell removed successfully', { cellId });
+        this.logger.debugComponent('X6CoreOperations', 'Cell removed successfully', { cellId });
       }
 
       return true;
     } catch (error) {
-      this.logger.error('X6 Core: Error removing cell', {
+      this.logger.error('Error removing cell', {
         cellId,
-        error
+        error,
       });
 
       if (!suppressErrors) {
@@ -306,34 +294,30 @@ export class X6CoreOperationsService {
   /**
    * Remove a cell object directly from the X6 graph
    */
-  removeCellObject(
-    graph: Graph,
-    cell: Cell,
-    options: CoreOperationOptions = {}
-  ): boolean {
+  removeCellObject(graph: Graph, cell: Cell, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
     try {
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Removing cell object', {
+        this.logger.debugComponent('X6CoreOperations', 'Removing cell object', {
           cellId: cell.id,
-          cellType: cell.isNode() ? 'node' : 'edge'
+          cellType: cell.isNode() ? 'node' : 'edge',
         });
       }
 
       graph.removeCell(cell);
 
       if (logOperation) {
-        this.logger.debugComponent('X6CoreOperations', 'X6 Core: Cell object removed successfully', {
-          cellId: cell.id
+        this.logger.debugComponent('X6CoreOperations', 'Cell object removed successfully', {
+          cellId: cell.id,
         });
       }
 
       return true;
     } catch (error) {
-      this.logger.error('X6 Core: Error removing cell object', {
+      this.logger.error('Error removing cell object', {
         cellId: cell.id,
-        error
+        error,
       });
 
       if (!suppressErrors) {
@@ -367,7 +351,7 @@ export class X6CoreOperationsService {
    */
   getNode(graph: Graph, nodeId: string): Node | null {
     const cell = graph.getCellById(nodeId);
-    return (cell && cell.isNode()) ? cell : null;
+    return cell && cell.isNode() ? cell : null;
   }
 
   /**
@@ -375,26 +359,23 @@ export class X6CoreOperationsService {
    */
   getEdge(graph: Graph, edgeId: string): Edge | null {
     const cell = graph.getCellById(edgeId);
-    return (cell && cell.isEdge()) ? cell : null;
+    return cell && cell.isEdge() ? cell : null;
   }
 
   /**
    * Clear all cells from the graph
    */
-  clearGraph(
-    graph: Graph,
-    options: CoreOperationOptions = {}
-  ): void {
+  clearGraph(graph: Graph, options: CoreOperationOptions = {}): void {
     const { logOperation = true } = options;
 
     if (logOperation) {
-      this.logger.debugComponent('X6CoreOperations', 'X6 Core: Clearing graph');
+      this.logger.debugComponent('X6CoreOperations', 'Clearing graph');
     }
 
     graph.clearCells();
 
     if (logOperation) {
-      this.logger.debugComponent('X6CoreOperations', 'X6 Core: Graph cleared successfully');
+      this.logger.debugComponent('X6CoreOperations', 'Graph cleared successfully');
     }
   }
 }

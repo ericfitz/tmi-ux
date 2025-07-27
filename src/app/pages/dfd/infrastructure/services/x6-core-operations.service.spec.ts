@@ -7,13 +7,18 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Graph, Node, Edge } from '@antv/x6';
-import { X6CoreOperationsService, NodeCreationConfig, EdgeCreationConfig } from './x6-core-operations.service';
+import {
+  X6CoreOperationsService,
+  NodeCreationConfig,
+  EdgeCreationConfig,
+} from './x6-core-operations.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService
 interface MockLoggerService {
   debug: ReturnType<typeof vi.fn>;
+  debugComponent: ReturnType<typeof vi.fn>;
   info: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
@@ -28,6 +33,7 @@ describe('X6CoreOperationsService', () => {
     // Create mock for LoggerService
     mockLogger = {
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       info: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
@@ -66,20 +72,22 @@ describe('X6CoreOperationsService', () => {
         expect(result?.id).toBe('test-node-1');
         expect(result?.isNode()).toBe(true);
         expect(graph.getCellById('test-node-1')).toBeTruthy();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Adding node',
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Adding node',
           expect.objectContaining({
             nodeId: 'test-node-1',
             shape: 'rect',
-            position: { x: 100, y: 100 }
-          })
+            position: { x: 100, y: 100 },
+          }),
         );
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Node added successfully',
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Node added successfully',
           expect.objectContaining({
             nodeId: 'test-node-1',
-            cellId: 'test-node-1'
-          })
+            cellId: 'test-node-1',
+          }),
         );
       });
 
@@ -119,7 +127,7 @@ describe('X6CoreOperationsService', () => {
         const result = service.addNode(graph, nodeConfig, { logOperation: false });
 
         expect(result).toBeTruthy();
-        expect(mockLogger.debug).not.toHaveBeenCalled();
+        expect(mockLogger.debugComponent).not.toHaveBeenCalled();
       });
 
       it('should handle errors and throw by default', () => {
@@ -141,10 +149,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(() => service.addNode(graph, nodeConfig)).toThrow('Test error');
         expect(mockLogger.error).toHaveBeenCalledWith(
-          'X6 Core: Error adding node',
+          'Error adding node',
           expect.objectContaining({
-            nodeId: 'test-node-error'
-          })
+            nodeId: 'test-node-error',
+          }),
         );
 
         // Restore original method
@@ -196,13 +204,15 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(true);
         expect(graph.getCellById('remove-test-node')).toBeNull();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Removing node',
-          { nodeId: 'remove-test-node' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Removing node',
+          { nodeId: 'remove-test-node' },
         );
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Node removed successfully',
-          { nodeId: 'remove-test-node' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Node removed successfully',
+          { nodeId: 'remove-test-node' },
         );
       });
 
@@ -210,10 +220,9 @@ describe('X6CoreOperationsService', () => {
         const result = service.removeNode(graph, 'non-existent-node');
 
         expect(result).toBe(false);
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-          'X6 Core: Node not found for removal',
-          { nodeId: 'non-existent-node' }
-        );
+        expect(mockLogger.warn).toHaveBeenCalledWith('Node not found for removal', {
+          nodeId: 'non-existent-node',
+        });
       });
 
       it('should return false when trying to remove an edge ID', () => {
@@ -235,17 +244,16 @@ describe('X6CoreOperationsService', () => {
         const result = service.removeNode(graph, 'test-edge');
 
         expect(result).toBe(false);
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-          'X6 Core: Node not found for removal',
-          { nodeId: 'test-edge' }
-        );
+        expect(mockLogger.warn).toHaveBeenCalledWith('Node not found for removal', {
+          nodeId: 'test-edge',
+        });
       });
 
       it('should suppress logging when logOperation is false', () => {
         const result = service.removeNode(graph, 'remove-test-node', { logOperation: false });
 
         expect(result).toBe(true);
-        expect(mockLogger.debug).not.toHaveBeenCalled();
+        expect(mockLogger.debugComponent).not.toHaveBeenCalled();
         expect(mockLogger.warn).not.toHaveBeenCalled();
       });
     });
@@ -288,13 +296,14 @@ describe('X6CoreOperationsService', () => {
         expect(result?.id).toBe('test-edge-1');
         expect(result?.isEdge()).toBe(true);
         expect(graph.getCellById('test-edge-1')).toBeTruthy();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Adding edge',
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Adding edge',
           expect.objectContaining({
             edgeId: 'test-edge-1',
             source: { cell: 'source-node' },
-            target: { cell: 'target-node' }
-          })
+            target: { cell: 'target-node' },
+          }),
         );
       });
 
@@ -334,10 +343,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(() => service.addEdge(graph, edgeConfig)).toThrow('Test error');
         expect(mockLogger.error).toHaveBeenCalledWith(
-          'X6 Core: Error adding edge',
+          'Error adding edge',
           expect.objectContaining({
-            edgeId: 'test-edge-error'
-          })
+            edgeId: 'test-edge-error',
+          }),
         );
 
         // Restore original method
@@ -381,13 +390,15 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(true);
         expect(graph.getCellById('remove-test-edge')).toBeNull();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Removing edge',
-          { edgeId: 'remove-test-edge' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Removing edge',
+          { edgeId: 'remove-test-edge' },
         );
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Edge removed successfully',
-          { edgeId: 'remove-test-edge' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Edge removed successfully',
+          { edgeId: 'remove-test-edge' },
         );
       });
 
@@ -395,20 +406,18 @@ describe('X6CoreOperationsService', () => {
         const result = service.removeEdge(graph, 'non-existent-edge');
 
         expect(result).toBe(false);
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-          'X6 Core: Edge not found for removal',
-          { edgeId: 'non-existent-edge' }
-        );
+        expect(mockLogger.warn).toHaveBeenCalledWith('Edge not found for removal', {
+          edgeId: 'non-existent-edge',
+        });
       });
 
       it('should return false when trying to remove a node ID', () => {
         const result = service.removeEdge(graph, 'source-node');
 
         expect(result).toBe(false);
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-          'X6 Core: Edge not found for removal',
-          { edgeId: 'source-node' }
-        );
+        expect(mockLogger.warn).toHaveBeenCalledWith('Edge not found for removal', {
+          edgeId: 'source-node',
+        });
       });
     });
   });
@@ -447,9 +456,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(true);
         expect(graph.getCellById('cell-test-node')).toBeNull();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Removing cell',
-          { cellId: 'cell-test-node', cellType: 'node' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Removing cell',
+          { cellId: 'cell-test-node', cellType: 'node' },
         );
       });
 
@@ -458,9 +468,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(true);
         expect(graph.getCellById('cell-test-edge')).toBeNull();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Removing cell',
-          { cellId: 'cell-test-edge', cellType: 'edge' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Removing cell',
+          { cellId: 'cell-test-edge', cellType: 'edge' },
         );
       });
 
@@ -468,10 +479,9 @@ describe('X6CoreOperationsService', () => {
         const result = service.removeCell(graph, 'non-existent-cell');
 
         expect(result).toBe(false);
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-          'X6 Core: Cell not found for removal',
-          { cellId: 'non-existent-cell' }
-        );
+        expect(mockLogger.warn).toHaveBeenCalledWith('Cell not found for removal', {
+          cellId: 'non-existent-cell',
+        });
       });
     });
 
@@ -481,9 +491,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(true);
         expect(graph.getCellById('cell-test-node')).toBeNull();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Removing cell object',
-          { cellId: 'cell-test-node', cellType: 'node' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Removing cell object',
+          { cellId: 'cell-test-node', cellType: 'node' },
         );
       });
 
@@ -492,9 +503,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(true);
         expect(graph.getCellById('cell-test-edge')).toBeNull();
-        expect(mockLogger.debug).toHaveBeenCalledWith(
-          'X6 Core: Removing cell object',
-          { cellId: 'cell-test-edge', cellType: 'edge' }
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Removing cell object',
+          { cellId: 'cell-test-edge', cellType: 'edge' },
         );
       });
 
@@ -509,10 +521,10 @@ describe('X6CoreOperationsService', () => {
 
         expect(result).toBe(false);
         expect(mockLogger.error).toHaveBeenCalledWith(
-          'X6 Core: Error removing cell object',
+          'Error removing cell object',
           expect.objectContaining({
-            cellId: 'cell-test-node'
-          })
+            cellId: 'cell-test-node',
+          }),
         );
 
         // Restore original method
@@ -623,15 +635,21 @@ describe('X6CoreOperationsService', () => {
         service.clearGraph(graph);
 
         expect(graph.getCells()).toHaveLength(0);
-        expect(mockLogger.debug).toHaveBeenCalledWith('X6 Core: Clearing graph');
-        expect(mockLogger.debug).toHaveBeenCalledWith('X6 Core: Graph cleared successfully');
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Clearing graph',
+        );
+        expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+          'X6CoreOperations',
+          'Graph cleared successfully',
+        );
       });
 
       it('should suppress logging when logOperation is false', () => {
         service.clearGraph(graph, { logOperation: false });
 
         expect(graph.getCells()).toHaveLength(0);
-        expect(mockLogger.debug).not.toHaveBeenCalled();
+        expect(mockLogger.debugComponent).not.toHaveBeenCalled();
       });
     });
   });
@@ -683,18 +701,30 @@ describe('X6CoreOperationsService', () => {
       const originalRemoveEdge = graph.removeEdge;
       const originalRemoveCell = graph.removeCell;
 
-      graph.addNode = vi.fn().mockImplementation(() => { throw new Error('Test error'); });
-      graph.addEdge = vi.fn().mockImplementation(() => { throw new Error('Test error'); });
-      graph.removeNode = vi.fn().mockImplementation(() => { throw new Error('Test error'); });
-      graph.removeEdge = vi.fn().mockImplementation(() => { throw new Error('Test error'); });
-      graph.removeCell = vi.fn().mockImplementation(() => { throw new Error('Test error'); });
+      graph.addNode = vi.fn().mockImplementation(() => {
+        throw new Error('Test error');
+      });
+      graph.addEdge = vi.fn().mockImplementation(() => {
+        throw new Error('Test error');
+      });
+      graph.removeNode = vi.fn().mockImplementation(() => {
+        throw new Error('Test error');
+      });
+      graph.removeEdge = vi.fn().mockImplementation(() => {
+        throw new Error('Test error');
+      });
+      graph.removeCell = vi.fn().mockImplementation(() => {
+        throw new Error('Test error');
+      });
 
       // All operations should return false/null instead of throwing
       expect(service.addNode(graph, nodeConfig, { suppressErrors: true })).toBeNull();
       expect(service.addEdge(graph, edgeConfig, { suppressErrors: true })).toBeNull();
       expect(service.removeNode(graph, 'remove-error-node', { suppressErrors: true })).toBe(false);
       expect(service.removeEdge(graph, 'remove-error-edge', { suppressErrors: true })).toBe(false);
-      expect(service.removeCell(graph, 'remove-error-target', { suppressErrors: true })).toBe(false);
+      expect(service.removeCell(graph, 'remove-error-target', { suppressErrors: true })).toBe(
+        false,
+      );
 
       // Only addNode and addEdge will error (3 operations that actually find cells to remove won't error due to early returns)
       expect(mockLogger.error).toHaveBeenCalledTimes(5);
@@ -760,7 +790,7 @@ describe('X6CoreOperationsService', () => {
       service.clearGraph(workingGraph, { logOperation: false });
 
       // No debug, info, or warn calls should have been made
-      expect(mockLogger.debug).not.toHaveBeenCalled();
+      expect(mockLogger.debugComponent).not.toHaveBeenCalled();
       expect(mockLogger.info).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
 

@@ -41,6 +41,7 @@ import { environment } from '../../../environments/environment';
 interface MockLoggerService {
   info: ReturnType<typeof vi.fn>;
   debug: ReturnType<typeof vi.fn>;
+  debugComponent: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
   logInit: ReturnType<typeof vi.fn>;
@@ -126,6 +127,7 @@ describe('AuthService', () => {
     loggerService = {
       info: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       error: vi.fn(),
       warn: vi.fn(),
       logInit: vi.fn(),

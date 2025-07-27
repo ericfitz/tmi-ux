@@ -47,7 +47,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Build a map of all available references in the threat model
    */
-  private buildReferenceMap(threatModel: any, context: ValidationContext): ReferenceMap {
+  private buildReferenceMap(threatModel: any, _context: ValidationContext): ReferenceMap {
     const referenceMap: ReferenceMap = {
       threatModelId: threatModel.id,
       diagramIds: new Set(),

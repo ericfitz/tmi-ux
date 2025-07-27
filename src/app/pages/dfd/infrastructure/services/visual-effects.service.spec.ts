@@ -375,8 +375,8 @@ describe('VisualEffectsService', () => {
       service.applyCreationHighlight(mockNode as unknown as Node);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
-        '[VisualEffects] Error checking selection state',
+        'DfdVisualEffects',
+        'Error checking selection state',
         expect.objectContaining({
           cellId: 'node1',
           error: expect.any(Error),

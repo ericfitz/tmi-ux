@@ -254,7 +254,7 @@ describe('X6KeyboardHandler', () => {
       graph.trigger('node:mousedown', { node });
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
+        'X6Keyboard',
         'Node drag started (handleNodeMouseDown)',
         { nodeId: node.id },
       );
@@ -298,7 +298,7 @@ describe('X6KeyboardHandler', () => {
       graph.trigger('node:mouseup', { node });
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
+        'X6Keyboard',
         'Node drag ended (handleNodeMouseUp)',
         { nodeId: node.id },
       );

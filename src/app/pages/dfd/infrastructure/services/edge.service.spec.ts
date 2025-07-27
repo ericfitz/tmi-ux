@@ -20,6 +20,7 @@ import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 interface MockLoggerService {
   info: ReturnType<typeof vi.fn>;
   debug: ReturnType<typeof vi.fn>;
+  debugComponent: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
 }
@@ -42,6 +43,7 @@ describe('EdgeService - X6 Integration Tests', () => {
     mockLogger = {
       info: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
     };

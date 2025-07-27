@@ -7,11 +7,11 @@ import { ThreatModelService } from './services/threat-model.service';
 import { provideHttpClient } from '@angular/common/http';
 import { LoggerService } from '../../core/services/logger.service';
 import { BehaviorSubject, of } from 'rxjs';
-import { mockThreatModel1 } from '../../mocks/instances/threat-model-1';
-import { mockThreatModel2 } from '../../mocks/instances/threat-model-2';
-import { mockThreatModel3 } from '../../mocks/instances/threat-model-3';
+import { MOCK_THREAT_MODELS } from './models/threat-model.model';
 
 describe('TmComponent', () => {
+  const [mockThreatModel1, mockThreatModel2, mockThreatModel3] = MOCK_THREAT_MODELS;
+
   const mockDataServiceStub = {
     useMockData$: new BehaviorSubject<boolean>(true),
     getMockThreatModels: () => [mockThreatModel1, mockThreatModel2, mockThreatModel3],

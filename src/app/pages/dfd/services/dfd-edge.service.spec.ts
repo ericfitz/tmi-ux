@@ -790,8 +790,8 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
 
       expect(result).toBe(true);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
-        '[Edge Creation] isMagnetValid result',
+        'DfdEdge',
+        'isMagnetValid result',
         expect.objectContaining({
           magnetAttribute: 'true',
           portGroup: 'top',
@@ -816,8 +816,8 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
 
       expect(result).toBe(false);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
-        '[Edge Creation] isMagnetValid: no magnet found'
+        'DfdEdge',
+        'isMagnetValid: no magnet found'
       );
     });
 
@@ -841,8 +841,8 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
 
       expect(result).toBe(true);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
-        '[Edge Creation] Connection validation passed'
+        'DfdEdge',
+        'Connection validation passed'
       );
     });
 
@@ -861,8 +861,8 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
 
       expect(result).toBe(false);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DFD',
-        '[Edge Creation] Connection rejected: same port on same node'
+        'DfdEdge',
+        'Connection rejected: same port on same node'
       );
     });
   });

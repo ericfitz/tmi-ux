@@ -164,7 +164,7 @@ describe('PortStateManagerService', () => {
       expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledWith(graph, node.id, 'port3');
 
       // Verify logging
-      expect(mockLogger.debug).toHaveBeenCalledWith('Updated node port visibility', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Updated node port visibility', {
         nodeId: node.id,
         totalPorts: 3,
         connectedPorts: 2,
@@ -247,7 +247,7 @@ describe('PortStateManagerService', () => {
       );
 
       // Verify logging
-      expect(mockLogger.debug).toHaveBeenCalledWith('Showed all ports on all nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Showed all ports on all nodes', {
         nodeCount: 2,
       });
     });
@@ -276,7 +276,7 @@ describe('PortStateManagerService', () => {
       service.hideUnconnectedPorts(graph);
 
       // Verify logging
-      expect(mockLogger.debug).toHaveBeenCalledWith('Hid unconnected ports on all nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Hid unconnected ports on all nodes', {
         nodeCount: 2,
       });
     });
@@ -291,10 +291,10 @@ describe('PortStateManagerService', () => {
       service.showAllPorts(emptyGraph);
       service.hideUnconnectedPorts(emptyGraph);
 
-      expect(mockLogger.debug).toHaveBeenCalledWith('Showed all ports on all nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Showed all ports on all nodes', {
         nodeCount: 0,
       });
-      expect(mockLogger.debug).toHaveBeenCalledWith('Hid unconnected ports on all nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Hid unconnected ports on all nodes', {
         nodeCount: 0,
       });
 
@@ -351,7 +351,7 @@ describe('PortStateManagerService', () => {
       );
 
       // Verify logging
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager',
         'Ensuring connected ports are visible for edge',
         {
           edgeId: edge.id,
@@ -362,13 +362,13 @@ describe('PortStateManagerService', () => {
         },
       );
 
-      expect(mockLogger.debug).toHaveBeenCalledWith('Made source port visible', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Made source port visible', {
         edgeId: edge.id,
         sourceNodeId: sourceNode.id,
         sourcePortId: 'source-port',
       });
 
-      expect(mockLogger.debug).toHaveBeenCalledWith('Made target port visible', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Made target port visible', {
         edgeId: edge.id,
         targetNodeId: targetNode.id,
         targetPortId: 'target-port',
@@ -421,7 +421,7 @@ describe('PortStateManagerService', () => {
       service.ensureConnectedPortsVisible(graph, incompleteEdge);
 
       // Should handle gracefully without errors
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager',
         'Ensuring connected ports are visible for edge',
         expect.any(Object),
       );
@@ -433,7 +433,7 @@ describe('PortStateManagerService', () => {
       service.ensureConnectedPortsVisible(null as any, null as any);
 
       // Should not throw errors or make any port changes
-      expect(mockLogger.debug).not.toHaveBeenCalled();
+      expect(mockLogger.debugComponent).not.toHaveBeenCalled();
     });
   });
 
@@ -511,7 +511,7 @@ describe('PortStateManagerService', () => {
       service.onConnectionChange(graph);
 
       // Verify all nodes were processed
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager',
         'Updated port visibility after connection change',
         {
           nodeCount: 2,
@@ -523,7 +523,7 @@ describe('PortStateManagerService', () => {
       service.onConnectionChange(null as any);
 
       // Should not throw errors
-      expect(mockLogger.debug).not.toHaveBeenCalled();
+      expect(mockLogger.debugComponent).not.toHaveBeenCalled();
     });
   });
 
@@ -557,7 +557,7 @@ describe('PortStateManagerService', () => {
 
       // Verify state is cleared
       expect(service.getPortConnectionState(node.id)).toBeNull();
-      expect(mockLogger.debug).toHaveBeenCalledWith('Cleared all port state cache');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Cleared all port state cache');
     });
 
     it('should get all port states for debugging', () => {
@@ -719,7 +719,7 @@ describe('PortStateManagerService', () => {
       expect(endTime - startTime).toBeLessThan(1000);
 
       // Verify logging shows correct port count
-      expect(mockLogger.debug).toHaveBeenCalledWith('Updated node port visibility', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdPortStateManager', 'Updated node port visibility', {
         nodeId: nodeWithManyPorts.id,
         totalPorts: 100,
         connectedPorts: 0,

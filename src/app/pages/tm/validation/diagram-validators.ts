@@ -93,7 +93,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     'edge'
   ];
 
-  protected validateDiagramSpecific(diagram: any, context: ValidationContext): void {
+  protected validateDiagramSpecific(_diagram: any, _context: ValidationContext): void {
     // No additional validation needed for base DFD structure
     // Future versions could add specific validation rules here
   }
@@ -111,8 +111,8 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     }
 
     // Validate each cell
-    cells.forEach((cell, index) => {
-      const cellPath = ValidationUtils.buildPath(context.currentPath, index);
+    cells.forEach((cell, _index) => {
+      const cellPath = ValidationUtils.buildPath(context.currentPath, _index);
       const cellErrors = this.validateDfdCell(cell, cellPath);
       errors.push(...cellErrors);
     });
@@ -269,7 +269,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     const duplicateIds: string[] = [];
 
     // Build cell ID map and check for duplicates
-    cells.forEach((cell, index) => {
+    cells.forEach((cell, _index) => {
       if (cell?.id) {
         if (cellIds.has(cell.id)) {
           duplicateIds.push(cell.id);

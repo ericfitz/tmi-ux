@@ -13,6 +13,7 @@ import { FeedbackMaterialModule } from '../../../shared/material/feedback-materi
 // Services
 import { AuthService } from '../../../auth/services/auth.service';
 import { LanguageService, Language } from '../../../i18n/language.service';
+import { LoggerService } from '../../services/logger.service';
 
 // Import the MockDataToggleComponent
 import { MockDataToggleComponent } from '../mock-data-toggle/mock-data-toggle.component';
@@ -55,6 +56,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private languageService: LanguageService,
     private dialog: MatDialog,
+    private logger: LoggerService,
   ) {
     // Get available languages
     this.languages = this.languageService.getAvailableLanguages();
@@ -117,7 +119,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         const profile = JSON.parse(userProfile) as { email?: string };
         this.userEmail = profile.email || '';
       } catch (e) {
-        console.error('Error parsing user profile:', e);
+        this.logger.error('Error parsing user profile:', e);
         this.userEmail = '';
       }
     }

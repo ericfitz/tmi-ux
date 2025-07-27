@@ -212,7 +212,7 @@ describe('ThreatModel Validation Integration', () => {
     const result = service.validateSchema(threatModel);
 
     if (!result.valid) {
-      console.log('Schema validation errors:', result.errors);
+      console.error('Schema validation errors:', result.errors);
     }
     expect(result.valid).toBe(true); // Schema validation should pass
   });
@@ -356,7 +356,7 @@ describe('ThreatModel Validation Integration', () => {
     const result = service.validate(complexThreatModel);
 
     if (!result.valid) {
-      console.log('Complex threat model validation errors:', result.errors);
+      console.error('Complex threat model validation errors:', result.errors);
     }
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
