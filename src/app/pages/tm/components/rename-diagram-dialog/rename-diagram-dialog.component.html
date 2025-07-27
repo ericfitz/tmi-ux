@@ -9,10 +9,10 @@
         <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
         <input matInput formControlName="name" />
         <mat-error *ngIf="diagramForm.get('name')?.hasError('required')">
-          {{ 'validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
         <mat-error *ngIf="diagramForm.get('name')?.hasError('maxlength')">
-          {{ 'validation.maxLength' | transloco: { max: 100 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
         </mat-error>
       </mat-form-field>
     </div>

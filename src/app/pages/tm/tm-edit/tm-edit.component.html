@@ -113,10 +113,10 @@
             <mat-label [transloco]="'threatModels.name'">Name</mat-label>
             <input matInput formControlName="name" />
             <mat-error *ngIf="threatModelForm.get('name')?.hasError('required')">
-              {{ 'validation.required' | transloco }}
+              {{ 'common.validation.required' | transloco }}
             </mat-error>
             <mat-error *ngIf="threatModelForm.get('name')?.hasError('maxlength')">
-              {{ 'validation.maxLength' | transloco: { max: 100 } }}
+              {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
             </mat-error>
           </mat-form-field>
 
@@ -129,7 +129,7 @@
               placeholder="{{ 'threatModels.descriptionPlaceholder' | transloco }}"
             ></textarea>
             <mat-error *ngIf="threatModelForm.get('description')?.hasError('maxlength')">
-              {{ 'validation.maxLength' | transloco: { max: 500 } }}
+              {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
             </mat-error>
           </mat-form-field>
 
@@ -156,7 +156,7 @@
               <mat-error
                 *ngIf="threatModelForm.get('threat_model_framework')?.hasError('required')"
               >
-                {{ 'validation.required' | transloco }}
+                {{ 'common.validation.required' | transloco }}
               </mat-error>
             </mat-form-field>
 

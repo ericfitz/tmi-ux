@@ -38,7 +38,7 @@ interface CheckboxChangeEvent {
       </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="close()" [transloco]="'userPreferences.close'">Close</button>
+      <button mat-button (click)="close()" [transloco]="'common.close'">Close</button>
     </mat-dialog-actions>
   `,
   styles: [`

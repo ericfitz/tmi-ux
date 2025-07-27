@@ -40,7 +40,7 @@
             </h3>
             <p class="threat-model-date">
               {{
-                'diagrams.lastModified' | transloco: { date: formatDate(threatModel.modified_at) }
+                'common.lastModifiedDate' | transloco: { date: formatDate(threatModel.modified_at) }
               }}
             </p>
             <p class="threat-model-description" *ngIf="threatModel.description">

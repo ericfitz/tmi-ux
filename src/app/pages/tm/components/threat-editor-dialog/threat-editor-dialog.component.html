@@ -39,10 +39,10 @@
         <mat-label>{{ 'threatEditor.threatName' | transloco }}</mat-label>
         <input matInput formControlName="name" />
         <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
-          {{ 'threatEditor.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
         <mat-error *ngIf="threatForm.get('name')?.hasError('maxlength')">
-          {{ 'threatEditor.validation.maxLength' | transloco: { max: 100 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
         </mat-error>
       </mat-form-field>
     </div>
@@ -57,7 +57,7 @@
           placeholder="{{ 'threatEditor.threatDescriptionPlaceholder' | transloco }}"
         ></textarea>
         <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
-          {{ 'threatEditor.validation.maxLength' | transloco: { max: 500 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
         </mat-error>
       </mat-form-field>
     </div>
@@ -72,7 +72,7 @@
           </mat-option>
         </mat-select>
         <mat-error *ngIf="threatForm.get('threat_type')?.hasError('required')">
-          {{ 'threatEditor.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
       </mat-form-field>
     </div>
@@ -93,7 +93,7 @@
           }}</mat-option>
         </mat-select>
         <mat-error *ngIf="threatForm.get('severity')?.hasError('required')">
-          {{ 'threatEditor.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
       </mat-form-field>
 
@@ -218,7 +218,7 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">
-    {{ 'threatEditor.cancel' | transloco }}
+    {{ 'common.cancel' | transloco }}
   </button>
   <button
     mat-raised-button
@@ -227,9 +227,9 @@
     (click)="onSubmit()"
     *ngIf="!isViewOnly"
   >
-    {{ 'threatEditor.save' | transloco }}
+    {{ 'common.save' | transloco }}
   </button>
   <button mat-raised-button color="primary" (click)="onCancel()" *ngIf="isViewOnly">
-    {{ 'threatEditor.close' | transloco }}
+    {{ 'common.close' | transloco }}
   </button>
 </mat-dialog-actions>

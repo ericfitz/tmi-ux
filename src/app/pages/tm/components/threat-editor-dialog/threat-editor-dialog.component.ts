@@ -552,9 +552,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'threatEditor.cellId',
         'threatEditor.notAssociatedWithDiagram',
         'threatEditor.notAssociatedWithCell',
-        'threatEditor.cancel',
-        'threatEditor.save',
-        'threatEditor.close',
+        'common.cancel',
+        'common.save',
+        'common.close',
       ];
 
       // Log the problematic labels that are not showing
