@@ -18,7 +18,7 @@
         mat-icon-button
         color="primary"
         (click)="createThreatModel()"
-        [matTooltip]="'threatModels.tooltips.create' | transloco"
+        [matTooltip]="'common.create' | transloco"
       >
         <mat-icon>add</mat-icon>
       </button>
@@ -70,7 +70,7 @@
           color="warn"
           class="delete-button"
           (click)="deleteThreatModel(threatModel.id, $event)"
-          [matTooltip]="'threatModels.tooltips.delete' | transloco"
+          [matTooltip]="'common.delete' | transloco"
         >
           <mat-icon>delete</mat-icon>
         </button>

@@ -112,6 +112,11 @@
       "title": "Eigenschaften"
     },
     "toolbar": {
+      "exportMenu": {
+        "exportAsJpeg": "Als JPEG exportieren",
+        "exportAsPng": "Als PNG exportieren",
+        "exportAsSvg": "Als SVG exportieren"
+      },
       "tooltips": {
         "addActor": "Akteur hinzufügen",
         "addProcess": "Prozess hinzufügen",
@@ -134,6 +139,17 @@
   },
   "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
+  "login": {
+    "authenticationFailed": "Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
+    "loggingInWith": "Anmelden mit {{provider}}...",
+    "loginWith": "Anmelden mit",
+    "noProvidersConfigured": "Keine Authentifizierungsanbieter konfiguriert.",
+    "oauthFailed": "OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "pleaseSignIn": "Bitte melden Sie sich an, um fortzufahren.",
+    "title": "Bei TMI anmelden",
+    "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
+  },
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "currentLanguage": "{{language}}",

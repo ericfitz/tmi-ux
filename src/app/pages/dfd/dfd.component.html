@@ -120,7 +120,7 @@
         color="primary"
         [disabled]="!hasExactlyOneSelectedCell"
         (click)="manageMetadata()"
-        [matTooltip]="'editor.toolbar.tooltips.manageMetadata' | transloco"
+        [matTooltip]="'common.metadata' | transloco"
       >
         <mat-icon>list</mat-icon>
       </button>
@@ -148,20 +148,20 @@
       </button>
       <mat-menu #exportMenu="matMenu">
         <button mat-menu-item (click)="exportDiagram('svg')">
-          <span>Export as SVG</span>
+          <span>{{ 'editor.toolbar.exportMenu.exportAsSvg' | transloco }}</span>
         </button>
         <button mat-menu-item (click)="exportDiagram('png')">
-          <span>Export as PNG</span>
+          <span>{{ 'editor.toolbar.exportMenu.exportAsPng' | transloco }}</span>
         </button>
         <button mat-menu-item (click)="exportDiagram('jpeg')">
-          <span>Export as JPEG</span>
+          <span>{{ 'editor.toolbar.exportMenu.exportAsJpeg' | transloco }}</span>
         </button>
       </mat-menu>
 
       <button
         mat-icon-button
         (click)="closeDiagram()"
-        [matTooltip]="'editor.toolbar.tooltips.close' | transloco"
+        [matTooltip]="'common.close' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"

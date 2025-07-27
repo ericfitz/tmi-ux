@@ -112,6 +112,11 @@
       "title": "Properties"
     },
     "toolbar": {
+      "exportMenu": {
+        "exportAsJpeg": "Export as JPEG",
+        "exportAsPng": "Export as PNG",
+        "exportAsSvg": "Export as SVG"
+      },
       "tooltips": {
         "addActor": "Add Actor",
         "addProcess": "Add Process",
@@ -134,6 +139,17 @@
   },
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "login": {
+    "authenticationFailed": "Authentication failed. Please try again.",
+    "chooseMethod": "Choose your login method:",
+    "loggingInWith": "Logging in with {{provider}}...",
+    "loginWith": "Login with",
+    "noProvidersConfigured": "No authentication providers are configured.",
+    "oauthFailed": "OAuth authentication failed. Please try again.",
+    "pleaseSignIn": "Please sign in to continue.",
+    "title": "Login to TMI",
+    "unexpectedError": "An unexpected error occurred during OAuth."
+  },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "currentLanguage": "{{language}}",

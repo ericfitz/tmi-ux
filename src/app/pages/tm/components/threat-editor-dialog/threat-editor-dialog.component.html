@@ -11,21 +11,21 @@
         mat-icon-button
         class="copy-button"
         (click)="copyToClipboard(data.threat.id)"
-        matTooltip="{{ 'threatEditor.copyToClipboard' | transloco }}"
-        [attr.aria-label]="'threatEditor.copyToClipboard' | transloco"
+        matTooltip="{{ 'common.copyToClipboard' | transloco }}"
+        [attr.aria-label]="'common.copyToClipboard' | transloco"
       >
         <mat-icon>content_copy</mat-icon>
       </button>
     </div>
     <div class="info-field dates-row">
       <div class="date-field">
-        <span class="info-label">{{ 'threatEditor.createdAt' | transloco }}:</span>
+        <span class="info-label">{{ 'common.created' | transloco }}:</span>
         <span class="info-value">{{
           data.threat.created_at | date: 'short' : undefined : currentLocale
         }}</span>
       </div>
       <div class="date-field">
-        <span class="info-label">{{ 'threatEditor.modifiedAt' | transloco }}:</span>
+        <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
         <span class="info-value">{{
           data.threat.modified_at | date: 'short' : undefined : currentLocale
         }}</span>
@@ -81,15 +81,15 @@
     <div class="form-field-row three-columns">
       <!-- Severity field -->
       <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'threatEditor.severity' | transloco }}</mat-label>
+        <mat-label>{{ 'common.severity' | transloco }}</mat-label>
         <mat-select formControlName="severity">
-          <mat-option value="Unknown">{{ 'threatEditor.severityUnknown' | transloco }}</mat-option>
-          <mat-option value="None">{{ 'threatEditor.severityNone' | transloco }}</mat-option>
-          <mat-option value="Low">{{ 'threatEditor.severityLow' | transloco }}</mat-option>
-          <mat-option value="Medium">{{ 'threatEditor.severityMedium' | transloco }}</mat-option>
-          <mat-option value="High">{{ 'threatEditor.severityHigh' | transloco }}</mat-option>
+          <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
+          <mat-option value="None">{{ 'common.severityNone' | transloco }}</mat-option>
+          <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
+          <mat-option value="Medium">{{ 'common.severityMedium' | transloco }}</mat-option>
+          <mat-option value="High">{{ 'common.severityHigh' | transloco }}</mat-option>
           <mat-option value="Critical">{{
-            'threatEditor.severityCritical' | transloco
+            'common.severityCritical' | transloco
           }}</mat-option>
         </mat-select>
         <mat-error *ngIf="threatForm.get('severity')?.hasError('required')">
@@ -99,13 +99,13 @@
 
       <!-- Score field -->
       <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'threatEditor.score' | transloco }}</mat-label>
+        <mat-label>{{ 'common.score' | transloco }}</mat-label>
         <input matInput type="number" formControlName="score" min="0" max="10" step="0.1" />
       </mat-form-field>
 
       <!-- Priority field -->
       <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'threatEditor.priority' | transloco }}</mat-label>
+        <mat-label>{{ 'common.priority' | transloco }}</mat-label>
         <input matInput formControlName="priority" />
       </mat-form-field>
     </div>
@@ -119,7 +119,7 @@
           class="issue-url-field" 
           floatLabel="always"
         >
-          <mat-label>{{ 'threatEditor.issueUrl' | transloco }}</mat-label>
+          <mat-label>{{ 'common.issueUrl' | transloco }}</mat-label>
           
           <!-- Use ng-container with if-else to ensure exactly one control is always present -->
           <ng-container *ngIf="shouldShowIssueUrlHyperlink(); else inputMode">
@@ -158,7 +158,7 @@
       
       <!-- View-only mode: Show only hyperlink if URL exists -->
       <div *ngIf="isViewOnly && data.threat?.issue_url" class="view-only-url">
-        <span class="url-label">{{ 'threatEditor.issueUrl' | transloco }}:</span>
+        <span class="url-label">{{ 'common.issueUrl' | transloco }}:</span>
         <a 
           [href]="data.threat?.issue_url" 
           target="_blank" 
@@ -174,14 +174,14 @@
     <div class="form-field-row two-columns">
       <!-- Status field -->
       <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'threatEditor.status' | transloco }}</mat-label>
+        <mat-label>{{ 'common.status' | transloco }}</mat-label>
         <input matInput formControlName="status" />
       </mat-form-field>
 
       <!-- Mitigated field -->
       <div class="checkbox-field">
         <mat-checkbox formControlName="mitigated">
-          {{ 'threatEditor.mitigated' | transloco }}
+          {{ 'common.mitigated' | transloco }}
         </mat-checkbox>
       </div>
     </div>
@@ -189,7 +189,7 @@
     <!-- Diagram ID field - on its own row -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'threatEditor.diagramId' | transloco }}</mat-label>
+        <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
         <mat-select formControlName="diagram_id">
           <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
             {{
@@ -205,7 +205,7 @@
     <!-- Cell ID field - on its own row -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'threatEditor.cellId' | transloco }}</mat-label>
+        <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
         <mat-select formControlName="cell_id">
           <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
             {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.id + ' (' + cell.label + ')' }}

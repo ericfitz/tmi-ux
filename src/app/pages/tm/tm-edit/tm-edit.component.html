@@ -78,8 +78,8 @@
                   mat-icon-button
                   class="copy-button"
                   (click)="copyToClipboard(threatModel.id)"
-                  matTooltip="{{ 'threatModels.copyToClipboard' | transloco }}"
-                  [attr.aria-label]="'threatModels.copyToClipboard' | transloco"
+                  matTooltip="{{ 'common.copyToClipboard' | transloco }}"
+                  [attr.aria-label]="'common.copyToClipboard' | transloco"
                 >
                   <mat-icon>content_copy</mat-icon>
                 </button>
@@ -94,13 +94,13 @@
           <!-- Second row: Last Modified and Created (reversed order) -->
           <div class="info-row">
             <div class="info-field">
-              <span class="info-label">{{ 'threatModels.modifiedAt' | transloco }}:</span>
+              <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
               <span class="info-value">{{
                 threatModel.modified_at | date: 'short' : undefined : currentLocale
               }}</span>
             </div>
             <div class="info-field">
-              <span class="info-label">{{ 'threatModels.createdAt' | transloco }}:</span>
+              <span class="info-label">{{ 'common.created' | transloco }}:</span>
               <span class="info-value">{{
                 threatModel.created_at | date: 'short' : undefined : currentLocale
               }}</span>
@@ -121,7 +121,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label [transloco]="'threatModels.description'">Description</mat-label>
+            <mat-label [transloco]="'common.description'">Description</mat-label>
             <textarea
               matInput
               formControlName="description"
@@ -167,7 +167,7 @@
                 class="issue-url-field"
                 floatLabel="always"
               >
-                <mat-label [transloco]="'threatModels.issueUrl'">Issue URL</mat-label>
+                <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
                 
                 <!-- Use ng-container with if-else to ensure exactly one control is always present -->
                 <ng-container *ngIf="shouldShowIssueUrlHyperlink(); else inputMode">

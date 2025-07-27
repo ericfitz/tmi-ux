@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService, ProviderInfo } from '../../services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthError, OAuthResponse } from '../../models/auth.models';
@@ -21,7 +22,7 @@ interface LoginQueryParams {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatCardModule],
+  imports: [CommonModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatCardModule, TranslocoModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -99,7 +100,7 @@ export class LoginComponent implements OnInit {
         } else {
           this.handleLoginError({
             code: 'oauth_failed',
-            message: 'OAuth authentication failed. Please try again.',
+            message: 'login.oauthFailed',
             retryable: true,
           });
         }
@@ -109,7 +110,7 @@ export class LoginComponent implements OnInit {
         const authError: AuthError = {
           code: 'oauth_error',
           message:
-            err instanceof Error ? err.message : 'An unexpected error occurred during OAuth.',
+            err instanceof Error ? err.message : 'login.unexpectedError',
           retryable: true,
         };
         this.authService.handleAuthError(authError); // Propagate error through auth service

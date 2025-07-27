@@ -1,12 +1,12 @@
 <div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>Login to TMI</mat-card-title>
+      <mat-card-title>{{ 'login.title' | transloco }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <!-- Multiple providers -->
       <div *ngIf="availableProviders.length > 1">
-        <p>Choose your login method:</p>
+        <p>{{ 'login.chooseMethod' | transloco }}</p>
         <div class="provider-buttons">
           <button 
             mat-raised-button 
@@ -18,7 +18,7 @@
             class="provider-button">
             <!-- FontAwesome Icon -->
             <i [class]="provider.icon" class="provider-icon"></i>
-            <span>Login with {{provider.name}}</span>
+            <span>{{ 'login.loginWith' | transloco }} {{provider.name}}</span>
           </button>
         </div>
       </div>
@@ -27,21 +27,21 @@
       <div *ngIf="availableProviders.length === 1 && isLoading">
         <div class="single-provider-loading">
           <i [class]="availableProviders[0].icon" class="provider-icon-large"></i>
-          <p>Logging in with {{availableProviders[0].name}}...</p>
+          <p>{{ 'login.loggingInWith' | transloco: { provider: availableProviders[0].name } }}</p>
           <mat-spinner diameter="20"></mat-spinner>
         </div>
       </div>
       
       <!-- Single provider ready to login -->
       <div *ngIf="availableProviders.length === 1 && !isLoading">
-        <p>Please sign in to continue.</p>
+        <p>{{ 'login.pleaseSignIn' | transloco }}</p>
         <button 
           mat-raised-button 
           color="primary" 
           (click)="login(availableProviders[0].id)"
           class="single-provider-button">
           <i [class]="availableProviders[0].icon" class="provider-icon"></i>
-          <span>Login with {{availableProviders[0].name}}</span>
+          <span>{{ 'login.loginWith' | transloco }} {{availableProviders[0].name}}</span>
         </button>
       </div>
       
@@ -49,14 +49,17 @@
       <div *ngIf="availableProviders.length === 0">
         <div class="no-providers">
           <i class="fa-solid fa-exclamation-triangle warning-icon"></i>
-          <p>No authentication providers are configured.</p>
+          <p>{{ 'login.noProvidersConfigured' | transloco }}</p>
         </div>
       </div>
       
       <!-- Error display -->
       <div *ngIf="error" class="error-message">
         <i class="fa-solid fa-exclamation-circle error-icon"></i>
-        <span>{{ error }}</span>
+        <span *ngIf="error.startsWith('login.'); else rawError">{{ error | transloco }}</span>
+        <ng-template #rawError>
+          <span>{{ error }}</span>
+        </ng-template>
       </div>
     </mat-card-content>
   </mat-card>
