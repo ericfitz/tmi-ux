@@ -71,6 +71,11 @@ export class MockDataService implements OnDestroy {
     return this._useMockData.asObservable();
   }
 
+  // Public getter for the current mock data state
+  get isUsingMockData(): boolean {
+    return this._useMockData.value;
+  }
+
   /**
    * Toggle the use of mock data
    * @param useMock Boolean indicating whether to use mock data

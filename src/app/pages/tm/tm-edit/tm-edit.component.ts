@@ -10,6 +10,8 @@ import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageService } from '../../../i18n/language.service';
 import { LoggerService } from '../../../core/services/logger.service';
+import { environment } from '../../../../environments/environment';
+import { MockDataService } from '../../../mocks/mock-data.service';
 
 import { MaterialModule } from '../../../shared/material/material.module';
 import { SharedModule } from '../../../shared/shared.module';
@@ -108,6 +110,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private transloco: TranslocoService,
     private frameworkService: FrameworkService,
+    private mockDataService: MockDataService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1465,5 +1468,154 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
     
     return displayUrl;
+  }
+
+  /**
+   * Check if the save button should be shown (development builds only)
+   * @returns true if in development mode
+   */
+  shouldShowSaveButton(): boolean {
+    return !environment.production;
+  }
+
+  /**
+   * Check if the save button should be enabled
+   * @returns true if mock data is enabled and we're editing a mock threat model
+   */
+  isSaveEnabled(): boolean {
+    if (!this.threatModel) {
+      return false;
+    }
+
+    // Only enable if mock data is being used
+    if (!this.mockDataService.isUsingMockData) {
+      return false;
+    }
+
+    // Only enable for existing threat models (not new ones)
+    if (this.isNewThreatModel) {
+      return false;
+    }
+
+    // Check if this is one of the mock threat models
+    return this.isMockThreatModel(this.threatModel.id);
+  }
+
+  /**
+   * Check if a threat model ID corresponds to one of the mock data files
+   * @param threatModelId The threat model ID to check
+   * @returns true if this is a mock threat model
+   */
+  private isMockThreatModel(threatModelId: string): boolean {
+    // The mock data service loads threat models with these specific IDs
+    const mockThreatModelIds = [
+      '550e8400-e29b-41d4-a716-446655440000', // threat-model-1.json
+      '550e8400-e29b-41d4-a716-446655440001', // threat-model-2.json  
+      '550e8400-e29b-41d4-a716-446655440002'  // threat-model-3.json
+    ];
+    
+    return mockThreatModelIds.includes(threatModelId);
+  }
+
+  /**
+   * Get the mock data file name for a given threat model ID
+   * @param threatModelId The threat model ID
+   * @returns The corresponding mock data file name
+   */
+  private getMockDataFileName(threatModelId: string): string {
+    const idToFileMap: Record<string, string> = {
+      '550e8400-e29b-41d4-a716-446655440000': 'threat-model-1.json',
+      '550e8400-e29b-41d4-a716-446655440001': 'threat-model-2.json',
+      '550e8400-e29b-41d4-a716-446655440002': 'threat-model-3.json'
+    };
+    
+    return idToFileMap[threatModelId] || 'unknown-threat-model.json';
+  }
+
+  /**
+   * Save the threat model to disk for mock data replacement
+   * Downloads a file that can be used to replace the mock data file
+   */
+  saveToDisk(): void {
+    if (!this.threatModel) {
+      this.logger.warn('Cannot save threat model: no threat model loaded');
+      return;
+    }
+
+    if (!this.isSaveEnabled()) {
+      this.logger.warn('Save to disk is not enabled for this threat model');
+      return;
+    }
+
+    this.logger.debugComponent('TmEdit', 'Saving threat model to mock data file', {
+      threatModelId: this.threatModel.id,
+      threatModelName: this.threatModel.name
+    });
+
+    try {
+      // Apply form changes to the threat model before saving
+      this.applyFormChangesToThreatModel();
+
+      // Get the mock data file name
+      const mockFileName = this.getMockDataFileName(this.threatModel.id);
+      
+      // Serialize the complete threat model as JSON with proper formatting
+      const jsonContent = JSON.stringify(this.threatModel, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+
+      // Create download with the exact filename to replace in mock-data directory
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = mockFileName;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the object URL
+      URL.revokeObjectURL(url);
+
+      this.logger.info('Mock data file created for download', { 
+        fileName: mockFileName,
+        instruction: `Replace src/assets/mock-data/${mockFileName} with the downloaded file`
+      });
+
+      // Show success message to user in console (development only)
+      this.logger.info(`Mock data file created: ${mockFileName}`);
+      this.logger.info(`Replace src/assets/mock-data/${mockFileName} with the downloaded file to update mock data`);
+      
+    } catch (error) {
+      this.logger.error('Error saving threat model to mock data file', error);
+    }
+  }
+
+  /**
+   * Apply form changes to the threat model object before saving
+   */
+  private applyFormChangesToThreatModel(): void {
+    if (!this.threatModel || !this.threatModelForm.valid) {
+      return;
+    }
+
+    const formValues: ThreatModelFormValues = this.threatModelForm.value;
+    
+    // Update the threat model with form values
+    this.threatModel.name = formValues.name;
+    this.threatModel.description = formValues.description;
+    this.threatModel.threat_model_framework = formValues.threat_model_framework;
+    
+    if (formValues.issue_url) {
+      this.threatModel.issue_url = formValues.issue_url;
+    }
+
+    // Update modified timestamp
+    this.threatModel.modified_at = new Date().toISOString();
+
+    this.logger.debugComponent('TmEdit', 'Applied form changes to threat model', {
+      threatModelId: this.threatModel.id,
+      updatedFields: ['name', 'description', 'threat_model_framework', 'issue_url', 'modified_at']
+    });
   }
 }

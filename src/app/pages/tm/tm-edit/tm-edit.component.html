@@ -33,6 +33,19 @@
         >
         <span [transloco]="'threatModels.reportButton'">Report</span>
       </button>
+      <!-- Development-only save button -->
+      <button
+        *ngIf="shouldShowSaveButton()"
+        mat-button
+        color="accent"
+        [disabled]="!isSaveEnabled()"
+        (click)="saveToDisk()"
+        matTooltip="Save changes to mock data file (Development only)"
+        aria-label="Save to disk"
+      >
+        <mat-icon>save</mat-icon>
+        <span>Save to Disk</span>
+      </button>
       <button mat-button color="warn" (click)="cancel()">
         <mat-icon>close</mat-icon>
         <span [transloco]="'common.close'">Close</span>
