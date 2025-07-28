@@ -8,8 +8,17 @@ import { vi, beforeEach, describe, it, expect } from 'vitest';
 import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
-import { environment } from '../../../environments/environment';
 import { JwtToken } from '../models/auth.models';
+
+// Mock the environment module
+vi.mock('../../../environments/environment', () => ({
+  environment: {
+    apiUrl: 'http://localhost:8080',
+    production: false,
+  }
+}));
+
+import { environment } from '../../../environments/environment';
 
 describe('JwtInterceptor', () => {
   let interceptor: JwtInterceptor;
@@ -88,6 +97,82 @@ describe('JwtInterceptor', () => {
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'test' }))
+      } as unknown as HttpHandler;
+
+      await new Promise<void>((resolve) => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe(() => {
+          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
+          resolve();
+        });
+      });
+    });
+
+    it('should not add Authorization header to public API endpoints', async () => {
+      const mockRequest = {
+        url: `${environment.apiUrl}/auth/login`
+      } as unknown as HttpRequest<unknown>;
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(of({ data: 'login response' }))
+      } as unknown as HttpHandler;
+
+      await new Promise<void>((resolve) => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe(() => {
+          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
+          resolve();
+        });
+      });
+    });
+
+    it('should not add Authorization header to auth exchange endpoints', async () => {
+      const mockRequest = {
+        url: `${environment.apiUrl}/auth/exchange/google`
+      } as unknown as HttpRequest<unknown>;
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(of({ data: 'exchange response' }))
+      } as unknown as HttpHandler;
+
+      await new Promise<void>((resolve) => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe(() => {
+          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
+          resolve();
+        });
+      });
+    });
+
+    it('should not add Authorization header to auth authorize endpoints', async () => {
+      const mockRequest = {
+        url: `${environment.apiUrl}/auth/authorize/github`
+      } as unknown as HttpRequest<unknown>;
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(of({ data: 'authorize response' }))
+      } as unknown as HttpHandler;
+
+      await new Promise<void>((resolve) => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe(() => {
+          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
+          resolve();
+        });
+      });
+    });
+
+    it('should not add Authorization header to root health check endpoint', async () => {
+      const mockRequest = {
+        url: environment.apiUrl // This is just "http://localhost:8080" - the root endpoint
+      } as unknown as HttpRequest<unknown>;
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(of({ status: { code: 'OK', time: '2025-07-28T00:58:26.207Z' } }))
       } as unknown as HttpHandler;
 
       await new Promise<void>((resolve) => {

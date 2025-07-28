@@ -6,15 +6,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { TranslocoModule } from '@jsverse/transloco';
-import { AuthService, ProviderInfo } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
-import { AuthError, OAuthResponse } from '../../models/auth.models';
+import { AuthError, OAuthResponse, OAuthProviderInfo } from '../../models/auth.models';
 import { take } from 'rxjs';
 
 interface LoginQueryParams {
   returnUrl?: string;
   code?: string;
   state?: string;
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: string;
   error?: string;
   error_description?: string;
 }
@@ -29,7 +32,8 @@ interface LoginQueryParams {
 export class LoginComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
-  availableProviders: ProviderInfo[] = [];
+  availableProviders: OAuthProviderInfo[] = [];
+  providersLoading = true;
   private returnUrl: string | null = null;
 
   constructor(
@@ -42,27 +46,68 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.logger.info('LoginComponent initialized');
     
-    // Get available providers from auth service
-    this.availableProviders = this.authService.getAvailableProviders();
+    // Load available providers from TMI server
+    this.loadProviders();
 
     this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
       this.returnUrl = params.returnUrl || '/tm';
       const code = params.code;
       const state = params.state;
+      const accessToken = params.access_token;
+      const refreshToken = params.refresh_token;
+      const expiresIn = params.expires_in;
       const errorParam = params.error;
       const errorDescription = params.error_description;
 
-      if (code && state) {
+      // Handle TMI OAuth callback with tokens
+      if (accessToken) {
+        this.handleOAuthCallback({ 
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          expires_in: expiresIn ? parseInt(expiresIn) : undefined,
+          state 
+        });
+      }
+      // Handle old-style callback with code (for local provider)
+      else if (code && state) {
         this.handleOAuthCallback({ code, state });
-      } else if (errorParam) {
+      }
+      // Handle OAuth errors
+      else if (errorParam) {
         this.handleLoginError({
           code: errorParam,
           message: errorDescription || 'Authentication failed',
           retryable: true,
         });
-      } else if (this.availableProviders.length === 1 && !this.hasCallbackParams(params)) {
+      }
+    });
+  }
+
+  /**
+   * Load OAuth providers from TMI server
+   */
+  private loadProviders(): void {
+    this.providersLoading = true;
+    this.authService.getAvailableProviders().subscribe({
+      next: providers => {
+        this.availableProviders = providers;
+        this.providersLoading = false;
+        this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, { 
+          providers: providers.map(p => ({ id: p.id, name: p.name })) 
+        });
+
         // Auto-login if only one provider available and not handling callback
-        this.login(this.availableProviders[0].id);
+        const hasCallbackParams = this.route.snapshot.queryParams['code'] || 
+                                 this.route.snapshot.queryParams['access_token'] || 
+                                 this.route.snapshot.queryParams['error'];
+        if (providers.length === 1 && !hasCallbackParams) {
+          this.login(providers[0].id);
+        }
+      },
+      error: error => {
+        this.providersLoading = false;
+        this.error = 'Failed to load authentication providers';
+        this.logger.error('Failed to load OAuth providers', error);
       }
     });
   }
@@ -85,6 +130,12 @@ export class LoginComponent implements OnInit {
     const providerName = provider?.name || providerId || 'default provider';
     
     this.logger.info(`Initiating login with ${providerName}`);
+    this.logger.debugComponent('Auth', 'Starting OAuth flow', { 
+      providerId, 
+      providerName,
+      authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown' // Remove query params for logging
+    });
+    
     this.authService.initiateLogin(providerId);
   }
 

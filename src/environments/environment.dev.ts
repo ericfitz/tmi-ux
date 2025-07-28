@@ -16,26 +16,6 @@ export const environment: Environment = {
   enableTLS: false,
   defaultAuthProvider: 'local',
   oauth: {
-    providers: [
-      {
-        id: 'google',
-        name: 'Google',
-        authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-        scopes: ['openid', 'email', 'profile'],
-        clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual Google OAuth client ID
-        redirectUri: 'http://localhost:4200/auth/callback',
-        icon: 'fa-brands fa-google',
-      },
-      {
-        id: 'github',
-        name: 'GitHub',
-        authUrl: 'https://github.com/login/oauth/authorize',
-        scopes: ['user:email'],
-        clientId: 'YOUR_GITHUB_CLIENT_ID', // Replace with actual GitHub OAuth client ID
-        redirectUri: 'http://localhost:4200/auth/callback',
-        icon: 'fa-brands fa-github',
-      },
-    ],
     local: {
       enabled: true,
       icon: 'fa-solid fa-laptop-code',

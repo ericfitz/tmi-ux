@@ -55,12 +55,37 @@ export interface OAuthResponse {
   /**
    * Authorization code returned from the OAuth provider
    */
-  code: string;
+  code?: string;
 
   /**
    * State parameter for CSRF protection
    */
-  state: string;
+  state?: string;
+
+  /**
+   * Access token from TMI OAuth proxy
+   */
+  access_token?: string;
+
+  /**
+   * Refresh token from TMI OAuth proxy
+   */
+  refresh_token?: string;
+
+  /**
+   * Token expiration time in seconds
+   */
+  expires_in?: number;
+
+  /**
+   * OAuth error code
+   */
+  error?: string;
+
+  /**
+   * OAuth error description
+   */
+  error_description?: string;
 }
 
 /**
@@ -81,6 +106,51 @@ export interface AuthError {
    * Whether the error is retryable
    */
   retryable: boolean;
+}
+
+/**
+ * OAuth provider information from TMI server
+ */
+export interface OAuthProviderInfo {
+  /**
+   * Provider identifier
+   */
+  id: string;
+
+  /**
+   * Provider display name
+   */
+  name: string;
+
+  /**
+   * Provider icon class
+   */
+  icon: string;
+
+  /**
+   * TMI OAuth authorization URL for this provider
+   */
+  auth_url: string;
+
+  /**
+   * TMI OAuth callback URL
+   */
+  redirect_uri: string;
+
+  /**
+   * OAuth client ID (for display purposes only)
+   */
+  client_id: string;
+}
+
+/**
+ * Response from TMI provider discovery endpoint
+ */
+export interface ProvidersResponse {
+  /**
+   * List of available OAuth providers
+   */
+  providers: OAuthProviderInfo[];
 }
 
 /**

@@ -4,8 +4,16 @@
       <mat-card-title>{{ 'login.title' | transloco }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <!-- Loading providers -->
+      <div *ngIf="providersLoading">
+        <div class="providers-loading">
+          <mat-spinner diameter="20"></mat-spinner>
+          <p>{{ 'login.loadingProviders' | transloco }}</p>
+        </div>
+      </div>
+
       <!-- Multiple providers -->
-      <div *ngIf="availableProviders.length > 1">
+      <div *ngIf="!providersLoading && availableProviders.length > 1">
         <p>{{ 'login.chooseMethod' | transloco }}</p>
         <div class="provider-buttons">
           <button 
@@ -24,7 +32,7 @@
       </div>
       
       <!-- Single provider auto-login -->
-      <div *ngIf="availableProviders.length === 1 && isLoading">
+      <div *ngIf="!providersLoading && availableProviders.length === 1 && isLoading">
         <div class="single-provider-loading">
           <i [class]="availableProviders[0].icon" class="provider-icon-large"></i>
           <p>{{ 'login.loggingInWith' | transloco: { provider: availableProviders[0].name } }}</p>
@@ -33,7 +41,7 @@
       </div>
       
       <!-- Single provider ready to login -->
-      <div *ngIf="availableProviders.length === 1 && !isLoading">
+      <div *ngIf="!providersLoading && availableProviders.length === 1 && !isLoading">
         <p>{{ 'login.pleaseSignIn' | transloco }}</p>
         <button 
           mat-raised-button 
@@ -46,7 +54,7 @@
       </div>
       
       <!-- No providers configured -->
-      <div *ngIf="availableProviders.length === 0">
+      <div *ngIf="!providersLoading && availableProviders.length === 0">
         <div class="no-providers">
           <i class="fa-solid fa-exclamation-triangle warning-icon"></i>
           <p>{{ 'login.noProvidersConfigured' | transloco }}</p>

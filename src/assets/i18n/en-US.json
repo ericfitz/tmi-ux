@@ -142,6 +142,7 @@
   "login": {
     "authenticationFailed": "Authentication failed. Please try again.",
     "chooseMethod": "Choose your login method:",
+    "loadingProviders": "Loading authentication providers...",
     "loggingInWith": "Logging in with {{provider}}...",
     "loginWith": "Login with",
     "noProvidersConfigured": "No authentication providers are configured.",

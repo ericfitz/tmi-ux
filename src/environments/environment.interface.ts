@@ -6,58 +6,12 @@
  * 
  * Key functionality:
  * - Defines Environment interface with all configuration options
- * - Provides OAuthProvider interface for authentication provider configuration
- * - Supports OAuth authentication with multiple providers (Google, GitHub, etc.)
+ * - Supports OAuth authentication with dynamic provider discovery
  * - Includes local development provider for testing
  * - Configures TLS/HTTPS settings for production deployments
  * - Defines logging levels and component-specific debug options
  * - Supports operator contact information and server configuration
  */
-
-/**
- * OAuth provider configuration
- */
-export interface OAuthProvider {
-  /**
-   * Unique identifier for the provider
-   */
-  id: string;
-
-  /**
-   * Display name for the provider
-   */
-  name: string;
-
-  /**
-   * OAuth authorization URL
-   */
-  authUrl: string;
-
-  /**
-   * OAuth scopes to request
-   */
-  scopes: string[];
-
-  /**
-   * OAuth client ID
-   */
-  clientId: string;
-
-  /**
-   * OAuth redirect URI
-   */
-  redirectUri: string;
-
-  /**
-   * FontAwesome icon class (e.g., "fa-brands fa-google")
-   */
-  icon: string;
-
-  /**
-   * Additional URL parameters for the authorization request
-   */
-  additionalParams?: Record<string, string>;
-}
 
 /**
  * Interface for application environment configuration
@@ -155,16 +109,13 @@ export interface Environment {
 
   /**
    * OAuth configuration for authentication providers
-   * Contains settings for each supported OAuth provider
+   * OAuth providers are now discovered dynamically from TMI server via /auth/providers
+   * This configuration only contains local development provider settings
    */
   oauth?: {
     /**
-     * Configured OAuth providers
-     */
-    providers?: OAuthProvider[];
-
-    /**
      * Local development provider configuration
+     * Used for testing and development when TMI server is not available
      */
     local?: {
       /**
@@ -193,7 +144,7 @@ export interface Environment {
 
   /**
    * Default authentication provider to use
-   * If not specified, will use 'local' if available, otherwise first configured provider
+   * If not specified, will use 'local' if available, otherwise first provider from TMI server
    */
   defaultAuthProvider?: string;
 }

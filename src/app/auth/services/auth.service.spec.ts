@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { LocalOAuthProviderService } from './local-oauth-provider.service';
-import { JwtToken, UserProfile, OAuthResponse, AuthError, UserRole } from '../models/auth.models';
+import { JwtToken, UserProfile, OAuthResponse, AuthError, UserRole, ProvidersResponse } from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -27,9 +27,12 @@ vi.mock('../../../environments/environment', () => ({
     operatorName: 'TMI Operator (Test)',
     operatorContact: 'test@example.com',
     oauth: {
-      google: {
-        clientId: 'test-client-id',
-        redirectUri: 'http://localhost:4200/auth/callback',
+      local: {
+        enabled: true,
+        icon: 'fa-solid fa-laptop-code',
+        users: [
+          { id: 'user1', name: 'Test User', email: 'user1@example.com' },
+        ],
       },
     },
   },
@@ -94,6 +97,26 @@ describe('AuthService', () => {
   const mockOAuthResponse: OAuthResponse = {
     code: 'mock-auth-code',
     state: 'mock-state-value',
+  };
+
+  const mockTMITokenResponse: OAuthResponse = {
+    access_token: mockJwtToken.token,
+    refresh_token: 'mock-refresh-token',
+    expires_in: 3600,
+    state: 'mock-state-value',
+  };
+
+  const mockProvidersResponse: ProvidersResponse = {
+    providers: [
+      {
+        id: 'google',
+        name: 'Google',
+        icon: 'fa-brands fa-google',
+        auth_url: 'http://localhost:8080/auth/authorize/google',
+        redirect_uri: 'http://localhost:8080/auth/callback',
+        client_id: 'mock-client-id'
+      }
+    ]
   };
 
   const mockAuthError: AuthError = {
@@ -285,6 +308,9 @@ describe('AuthService', () => {
       const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
       cryptoMock.getRandomValues.mockReturnValue(mockArray);
 
+      // Mock provider discovery
+      vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
+
       service.initiateLogin();
 
       expect(cryptoMock.getRandomValues).toHaveBeenCalled();
@@ -297,6 +323,9 @@ describe('AuthService', () => {
 
     it('should handle missing provider configuration', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+      
+      // Mock provider discovery to return empty providers
+      vi.mocked(httpClient.get).mockReturnValue(of({ providers: [] }));
 
       service.initiateLogin('nonexistent-provider');
 
@@ -310,7 +339,10 @@ describe('AuthService', () => {
     it('should handle errors during local auth initialization', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
-      // Make localProvider throw an error
+      // Mock provider discovery to return empty providers (forces error)
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => new Error('Network error')));
+
+      // Make localProvider throw an error for when it gets to local provider
       localProvider.buildAuthUrl = vi.fn().mockImplementation(() => {
         throw new Error('Local provider error');
       });
@@ -318,26 +350,72 @@ describe('AuthService', () => {
       service.initiateLogin('local');
 
       expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-        code: 'local_auth_error',
-        message: 'Failed to initialize local authentication',
+        code: 'provider_discovery_error',
+        message: 'Failed to discover OAuth providers',
         retryable: true,
       });
       expect(loggerService.error).toHaveBeenCalledWith(
-        'Error initializing local authentication',
+        'Error discovering OAuth providers',
         expect.any(Error),
       );
     });
 
-    it('should get available providers', () => {
-      const providers = service.getAvailableProviders();
+    it('should get available providers from TMI server', () => {
+      // Mock HTTP response
+      vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
       
-      expect(providers).toEqual([
-        {
-          id: 'local',
-          name: 'Local Development',
-          icon: 'fa-solid fa-laptop-code'
-        }
-      ]);
+      const result$ = service.getAvailableProviders();
+      
+      result$.subscribe(providers => {
+        expect(providers).toEqual([
+          ...mockProvidersResponse.providers,
+          {
+            id: 'local',
+            name: 'Local Development',
+            icon: 'fa-solid fa-laptop-code',
+            auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
+            redirect_uri: expect.stringContaining('/auth/callback'),
+            client_id: 'local-development'
+          }
+        ]);
+      });
+      
+      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/auth/providers`);
+    });
+
+    it('should handle provider discovery errors gracefully', () => {
+      // Mock HTTP error
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => new Error('Network error')));
+      
+      const result$ = service.getAvailableProviders();
+      
+      result$.subscribe(providers => {
+        expect(providers).toEqual([
+          {
+            id: 'local',
+            name: 'Local Development',
+            icon: 'fa-solid fa-laptop-code',
+            auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
+            redirect_uri: expect.stringContaining('/auth/callback'),
+            client_id: 'local-development'
+          }
+        ]);
+      });
+      
+      expect(loggerService.error).toHaveBeenCalledWith('Failed to fetch OAuth providers', expect.any(Error));
+    });
+
+    it('should cache provider results', () => {
+      // Mock HTTP response
+      vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
+      
+      // First call
+      service.getAvailableProviders().subscribe();
+      // Second call should use cache
+      service.getAvailableProviders().subscribe();
+      
+      // Should only call HTTP once due to caching
+      expect(httpClient.get).toHaveBeenCalledTimes(1);
     });
   }); /* End of OAuth Login describe block */
 
@@ -371,7 +449,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should handle successful external provider authentication', () => {
+    it('should handle successful TMI OAuth proxy token response', () => {
       // Mock for external provider
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'oauth_state') return 'mock-state-value';
@@ -379,25 +457,69 @@ describe('AuthService', () => {
         return null;
       });
 
-      const tokenResponse = { 
-        access_token: mockJwtToken.token, 
-        refresh_token: 'mock-refresh-token',
-        expires_in: 3600, 
-        token_type: 'Bearer' 
-      };
-      vi.mocked(httpClient.post).mockReturnValue(of(tokenResponse));
-
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+      const result$ = service.handleOAuthCallback(mockTMITokenResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(true);
-        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/exchange/google`, {
-          code: 'mock-auth-code',
-          state: 'mock-state-value',
-          redirect_uri: `${window.location.origin}/auth/callback`,
-        });
         expect(service.isAuthenticated).toBe(true);
+        expect(service.userProfile).toEqual(
+          expect.objectContaining({
+            email: 'test@example.com',
+            name: 'Test User',
+          }),
+        );
         expect(router.navigate).toHaveBeenCalledWith(['/tm']);
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('user_profile', expect.any(String));
+      });
+    });
+
+    it('should handle OAuth errors from TMI callback', () => {
+      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+      
+      const errorResponse: OAuthResponse = {
+        error: 'access_denied',
+        error_description: 'User cancelled authorization'
+      };
+
+      const result$ = service.handleOAuthCallback(errorResponse);
+
+      result$.subscribe(result => {
+        expect(result).toBe(false);
+        expect(handleAuthErrorSpy).toHaveBeenCalledWith({
+          code: 'access_denied',
+          message: 'User cancelled authorization',
+          retryable: false
+        });
+      });
+    });
+
+    it('should handle unexpected callback format', () => {
+      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+      
+      // Mock receiving code instead of tokens (old-style callback)
+      const oldStyleResponse: OAuthResponse = {
+        code: 'auth-code',
+        state: 'mock-state-value'
+      };
+      
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return 'mock-state-value';
+        if (key === 'oauth_provider') return 'google'; // Not local
+        return null;
+      });
+
+      const result$ = service.handleOAuthCallback(oldStyleResponse);
+
+      result$.subscribe(result => {
+        expect(result).toBe(false);
+        expect(handleAuthErrorSpy).toHaveBeenCalledWith({
+          code: 'unexpected_callback_format',
+          message: 'Received authorization code instead of access token from TMI server',
+          retryable: true
+        });
       });
     });
 
@@ -439,32 +561,20 @@ describe('AuthService', () => {
       });
     });
 
-    it('should handle failed authentication due to token exchange error', () => {
-      // Mock for external provider
-      localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'oauth_state') return 'mock-state-value';
-        if (key === 'oauth_provider') return 'google';
-        return null;
-      });
-
+    it('should handle invalid callback with no valid data', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+      
+      const invalidResponse: OAuthResponse = {};
 
-      // Mock the HTTP post method to throw an error
-      vi.mocked(httpClient.post).mockReturnValue(throwError(() => new Error('Network error')));
-
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+      const result$ = service.handleOAuthCallback(invalidResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(false);
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-          code: 'token_exchange_error',
-          message: 'Failed to exchange authorization code for token',
-          retryable: true,
+          code: 'invalid_callback',
+          message: 'No valid authentication data received in callback',
+          retryable: true
         });
-        expect(loggerService.error).toHaveBeenCalledWith(
-          'Error exchanging code for token',
-          expect.any(Error),
-        );
       });
     });
   }); /* End of OAuth Callback Handling describe block */

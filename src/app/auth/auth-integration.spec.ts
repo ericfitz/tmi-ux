@@ -188,12 +188,6 @@ describe('Authentication Integration', () => {
   describe('OAuth Flow Integration Tests', () => {
     describe('Complete OAuth Login Flow', () => {
       it('should handle complete Google OAuth login flow with token refresh', () => {
-        // Mock OAuth response
-        const mockOAuthResponse = {
-          code: 'oauth-authorization-code',
-          state: 'csrf-state-value'
-        };
-
         // Create a properly formatted JWT token with base64-encoded payload
         const mockPayload = {
           email: 'user@example.com',
@@ -202,12 +196,12 @@ describe('Authentication Integration', () => {
         };
         const mockJwtToken = 'header.' + btoa(JSON.stringify(mockPayload)) + '.signature';
 
-        // Mock successful token exchange response
-        const tokenExchangeResponse = {
+        // Mock TMI OAuth proxy response with tokens (new pattern)
+        const mockOAuthResponse = {
           access_token: mockJwtToken,
           refresh_token: 'initial-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer'
+          state: 'csrf-state-value'
         };
 
         // Set up localStorage mocks for OAuth state
@@ -219,10 +213,7 @@ describe('Authentication Integration', () => {
           }
         });
 
-        // Mock HTTP token exchange
-        vi.mocked(httpClient.post).mockReturnValueOnce(of(tokenExchangeResponse));
-
-        // Execute OAuth callback
+        // Execute OAuth callback (no HTTP call needed - TMI provides tokens directly)
         const result$ = authService.handleOAuthCallback(mockOAuthResponse);
 
         result$.subscribe(success => {
@@ -232,22 +223,12 @@ describe('Authentication Integration', () => {
           expect(router.navigate).toHaveBeenCalledWith(['/tm']);
         });
 
-        // Verify token exchange was called with correct parameters
-        expect(httpClient.post).toHaveBeenCalledWith(
-          `${environment.apiUrl}/auth/exchange/google`,
-          {
-            code: 'oauth-authorization-code',
-            state: 'csrf-state-value',
-            redirect_uri: `${window.location.origin}/auth/callback`
-          }
-        );
-
         // Verify localStorage cleanup
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
       });
 
-      it('should handle OAuth login with automatic token refresh', () => {
+      it('should handle OAuth login with automatic token refresh', async () => {
         // Create JWT token for initial login
         const initialPayload = {
           email: 'refresh-user@example.com',
@@ -255,95 +236,102 @@ describe('Authentication Integration', () => {
         };
         const initialJwtToken = 'header.' + btoa(JSON.stringify(initialPayload)) + '.signature';
 
-        // First, simulate successful login
-        const initialToken = {
-          access_token: initialJwtToken,
-          refresh_token: 'valid-refresh-token',
-          expires_in: 60, // Short expiry for testing
-          token_type: 'Bearer'
+        // Set up localStorage to return a token that needs refresh
+        const expiringSoonToken = {
+          token: initialJwtToken,
+          refreshToken: 'valid-refresh-token',
+          expiresIn: 60,
+          expiresAt: new Date(Date.now() + 30000) // 30 seconds from now - will trigger refresh
         };
 
         localStorageMock.getItem.mockImplementation((key: string) => {
           switch (key) {
             case 'oauth_state': return 'test-state';
             case 'oauth_provider': return 'google';
-            case 'auth_token': {
-              // Return a token that will expire soon
-              const token = {
-                token: initialJwtToken,
-                refreshToken: 'valid-refresh-token',
-                expiresIn: 60,
-                expiresAt: new Date(Date.now() + 30000) // 30 seconds from now
-              };
-              return JSON.stringify(token);
-            }
+            case 'auth_token': return JSON.stringify(expiringSoonToken);
             default: return null;
           }
         });
 
-        vi.mocked(httpClient.post).mockReturnValueOnce(of(initialToken));
+        // Create JWT token for refresh response
+        const refreshPayload = {
+          email: 'refresh-user@example.com',
+          name: 'Refresh User'
+        };
+        const refreshJwtToken = 'header.' + btoa(JSON.stringify(refreshPayload)) + '.signature';
 
-        // Simulate OAuth callback
+        // Mock the refresh response
+        const refreshResponse = {
+          access_token: refreshJwtToken,
+          refresh_token: 'new-refresh-token',
+          expires_in: 3600,
+          token_type: 'Bearer'
+        };
+
+        vi.mocked(httpClient.post).mockReturnValueOnce(of(refreshResponse));
+
+        // First, simulate successful OAuth login
         const oauthResult$ = authService.handleOAuthCallback({
-          code: 'test-code',
+          access_token: initialJwtToken,
+          refresh_token: 'valid-refresh-token',
+          expires_in: 60,
           state: 'test-state'
         });
 
-        oauthResult$.subscribe(() => {
-          // Create JWT token for refresh response
-          const refreshPayload = {
-            email: 'refresh-user@example.com',
-            name: 'Refresh User'
-          };
-          const refreshJwtToken = 'header.' + btoa(JSON.stringify(refreshPayload)) + '.signature';
+        return new Promise<void>((resolve, reject) => {
+          oauthResult$.subscribe({
+            next: (success) => {
+              expect(success).toBe(true);
+              
+              // Now test automatic token refresh
+              const validToken$ = authService.getValidToken();
 
-          // Now test automatic token refresh
-          const refreshResponse = {
-            access_token: refreshJwtToken,
-            refresh_token: 'new-refresh-token',
-            expires_in: 3600,
-            token_type: 'Bearer'
-          };
-
-          vi.mocked(httpClient.post).mockReturnValueOnce(of(refreshResponse));
-
-          // Call getValidToken which should trigger refresh
-          const validToken$ = authService.getValidToken();
-
-          validToken$.subscribe(token => {
-            expect(token.token).toBe(refreshJwtToken);
-            expect(token.refreshToken).toBe('new-refresh-token');
+              validToken$.subscribe({
+                next: token => {
+                  try {
+                    expect(token.token).toBe(refreshJwtToken);
+                    expect(token.refreshToken).toBe('new-refresh-token');
+                    
+                    // Verify refresh was called
+                    expect(httpClient.post).toHaveBeenCalledWith(
+                      `${environment.apiUrl}/auth/refresh`,
+                      { refresh_token: 'valid-refresh-token' }
+                    );
+                    
+                    resolve();
+                  } catch (error) {
+                    reject(error instanceof Error ? error : new Error(String(error)));
+                  }
+                },
+                error: error => {
+                  reject(new Error(`Unexpected error in token refresh test: ${error.message}`));
+                }
+              });
+            },
+            error: error => {
+              reject(new Error(`OAuth callback failed: ${error.message}`));
+            }
           });
-
-          // Verify refresh was called
-          expect(httpClient.post).toHaveBeenCalledWith(
-            `${environment.apiUrl}/auth/refresh`,
-            { refresh_token: 'valid-refresh-token' }
-          );
         });
       });
     });
 
     describe('OAuth Error Handling Integration', () => {
       it('should handle complete OAuth flow failure and recovery', () => {
+        // In the new TMI OAuth proxy pattern, receiving a code instead of tokens
+        // indicates a server misconfiguration
         const mockOAuthResponse = {
-          code: 'invalid-code',
+          code: 'authorization-code',
           state: 'valid-state'
         };
 
         localStorageMock.getItem.mockImplementation((key: string) => {
           switch (key) {
             case 'oauth_state': return 'valid-state';
-            case 'oauth_provider': return 'google';
+            case 'oauth_provider': return 'google'; // Not local, so should expect tokens
             default: return null;
           }
         });
-
-        // Mock failed token exchange
-        const tokenExchangeError = new Error('Invalid authorization code');
-        vi.mocked(httpClient.post).mockReturnValueOnce(
-          throwError(() => tokenExchangeError)
-        );
 
         const result$ = authService.handleOAuthCallback(mockOAuthResponse);
 
@@ -359,8 +347,7 @@ describe('Authentication Integration', () => {
         });
 
         expect(logger.error).toHaveBeenCalledWith(
-          'Token exchange error',
-          expect.any(Error)
+          'Auth error: unexpected_callback_format - Received authorization code instead of access token from TMI server'
         );
       });
 
@@ -465,11 +452,6 @@ describe('Authentication Integration', () => {
 
     describe('Multi-Provider OAuth Integration', () => {
       it('should handle GitHub OAuth flow', () => {
-        const githubOAuthResponse = {
-          code: 'github-auth-code',
-          state: 'github-state'
-        };
-
         // Create JWT token for GitHub
         const githubPayload = {
           email: 'github-user@example.com',
@@ -477,11 +459,12 @@ describe('Authentication Integration', () => {
         };
         const githubJwtToken = 'header.' + btoa(JSON.stringify(githubPayload)) + '.signature';
 
-        const githubTokenResponse = {
+        // TMI OAuth proxy response with tokens (new pattern)
+        const githubOAuthResponse = {
           access_token: githubJwtToken,
           refresh_token: 'github-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer'
+          state: 'github-state'
         };
 
         localStorageMock.getItem.mockImplementation((key: string) => {
@@ -492,31 +475,15 @@ describe('Authentication Integration', () => {
           }
         });
 
-        vi.mocked(httpClient.post).mockReturnValue(of(githubTokenResponse));
-
         const result$ = authService.handleOAuthCallback(githubOAuthResponse);
 
         result$.subscribe(success => {
           expect(success).toBe(true);
           expect(authService.isAuthenticated).toBe(true);
         });
-
-        expect(httpClient.post).toHaveBeenCalledWith(
-          `${environment.apiUrl}/auth/exchange/github`,
-          {
-            code: 'github-auth-code',
-            state: 'github-state',
-            redirect_uri: `${window.location.origin}/auth/callback`
-          }
-        );
       });
 
       it('should handle Microsoft OAuth flow', () => {
-        const microsoftOAuthResponse = {
-          code: 'microsoft-auth-code',
-          state: 'microsoft-state'
-        };
-
         // Create JWT token for Microsoft
         const microsoftPayload = {
           email: 'microsoft-user@example.com',
@@ -524,11 +491,12 @@ describe('Authentication Integration', () => {
         };
         const microsoftJwtToken = 'header.' + btoa(JSON.stringify(microsoftPayload)) + '.signature';
 
-        const microsoftTokenResponse = {
+        // TMI OAuth proxy response with tokens (new pattern)
+        const microsoftOAuthResponse = {
           access_token: microsoftJwtToken,
           refresh_token: 'microsoft-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer'
+          state: 'microsoft-state'
         };
 
         localStorageMock.getItem.mockImplementation((key: string) => {
@@ -539,23 +507,12 @@ describe('Authentication Integration', () => {
           }
         });
 
-        vi.mocked(httpClient.post).mockReturnValue(of(microsoftTokenResponse));
-
         const result$ = authService.handleOAuthCallback(microsoftOAuthResponse);
 
         result$.subscribe(success => {
           expect(success).toBe(true);
           expect(authService.isAuthenticated).toBe(true);
         });
-
-        expect(httpClient.post).toHaveBeenCalledWith(
-          `${environment.apiUrl}/auth/exchange/microsoft`,
-          {
-            code: 'microsoft-auth-code',
-            state: 'microsoft-state',
-            redirect_uri: `${window.location.origin}/auth/callback`
-          }
-        );
       });
     });
 
@@ -624,12 +581,6 @@ describe('Authentication Integration', () => {
       // 1. Start unauthenticated
       expect(authService.isAuthenticated).toBe(false);
 
-      // 2. Simulate OAuth login
-      const oauthResponse = {
-        code: 'complete-flow-code',
-        state: 'complete-flow-state'
-      };
-
       // Create JWT token for session
       const sessionPayload = {
         email: 'session-user@example.com',
@@ -637,11 +588,12 @@ describe('Authentication Integration', () => {
       };
       const sessionJwtToken = 'header.' + btoa(JSON.stringify(sessionPayload)) + '.signature';
 
-      const tokenResponse = {
+      // 2. Simulate TMI OAuth login with tokens (new pattern)
+      const oauthResponse = {
         access_token: sessionJwtToken,
         refresh_token: 'session-refresh-token',
         expires_in: 3600,
-        token_type: 'Bearer'
+        state: 'complete-flow-state'
       };
 
       localStorageMock.getItem.mockImplementation((key: string) => {
@@ -652,9 +604,7 @@ describe('Authentication Integration', () => {
         }
       });
 
-      vi.mocked(httpClient.post).mockReturnValueOnce(of(tokenResponse));
-
-      // 3. Complete OAuth flow
+      // 3. Complete OAuth flow (no HTTP call needed with TMI proxy)
       const loginResult$ = authService.handleOAuthCallback(oauthResponse);
 
       loginResult$.subscribe(success => {

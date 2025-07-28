@@ -20,6 +20,20 @@ import { AuthError } from '../models/auth.models';
  */
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
+  
+  // Public endpoints that don't require authentication
+  private readonly publicEndpoints = [
+    '/',
+    '/version',
+    '/auth/login',
+    '/auth/callback',
+    '/auth/providers',
+    '/auth/token',
+    '/auth/refresh',
+    '/auth/authorize/*',
+    '/auth/exchange/*'
+  ];
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -35,8 +49,8 @@ export class JwtInterceptor implements HttpInterceptor {
    * @returns An observable of the HTTP event
    */
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Only add token to requests to our API
-    if (this.isApiRequest(request.url)) {
+    // Only add token to requests to our API that are not public endpoints
+    if (this.isApiRequest(request.url) && !this.isPublicEndpoint(request.url)) {
       // Get a valid token (with automatic refresh if needed)
       return this.authService.getValidToken().pipe(
         switchMap(token => {
@@ -57,9 +71,10 @@ export class JwtInterceptor implements HttpInterceptor {
       );
     }
 
+    // For public endpoints or non-API requests, just pass through with error handling
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
+        if (error.status === 401 && !this.isPublicEndpoint(request.url)) {
           this.handleUnauthorizedError();
         }
         return this.handleError(error, request);
@@ -74,6 +89,34 @@ export class JwtInterceptor implements HttpInterceptor {
    */
   private isApiRequest(url: string): boolean {
     return url.startsWith(environment.apiUrl);
+  }
+
+  /**
+   * Check if the request is to a public endpoint that doesn't require authentication
+   * @param url Request URL
+   * @returns True if the request is to a public endpoint
+   */
+  private isPublicEndpoint(url: string): boolean {
+    if (!this.isApiRequest(url)) {
+      return false;
+    }
+
+    // Extract the path from the API URL
+    let path = url.replace(environment.apiUrl, '');
+    
+    // If path is empty (root request), treat it as "/"
+    if (path === '') {
+      path = '/';
+    }
+    
+    return this.publicEndpoints.some(endpoint => {
+      // Handle exact matches and wildcard matches (for paths like /auth/authorize/* and /auth/exchange/*)
+      if (endpoint.endsWith('/*')) {
+        const baseEndpoint = endpoint.slice(0, -2);
+        return path.startsWith(baseEndpoint);
+      }
+      return path === endpoint || path.startsWith(endpoint + '/');
+    });
   }
 
 
