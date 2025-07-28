@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "TMI (Threat Modeling Improved) API",
-    "description": "A RESTful API for collaborative threat modeling with full X6 graph library compatibility. This API provides schemas that align with AntV X6 cell object models for seamless integration with modern diagramming libraries.",
+    "description": "A RESTful API for collaborative threat modeling with full X6 graph library compatibility. This API provides schemas that align with AntV X6 cell object models for seamless integration with modern diagramming libraries. Supports OAuth 2.0 authentication with client callback integration for seamless single-page application authentication flows.",
     "version": "1.0.0"
   },
   "externalDocs": {
@@ -1849,9 +1849,23 @@
                           "icon": {
                             "type": "string",
                             "description": "Icon identifier for the provider"
+                          },
+                          "auth_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "TMI authorization endpoint URL for this provider"
+                          },
+                          "redirect_uri": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "OAuth callback URI configured for this provider"
+                          },
+                          "client_id": {
+                            "type": "string",
+                            "description": "OAuth client ID for this provider"
                           }
                         },
-                        "required": ["id", "name", "icon"]
+                        "required": ["id", "name", "icon", "auth_url", "redirect_uri", "client_id"]
                       }
                     }
                   },
@@ -1864,17 +1878,26 @@
                 {
                   "id": "google",
                   "name": "Google",
-                  "icon": "google"
+                  "icon": "fa-brands fa-google",
+                  "auth_url": "http://localhost:8080/auth/authorize/google",
+                  "redirect_uri": "http://localhost:8080/auth/callback",
+                  "client_id": "675196260523-e8ppeu62pv222jhnpebe929b2tgl2jm0.apps.googleusercontent.com"
                 },
                 {
                   "id": "github",
-                  "name": "GitHub",
-                  "icon": "github"
+                  "name": "GitHub", 
+                  "icon": "fa-brands fa-github",
+                  "auth_url": "http://localhost:8080/auth/authorize/github",
+                  "redirect_uri": "http://localhost:8080/auth/callback",
+                  "client_id": "your-github-client-id"
                 },
                 {
                   "id": "microsoft",
                   "name": "Microsoft",
-                  "icon": "microsoft"
+                  "icon": "fa-brands fa-microsoft",
+                  "auth_url": "http://localhost:8080/auth/authorize/microsoft",
+                  "redirect_uri": "http://localhost:8080/auth/callback",
+                  "client_id": "your-microsoft-client-id"
                 }
               ]
             }
@@ -1889,7 +1912,7 @@
       "get": {
         "tags": ["Authentication"],
         "summary": "Initiate OAuth authorization flow",
-        "description": "Redirects user to OAuth provider's authorization page. Generates state parameter for CSRF protection.",
+        "description": "Redirects user to OAuth provider's authorization page. Supports client callback URL for seamless client integration. Generates state parameter for CSRF protection.",
         "operationId": "authorizeOAuthProvider",
         "parameters": [
           {
@@ -1900,6 +1923,27 @@
             "schema": {
               "type": "string",
               "enum": ["google", "github", "microsoft"]
+            }
+          },
+          {
+            "name": "client_callback",
+            "in": "query",
+            "required": false,
+            "description": "Client callback URL where TMI should redirect after successful OAuth completion with tokens as query parameters. If not provided, tokens are returned as JSON response.",
+            "schema": {
+              "type": "string",
+              "format": "uri",
+              "example": "http://localhost:4200/auth/callback"
+            }
+          },
+          {
+            "name": "state", 
+            "in": "query",
+            "required": false,
+            "description": "CSRF protection state parameter. Recommended for security. Will be included in the callback response.",
+            "schema": {
+              "type": "string",
+              "example": "random_state_abc123"
             }
           }
         ],
@@ -1946,6 +1990,57 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "examples": {
+          "client_callback_flow": {
+            "summary": "OAuth flow with client callback (Recommended for SPAs)",
+            "description": "Complete OAuth flow where TMI redirects back to the client application with tokens",
+            "value": {
+              "step1": {
+                "description": "Client initiates OAuth with callback URL",
+                "request": "GET /auth/authorize/google?state=abc123&client_callback=http%3A%2F%2Flocalhost%3A4200%2Fauth%2Fcallback"
+              },
+              "step2": {
+                "description": "TMI redirects to OAuth provider",
+                "response": "302 Redirect to https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=server_generated_state"
+              },
+              "step3": {
+                "description": "OAuth provider redirects back to TMI",
+                "callback": "GET /auth/callback?code=oauth_authorization_code&state=server_generated_state"
+              },
+              "step4": {
+                "description": "TMI processes OAuth and redirects to client with tokens",
+                "response": "302 Redirect to http://localhost:4200/auth/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=abc123"
+              }
+            }
+          },
+          "legacy_flow": {
+            "summary": "Legacy OAuth flow (JSON response)",
+            "description": "Traditional OAuth flow where TMI returns tokens as JSON",
+            "value": {
+              "step1": {
+                "description": "Client initiates OAuth without callback URL",
+                "request": "GET /auth/authorize/google?state=abc123"
+              },
+              "step2": {
+                "description": "TMI redirects to OAuth provider",
+                "response": "302 Redirect to https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=server_generated_state"
+              },
+              "step3": {
+                "description": "OAuth provider redirects back to TMI",
+                "callback": "GET /auth/callback?code=oauth_authorization_code&state=server_generated_state"
+              },
+              "step4": {
+                "description": "TMI returns tokens as JSON response",
+                "response": {
+                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "token_type": "Bearer",
+                  "expires_in": 3600
                 }
               }
             }
@@ -2371,7 +2466,7 @@
       "get": {
         "tags": ["Authentication"],
         "summary": "Handle OAuth callback",
-        "description": "Exchanges an OAuth authorization code for a JWT",
+        "description": "Exchanges OAuth authorization code for JWT tokens. If client_callback was provided during authorization, redirects to client with tokens. Otherwise returns tokens as JSON response.",
         "operationId": "handleOAuthCallback",
         "parameters": [
           {
@@ -2394,12 +2489,25 @@
         ],
         "responses": {
           "200": {
-            "description": "JWT issued successfully",
+            "description": "JWT tokens issued successfully (legacy mode when no client_callback provided)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthTokenResponse"
                 }
+              }
+            }
+          },
+          "302": {
+            "description": "Redirect to client callback URL with tokens (when client_callback was provided)",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": "Client callback URL with access_token, refresh_token, expires_in, token_type, and state as query parameters",
+                "example": "http://localhost:4200/auth/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=random_state_abc123"
               }
             }
           },

@@ -537,9 +537,47 @@ describe('AuthService', () => {
         expect(result).toBe(false);
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
           code: 'invalid_state',
-          message: 'Invalid state parameter, possible CSRF attack',
+          message: 'Invalid state parameter for local authentication',
           retryable: false,
         });
+      });
+    });
+
+    it('should handle Base64 encoded state parameter from TMI server', () => {
+      const originalState = 'test-state-12345';
+      const base64State = btoa(originalState); // Base64 encode the state
+      
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return originalState;
+        if (key === 'oauth_provider') return 'google';
+        return null;
+      });
+
+      const responseWithBase64State: OAuthResponse = {
+        access_token: mockJwtToken.token, // Use valid mock JWT token
+        refresh_token: 'mock-refresh-token',
+        expires_in: 3600,
+        state: base64State // TMI server returns Base64 encoded state
+      };
+
+      router.navigate = vi.fn().mockResolvedValue(true);
+
+      const result$ = service.handleOAuthCallback(responseWithBase64State);
+
+      result$.subscribe(result => {
+        expect(result).toBe(true);
+        expect(service.isAuthenticated).toBe(true);
+        expect(service.userProfile).toEqual(
+          expect.objectContaining({
+            email: 'test@example.com',
+            name: 'Test User',
+          }),
+        );
+        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('user_profile', expect.any(String));
       });
     });
 
