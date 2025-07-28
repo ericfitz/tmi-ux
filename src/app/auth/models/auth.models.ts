@@ -8,9 +8,14 @@
  */
 export interface JwtToken {
   /**
-   * The JWT token string
+   * The JWT access token string
    */
   token: string;
+
+  /**
+   * The refresh token string (optional)
+   */
+  refreshToken?: string;
 
   /**
    * Token expiration time in seconds

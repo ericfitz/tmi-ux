@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, catchError, throwError } from '../../core/rxjs-imports';
+import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthService } from '../services/auth.service';
@@ -37,7 +37,24 @@ export class JwtInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Only add token to requests to our API
     if (this.isApiRequest(request.url)) {
-      request = this.addTokenToRequest(request);
+      // Get a valid token (with automatic refresh if needed)
+      return this.authService.getValidToken().pipe(
+        switchMap(token => {
+          const tokenizedRequest = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${token.token}`,
+            },
+          });
+          this.logger.debug('Adding JWT token to request');
+          return next.handle(tokenizedRequest);
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            this.handleUnauthorizedError();
+          }
+          return this.handleError(error, request);
+        })
+      );
     }
 
     return next.handle(request).pipe(
@@ -59,25 +76,6 @@ export class JwtInterceptor implements HttpInterceptor {
     return url.startsWith(environment.apiUrl);
   }
 
-  /**
-   * Add JWT token to request headers
-   * @param request Original request
-   * @returns Cloned request with Authorization header
-   */
-  private addTokenToRequest(request: HttpRequest<unknown>): HttpRequest<unknown> {
-    const token = this.authService.getStoredToken();
-
-    if (token) {
-      this.logger.debug('Adding JWT token to request');
-      return request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token.token}`,
-        },
-      });
-    }
-
-    return request;
-  }
 
   /**
    * Handle 401 Unauthorized errors

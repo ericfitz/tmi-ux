@@ -175,6 +175,51 @@ export class AuthService {
   }
 
   /**
+   * Check if token needs refreshing (expires within 1 minute)
+   * @returns True if token should be refreshed
+   */
+  private shouldRefreshToken(): boolean {
+    const token = this.getStoredToken();
+    if (!token || !token.refreshToken) {
+      return false;
+    }
+
+    const now = new Date();
+    const oneMinuteFromNow = new Date(now.getTime() + 60000); // 1 minute buffer
+    return token.expiresAt <= oneMinuteFromNow;
+  }
+
+  /**
+   * Get a valid access token, refreshing if necessary
+   * @returns Observable that resolves to a valid JWT token
+   */
+  getValidToken(): Observable<JwtToken> {
+    const token = this.getStoredToken();
+    if (!token) {
+      return throwError(() => new Error('No token available'));
+    }
+
+    // If token is still valid and doesn't need refresh, return it
+    if (this.isTokenValid() && !this.shouldRefreshToken()) {
+      return of(token);
+    }
+
+    // If token needs refresh and we have a refresh token, refresh it
+    if (token.refreshToken) {
+      return this.refreshToken().pipe(
+        map(newToken => {
+          this.storeToken(newToken);
+          return newToken;
+        })
+      );
+    }
+
+    // Token is expired and no refresh token available
+    this.clearAuthData();
+    return throwError(() => new Error('Token expired and no refresh token available'));
+  }
+
+  /**
    * Check auth status from local storage
    * Loads JWT token and user profile if available
    */
@@ -402,11 +447,15 @@ export class AuthService {
   private exchangeCodeForToken(code: string, providerId: string | null): Observable<JwtToken> {
     this.logger.debugComponent('Auth', `Exchanging authorization code for token via ${providerId}`);
 
-    return this.http.post<{ token: string; expires_in: number }>(
-      `${environment.apiUrl}/auth/token`, 
+    if (!providerId) {
+      return throwError(() => new Error('Provider ID is required for token exchange'));
+    }
+
+    return this.http.post<{ access_token: string; refresh_token: string; expires_in: number; token_type: string }>(
+      `${environment.apiUrl}/auth/exchange/${providerId}`, 
       {
         code,
-        provider: providerId,
+        state: localStorage.getItem('oauth_state'),
         redirect_uri: this.getRedirectUri(providerId)
       }
     ).pipe(
@@ -415,7 +464,8 @@ export class AuthService {
         expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
 
         return {
-          token: response.token,
+          token: response.access_token,
+          refreshToken: response.refresh_token,
           expiresIn: response.expires_in,
           expiresAt
         };
@@ -557,6 +607,44 @@ export class AuthService {
   }
 
   /**
+   * Refresh an expired access token using the refresh token
+   * @returns Observable that resolves to a new JWT token
+   */
+  refreshToken(): Observable<JwtToken> {
+    this.logger.debugComponent('Auth', 'Refreshing access token');
+
+    const currentToken = this.getStoredToken();
+    if (!currentToken?.refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    return this.http.post<{ access_token: string; refresh_token: string; expires_in: number; token_type: string }>(
+      `${environment.apiUrl}/auth/refresh`,
+      {
+        refresh_token: currentToken.refreshToken
+      }
+    ).pipe(
+      map(response => {
+        const expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
+
+        return {
+          token: response.access_token,
+          refreshToken: response.refresh_token,
+          expiresIn: response.expires_in,
+          expiresAt
+        };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.logger.error('Token refresh failed', error);
+        // If refresh fails, clear auth data and redirect to login
+        this.clearAuthData();
+        return throwError(() => new Error('Token refresh failed - please login again'));
+      })
+    );
+  }
+
+  /**
    * Clear all authentication data
    */
   private clearAuthData(): void {
@@ -586,8 +674,18 @@ export class AuthService {
 
     // Call logout endpoint if authenticated (only for real users)
     if (this.isAuthenticated) {
+      const token = this.getStoredToken();
+      const headers: { [key: string]: string } = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add Authorization header if we have a token
+      if (token?.token) {
+        headers['Authorization'] = `Bearer ${token.token}`;
+      }
+
       this.http
-        .post(`${environment.apiUrl}/auth/logout`, {})
+        .post(`${environment.apiUrl}/auth/logout`, {}, { headers })
         .pipe(
           catchError((error: HttpErrorResponse) => {
             // Log the error but don't fail the logout process

@@ -8,7 +8,7 @@
 
 import '@angular/compiler';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
@@ -379,16 +379,21 @@ describe('AuthService', () => {
         return null;
       });
 
-      const tokenResponse = { token: mockJwtToken.token, expires_in: 3600 };
+      const tokenResponse = { 
+        access_token: mockJwtToken.token, 
+        refresh_token: 'mock-refresh-token',
+        expires_in: 3600, 
+        token_type: 'Bearer' 
+      };
       vi.mocked(httpClient.post).mockReturnValue(of(tokenResponse));
 
       const result$ = service.handleOAuthCallback(mockOAuthResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(true);
-        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/token`, {
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/exchange/google`, {
           code: 'mock-auth-code',
-          provider: 'google',
+          state: 'mock-state-value',
           redirect_uri: `${window.location.origin}/auth/callback`,
         });
         expect(service.isAuthenticated).toBe(true);
@@ -516,12 +521,23 @@ describe('AuthService', () => {
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
 
+      // Mock stored token for logout request
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
       // Mock the HTTP post method for logout
       vi.mocked(httpClient.post).mockReturnValue(of({}));
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {});
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${mockJwtToken.token}`
+        }
+      });
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
@@ -597,4 +613,581 @@ describe('AuthService', () => {
       expect(service.hasRole(UserRole.Reader)).toBe(false);
     });
   }); /* End of Role-based Authorization describe block */
+
+  describe('Enhanced Logout Functionality', () => {
+    it('should include Authorization header when token is available', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      // Mock stored token for logout request
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      // Mock the HTTP post method for logout
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
+      service.logout();
+
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${mockJwtToken.token}`
+        }
+      });
+    });
+
+    it('should exclude Authorization header when no token is available', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      // Mock no stored token
+      localStorageMock.getItem.mockReturnValue(null);
+
+      // Mock the HTTP post method for logout
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
+      service.logout();
+
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    });
+
+    it('should handle malformed token gracefully', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      // Mock malformed token
+      localStorageMock.getItem.mockReturnValue('invalid-json');
+
+      // Mock the HTTP post method for logout
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
+      service.logout();
+
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    });
+
+    it('should skip server logout for test users', () => {
+      const testUserProfile = { ...mockUserProfile, email: 'user1@example.com' };
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(testUserProfile);
+
+      service.logout();
+
+      expect(httpClient.post).not.toHaveBeenCalled();
+      expect(loggerService.debugComponent).toHaveBeenCalledWith('Auth', 'Skipping server logout for test user');
+      expect(service.isAuthenticated).toBe(false);
+      expect(service.userProfile).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should handle server unavailable during logout', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      // Mock network error (server unavailable)
+      const networkError = new HttpErrorResponse({
+        status: 0,
+        statusText: 'Unknown Error',
+        name: 'HttpErrorResponse'
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(throwError(() => networkError));
+
+      service.logout();
+
+      expect(loggerService.warn).toHaveBeenCalledWith('Server unavailable during logout - proceeding with client-side logout');
+      expect(service.isAuthenticated).toBe(false);
+      expect(service.userProfile).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should handle server errors during logout gracefully', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      // Mock server error
+      const serverError = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error',
+        error: 'Server Error'
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(throwError(() => serverError));
+
+      service.logout();
+
+      // Should eventually clear auth data and navigate regardless of server error
+      expect(service.isAuthenticated).toBe(false);
+      expect(service.userProfile).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should handle successful server logout', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(of({ success: true }));
+
+      service.logout();
+
+      expect(loggerService.debug).toHaveBeenCalledWith('Server logout request completed');
+      expect(service.isAuthenticated).toBe(false);
+      expect(service.userProfile).toBeNull();
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_profile');
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should handle logout when not authenticated', () => {
+      service['isAuthenticatedSubject'].next(false);
+
+      service.logout();
+
+      expect(httpClient.post).not.toHaveBeenCalled();
+      expect(service.isAuthenticated).toBe(false);
+      expect(service.userProfile).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should handle different test user email patterns', () => {
+      const testUsers = [
+        'user1@example.com',
+        'user2@example.com', 
+        'user3@example.com',
+        'demo.user@example.com'
+      ];
+
+      testUsers.forEach(email => {
+        const testUserProfile = { ...mockUserProfile, email };
+        service['isAuthenticatedSubject'].next(true);
+        service['userProfileSubject'].next(testUserProfile);
+
+        service.logout();
+
+        expect(httpClient.post).not.toHaveBeenCalled();
+        expect(service.isAuthenticated).toBe(false);
+        
+        // Reset for next iteration
+        vi.clearAllMocks();
+      });
+    });
+
+    it('should not skip server logout for regular users', () => {
+      const regularUserProfile = { ...mockUserProfile, email: 'regular.user@company.com' };
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(regularUserProfile);
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
+      service.logout();
+
+      expect(httpClient.post).toHaveBeenCalled();
+      expect(loggerService.debugComponent).not.toHaveBeenCalledWith('Auth', 'Skipping server logout for test user');
+    });
+  }); /* End of Enhanced Logout Functionality describe block */
+
+  describe('Token Refresh Functionality', () => {
+    describe('refreshToken()', () => {
+      it('should successfully refresh token with valid refresh token', () => {
+        const currentToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'valid-refresh-token'
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
+        
+        const refreshResponse = {
+          access_token: 'new-access-token',
+          refresh_token: 'new-refresh-token',
+          expires_in: 3600,
+          token_type: 'Bearer'
+        };
+        
+        vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
+        
+        const result$ = service.refreshToken();
+        
+        result$.subscribe(newToken => {
+          expect(newToken.token).toBe('new-access-token');
+          expect(newToken.refreshToken).toBe('new-refresh-token');
+          expect(newToken.expiresIn).toBe(3600);
+          expect(newToken.expiresAt).toBeInstanceOf(Date);
+          expect(newToken.expiresAt.getTime()).toBeGreaterThan(Date.now());
+        });
+        
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
+          refresh_token: 'valid-refresh-token'
+        });
+      });
+
+      it('should handle refresh token failure and clear auth data', () => {
+        const currentToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'expired-refresh-token'
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
+        
+        const error = new HttpErrorResponse({
+          status: 401,
+          statusText: 'Unauthorized',
+          error: 'Invalid refresh token'
+        });
+        
+        vi.mocked(httpClient.post).mockReturnValue(throwError(() => error));
+        
+        const result$ = service.refreshToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('Token refresh failed - please login again');
+            expect(service.isAuthenticated).toBe(false);
+            expect(service.userProfile).toBeNull();
+            expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
+            expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_profile');
+          }
+        });
+      });
+
+      it('should return error when no refresh token is available', () => {
+        const tokenWithoutRefresh: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: undefined
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(tokenWithoutRefresh));
+        
+        const result$ = service.refreshToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('No refresh token available');
+            expect(httpClient.post).not.toHaveBeenCalled();
+          }
+        });
+      });
+
+      it('should return error when no token is stored', () => {
+        localStorageMock.getItem.mockReturnValue(null);
+        
+        const result$ = service.refreshToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('No refresh token available');
+            expect(httpClient.post).not.toHaveBeenCalled();
+          }
+        });
+      });
+
+      it('should handle network errors during refresh', () => {
+        const currentToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'valid-refresh-token'
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
+        
+        const networkError = new HttpErrorResponse({
+          status: 0,
+          statusText: 'Unknown Error',
+          error: new ProgressEvent('Network error')
+        });
+        
+        vi.mocked(httpClient.post).mockReturnValue(throwError(() => networkError));
+        
+        const result$ = service.refreshToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('Token refresh failed - please login again');
+            expect(loggerService.error).toHaveBeenCalledWith('Token refresh failed', networkError);
+          }
+        });
+      });
+    });
+
+    describe('shouldRefreshToken()', () => {
+      it('should return true when token expires within 1 minute', () => {
+        const soonToExpireToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 30000) // 30 seconds from now
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
+        
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(true);
+      });
+
+      it('should return false when token has plenty of time left', () => {
+        const validToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 1800000) // 30 minutes from now
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(validToken));
+        
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(false);
+      });
+
+      it('should return false when no refresh token is available', () => {
+        const tokenWithoutRefresh: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: undefined,
+          expiresAt: new Date(Date.now() + 30000)
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(tokenWithoutRefresh));
+        
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(false);
+      });
+
+      it('should return false when no token is stored', () => {
+        localStorageMock.getItem.mockReturnValue(null);
+        
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(false);
+      });
+
+      it('should handle exact boundary conditions', () => {
+        // Test exactly 1 minute from now
+        const exactBoundaryToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 60000) // exactly 1 minute
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(exactBoundaryToken));
+        
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(true);
+      });
+
+      it('should handle already expired tokens', () => {
+        const expiredToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() - 1000) // 1 second ago
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredToken));
+        
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(true);
+      });
+    });
+
+    describe('getValidToken()', () => {
+      it('should return existing token when valid and no refresh needed', () => {
+        const validToken: JwtToken = {
+          ...mockJwtToken,
+          expiresAt: new Date(Date.now() + 1800000) // 30 minutes from now
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(validToken));
+        
+        const result$ = service.getValidToken();
+        
+        result$.subscribe(token => {
+          expect(token).toEqual(validToken);
+          expect(httpClient.post).not.toHaveBeenCalled();
+        });
+      });
+
+      it('should automatically refresh token when needed and return new token', () => {
+        const soonToExpireToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 30000) // 30 seconds from now
+        };
+        
+        const refreshResponse = {
+          access_token: 'new-access-token',
+          refresh_token: 'new-refresh-token',
+          expires_in: 3600,
+          token_type: 'Bearer'
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
+        vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
+        
+        const storeTokenSpy = vi.spyOn(service as any, 'storeToken');
+        
+        const result$ = service.getValidToken();
+        
+        result$.subscribe(token => {
+          expect(token.token).toBe('new-access-token');
+          expect(token.refreshToken).toBe('new-refresh-token');
+          expect(storeTokenSpy).toHaveBeenCalledWith(token);
+        });
+        
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
+          refresh_token: 'refresh-token'
+        });
+      });
+
+      it('should return error when no token is available', () => {
+        localStorageMock.getItem.mockReturnValue(null);
+        
+        const result$ = service.getValidToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('No token available');
+          }
+        });
+      });
+
+      it('should return error when token is expired and no refresh token available', () => {
+        const expiredTokenWithoutRefresh: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: undefined,
+          expiresAt: new Date(Date.now() - 1000)
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredTokenWithoutRefresh));
+        
+        const result$ = service.getValidToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('Token expired and no refresh token available');
+            expect(service.isAuthenticated).toBe(false);
+            expect(service.userProfile).toBeNull();
+          }
+        });
+      });
+
+      it('should handle refresh failure and clear auth data', () => {
+        const soonToExpireToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'invalid-refresh-token',
+          expiresAt: new Date(Date.now() + 30000)
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
+        
+        const refreshError = new HttpErrorResponse({
+          status: 401,
+          statusText: 'Unauthorized',
+          error: 'Invalid refresh token'
+        });
+        
+        vi.mocked(httpClient.post).mockReturnValue(throwError(() => refreshError));
+        
+        const result$ = service.getValidToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('Token refresh failed - please login again');
+            expect(service.isAuthenticated).toBe(false);
+          }
+        });
+      });
+
+      it('should handle malformed stored token', () => {
+        localStorageMock.getItem.mockReturnValue('invalid-json');
+        
+        const result$ = service.getValidToken();
+        
+        result$.subscribe({
+          next: () => {},
+          error: (err) => {
+            expect(err.message).toBe('No token available');
+          }
+        });
+      });
+    });
+
+    describe('Token Lifecycle Integration', () => {
+      it('should handle complete token refresh cycle', () => {
+        // Start with a token that needs refresh
+        const expiringSoonToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token-123',
+          expiresAt: new Date(Date.now() + 30000)
+        };
+        
+        const refreshResponse = {
+          access_token: 'refreshed-access-token',
+          refresh_token: 'new-refresh-token',
+          expires_in: 3600,
+          token_type: 'Bearer'
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiringSoonToken));
+        vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
+        
+        // First call should trigger refresh
+        const result1$ = service.getValidToken();
+        
+        result1$.subscribe(token => {
+          expect(token.token).toBe('refreshed-access-token');
+          expect(token.refreshToken).toBe('new-refresh-token');
+        });
+        
+        // Update mock to return the new token
+        const newToken: JwtToken = {
+          token: 'refreshed-access-token', 
+          refreshToken: 'new-refresh-token',
+          expiresIn: 3600,
+          expiresAt: new Date(Date.now() + 3600000)
+        };
+        
+        localStorageMock.getItem.mockReturnValue(JSON.stringify(newToken));
+        
+        // Second call should not trigger refresh
+        const result2$ = service.getValidToken();
+        
+        result2$.subscribe(token => {
+          expect(token.token).toBe('refreshed-access-token');
+        });
+        
+        // Should only have called refresh once
+        expect(httpClient.post).toHaveBeenCalledTimes(1);
+      });
+    });
+  }); /* End of Token Refresh Functionality describe block */
 });

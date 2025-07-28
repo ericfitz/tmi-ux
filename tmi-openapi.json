@@ -1831,55 +1831,124 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "description": "Provider identifier"
-                      },
-                      "name": {
-                        "type": "string",
-                        "description": "Display name of the provider"
-                      },
-                      "enabled": {
-                        "type": "boolean",
-                        "description": "Whether the provider is currently enabled"
-                      },
-                      "icon": {
-                        "type": "string",
-                        "description": "Icon identifier for the provider"
+                  "type": "object",
+                  "properties": {
+                    "providers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Provider identifier"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Display name of the provider"
+                          },
+                          "icon": {
+                            "type": "string",
+                            "description": "Icon identifier for the provider"
+                          }
+                        },
+                        "required": ["id", "name", "icon"]
                       }
-                    },
-                    "required": ["id", "name", "enabled"]
-                  }
+                    }
+                  },
+                  "required": ["providers"]
                 }
               }
             },
             "example": {
-              "request": "GET /auth/providers",
-              "response": {
-                "status": 200,
-                "body": [
-                  {
-                    "id": "google",
-                    "name": "Google",
-                    "enabled": true,
-                    "icon": "google"
-                  },
-                  {
-                    "id": "github",
-                    "name": "GitHub",
-                    "enabled": true,
-                    "icon": "github"
-                  }
-                ]
-              }
+              "providers": [
+                {
+                  "id": "google",
+                  "name": "Google",
+                  "icon": "google"
+                },
+                {
+                  "id": "github",
+                  "name": "GitHub",
+                  "icon": "github"
+                },
+                {
+                  "id": "microsoft",
+                  "name": "Microsoft",
+                  "icon": "microsoft"
+                }
+              ]
             }
           },
           "500": {
             "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/auth/authorize/{provider}": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Initiate OAuth authorization flow",
+        "description": "Redirects user to OAuth provider's authorization page. Generates state parameter for CSRF protection.",
+        "operationId": "authorizeOAuthProvider",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "description": "OAuth provider identifier",
+            "schema": {
+              "type": "string",
+              "enum": ["google", "github", "microsoft"]
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to OAuth provider authorization page",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": "OAuth provider authorization URL with client_id, redirect_uri, response_type, scope, and state parameters",
+                "examples": {
+                  "google": {
+                    "summary": "Google OAuth authorization URL",
+                    "value": "https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=random_state_abc123"
+                  },
+                  "github": {
+                    "summary": "GitHub OAuth authorization URL", 
+                    "value": "https://github.com/login/oauth/authorize?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=user:email&state=random_state_abc123"
+                  },
+                  "microsoft": {
+                    "summary": "Microsoft OAuth authorization URL",
+                    "value": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email+User.Read&state=random_state_abc123"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid provider or provider not configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error generating authorization URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1978,6 +2047,137 @@
         }
       }
     },
+    "/auth/exchange/{provider}": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Exchange OAuth authorization code for JWT tokens",
+        "description": "Provider-neutral endpoint to exchange OAuth authorization codes for TMI JWT tokens. Supports Google, GitHub, and Microsoft OAuth providers.",
+        "operationId": "exchangeOAuthCode",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "description": "OAuth provider identifier",
+            "schema": {
+              "type": "string",
+              "enum": ["google", "github", "microsoft"]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Authorization code received from OAuth provider",
+                    "example": "4/0AX4XfWiXY2BZ_example_auth_code_from_google"
+                  },
+                  "state": {
+                    "type": "string",
+                    "description": "State parameter for CSRF protection (optional but recommended)",
+                    "example": "random_state_value_abc123"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Redirect URI used in the authorization request (must match exactly)",
+                    "example": "https://your-web-app.com/auth/callback"
+                  }
+                },
+                "required": ["code", "redirect_uri"]
+              },
+              "example": {
+                "code": "4/0AX4XfWiXY2BZ_example_auth_code_from_google",
+                "state": "random_state_value_abc123",
+                "redirect_uri": "https://your-web-app.com/auth/callback"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OAuth exchange successful, TMI JWT tokens issued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenResponse"
+                },
+                "example": {
+                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyNDI2MjJ9.example_jwt_signature",
+                  "refresh_token": "8xLOxBtZp8_example_refresh_token",
+                  "token_type": "Bearer",
+                  "expires_in": 3600
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid provider, missing parameters, or invalid state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalid_provider": {
+                    "summary": "Invalid provider",
+                    "value": {
+                      "error": "Invalid provider: invalid_provider",
+                      "error_description": "Provider 'invalid_provider' is not supported. Supported providers: google, github, microsoft"
+                    }
+                  },
+                  "missing_code": {
+                    "summary": "Missing authorization code",
+                    "value": {
+                      "error": "Invalid request: missing required fields",
+                      "error_description": "The 'code' parameter is required"
+                    }
+                  },
+                  "invalid_state": {
+                    "summary": "Invalid state parameter",
+                    "value": {
+                      "error": "Invalid state parameter",
+                      "error_description": "State parameter validation failed - possible CSRF attack"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error - OAuth provider communication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "provider_error": {
+                    "summary": "OAuth provider communication failed",
+                    "value": {
+                      "error": "Failed to exchange authorization code: oauth2: cannot fetch token: 400 Bad Request",
+                      "error_description": "Unable to communicate with OAuth provider or invalid authorization code"
+                    }
+                  },
+                  "user_info_error": {
+                    "summary": "Failed to get user information",
+                    "value": {
+                      "error": "Failed to get user info: 401 Unauthorized",
+                      "error_description": "OAuth provider denied access to user information"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/refresh": {
       "post": {
         "tags": ["Authentication"],
@@ -1992,10 +2192,14 @@
                 "properties": {
                   "refresh_token": {
                     "type": "string",
-                    "description": "Valid refresh token"
+                    "description": "Valid refresh token",
+                    "example": "8xLOxBtZp8_example_refresh_token"
                   }
                 },
                 "required": ["refresh_token"]
+              },
+              "example": {
+                "refresh_token": "8xLOxBtZp8_example_refresh_token"
               }
             }
           }
@@ -2007,18 +2211,81 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthTokenResponse"
+                },
+                "example": {
+                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyNDI2MjJ9.new_jwt_signature",
+                  "refresh_token": "9yMPyCtZq9_new_refresh_token", 
+                  "token_type": "Bearer",
+                  "expires_in": 3600
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/Error"
+            "description": "Bad request - missing or invalid refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_token": {
+                    "summary": "Missing refresh token",
+                    "value": {
+                      "error": "Invalid request: missing required fields",
+                      "error_description": "The 'refresh_token' parameter is required"
+                    }
+                  },
+                  "invalid_format": {
+                    "summary": "Invalid token format",
+                    "value": {
+                      "error": "Invalid refresh token format",
+                      "error_description": "Refresh token must be a valid UUID string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "$ref": "#/components/responses/Error"
+            "description": "Unauthorized - invalid or expired refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "expired_token": {
+                    "summary": "Expired refresh token",
+                    "value": {
+                      "error": "Invalid refresh token",
+                      "error_description": "The refresh token has expired or has been revoked"
+                    }
+                  },
+                  "invalid_token": {
+                    "summary": "Invalid refresh token",
+                    "value": {
+                      "error": "Invalid refresh token",
+                      "error_description": "The provided refresh token is not valid"
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/Error"
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error",
+                  "error_description": "Unable to process token refresh request"
+                }
+              }
+            }
           }
         }
       }
