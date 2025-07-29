@@ -13,7 +13,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, timer, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, timer, Subscription, EMPTY } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
@@ -155,8 +155,8 @@ export class ServerConnectionService implements OnDestroy {
         this._connectionStatus$.next(ServerConnectionStatus.ERROR);
         // Increase backoff delay for next retry
         this._currentBackoffDelay = this.getNextBackoffDelay();
-        // Return empty observable to continue the stream
-        return new Observable<void>();
+        // Return empty observable that completes immediately to continue the stream
+        return EMPTY;
       }),
     );
   }
