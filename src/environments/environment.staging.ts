@@ -12,9 +12,8 @@ export const environment: Environment = {
   operatorName: 'TMI Operator (Staging)',
   operatorContact: 'contact@example.com',
   oauth: {
-    google: {
-      clientId: 'STAGING_GOOGLE_CLIENT_ID', // Staging client ID
-      redirectUri: 'https://staging.example.com/auth/callback',
+    local: {
+      enabled: false, // Disable local provider in staging
     },
   },
 };

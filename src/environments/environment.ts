@@ -28,9 +28,9 @@ export const environment: Environment = {
   operatorName: 'TMI Operator (Development)',
   operatorContact: 'contact@example.com',
   oauth: {
-    google: {
-      clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual Google OAuth client ID
-      redirectUri: 'http://localhost:4200/auth/callback',
+    local: {
+      enabled: true,
+      icon: 'fa-solid fa-laptop-code',
     },
   },
 };

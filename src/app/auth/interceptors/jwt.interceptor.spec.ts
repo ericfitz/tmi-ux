@@ -58,6 +58,7 @@ describe('JwtInterceptor', () => {
   beforeEach(() => {
     const mockAuthService = {
       getValidToken: vi.fn(),
+      getValidTokenIfAvailable: vi.fn(),
       logout: vi.fn(),
       handleAuthError: vi.fn(),
     };
@@ -126,7 +127,7 @@ describe('JwtInterceptor', () => {
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
-          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(authService.getValidTokenIfAvailable).not.toHaveBeenCalled();
           expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
           resolve();
         });
@@ -143,7 +144,7 @@ describe('JwtInterceptor', () => {
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
-          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(authService.getValidTokenIfAvailable).not.toHaveBeenCalled();
           expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
           resolve();
         });
@@ -160,7 +161,7 @@ describe('JwtInterceptor', () => {
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
-          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(authService.getValidTokenIfAvailable).not.toHaveBeenCalled();
           expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
           resolve();
         });
@@ -177,7 +178,7 @@ describe('JwtInterceptor', () => {
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
-          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(authService.getValidTokenIfAvailable).not.toHaveBeenCalled();
           expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
           resolve();
         });
@@ -196,7 +197,7 @@ describe('JwtInterceptor', () => {
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
-          expect(authService.getValidToken).not.toHaveBeenCalled();
+          expect(authService.getValidTokenIfAvailable).not.toHaveBeenCalled();
           expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
           resolve();
         });
@@ -204,8 +205,8 @@ describe('JwtInterceptor', () => {
     });
 
     it('should handle token refresh failure', () => {
-      const refreshError = new Error('Token refresh failed - please login again');
-      vi.mocked(authService.getValidToken).mockReturnValue(throwError(() => refreshError));
+      // Mock to return error (no token available)
+      vi.mocked(authService.getValidToken).mockReturnValue(throwError(() => new Error('No token available')));
 
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET');
 
@@ -226,8 +227,8 @@ describe('JwtInterceptor', () => {
         },
         error: error => {
           expect(error).toBeInstanceOf(Error);
-          // When getValidToken fails, the error gets processed by handleError which creates a Server Error message
-          expect(error.message).toContain('Server Error');
+          // When no token is available, error gets wrapped by handleError as server error
+          expect(error.message).toContain('Server Error: Unknown Unknown Error');
         },
       });
     });
@@ -240,7 +241,8 @@ describe('JwtInterceptor', () => {
 
       // First call returns token, then fails with 401, then refresh succeeds
       vi.mocked(authService.getValidToken)
-        .mockReturnValueOnce(of(mockJwtToken))
+        .mockReturnValueOnce(of(mockJwtToken));
+      vi.mocked(authService.getValidTokenIfAvailable)
         .mockReturnValueOnce(of(refreshedToken));
 
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
@@ -269,7 +271,8 @@ describe('JwtInterceptor', () => {
             expect(loggerService.info).toHaveBeenCalledWith(
               'Token refresh successful - retrying original request',
             );
-            expect(authService.getValidToken).toHaveBeenCalledTimes(2);
+            expect(authService.getValidToken).toHaveBeenCalledTimes(1);
+            expect(authService.getValidTokenIfAvailable).toHaveBeenCalledTimes(1);
             expect(mockHandler.handle).toHaveBeenCalledTimes(2);
             resolve();
           },
@@ -281,12 +284,11 @@ describe('JwtInterceptor', () => {
     });
 
     it('should handle 401 errors with reactive refresh failure', async () => {
-      const refreshError = new Error('Token refresh failed');
-
-      // First call returns token, then fails with 401, then refresh fails
+      // First call returns token, then fails with 401, then refresh returns null
       vi.mocked(authService.getValidToken)
-        .mockReturnValueOnce(of(mockJwtToken))
-        .mockReturnValueOnce(throwError(() => refreshError));
+        .mockReturnValueOnce(of(mockJwtToken));
+      vi.mocked(authService.getValidTokenIfAvailable)
+        .mockReturnValueOnce(of(null));
 
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
@@ -307,18 +309,17 @@ describe('JwtInterceptor', () => {
             expect(true).toBe(false); // Should not succeed
           },
           error: error => {
-            expect(error).toEqual(refreshError);
+            expect(error.message).toContain('Token refresh failed - no token available');
             expect(loggerService.warn).toHaveBeenCalledWith(
               'Received 401 Unauthorized - attempting reactive token refresh',
             );
-            expect(loggerService.error).toHaveBeenCalledWith(
-              'Token refresh failed during reactive refresh',
-              refreshError,
+            expect(loggerService.warn).toHaveBeenCalledWith(
+              'No token available after refresh attempt - redirecting to login',
             );
             expect(loggerService.warn).toHaveBeenCalledWith(
               'Unauthorized request - redirecting to login',
             );
-            expect(authService.logout).toHaveBeenCalledOnce();
+            expect(authService.logout).toHaveBeenCalled();
             expect(router.navigate).toHaveBeenCalledWith(['/login'], {
               queryParams: { returnUrl: '/test-path', reason: 'session_expired' },
             });

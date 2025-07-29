@@ -51,15 +51,17 @@ export class JwtInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Only add token to requests to our API that are not public endpoints
     if (this.isApiRequest(request.url) && !this.isPublicEndpoint(request.url)) {
-      // Get a valid token if available (with automatic refresh if needed)
-      return this.authService.getValidTokenIfAvailable().pipe(
+      // Get a valid token (with automatic refresh if needed)
+      return this.authService.getValidToken().pipe(
         switchMap(token => {
-          if (!token) {
-            // If no token is available after auth was cleared, redirect to login
-            this.handleUnauthorizedError();
-            return throwError(() => new Error('No authentication token available'));
-          }
-
+          this.logger.debugComponent('api', 'JWT Interceptor adding token to request', {
+            url: request.url,
+            method: request.method,
+            tokenLength: token.token?.length,
+            tokenPrefix: token.token?.substring(0, 20) + '...',
+            expiresAt: token.expiresAt.toISOString(),
+          });
+          
           const tokenizedRequest = request.clone({
             setHeaders: {
               Authorization: `Bearer ${token.token}`,
@@ -78,8 +80,35 @@ export class JwtInterceptor implements HttpInterceptor {
           );
         }),
         catchError((error: HttpErrorResponse) => {
-          // Implement reactive refresh for 401 errors
+          // Log the 401 error details for diagnosis
           if (error.status === 401) {
+            this.logger.error('❌ 401 UNAUTHORIZED ERROR ANALYSIS', {
+              url: request.url,
+              method: request.method,
+              status: error.status,
+              statusText: error.statusText,
+              errorMessage: error.message,
+              serverErrorBody: error.error,
+              responseHeaders: error.headers?.keys()?.reduce((acc, key) => {
+                const value = error.headers.get(key);
+                if (value) {
+                  acc[key] = value;
+                }
+                return acc;
+              }, {} as Record<string, string>),
+              requestHeaders: request.headers?.keys()?.reduce((acc, key) => {
+                const value = request.headers.get(key);
+                if (value) {
+                  if (key.toLowerCase() === 'authorization') {
+                    // Show only the Bearer prefix and token type for debugging
+                    acc[key] = value.substring(0, 20) + '...[redacted]';
+                  } else {
+                    acc[key] = value;
+                  }
+                }
+                return acc;
+              }, {} as Record<string, string>),
+            });
             return this.handleUnauthorizedErrorWithRefresh(request, next);
           }
           return this.handleError(error, request);

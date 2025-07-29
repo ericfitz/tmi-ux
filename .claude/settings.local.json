@@ -24,7 +24,9 @@
       "Bash(do echo \"Processing $file\")",
       "Bash(done)",
       "WebFetch(domain:x6.antv.vision)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(rm:*)"
     ]
   },
   "enableAllProjectMcpServers": false

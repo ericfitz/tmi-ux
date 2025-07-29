@@ -878,7 +878,6 @@ describe('AuthService', () => {
       const networkError = new HttpErrorResponse({
         status: 0,
         statusText: 'Unknown Error',
-        name: 'HttpErrorResponse',
       });
 
       vi.mocked(httpClient.post).mockReturnValue(throwError(() => networkError));

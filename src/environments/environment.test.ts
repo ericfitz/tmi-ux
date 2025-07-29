@@ -12,9 +12,9 @@ export const environment: Environment = {
   operatorName: 'TMI Operator (Test)',
   operatorContact: 'contact@example.com',
   oauth: {
-    google: {
-      clientId: 'TEST_GOOGLE_CLIENT_ID', // Mock client ID for testing
-      redirectUri: 'http://localhost:4200/auth/callback',
+    local: {
+      enabled: true, // Enable local provider for testing
+      icon: 'fa-solid fa-laptop-code',
     },
   },
 };

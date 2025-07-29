@@ -133,32 +133,34 @@ export class AuthService {
 
   /**
    * Check if the current JWT token is valid and not expired
+   * @param token Optional token to check, otherwise retrieves from storage
    * @returns True if the token is valid and not expired
    */
-  private isTokenValid(): boolean {
-    const token = this.getStoredToken();
-    if (!token) {
+  private isTokenValid(token?: JwtToken | null): boolean {
+    const tokenToCheck = token || this.getStoredToken();
+    if (!tokenToCheck) {
       return false;
     }
 
     // Check if token is expired
     const now = new Date();
-    return token.expiresAt > now;
+    return tokenToCheck.expiresAt > now;
   }
 
   /**
    * Check if token needs refreshing (expires within 1 minute)
+   * @param token Optional token to check, otherwise retrieves from storage
    * @returns True if token should be refreshed
    */
-  private shouldRefreshToken(): boolean {
-    const token = this.getStoredToken();
-    if (!token || !token.refreshToken) {
+  private shouldRefreshToken(token?: JwtToken | null): boolean {
+    const tokenToCheck = token || this.getStoredToken();
+    if (!tokenToCheck || !tokenToCheck.refreshToken) {
       return false;
     }
 
     const now = new Date();
     const oneMinuteFromNow = new Date(now.getTime() + 60000); // 1 minute buffer
-    return token.expiresAt <= oneMinuteFromNow;
+    return tokenToCheck.expiresAt <= oneMinuteFromNow;
   }
 
   /**
@@ -166,20 +168,35 @@ export class AuthService {
    * @returns Observable that resolves to a valid JWT token
    */
   getValidToken(): Observable<JwtToken> {
+    this.logger.debugComponent('Auth', 'getValidToken called');
     const token = this.getStoredToken();
     if (!token) {
+      this.logger.debugComponent('Auth', 'getValidToken: No token available');
       return throwError(() => new Error('No token available'));
     }
 
+    // Use the retrieved token for validation to avoid multiple storage calls
+    const isValid = this.isTokenValid(token);
+    const shouldRefresh = this.shouldRefreshToken(token);
+    
+    this.logger.debugComponent('Auth', 'Token validation status', {
+      isValid,
+      shouldRefresh,
+      hasRefreshToken: !!token.refreshToken,
+    });
+
     // If token is still valid and doesn't need refresh, return it
-    if (this.isTokenValid() && !this.shouldRefreshToken()) {
+    if (isValid && !shouldRefresh) {
+      this.logger.debugComponent('Auth', 'getValidToken: Returning valid token');
       return of(token);
     }
 
     // If token needs refresh and we have a refresh token, refresh it
     if (token.refreshToken) {
+      this.logger.debugComponent('Auth', 'getValidToken: Attempting token refresh');
       return this.refreshToken().pipe(
         map(newToken => {
+          this.logger.debugComponent('Auth', 'getValidToken: Token refresh successful');
           this.storeToken(newToken);
           return newToken;
         }),
@@ -187,6 +204,7 @@ export class AuthService {
     }
 
     // Token is expired and no refresh token available
+    this.logger.debugComponent('Auth', 'getValidToken: Token expired, no refresh token available');
     this.clearAuthData();
     return throwError(() => new Error('Token expired and no refresh token available'));
   }
@@ -232,8 +250,9 @@ export class AuthService {
    */
   checkAuthStatus(): void {
     try {
-      // Check if token is valid
-      const isAuthenticated = this.isTokenValid();
+      // Get token once and use it for validation
+      const token = this.getStoredToken();
+      const isAuthenticated = this.isTokenValid(token);
       this.logger.logInit('isAuthenticated', isAuthenticated, 'AuthService.checkAuthStatus');
       this.isAuthenticatedSubject.next(isAuthenticated);
 
@@ -633,7 +652,26 @@ export class AuthService {
         providerId,
         expiresIn: response.expires_in,
         hasRefreshToken: !!response.refresh_token,
+        accessTokenLength: response.access_token?.length,
+        accessTokenPrefix: response.access_token?.substring(0, 30) + '...',
+        refreshTokenLength: response.refresh_token?.length,
+        refreshTokenPrefix: response.refresh_token?.substring(0, 20) + '...',
       });
+
+      // Validate the access token format
+      if (!response.access_token) {
+        this.logger.error('No access token in TMI response');
+        throw new Error('No access token provided');
+      }
+      
+      const tokenParts = response.access_token.split('.');
+      if (tokenParts.length !== 3) {
+        this.logger.error('Invalid JWT token format', {
+          tokenParts: tokenParts.length,
+          token: response.access_token.substring(0, 50) + '...',
+        });
+        throw new Error('Invalid JWT token format');
+      }
 
       // Create JWT token object
       const expiresAt = new Date();
@@ -646,6 +684,17 @@ export class AuthService {
         expiresAt,
       };
 
+      // Check if the created token is valid
+      const now = new Date();
+      const isTokenValid = token.expiresAt > now;
+      
+      this.logger.debugComponent('Auth', 'Created JWT token object', {
+        expiresAt: token.expiresAt.toISOString(),
+        expiresIn: token.expiresIn,
+        isValid: isTokenValid,
+        currentTime: now.toISOString(),
+      });
+
       // Store token and extract user profile
       this.storeToken(token);
       const userProfile = this.extractUserProfileFromToken(token);
@@ -654,6 +703,14 @@ export class AuthService {
       // Update authentication state
       this.isAuthenticatedSubject.next(true);
       this.userProfileSubject.next(userProfile);
+
+      // Verify token was stored correctly
+      const storedToken = this.getStoredToken();
+      this.logger.debugComponent('Auth', 'Token storage verification', {
+        tokenWasStored: !!storedToken,
+        storedTokenLength: storedToken?.token?.length,
+        storedTokenMatches: storedToken?.token === token.token,
+      });
 
       this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`);
       void this.router.navigate(['/tm']);
@@ -754,7 +811,33 @@ export class AuthService {
    * @param token JWT token
    */
   private storeToken(token: JwtToken): void {
-    this.logger.debugComponent('Auth', 'Storing JWT token');
+    this.logger.debugComponent('Auth', 'Storing JWT token', {
+      tokenLength: token.token?.length,
+      tokenPrefix: token.token?.substring(0, 20) + '...',
+      expiresAt: token.expiresAt.toISOString(),
+      expiresIn: token.expiresIn,
+      hasRefreshToken: !!token.refreshToken,
+      refreshTokenLength: token.refreshToken?.length,
+    });
+    
+    try {
+      // Parse the JWT payload to log token contents (without signature)
+      const payload = token.token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      this.logger.debugComponent('Auth', 'JWT token payload', {
+        sub: decodedPayload.sub,
+        email: decodedPayload.email,
+        name: decodedPayload.name,
+        iat: decodedPayload.iat,
+        exp: decodedPayload.exp,
+        provider: decodedPayload.provider,
+        aud: decodedPayload.aud,
+        iss: decodedPayload.iss,
+      });
+    } catch (error) {
+      this.logger.warn('Could not decode JWT payload for logging', error);
+    }
+    
     localStorage.setItem(this.tokenStorageKey, JSON.stringify(token));
     this.jwtTokenSubject.next(token);
   }
@@ -767,6 +850,7 @@ export class AuthService {
     try {
       const tokenJson = localStorage.getItem(this.tokenStorageKey);
       if (!tokenJson) {
+        this.logger.debugComponent('Auth', 'No token found in localStorage');
         return null;
       }
 
@@ -774,6 +858,21 @@ export class AuthService {
       // Convert expiresAt string back to Date object
       if (typeof token.expiresAt === 'string') {
         token.expiresAt = new Date(token.expiresAt);
+      }
+
+      const now = new Date();
+      const isExpired = token.expiresAt <= now;
+      const minutesUntilExpiry = Math.floor((token.expiresAt.getTime() - now.getTime()) / 60000);
+      
+      // Only log token details if expires soon or there's an issue
+      if (isExpired || minutesUntilExpiry < 5) {
+        this.logger.debugComponent('Auth', 'Retrieved stored token', {
+          tokenLength: token.token?.length,
+          expiresAt: token.expiresAt.toISOString(),
+          isExpired,
+          minutesUntilExpiry,
+          hasRefreshToken: !!token.refreshToken,
+        });
       }
 
       return token;
@@ -823,11 +922,14 @@ export class AuthService {
 
     const currentToken = this.getStoredToken();
     if (!currentToken?.refreshToken) {
+      this.logger.debugComponent('Auth', 'No refresh token available');
       return throwError(() => new Error('No refresh token available'));
     }
 
     this.logger.debugComponent('Auth', 'Sending refresh token request', {
       hasRefreshToken: !!currentToken.refreshToken,
+      refreshTokenLength: currentToken.refreshToken?.length,
+      refreshTokenPrefix: currentToken.refreshToken?.substring(0, 20) + '...',
       tokenExpiry: currentToken.expiresAt.toISOString(),
     });
 

@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 
 import { UserPresence } from '../../domain/collaboration/user-presence';
-import { CollaborationApplicationService } from '../../application/collaboration/collaboration-application.service';
+import { DfdCollaborationService } from '../../services/dfd-collaboration.service';
 import { UserPresenceIndicatorComponent } from './user-presence-indicator.component';
 
 /**
@@ -75,13 +75,13 @@ export class UserPresenceListComponent implements OnInit, OnDestroy {
   public presences$!: Observable<UserPresence[]>;
   private readonly _destroy$ = new Subject<void>();
 
-  constructor(private readonly _collaborationService: CollaborationApplicationService) {}
+  constructor(private readonly _collaborationService: DfdCollaborationService) {}
 
   ngOnInit(): void {
     // Get active participants from collaboration service
     this.presences$ = this.filterOnline
-      ? this._collaborationService.activeParticipants$
-      : this._collaborationService.sessionParticipants$;
+      ? this._collaborationService.collaborationUsers$
+      : this._collaborationService.collaborationUsers$;
   }
 
   ngOnDestroy(): void {
