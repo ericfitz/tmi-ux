@@ -85,68 +85,53 @@ describe('DiagramInfo', () => {
 
     it('should throw error for empty ID', () => {
       // Act & Assert
-      expect(() => new DiagramInfo(
-        '',
-        'Test Diagram',
-        'DFD-1.0.0',
-        new Date(),
-        new Date(),
-              )).toThrow('Diagram ID cannot be empty');
+      expect(
+        () => new DiagramInfo('', 'Test Diagram', 'DFD-1.0.0', new Date(), new Date()),
+      ).toThrow('Diagram ID cannot be empty');
     });
 
     it('should throw error for empty name', () => {
       // Act & Assert
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        '',
-        'DFD-1.0.0',
-        new Date(),
-        new Date(),
-              )).toThrow('Diagram name cannot be empty');
+      expect(() => new DiagramInfo('diagram-1', '', 'DFD-1.0.0', new Date(), new Date())).toThrow(
+        'Diagram name cannot be empty',
+      );
     });
 
     it('should throw error for invalid type', () => {
       // Act & Assert
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'INVALID' as DiagramType,
-        new Date(),
-        new Date(),
-              )).toThrow('Invalid diagram type: INVALID');
+      expect(
+        () =>
+          new DiagramInfo(
+            'diagram-1',
+            'Test Diagram',
+            'INVALID' as DiagramType,
+            new Date(),
+            new Date(),
+          ),
+      ).toThrow('Invalid diagram type: INVALID');
     });
 
     it('should throw error for invalid dates', () => {
       // Act & Assert
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'DFD-1.0.0',
-        'invalid' as any,
-        new Date(),
-              )).toThrow('Created date must be a valid Date object');
+      expect(
+        () =>
+          new DiagramInfo('diagram-1', 'Test Diagram', 'DFD-1.0.0', 'invalid' as any, new Date()),
+      ).toThrow('Created date must be a valid Date object');
 
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'DFD-1.0.0',
-        new Date(),
-        'invalid' as any,
-              )).toThrow('Modified date must be a valid Date object');
+      expect(
+        () =>
+          new DiagramInfo('diagram-1', 'Test Diagram', 'DFD-1.0.0', new Date(), 'invalid' as any),
+      ).toThrow('Modified date must be a valid Date object');
     });
 
     it('should throw error when modified date is before created date', () => {
       // Act & Assert
       const created = new Date('2024-01-01T12:00:00Z');
       const modified = new Date('2024-01-01T10:00:00Z');
-      
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'DFD-1.0.0',
-        created,
-        modified,
-              )).toThrow('Modified date cannot be before created date');
+
+      expect(
+        () => new DiagramInfo('diagram-1', 'Test Diagram', 'DFD-1.0.0', created, modified),
+      ).toThrow('Modified date cannot be before created date');
     });
   });
 
@@ -192,11 +177,13 @@ describe('DiagramInfo', () => {
       expect(diagramInfo.getMetadataAsRecord()).toEqual({ category: 'test' });
     });
 
-
-
     it('should create default DiagramInfo', () => {
       // Act
-      const diagramInfo = DiagramInfo.createDefault('diagram-1', 'Test Diagram', 'A default diagram');
+      const diagramInfo = DiagramInfo.createDefault(
+        'diagram-1',
+        'Test Diagram',
+        'A default diagram',
+      );
 
       // Assert
       expect(diagramInfo.id).toBe('diagram-1');
@@ -223,7 +210,7 @@ describe('DiagramInfo', () => {
         'DFD-1.0.0',
         createdAt,
         modifiedAt,
-                'Original description',
+        'Original description',
         metadata,
         [node],
       );
@@ -346,7 +333,7 @@ describe('DiagramInfo', () => {
         'DFD-1.0.0',
         new Date(),
         new Date(),
-                'A test diagram',
+        'A test diagram',
         [],
         [node1, node2, edge1, edge2],
       );
@@ -423,7 +410,7 @@ describe('DiagramInfo', () => {
         'DFD-1.0.0',
         new Date('2024-01-01T10:00:00Z'),
         new Date('2024-01-01T11:00:00Z'),
-                'A test diagram',
+        'A test diagram',
         metadata,
         [node],
       );
@@ -448,7 +435,7 @@ describe('DiagramInfo', () => {
         'DFD-1.0.0',
         new Date('2024-01-01T10:00:00Z'),
         new Date('2024-01-01T11:00:00Z'),
-                'A test diagram',
+        'A test diagram',
         metadata,
         [node],
       );
@@ -459,7 +446,7 @@ describe('DiagramInfo', () => {
         'DFD-1.0.0',
         new Date('2024-01-01T10:00:00Z'),
         new Date('2024-01-01T11:00:00Z'),
-                'A test diagram',
+        'A test diagram',
         metadata,
         [node],
       );
@@ -491,7 +478,6 @@ describe('DiagramInfo', () => {
       expect(json.metadata).toEqual([{ key: 'category', value: 'test' }]);
       expect(json.cells).toHaveLength(1);
     });
-
   });
 
   describe('Validation', () => {
@@ -501,16 +487,19 @@ describe('DiagramInfo', () => {
       const node2 = NodeInfo.createDefault('node-1', 'actor', new Point(200, 100)); // Duplicate ID
 
       // Act & Assert
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'DFD-1.0.0',
-        new Date(),
-        new Date(),
-                undefined,
-        [],
-        [node1, node2],
-      )).toThrow('Duplicate cell ID found: node-1');
+      expect(
+        () =>
+          new DiagramInfo(
+            'diagram-1',
+            'Test Diagram',
+            'DFD-1.0.0',
+            new Date(),
+            new Date(),
+            undefined,
+            [],
+            [node1, node2],
+          ),
+      ).toThrow('Duplicate cell ID found: node-1');
     });
 
     it('should throw error for edge with non-existent source node', () => {
@@ -519,16 +508,19 @@ describe('DiagramInfo', () => {
       const edge = EdgeInfo.createSimple('edge-1', 'non-existent', 'node-1', 'Data Flow');
 
       // Act & Assert
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'DFD-1.0.0',
-        new Date(),
-        new Date(),
-                undefined,
-        [],
-        [node, edge],
-      )).toThrow('Edge edge-1 references non-existent source node: non-existent');
+      expect(
+        () =>
+          new DiagramInfo(
+            'diagram-1',
+            'Test Diagram',
+            'DFD-1.0.0',
+            new Date(),
+            new Date(),
+            undefined,
+            [],
+            [node, edge],
+          ),
+      ).toThrow('Edge edge-1 references non-existent source node: non-existent');
     });
 
     it('should throw error for edge with non-existent target node', () => {
@@ -537,16 +529,19 @@ describe('DiagramInfo', () => {
       const edge = EdgeInfo.createSimple('edge-1', 'node-1', 'non-existent', 'Data Flow');
 
       // Act & Assert
-      expect(() => new DiagramInfo(
-        'diagram-1',
-        'Test Diagram',
-        'DFD-1.0.0',
-        new Date(),
-        new Date(),
-                undefined,
-        [],
-        [node, edge],
-      )).toThrow('Edge edge-1 references non-existent target node: non-existent');
+      expect(
+        () =>
+          new DiagramInfo(
+            'diagram-1',
+            'Test Diagram',
+            'DFD-1.0.0',
+            new Date(),
+            new Date(),
+            undefined,
+            [],
+            [node, edge],
+          ),
+      ).toThrow('Edge edge-1 references non-existent target node: non-existent');
     });
   });
 });

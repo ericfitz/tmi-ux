@@ -39,15 +39,15 @@ describe('ThreatModelService', () => {
     // Create test data using factory functions
     testThreatModel1 = createMockThreatModel({
       id: '550e8400-e29b-41d4-a716-446655440000',
-      name: 'Test Threat Model 1'
+      name: 'Test Threat Model 1',
     });
     testThreatModel2 = createMockThreatModel({
       id: '550e8400-e29b-41d4-a716-446655440001',
-      name: 'Test Threat Model 2'
+      name: 'Test Threat Model 2',
     });
     testThreatModel3 = createMockThreatModel({
       id: '550e8400-e29b-41d4-a716-446655440002',
-      name: 'Test Threat Model 3'
+      name: 'Test Threat Model 3',
     });
 
     // Create spy objects for the dependencies

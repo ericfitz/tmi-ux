@@ -33,8 +33,11 @@ interface CheckboxChangeEvent {
       <div class="preference-item">
         <mat-checkbox
           [(ngModel)]="preferences.animations"
-          (change)="onAnimationPreferenceChange($event)">
-          <span [transloco]="'userPreferences.diagramAnimationEffects'">Diagram animation effects</span>
+          (change)="onAnimationPreferenceChange($event)"
+        >
+          <span [transloco]="'userPreferences.diagramAnimationEffects'"
+            >Diagram animation effects</span
+          >
         </mat-checkbox>
       </div>
     </mat-dialog-content>
@@ -42,15 +45,17 @@ interface CheckboxChangeEvent {
       <button mat-button (click)="close()" [transloco]="'common.close'">Close</button>
     </mat-dialog-actions>
   `,
-  styles: [`
-    .preference-item {
-      margin: 16px 0;
-    }
-    
-    mat-dialog-content {
-      min-width: 300px;
-    }
-  `]
+  styles: [
+    `
+      .preference-item {
+        margin: 16px 0;
+      }
+
+      mat-dialog-content {
+        min-width: 300px;
+      }
+    `,
+  ],
 })
 export class UserPreferencesDialogComponent {
   preferences: UserPreferences;
@@ -72,7 +77,7 @@ export class UserPreferencesDialogComponent {
         this.logger.error('Error parsing user preferences:', e);
       }
     }
-    
+
     // Default preferences
     const defaultPrefs: UserPreferences = { animations: true };
     this.savePreferences(defaultPrefs);

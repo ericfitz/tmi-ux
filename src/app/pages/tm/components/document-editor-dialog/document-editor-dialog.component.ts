@@ -50,7 +50,7 @@ export class DocumentEditorDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DocumentEditorDialogData,
   ) {
     this.mode = data.mode;
-    
+
     this.documentForm = this.fb.group({
       name: [data.document?.name || '', [Validators.required, Validators.maxLength(256)]],
       url: [data.document?.url || '', [Validators.required, Validators.maxLength(1024)]],

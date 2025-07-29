@@ -15,7 +15,7 @@ vi.mock('../../../environments/environment', () => ({
   environment: {
     apiUrl: 'http://localhost:8080',
     production: false,
-  }
+  },
 }));
 
 import { environment } from '../../../environments/environment';
@@ -30,24 +30,28 @@ describe('JwtInterceptor', () => {
     token: 'mock-jwt-token',
     refreshToken: 'mock-refresh-token',
     expiresIn: 3600,
-    expiresAt: new Date(Date.now() + 3600000)
+    expiresAt: new Date(Date.now() + 3600000),
   };
 
   // Helper function to create mock requests
-  const createMockRequest = (url: string, method = 'GET', includeClone = false): HttpRequest<unknown> => {
+  const createMockRequest = (
+    url: string,
+    method = 'GET',
+    includeClone = false,
+  ): HttpRequest<unknown> => {
     const request = {
       url,
       method,
       headers: {
         keys: vi.fn().mockReturnValue([]),
-        get: vi.fn().mockReturnValue(null)
-      }
+        get: vi.fn().mockReturnValue(null),
+      },
     } as any;
-    
+
     if (includeClone) {
       request.clone = vi.fn().mockReturnThis();
     }
-    
+
     return request as HttpRequest<unknown>;
   };
 
@@ -55,12 +59,12 @@ describe('JwtInterceptor', () => {
     const mockAuthService = {
       getValidToken: vi.fn(),
       logout: vi.fn(),
-      handleAuthError: vi.fn()
+      handleAuthError: vi.fn(),
     };
 
     const mockRouter = {
       navigate: vi.fn(),
-      url: '/test-path'
+      url: '/test-path',
     };
 
     const mockLoggerService = {
@@ -68,7 +72,7 @@ describe('JwtInterceptor', () => {
       debug: vi.fn(),
       debugComponent: vi.fn(),
       warn: vi.fn(),
-      error: vi.fn()
+      error: vi.fn(),
     };
 
     authService = mockAuthService as unknown as AuthService;
@@ -89,18 +93,22 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ data: 'test' }))
+        handle: vi.fn().mockReturnValue(of({ data: 'test' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(mockRequest.clone).toHaveBeenCalledWith({
             setHeaders: {
-              Authorization: `Bearer ${mockJwtToken.token}`
-            }
+              Authorization: `Bearer ${mockJwtToken.token}`,
+            },
           });
-          expect(loggerService.debugComponent).toHaveBeenCalledWith('api', expect.stringContaining('GET request details:'), expect.any(Object));
+          expect(loggerService.debugComponent).toHaveBeenCalledWith(
+            'api',
+            expect.stringContaining('GET request details:'),
+            expect.any(Object),
+          );
           resolve();
         });
       });
@@ -108,14 +116,14 @@ describe('JwtInterceptor', () => {
 
     it('should not add Authorization header to non-API requests', async () => {
       const mockRequest = {
-        url: 'https://external-api.com/test'
+        url: 'https://external-api.com/test',
       } as unknown as HttpRequest<unknown>;
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ data: 'test' }))
+        handle: vi.fn().mockReturnValue(of({ data: 'test' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(authService.getValidToken).not.toHaveBeenCalled();
@@ -129,10 +137,10 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login`);
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ data: 'login response' }))
+        handle: vi.fn().mockReturnValue(of({ data: 'login response' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(authService.getValidToken).not.toHaveBeenCalled();
@@ -146,10 +154,10 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/auth/exchange/google`);
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ data: 'exchange response' }))
+        handle: vi.fn().mockReturnValue(of({ data: 'exchange response' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(authService.getValidToken).not.toHaveBeenCalled();
@@ -163,10 +171,10 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/auth/authorize/github`);
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ data: 'authorize response' }))
+        handle: vi.fn().mockReturnValue(of({ data: 'authorize response' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(authService.getValidToken).not.toHaveBeenCalled();
@@ -180,10 +188,12 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(environment.apiUrl); // This is just "http://localhost:8080" - the root endpoint
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ status: { code: 'OK', time: '2025-07-28T00:58:26.207Z' } }))
+        handle: vi
+          .fn()
+          .mockReturnValue(of({ status: { code: 'OK', time: '2025-07-28T00:58:26.207Z' } })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(authService.getValidToken).not.toHaveBeenCalled();
@@ -200,7 +210,7 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET');
 
       const mockHandler = {
-        handle: vi.fn()
+        handle: vi.fn(),
       } as unknown as HttpHandler;
 
       const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -208,24 +218,24 @@ describe('JwtInterceptor', () => {
       // Verify the observable is set up correctly but don't wait for completion
       expect(authService.getValidToken).toHaveBeenCalledOnce();
       expect(mockHandler.handle).not.toHaveBeenCalled();
-      
+
       // The JWT interceptor processes all errors through handleError method
       result$.subscribe({
         next: () => {
           expect(true).toBe(false); // Should not succeed
         },
-        error: (error) => {
+        error: error => {
           expect(error).toBeInstanceOf(Error);
           // When getValidToken fails, the error gets processed by handleError which creates a Server Error message
           expect(error.message).toContain('Server Error');
-        }
+        },
       });
     });
 
     it('should handle 401 errors with reactive refresh success', async () => {
       const refreshedToken: JwtToken = {
         ...mockJwtToken,
-        token: 'refreshed-token'
+        token: 'refreshed-token',
       };
 
       // First call returns token, then fails with 401, then refresh succeeds
@@ -238,36 +248,41 @@ describe('JwtInterceptor', () => {
       const unauthorizedError = new HttpErrorResponse({
         status: 401,
         statusText: 'Unauthorized',
-        url: `${environment.apiUrl}/test`
+        url: `${environment.apiUrl}/test`,
       });
 
       const mockHandler = {
-        handle: vi.fn()
+        handle: vi
+          .fn()
           .mockReturnValueOnce(throwError(() => unauthorizedError))
-          .mockReturnValueOnce(of({ data: 'success' }))
+          .mockReturnValueOnce(of({ data: 'success' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe({
-          next: (response) => {
+          next: response => {
             expect(response).toEqual({ data: 'success' });
-            expect(loggerService.warn).toHaveBeenCalledWith('Received 401 Unauthorized - attempting reactive token refresh');
-            expect(loggerService.info).toHaveBeenCalledWith('Token refresh successful - retrying original request');
+            expect(loggerService.warn).toHaveBeenCalledWith(
+              'Received 401 Unauthorized - attempting reactive token refresh',
+            );
+            expect(loggerService.info).toHaveBeenCalledWith(
+              'Token refresh successful - retrying original request',
+            );
             expect(authService.getValidToken).toHaveBeenCalledTimes(2);
             expect(mockHandler.handle).toHaveBeenCalledTimes(2);
             resolve();
           },
           error: () => {
             expect(true).toBe(false); // Should not error
-          }
+          },
         });
       });
     });
 
     it('should handle 401 errors with reactive refresh failure', async () => {
       const refreshError = new Error('Token refresh failed');
-      
+
       // First call returns token, then fails with 401, then refresh fails
       vi.mocked(authService.getValidToken)
         .mockReturnValueOnce(of(mockJwtToken))
@@ -278,30 +293,37 @@ describe('JwtInterceptor', () => {
       const unauthorizedError = new HttpErrorResponse({
         status: 401,
         statusText: 'Unauthorized',
-        url: `${environment.apiUrl}/test`
+        url: `${environment.apiUrl}/test`,
       });
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError))
+        handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe({
           next: () => {
             expect(true).toBe(false); // Should not succeed
           },
-          error: (error) => {
+          error: error => {
             expect(error).toEqual(refreshError);
-            expect(loggerService.warn).toHaveBeenCalledWith('Received 401 Unauthorized - attempting reactive token refresh');
-            expect(loggerService.error).toHaveBeenCalledWith('Token refresh failed during reactive refresh', refreshError);
-            expect(loggerService.warn).toHaveBeenCalledWith('Unauthorized request - redirecting to login');
+            expect(loggerService.warn).toHaveBeenCalledWith(
+              'Received 401 Unauthorized - attempting reactive token refresh',
+            );
+            expect(loggerService.error).toHaveBeenCalledWith(
+              'Token refresh failed during reactive refresh',
+              refreshError,
+            );
+            expect(loggerService.warn).toHaveBeenCalledWith(
+              'Unauthorized request - redirecting to login',
+            );
             expect(authService.logout).toHaveBeenCalledOnce();
             expect(router.navigate).toHaveBeenCalledWith(['/login'], {
-              queryParams: { returnUrl: '/test-path', reason: 'session_expired' }
+              queryParams: { returnUrl: '/test-path', reason: 'session_expired' },
             });
             resolve();
-          }
+          },
         });
       });
     });
@@ -314,29 +336,29 @@ describe('JwtInterceptor', () => {
       const forbiddenError = new HttpErrorResponse({
         status: 403,
         statusText: 'Forbidden',
-        url: `${environment.apiUrl}/test`
+        url: `${environment.apiUrl}/test`,
       });
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(throwError(() => forbiddenError))
+        handle: vi.fn().mockReturnValue(throwError(() => forbiddenError)),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe({
           next: () => {
             expect(true).toBe(false); // Should not succeed
           },
-          error: (error) => {
+          error: error => {
             expect(error).toBeInstanceOf(Error);
             expect(error.message).toContain('Server Error: 403');
             expect(authService.handleAuthError).toHaveBeenCalledWith({
               code: 'forbidden',
               message: 'You do not have permission to access this resource',
-              retryable: false
+              retryable: false,
             });
             resolve();
-          }
+          },
         });
       });
     });
@@ -344,7 +366,7 @@ describe('JwtInterceptor', () => {
     it('should use getValidToken for automatic token refresh', async () => {
       const refreshedToken: JwtToken = {
         ...mockJwtToken,
-        token: 'refreshed-token'
+        token: 'refreshed-token',
       };
 
       vi.mocked(authService.getValidToken).mockReturnValue(of(refreshedToken));
@@ -352,17 +374,17 @@ describe('JwtInterceptor', () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
       const mockHandler = {
-        handle: vi.fn().mockReturnValue(of({ data: 'test' }))
+        handle: vi.fn().mockReturnValue(of({ data: 'test' })),
       } as unknown as HttpHandler;
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
         result$.subscribe(() => {
           expect(authService.getValidToken).toHaveBeenCalledOnce();
           expect(mockRequest.clone).toHaveBeenCalledWith({
             setHeaders: {
-              Authorization: `Bearer ${refreshedToken.token}`
-            }
+              Authorization: `Bearer ${refreshedToken.token}`,
+            },
           });
           resolve();
         });

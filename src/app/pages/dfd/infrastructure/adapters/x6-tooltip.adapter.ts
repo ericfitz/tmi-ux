@@ -61,7 +61,7 @@ export class X6TooltipAdapter {
 
     // Format content using service
     const formattedContent = this.tooltipService.formatTooltipContent(content);
-    
+
     if (!this.tooltipService.shouldShowTooltip(formattedContent)) {
       this.hideTooltip();
       return;
@@ -140,7 +140,7 @@ export class X6TooltipAdapter {
         try {
           // Get tooltip content from service
           const content = this.tooltipService.getPortTooltipContent(node, port.id);
-          
+
           // Calculate position using service
           const position = this.tooltipService.calculateTooltipPosition(e);
 

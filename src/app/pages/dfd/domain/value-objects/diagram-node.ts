@@ -1,9 +1,9 @@
 /**
  * Diagram Node Domain Model
- * 
+ *
  * This file defines the DiagramNode entity which represents a node in the DFD domain layer.
  * It encapsulates node data, state, and behavior following domain-driven design principles.
- * 
+ *
  * Key functionality:
  * - Encapsulates NodeInfo data with additional domain behavior
  * - Manages node selection and highlighting states

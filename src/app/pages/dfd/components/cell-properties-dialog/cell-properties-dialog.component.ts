@@ -1,9 +1,9 @@
 /**
  * Cell Properties Dialog Component
- * 
+ *
  * This component provides a dialog for viewing and debugging X6 cell properties in JSON format.
  * It's primarily used for development and debugging purposes to inspect cell state.
- * 
+ *
  * Key functionality:
  * - Displays complete X6 cell object as formatted JSON
  * - Provides read-only view of cell properties for debugging

@@ -102,26 +102,12 @@ export class DiagramInfo {
     );
   }
 
-
   /**
    * Creates a default DiagramInfo
    */
-  static createDefault(
-    id: string,
-    name: string,
-    description?: string,
-  ): DiagramInfo {
+  static createDefault(id: string, name: string, description?: string): DiagramInfo {
     const now = new Date();
-    return new DiagramInfo(
-      id,
-      name,
-      'DFD-1.0.0',
-      now,
-      now,
-      description,
-      [],
-      [],
-    );
+    return new DiagramInfo(id, name, 'DFD-1.0.0', now, now, description, [], []);
   }
 
   /**
@@ -244,9 +230,7 @@ export class DiagramInfo {
    * Creates a new DiagramInfo with an updated cell (node or edge)
    */
   withUpdatedCell(updatedCell: DiagramCell): DiagramInfo {
-    const newCells = this.cells.map(cell => 
-      cell.id === updatedCell.id ? updatedCell : cell
-    );
+    const newCells = this.cells.map(cell => (cell.id === updatedCell.id ? updatedCell : cell));
     return this.withCells(newCells);
   }
 
@@ -360,7 +344,6 @@ export class DiagramInfo {
     };
   }
 
-
   /**
    * Validates the diagram info
    */
@@ -380,7 +363,6 @@ export class DiagramInfo {
     if (this.type !== 'DFD-1.0.0') {
       throw new Error(`Invalid diagram type: ${String(this.type)}`);
     }
-
 
     if (!(this.createdAt instanceof Date) || isNaN(this.createdAt.getTime())) {
       throw new Error('Created date must be a valid Date object');
@@ -416,7 +398,6 @@ export class DiagramInfo {
       }
     });
   }
-
 
   /**
    * Checks if metadata arrays are equal

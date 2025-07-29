@@ -20,23 +20,27 @@ export abstract class BaseDiagramValidator extends BaseValidator implements Diag
     this.clearErrors();
 
     if (!diagram || typeof diagram !== 'object') {
-      this.addError(ValidationUtils.createError(
-        'INVALID_DIAGRAM',
-        'Diagram must be a valid object',
-        context.currentPath
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_DIAGRAM',
+          'Diagram must be a valid object',
+          context.currentPath,
+        ),
+      );
       return this.getResults().errors;
     }
 
     // Validate diagram type
     if (!diagram.type || !this.supportsType(diagram.type)) {
-      this.addError(ValidationUtils.createError(
-        'UNSUPPORTED_DIAGRAM_TYPE',
-        `Diagram type '${diagram.type}' is not supported by this validator`,
-        ValidationUtils.buildPath(context.currentPath, 'type'),
-        'error',
-        { supportedType: this.diagramType, actualType: diagram.type }
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'UNSUPPORTED_DIAGRAM_TYPE',
+          `Diagram type '${diagram.type}' is not supported by this validator`,
+          ValidationUtils.buildPath(context.currentPath, 'type'),
+          'error',
+          { supportedType: this.diagramType, actualType: diagram.type },
+        ),
+      );
       return this.getResults().errors;
     }
 
@@ -47,7 +51,7 @@ export abstract class BaseDiagramValidator extends BaseValidator implements Diag
     if (diagram.cells) {
       const cellErrors = this.validateCells(diagram.cells, {
         ...context,
-        currentPath: ValidationUtils.buildPath(context.currentPath, 'cells')
+        currentPath: ValidationUtils.buildPath(context.currentPath, 'cells'),
       });
       cellErrors.forEach(error => this.addError(error));
     }
@@ -90,7 +94,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     'store',
     'security-boundary',
     'textbox',
-    'edge'
+    'edge',
   ];
 
   protected validateDiagramSpecific(_diagram: any, _context: ValidationContext): void {
@@ -102,11 +106,9 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     const errors: ValidationError[] = [];
 
     if (!Array.isArray(cells)) {
-      errors.push(ValidationUtils.createError(
-        'INVALID_CELLS',
-        'Cells must be an array',
-        context.currentPath
-      ));
+      errors.push(
+        ValidationUtils.createError('INVALID_CELLS', 'Cells must be an array', context.currentPath),
+      );
       return errors;
     }
 
@@ -131,21 +133,21 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     const errors: ValidationError[] = [];
 
     if (!cell || typeof cell !== 'object') {
-      errors.push(ValidationUtils.createError(
-        'INVALID_CELL',
-        'Cell must be a valid object',
-        cellPath
-      ));
+      errors.push(
+        ValidationUtils.createError('INVALID_CELL', 'Cell must be a valid object', cellPath),
+      );
       return errors;
     }
 
     // Required fields
     if (!cell.id || typeof cell.id !== 'string') {
-      errors.push(ValidationUtils.createError(
-        'MISSING_CELL_ID',
-        'Cell must have a valid string id',
-        ValidationUtils.buildPath(cellPath, 'id')
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'MISSING_CELL_ID',
+          'Cell must have a valid string id',
+          ValidationUtils.buildPath(cellPath, 'id'),
+        ),
+      );
     }
 
     // Validate vertex/edge properties
@@ -153,19 +155,23 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     const isEdge = cell.edge === true;
 
     if (!isVertex && !isEdge) {
-      errors.push(ValidationUtils.createError(
-        'INVALID_CELL_TYPE',
-        'Cell must be either a vertex (vertex: true) or edge (edge: true)',
-        cellPath
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_CELL_TYPE',
+          'Cell must be either a vertex (vertex: true) or edge (edge: true)',
+          cellPath,
+        ),
+      );
     }
 
     if (isVertex && isEdge) {
-      errors.push(ValidationUtils.createError(
-        'AMBIGUOUS_CELL_TYPE',
-        'Cell cannot be both vertex and edge',
-        cellPath
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'AMBIGUOUS_CELL_TYPE',
+          'Cell cannot be both vertex and edge',
+          cellPath,
+        ),
+      );
     }
 
     // Validate vertex-specific properties
@@ -195,28 +201,34 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
       const geometryPath = ValidationUtils.buildPath(cellPath, 'geometry');
 
       if (typeof geometry.x !== 'number' || typeof geometry.y !== 'number') {
-        errors.push(ValidationUtils.createError(
-          'INVALID_GEOMETRY',
-          'Vertex geometry must have numeric x and y coordinates',
-          geometryPath
-        ));
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_GEOMETRY',
+            'Vertex geometry must have numeric x and y coordinates',
+            geometryPath,
+          ),
+        );
       }
 
       if (typeof geometry.width !== 'number' || typeof geometry.height !== 'number') {
-        errors.push(ValidationUtils.createError(
-          'INVALID_GEOMETRY',
-          'Vertex geometry must have numeric width and height',
-          geometryPath
-        ));
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_GEOMETRY',
+            'Vertex geometry must have numeric width and height',
+            geometryPath,
+          ),
+        );
       }
 
       if (geometry.width <= 0 || geometry.height <= 0) {
-        errors.push(ValidationUtils.createError(
-          'INVALID_DIMENSIONS',
-          'Vertex dimensions must be positive numbers',
-          geometryPath,
-          'warning'
-        ));
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_DIMENSIONS',
+            'Vertex dimensions must be positive numbers',
+            geometryPath,
+            'warning',
+          ),
+        );
       }
     }
 
@@ -231,30 +243,36 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
     // Edges should have source and target
     if (!cell.source || typeof cell.source !== 'string') {
-      errors.push(ValidationUtils.createError(
-        'MISSING_EDGE_SOURCE',
-        'Edge must have a valid source cell id',
-        ValidationUtils.buildPath(cellPath, 'source')
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'MISSING_EDGE_SOURCE',
+          'Edge must have a valid source cell id',
+          ValidationUtils.buildPath(cellPath, 'source'),
+        ),
+      );
     }
 
     if (!cell.target || typeof cell.target !== 'string') {
-      errors.push(ValidationUtils.createError(
-        'MISSING_EDGE_TARGET',
-        'Edge must have a valid target cell id',
-        ValidationUtils.buildPath(cellPath, 'target')
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'MISSING_EDGE_TARGET',
+          'Edge must have a valid target cell id',
+          ValidationUtils.buildPath(cellPath, 'target'),
+        ),
+      );
     }
 
     // Self-referencing edges warning
     if (cell.source === cell.target) {
-      errors.push(ValidationUtils.createError(
-        'SELF_REFERENCING_EDGE',
-        'Edge references itself (source equals target)',
-        cellPath,
-        'warning',
-        { source: cell.source, target: cell.target }
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'SELF_REFERENCING_EDGE',
+          'Edge references itself (source equals target)',
+          cellPath,
+          'warning',
+          { source: cell.source, target: cell.target },
+        ),
+      );
     }
 
     return errors;
@@ -281,13 +299,15 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
     // Report duplicate IDs
     if (duplicateIds.length > 0) {
-      errors.push(ValidationUtils.createError(
-        'DUPLICATE_CELL_IDS',
-        `Duplicate cell IDs found: ${duplicateIds.join(', ')}`,
-        basePath,
-        'error',
-        { duplicateIds }
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'DUPLICATE_CELL_IDS',
+          `Duplicate cell IDs found: ${duplicateIds.join(', ')}`,
+          basePath,
+          'error',
+          { duplicateIds },
+        ),
+      );
     }
 
     // Validate edge references
@@ -297,24 +317,28 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
         // Check if source exists
         if (!cellIds.has(cell.source)) {
-          errors.push(ValidationUtils.createError(
-            'INVALID_EDGE_SOURCE',
-            `Edge source '${cell.source}' does not reference an existing cell`,
-            ValidationUtils.buildPath(cellPath, 'source'),
-            'error',
-            { sourceId: cell.source, availableIds: Array.from(cellIds) }
-          ));
+          errors.push(
+            ValidationUtils.createError(
+              'INVALID_EDGE_SOURCE',
+              `Edge source '${cell.source}' does not reference an existing cell`,
+              ValidationUtils.buildPath(cellPath, 'source'),
+              'error',
+              { sourceId: cell.source, availableIds: Array.from(cellIds) },
+            ),
+          );
         }
 
         // Check if target exists
         if (!cellIds.has(cell.target)) {
-          errors.push(ValidationUtils.createError(
-            'INVALID_EDGE_TARGET',
-            `Edge target '${cell.target}' does not reference an existing cell`,
-            ValidationUtils.buildPath(cellPath, 'target'),
-            'error',
-            { targetId: cell.target, availableIds: Array.from(cellIds) }
-          ));
+          errors.push(
+            ValidationUtils.createError(
+              'INVALID_EDGE_TARGET',
+              `Edge target '${cell.target}' does not reference an existing cell`,
+              ValidationUtils.buildPath(cellPath, 'target'),
+              'error',
+              { targetId: cell.target, availableIds: Array.from(cellIds) },
+            ),
+          );
         }
       }
     });
@@ -344,8 +368,8 @@ export class DiagramValidatorFactory {
    */
   static registerValidator(validator: DiagramValidator): void {
     // Remove existing validator for the same type pattern
-    this.validators = this.validators.filter(v => 
-      v.versionPattern.source !== validator.versionPattern.source
+    this.validators = this.validators.filter(
+      v => v.versionPattern.source !== validator.versionPattern.source,
     );
     this.validators.push(validator);
   }

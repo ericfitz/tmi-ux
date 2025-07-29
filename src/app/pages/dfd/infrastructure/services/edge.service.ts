@@ -51,7 +51,9 @@ export class EdgeService {
     this._verifyEdgeNodes(graph, edgeInfo);
 
     // Ensure proper edge attributes for visual rendering
-    const attrs = ensureVisualRendering ? this._ensureEdgeAttrs(edgeInfo.attrs as any) : edgeInfo.attrs as any;
+    const attrs = ensureVisualRendering
+      ? this._ensureEdgeAttrs(edgeInfo.attrs as any)
+      : (edgeInfo.attrs as any);
 
     const edgeParams = {
       id: edgeInfo.id,
@@ -153,7 +155,9 @@ export class EdgeService {
     }
 
     if (updates.attrs !== undefined) {
-      const attrs = ensureVisualRendering ? this._ensureEdgeAttrs(updates.attrs as any) : updates.attrs as any;
+      const attrs = ensureVisualRendering
+        ? this._ensureEdgeAttrs(updates.attrs as any)
+        : (updates.attrs as any);
       edge.setAttrs(attrs);
     }
 
@@ -240,7 +244,6 @@ export class EdgeService {
     return graph.getEdges();
   }
 
-
   /**
    * Ensure edge has proper attrs structure for visual rendering
    */
@@ -250,11 +253,15 @@ export class EdgeService {
     const hasLineAttrs = attrs?.['line'] && typeof attrs['line'] === 'object';
 
     if (!hasWrapAttrs || !hasLineAttrs) {
-      this._logger.debugComponent('DfdEdgeService', 'Adding missing edge attrs for visual rendering', {
-        hasWrapAttrs,
-        hasLineAttrs,
-        originalAttrs: attrs,
-      });
+      this._logger.debugComponent(
+        'DfdEdgeService',
+        'Adding missing edge attrs for visual rendering',
+        {
+          hasWrapAttrs,
+          hasLineAttrs,
+          originalAttrs: attrs,
+        },
+      );
 
       return {
         ...attrs,

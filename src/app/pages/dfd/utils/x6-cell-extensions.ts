@@ -1,9 +1,9 @@
 /**
  * X6 Cell Extensions
- * 
+ *
  * This file provides extensions and utility functions for X6 Cell objects,
  * adding consistent interfaces and behavior across different cell types.
- * 
+ *
  * Key functionality:
  * - Extends X6 Cell prototype with custom methods for DFD-specific operations
  * - Provides unified interfaces for cell metadata management
@@ -34,7 +34,6 @@ import { Metadata } from '../domain/value-objects/metadata';
  * - Use metadata array only for application-specific data
  * - Provide consistent API regardless of cell type
  */
-
 
 /**
  * Node type information interface

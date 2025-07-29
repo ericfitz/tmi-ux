@@ -33,6 +33,7 @@ import { environment } from '../../../environments/environment';
 interface MockLoggerService {
   info: ReturnType<typeof vi.fn>;
   debug: ReturnType<typeof vi.fn>;
+  debugComponent: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
 }
@@ -125,9 +126,12 @@ describe('ApiService', () => {
         expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
           params: undefined,
         });
-        expect(loggerService.debug).toHaveBeenCalledWith(
-          `GET request to: ${environment.apiUrl}/${testEndpoint}`,
-          undefined,
+        expect(loggerService.debugComponent).toHaveBeenCalledWith(
+          'api',
+          'GET request details:',
+          expect.objectContaining({
+            url: `${environment.apiUrl}/${testEndpoint}`,
+          }),
         );
       });
     });
@@ -140,9 +144,13 @@ describe('ApiService', () => {
         expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
           params: testParams,
         });
-        expect(loggerService.debug).toHaveBeenCalledWith(
-          `GET request to: ${environment.apiUrl}/${testEndpoint}`,
-          testParams,
+        expect(loggerService.debugComponent).toHaveBeenCalledWith(
+          'api',
+          'GET request details:',
+          expect.objectContaining({
+            url: `${environment.apiUrl}/${testEndpoint}`,
+            params: expect.objectContaining(testParams),
+          }),
         );
       });
     });
@@ -197,8 +205,13 @@ describe('ApiService', () => {
           `${environment.apiUrl}/${testEndpoint}`,
           testBody,
         );
-        expect(loggerService.debug).toHaveBeenCalledWith(
-          `POST request to: ${environment.apiUrl}/${testEndpoint}`,
+        expect(loggerService.debugComponent).toHaveBeenCalledWith(
+          'api',
+          'POST request details:',
+          expect.objectContaining({
+            url: `${environment.apiUrl}/${testEndpoint}`,
+            body: expect.objectContaining(testBody),
+          }),
         );
       });
     });
@@ -233,8 +246,13 @@ describe('ApiService', () => {
           `${environment.apiUrl}/${testEndpoint}`,
           testBody,
         );
-        expect(loggerService.debug).toHaveBeenCalledWith(
-          `PUT request to: ${environment.apiUrl}/${testEndpoint}`,
+        expect(loggerService.debugComponent).toHaveBeenCalledWith(
+          'api',
+          'PUT request details:',
+          expect.objectContaining({
+            url: `${environment.apiUrl}/${testEndpoint}`,
+            body: expect.objectContaining(testBody),
+          }),
         );
       });
     });
@@ -266,8 +284,12 @@ describe('ApiService', () => {
       result$.subscribe(result => {
         expect(result).toEqual(mockSuccessResponse);
         expect(httpClient.delete).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`);
-        expect(loggerService.debug).toHaveBeenCalledWith(
-          `DELETE request to: ${environment.apiUrl}/${testEndpoint}`,
+        expect(loggerService.debugComponent).toHaveBeenCalledWith(
+          'api',
+          'DELETE request details:',
+          expect.objectContaining({
+            url: `${environment.apiUrl}/${testEndpoint}`,
+          }),
         );
       });
     });

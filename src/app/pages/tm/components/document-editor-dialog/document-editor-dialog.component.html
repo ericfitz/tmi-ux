@@ -1,5 +1,9 @@
 <h2 mat-dialog-title>
-  {{ mode === 'create' ? ('threatModels.createNewDocument' | transloco) : ('threatModels.editDocument' | transloco) }}
+  {{
+    mode === 'create'
+      ? ('threatModels.createNewDocument' | transloco)
+      : ('threatModels.editDocument' | transloco)
+  }}
 </h2>
 <mat-dialog-content>
   <form [formGroup]="documentForm" class="dialog-form">

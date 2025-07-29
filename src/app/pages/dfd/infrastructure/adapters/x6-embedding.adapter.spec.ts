@@ -329,7 +329,7 @@ describe('X6EmbeddingAdapter', () => {
         body: { fill: 'rgb(240, 250, 255)', fillOpacity: 0.9 },
       });
       childNode.setAttrs = vi.fn();
-      
+
       // Mock removeFromParent to actually remove the parent relationship
       childNode.removeFromParent = vi.fn(() => {
         (childNode as any).setParent(null);

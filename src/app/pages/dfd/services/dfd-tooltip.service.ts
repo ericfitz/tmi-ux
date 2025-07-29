@@ -75,7 +75,7 @@ export class DfdTooltipService {
     options: { offsetX?: number; offsetY?: number } = {},
   ): { x: number; y: number } {
     const { offsetX = 10, offsetY = -30 } = options;
-    
+
     const position = {
       x: mouseEvent.clientX + offsetX,
       y: mouseEvent.clientY + offsetY,

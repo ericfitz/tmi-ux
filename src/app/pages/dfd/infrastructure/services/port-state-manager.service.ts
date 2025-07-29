@@ -1,9 +1,9 @@
 /**
  * Port State Manager Service
- * 
+ *
  * This service manages port visibility state and connection tracking for DFD nodes.
  * It centralizes port-related logic and coordinates with history management.
- * 
+ *
  * Key functionality:
  * - Manages port visibility state for all nodes in the graph
  * - Tracks port connection states and updates visibility accordingly
@@ -52,17 +52,9 @@ export class PortStateManagerService {
   /**
    * Execute port visibility operation with proper history suppression
    */
-  private _executePortOperation(
-    graph: Graph,
-    operationName: string,
-    operation: () => void
-  ): void {
+  private _executePortOperation(graph: Graph, operationName: string, operation: () => void): void {
     if (this._historyCoordinator) {
-      this._historyCoordinator.executeVisualEffect(
-        graph,
-        operationName,
-        operation
-      );
+      this._historyCoordinator.executeVisualEffect(graph, operationName, operation);
     } else {
       // Fallback: execute directly if no history coordinator available
       this._logger.warn('No history coordinator available for port operation', { operationName });
@@ -79,7 +71,7 @@ export class PortStateManagerService {
     node: any,
     portId: string,
     visibility: 'visible' | 'hidden',
-    operationName: string
+    operationName: string,
   ): void {
     this._executePortOperation(graph, operationName, () => {
       node.setPortProp(portId, 'attrs/circle/style/visibility', visibility);
@@ -214,13 +206,17 @@ export class PortStateManagerService {
       const sourcePortId = edge.getSourcePortId();
       const targetPortId = edge.getTargetPortId();
 
-      this._logger.debugComponent('DfdPortStateManager', 'Ensuring connected ports are visible for edge', {
-        edgeId: edge.id,
-        sourceCellId,
-        targetCellId,
-        sourcePortId,
-        targetPortId,
-      });
+      this._logger.debugComponent(
+        'DfdPortStateManager',
+        'Ensuring connected ports are visible for edge',
+        {
+          edgeId: edge.id,
+          sourceCellId,
+          targetCellId,
+          sourcePortId,
+          targetPortId,
+        },
+      );
 
       // Make sure source port is visible
       if (sourceCellId && sourcePortId) {
@@ -311,9 +307,13 @@ export class PortStateManagerService {
         this._updateNodePortVisibilityInternal(graph, node);
       });
 
-      this._logger.debugComponent('DfdPortStateManager', 'Updated port visibility after connection change', {
-        nodeCount: nodes.length,
-      });
+      this._logger.debugComponent(
+        'DfdPortStateManager',
+        'Updated port visibility after connection change',
+        {
+          nodeCount: nodes.length,
+        },
+      );
     });
   }
 
@@ -372,10 +372,10 @@ export class PortStateManagerService {
    */
   showNodePorts(graph: Graph, node: any): void {
     if (!graph || !node) return;
-    
+
     const ports = node.getPorts();
     if (!ports) return;
-    
+
     this._executePortOperation(graph, `show-node-ports-${node.id}`, () => {
       ports.forEach((port: any) => {
         node.setPortProp(port.id, 'attrs/circle/style/visibility', 'visible');
@@ -389,10 +389,10 @@ export class PortStateManagerService {
    */
   hideUnconnectedNodePorts(graph: Graph, node: any): void {
     if (!graph || !node) return;
-    
+
     const ports = node.getPorts();
     if (!ports) return;
-    
+
     this._executePortOperation(graph, `hide-unconnected-ports-${node.id}`, () => {
       ports.forEach((port: any) => {
         // Only hide ports that are not connected

@@ -127,19 +127,19 @@ export class ZOrderService {
     const validCells = allCells.filter(c => {
       if (c.id === cell.id) return false;
       if (this.isSecurityBoundaryCell(c) !== isSecurityBoundary) return false;
-      
+
       // Don't allow moving above embedded children
       if (cell.isNode() && c.isNode()) {
         const cellNode = cell;
         const otherNode = c;
-        
+
         // If other cell is a child of this cell, don't consider its zIndex for max calculation
         if (otherNode.getParent()?.id === cellNode.id) return false;
-        
+
         // If this cell is a child of other cell, can't move above other cell's zIndex
         if (cellNode.getParent()?.id === otherNode.id) return false;
       }
-      
+
       return true;
     });
 
@@ -150,21 +150,19 @@ export class ZOrderService {
 
     const maxZIndex = Math.max(...validCells.map(c => c.getZIndex() ?? 1));
     let newZIndex = maxZIndex + 1;
-    
+
     // If this is a node with embedded children, ensure children maintain higher zIndex
     if (cell.isNode()) {
       const cellNode = cell;
-      const children = allCells.filter(c => 
-        c.isNode() && (c).getParent()?.id === cellNode.id
-      );
-      
+      const children = allCells.filter(c => c.isNode() && c.getParent()?.id === cellNode.id);
+
       if (children.length > 0) {
         const maxChildZIndex = Math.max(...children.map(c => c.getZIndex() ?? 1));
         // Ensure new zIndex doesn't interfere with children's zIndex values
         newZIndex = Math.min(newZIndex, maxChildZIndex - children.length - 1);
       }
     }
-    
+
     // If this is an embedded node, ensure it stays above its parent
     if (cell.isNode()) {
       const cellNode = cell;
@@ -196,19 +194,19 @@ export class ZOrderService {
     const validCells = allCells.filter(c => {
       if (c.id === cell.id) return false;
       if (this.isSecurityBoundaryCell(c) !== isSecurityBoundary) return false;
-      
+
       // Don't allow moving below embedded parent
       if (cell.isNode() && c.isNode()) {
         const cellNode = cell;
         const otherNode = c;
-        
+
         // If other cell is a parent of this cell, don't consider its zIndex for min calculation
         if (cellNode.getParent()?.id === otherNode.id) return false;
-        
+
         // If this cell is a parent of other cell, can't move below other cell's zIndex
         if (otherNode.getParent()?.id === cellNode.id) return false;
       }
-      
+
       return true;
     });
 
@@ -219,7 +217,7 @@ export class ZOrderService {
 
     const minZIndex = Math.min(...validCells.map(c => c.getZIndex() ?? 1));
     let newZIndex = Math.max(minZIndex - 1, 1);
-    
+
     // If this is an embedded node, ensure it stays above its parent
     if (cell.isNode()) {
       const cellNode = cell;
@@ -229,14 +227,12 @@ export class ZOrderService {
         newZIndex = Math.max(newZIndex, parentZIndex + 1);
       }
     }
-    
+
     // If this is a node with embedded children, ensure it stays below children
     if (cell.isNode()) {
       const cellNode = cell;
-      const children = allCells.filter(c => 
-        c.isNode() && (c).getParent()?.id === cellNode.id
-      );
-      
+      const children = allCells.filter(c => c.isNode() && c.getParent()?.id === cellNode.id);
+
       if (children.length > 0) {
         const minChildZIndex = Math.min(...children.map(c => c.getZIndex() ?? 1));
         // Ensure new zIndex stays below all children

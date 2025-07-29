@@ -38,7 +38,14 @@ import {
   ThreatEditorDialogData,
 } from '../components/threat-editor-dialog/threat-editor-dialog.component';
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
-import { Authorization, Document, Metadata, Source, Threat, ThreatModel } from '../models/threat-model.model';
+import {
+  Authorization,
+  Document,
+  Metadata,
+  Source,
+  Threat,
+  ThreatModel,
+} from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
 import { FrameworkService } from '../../../shared/services/framework.service';
 import { FrameworkModel } from '../../../shared/models/framework.model';
@@ -143,7 +150,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this.isEditingIssueUrl = true;
     // Focus the input field after the view updates
     setTimeout(() => {
-      const input = document.querySelector('input[formControlName="issue_url"]') as HTMLInputElement;
+      const input = document.querySelector(
+        'input[formControlName="issue_url"]',
+      ) as HTMLInputElement;
       if (input) {
         input.focus();
       }
@@ -155,7 +164,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   onIssueUrlBlur(): void {
     // Update the initial value with the current form value
-    const currentValue = this.threatModelForm.get('issue_url')?.value as string || '';
+    const currentValue = (this.threatModelForm.get('issue_url')?.value as string) || '';
     this.initialIssueUrlValue = currentValue;
     // Exit edit mode when user clicks away from the input
     this.isEditingIssueUrl = false;
@@ -165,7 +174,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Check if we should show the hyperlink view for issue URL
    */
   shouldShowIssueUrlHyperlink(): boolean {
-    return !this.isEditingIssueUrl && !!this.initialIssueUrlValue && this.initialIssueUrlValue.trim() !== '';
+    return (
+      !this.isEditingIssueUrl &&
+      !!this.initialIssueUrlValue &&
+      this.initialIssueUrlValue.trim() !== ''
+    );
   }
 
   /**
@@ -223,8 +236,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (frameworkControl) {
       this._subscriptions.add(
         frameworkControl.valueChanges.subscribe(newFramework => {
-          if (newFramework && this.threatModel && newFramework !== this.threatModel.threat_model_framework) {
-            this.handleFrameworkChange(this.threatModel.threat_model_framework, newFramework as string);
+          if (
+            newFramework &&
+            this.threatModel &&
+            newFramework !== this.threatModel.threat_model_framework
+          ) {
+            this.handleFrameworkChange(
+              this.threatModel.threat_model_framework,
+              newFramework as string,
+            );
           }
         }),
       );
@@ -241,7 +261,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
           this.threatModel = threatModel;
           // Store the initial issue URL value
           this.initialIssueUrlValue = threatModel.issue_url || '';
-          
+
           this.threatModelForm.patchValue({
             name: threatModel.name,
             description: threatModel.description || '',
@@ -284,7 +304,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             threat_model_framework: this.threatModel.threat_model_framework,
             issue_url: this.threatModel.issue_url || '',
           });
-          
+
           // Store the initial issue URL value for new models
           this.initialIssueUrlValue = this.threatModel.issue_url || '';
 
@@ -346,11 +366,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     // Get the current framework from the form (which may be different from saved model)
-    const currentFrameworkName = this.threatModelForm.get('threat_model_framework')?.value as string || this.threatModel?.threat_model_framework;
-    
+    const currentFrameworkName =
+      (this.threatModelForm.get('threat_model_framework')?.value as string) ||
+      this.threatModel?.threat_model_framework;
+
     // Find the framework model that matches the current framework selection
     const framework = this.frameworks.find(f => f.name === currentFrameworkName);
-    
+
     if (!framework) {
       this.logger.warn('Framework not found for current selection', {
         currentFrameworkName,
@@ -517,40 +539,42 @@ export class TmEditComponent implements OnInit, OnDestroy {
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((diagramData: { name: string; type: string } | undefined) => {
-        if (diagramData && this.threatModel) {
-          // Create a new diagram with UUID, name, and type
-          const now = new Date().toISOString();
-          const newDiagram: Diagram = {
-            id: uuidv4(),
-            name: diagramData.name,
-            created_at: now,
-            modified_at: now,
-            type: diagramData.type,
-          };
+      dialogRef
+        .afterClosed()
+        .subscribe((diagramData: { name: string; type: string } | undefined) => {
+          if (diagramData && this.threatModel) {
+            // Create a new diagram with UUID, name, and type
+            const now = new Date().toISOString();
+            const newDiagram: Diagram = {
+              id: uuidv4(),
+              name: diagramData.name,
+              created_at: now,
+              modified_at: now,
+              type: diagramData.type,
+            };
 
-          // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
-          DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
+            // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
+            DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
 
-          // Add the diagram object directly to the threat model
-          if (!this.threatModel.diagrams) {
-            this.threatModel.diagrams = [];
+            // Add the diagram object directly to the threat model
+            if (!this.threatModel.diagrams) {
+              this.threatModel.diagrams = [];
+            }
+            this.threatModel.diagrams.push(newDiagram);
+
+            // Update the threat model
+            this._subscriptions.add(
+              this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
+                if (result) {
+                  this.threatModel = result;
+
+                  // Add the new diagram to the diagrams array for display
+                  this.diagrams.push(newDiagram);
+                }
+              }),
+            );
           }
-          this.threatModel.diagrams.push(newDiagram);
-
-          // Update the threat model
-          this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
-              if (result) {
-                this.threatModel = result;
-
-                // Add the new diagram to the diagrams array for display
-                this.diagrams.push(newDiagram);
-              }
-            }),
-          );
-        }
-      }),
+        }),
     );
   }
 
@@ -734,11 +758,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
             // Update the threat model
             this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-                if (updatedModel) {
-                  this.threatModel = updatedModel;
-                }
-              }),
+              this.threatModelService
+                .updateThreatModel(this.threatModel)
+                .subscribe(updatedModel => {
+                  if (updatedModel) {
+                    this.threatModel = updatedModel;
+                  }
+                }),
             );
           }
         }
@@ -762,7 +788,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Confirm deletion
     const confirmMessage = this.transloco.translate('common.confirmDelete', {
       item: this.transloco.translate('threatModels.documents').toLowerCase(),
-      name: document.name
+      name: document.name,
     });
     const confirmDelete = window.confirm(confirmMessage);
 
@@ -885,11 +911,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
             // Update the threat model
             this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-                if (updatedModel) {
-                  this.threatModel = updatedModel;
-                }
-              }),
+              this.threatModelService
+                .updateThreatModel(this.threatModel)
+                .subscribe(updatedModel => {
+                  if (updatedModel) {
+                    this.threatModel = updatedModel;
+                  }
+                }),
             );
           }
         }
@@ -913,7 +941,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Confirm deletion
     const confirmMessage = this.transloco.translate('common.confirmDelete', {
       item: this.transloco.translate('threatModels.sourceCode').toLowerCase(),
-      name: sourceCode.name
+      name: sourceCode.name,
     });
     const confirmDelete = window.confirm(confirmMessage);
 
@@ -980,22 +1008,26 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel && this.threatModel.sourceCode) {
           // Update the source code metadata
-          const sourceCodeIndex = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+          const sourceCodeIndex = this.threatModel.sourceCode.findIndex(
+            sc => sc.id === sourceCode.id,
+          );
           if (sourceCodeIndex !== -1) {
             this.threatModel.sourceCode[sourceCodeIndex].metadata = result;
 
             // Update the threat model
             this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-                if (updatedModel) {
-                  this.threatModel = updatedModel;
-                }
-              }),
+              this.threatModelService
+                .updateThreatModel(this.threatModel)
+                .subscribe(updatedModel => {
+                  if (updatedModel) {
+                    this.threatModel = updatedModel;
+                  }
+                }),
             );
 
-            this.logger.info('Updated source code metadata', { 
-              sourceCodeId: sourceCode.id, 
-              metadata: result 
+            this.logger.info('Updated source code metadata', {
+              sourceCodeId: sourceCode.id,
+              metadata: result,
             });
           }
         }
@@ -1035,16 +1067,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
             // Update the threat model
             this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-                if (updatedModel) {
-                  this.threatModel = updatedModel;
-                }
-              }),
+              this.threatModelService
+                .updateThreatModel(this.threatModel)
+                .subscribe(updatedModel => {
+                  if (updatedModel) {
+                    this.threatModel = updatedModel;
+                  }
+                }),
             );
 
-            this.logger.info('Updated document metadata', { 
-              documentId: document.id, 
-              metadata: result 
+            this.logger.info('Updated document metadata', {
+              documentId: document.id,
+              metadata: result,
             });
           }
         }
@@ -1172,9 +1206,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
             // Note: The threat model's diagrams array only contains IDs (strings), not full diagram objects
             // In a real implementation, we would likely update the diagram via a separate API call
             // For now, we just update the local diagram data
-            this.logger.info('Updated diagram metadata', { 
-              diagramId: diagram.id, 
-              metadata: result 
+            this.logger.info('Updated diagram metadata', {
+              diagramId: diagram.id,
+              metadata: result,
             });
           }
         }
@@ -1188,14 +1222,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
   openThreatMetadataDialog(threat: Threat, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    
+
     const dialogData: MetadataDialogData = {
       metadata: threat.metadata || [],
       isReadOnly: false,
       objectType: 'Threat',
       objectName: threat.name,
     };
-    
+
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
       width: '90vw',
       maxWidth: '800px',
@@ -1203,7 +1237,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       maxHeight: '80vh',
       data: dialogData,
     });
-    
+
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
@@ -1213,20 +1247,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
             this.threatModel.threats[threatIndex].metadata = result;
             this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
             this.threatModel.modified_at = new Date().toISOString();
-            
-            this.logger.info('Updated threat metadata', { 
+
+            this.logger.info('Updated threat metadata', {
               threatId: threat.id,
               threatName: threat.name,
-              metadata: result 
+              metadata: result,
             });
-            
+
             // Update the threat model
             this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-                if (updatedModel) {
-                  this.threatModel = updatedModel;
-                }
-              }),
+              this.threatModelService
+                .updateThreatModel(this.threatModel)
+                .subscribe(updatedModel => {
+                  if (updatedModel) {
+                    this.threatModel = updatedModel;
+                  }
+                }),
             );
           }
         }
@@ -1259,15 +1295,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.logger.info('Downloading threat model to desktop', { 
+    this.logger.info('Downloading threat model to desktop', {
       threatModelId: this.threatModel.id,
-      threatModelName: this.threatModel.name 
+      threatModelName: this.threatModel.name,
     });
 
     try {
       // Generate filename: threat model name (truncated to 63 chars) + "-threat-model.json"
       const filename = this.generateThreatModelFilename(this.threatModel.name);
-      
+
       // Serialize the complete threat model as JSON
       const jsonContent = JSON.stringify(this.threatModel, null, 2);
       const blob = new Blob([jsonContent], { type: 'application/json' });
@@ -1294,14 +1330,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
         .replace(/\s+/g, '-') // Replace spaces with dashes
         .replace(/-+/g, '-') // Replace multiple dashes with single dash
         .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
-      
+
       // Truncate to max length
       return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
     };
 
     // Sanitize and truncate the threat model name
     const sanitizedName = sanitizeAndTruncate(threatModelName.trim(), 63);
-    
+
     // If sanitization resulted in an empty string, use default with timestamp
     if (!sanitizedName) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -1309,11 +1345,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     const filename = `${sanitizedName}-threat-model.json`;
-    
-    this.logger.debugComponent('TmEdit', 'Generated threat model filename', { 
+
+    this.logger.debugComponent('TmEdit', 'Generated threat model filename', {
       originalName: threatModelName,
       sanitizedName,
-      filename 
+      filename,
     });
 
     return filename;
@@ -1329,17 +1365,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
         this.logger.debugComponent('TmEdit', 'Using File System Access API for threat model save');
         const fileHandle = await window.showSaveFilePicker({
           suggestedName: filename,
-          types: [{
-            description: 'JSON files',
-            accept: { 'application/json': ['.json'] },
-          }],
+          types: [
+            {
+              description: 'JSON files',
+              accept: { 'application/json': ['.json'] },
+            },
+          ],
         });
 
         const writable = await fileHandle.createWritable();
         await writable.write(blob);
         await writable.close();
-        
-        this.logger.info('Threat model saved successfully using File System Access API', { filename });
+
+        this.logger.info('Threat model saved successfully using File System Access API', {
+          filename,
+        });
         return; // Success, exit early
       } catch (error) {
         // Handle File System Access API errors
@@ -1352,7 +1392,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      this.logger.debugComponent('TmEdit', 'File System Access API not supported, using fallback download method');
+      this.logger.debugComponent(
+        'TmEdit',
+        'File System Access API not supported, using fallback download method',
+      );
     }
 
     // Fallback method for unsupported browsers or API failures
@@ -1408,7 +1451,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Extract the type prefix (everything before the first hyphen)
     const typePrefix = diagram.type.split('-')[0].toUpperCase();
-    
+
     switch (typePrefix) {
       case 'DFD':
         return 'graph_3';
@@ -1442,11 +1485,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Framework control should be disabled if threats exist, so this should only
     // happen when there are no existing threats, but we log it for debugging
     if (this.threatModel?.threats && this.threatModel.threats.length > 0) {
-      this.logger.warn('Framework change detected with existing threats - this should not be possible', {
-        oldFramework,
-        newFramework,
-        threatCount: this.threatModel.threats.length,
-      });
+      this.logger.warn(
+        'Framework change detected with existing threats - this should not be possible',
+        {
+          oldFramework,
+          newFramework,
+          threatCount: this.threatModel.threats.length,
+        },
+      );
     }
   }
 
@@ -1457,16 +1503,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   getTruncatedUrl(url: string): string {
     if (!url) return '';
-    
+
     // Remove protocol and www prefix for cleaner display
     let displayUrl = url.replace(/^https?:\/\/(www\.)?/, '');
-    
+
     // Truncate if too long
     const maxLength = 40;
     if (displayUrl.length > maxLength) {
       displayUrl = displayUrl.substring(0, maxLength - 3) + '...';
     }
-    
+
     return displayUrl;
   }
 
@@ -1518,7 +1564,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this.logger.debugComponent('TmEdit', 'Saving threat model to mock data file', {
       threatModelId: this.threatModel.id,
-      threatModelName: this.threatModel.name
+      threatModelName: this.threatModel.name,
     });
 
     try {
@@ -1527,14 +1573,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
       // Get the mock data file name from the service
       const mockFileName = this.mockDataService.getMockDataFileName(this.threatModel.id);
-      
+
       if (!mockFileName) {
         this.logger.warn('Cannot determine mock data file name for threat model', {
-          threatModelId: this.threatModel.id
+          threatModelId: this.threatModel.id,
         });
         return;
       }
-      
+
       // Serialize the complete threat model as JSON with proper formatting
       const jsonContent = JSON.stringify(this.threatModel, null, 2);
       const blob = new Blob([jsonContent], { type: 'application/json' });
@@ -1545,23 +1591,25 @@ export class TmEditComponent implements OnInit, OnDestroy {
       link.href = url;
       link.download = mockFileName;
       link.style.display = 'none';
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Clean up the object URL
       URL.revokeObjectURL(url);
 
-      this.logger.debugComponent('TmEdit', 'Mock data file created for download', { 
+      this.logger.debugComponent('TmEdit', 'Mock data file created for download', {
         fileName: mockFileName,
-        instruction: `Replace src/assets/mock-data/${mockFileName} with the downloaded file`
+        instruction: `Replace src/assets/mock-data/${mockFileName} with the downloaded file`,
       });
 
       // Show success message to user in console (development only)
       this.logger.debugComponent('TmEdit', `Mock data file created: ${mockFileName}`);
-      this.logger.debugComponent('TmEdit', `Replace src/assets/mock-data/${mockFileName} with the downloaded file to update mock data`);
-      
+      this.logger.debugComponent(
+        'TmEdit',
+        `Replace src/assets/mock-data/${mockFileName} with the downloaded file to update mock data`,
+      );
     } catch (error) {
       this.logger.error('Error saving threat model to mock data file', error);
     }
@@ -1576,12 +1624,12 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     const formValues: ThreatModelFormValues = this.threatModelForm.value as ThreatModelFormValues;
-    
+
     // Update the threat model with form values
     this.threatModel.name = formValues.name;
     this.threatModel.description = formValues.description;
     this.threatModel.threat_model_framework = formValues.threat_model_framework;
-    
+
     if (formValues.issue_url) {
       this.threatModel.issue_url = formValues.issue_url;
     }
@@ -1591,7 +1639,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this.logger.debugComponent('TmEdit', 'Applied form changes to threat model', {
       threatModelId: this.threatModel.id,
-      updatedFields: ['name', 'description', 'threat_model_framework', 'issue_url', 'modified_at']
+      updatedFields: ['name', 'description', 'threat_model_framework', 'issue_url', 'modified_at'],
     });
   }
 }

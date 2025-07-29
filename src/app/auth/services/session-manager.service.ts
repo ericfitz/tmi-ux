@@ -114,7 +114,9 @@ export class SessionManagerService {
       }
     } else if (timeToExpiry <= this.warningTime) {
       // Token is about to expire - proactively refresh
-      this.logger.debug(`Token will expire in ${Math.round(timeToExpiry / 1000 / 60)} minutes - proactively refreshing`);
+      this.logger.debug(
+        `Token will expire in ${Math.round(timeToExpiry / 1000 / 60)} minutes - proactively refreshing`,
+      );
 
       // Check if this is a test user - if so, silently extend the session
       if (this.authService.isTestUser) {
@@ -143,7 +145,7 @@ export class SessionManagerService {
    */
   private showExpiryWarning(minutesLeft: number): void {
     this.logger.debug(`Session expiry warning: ${minutesLeft} minutes left - initiating logout`);
-    
+
     // For transparent session management, we no longer show dialogs
     // Instead, we log out immediately when session is about to expire
     this.handleSessionTimeout();
@@ -155,18 +157,18 @@ export class SessionManagerService {
    */
   private attemptTokenRefresh(): void {
     this.logger.debug('Attempting proactive token refresh');
-    
+
     this.authService.getValidToken().subscribe({
-      next: (newToken) => {
-        this.logger.info('Proactive token refresh successful', { 
-          newExpiry: newToken.expiresAt.toISOString() 
+      next: newToken => {
+        this.logger.info('Proactive token refresh successful', {
+          newExpiry: newToken.expiresAt.toISOString(),
         });
       },
-      error: (error) => {
+      error: error => {
         this.logger.error('Proactive token refresh failed', error);
         // If refresh fails, handle session timeout
         this.handleSessionTimeout();
-      }
+      },
     });
   }
 
@@ -176,10 +178,10 @@ export class SessionManagerService {
    */
   private handleSessionTimeout(): void {
     this.logger.warn('Session timeout - logging out user and redirecting to home');
-    
+
     // Stop timers
     this.stopExpiryTimer();
-    
+
     // Log out the user (this will clear auth data and redirect to home)
     this.authService.logout();
   }

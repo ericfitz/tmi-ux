@@ -1,9 +1,9 @@
 /**
  * Edge Query Service
- * 
+ *
  * This service provides specialized edge query operations for the X6 graph.
  * It handles edge lookups, filtering, and relationship queries efficiently.
- * 
+ *
  * Key functionality:
  * - Provides read-only edge query operations for graph analysis
  * - Finds edges connected to specific nodes or ports

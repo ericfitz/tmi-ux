@@ -36,9 +36,7 @@ export class CreateDiagramDialogComponent {
   diagramForm: FormGroup;
 
   // Available diagram types (initially only DFD-1.0.0)
-  readonly diagramTypes = [
-    { value: 'DFD-1.0.0', label: 'DFD-1.0.0' }
-  ];
+  readonly diagramTypes = [{ value: 'DFD-1.0.0', label: 'DFD-1.0.0' }];
 
   constructor(
     private dialogRef: MatDialogRef<CreateDiagramDialogComponent>,
@@ -61,7 +59,7 @@ export class CreateDiagramDialogComponent {
     const formValues = this.diagramForm.getRawValue() as DiagramFormValues;
     this.dialogRef.close({
       name: formValues.name,
-      type: formValues.type
+      type: formValues.type,
     });
   }
 

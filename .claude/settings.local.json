@@ -23,7 +23,8 @@
       "Bash(for:*)",
       "Bash(do echo \"Processing $file\")",
       "Bash(done)",
-      "WebFetch(domain:x6.antv.vision)"
+      "WebFetch(domain:x6.antv.vision)",
+      "Bash(chmod:*)"
     ]
   },
   "enableAllProjectMcpServers": false

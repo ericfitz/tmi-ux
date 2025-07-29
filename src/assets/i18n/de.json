@@ -83,18 +83,11 @@
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
-    "copyDefinitionToClipboard": "Definition in Zwischenablage kopieren",
     "editText": "Text bearbeiten",
     "moveBackward": "Nach hinten bewegen",
     "moveForward": "Nach vorne bewegen",
     "moveToBack": "In den Hintergrund",
     "moveToFront": "In den Vordergrund"
-  },
-  "diagrams": {
-    "createFirstButton": "Erstellen Sie Ihr erstes Diagramm",
-    "diagramTitle": "{{name}}",
-    "noItemsMessage": "Sie haben noch keine Diagramme.",
-    "pageTitle": "Meine Diagramme"
   },
   "editor": {
     "diagramPrefix": "Diagramm:",
@@ -108,7 +101,6 @@
     },
     "pageTitle": "Datenflussdiagramm-Editor",
     "properties": {
-      "help": "Elementeigenschaften werden hier angezeigt, wenn ein Element ausgewählt ist.",
       "title": "Eigenschaften"
     },
     "toolbar": {
@@ -140,7 +132,6 @@
   "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
-    "authenticationFailed": "Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
     "loggingInWith": "Anmelden mit {{provider}}...",
     "loginWith": "Anmelden mit",
@@ -154,9 +145,7 @@
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "Abmelden",
-    "userProfileTooltip": "{{email}}",
-    "username": "{{username}}"
+    "logoutButton": "Abmelden"
   },
   "privacy": {
     "changesContent": "Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
@@ -238,7 +227,6 @@
     "name": "Name",
     "newThreatModel": "Neues Bedrohungsmodell",
     "noDiagrams": "Noch keine Diagramme hinzugefügt",
-    "noDocumentDescription": "Keine Beschreibung angegeben",
     "noDocuments": "Noch keine Dokumente hinzugefügt",
     "noItemsMessage": "Sie haben noch keine Bedrohungsmodelle.",
     "noPermissions": "Keine Berechtigungen definiert",
@@ -255,7 +243,6 @@
     "reportButton": "Bericht",
     "reportTooltip": "Bericht",
     "sourceCode": "Quellcode",
-    "sourceCodeButton": "Quellcode",
     "sourceCodeDescriptionPlaceholder": "Beschreiben Sie das Quellcode-Repository oder seinen Zweck",
     "sourceCodeName": "Quellcode-Name",
     "sourceCodeParameters": "Repository-Parameter",
@@ -264,7 +251,6 @@
     "sourceCodeRefValueHint": "Branch-Name, Tag oder Commit-ID",
     "sourceCodeSubPath": "Unterpfad",
     "sourceCodeSubPathHint": "Optionaler Pfad innerhalb des Repositories",
-    "sourceCodeTooltip": "Quellcode",
     "sourceCodeType": "Repository-Typ",
     "sourceCodeUrl": "Repository-URL",
     "tag": "Tag",

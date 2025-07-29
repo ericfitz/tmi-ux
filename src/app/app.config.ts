@@ -1,9 +1,9 @@
 /**
  * Application Configuration
- * 
+ *
  * This file defines the main application configuration for the Angular standalone application.
  * It configures all global providers and services needed throughout the application.
- * 
+ *
  * Key functionality:
  * - Configures routing with component input binding support
  * - Sets up HTTP client with fetch API and JWT interceptors

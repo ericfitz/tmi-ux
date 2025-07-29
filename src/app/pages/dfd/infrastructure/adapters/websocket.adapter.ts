@@ -1,9 +1,9 @@
 /**
  * WebSocket Adapter
- * 
+ *
  * This adapter provides WebSocket communication infrastructure for real-time collaboration
  * in the DFD editor. It handles connection management and message routing.
- * 
+ *
  * Key functionality:
  * - Manages WebSocket connection lifecycle (connect, disconnect, reconnect)
  * - Provides connection state monitoring with reactive observables

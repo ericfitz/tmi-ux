@@ -107,7 +107,9 @@ export class VisualEffectsService {
         // Clean up tracking
         this.activeEffects.delete(cell.id);
 
-        this.logger.debugComponent('DfdVisualEffects', 'Removed visual effects', { cellId: cell.id });
+        this.logger.debugComponent('DfdVisualEffects', 'Removed visual effects', {
+          cellId: cell.id,
+        });
       } finally {
         // Re-enable history if we disabled it
         this._enableHistoryIfAvailable(graph, historyWasDisabled);
@@ -130,7 +132,9 @@ export class VisualEffectsService {
       if (effect.timer) {
         clearInterval(effect.timer);
       }
-      this.logger.debugComponent('DfdVisualEffects', 'Cleaned up effect during service cleanup', { cellId });
+      this.logger.debugComponent('DfdVisualEffects', 'Cleaned up effect during service cleanup', {
+        cellId,
+      });
     });
     this.activeEffects.clear();
   }
@@ -183,9 +187,13 @@ export class VisualEffectsService {
         // Re-enable history now that animation is complete
         this._enableHistoryIfAvailable(graph, historyWasDisabled);
 
-        this.logger.debugComponent('DfdVisualEffects', 'Creation highlight fade complete, history re-enabled', {
-          cellId: cell.id,
-        });
+        this.logger.debugComponent(
+          'DfdVisualEffects',
+          'Creation highlight fade complete, history re-enabled',
+          {
+            cellId: cell.id,
+          },
+        );
         return;
       }
 
@@ -211,7 +219,6 @@ export class VisualEffectsService {
     activeEffect.timer = setTimeout(fadeStep, this.ANIMATION_FRAME_INTERVAL);
     this.activeEffects.set(cell.id, activeEffect);
   }
-
 
   /**
    * Apply fade effect directly without any batching or history considerations
@@ -244,13 +251,13 @@ export class VisualEffectsService {
           // IMPORTANT: Apply fill FIRST, then drop shadow, so shadow is visible against the background
           const fillColorString = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.3})`; // Lower opacity for fill
           cell.attr('body/fill', fillColorString);
-          
+
           const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
           cell.attr('text/filter', filterValue);
-          
-          this.logger.info('[VisualEffects] Applied body fill then text filter to text-box', { 
+
+          this.logger.info('[VisualEffects] Applied body fill then text filter to text-box', {
             fillColor: fillColorString,
-            filterValue
+            filterValue,
           });
         }
       } else {
@@ -279,7 +286,9 @@ export class VisualEffectsService {
    * Remove all visual effects from a cell
    */
   private removeAllEffectsFromCell(cell: Cell): void {
-    this.logger.debugComponent('DfdVisualEffects', 'Removing all effects from cell', { cellId: cell.id });
+    this.logger.debugComponent('DfdVisualEffects', 'Removing all effects from cell', {
+      cellId: cell.id,
+    });
 
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -387,7 +396,10 @@ export class VisualEffectsService {
     if (historyPlugin && typeof historyPlugin.disable === 'function') {
       try {
         historyPlugin.disable();
-        this.logger.debugComponent('DfdVisualEffects', 'History tracking disabled for visual effects');
+        this.logger.debugComponent(
+          'DfdVisualEffects',
+          'History tracking disabled for visual effects',
+        );
         return true;
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to disable history tracking', { error });
@@ -440,7 +452,10 @@ export class VisualEffectsService {
     if (historyPlugin && typeof historyPlugin.enable === 'function') {
       try {
         historyPlugin.enable();
-        this.logger.debugComponent('DfdVisualEffects', 'History tracking re-enabled after visual effects');
+        this.logger.debugComponent(
+          'DfdVisualEffects',
+          'History tracking re-enabled after visual effects',
+        );
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to re-enable history tracking', { error });
       }

@@ -1,9 +1,9 @@
 /**
  * User Presence Indicator Component
- * 
+ *
  * This component displays a visual indicator for a single user's presence and activity
  * in the collaborative DFD editing environment.
- * 
+ *
  * Key functionality:
  * - Displays user avatar with initials and personalized color
  * - Shows real-time presence status (online, away, offline)

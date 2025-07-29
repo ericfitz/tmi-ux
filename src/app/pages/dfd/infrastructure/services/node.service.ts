@@ -1,9 +1,9 @@
 /**
  * Node Service
- * 
+ *
  * This service provides comprehensive node management functionality for DFD diagrams.
  * It handles node creation, manipulation, and operations with proper history coordination.
- * 
+ *
  * Key functionality:
  * - Provides node creation operations with different node types (actor, process, store, etc.)
  * - Manages node positioning and automatic layout algorithms
@@ -31,7 +31,10 @@ import { X6ZOrderAdapter } from '../adapters/x6-z-order.adapter';
 import { NodeConfigurationService } from './node-configuration.service';
 import { VisualEffectsService } from './visual-effects.service';
 import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';
 
 /**
@@ -155,7 +158,7 @@ export class DfdNodeService {
 
       // Use centralized history coordinator for consistent filtering and batching
       let createdNode: any;
-      
+
       this.historyCoordinator.executeCompoundOperation(
         graph,
         HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
@@ -177,10 +180,15 @@ export class DfdNodeService {
           }
         },
         // Use default options for node creation (excludes visual effects)
-        this.historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.NODE_CREATION_USER)
+        this.historyCoordinator.getDefaultOptionsForOperation(
+          HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
+        ),
       );
 
-      this.logger.info('Node created successfully directly in X6 with creation highlight (batched)', { nodeId, shapeType });
+      this.logger.info(
+        'Node created successfully directly in X6 with creation highlight (batched)',
+        { nodeId, shapeType },
+      );
       return of(void 0);
     } catch (error) {
       this.logger.error('Error creating node directly in X6', error);
@@ -297,7 +305,7 @@ export class DfdNodeService {
       ensureVisualRendering?: boolean;
       updatePortVisibility?: boolean;
       suppressHistory?: boolean;
-    } = {}
+    } = {},
   ): any {
     const { ensureVisualRendering = true, suppressHistory = false } = options;
 
@@ -305,7 +313,7 @@ export class DfdNodeService {
       nodeId: nodeInfo.id,
       nodeType: nodeInfo.type,
       position: { x: nodeInfo.x, y: nodeInfo.y },
-      suppressHistory
+      suppressHistory,
     });
 
     try {
@@ -332,7 +340,7 @@ export class DfdNodeService {
       this.logger.debugComponent('DfdNodeService', 'Node created successfully from NodeInfo', {
         nodeId: nodeInfo.id,
         nodeCreated: !!node,
-        suppressHistory
+        suppressHistory,
       });
 
       return node;
@@ -378,5 +386,4 @@ export class DfdNodeService {
 
     return nodeConfig;
   }
-
 }

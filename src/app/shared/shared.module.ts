@@ -1,9 +1,9 @@
 /**
  * Shared Module
- * 
+ *
  * This module provides commonly used Angular modules and components that are shared
  * across multiple feature modules in the application.
- * 
+ *
  * Key functionality:
  * - Exports commonly used Angular modules (CommonModule, FormsModule, ReactiveFormsModule)
  * - Provides router functionality for navigation across shared components

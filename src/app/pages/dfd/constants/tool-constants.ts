@@ -1,6 +1,6 @@
 /**
  * DFD Tool Configuration Constants
- * 
+ *
  * Centralized tool configuration for X6 tools used in DFD components.
  * These constants define the exact configuration for node and edge tools
  * to ensure consistency between implementation and testing.
@@ -100,27 +100,27 @@ export const EDGE_TOOLS = [
 export const TOOL_CONFIG = {
   NODE_TOOLS,
   EDGE_TOOLS,
-  
+
   // Tool-specific constants
   COLORS: {
     REMOVE_BUTTON: '#ff4d4f',
-    SOURCE_ARROWHEAD: '#4C9AFF', 
+    SOURCE_ARROWHEAD: '#4C9AFF',
     TARGET_ARROWHEAD: '#FF7452',
     BOUNDARY: '#000',
     VERTEX: '#ffffff',
   },
-  
+
   SIZES: {
     REMOVE_BUTTON_RADIUS: 8,
     ARROWHEAD_RADIUS: 6,
     VERTEX_RADIUS: 4,
   },
-  
+
   POSITIONING: {
     REMOVE_BUTTON_OFFSET: { x: -10, y: 10 },
     EDGE_REMOVE_DISTANCE: '50%',
   },
-  
+
   STYLING: {
     BOUNDARY_DASHARRAY: '2,4',
     STROKE_WIDTH: 2,
@@ -131,8 +131,8 @@ export const TOOL_CONFIG = {
 /**
  * Type definitions for tool configurations
  */
-export type NodeToolConfig = typeof NODE_TOOLS[number];
-export type EdgeToolConfig = typeof EDGE_TOOLS[number];
+export type NodeToolConfig = (typeof NODE_TOOLS)[number];
+export type EdgeToolConfig = (typeof EDGE_TOOLS)[number];
 export type ToolConfig = typeof TOOL_CONFIG;
 
 /**
@@ -145,15 +145,18 @@ export const TOOL_HELPERS = {
   getToolsForCellType(cellType: 'node' | 'edge'): readonly any[] {
     return cellType === 'node' ? NODE_TOOLS : EDGE_TOOLS;
   },
-  
+
   /**
    * Get specific tool configuration by name
    */
-  getToolByName(toolName: string, cellType: 'node' | 'edge'): NodeToolConfig | EdgeToolConfig | undefined {
+  getToolByName(
+    toolName: string,
+    cellType: 'node' | 'edge',
+  ): NodeToolConfig | EdgeToolConfig | undefined {
     const tools = cellType === 'node' ? NODE_TOOLS : EDGE_TOOLS;
     return tools.find(tool => tool.name === toolName);
   },
-  
+
   /**
    * Check if a tool name is valid for a cell type
    */

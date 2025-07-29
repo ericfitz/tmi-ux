@@ -23,16 +23,17 @@ import { LocalOAuthProviderService } from '../../services/local-oauth-provider.s
         </mat-card-header>
         <mat-card-content>
           <div class="user-list">
-            <button 
-              mat-stroked-button 
-              *ngFor="let user of users" 
+            <button
+              mat-stroked-button
+              *ngFor="let user of users"
               (click)="selectUser(user.id)"
-              class="user-button">
+              class="user-button"
+            >
               <div class="user-info">
                 <i class="fa-solid fa-user user-icon"></i>
                 <div class="user-details">
-                  <div class="user-name">{{user.name}}</div>
-                  <div class="user-email">{{user.email}}</div>
+                  <div class="user-name">{{ user.name }}</div>
+                  <div class="user-email">{{ user.email }}</div>
                 </div>
               </div>
             </button>
@@ -41,84 +42,86 @@ import { LocalOAuthProviderService } from '../../services/local-oauth-provider.s
       </mat-card>
     </div>
   `,
-  styles: [`
-    .local-auth-container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 40px 20px;
-      max-width: 100%;
-    }
-    
-    .auth-card {
-      max-width: 400px;
-      width: 100%;
-    }
-    
-    .header-with-icon {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    
-    .local-icon {
-      font-size: 32px;
-      color: #6c757d;
-    }
-    
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    .user-button {
-      padding: 16px;
-      text-align: left;
-      transition: background-color 0.2s ease;
-      
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.04);
+  styles: [
+    `
+      .local-auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+        max-width: 100%;
       }
-    }
-    
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .user-icon {
-      font-size: 20px;
-      color: #6c757d;
-      width: 24px;
-      text-align: center;
-    }
-    
-    .user-details {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .user-name {
-      font-weight: 500;
-      font-size: 16px;
-    }
-    
-    .user-email {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.6);
-    }
-  `]
+
+      .auth-card {
+        max-width: 400px;
+        width: 100%;
+      }
+
+      .header-with-icon {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .local-icon {
+        font-size: 32px;
+        color: #6c757d;
+      }
+
+      .user-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .user-button {
+        padding: 16px;
+        text-align: left;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.04);
+        }
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .user-icon {
+        font-size: 20px;
+        color: #6c757d;
+        width: 24px;
+        text-align: center;
+      }
+
+      .user-details {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 500;
+        font-size: 16px;
+      }
+
+      .user-email {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.6);
+      }
+    `,
+  ],
 })
 export class LocalUserSelectComponent implements OnInit {
-  users: Array<{id: string, name: string, email: string, picture?: string}> = [];
+  users: Array<{ id: string; name: string; email: string; picture?: string }> = [];
   private state: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private localProvider: LocalOAuthProviderService,
-    private router: Router
+    private router: Router,
   ) {
     this.users = this.localProvider.getUsers();
   }
@@ -132,7 +135,7 @@ export class LocalUserSelectComponent implements OnInit {
   selectUser(userId: string): void {
     const code = this.localProvider.generateAuthCode(userId);
     void this.router.navigate(['/auth/callback'], {
-      queryParams: { code, state: this.state }
+      queryParams: { code, state: this.state },
     });
   }
 }

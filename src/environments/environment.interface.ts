@@ -1,9 +1,9 @@
 /**
  * Environment Configuration Interface
- * 
+ *
  * This file defines TypeScript interfaces for environment configuration across all deployment environments.
  * It provides type safety and documentation for all environment variables and OAuth provider settings.
- * 
+ *
  * Key functionality:
  * - Defines Environment interface with all configuration options
  * - Supports OAuth authentication with dynamic provider discovery

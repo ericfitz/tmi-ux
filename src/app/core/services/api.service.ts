@@ -1,9 +1,9 @@
 /**
  * API Service
- * 
+ *
  * This service provides a centralized interface for making HTTP requests to the TMI backend API.
  * It handles error processing, authentication integration, and request logging.
- * 
+ *
  * Key functionality:
  * - Provides generic HTTP methods (GET, POST, PUT, DELETE) with consistent error handling
  * - Integrates with authentication service for automatic token handling via JWT interceptor
@@ -51,13 +51,13 @@ export class ApiService {
    */
   get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    
+
     // Log the request details with component-specific debug logging
     this.logApiRequest('GET', url, undefined, params);
 
     return this.http.get<T>(url, { params }).pipe(
       retry(1),
-      tap((response) => this.logApiResponse('GET', url, response)),
+      tap(response => this.logApiResponse('GET', url, response)),
       catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
     );
   }
@@ -69,16 +69,14 @@ export class ApiService {
    */
   post<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    
+
     // Log the request details with component-specific debug logging
     this.logApiRequest('POST', url, body);
 
-    return this.http
-      .post<T>(url, body)
-      .pipe(
-        tap((response) => this.logApiResponse('POST', url, response)),
-        catchError((error: HttpErrorResponse) => this.handleError(error, 'POST', endpoint)),
-      );
+    return this.http.post<T>(url, body).pipe(
+      tap(response => this.logApiResponse('POST', url, response)),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'POST', endpoint)),
+    );
   }
 
   /**
@@ -88,16 +86,14 @@ export class ApiService {
    */
   put<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    
+
     // Log the request details with component-specific debug logging
     this.logApiRequest('PUT', url, body);
 
-    return this.http
-      .put<T>(url, body)
-      .pipe(
-        tap((response) => this.logApiResponse('PUT', url, response)),
-        catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)),
-      );
+    return this.http.put<T>(url, body).pipe(
+      tap(response => this.logApiResponse('PUT', url, response)),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)),
+    );
   }
 
   /**
@@ -106,16 +102,14 @@ export class ApiService {
    */
   delete<T>(endpoint: string): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    
+
     // Log the request details with component-specific debug logging
     this.logApiRequest('DELETE', url);
 
-    return this.http
-      .delete<T>(url)
-      .pipe(
-        tap((response) => this.logApiResponse('DELETE', url, response)),
-        catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)),
-      );
+    return this.http.delete<T>(url).pipe(
+      tap(response => this.logApiResponse('DELETE', url, response)),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)),
+    );
   }
 
   /**
@@ -170,7 +164,7 @@ export class ApiService {
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
       const isHeader = key.toLowerCase() === 'authorization';
-      
+
       // Check if this key contains sensitive information
       if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
         if (typeof value === 'string' && value.length > 0) {

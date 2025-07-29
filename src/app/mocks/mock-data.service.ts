@@ -1,10 +1,10 @@
 /**
  * Mock Data Service
- * 
+ *
  * This service provides comprehensive mock data management for development and testing.
  * It centralizes all mock data creation and provides a toggle mechanism for switching
  * between mock and real API data.
- * 
+ *
  * Key functionality:
  * - Provides toggle mechanism between mock data and real API data
  * - Manages comprehensive mock threat model data with realistic content
@@ -49,7 +49,7 @@ export class MockDataService implements OnDestroy {
 
   // Map of all diagrams by ID for quick lookup
   private _mockDiagramsMap = new Map<string, Diagram>();
-  
+
   // Mapping of threat model UUID to mock file name
   private _uuidToFileNameMap = new Map<string, string>();
 
@@ -58,11 +58,11 @@ export class MockDataService implements OnDestroy {
 
   constructor(
     private logger: LoggerService,
-    private http: HttpClient
+    private http: HttpClient,
   ) {
     this.logger.debugComponent('MockData', 'MockDataService initialized', {
       initialMockState: this.getInitialMockState(),
-      localStorage: localStorage.getItem('useMockData')
+      localStorage: localStorage.getItem('useMockData'),
     });
 
     // Load JSON data on initialization
@@ -104,7 +104,9 @@ export class MockDataService implements OnDestroy {
   toggleMockData(useMock: boolean): void {
     this._useMockData.next(useMock);
     localStorage.setItem('useMockData', String(useMock));
-    this.logger.debugComponent('MockData', `Mock data ${useMock ? 'enabled' : 'disabled'}`, { useMock });
+    this.logger.debugComponent('MockData', `Mock data ${useMock ? 'enabled' : 'disabled'}`, {
+      useMock,
+    });
   }
 
   /**
@@ -216,43 +218,46 @@ export class MockDataService implements OnDestroy {
     const mockDataUrls = [
       'assets/mock-data/threat-model-1.json',
       'assets/mock-data/threat-model-2.json',
-      'assets/mock-data/threat-model-3.json'
+      'assets/mock-data/threat-model-3.json',
     ];
 
     forkJoin(
-      mockDataUrls.map((url, index) => 
-        this.http.get<ThreatModel>(url).pipe(
-          catchError(error => {
-            this.logger.error(`Failed to load mock data from ${url}`, error);
-            return of(null);
-          })
-        ).pipe(
-          map(threatModel => ({
-            threatModel,
-            fileName: url.split('/').pop() || `threat-model-${index + 1}.json`
-          }))
-        )
-      )
+      mockDataUrls.map((url, index) =>
+        this.http
+          .get<ThreatModel>(url)
+          .pipe(
+            catchError(error => {
+              this.logger.error(`Failed to load mock data from ${url}`, error);
+              return of(null);
+            }),
+          )
+          .pipe(
+            map(threatModel => ({
+              threatModel,
+              fileName: url.split('/').pop() || `threat-model-${index + 1}.json`,
+            })),
+          ),
+      ),
     ).subscribe(results => {
       // Filter out null values from failed loads and build UUID mapping
       this._mockThreatModels = [];
       this._uuidToFileNameMap.clear();
-      
+
       results.forEach(result => {
         if (result.threatModel) {
           this._mockThreatModels.push(result.threatModel);
           this._uuidToFileNameMap.set(result.threatModel.id, result.fileName);
         }
       });
-      
+
       // Initialize diagrams map
       this.initDiagramsMap();
-      
+
       this._dataLoaded = true;
-      
+
       this.logger.debugComponent('MockData', 'Mock data loaded successfully', {
         threatModelCount: this._mockThreatModels.length,
-        diagramCount: this._mockDiagramsMap.size
+        diagramCount: this._mockDiagramsMap.size,
       });
     });
   }
@@ -262,7 +267,7 @@ export class MockDataService implements OnDestroy {
    */
   private initDiagramsMap(): void {
     this._mockDiagramsMap.clear();
-    
+
     // Extract all diagrams from threat models
     this._mockThreatModels.forEach(threatModel => {
       if (threatModel.diagrams) {
@@ -272,7 +277,10 @@ export class MockDataService implements OnDestroy {
       }
     });
 
-    this.logger.debugComponent('MockData', `Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`);
+    this.logger.debugComponent(
+      'MockData',
+      `Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`,
+    );
   }
 
   /**

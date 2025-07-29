@@ -63,12 +63,12 @@ export const HISTORY_OPERATION_TYPES = {
   NODE_POSITIONING: 'node-positioning',
   NODE_RESIZING: 'node-resizing',
   DIAGRAM_LOAD: 'diagram-load',
-  
+
   // Grouping operations (structural)
   GROUP_CREATION: 'group-creation',
   GROUP_EXPANSION: 'group-expansion',
   GROUP_UNGROUPING: 'group-ungrouping',
-  
+
   // Visual operations (excluded by default)
   HIGHLIGHTING: 'highlighting',
   SELECTION_EFFECTS: 'selection-effects',
@@ -78,7 +78,8 @@ export const HISTORY_OPERATION_TYPES = {
   TOOL_UPDATES: 'tool-updates',
 } as const;
 
-export type HistoryOperationType = typeof HISTORY_OPERATION_TYPES[keyof typeof HISTORY_OPERATION_TYPES];
+export type HistoryOperationType =
+  (typeof HISTORY_OPERATION_TYPES)[keyof typeof HISTORY_OPERATION_TYPES];
 
 /**
  * Centralized service for coordinating history management across all graph operations.
@@ -86,21 +87,20 @@ export type HistoryOperationType = typeof HISTORY_OPERATION_TYPES[keyof typeof H
  */
 @Injectable()
 export class GraphHistoryCoordinator {
-  
   private readonly historyFilters = {
     // Visual effects exclusions
     visualEffects: [
       'tools',
-      'items', 
+      'items',
       'name',
       'body/filter',
-      'line/filter', 
+      'line/filter',
       'text/filter',
       'body/strokeWidth',
       'line/strokeWidth',
-      'line/stroke'
+      'line/stroke',
     ],
-    
+
     // Highlighting and selection effects
     highlighting: [
       'body/stroke',
@@ -112,52 +112,46 @@ export class GraphHistoryCoordinator {
       'attrs/line/stroke',
       'attrs/line/strokeWidth',
       'stroke',
-      'strokeWidth'
+      'strokeWidth',
     ],
-    
+
     // Tool state changes
-    toolChanges: [
-      'tools',
-      'items',
-      'name',
-      'attrs/tools',
-      'attrs/items'
-    ],
-    
+    toolChanges: ['tools', 'items', 'name', 'attrs/tools', 'attrs/items'],
+
     // Port visibility patterns (regex)
     portVisibilityPatterns: [
       // Match port visibility changes in groups structure: ports/groups/*/attrs/circle/style/visibility
       /^ports\/groups\/.*\/attrs\/circle\/style\/visibility$/,
       /^ports\/groups\/.*\/attrs\/.*\/style\/visibility$/,
-      
-      // Match port visibility in items structure: ports/items/*/attrs/circle/style/visibility  
+
+      // Match port visibility in items structure: ports/items/*/attrs/circle/style/visibility
       /^ports\/items\/.*\/attrs\/circle\/style\/visibility$/,
       /^ports\/items\/.*\/attrs\/.*\/style\/visibility$/,
-      
+
       // Match any port attribute changes (broader catch-all)
       /^ports\/.*\/attrs\/.*$/,
-      
+
       // Legacy patterns for other port structures
       /^attrs\/circle\/style\/visibility$/,
       /^attrs\/ports\/.*$/,
-      
+
       // Dot notation versions (in case X6 reports with dots)
       /^ports\.groups\..*\.attrs\.circle\.style\.visibility$/,
       /^ports\.groups\..*\.attrs\..*\.style\.visibility$/,
       /^ports\.items\..*\.attrs\.circle\.style\.visibility$/,
-      /^ports\.items\..*\.attrs\..*\.style\.visibility$/
-    ]
+      /^ports\.items\..*\.attrs\..*\.style\.visibility$/,
+    ],
   };
 
   constructor(
     private x6HistoryManager: X6HistoryManager,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
   ) {}
 
   /**
    * Execute a batched operation with consistent history filtering.
    * All structural changes are grouped into a single atomic batch.
-   * 
+   *
    * @param graph The X6 Graph instance
    * @param operationType Standard operation type for logging and debugging
    * @param operation The operation to execute within the batch
@@ -168,11 +162,11 @@ export class GraphHistoryCoordinator {
     graph: Graph,
     operationType: HistoryOperationType,
     operation: () => T,
-    options: HistoryOperationOptions = {}
+    options: HistoryOperationOptions = {},
   ): T {
     this.loggerService.debug(`Starting atomic operation: ${operationType}`, {
       options,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     try {
@@ -186,15 +180,14 @@ export class GraphHistoryCoordinator {
       });
 
       this.loggerService.debug(`Completed atomic operation: ${operationType}`, {
-        success: true
+        success: true,
       });
 
       return result;
-
     } catch (error) {
       this.loggerService.error(`Failed atomic operation: ${operationType}`, {
         error: error instanceof Error ? error.message : String(error),
-        options
+        options,
       });
       throw error;
     }
@@ -203,27 +196,23 @@ export class GraphHistoryCoordinator {
   /**
    * Execute visual effects outside of history tracking.
    * These operations are completely excluded from undo/redo.
-   * 
-   * @param graph The X6 Graph instance  
+   *
+   * @param graph The X6 Graph instance
    * @param effectName Name of the visual effect for logging
    * @param effect The visual effect operation to execute
    */
-  executeVisualEffect(
-    graph: Graph,
-    effectName: string,
-    effect: () => void
-  ): void {
+  executeVisualEffect(graph: Graph, effectName: string, effect: () => void): void {
     this.loggerService.debug(`Executing visual effect: ${effectName}`);
 
     // Disable history for visual effects
     this.x6HistoryManager.disable(graph);
-    
+
     try {
       effect();
       this.loggerService.debug(`Completed visual effect: ${effectName}`);
     } catch (error) {
       this.loggerService.error(`Failed visual effect: ${effectName}`, {
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     } finally {
@@ -235,7 +224,7 @@ export class GraphHistoryCoordinator {
   /**
    * Execute a compound operation that includes both structural changes and visual effects.
    * Structural changes are batched and recorded in history, visual effects are excluded.
-   * 
+   *
    * @param graph The X6 Graph instance
    * @param operationType Standard operation type
    * @param structuralOperation Structural changes (recorded in history)
@@ -248,23 +237,14 @@ export class GraphHistoryCoordinator {
     operationType: HistoryOperationType,
     structuralOperation: () => T,
     visualEffect?: () => void,
-    options: HistoryOperationOptions = {}
+    options: HistoryOperationOptions = {},
   ): T {
     // Execute structural changes in history
-    const result = this.executeAtomicOperation(
-      graph, 
-      operationType, 
-      structuralOperation, 
-      options
-    );
+    const result = this.executeAtomicOperation(graph, operationType, structuralOperation, options);
 
     // Execute visual effects outside history
     if (visualEffect) {
-      this.executeVisualEffect(
-        graph,
-        `${operationType}-visual-effects`,
-        visualEffect
-      );
+      this.executeVisualEffect(graph, `${operationType}-visual-effects`, visualEffect);
     }
 
     return result;
@@ -273,27 +253,27 @@ export class GraphHistoryCoordinator {
   /**
    * Check if a specific attribute should be excluded from history based on current filters.
    * This can be used for custom validation logic.
-   * 
+   *
    * @param attributePath The attribute path to check (e.g., 'body/stroke')
    * @param options Current operation options (defaults to exclude visual effects)
    * @returns true if the attribute should be excluded from history
    */
   shouldExcludeAttribute(
-    attributePath: string, 
+    attributePath: string,
     options: HistoryOperationOptions = {
       includeVisualEffects: false,
       includeHighlighting: false,
       includePortVisibility: false,
-      includeToolChanges: false
-    }
+      includeToolChanges: false,
+    },
   ): boolean {
     const {
       includeVisualEffects = false,
-      includeHighlighting = false, 
+      includeHighlighting = false,
       includePortVisibility = false,
       includeToolChanges = false,
       customExclusions = [],
-      customPatterns = []
+      customPatterns = [],
     } = options;
 
     // Check custom exclusions first
@@ -323,15 +303,17 @@ export class GraphHistoryCoordinator {
 
     // Check port visibility patterns
     if (!includePortVisibility) {
-      const isPortVisibility = this.historyFilters.portVisibilityPatterns.some(pattern => 
-        pattern.test(attributePath)
+      const isPortVisibility = this.historyFilters.portVisibilityPatterns.some(pattern =>
+        pattern.test(attributePath),
       );
-      
+
       // Debug logging for port visibility filtering
       if (attributePath.includes('port') || attributePath.includes('visibility')) {
-        this.loggerService.debug(`Port visibility check: "${attributePath}" -> excluded: ${isPortVisibility}`);
+        this.loggerService.debug(
+          `Port visibility check: "${attributePath}" -> excluded: ${isPortVisibility}`,
+        );
       }
-      
+
       return isPortVisibility;
     }
 
@@ -341,7 +323,7 @@ export class GraphHistoryCoordinator {
   /**
    * Get default options for specific operation types.
    * This ensures consistent behavior for common operations.
-   * 
+   *
    * @param operationType The type of operation
    * @returns Default options for the operation type
    */
@@ -361,7 +343,7 @@ export class GraphHistoryCoordinator {
           includeVisualEffects: false,
           includeHighlighting: false,
           includePortVisibility: false,
-          includeToolChanges: false
+          includeToolChanges: false,
         };
 
       case HISTORY_OPERATION_TYPES.GROUP_CREATION:
@@ -371,7 +353,7 @@ export class GraphHistoryCoordinator {
           includeVisualEffects: false,
           includeHighlighting: false,
           includePortVisibility: false,
-          includeToolChanges: false
+          includeToolChanges: false,
         };
 
       case HISTORY_OPERATION_TYPES.HIGHLIGHTING:
@@ -385,7 +367,7 @@ export class GraphHistoryCoordinator {
           includeVisualEffects: true,
           includeHighlighting: true,
           includePortVisibility: true,
-          includeToolChanges: true
+          includeToolChanges: true,
         };
 
       default:
@@ -394,7 +376,7 @@ export class GraphHistoryCoordinator {
           includeVisualEffects: false,
           includeHighlighting: false,
           includePortVisibility: false,
-          includeToolChanges: false
+          includeToolChanges: false,
         };
     }
   }
@@ -403,10 +385,7 @@ export class GraphHistoryCoordinator {
    * Apply operation-specific filters to the graph's history plugin.
    * This is called internally by executeAtomicOperation.
    */
-  private applyOperationFilters(
-    graph: Graph, 
-    options: HistoryOperationOptions
-  ): void {
+  private applyOperationFilters(graph: Graph, options: HistoryOperationOptions): void {
     const history = graph.getPlugin('history') as History;
     if (!history) {
       this.loggerService.warn('History plugin not found on graph - filters cannot be applied');
@@ -416,14 +395,14 @@ export class GraphHistoryCoordinator {
     // The actual filter application will be handled by the History plugin's
     // beforeAddCommand callback, which can access these options through
     // a mechanism we'll implement in the next phase
-    
+
     this.loggerService.debug('Applied operation filters', {
       includeVisualEffects: options.includeVisualEffects,
       includeHighlighting: options.includeHighlighting,
       includePortVisibility: options.includePortVisibility,
       includeToolChanges: options.includeToolChanges,
       customExclusions: options.customExclusions?.length || 0,
-      customPatterns: options.customPatterns?.length || 0
+      customPatterns: options.customPatterns?.length || 0,
     });
   }
 }

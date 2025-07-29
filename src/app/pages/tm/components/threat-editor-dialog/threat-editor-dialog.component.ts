@@ -104,7 +104,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
 
-
   private langSubscription: Subscription | null = null;
   private directionSubscription: Subscription | null = null;
 
@@ -151,9 +150,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       });
   }
 
-
-
-
   /**
    * Enter edit mode for issue URL
    */
@@ -161,7 +157,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     this.isEditingIssueUrl = true;
     // Focus the input field after the view updates
     setTimeout(() => {
-      const input = document.querySelector('input[formControlName="issue_url"]') as HTMLInputElement;
+      const input = document.querySelector(
+        'input[formControlName="issue_url"]',
+      ) as HTMLInputElement;
       if (input) {
         input.focus();
       }
@@ -173,7 +171,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    */
   onIssueUrlBlur(): void {
     // Update the initial value with the current form value
-    const currentValue = this.threatForm.get('issue_url')?.value as string || '';
+    const currentValue = (this.threatForm.get('issue_url')?.value as string) || '';
     this.initialIssueUrlValue = currentValue;
     // Exit edit mode when user clicks away from the input
     this.isEditingIssueUrl = false;
@@ -227,16 +225,16 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    */
   private initializeThreatTypeOptions(): void {
     this.threatTypeOptions = [];
-    
+
     if (this.data.framework && this.data.framework.threatTypes.length > 0) {
       let applicableThreatTypes = this.data.framework.threatTypes;
-      
+
       // Filter threat types by shape type if provided
       if (this.data.shapeType) {
-        applicableThreatTypes = this.data.framework.threatTypes.filter(tt => 
-          tt.appliesTo.includes(this.data.shapeType!)
+        applicableThreatTypes = this.data.framework.threatTypes.filter(tt =>
+          tt.appliesTo.includes(this.data.shapeType!),
         );
-        
+
         this.logger.info('Filtering threat types by shape type', {
           framework: this.data.framework.name,
           shapeType: this.data.shapeType,
@@ -244,9 +242,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           allThreatTypes: this.data.framework.threatTypes.map(tt => tt.name),
         });
       }
-      
+
       this.threatTypeOptions = applicableThreatTypes.map(tt => tt.name);
-      
+
       this.logger.info('Threat type options initialized from framework', {
         framework: this.data.framework.name,
         shapeType: this.data.shapeType || 'none',
@@ -256,7 +254,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Fallback to default threat types if no framework provided
       this.threatTypeOptions = [
         'Spoofing',
-        'Tampering', 
+        'Tampering',
         'Repudiation',
         'Information Disclosure',
         'Denial of Service',
@@ -406,7 +404,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
           severity: 'High',
-          threat_type: this.threatTypeOptions.length > 0 ? this.threatTypeOptions[0] : 'Information Disclosure',
+          threat_type:
+            this.threatTypeOptions.length > 0
+              ? this.threatTypeOptions[0]
+              : 'Information Disclosure',
           diagram_id: this.data.diagramId || '',
           cell_id: this.data.cellId || '',
           score: 10.0,
@@ -426,11 +427,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Initialize form with empty values for text fields and default values for other fields
     // We're using floatLabel="always" in the HTML to ensure labels are always visible
     const defaultCellId = this.data.cellId || '';
-    
+
     // Use first threat type from framework, or fallback to a default
-    const defaultThreatType = this.threatTypeOptions.length > 0 
-      ? this.threatTypeOptions[0] 
-      : 'Information Disclosure';
+    const defaultThreatType =
+      this.threatTypeOptions.length > 0 ? this.threatTypeOptions[0] : 'Information Disclosure';
 
     this.threatForm.patchValue({
       name: '',
@@ -450,7 +450,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     if (this.data.threat) {
       // Store the initial issue URL value
       this.initialIssueUrlValue = this.data.threat.issue_url || '';
-      
+
       this.threatForm.patchValue({
         name: this.data.threat.name,
         description: this.data.threat.description || '',
@@ -470,7 +470,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         this.threatForm.disable();
       }
     }
-
 
     // Force translations to be applied
     this.forceTranslationUpdate();
@@ -615,7 +614,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         this.translocoService.load(currentLang).subscribe({
           next: () => {
             const retryTranslation = this.translocoService.translate(key);
-            this.logger.debugComponent('ThreatEditorDialog', `Retry translation for ${key}: ${retryTranslation}`);
+            this.logger.debugComponent(
+              'ThreatEditorDialog',
+              `Retry translation for ${key}: ${retryTranslation}`,
+            );
           },
           error: (err: unknown) => {
             const errorMessage = err instanceof Error ? err.message : String(err);

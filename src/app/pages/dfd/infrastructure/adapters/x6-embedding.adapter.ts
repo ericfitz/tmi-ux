@@ -1,9 +1,9 @@
 /**
  * X6 Embedding Adapter
- * 
+ *
  * This adapter handles node embedding functionality within the X6 graph library,
  * enabling nodes to be contained within other nodes (parent-child relationships).
- * 
+ *
  * Key functionality:
  * - Manages parent-child node relationships in X6 graph structure
  * - Handles automatic node embedding when nodes are dragged over containers
@@ -447,9 +447,10 @@ export class X6EmbeddingAdapter {
     try {
       // Recalculate embedding appearance based on new embedding depth
       const newDepth = this.embeddingService.calculateEmbeddingDepth(node);
-      const fillColor = newDepth === 0 
-        ? this._getOriginalFillColorForShape(node.shape)
-        : this.embeddingService.calculateEmbeddingFillColor(newDepth);
+      const fillColor =
+        newDepth === 0
+          ? this._getOriginalFillColorForShape(node.shape)
+          : this.embeddingService.calculateEmbeddingFillColor(newDepth);
       this.applyEmbeddingVisualEffects(node, fillColor, newDepth);
 
       // Reset z-order - check if this is a security boundary node
@@ -506,9 +507,10 @@ export class X6EmbeddingAdapter {
     const depth = this.embeddingService.calculateEmbeddingDepth(node);
 
     // Calculate fill color based on depth
-    const fillColor = depth === 0 
-      ? this._getOriginalFillColorForShape(node.shape)
-      : this.embeddingService.calculateEmbeddingFillColor(depth);
+    const fillColor =
+      depth === 0
+        ? this._getOriginalFillColorForShape(node.shape)
+        : this.embeddingService.calculateEmbeddingFillColor(depth);
 
     // Apply visual changes
     this.applyEmbeddingVisualEffects(node, fillColor, depth);
@@ -572,20 +574,18 @@ export class X6EmbeddingAdapter {
     node.setAttrs(updatedAttrs);
   }
 
-
   /**
    * Get original fill color based on X6 shape type (matches shape definitions)
    */
   private _getOriginalFillColorForShape(shape: string): string {
     const shapeColorMap: Record<string, string> = {
-      'process': '#FFFFFF',
-      'store': '#FFFFFF', 
-      'actor': '#FFFFFF',
+      process: '#FFFFFF',
+      store: '#FFFFFF',
+      actor: '#FFFFFF',
       'security-boundary': '#FFFFFF',
       'text-box': 'transparent',
     };
 
     return shapeColorMap[shape] || '#FFFFFF';
   }
-
 }

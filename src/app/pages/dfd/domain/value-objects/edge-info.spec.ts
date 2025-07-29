@@ -27,10 +27,7 @@ describe('EdgeInfo', () => {
       const visible = true;
       const attrs: EdgeAttrs = { text: { text: 'Data Flow' } };
       const labels: EdgeLabel[] = [];
-      const vertices = [
-        new Point(150, 150),
-        new Point(200, 200),
-      ];
+      const vertices = [new Point(150, 150), new Point(200, 200)];
       const metadata: Metadata[] = [
         { key: 'style', value: 'dashed' },
         { key: 'color', value: '#red' },
@@ -126,17 +123,7 @@ describe('EdgeInfo', () => {
       const target: EdgeTerminal = { cell: 'target' };
       const invalidVertex = { x: 'invalid', y: 200 } as any;
       expect(
-        () => new EdgeInfo(
-            'edge-1',
-            'edge',
-            source,
-            target,
-            1,
-            true,
-            {},
-            [],
-            [invalidVertex],
-          ),
+        () => new EdgeInfo('edge-1', 'edge', source, target, 1, true, {}, [], [invalidVertex]),
       ).toThrow('Vertex at index 0 must be a Point object');
     });
   });
@@ -284,10 +271,7 @@ describe('EdgeInfo', () => {
 
     it('should create new EdgeInfo with updated vertices', () => {
       // Arrange
-      const newVertices = [
-        new Point(100, 100),
-        new Point(200, 200),
-      ];
+      const newVertices = [new Point(100, 100), new Point(200, 200)];
 
       // Act
       const updated = originalEdgeInfo.withVertices(newVertices);
@@ -422,24 +406,12 @@ describe('EdgeInfo', () => {
       const source: EdgeTerminal = { cell: 'source', port: 'out-port' };
       const target: EdgeTerminal = { cell: 'target', port: 'in-port' };
       const attrs: EdgeAttrs = { text: { text: 'Data Flow' } };
-      const vertices = [
-        new Point(100, 100),
-        new Point(200, 200),
-      ];
+      const vertices = [new Point(100, 100), new Point(200, 200)];
       const metadata: Metadata[] = [{ key: 'style', value: 'solid' }];
 
-      edgeInfo = new EdgeInfo(
-        'edge-1',
-        'edge',
-        source,
-        target,
-        1,
-        true,
-        attrs,
-        [],
-        vertices,
-        { _metadata: metadata },
-      );
+      edgeInfo = new EdgeInfo('edge-1', 'edge', source, target, 1, true, attrs, [], vertices, {
+        _metadata: metadata,
+      });
     });
 
     it('should check if edge connects to node', () => {
@@ -484,10 +456,7 @@ describe('EdgeInfo', () => {
       const source: EdgeTerminal = { cell: 'source', port: 'out-port' };
       const target: EdgeTerminal = { cell: 'target', port: 'in-port' };
       const attrs: EdgeAttrs = { text: { text: 'Data Flow' } };
-      const vertices = [
-        new Point(100, 100),
-        new Point(200, 200),
-      ];
+      const vertices = [new Point(100, 100), new Point(200, 200)];
       const metadata: Metadata[] = [{ key: 'style', value: 'solid' }];
 
       const identical = new EdgeInfo(
@@ -546,7 +515,6 @@ describe('EdgeInfo', () => {
       expect(json.data).toEqual({ _metadata: [{ key: 'style', value: 'solid' }] });
     });
 
-
     it('should convert metadata to Record format', () => {
       // Act
       const metadataRecord = edgeInfo.getMetadataAsRecord();
@@ -602,13 +570,13 @@ describe('EdgeInfo', () => {
         {
           tagName: 'path',
           selector: 'line',
-          attrs: { stroke: '#000000', strokeWidth: 2 }
+          attrs: { stroke: '#000000', strokeWidth: 2 },
         },
         {
           tagName: 'text',
           selector: 'label',
-          attrs: { fontSize: 12, fill: '#333333' }
-        }
+          attrs: { fontSize: 12, fill: '#333333' },
+        },
       ];
 
       // Act
@@ -616,7 +584,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        markup
+        markup,
       });
 
       // Assert
@@ -628,7 +596,7 @@ describe('EdgeInfo', () => {
       // Arrange
       const tools = [
         { name: 'vertices', args: { distance: 20 } },
-        { name: 'segments', args: { precision: 2 } }
+        { name: 'segments', args: { precision: 2 } },
       ];
 
       // Act
@@ -636,7 +604,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        tools
+        tools,
       });
 
       // Assert
@@ -648,7 +616,7 @@ describe('EdgeInfo', () => {
       // Arrange
       const router = {
         name: 'manhattan' as const,
-        args: { padding: 10, step: 20 }
+        args: { padding: 10, step: 20 },
       };
 
       // Act
@@ -656,7 +624,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        router
+        router,
       });
 
       // Assert
@@ -670,7 +638,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        router: 'orth'
+        router: 'orth',
       });
 
       // Assert
@@ -682,7 +650,7 @@ describe('EdgeInfo', () => {
       // Arrange
       const connector = {
         name: 'rounded' as const,
-        args: { radius: 10 }
+        args: { radius: 10 },
       };
 
       // Act
@@ -690,7 +658,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        connector
+        connector,
       });
 
       // Assert
@@ -704,8 +672,8 @@ describe('EdgeInfo', () => {
         position: 0.5,
         attrs: {
           text: { fontSize: 14, fill: '#000000' },
-          rect: { fill: '#ffffff', stroke: '#cccccc' }
-        }
+          rect: { fill: '#ffffff', stroke: '#cccccc' },
+        },
       };
 
       // Act
@@ -713,7 +681,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        defaultLabel
+        defaultLabel,
       });
 
       // Assert
@@ -726,7 +694,7 @@ describe('EdgeInfo', () => {
       const edgeInfo = EdgeInfo.fromJSON({
         id: 'test-edge',
         source: { cell: 'source-node' },
-        target: { cell: 'target-node' }
+        target: { cell: 'target-node' },
       });
 
       // Assert
@@ -750,7 +718,7 @@ describe('EdgeInfo', () => {
         markup,
         tools,
         router,
-        connector
+        connector,
       });
 
       // Act
@@ -771,7 +739,7 @@ describe('EdgeInfo', () => {
         strokeWidth: 3,
         strokeDasharray: '10 5',
         fontSize: 14,
-        fontColor: '#333333'
+        fontColor: '#333333',
       };
 
       // Act
@@ -780,7 +748,7 @@ describe('EdgeInfo', () => {
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
         label: 'Test Edge',
-        style
+        style,
       });
 
       // Assert
@@ -797,7 +765,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        label: 'Simple Label'
+        label: 'Simple Label',
       });
 
       // Assert
@@ -813,7 +781,7 @@ describe('EdgeInfo', () => {
           id: 'test-edge',
           source: { cell: 'source-node' },
           target: { cell: 'target-node' },
-          router: 'invalid-router' as any // Invalid router type
+          router: 'invalid-router' as any, // Invalid router type
         });
       }).toThrow('Invalid router type: invalid-router');
     });
@@ -825,7 +793,7 @@ describe('EdgeInfo', () => {
           id: 'test-edge',
           source: { cell: 'source-node' },
           target: { cell: 'target-node' },
-          connector: 'invalid-connector' as any // Invalid connector type
+          connector: 'invalid-connector' as any, // Invalid connector type
         });
       }).toThrow('Invalid connector type: invalid-connector');
     });
@@ -837,7 +805,7 @@ describe('EdgeInfo', () => {
           id: 'test-edge',
           source: { cell: 'source-node' },
           target: { cell: 'target-node' },
-          defaultLabel: { position: 2.0 } // Invalid: position > 1
+          defaultLabel: { position: 2.0 }, // Invalid: position > 1
         });
       }).toThrow('Default label position must be a number between 0 and 1');
     });
@@ -852,7 +820,7 @@ describe('EdgeInfo', () => {
         connector: 'rounded',
         defaultLabel: { position: 0.5, attrs: { text: { fontSize: 12 } } },
         markup: [{ tagName: 'path', selector: 'line' }],
-        tools: [{ name: 'vertices', args: { distance: 20 } }]
+        tools: [{ name: 'vertices', args: { distance: 20 } }],
       });
 
       // Assert

@@ -1,5 +1,5 @@
 // This project uses vitest for all unit tests, with native vitest syntax
-// This project uses cypress for all integration tests  
+// This project uses cypress for all integration tests
 // Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
 // Execute all tests using: "pnpm run test"
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
@@ -22,7 +22,7 @@ describe('NodeService - Core Functionality Tests', () => {
     // Initialize X6 cell extensions and register DFD shapes
     initializeX6CellExtensions();
     registerCustomShapes();
-    
+
     // Create real X6 graph for integration testing
     graph = new Graph({
       container: document.createElement('div'),
@@ -94,14 +94,14 @@ describe('NodeService - Core Functionality Tests', () => {
   describe('Node Configuration', () => {
     it('should provide correct port configuration for different node types', () => {
       const nodeTypes: NodeType[] = ['actor', 'process', 'store', 'security-boundary'];
-      
+
       nodeTypes.forEach(nodeType => {
         const portConfig = nodeConfigurationService.getNodePorts(nodeType);
-        
+
         expect(portConfig.groups).toBeDefined();
         expect(portConfig.items).toBeDefined();
         expect(portConfig.items).toHaveLength(4); // top, right, bottom, left
-        
+
         // Verify port structure
         expect(portConfig.items).toEqual([
           { group: 'top', id: 'top' },
@@ -114,7 +114,7 @@ describe('NodeService - Core Functionality Tests', () => {
 
     it('should provide empty port configuration for text-box nodes', () => {
       const portConfig = nodeConfigurationService.getNodePorts('text-box');
-      
+
       expect(portConfig.groups).toEqual({});
       expect(portConfig.items).toEqual([]);
     });
@@ -122,7 +122,7 @@ describe('NodeService - Core Functionality Tests', () => {
     it('should indicate correct port capabilities for node types', () => {
       expect(nodeConfigurationService.getNodeTypeInfo('text-box').hasPorts).toBe(false);
       expect(nodeConfigurationService.getNodeTypeInfo('text-box').isTextbox).toBe(true);
-      
+
       expect(nodeConfigurationService.getNodeTypeInfo('process').hasPorts).toBe(true);
       expect(nodeConfigurationService.getNodeTypeInfo('process').isTextbox).toBe(false);
     });
@@ -141,7 +141,7 @@ describe('NodeService - Core Functionality Tests', () => {
       nodeTypes.forEach(({ type, expectedShape }) => {
         const x6Shape = getX6ShapeForNodeType(type);
         expect(x6Shape).toBe(expectedShape);
-        
+
         // Verify we can create nodes with these shapes
         const node = graph.addNode({
           id: `test-${type}`,
@@ -152,7 +152,7 @@ describe('NodeService - Core Functionality Tests', () => {
           height: 80,
           label: `Test ${type}`,
         });
-        
+
         expect(node).toBeDefined();
         expect(node.shape).toBe(expectedShape);
       });
@@ -169,7 +169,7 @@ describe('NodeService - Core Functionality Tests', () => {
       });
 
       const portConfig = nodeConfigurationService.getNodePorts(nodeInfo.type);
-      
+
       const node = graph.addNode({
         id: nodeInfo.id,
         shape: getX6ShapeForNodeType(nodeInfo.type),
@@ -183,7 +183,7 @@ describe('NodeService - Core Functionality Tests', () => {
 
       expect(node).toBeDefined();
       expect(node.getPorts()).toHaveLength(4);
-      
+
       // Verify port IDs match expectations
       const portIds = node.getPorts().map(port => port.id);
       expect(portIds).toEqual(['top', 'right', 'bottom', 'left']);
@@ -204,13 +204,13 @@ describe('NodeService - Core Functionality Tests', () => {
 
       const metadataRecord = nodeInfo.getMetadataAsRecord();
       expect(metadataRecord).toEqual({ key1: 'value1', key2: 'value2' });
-      
+
       // Test metadata array conversion
       const metadataArray = Object.entries(metadataRecord).map(([key, value]) => ({
         key,
-        value
+        value,
       }));
-      
+
       expect(metadataArray).toEqual([
         { key: 'key1', value: 'value1' },
         { key: 'key2', value: 'value2' },
@@ -278,7 +278,7 @@ describe('NodeService - Core Functionality Tests', () => {
         });
 
         expect(nodeInfo.zIndex).toBe(expectedZIndex);
-        
+
         // Simulate NodeService logic: nodeInfo.zIndex || getNodeZIndex(type)
         // Since nodeInfo.zIndex is always truthy (positive number), it should use nodeInfo.zIndex
         const x6NodeConfig = {
@@ -303,7 +303,7 @@ describe('NodeService - Core Functionality Tests', () => {
         angle: 0,
         attrs: {
           body: { fill: '#ffffff', stroke: '#000000', strokeWidth: 2 },
-          text: { text: 'Test Process With Zero ZIndex', fontSize: 12, fill: '#000000' }
+          text: { text: 'Test Process With Zero ZIndex', fontSize: 12, fill: '#000000' },
         },
         ports: { groups: {}, items: [] },
         data: [],
@@ -314,7 +314,9 @@ describe('NodeService - Core Functionality Tests', () => {
 
       // Simulate NodeService logic: since zIndex is 0 (falsy), should use type default
       const x6NodeConfig = {
-        zIndex: nodeInfoWithFalsyZIndex.zIndex || nodeConfigurationService.getNodeZIndex(nodeInfoWithFalsyZIndex.type),
+        zIndex:
+          nodeInfoWithFalsyZIndex.zIndex ||
+          nodeConfigurationService.getNodeZIndex(nodeInfoWithFalsyZIndex.type),
       };
 
       expect(x6NodeConfig.zIndex).toBe(10); // Uses type default for 'process'
@@ -334,7 +336,7 @@ describe('NodeService - Core Functionality Tests', () => {
         angle: 0,
         attrs: {
           body: { fill: '#ffffff', stroke: '#000000', strokeWidth: 2 },
-          text: { text: 'Test Process With Explicit ZIndex', fontSize: 12, fill: '#000000' }
+          text: { text: 'Test Process With Explicit ZIndex', fontSize: 12, fill: '#000000' },
         },
         ports: { groups: {}, items: [] },
         data: [],
@@ -342,13 +344,15 @@ describe('NodeService - Core Functionality Tests', () => {
 
       // The explicit zIndex should be preserved
       expect(nodeInfoWithExplicitZIndex.zIndex).toBe(15);
-      
+
       // Simulate NodeService logic: nodeInfo.zIndex || getNodeZIndex(type)
       // Since zIndex is 15 (truthy), should use 15
       const x6NodeConfig = {
-        zIndex: nodeInfoWithExplicitZIndex.zIndex || nodeConfigurationService.getNodeZIndex(nodeInfoWithExplicitZIndex.type),
+        zIndex:
+          nodeInfoWithExplicitZIndex.zIndex ||
+          nodeConfigurationService.getNodeZIndex(nodeInfoWithExplicitZIndex.type),
       };
-      
+
       expect(x6NodeConfig.zIndex).toBe(15); // Should use explicit zIndex, not default (10)
     });
 
@@ -374,7 +378,7 @@ describe('NodeService - Core Functionality Tests', () => {
           angle: 0,
           attrs: {
             body: { fill: '#ffffff', stroke: '#000000', strokeWidth: 2 },
-            text: { text: `Test ${type}`, fontSize: 12, fill: '#000000' }
+            text: { text: `Test ${type}`, fontSize: 12, fill: '#000000' },
           },
           ports: { groups: {}, items: [] },
           data: [],

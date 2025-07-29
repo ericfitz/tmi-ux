@@ -1,9 +1,9 @@
 /**
  * Server Connection Service
- * 
+ *
  * This service monitors the connection status to the configured API server.
  * It provides reactive streams for connection status and handles periodic health checks.
- * 
+ *
  * Key functionality:
  * - Monitors server connectivity through periodic health checks
  * - Provides reactive connection status (NOT_CONFIGURED, ERROR, CONNECTED)
@@ -22,15 +22,15 @@ import { LoggerService } from './logger.service';
 export enum ServerConnectionStatus {
   NOT_CONFIGURED = 'NOT_CONFIGURED',
   ERROR = 'ERROR',
-  CONNECTED = 'CONNECTED'
+  CONNECTED = 'CONNECTED',
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ServerConnectionService implements OnDestroy {
   private readonly _connectionStatus$ = new BehaviorSubject<ServerConnectionStatus>(
-    ServerConnectionStatus.NOT_CONFIGURED
+    ServerConnectionStatus.NOT_CONFIGURED,
   );
   private _healthCheckSubscription: Subscription | null = null;
   private readonly HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
@@ -40,7 +40,7 @@ export class ServerConnectionService implements OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     this.initializeConnectionMonitoring();
   }
@@ -77,7 +77,7 @@ export class ServerConnectionService implements OnDestroy {
     }
 
     this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
-    
+
     // Start periodic health checks
     this.startHealthChecks();
   }
@@ -88,9 +88,7 @@ export class ServerConnectionService implements OnDestroy {
   private isServerConfigured(): boolean {
     // Consider server not configured if apiUrl is empty, localhost with default port, or example URL
     const apiUrl = environment.apiUrl;
-    if (!apiUrl || 
-        apiUrl.includes('api.example.com') || 
-        apiUrl === 'http://localhost:8080/api') {
+    if (!apiUrl || apiUrl.includes('api.example.com') || apiUrl === 'http://localhost:8080/api') {
       return false;
     }
     return true;
@@ -123,9 +121,11 @@ export class ServerConnectionService implements OnDestroy {
         complete: () => {
           // Schedule next health check based on current status
           const nextDelay = this.getHealthCheckDelay();
-          this.logger.debug(`Scheduling next health check in ${nextDelay}ms (backoff: ${this._currentBackoffDelay}ms)`);
+          this.logger.debug(
+            `Scheduling next health check in ${nextDelay}ms (backoff: ${this._currentBackoffDelay}ms)`,
+          );
           this.scheduleNextHealthCheck(nextDelay);
-        }
+        },
       });
   }
 
@@ -135,9 +135,9 @@ export class ServerConnectionService implements OnDestroy {
   private performHealthCheck(): Observable<void> {
     // Use the root API endpoint as defined in tmi-openapi.json
     const statusEndpoint = environment.apiUrl.replace('/api', '');
-    
+
     return this.http.get<{ status: { code: string; time: string } }>(statusEndpoint).pipe(
-      map((response) => {
+      map(response => {
         if (response.status?.code === 'OK') {
           this.logger.debug('Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
@@ -157,7 +157,7 @@ export class ServerConnectionService implements OnDestroy {
         this._currentBackoffDelay = this.getNextBackoffDelay();
         // Return empty observable to continue the stream
         return new Observable<void>();
-      })
+      }),
     );
   }
 

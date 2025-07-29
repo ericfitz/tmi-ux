@@ -31,9 +31,7 @@ describe('ThreatModel Validation Integration', () => {
       owner: 'test@example.com',
       created_by: 'test@example.com',
       threat_model_framework: 'STRIDE',
-      authorization: [
-        { subject: 'test@example.com', role: 'owner' }
-      ]
+      authorization: [{ subject: 'test@example.com', role: 'owner' }],
     };
 
     const result = service.validate(validThreatModel);
@@ -46,7 +44,7 @@ describe('ThreatModel Validation Integration', () => {
 
   it('should detect missing required fields', () => {
     const invalidThreatModel = {
-      name: 'Test Threat Model'
+      name: 'Test Threat Model',
       // Missing required fields: id, created_at, modified_at, owner, created_by, threat_model_framework, authorization
     };
 
@@ -54,7 +52,7 @@ describe('ThreatModel Validation Integration', () => {
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
-    
+
     const requiredFieldErrors = result.errors.filter(e => e.code === 'FIELD_REQUIRED');
     expect(requiredFieldErrors.length).toBeGreaterThan(0);
   });
@@ -68,16 +66,16 @@ describe('ThreatModel Validation Integration', () => {
       owner: 'test@example.com',
       created_by: 'test@example.com',
       threat_model_framework: 'INVALID_FRAMEWORK',
-      authorization: 'not-an-array'
+      authorization: 'not-an-array',
     };
 
     const result = service.validate(invalidThreatModel);
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
-    
-    const typeErrors = result.errors.filter(e => 
-      e.code === 'INVALID_TYPE' || e.code === 'INVALID_ENUM_VALUE'
+
+    const typeErrors = result.errors.filter(
+      e => e.code === 'INVALID_TYPE' || e.code === 'INVALID_ENUM_VALUE',
     );
     expect(typeErrors.length).toBeGreaterThan(0);
   });
@@ -91,9 +89,7 @@ describe('ThreatModel Validation Integration', () => {
       owner: 'test@example.com',
       created_by: 'test@example.com',
       threat_model_framework: 'STRIDE',
-      authorization: [
-        { subject: 'test@example.com', role: 'owner' }
-      ],
+      authorization: [{ subject: 'test@example.com', role: 'owner' }],
       diagrams: [
         {
           id: 'diagram-1',
@@ -101,10 +97,8 @@ describe('ThreatModel Validation Integration', () => {
           type: 'DFD-1.0.0',
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
-          cells: [
-            { id: 'cell-1', vertex: true, value: 'Process' }
-          ]
-        }
+          cells: [{ id: 'cell-1', vertex: true, value: 'Process' }],
+        },
       ],
       threats: [
         {
@@ -116,16 +110,16 @@ describe('ThreatModel Validation Integration', () => {
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
           diagram_id: 'non-existent-diagram',
-          cell_id: 'non-existent-cell'
-        }
-      ]
+          cell_id: 'non-existent-cell',
+        },
+      ],
     };
 
     const result = service.validate(threatModelWithInvalidReferences);
 
     expect(result.valid).toBe(false);
-    const referenceErrors = result.errors.filter(e => 
-      e.code === 'INVALID_DIAGRAM_REFERENCE' || e.code === 'INVALID_CELL_REFERENCE'
+    const referenceErrors = result.errors.filter(
+      e => e.code === 'INVALID_DIAGRAM_REFERENCE' || e.code === 'INVALID_CELL_REFERENCE',
     );
     expect(referenceErrors.length).toBeGreaterThan(0);
   });
@@ -139,9 +133,7 @@ describe('ThreatModel Validation Integration', () => {
       owner: 'test@example.com',
       created_by: 'test@example.com',
       threat_model_framework: 'STRIDE',
-      authorization: [
-        { subject: 'test@example.com', role: 'owner' }
-      ],
+      authorization: [{ subject: 'test@example.com', role: 'owner' }],
       diagrams: [
         {
           id: 'diagram-1',
@@ -152,32 +144,32 @@ describe('ThreatModel Validation Integration', () => {
           cells: [
             { id: 'cell-1', vertex: true, edge: true }, // Invalid: both vertex and edge
             { id: 'cell-2', edge: true, source: 'cell-1', target: 'non-existent-cell' }, // Invalid target
-            { vertex: true, value: 'Process' } // Missing ID
-          ]
-        }
+            { vertex: true, value: 'Process' }, // Missing ID
+          ],
+        },
       ],
-      threats: []
+      threats: [],
     };
 
     const result = service.validate(threatModelWithInvalidDiagram);
 
     expect(result.valid).toBe(false);
-    const diagramErrors = result.errors.filter(e => 
-      e.code.includes('CELL') || e.code.includes('EDGE') || e.code === 'AMBIGUOUS_CELL_TYPE'
+    const diagramErrors = result.errors.filter(
+      e => e.code.includes('CELL') || e.code.includes('EDGE') || e.code === 'AMBIGUOUS_CELL_TYPE',
     );
     expect(diagramErrors.length).toBeGreaterThan(0);
   });
 
   it('should respect validation configuration', () => {
     const invalidThreatModel = {
-      name: 'Test'
+      name: 'Test',
       // Missing many required fields
     };
 
     const config: Partial<ValidationConfig> = {
       failFast: true,
       maxErrors: 2,
-      includeWarnings: false
+      includeWarnings: false,
     };
 
     const result = service.validate(invalidThreatModel, config);
@@ -195,18 +187,16 @@ describe('ThreatModel Validation Integration', () => {
       owner: 'test@example.com',
       created_by: 'test@example.com',
       threat_model_framework: 'STRIDE',
-      authorization: [
-        { subject: 'test@example.com', role: 'owner' }
-      ],
+      authorization: [{ subject: 'test@example.com', role: 'owner' }],
       diagrams: [
         {
           id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Diagram',
           type: 'UNSUPPORTED-TYPE', // This would fail diagram validation but not schema
           created_at: '2025-01-01T00:00:00Z',
-          modified_at: '2025-01-01T00:00:00Z'
-        }
-      ]
+          modified_at: '2025-01-01T00:00:00Z',
+        },
+      ],
     };
 
     const result = service.validateSchema(threatModel);
@@ -221,22 +211,20 @@ describe('ThreatModel Validation Integration', () => {
     const threatModel = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test Threat Model',
-      authorization: [
-        { subject: 'test@example.com', role: 'owner' }
-      ],
+      authorization: [{ subject: 'test@example.com', role: 'owner' }],
       diagrams: [
         {
           id: 'diagram-1',
-          name: 'Test Diagram'
-        }
+          name: 'Test Diagram',
+        },
       ],
       threats: [
         {
           id: 'threat-1',
           threat_model_id: 'wrong-id', // Reference error
-          diagram_id: 'diagram-1'
-        }
-      ]
+          diagram_id: 'diagram-1',
+        },
+      ],
     };
 
     const result = service.validateReferences(threatModel);
@@ -248,7 +236,7 @@ describe('ThreatModel Validation Integration', () => {
 
   it('should list supported diagram types', () => {
     const supportedTypes = service.getSupportedDiagramTypes();
-    
+
     expect(supportedTypes).toContain('DFD-1.0.0');
     expect(Array.isArray(supportedTypes)).toBe(true);
   });
@@ -260,11 +248,11 @@ describe('ThreatModel Validation Integration', () => {
     expect(result).toHaveProperty('errors');
     expect(result).toHaveProperty('warnings');
     expect(result).toHaveProperty('metadata');
-    
+
     expect(result.metadata).toHaveProperty('timestamp');
     expect(result.metadata).toHaveProperty('validatorVersion');
     expect(result.metadata).toHaveProperty('duration');
-    
+
     expect(typeof result.valid).toBe('boolean');
     expect(Array.isArray(result.errors)).toBe(true);
     expect(Array.isArray(result.warnings)).toBe(true);
@@ -273,13 +261,13 @@ describe('ThreatModel Validation Integration', () => {
   it('should include proper error context', () => {
     const invalidThreatModel = {
       id: 'invalid-uuid',
-      name: 'Test'
+      name: 'Test',
     };
 
     const result = service.validate(invalidThreatModel);
 
     expect(result.errors.length).toBeGreaterThan(0);
-    
+
     const uuidError = result.errors.find(e => e.code === 'INVALID_TYPE');
     expect(uuidError).toBeDefined();
     expect(uuidError?.path).toBeDefined();
@@ -299,11 +287,11 @@ describe('ThreatModel Validation Integration', () => {
       issue_url: 'https://example.com/issues/123',
       authorization: [
         { subject: 'owner@example.com', role: 'owner' },
-        { subject: 'user@example.com', role: 'writer' }
+        { subject: 'user@example.com', role: 'writer' },
       ],
       metadata: [
         { key: 'version', value: '1.0' },
-        { key: 'status', value: 'active' }
+        { key: 'status', value: 'active' },
       ],
       documents: [
         {
@@ -311,10 +299,8 @@ describe('ThreatModel Validation Integration', () => {
           name: 'Architecture Document',
           url: 'https://example.com/docs/arch.pdf',
           description: 'System architecture documentation',
-          metadata: [
-            { key: 'type', value: 'architecture' }
-          ]
-        }
+          metadata: [{ key: 'type', value: 'architecture' }],
+        },
       ],
       diagrams: [
         {
@@ -324,11 +310,27 @@ describe('ThreatModel Validation Integration', () => {
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
           cells: [
-            { id: 'process-1', vertex: true, value: 'Web Server', geometry: { x: 100, y: 100, width: 120, height: 60 } },
-            { id: 'store-1', vertex: true, value: 'Database', geometry: { x: 300, y: 100, width: 100, height: 60 } },
-            { id: 'flow-1', edge: true, source: 'process-1', target: 'store-1', value: 'Query Data' }
-          ]
-        }
+            {
+              id: 'process-1',
+              vertex: true,
+              value: 'Web Server',
+              geometry: { x: 100, y: 100, width: 120, height: 60 },
+            },
+            {
+              id: 'store-1',
+              vertex: true,
+              value: 'Database',
+              geometry: { x: 300, y: 100, width: 100, height: 60 },
+            },
+            {
+              id: 'flow-1',
+              edge: true,
+              source: 'process-1',
+              target: 'store-1',
+              value: 'Query Data',
+            },
+          ],
+        },
       ],
       threats: [
         {
@@ -346,11 +348,9 @@ describe('ThreatModel Validation Integration', () => {
           priority: 'Critical',
           mitigated: false,
           status: 'Open',
-          metadata: [
-            { key: 'CVSS', value: '8.5' }
-          ]
-        }
-      ]
+          metadata: [{ key: 'CVSS', value: '8.5' }],
+        },
+      ],
     };
 
     const result = service.validate(complexThreatModel);

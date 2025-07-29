@@ -1,5 +1,9 @@
 <h2 mat-dialog-title>
-  {{ mode === 'create' ? ('threatModels.createNewSourceCode' | transloco) : ('threatModels.editSourceCode' | transloco) }}
+  {{
+    mode === 'create'
+      ? ('threatModels.createNewSourceCode' | transloco)
+      : ('threatModels.editSourceCode' | transloco)
+  }}
 </h2>
 <mat-dialog-content>
   <form [formGroup]="sourceCodeForm" class="dialog-form">
@@ -54,7 +58,7 @@
 
       <div class="parameters-section">
         <h3>{{ 'threatModels.sourceCodeParameters' | transloco }}</h3>
-        
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.sourceCodeRefType' | transloco }}</mat-label>
           <mat-select formControlName="refType">
@@ -89,7 +93,12 @@
   <button mat-button (click)="onCancel()">
     {{ 'common.cancel' | transloco }}
   </button>
-  <button mat-raised-button color="primary" [disabled]="sourceCodeForm.invalid" (click)="onSubmit()">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="sourceCodeForm.invalid"
+    (click)="onSubmit()"
+  >
     {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
   </button>
 </mat-dialog-actions>

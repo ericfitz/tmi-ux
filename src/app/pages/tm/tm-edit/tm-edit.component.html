@@ -152,14 +152,11 @@
               <mat-label [transloco]="'threatModels.threatModelFramework'"
                 >Threat Model Framework</mat-label
               >
-              <mat-select 
+              <mat-select
                 formControlName="threat_model_framework"
                 [attr.aria-label]="'threatModels.threatModelFramework' | transloco"
               >
-                <mat-option 
-                  *ngFor="let framework of frameworks" 
-                  [value]="framework.name"
-                >
+                <mat-option *ngFor="let framework of frameworks" [value]="framework.name">
                   {{ framework.name }}
                 </mat-option>
               </mat-select>
@@ -175,35 +172,31 @@
 
             <!-- Issue URL field with external edit button -->
             <div class="issue-url-container">
-              <mat-form-field 
-                appearance="outline" 
-                class="issue-url-field"
-                floatLabel="always"
-              >
+              <mat-form-field appearance="outline" class="issue-url-field" floatLabel="always">
                 <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
-                
+
                 <!-- Use ng-container with if-else to ensure exactly one control is always present -->
                 <ng-container *ngIf="shouldShowIssueUrlHyperlink(); else inputMode">
-                  <input 
+                  <input
                     matInput
                     readonly
                     [value]="initialIssueUrlValue"
                     class="url-view-content"
                     (click)="openUrlInNewTab(initialIssueUrlValue)"
-                    style="cursor: pointer; color: #1976d2; text-decoration: underline;"
+                    style="cursor: pointer; color: #1976d2; text-decoration: underline"
                   />
                 </ng-container>
-                
+
                 <ng-template #inputMode>
-                  <input 
-                    matInput 
-                    formControlName="issue_url" 
+                  <input
+                    matInput
+                    formControlName="issue_url"
                     type="url"
                     (blur)="onIssueUrlBlur()"
                   />
                 </ng-template>
               </mat-form-field>
-              
+
               <!-- Edit button outside the form field -->
               <button
                 mat-icon-button
@@ -241,8 +234,8 @@
               class="diagram-item"
               [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
             >
-              <mat-icon 
-                matListItemIcon 
+              <mat-icon
+                matListItemIcon
                 class="material-symbols-outlined"
                 [matTooltip]="getDiagramTooltip(diagram)"
                 matTooltipPosition="above"
@@ -298,16 +291,13 @@
         </mat-card-header>
         <mat-card-content>
           <mat-list>
-            <mat-list-item
-              *ngFor="let document of threatModel.documents"
-              class="document-item"
-            >
+            <mat-list-item *ngFor="let document of threatModel.documents" class="document-item">
               <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
               <div matListItemTitle>
-                <a 
-                  [href]="document.url" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  [href]="document.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="document-name-link"
                   [matTooltip]="getDocumentTooltip(document)"
                   matTooltipPosition="above"
@@ -371,10 +361,10 @@
             >
               <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
               <div matListItemTitle>
-                <a 
-                  [href]="sourceCode.url" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  [href]="sourceCode.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="source-code-name-link"
                   [matTooltip]="getSourceCodeTooltip(sourceCode)"
                   matTooltipPosition="above"
@@ -442,7 +432,7 @@
               <span class="threat-severity" [class]="'severity-' + threat.severity.toLowerCase()">
                 {{ threat.severity }}
               </span>
-              <span 
+              <span
                 class="threat-name"
                 [matTooltip]="threat.description"
                 matTooltipClass="threat-description-tooltip"
@@ -450,11 +440,11 @@
               >
                 {{ threat.name }}
               </span>
-              <a 
-                *ngIf="threat.issue_url" 
-                [href]="threat.issue_url" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                *ngIf="threat.issue_url"
+                [href]="threat.issue_url"
+                target="_blank"
+                rel="noopener noreferrer"
                 class="threat-issue-url"
                 (click)="$event.stopPropagation()"
                 [matTooltip]="threat.issue_url"

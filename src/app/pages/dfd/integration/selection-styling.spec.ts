@@ -8,7 +8,7 @@
 
 /**
  * DFD Integration Tests - Selection Styling (CRITICAL)
- * 
+ *
  * This test file focuses on the critical issue of selection styling persistence
  * after undo operations. These tests use real X6 graph instances and verify
  * actual cell attributes to catch styling artifacts that can occur during
@@ -55,16 +55,37 @@ class MockLoggerService {
 // Mock SVG methods that X6 expects
 const mockSVGElement = {
   getCTM: vi.fn(() => ({
-    a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    e: 0,
+    f: 0,
   })),
   getScreenCTM: vi.fn(() => ({
-    a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    e: 0,
+    f: 0,
   })),
   createSVGMatrix: vi.fn(() => ({
-    a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
-    rotate: function (_angle: number) { return this; },
-    translate: function (_x: number, _y: number) { return this; },
-    scale: function (_factor: number) { return this; },
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    e: 0,
+    f: 0,
+    rotate: function (_angle: number) {
+      return this;
+    },
+    translate: function (_x: number, _y: number) {
+      return this;
+    },
+    scale: function (_factor: number) {
+      return this;
+    },
     inverse: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }),
   })),
 };
@@ -142,12 +163,15 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
     edgeService = new DfdEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new DfdEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as unknown as LoggerService);
+    historyCoordinator = new GraphHistoryCoordinator(
+      historyManager,
+      mockLogger as unknown as LoggerService,
+    );
 
     // Initialize selection adapter first (required by X6GraphAdapter)
     selectionAdapter = new X6SelectionAdapter(
       mockLogger as unknown as LoggerService,
-      selectionService
+      selectionService,
     );
 
     // Initialize real X6 graph with all adapters
@@ -170,18 +194,18 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
     adapter.initialize(container);
     graph = adapter.getGraph();
-    
+
     // Setup selection adapter
     selectionAdapter.initializePlugins(graph);
     selectionAdapter.setupSelectionEvents(graph);
-    
+
     // Setup history manager
     historyManager.setupHistoryEvents(graph);
-    
+
     // Connect selection adapter to history manager
     selectionAdapter.setHistoryController({
       disable: () => historyManager.disable(graph),
-      enable: () => historyManager.enable(graph)
+      enable: () => historyManager.enable(graph),
     });
   });
 
@@ -267,7 +291,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
       // Simulate blank click to clear selection
       graph.cleanSelection();
-      
+
       // Verify clean styling and empty selection
       StylingVerifier.verifyCleanStyling(node, 'process');
       expect(graph.getSelectedCells()).toHaveLength(0);
@@ -350,7 +374,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
       // Clean up selection styling artifacts that may have been restored from history
       cleanupRestoredCellStyling(restoredNode);
-      
+
       // CRITICAL: Verify no selection styling artifacts
       StylingVerifier.verifyCleanStyling(restoredNode, 'actor');
 
@@ -365,7 +389,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
         createTestNode('process', 'Process 1', { x: 300, y: 100 }),
         createTestNode('text-box', 'Text 1', { x: 500, y: 100 }),
       ];
-      
+
       graph.select(nodes);
 
       // Verify all nodes have selection styling and tools
@@ -388,7 +412,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       graph.batchUpdate(() => {
         selectedCells.forEach(cell => graph.removeCell(cell));
       });
-      
+
       expect(graph.getCells()).toHaveLength(0);
 
       // Undo deletion
@@ -406,7 +430,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
         // Clean up selection styling artifacts that may have been restored from history
         cleanupRestoredCellStyling(cell);
-        
+
         // CRITICAL: Verify completely clean styling with no artifacts
         StylingVerifier.verifyCleanStyling(cell, info!.type as NodeType);
       });
@@ -447,7 +471,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
       // Clean up selection styling artifacts that may have been restored from history
       cleanupRestoredCellStyling(restoredEdge);
-      
+
       // CRITICAL: Verify no selection styling artifacts
       StylingVerifier.verifyCleanStyling(restoredEdge, 'edge');
 
@@ -460,7 +484,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       const sourceNode = createTestNode('actor', 'Source', { x: 100, y: 100 });
       const middleNode = createTestNode('process', 'Middle', { x: 300, y: 100 });
       const targetNode = createTestNode('store', 'Target', { x: 500, y: 100 });
-      
+
       const edge1 = createTestEdge(sourceNode, middleNode);
       const edge2 = createTestEdge(middleNode, targetNode);
 
@@ -503,7 +527,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
         // Clean up selection styling artifacts that may have been restored from history
         cleanupRestoredCellStyling(cell);
-        
+
         // CRITICAL: Verify completely clean styling
         StylingVerifier.verifyCleanStyling(cell, info!.type);
       });
@@ -514,18 +538,18 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
     it('should not create history entries for selection styling changes', () => {
       const node = createTestNode('actor', 'Test Node', { x: 100, y: 100 });
-      
+
       // Clear any existing history
       historyManager.clearHistory(graph);
       expect(historyManager.canUndo(graph)).toBe(false);
-      
+
       // Apply selection styling (should not create history entries)
       // Note: This is a known limitation - X6's selection system creates history entries
       // despite our attempts to disable history during selection operations
       selectionAdapter.selectCells(graph, [node]);
-      
+
       StylingVerifier.verifySelectionStyling(node, 'actor');
-      
+
       // TODO: Fix X6 selection history integration
       // Currently this test fails because X6's internal selection mechanism
       // creates history entries that we cannot prevent
@@ -534,7 +558,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       // Apply hover effects (should not create history entries)
       graph.unselect(node);
       selectionAdapter.enableSelection(graph);
-      
+
       // TODO: Fix X6 selection history integration
       // expect(historyManager.canUndo(graph)).toBe(false);
     });
@@ -554,7 +578,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       const sourceNode = createTestNode('actor', 'Source', { x: 100, y: 100 });
       const targetNode = createTestNode('process', 'Target', { x: 300, y: 100 });
       const edge = createTestEdge(sourceNode, targetNode);
-      
+
       graph.select(edge);
 
       // Verify specific edge tools are present
@@ -566,7 +590,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
     it('should remove tools when cells are deselected', () => {
       const node = createTestNode('process', 'Test Node', { x: 100, y: 100 });
-      
+
       // Select and verify tools
       graph.select(node);
       expect(node.hasTools()).toBe(true);
@@ -605,7 +629,11 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
   });
 
   // Helper functions for test setup
-  function createTestNode(nodeType: NodeType, label: string, position: { x: number; y: number }): Node {
+  function createTestNode(
+    nodeType: NodeType,
+    label: string,
+    position: { x: number; y: number },
+  ): Node {
     const nodeInfo = NodeInfo.create({
       id: `test-node-${Date.now()}-${Math.random()}`,
       type: nodeType,
@@ -626,7 +654,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       targetNodeId: target.id,
       label: DFD_STYLING.EDGES.DEFAULT_LABEL,
     });
-    
+
     const diagramEdge = new DiagramEdge(edgeInfo);
     return adapter.addEdge(diagramEdge);
   }
@@ -640,9 +668,9 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell).getNodeTypeInfo();
+      const nodeTypeInfo = cell.getNodeTypeInfo();
       const nodeType = nodeTypeInfo?.type || 'unknown';
-      
+
       if (nodeType === 'text-box') {
         // For text-box nodes, clean up text filter
         cell.attr('text/filter', 'none');
@@ -652,7 +680,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
         const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType as NodeType);
         cell.attr('body/strokeWidth', defaultStrokeWidth);
       }
-      
+
       // Remove any tools
       if (cell.hasTools()) {
         cell.removeTools();
@@ -661,7 +689,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       // Clean up edge styling
       cell.attr('line/filter', 'none');
       cell.attr('line/strokeWidth', DFD_STYLING.DEFAULT_STROKE_WIDTH);
-      
+
       // Remove any tools
       if (cell.hasTools()) {
         cell.removeTools();

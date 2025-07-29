@@ -25,9 +25,9 @@ export * from './threat-model-validator.service';
 export { ThreatModelValidatorService } from './threat-model-validator.service';
 export { ValidationUtils } from './base-validator';
 export { DiagramValidatorFactory } from './diagram-validators';
-export type { 
-  ValidationResult, 
-  ValidationError, 
+export type {
+  ValidationResult,
+  ValidationError,
   ValidationConfig,
-  DiagramValidator 
+  DiagramValidator,
 } from './types';

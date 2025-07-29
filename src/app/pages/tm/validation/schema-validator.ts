@@ -21,7 +21,12 @@ export class SchemaValidator extends BaseValidator {
     { field: 'modified_at', required: true, type: 'date-time', maxLength: 24 },
     { field: 'owner', required: true, type: 'string' },
     { field: 'created_by', required: true, type: 'string', maxLength: 256 },
-    { field: 'threat_model_framework', required: true, type: 'string', enum: ['CIA', 'STRIDE', 'LINDDUN', 'DIE', 'PLOT4ai'] },
+    {
+      field: 'threat_model_framework',
+      required: true,
+      type: 'string',
+      enum: ['CIA', 'STRIDE', 'LINDDUN', 'DIE', 'PLOT4ai'],
+    },
     { field: 'authorization', required: true, type: 'array' },
 
     // Optional fields
@@ -57,10 +62,15 @@ export class SchemaValidator extends BaseValidator {
     { field: 'threat_model_id', required: true, type: 'uuid' },
     { field: 'name', required: true, type: 'string' },
     { field: 'threat_type', required: true, type: 'string' },
-    { field: 'severity', required: true, type: 'string', enum: ['Unknown', 'None', 'Low', 'Medium', 'High', 'Critical'] },
+    {
+      field: 'severity',
+      required: true,
+      type: 'string',
+      enum: ['Unknown', 'None', 'Low', 'Medium', 'High', 'Critical'],
+    },
     { field: 'created_at', required: true, type: 'date-time' },
     { field: 'modified_at', required: true, type: 'date-time' },
-    
+
     // Optional fields
     { field: 'description', required: false, type: 'string' },
     { field: 'diagram_id', required: false, type: 'uuid' },
@@ -79,7 +89,7 @@ export class SchemaValidator extends BaseValidator {
     { field: 'type', required: true, type: 'string' },
     { field: 'created_at', required: true, type: 'date-time' },
     { field: 'modified_at', required: true, type: 'date-time' },
-    
+
     // Optional fields
     { field: 'description', required: false, type: 'string' },
     { field: 'metadata', required: false, type: 'array' },
@@ -93,11 +103,13 @@ export class SchemaValidator extends BaseValidator {
     this.clearErrors();
 
     if (!threatModel || typeof threatModel !== 'object') {
-      this.addError(ValidationUtils.createError(
-        'INVALID_OBJECT',
-        'ThreatModel must be a valid object',
-        context.currentPath
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_OBJECT',
+          'ThreatModel must be a valid object',
+          context.currentPath,
+        ),
+      );
       return this.getResults().errors;
     }
 
@@ -121,11 +133,13 @@ export class SchemaValidator extends BaseValidator {
     if (!authorization) return;
 
     if (!Array.isArray(authorization)) {
-      this.addError(ValidationUtils.createError(
-        'INVALID_TYPE',
-        'Authorization must be an array',
-        ValidationUtils.buildPath(context.currentPath, 'authorization')
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_TYPE',
+          'Authorization must be an array',
+          ValidationUtils.buildPath(context.currentPath, 'authorization'),
+        ),
+      );
       return;
     }
 
@@ -136,18 +150,20 @@ export class SchemaValidator extends BaseValidator {
         const itemContext = { ...context, currentPath: itemPath };
         this.validateFields(item, SchemaValidator.AUTHORIZATION_RULES, itemContext);
         return [];
-      }
+      },
     );
 
     // Additional validation: ensure at least one owner exists
     const owners = authorization.filter((auth: any) => auth?.role === 'owner');
     if (owners.length === 0) {
-      this.addError(ValidationUtils.createError(
-        'NO_OWNER',
-        'ThreatModel must have at least one owner',
-        ValidationUtils.buildPath(context.currentPath, 'authorization'),
-        'error'
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'NO_OWNER',
+          'ThreatModel must have at least one owner',
+          ValidationUtils.buildPath(context.currentPath, 'authorization'),
+          'error',
+        ),
+      );
     }
   }
 
@@ -158,11 +174,13 @@ export class SchemaValidator extends BaseValidator {
     if (!metadata) return;
 
     if (!Array.isArray(metadata)) {
-      this.addError(ValidationUtils.createError(
-        'INVALID_TYPE',
-        'Metadata must be an array',
-        ValidationUtils.buildPath(context.currentPath, 'metadata')
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_TYPE',
+          'Metadata must be an array',
+          ValidationUtils.buildPath(context.currentPath, 'metadata'),
+        ),
+      );
       return;
     }
 
@@ -173,19 +191,21 @@ export class SchemaValidator extends BaseValidator {
         const itemContext = { ...context, currentPath: itemPath };
         this.validateFields(item, SchemaValidator.METADATA_RULES, itemContext);
         return [];
-      }
+      },
     );
 
     // Check for duplicate keys
     const keys = metadata.map((item: any) => item?.key).filter(Boolean);
     const duplicateKeys = keys.filter((key: string, index: number) => keys.indexOf(key) !== index);
     if (duplicateKeys.length > 0) {
-      this.addError(ValidationUtils.createError(
-        'DUPLICATE_METADATA_KEYS',
-        `Duplicate metadata keys found: ${duplicateKeys.join(', ')}`,
-        ValidationUtils.buildPath(context.currentPath, 'metadata'),
-        'warning'
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'DUPLICATE_METADATA_KEYS',
+          `Duplicate metadata keys found: ${duplicateKeys.join(', ')}`,
+          ValidationUtils.buildPath(context.currentPath, 'metadata'),
+          'warning',
+        ),
+      );
     }
   }
 
@@ -196,11 +216,13 @@ export class SchemaValidator extends BaseValidator {
     if (!documents) return;
 
     if (!Array.isArray(documents)) {
-      this.addError(ValidationUtils.createError(
-        'INVALID_TYPE',
-        'Documents must be an array',
-        ValidationUtils.buildPath(context.currentPath, 'documents')
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_TYPE',
+          'Documents must be an array',
+          ValidationUtils.buildPath(context.currentPath, 'documents'),
+        ),
+      );
       return;
     }
 
@@ -210,14 +232,14 @@ export class SchemaValidator extends BaseValidator {
       (item, index, itemPath) => {
         const itemContext = { ...context, currentPath: itemPath };
         this.validateFields(item, SchemaValidator.DOCUMENT_RULES, itemContext);
-        
+
         // Validate nested metadata if present
         if (item?.metadata) {
           this.validateMetadataArray(item.metadata, itemContext);
         }
-        
+
         return [];
-      }
+      },
     );
   }
 
@@ -228,11 +250,13 @@ export class SchemaValidator extends BaseValidator {
     if (!threats) return;
 
     if (!Array.isArray(threats)) {
-      this.addError(ValidationUtils.createError(
-        'INVALID_TYPE',
-        'Threats must be an array',
-        ValidationUtils.buildPath(context.currentPath, 'threats')
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_TYPE',
+          'Threats must be an array',
+          ValidationUtils.buildPath(context.currentPath, 'threats'),
+        ),
+      );
       return;
     }
 
@@ -242,24 +266,30 @@ export class SchemaValidator extends BaseValidator {
       (item, index, itemPath) => {
         const itemContext = { ...context, currentPath: itemPath };
         this.validateFields(item, SchemaValidator.THREAT_RULES, itemContext);
-        
+
         // Validate nested metadata if present
         if (item?.metadata) {
           this.validateMetadataArray(item.metadata, itemContext);
         }
 
         // Additional validation: threat_model_id should match the parent threat model
-        if (item?.threat_model_id && (context.object as { id?: string })?.id && item.threat_model_id !== (context.object as { id?: string }).id) {
-          this.addError(ValidationUtils.createError(
-            'THREAT_MODEL_ID_MISMATCH',
-            `Threat threat_model_id '${item.threat_model_id}' does not match parent ThreatModel id '${(context.object as { id?: string }).id}'`,
-            ValidationUtils.buildPath(itemPath, 'threat_model_id'),
-            'error'
-          ));
+        if (
+          item?.threat_model_id &&
+          (context.object as { id?: string })?.id &&
+          item.threat_model_id !== (context.object as { id?: string }).id
+        ) {
+          this.addError(
+            ValidationUtils.createError(
+              'THREAT_MODEL_ID_MISMATCH',
+              `Threat threat_model_id '${item.threat_model_id}' does not match parent ThreatModel id '${(context.object as { id?: string }).id}'`,
+              ValidationUtils.buildPath(itemPath, 'threat_model_id'),
+              'error',
+            ),
+          );
         }
-        
+
         return [];
-      }
+      },
     );
   }
 
@@ -270,11 +300,13 @@ export class SchemaValidator extends BaseValidator {
     if (!diagrams) return;
 
     if (!Array.isArray(diagrams)) {
-      this.addError(ValidationUtils.createError(
-        'INVALID_TYPE',
-        'Diagrams must be an array',
-        ValidationUtils.buildPath(context.currentPath, 'diagrams')
-      ));
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_TYPE',
+          'Diagrams must be an array',
+          ValidationUtils.buildPath(context.currentPath, 'diagrams'),
+        ),
+      );
       return;
     }
 
@@ -284,14 +316,14 @@ export class SchemaValidator extends BaseValidator {
       (item, index, itemPath) => {
         const itemContext = { ...context, currentPath: itemPath };
         this.validateFields(item, SchemaValidator.DIAGRAM_RULES, itemContext);
-        
+
         // Validate nested metadata if present
         if (item?.metadata) {
           this.validateMetadataArray(item.metadata, itemContext);
         }
-        
+
         return [];
-      }
+      },
     );
   }
 }

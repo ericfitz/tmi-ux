@@ -1,9 +1,9 @@
 /**
  * Logging Service
- * 
+ *
  * This service provides centralized logging functionality for the entire application.
  * It supports configurable log levels and component-specific debug logging.
- * 
+ *
  * Key functionality:
  * - Provides standardized logging with ISO8601 timestamps
  * - Supports configurable log levels (DEBUG, INFO, WARNING, ERROR)

@@ -21,7 +21,6 @@ import { AuthError } from '../models/auth.models';
  */
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  
   // Public endpoints that don't require authentication
   private readonly publicEndpoints = [
     '/',
@@ -32,7 +31,7 @@ export class JwtInterceptor implements HttpInterceptor {
     '/auth/token',
     '/auth/refresh',
     '/auth/authorize/*',
-    '/auth/exchange/*'
+    '/auth/exchange/*',
   ];
 
   constructor(
@@ -60,12 +59,12 @@ export class JwtInterceptor implements HttpInterceptor {
               Authorization: `Bearer ${token.token}`,
             },
           });
-          
+
           // Log the complete request details with component-specific debug logging
           this.logApiRequest(tokenizedRequest);
-          
+
           return next.handle(tokenizedRequest).pipe(
-            tap((event) => {
+            tap(event => {
               if (event instanceof HttpResponse) {
                 this.logApiResponse(tokenizedRequest, event);
               }
@@ -78,7 +77,7 @@ export class JwtInterceptor implements HttpInterceptor {
             return this.handleUnauthorizedErrorWithRefresh(request, next);
           }
           return this.handleError(error, request);
-        })
+        }),
       );
     }
 
@@ -87,9 +86,9 @@ export class JwtInterceptor implements HttpInterceptor {
     if (this.isApiRequest(request.url)) {
       this.logApiRequest(request);
     }
-    
+
     return next.handle(request).pipe(
-      tap((event) => {
+      tap(event => {
         if (event instanceof HttpResponse && this.isApiRequest(request.url)) {
           this.logApiResponse(request, event);
         }
@@ -124,12 +123,12 @@ export class JwtInterceptor implements HttpInterceptor {
 
     // Extract the path from the API URL
     let path = url.replace(environment.apiUrl, '');
-    
+
     // If path is empty (root request), treat it as "/"
     if (path === '') {
       path = '/';
     }
-    
+
     return this.publicEndpoints.some(endpoint => {
       // Handle exact matches and wildcard matches (for paths like /auth/authorize/* and /auth/exchange/*)
       if (endpoint.endsWith('/*')) {
@@ -139,7 +138,6 @@ export class JwtInterceptor implements HttpInterceptor {
       return path === endpoint || path.startsWith(endpoint + '/');
     });
   }
-
 
   /**
    * Log API request details with secret redaction
@@ -206,7 +204,7 @@ export class JwtInterceptor implements HttpInterceptor {
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
       const isHeader = key.toLowerCase() === 'authorization';
-      
+
       // Check if this key contains sensitive information
       if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
         if (typeof value === 'string' && value.length > 0) {
@@ -264,7 +262,9 @@ export class JwtInterceptor implements HttpInterceptor {
       status: response.status,
       statusText: response.statusText,
       headers: this.redactSecrets(headers),
-      body: response.body ? this.redactSecrets(response.body as Record<string, unknown>) : undefined,
+      body: response.body
+        ? this.redactSecrets(response.body as Record<string, unknown>)
+        : undefined,
     });
   }
 
@@ -276,8 +276,8 @@ export class JwtInterceptor implements HttpInterceptor {
    * @returns Observable of the retried request or error
    */
   private handleUnauthorizedErrorWithRefresh(
-    request: HttpRequest<unknown>, 
-    next: HttpHandler
+    request: HttpRequest<unknown>,
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     this.logger.warn('Received 401 Unauthorized - attempting reactive token refresh');
 
@@ -285,7 +285,7 @@ export class JwtInterceptor implements HttpInterceptor {
     return this.authService.getValidToken().pipe(
       switchMap(newToken => {
         this.logger.info('Token refresh successful - retrying original request');
-        
+
         // Clone the original request with the new token
         const retryRequest = request.clone({
           setHeaders: {
@@ -298,19 +298,19 @@ export class JwtInterceptor implements HttpInterceptor {
 
         // Retry the original request with new token
         return next.handle(retryRequest).pipe(
-          tap((event) => {
+          tap(event => {
             if (event instanceof HttpResponse) {
               this.logApiResponse(retryRequest, event);
             }
-          })
+          }),
         );
       }),
-      catchError((refreshError) => {
+      catchError(refreshError => {
         // Token refresh failed - logout and redirect
         this.logger.error('Token refresh failed during reactive refresh', refreshError);
         this.handleUnauthorizedError();
         return throwError(() => refreshError as Error);
-      })
+      }),
     );
   }
 
@@ -350,7 +350,11 @@ export class JwtInterceptor implements HttpInterceptor {
       };
     } else {
       // Server-side error
-      errorMessage = `Server Error: ${error.status} ${error.statusText} for ${request.method} ${request.url}`;
+      const status = error.status || 'Unknown';
+      const statusText = error.statusText || 'Unknown Error';
+      const method = request?.method || 'Unknown';
+      const url = request?.url || 'Unknown URL';
+      errorMessage = `Server Error: ${status} ${statusText} for ${method} ${url}`;
 
       // Create auth error based on status code
       switch (error.status) {

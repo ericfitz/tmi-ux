@@ -1,6 +1,6 @@
 /**
  * Shared X6 Tool Configurations for DFD Components
- * 
+ *
  * These constants define the standard tool configurations used across
  * the DFD component infrastructure for consistent visual feedback and
  * interaction behavior.

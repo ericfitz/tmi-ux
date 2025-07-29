@@ -1,6 +1,6 @@
 /**
  * Styling Verification Helpers for DFD Integration Tests
- * 
+ *
  * This module provides comprehensive styling verification utilities for testing
  * DFD graph components with real X6 objects. All verification uses dynamic
  * constants rather than hardcoded values to ensure maintainability.
@@ -24,11 +24,11 @@ export class StylingVerifier {
     } else {
       this.verifyCleanNodeStyling(cell as Node, nodeType);
     }
-    
+
     // Verify no tools are present
     expect(cell.hasTools()).toBe(false);
   }
-  
+
   /**
    * Verify a node has clean default styling
    */
@@ -37,11 +37,11 @@ export class StylingVerifier {
     const expectedStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType);
     const expectedStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType);
     const expectedFill = DFD_STYLING_HELPERS.getDefaultFill(nodeType);
-    
+
     expect(node.attr('body/stroke')).toBe(expectedStroke);
     expect(node.attr('body/strokeWidth')).toBe(expectedStrokeWidth);
     expect(node.attr('body/fill')).toBe(expectedFill);
-    
+
     // Verify no filter effects based on node type
     if (nodeType === 'text-box') {
       // Verify no text filter effects
@@ -50,13 +50,15 @@ export class StylingVerifier {
       // Verify no body filter effects
       expect(node.attr('body/filter')).toBeOneOf(['none', undefined, null, '']);
     }
-    
+
     // Verify security boundary specific styling
     if (nodeType === 'security-boundary') {
-      expect(node.attr('body/strokeDasharray')).toBe(DFD_STYLING.NODES.SECURITY_BOUNDARY.STROKE_DASHARRAY);
+      expect(node.attr('body/strokeDasharray')).toBe(
+        DFD_STYLING.NODES.SECURITY_BOUNDARY.STROKE_DASHARRAY,
+      );
     }
   }
-  
+
   /**
    * Verify an edge has clean default styling
    */
@@ -64,11 +66,11 @@ export class StylingVerifier {
     // Verify default edge styling
     expect(edge.attr('line/stroke')).toBe(DFD_STYLING.EDGES.DEFAULT_STROKE);
     expect(edge.attr('line/strokeWidth')).toBe(DFD_STYLING.DEFAULT_STROKE_WIDTH);
-    
+
     // Verify no filter effects
     expect(edge.attr('line/filter')).toBeOneOf(['none', undefined, null, '']);
   }
-  
+
   /**
    * Verify a cell has correct selection styling applied
    */
@@ -79,13 +81,13 @@ export class StylingVerifier {
       this.verifyNodeSelectionStyling(cell as Node, nodeType);
     }
   }
-  
+
   /**
    * Verify a node has correct selection styling
    */
   static verifyNodeSelectionStyling(node: Node, nodeType: NodeType): void {
     const expectedFilter = DFD_STYLING_HELPERS.getSelectionFilter(nodeType);
-    
+
     if (nodeType === 'text-box') {
       // Text-box nodes apply selection effects to text element
       expect(node.attr('text/filter')).toBe(expectedFilter);
@@ -95,7 +97,7 @@ export class StylingVerifier {
       expect(node.attr('body/strokeWidth')).toBe(DFD_STYLING.SELECTION.STROKE_WIDTH);
     }
   }
-  
+
   /**
    * Verify an edge has correct selection styling
    */
@@ -104,13 +106,13 @@ export class StylingVerifier {
     expect(edge.attr('line/filter')).toBe(expectedFilter);
     expect(edge.attr('line/strokeWidth')).toBe(DFD_STYLING.SELECTION.STROKE_WIDTH);
   }
-  
+
   /**
    * Verify a cell has correct hover styling applied
    */
   static verifyHoverStyling(cell: Cell, nodeType: NodeType | 'edge'): void {
     const expectedFilter = DFD_STYLING_HELPERS.getHoverFilter(nodeType);
-    
+
     if (nodeType === 'edge') {
       expect(cell.attr('line/filter')).toBe(expectedFilter);
     } else if (nodeType === 'text-box') {
@@ -119,13 +121,17 @@ export class StylingVerifier {
       expect(cell.attr('body/filter')).toBe(expectedFilter);
     }
   }
-  
+
   /**
    * Verify a cell has correct creation effect styling with specific opacity
    */
-  static verifyCreationEffect(cell: Cell, nodeType: NodeType | 'edge', expectedOpacity: number): void {
+  static verifyCreationEffect(
+    cell: Cell,
+    nodeType: NodeType | 'edge',
+    expectedOpacity: number,
+  ): void {
     const expectedFilter = DFD_STYLING_HELPERS.getCreationFilter(expectedOpacity);
-    
+
     if (DFD_STYLING_HELPERS.shouldUseNoneFilter(expectedOpacity)) {
       // For very low opacity, expect 'none' filter
       const filterAttr = DFD_STYLING_HELPERS.getFilterAttribute(nodeType);
@@ -140,19 +146,19 @@ export class StylingVerifier {
       }
     }
   }
-  
+
   /**
    * Verify a cell has the correct tools applied
    */
   static verifyToolsPresent(cell: Cell, cellType: 'node' | 'edge'): void {
     expect(cell.hasTools()).toBe(true);
-    
+
     const expectedTools = TOOL_HELPERS.getToolsForCellType(cellType);
     const actualTools = cell.getTools();
-    
+
     // Verify minimum expected tools are present (implementation may add additional tools)
     expect(actualTools.items.length).toBeGreaterThanOrEqual(expectedTools.length);
-    
+
     // Verify each expected tool is present
     expectedTools.forEach(expectedTool => {
       const foundTool = actualTools.items.find((tool: any) => tool.name === expectedTool.name);
@@ -160,21 +166,21 @@ export class StylingVerifier {
       expect(foundTool.name).toBe(expectedTool.name);
     });
   }
-  
+
   /**
    * Verify a specific tool is present with correct configuration
    */
   static verifySpecificTool(cell: Cell, toolName: string, cellType: 'node' | 'edge'): void {
     const actualTools = cell.getTools();
     const foundTool = actualTools.items.find((tool: any) => tool.name === toolName);
-    
+
     expect(foundTool).toBeDefined();
     expect(foundTool.name).toBe(toolName);
-    
+
     // Verify tool configuration matches constants
     const expectedTool = TOOL_HELPERS.getToolByName(toolName, cellType);
     expect(expectedTool).toBeDefined();
-    
+
     // Compare key configuration properties
     if (expectedTool?.args) {
       Object.keys(expectedTool.args).forEach(key => {
@@ -184,13 +190,13 @@ export class StylingVerifier {
       });
     }
   }
-  
+
   /**
    * Verify Z-index values match expected constants
    */
   static verifyZIndex(cell: Cell, nodeType: NodeType | 'edge'): void {
     const actualZIndex = cell.getZIndex();
-    
+
     if (nodeType === 'security-boundary') {
       expect(actualZIndex).toBe(DFD_STYLING.Z_ORDER.SECURITY_BOUNDARY_DEFAULT);
     } else if (nodeType === 'edge') {
@@ -200,22 +206,22 @@ export class StylingVerifier {
       expect(actualZIndex).toBe(DFD_STYLING.Z_ORDER.NODE_DEFAULT);
     }
   }
-  
+
   /**
    * Verify port configuration matches constants
    */
   static verifyPortConfiguration(node: Node): void {
     const ports = node.getPorts();
-    
+
     // Verify port count
     expect(ports).toHaveLength(DFD_STYLING.NODES.PORTS.COUNT);
-    
+
     // Verify port positions
     const portIds = ports.map(port => port.id);
     DFD_STYLING.NODES.PORTS.POSITIONS.forEach(position => {
       expect(portIds).toContain(position);
     });
-    
+
     // Verify port styling
     ports.forEach(port => {
       const portElement = node.getPortNode(port.id!);
@@ -230,32 +236,32 @@ export class StylingVerifier {
       }
     });
   }
-  
+
   /**
    * Verify default node styling matches constants
    */
   static verifyDefaultNodeStyling(node: Node, nodeType: NodeType): void {
     // Verify basic styling
     this.verifyCleanNodeStyling(node, nodeType);
-    
+
     // Verify Z-index
     this.verifyZIndex(node, nodeType);
-    
+
     // Verify port configuration
     this.verifyPortConfiguration(node);
-    
+
     // Verify font properties
     expect(node.attr('text/fontFamily')).toBe(DFD_STYLING.TEXT_FONT_FAMILY);
     expect(node.attr('text/fontSize')).toBe(DFD_STYLING.DEFAULT_FONT_SIZE);
   }
-  
+
   /**
    * Verify default edge styling matches constants
    */
   static verifyDefaultEdgeStyling(edge: Edge): void {
     // Verify basic styling
     this.verifyCleanEdgeStyling(edge);
-    
+
     // Verify edge-specific properties
     expect(edge.attr('line/sourceMarker/name')).toBe(DFD_STYLING.EDGES.ARROWHEAD);
     expect(edge.getLabelAt(0)?.attrs?.text?.text).toBe(DFD_STYLING.EDGES.DEFAULT_LABEL);
@@ -271,19 +277,21 @@ export class TestHelpers {
    */
   static getNodeTypeFromCell(cell: Cell): NodeType | 'edge' {
     if (cell.isEdge()) return 'edge';
-    
+
     // Try to get node type from cell properties
     const nodeTypeInfo = (cell as any).getNodeTypeInfo?.();
     return nodeTypeInfo?.type || 'unknown';
   }
-  
+
   /**
    * Wait for animation to complete
    */
-  static async waitForAnimationComplete(durationMs: number = DFD_STYLING.CREATION.FADE_DURATION_MS): Promise<void> {
+  static async waitForAnimationComplete(
+    durationMs: number = DFD_STYLING.CREATION.FADE_DURATION_MS,
+  ): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, durationMs + 50));
   }
-  
+
   /**
    * Wait for a specific number of animation frames
    */
@@ -291,7 +299,7 @@ export class TestHelpers {
     const frameTime = DFD_STYLING.CREATION.ANIMATION_FRAME_INTERVAL;
     return new Promise(resolve => setTimeout(resolve, frameTime * frameCount + 10));
   }
-  
+
   /**
    * Create a mock event for testing interactions
    */

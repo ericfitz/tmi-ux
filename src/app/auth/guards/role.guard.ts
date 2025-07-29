@@ -26,7 +26,10 @@ export const roleGuard: CanActivateFn = (route, state) => {
       // For now, we'll assume all authenticated users have all roles
       // In a real implementation, we would check userProfile.roles against requiredRole
       if (authService.hasRole(requiredRole)) {
-        logger.debugComponent('RoleGuard', `User has required role: ${requiredRole}, allowing access`);
+        logger.debugComponent(
+          'RoleGuard',
+          `User has required role: ${requiredRole}, allowing access`,
+        );
         return true;
       } else {
         logger.warn(

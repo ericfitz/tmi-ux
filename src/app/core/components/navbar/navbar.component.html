@@ -34,26 +34,25 @@
       <app-mock-data-toggle *ngIf="isDevelopmentMode"></app-mock-data-toggle>
 
       <!-- Server connection indicator -->
-      <span 
+      <span
         [matTooltip]="getServerStatusTooltipKey() | transloco"
         matTooltipPosition="below"
-        style="display: inline-block;">
-        <button 
-          mat-icon-button 
-          [class]="getServerStatusIconClass()"
-          disabled>
+        style="display: inline-block"
+      >
+        <button mat-icon-button [class]="getServerStatusIconClass()" disabled>
           <mat-icon>{{ getServerStatusIcon() }}</mat-icon>
         </button>
       </span>
 
       <!-- User info and logout when authenticated -->
       <ng-container *ngIf="isAuthenticated">
-        <button 
-          mat-button 
+        <button
+          mat-button
           (click)="openUserPreferences()"
           class="user-profile-button"
           [matTooltip]="userEmail"
-          matTooltipPosition="below">
+          matTooltipPosition="below"
+        >
           <mat-icon>person</mat-icon>
           <span>{{ username }}</span>
         </button>

@@ -56,7 +56,7 @@ export class SourceCodeEditorDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: SourceCodeEditorDialogData,
   ) {
     this.mode = data.mode;
-    
+
     this.sourceCodeForm = this.fb.group({
       name: [data.sourceCode?.name || '', [Validators.required, Validators.maxLength(256)]],
       description: [data.sourceCode?.description || '', Validators.maxLength(1024)],
@@ -77,18 +77,20 @@ export class SourceCodeEditorDialogComponent {
     }
 
     const formValues = this.sourceCodeForm.getRawValue() as SourceCodeFormValues;
-    
+
     // Build the result with proper structure
     const result = {
       name: formValues.name,
       description: formValues.description,
       type: formValues.type,
       url: formValues.url,
-      parameters: formValues.refValue ? {
-        refType: formValues.refType || 'branch',
-        refValue: formValues.refValue,
-        subPath: formValues.subPath,
-      } : undefined,
+      parameters: formValues.refValue
+        ? {
+            refType: formValues.refType || 'branch',
+            refValue: formValues.refValue,
+            subPath: formValues.subPath,
+          }
+        : undefined,
     };
 
     this.dialogRef.close(result);

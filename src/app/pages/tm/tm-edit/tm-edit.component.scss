@@ -53,24 +53,23 @@
   display: flex;
   align-items: center; // Center both items
   gap: 8px;
-  
+
   .issue-url-field {
     flex: 1; // Take up remaining space
   }
-  
+
   .external-edit-button {
     flex-shrink: 0;
     margin-top: -20px; // Move up 20px for better vertical centering
   }
 }
 
-
 // URL view content - readonly input styled as hyperlink
 .url-view-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  
+
   &:hover {
     color: #1565c0 !important;
   }
@@ -312,7 +311,6 @@ mat-card-header {
   }
 }
 
-
 .document-actions {
   display: flex;
   gap: 4px;
@@ -343,7 +341,7 @@ mat-card-header {
     align-items: center;
     min-height: 56px; /* Reduced height for single-line items */
   }
-  
+
   ::ng-deep .mat-mdc-list-item-meta {
     align-self: center;
   }
@@ -357,7 +355,7 @@ mat-card-header {
     gap: 12px;
     width: 100%;
     overflow: hidden;
-    
+
     .threat-name {
       font-weight: 500;
       color: rgb(0 0 0 / 87%);
@@ -367,12 +365,12 @@ mat-card-header {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      
+
       &:hover {
         color: #1976d2;
       }
     }
-    
+
     .threat-severity {
       padding: 2px 8px;
       border-radius: 12px;
@@ -383,44 +381,44 @@ mat-card-header {
       width: 70px;
       text-align: center;
       display: inline-block;
-      
+
       &.severity-critical {
         background-color: #ffebee;
         color: #c62828;
         border: 1px solid #ef5350;
       }
-      
+
       &.severity-high {
         background-color: #fff3e0;
         color: #ef6c00;
         border: 1px solid #ff9800;
       }
-      
+
       &.severity-medium {
         background-color: #fff8e1;
         color: #f57f17;
         border: 1px solid #ffb300;
       }
-      
+
       &.severity-low {
         background-color: #e8f5e8;
         color: #2e7d32;
         border: 1px solid #4caf50;
       }
-      
+
       &.severity-none {
         background-color: #f5f5f5;
         color: rgb(0 0 0 / 60%);
         border: 1px solid #e0e0e0;
       }
-      
+
       &.severity-unknown {
         background-color: #f3e5f5;
         color: #7b1fa2;
         border: 1px solid #ba68c8;
       }
     }
-    
+
     .threat-issue-url {
       color: #1976d2;
       text-decoration: none;
@@ -431,12 +429,12 @@ mat-card-header {
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 200px;
-      
+
       &:hover {
         text-decoration: underline;
         color: #1565c0;
       }
-      
+
       &:visited {
         color: #7b1fa2;
       }

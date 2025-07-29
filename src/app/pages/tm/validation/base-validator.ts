@@ -16,7 +16,7 @@ export class ValidationUtils {
     message: string,
     path: string,
     severity: 'error' | 'warning' | 'info' = 'error',
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ): ValidationError {
     return {
       code,
@@ -92,9 +92,18 @@ export class ValidationUtils {
   static validateField(
     value: unknown,
     rule: FieldValidationRule,
-    context: ValidationContext
+    context: ValidationContext,
   ): ValidationError | null {
-    const { field, required, type, minLength, maxLength, enum: enumValues, pattern, customValidator } = rule;
+    const {
+      field,
+      required,
+      type,
+      minLength,
+      maxLength,
+      enum: enumValues,
+      pattern,
+      customValidator,
+    } = rule;
     const path = context.currentPath ? `${context.currentPath}.${field}` : field;
 
     // Check if required field is missing
@@ -102,7 +111,7 @@ export class ValidationUtils {
       return ValidationUtils.createError(
         'FIELD_REQUIRED',
         `Required field '${field}' is missing`,
-        path
+        path,
       );
     }
 
@@ -139,7 +148,7 @@ export class ValidationUtils {
           `Field '${field}' expected type '${type}' but got '${actualType}'`,
           path,
           'error',
-          { expectedType: type, actualType, value }
+          { expectedType: type, actualType, value },
         );
       }
     }
@@ -152,7 +161,7 @@ export class ValidationUtils {
           `Field '${field}' length ${value.length} is less than minimum ${minLength}`,
           path,
           'error',
-          { minLength, actualLength: value.length }
+          { minLength, actualLength: value.length },
         );
       }
 
@@ -162,19 +171,20 @@ export class ValidationUtils {
           `Field '${field}' length ${value.length} exceeds maximum ${maxLength}`,
           path,
           'error',
-          { maxLength, actualLength: value.length }
+          { maxLength, actualLength: value.length },
         );
       }
     }
 
     // Enum validation
     if (enumValues && !enumValues.includes(value as string)) {
+      const displayValue = typeof value === 'string' ? value : typeof value === 'number' ? value : '[object]';
       return ValidationUtils.createError(
         'INVALID_ENUM_VALUE',
-        `Field '${field}' value '${String(value)}' is not one of allowed values: ${enumValues.join(', ')}`,
+        `Field '${field}' value '${displayValue}' is not one of allowed values: ${enumValues.join(', ')}`,
         path,
         'error',
-        { allowedValues: enumValues, actualValue: value }
+        { allowedValues: enumValues, actualValue: value },
       );
     }
 
@@ -185,7 +195,7 @@ export class ValidationUtils {
         `Field '${field}' value '${value}' does not match required pattern`,
         path,
         'error',
-        { pattern: pattern.source, value }
+        { pattern: pattern.source, value },
       );
     }
 
@@ -222,7 +232,7 @@ export abstract class BaseValidator {
   protected validateFields(
     obj: unknown,
     rules: FieldValidationRule[],
-    context: ValidationContext
+    context: ValidationContext,
   ): void {
     for (const rule of rules) {
       const value = this.getNestedValue(obj, rule.field);
@@ -239,7 +249,7 @@ export abstract class BaseValidator {
   protected getNestedValue(obj: unknown, path: string): unknown {
     return path.split('.').reduce((current, key) => {
       if (current === null || current === undefined) return undefined;
-      
+
       // Handle array access like "items[0]"
       const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
       if (arrayMatch) {
@@ -247,7 +257,7 @@ export abstract class BaseValidator {
         const array = (current as Record<string, unknown>)[arrayKey];
         return Array.isArray(array) ? array[parseInt(index, 10)] : undefined;
       }
-      
+
       return (current as Record<string, unknown>)[key];
     }, obj);
   }
@@ -258,7 +268,7 @@ export abstract class BaseValidator {
   protected validateArray<T>(
     array: T[] | undefined,
     path: string,
-    validator: (item: T, index: number, itemPath: string) => ValidationError[]
+    validator: (item: T, index: number, itemPath: string) => ValidationError[],
   ): void {
     if (!array || !Array.isArray(array)) return;
 

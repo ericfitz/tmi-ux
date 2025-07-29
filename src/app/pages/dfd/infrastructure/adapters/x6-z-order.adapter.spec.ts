@@ -27,7 +27,7 @@ function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
   // Mock the getNodeTypeInfo extension that's added in the real application
   (node as any).getNodeTypeInfo = vi.fn(() => ({
     type: nodeType,
-    label: node.getAttrByPath('label') || 'Test Node'
+    label: node.getAttrByPath('label') || 'Test Node',
   }));
   return node;
 }
@@ -399,14 +399,18 @@ describe('X6ZOrderAdapter', () => {
     });
 
     it('should apply node creation z-index based on shape', () => {
-      const textBoxNode = createTestNode(graph, {
-        x: 400,
-        y: 200,
-        width: 100,
-        height: 40,
-        shape: 'text-box',
-        label: 'Text Box',
-      }, 'text-box');
+      const textBoxNode = createTestNode(
+        graph,
+        {
+          x: 400,
+          y: 200,
+          width: 100,
+          height: 40,
+          shape: 'text-box',
+          label: 'Text Box',
+        },
+        'text-box',
+      );
 
       textBoxNode.setZIndex = vi.fn();
 
@@ -833,13 +837,10 @@ describe('X6ZOrderAdapter', () => {
 
       // Should default to 'unknown' type and get z-index 10 (default case)
       expect(nodeWithoutTypeInfo.setZIndex).toHaveBeenCalledWith(10);
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Node missing getNodeTypeInfo extension',
-        {
-          nodeId: nodeWithoutTypeInfo.id,
-          shape: 'process'
-        }
-      );
+      expect(mockLogger.warn).toHaveBeenCalledWith('Node missing getNodeTypeInfo extension', {
+        nodeId: nodeWithoutTypeInfo.id,
+        shape: 'process',
+      });
     });
 
     it('should handle nodes without setZIndex method in test environment', () => {

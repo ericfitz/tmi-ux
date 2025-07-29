@@ -59,7 +59,7 @@ const customRules: FieldValidationRule[] = [
     type: 'string',
     minLength: 5,
     maxLength: 100,
-    pattern: /^[A-Za-z0-9\s-]+$/
+    pattern: /^[A-Za-z0-9\s-]+$/,
   },
   {
     field: 'custom_field',
@@ -69,19 +69,19 @@ const customRules: FieldValidationRule[] = [
         return ValidationUtils.createError(
           'INVALID_PREFIX',
           'Custom field must start with PREFIX_',
-          context.currentPath + '.custom_field'
+          context.currentPath + '.custom_field',
         );
       }
       return null;
-    }
-  }
+    },
+  },
 ];
 
 const config: Partial<ValidationConfig> = {
   includeWarnings: true,
   failFast: false,
   maxErrors: 50,
-  customRules
+  customRules,
 };
 
 const result = this.validator.validate(threatModel, config);
@@ -98,16 +98,18 @@ class CustomDiagramValidator implements DiagramValidator {
 
   validate(diagram: any, context: ValidationContext): ValidationError[] {
     const errors: ValidationError[] = [];
-    
+
     // Custom diagram validation logic
     if (!diagram.customProperty) {
-      errors.push(ValidationUtils.createError(
-        'MISSING_CUSTOM_PROPERTY',
-        'Custom diagrams must have customProperty',
-        ValidationUtils.buildPath(context.currentPath, 'customProperty')
-      ));
+      errors.push(
+        ValidationUtils.createError(
+          'MISSING_CUSTOM_PROPERTY',
+          'Custom diagrams must have customProperty',
+          ValidationUtils.buildPath(context.currentPath, 'customProperty'),
+        ),
+      );
     }
-    
+
     return errors;
   }
 
@@ -192,13 +194,13 @@ async importThreatModel(file: File) {
   try {
     const data = JSON.parse(await file.text());
     const result = this.validator.validate(data);
-    
+
     if (!result.valid) {
       // Show validation errors to user
       this.showValidationErrors(result.errors);
       return;
     }
-    
+
     // Proceed with import
     await this.threatModelService.importThreatModel(data);
   } catch (error) {
@@ -213,13 +215,13 @@ async importThreatModel(file: File) {
 @Component({...})
 export class ThreatModelEditComponent {
   private validationSubject = new Subject<any>();
-  
+
   ngOnInit() {
     // Debounced validation
     this.validationSubject.pipe(
       debounceTime(500),
       distinctUntilChanged(),
-      switchMap(threatModel => 
+      switchMap(threatModel =>
         of(this.validator.validateSchema(threatModel))
       )
     ).subscribe(result => {
@@ -227,7 +229,7 @@ export class ThreatModelEditComponent {
       this.validationWarnings = result.warnings;
     });
   }
-  
+
   onThreatModelChange(threatModel: any) {
     this.validationSubject.next(threatModel);
   }
@@ -245,7 +247,7 @@ async validateMultipleThreatModels(threatModels: any[]) {
       result: this.validator.validate(tm)
     }))
   );
-  
+
   const invalid = results.filter(r => !r.result.valid);
   if (invalid.length > 0) {
     console.log(`${invalid.length} of ${threatModels.length} threat models failed validation`);
@@ -253,7 +255,7 @@ async validateMultipleThreatModels(threatModels: any[]) {
       console.log(`${name} (${index}):`, result.errors);
     });
   }
-  
+
   return results;
 }
 ```
@@ -261,6 +263,7 @@ async validateMultipleThreatModels(threatModels: any[]) {
 ## Error Codes Reference
 
 ### Schema Validation Errors
+
 - `FIELD_REQUIRED`: Required field is missing
 - `INVALID_TYPE`: Field type doesn't match expected type
 - `INVALID_ENUM_VALUE`: Value is not in allowed enum values
@@ -269,12 +272,14 @@ async validateMultipleThreatModels(threatModels: any[]) {
 - `PATTERN_MISMATCH`: String doesn't match required pattern
 
 ### Reference Validation Errors
+
 - `INVALID_DIAGRAM_REFERENCE`: Threat references non-existent diagram
 - `INVALID_CELL_REFERENCE`: Threat references non-existent cell
 - `INVALID_THREAT_MODEL_REFERENCE`: Threat has wrong threat_model_id
 - `OWNER_NOT_IN_AUTHORIZATION`: Owner not present in authorization list
 
 ### Diagram Validation Errors
+
 - `UNSUPPORTED_DIAGRAM_TYPE`: No validator found for diagram type
 - `INVALID_CELL`: Cell object is malformed
 - `MISSING_CELL_ID`: Cell is missing required ID
@@ -284,6 +289,7 @@ async validateMultipleThreatModels(threatModels: any[]) {
 - `INVALID_EDGE_TARGET`: Edge target references non-existent cell
 
 ### System Errors
+
 - `VALIDATION_EXCEPTION`: Internal validation error
 - `MAX_ERRORS_EXCEEDED`: Too many errors found
 
@@ -313,6 +319,7 @@ async validateMultipleThreatModels(threatModels: any[]) {
 ### Handling Different OpenAPI Versions
 
 The validation system is designed to be flexible for minor schema changes:
+
 - Use version patterns in diagram validators
 - Add conditional validation rules
 - Extend base classes for major changes

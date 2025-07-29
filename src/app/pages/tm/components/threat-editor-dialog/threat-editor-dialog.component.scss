@@ -2,7 +2,6 @@
   width: 100%;
 }
 
-
 mat-dialog-content {
   min-width: 300px;
   padding-top: 6px;
@@ -63,11 +62,11 @@ mat-dialog-content {
   display: flex;
   align-items: center; // Center both items
   gap: 8px;
-  
+
   .issue-url-field {
     flex: 1; // Take up remaining space
   }
-  
+
   .external-edit-button {
     flex-shrink: 0;
     margin-top: -8px; // Bump up 8px for better visual centering
@@ -87,7 +86,7 @@ mat-dialog-content {
   color: #1976d2;
   text-decoration: none;
   word-break: break-all;
-  
+
   &:hover {
     text-decoration: underline;
     color: #1565c0;
@@ -104,7 +103,7 @@ mat-dialog-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  
+
   &:hover {
     color: #1565c0 !important;
   }
@@ -128,7 +127,6 @@ mat-dialog-content {
     margin-right: 8px;
   }
 }
-
 
 // For smaller screens, adjust the grid
 @media (width <= 800px) {

@@ -1,9 +1,9 @@
 /**
  * Root Application Component
- * 
+ *
  * This is the main application component that serves as the root of the Angular application.
  * It provides the core layout structure and manages global application state.
- * 
+ *
  * Key functionality:
  * - Renders the main application layout with navbar, router outlet, and footer
  * - Manages global authentication state and user profile information

@@ -1,9 +1,9 @@
 /**
  * DFD Facade Service
- * 
+ *
  * This service provides a unified interface for DFD component operations by coordinating
  * multiple specialized services. It implements the Facade pattern to simplify component dependencies.
- * 
+ *
  * Key functionality:
  * - Coordinates node operations (creation, deletion, manipulation) via DfdNodeService
  * - Manages edge operations (connection validation, creation, vertices) via DfdEdgeService
@@ -30,13 +30,12 @@ import { DfdDiagramService } from './dfd-diagram.service';
 /**
  * Facade service that simplifies DFD component dependencies by providing
  * a single entry point for common operations across multiple services.
- * 
+ *
  * This reduces the number of direct service dependencies in the component
  * and provides a cleaner API for coordinating operations.
  */
 @Injectable()
 export class DfdFacadeService {
-
   constructor(
     private nodeService: DfdNodeService,
     private edgeService: DfdEdgeService,
@@ -53,23 +52,34 @@ export class DfdFacadeService {
    * Add a new node to the diagram
    */
   addGraphNode(
-    shapeType: NodeType, 
-    containerWidth: number, 
-    containerHeight: number, 
-    diagramId: string, 
-    isInitialized: boolean
+    shapeType: NodeType,
+    containerWidth: number,
+    containerHeight: number,
+    diagramId: string,
+    isInitialized: boolean,
   ): Observable<any> {
-    return this.nodeService.addGraphNode(shapeType, containerWidth, containerHeight, diagramId, isInitialized);
+    return this.nodeService.addGraphNode(
+      shapeType,
+      containerWidth,
+      containerHeight,
+      diagramId,
+      isInitialized,
+    );
   }
 
   // ===============================
-  // Edge Operations  
+  // Edge Operations
   // ===============================
 
   /**
    * Handle edge added events
    */
-  handleEdgeAdded(edge: Edge, graph: Graph, diagramId: string, isInitialized: boolean): Observable<any> {
+  handleEdgeAdded(
+    edge: Edge,
+    graph: Graph,
+    diagramId: string,
+    isInitialized: boolean,
+  ): Observable<any> {
     return this.edgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
   }
 
@@ -81,9 +91,15 @@ export class DfdFacadeService {
     vertices: Array<{ x: number; y: number }>,
     graph: Graph,
     diagramId: string,
-    isInitialized: boolean
+    isInitialized: boolean,
   ): Observable<any> {
-    return this.edgeService.handleEdgeVerticesChanged(edgeId, vertices, graph, diagramId, isInitialized);
+    return this.edgeService.handleEdgeVerticesChanged(
+      edgeId,
+      vertices,
+      graph,
+      diagramId,
+      isInitialized,
+    );
   }
 
   /**
@@ -121,14 +137,23 @@ export class DfdFacadeService {
   /**
    * Handle window resize
    */
-  onWindowResize(graphContainer: any, resizeTimeout: number | null, x6GraphAdapter: any): number | null {
+  onWindowResize(
+    graphContainer: any,
+    resizeTimeout: number | null,
+    x6GraphAdapter: any,
+  ): number | null {
     return this.eventHandlersService.onWindowResize(graphContainer, resizeTimeout, x6GraphAdapter);
   }
 
   /**
    * Handle key down events
    */
-  onKeyDown(event: KeyboardEvent, diagramId: string, isInitialized: boolean, x6GraphAdapter: any): void {
+  onKeyDown(
+    event: KeyboardEvent,
+    diagramId: string,
+    isInitialized: boolean,
+    x6GraphAdapter: any,
+  ): void {
     this.eventHandlersService.onKeyDown(event, diagramId, isInitialized, x6GraphAdapter);
   }
 
@@ -232,7 +257,11 @@ export class DfdFacadeService {
   /**
    * Export diagram to specified format
    */
-  exportDiagram(format: 'png' | 'jpeg' | 'svg', threatModelName?: string, diagramName?: string): void {
+  exportDiagram(
+    format: 'png' | 'jpeg' | 'svg',
+    threatModelName?: string,
+    diagramName?: string,
+  ): void {
     this.exportService.exportDiagram(format, threatModelName, diagramName);
   }
 
@@ -315,10 +344,10 @@ export class DfdFacadeService {
    * Load multiple diagram cells with proper history suppression and port visibility management
    */
   loadDiagramCellsBatch(
-    cells: any[], 
-    graph: Graph, 
-    diagramId: string, 
-    nodeConfigurationService: any
+    cells: any[],
+    graph: Graph,
+    diagramId: string,
+    nodeConfigurationService: any,
   ): void {
     this.diagramService.loadDiagramCellsBatch(cells, graph, diagramId, nodeConfigurationService);
   }

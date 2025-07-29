@@ -174,7 +174,7 @@ export class NodeConfigurationService {
         { group: 'top', id: 'top' },
         { group: 'right', id: 'right' },
         { group: 'bottom', id: 'bottom' },
-        { group: 'left', id: 'left' }
+        { group: 'left', id: 'left' },
       ],
     };
   }

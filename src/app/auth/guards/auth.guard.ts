@@ -1,9 +1,9 @@
 /**
  * Authentication Route Guard
- * 
+ *
  * This guard protects routes that require user authentication.
  * It checks if the user is authenticated and redirects to login if not.
- * 
+ *
  * Key functionality:
  * - Uses Angular's functional guard pattern with dependency injection
  * - Checks authentication status reactively via AuthService observable

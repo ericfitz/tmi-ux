@@ -83,18 +83,11 @@
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
-    "copyDefinitionToClipboard": "คัดลอกคำจำกัดความไปยังคลิปบอร์ด",
     "editText": "แก้ไขข้อความ",
     "moveBackward": "เลื่อนไปข้างหลัง",
     "moveForward": "เลื่อนไปข้างหน้า",
     "moveToBack": "เลื่อนไปด้านหลัง",
     "moveToFront": "เลื่อนไปด้านหน้า"
-  },
-  "diagrams": {
-    "createFirstButton": "สร้างแผนภาพแรกของคุณ",
-    "diagramTitle": "{{name}}",
-    "noItemsMessage": "คุณยังไม่มีแผนภาพใด ๆ",
-    "pageTitle": "แผนภาพของฉัน"
   },
   "editor": {
     "diagramPrefix": "แผนภาพ:",
@@ -108,7 +101,6 @@
     },
     "pageTitle": "โปรแกรมแก้ไขแผนภาพการไหลของข้อมูล",
     "properties": {
-      "help": "คุณสมบัติของสิ่งประกอบจะปรากฏที่นี่เมื่อเลือกสิ่งประกอบ",
       "title": "คุณสมบัติ"
     },
     "toolbar": {
@@ -140,7 +132,6 @@
   "homeDescription": "เครื่องมือสร้างแบบจำลองภัยคุกคามแบบการทำงานร่วมกันที่ออกแบบมาเพื่อช่วยทีมในการระบุ วิเคราะห์ และจัดทำเอกสารภัยคุกคามด้านความปลอดภัยในระบบของพวกเขา สร้าง แบ่งปัน และแก้ไขแบบจำลองภัยคุกคามและแผนภาพร่วมกันเพื่อปรับปรุงความปลอดภัยของแอปพลิเคชันของคุณ",
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
   "login": {
-    "authenticationFailed": "การตรวจสอบสิทธิ์ล้มเหลว กรุณาลองใหม่อีกครั้ง",
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
     "loggingInWith": "กำลังเข้าสู่ระบบด้วย {{provider}}...",
     "loginWith": "เข้าสู่ระบบด้วย",
@@ -154,9 +145,7 @@
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "ออกจากระบบ",
-    "userProfileTooltip": "{{email}}",
-    "username": "{{username}}"
+    "logoutButton": "ออกจากระบบ"
   },
   "privacy": {
     "changesContent": "ผู้ดำเนินการอาจอัปเดตนโยบายความเป็นส่วนตัวนี้เป็นครั้งคราว การเปลี่ยนแปลงใด ๆ จะถูกโพสต์บนหน้านี้พร้อมกับวันที่ \"อัปเดตล่าสุด\" ที่อัปเดต",
@@ -237,7 +226,6 @@
     "name": "ชื่อ",
     "newThreatModel": "แบบจำลองภัยคุกคามใหม่",
     "noDiagrams": "ยังไม่มีการเพิ่มแผนภาพ",
-    "noDocumentDescription": "ไม่มีคำอธิบาย",
     "noDocuments": "ยังไม่มีการเพิ่มเอกสาร",
     "noItemsMessage": "คุณยังไม่มีแบบจำลองภัยคุกคามใด ๆ",
     "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
@@ -254,7 +242,6 @@
     "reportButton": "รายงาน",
     "reportTooltip": "รายงาน",
     "sourceCode": "ซอร์สโค้ด",
-    "sourceCodeButton": "ซอร์สโค้ด",
     "sourceCodeDescription": "คำอธิบาย",
     "sourceCodeDescriptionPlaceholder": "อธิบายที่เก็บซอร์สโค้ดหรือวัตถุประสงค์",
     "sourceCodeName": "ชื่อซอร์สโค้ด",
@@ -264,7 +251,6 @@
     "sourceCodeRefValueHint": "ชื่อ branch, tag หรือ commit ID",
     "sourceCodeSubPath": "เส้นทางย่อย",
     "sourceCodeSubPathHint": "เส้นทางเสริมภายในที่เก็บ",
-    "sourceCodeTooltip": "ซอร์สโค้ด",
     "sourceCodeType": "ประเภทที่เก็บ",
     "sourceCodeUrl": "URL ที่เก็บ",
     "tag": "Tag",

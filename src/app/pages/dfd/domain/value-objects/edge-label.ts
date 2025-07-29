@@ -117,7 +117,7 @@ export function createSimpleEdgeLabel(
     fontSize?: number;
     fill?: string;
     backgroundColor?: string;
-  }
+  },
 ): EdgeLabel {
   return {
     attrs: {
@@ -145,20 +145,29 @@ export function createSimpleEdgeLabel(
 /**
  * Creates an edge label positioned at the start of the edge
  */
-export function createStartLabel(text: string, options?: { fontSize?: number; fill?: string }): EdgeLabel {
+export function createStartLabel(
+  text: string,
+  options?: { fontSize?: number; fill?: string },
+): EdgeLabel {
   return createSimpleEdgeLabel(text, 0.1, options);
 }
 
 /**
  * Creates an edge label positioned at the end of the edge
  */
-export function createEndLabel(text: string, options?: { fontSize?: number; fill?: string }): EdgeLabel {
+export function createEndLabel(
+  text: string,
+  options?: { fontSize?: number; fill?: string },
+): EdgeLabel {
   return createSimpleEdgeLabel(text, 0.9, options);
 }
 
 /**
  * Creates an edge label positioned at the middle of the edge
  */
-export function createMiddleLabel(text: string, options?: { fontSize?: number; fill?: string }): EdgeLabel {
+export function createMiddleLabel(
+  text: string,
+  options?: { fontSize?: number; fill?: string },
+): EdgeLabel {
   return createSimpleEdgeLabel(text, 0.5, options);
 }

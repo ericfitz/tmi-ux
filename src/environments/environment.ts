@@ -1,9 +1,9 @@
 /**
  * Default Development Environment Configuration
- * 
+ *
  * This file contains the default environment configuration used during local development.
  * It provides development-friendly settings with verbose logging and local OAuth configuration.
- * 
+ *
  * Key functionality:
  * - Enables debug logging for development and testing
  * - Configures local API server endpoint (localhost:8080)

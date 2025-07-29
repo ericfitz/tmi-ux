@@ -4,12 +4,12 @@
  */
 
 import { Injectable } from '@angular/core';
-import { 
-  ThreatModelValidator, 
-  ValidationResult, 
-  ValidationConfig, 
+import {
+  ThreatModelValidator,
+  ValidationResult,
+  ValidationConfig,
   ValidationContext,
-  DEFAULT_VALIDATION_CONFIG 
+  DEFAULT_VALIDATION_CONFIG,
 } from './types';
 import { SchemaValidator } from './schema-validator';
 import { DiagramValidatorFactory } from './diagram-validators';
@@ -32,11 +32,11 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   validate(threatModel: any, config: Partial<ValidationConfig> = {}): ValidationResult {
     const startTime = Date.now();
     const validationConfig = { ...DEFAULT_VALIDATION_CONFIG, ...config };
-    
+
     const context: ValidationContext = {
       object: threatModel,
       currentPath: '',
-      data: { config: validationConfig }
+      data: { config: validationConfig },
     };
 
     const allErrors: ValidationResult['errors'] = [];
@@ -46,7 +46,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
       this.logger.debug('Starting ThreatModel validation', {
         threatModelId: threatModel?.id,
         threatModelName: threatModel?.name,
-        config: validationConfig
+        config: validationConfig,
       });
       // 1. Schema validation
       const schemaErrors = this.schemaValidator.validateThreatModel(threatModel, context);
@@ -77,13 +77,15 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
       // Check error limits
       if (allErrors.length > validationConfig.maxErrors) {
         allErrors.splice(validationConfig.maxErrors);
-        allErrors.push(ValidationUtils.createError(
-          'MAX_ERRORS_EXCEEDED',
-          `Validation stopped after reaching maximum error limit of ${validationConfig.maxErrors}`,
-          '',
-          'error',
-          { maxErrors: validationConfig.maxErrors }
-        ));
+        allErrors.push(
+          ValidationUtils.createError(
+            'MAX_ERRORS_EXCEEDED',
+            `Validation stopped after reaching maximum error limit of ${validationConfig.maxErrors}`,
+            '',
+            'error',
+            { maxErrors: validationConfig.maxErrors },
+          ),
+        );
       }
 
       const isValid = allErrors.length === 0;
@@ -93,21 +95,22 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
         valid: isValid,
         errorCount: allErrors.length,
         warningCount: allWarnings.length,
-        duration: result.metadata.duration
+        duration: result.metadata.duration,
       });
 
       return result;
-
     } catch (error) {
       this.logger.error('ThreatModel validation failed with exception', error);
-      
-      allErrors.push(ValidationUtils.createError(
-        'VALIDATION_EXCEPTION',
-        `Validation failed due to internal error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        '',
-        'error',
-        { originalError: error }
-      ));
+
+      allErrors.push(
+        ValidationUtils.createError(
+          'VALIDATION_EXCEPTION',
+          `Validation failed due to internal error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          '',
+          'error',
+          { originalError: error },
+        ),
+      );
 
       return this.buildResult(false, allErrors, allWarnings, startTime, validationConfig);
     }
@@ -117,9 +120,9 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    * Validate diagrams using type-specific validators
    */
   private validateDiagrams(
-    threatModel: any, 
+    threatModel: any,
     context: ValidationContext,
-    config: ValidationConfig
+    config: ValidationConfig,
   ): ValidationResult['errors'] {
     const errors: ValidationResult['errors'] = [];
 
@@ -130,37 +133,39 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     threatModel.diagrams.forEach((diagram: any, index: number) => {
       const diagramPath = ValidationUtils.buildPath(
         ValidationUtils.buildPath(context.currentPath, 'diagrams'),
-        index
+        index,
       );
 
       const diagramContext: ValidationContext = {
         ...context,
-        currentPath: diagramPath
+        currentPath: diagramPath,
       };
 
       // Get appropriate validator for diagram type
       const validator = DiagramValidatorFactory.getValidator(diagram?.type);
-      
+
       if (!validator) {
         // Check if we have custom validators for this type
-        const customValidator = config.diagramValidators.find(v => 
-          v.versionPattern.test(diagram?.type || '')
+        const customValidator = config.diagramValidators.find(v =>
+          v.versionPattern.test(diagram?.type || ''),
         );
 
         if (customValidator) {
           const diagramErrors = customValidator.validate(diagram, diagramContext);
           errors.push(...diagramErrors);
         } else {
-          errors.push(ValidationUtils.createError(
-            'UNSUPPORTED_DIAGRAM_TYPE',
-            `No validator found for diagram type '${diagram?.type}'`,
-            ValidationUtils.buildPath(diagramPath, 'type'),
-            'warning',
-            { 
-              diagramType: diagram?.type,
-              supportedTypes: DiagramValidatorFactory.getSupportedTypes()
-            }
-          ));
+          errors.push(
+            ValidationUtils.createError(
+              'UNSUPPORTED_DIAGRAM_TYPE',
+              `No validator found for diagram type '${diagram?.type}'`,
+              ValidationUtils.buildPath(diagramPath, 'type'),
+              'warning',
+              {
+                diagramType: diagram?.type,
+                supportedTypes: DiagramValidatorFactory.getSupportedTypes(),
+              },
+            ),
+          );
         }
       } else {
         const diagramErrors = validator.validate(diagram, diagramContext);
@@ -177,7 +182,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   private applyCustomRules(
     threatModel: any,
     context: ValidationContext,
-    config: ValidationConfig
+    config: ValidationConfig,
   ): ValidationResult['errors'] {
     const errors: ValidationResult['errors'] = [];
 
@@ -198,14 +203,14 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   private getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((current, key) => {
       if (current === null || current === undefined) return undefined;
-      
+
       const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
       if (arrayMatch) {
         const [, arrayKey, index] = arrayMatch;
         const array = current[arrayKey];
         return Array.isArray(array) ? array[parseInt(index, 10)] : undefined;
       }
-      
+
       return current[key];
     }, obj);
   }
@@ -216,7 +221,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   private categorizeErrors(
     errors: ValidationResult['errors'],
     allErrors: ValidationResult['errors'],
-    allWarnings: ValidationResult['warnings']
+    allWarnings: ValidationResult['warnings'],
   ): void {
     errors.forEach(error => {
       if (error.severity === 'warning' || error.severity === 'info') {
@@ -235,10 +240,10 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     errors: ValidationResult['errors'],
     warnings: ValidationResult['warnings'],
     startTime: number,
-    config: ValidationConfig
+    config: ValidationConfig,
   ): ValidationResult {
     const endTime = Date.now();
-    
+
     return {
       valid,
       errors,
@@ -246,8 +251,8 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
       metadata: {
         timestamp: new Date().toISOString(),
         validatorVersion: '1.0.0',
-        duration: endTime - startTime
-      }
+        duration: endTime - startTime,
+      },
     };
   }
 
@@ -259,21 +264,21 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     const context: ValidationContext = {
       object: threatModel,
       currentPath: '',
-      data: {}
+      data: {},
     };
 
     const errors = this.schemaValidator.validateThreatModel(threatModel, context);
     const allErrors: ValidationResult['errors'] = [];
     const allWarnings: ValidationResult['warnings'] = [];
-    
+
     this.categorizeErrors(errors, allErrors, allWarnings);
-    
+
     return this.buildResult(
-      allErrors.length === 0, 
-      allErrors, 
-      allWarnings, 
-      startTime, 
-      DEFAULT_VALIDATION_CONFIG
+      allErrors.length === 0,
+      allErrors,
+      allWarnings,
+      startTime,
+      DEFAULT_VALIDATION_CONFIG,
     );
   }
 
@@ -285,21 +290,21 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     const context: ValidationContext = {
       object: threatModel,
       currentPath: '',
-      data: {}
+      data: {},
     };
 
     const errors = this.referenceValidator.validateReferences(threatModel, context);
     const allErrors: ValidationResult['errors'] = [];
     const allWarnings: ValidationResult['warnings'] = [];
-    
+
     this.categorizeErrors(errors, allErrors, allWarnings);
-    
+
     return this.buildResult(
-      allErrors.length === 0, 
-      allErrors, 
-      allWarnings, 
-      startTime, 
-      DEFAULT_VALIDATION_CONFIG
+      allErrors.length === 0,
+      allErrors,
+      allWarnings,
+      startTime,
+      DEFAULT_VALIDATION_CONFIG,
     );
   }
 
@@ -310,7 +315,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     DiagramValidatorFactory.registerValidator(validator);
     this.logger.debug('Registered custom diagram validator', {
       diagramType: validator.diagramType,
-      versionPattern: validator.versionPattern.source
+      versionPattern: validator.versionPattern.source,
     });
   }
 

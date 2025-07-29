@@ -25,7 +25,14 @@ interface LoginQueryParams {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatCardModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatCardModule,
+    TranslocoModule,
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -45,7 +52,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.logger.info('LoginComponent initialized');
-    
+
     // Load available providers from TMI server
     this.loadProviders();
 
@@ -61,11 +68,11 @@ export class LoginComponent implements OnInit {
 
       // Handle TMI OAuth callback with tokens
       if (accessToken) {
-        this.handleOAuthCallback({ 
+        this.handleOAuthCallback({
           access_token: accessToken,
           refresh_token: refreshToken,
           expires_in: expiresIn ? parseInt(expiresIn) : undefined,
-          state 
+          state,
         });
       }
       // Handle old-style callback with code (for local provider)
@@ -92,15 +99,13 @@ export class LoginComponent implements OnInit {
       next: providers => {
         this.availableProviders = providers;
         this.providersLoading = false;
-        this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, { 
-          providers: providers.map(p => ({ id: p.id, name: p.name })) 
+        this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, {
+          providers: providers.map(p => ({ id: p.id, name: p.name })),
         });
 
         // Auto-login if only one provider available and not handling callback
         const queryParams = this.route.snapshot.queryParams as LoginQueryParams;
-        const hasCallbackParams = queryParams.code || 
-                                 queryParams.access_token || 
-                                 queryParams.error;
+        const hasCallbackParams = queryParams.code || queryParams.access_token || queryParams.error;
         if (providers.length === 1 && !hasCallbackParams) {
           this.login(providers[0].id);
         }
@@ -109,7 +114,7 @@ export class LoginComponent implements OnInit {
         this.providersLoading = false;
         this.error = 'Failed to load authentication providers';
         this.logger.error('Failed to load OAuth providers', error);
-      }
+      },
     });
   }
 
@@ -126,17 +131,17 @@ export class LoginComponent implements OnInit {
   login(providerId?: string): void {
     this.isLoading = true;
     this.error = null;
-    
+
     const provider = this.availableProviders.find(p => p.id === providerId);
     const providerName = provider?.name || providerId || 'default provider';
-    
+
     this.logger.info(`Initiating login with ${providerName}`);
-    this.logger.debugComponent('Auth', 'Starting OAuth flow', { 
-      providerId, 
+    this.logger.debugComponent('Auth', 'Starting OAuth flow', {
+      providerId,
       providerName,
-      authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown' // Remove query params for logging
+      authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown', // Remove query params for logging
     });
-    
+
     this.authService.initiateLogin(providerId);
   }
 
@@ -161,8 +166,7 @@ export class LoginComponent implements OnInit {
         this.isLoading = false;
         const authError: AuthError = {
           code: 'oauth_error',
-          message:
-            err instanceof Error ? err.message : 'login.unexpectedError',
+          message: err instanceof Error ? err.message : 'login.unexpectedError',
           retryable: true,
         };
         this.authService.handleAuthError(authError); // Propagate error through auth service

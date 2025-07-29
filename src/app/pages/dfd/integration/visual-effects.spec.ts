@@ -8,7 +8,7 @@
 
 /**
  * DFD Integration Tests - Visual Effects
- * 
+ *
  * This test file focuses on the visual effects system for creation highlights
  * and fade animations. Tests use real X6 graph instances and verify actual
  * visual effects applied to cells during programmatic creation operations.
@@ -57,10 +57,21 @@ const mockSVGElement = {
   getCTM: vi.fn(() => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 })),
   getScreenCTM: vi.fn(() => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 })),
   createSVGMatrix: vi.fn(() => ({
-    a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
-    rotate: function (_angle: number) { return this; },
-    translate: function (_x: number, _y: number) { return this; },
-    scale: function (_factor: number) { return this; },
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    e: 0,
+    f: 0,
+    rotate: function (_angle: number) {
+      return this;
+    },
+    translate: function (_x: number, _y: number) {
+      return this;
+    },
+    scale: function (_factor: number) {
+      return this;
+    },
     inverse: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }),
   })),
 };
@@ -137,13 +148,16 @@ describe.skip('DFD Integration - Visual Effects', () => {
     edgeService = new DfdEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new DfdEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as unknown as LoggerService);
+    historyCoordinator = new GraphHistoryCoordinator(
+      historyManager,
+      mockLogger as unknown as LoggerService,
+    );
 
     // Initialize selection adapter first (required by X6GraphAdapter)
     selectionAdapter = new X6SelectionAdapter(
       mockLogger as unknown as LoggerService,
       selectionService,
-      historyCoordinator
+      historyCoordinator,
     );
 
     // Initialize main services
@@ -419,7 +433,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
 
       // Should log warning for null cell
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Cannot apply creation highlight to null cell')
+        expect.stringContaining('Cannot apply creation highlight to null cell'),
       );
     });
 
@@ -469,7 +483,11 @@ describe.skip('DFD Integration - Visual Effects', () => {
   });
 
   // Helper functions
-  function createTestNode(nodeType: NodeType, label: string, position: { x: number; y: number }): Node {
+  function createTestNode(
+    nodeType: NodeType,
+    label: string,
+    position: { x: number; y: number },
+  ): Node {
     const nodeData = NodeInfo.create({
       id: `test-node-${Date.now()}-${Math.random()}`,
       type: nodeType,

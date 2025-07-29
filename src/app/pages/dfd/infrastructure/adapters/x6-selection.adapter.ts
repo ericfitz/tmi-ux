@@ -101,7 +101,7 @@ export class X6SelectionAdapter {
       if (graph && typeof graph.cleanSelection === 'function') {
         graph.cleanSelection();
       }
-      
+
       // Update port visibility for all nodes after blank click
       if (this.portStateManager) {
         this.portStateManager.hideUnconnectedPorts(graph);
@@ -238,7 +238,7 @@ export class X6SelectionAdapter {
             // Use EdgeService for edge deletions (handles business logic and port visibility)
             this.edgeService.removeEdge(graph, cell.id);
           } else {
-            // Use X6CoreOperationsService for node deletions 
+            // Use X6CoreOperationsService for node deletions
             // TODO: Replace with nodeService.removeNode() when DfdNodeService has removeNode method
             this.x6CoreOps.removeCellObject(graph, cell);
           }
@@ -248,8 +248,8 @@ export class X6SelectionAdapter {
         includePortVisibility: false, // Suppress port visibility changes from history
         includeVisualEffects: false,
         includeHighlighting: false,
-        includeToolChanges: false
-      }
+        includeToolChanges: false,
+      },
     );
 
     this.logger.info('Deleted selected cells', { count: selectedCells.length });
@@ -320,7 +320,7 @@ export class X6SelectionAdapter {
       () => {
         // Create group node using X6CoreOperationsService
         const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
-        
+
         if (!createdGroupNode) {
           throw new Error('Failed to create group node');
         }

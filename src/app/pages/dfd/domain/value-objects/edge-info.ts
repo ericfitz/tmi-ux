@@ -47,7 +47,6 @@ export class EdgeInfo {
     return customData;
   }
 
-
   /**
    * Creates EdgeInfo from a plain object
    */
@@ -88,7 +87,7 @@ export class EdgeInfo {
     } else if (data.sourceNodeId) {
       source = {
         cell: data.sourceNodeId,
-        port: data.sourcePortId || 'right'
+        port: data.sourcePortId || 'right',
       };
     } else {
       throw new Error('Source information is required');
@@ -101,7 +100,7 @@ export class EdgeInfo {
     } else if (data.targetNodeId) {
       target = {
         cell: data.targetNodeId,
-        port: data.targetPortId || 'left'
+        port: data.targetPortId || 'left',
       };
     } else {
       throw new Error('Target information is required');
@@ -138,8 +137,8 @@ export class EdgeInfo {
     const labels: EdgeLabel[] = data.labels || [];
 
     // Handle vertices
-    const vertices: Point[] = (data.vertices || []).map(v => 
-      v instanceof Point ? v : new Point(v.x, v.y)
+    const vertices: Point[] = (data.vertices || []).map(v =>
+      v instanceof Point ? v : new Point(v.x, v.y),
     );
 
     // Handle hybrid data format or legacy metadata
@@ -168,7 +167,6 @@ export class EdgeInfo {
       data.defaultLabel,
     );
   }
-
 
   /**
    * Creates a new EdgeInfo instance from a plain object.
@@ -209,21 +207,10 @@ export class EdgeInfo {
 
     const hybridData = {
       _metadata: metadataEntries,
-      ...(data.customData || {})
+      ...(data.customData || {}),
     };
 
-    return new EdgeInfo(
-      data.id,
-      'edge',
-      source,
-      target,
-      1,
-      true,
-      attrs,
-      [],
-      vertices,
-      hybridData,
-    );
+    return new EdgeInfo(data.id, 'edge', source, target, 1, true, attrs, [], vertices, hybridData);
   }
 
   /**
@@ -290,9 +277,7 @@ export class EdgeInfo {
    * Creates a new EdgeInfo with updated vertices
    */
   withVertices(vertices: Point[] | Array<{ x: number; y: number }>): EdgeInfo {
-    const pointVertices = vertices.map(v => 
-      v instanceof Point ? v : new Point(v.x, v.y)
-    );
+    const pointVertices = vertices.map(v => (v instanceof Point ? v : new Point(v.x, v.y)));
     return new EdgeInfo(
       this.id,
       this.shape,
@@ -355,7 +340,7 @@ export class EdgeInfo {
 
     const newData = {
       ...this.data,
-      _metadata: newMetadata
+      _metadata: newMetadata,
     };
 
     return new EdgeInfo(
@@ -431,7 +416,7 @@ export class EdgeInfo {
   withCustomData(key: string, value: any): EdgeInfo {
     const newData = {
       ...this.data,
-      [key]: value
+      [key]: value,
     };
 
     return new EdgeInfo(
@@ -459,7 +444,7 @@ export class EdgeInfo {
   withCustomDataBatch(customData: Record<string, any>): EdgeInfo {
     const newData = {
       ...this.data,
-      ...customData
+      ...customData,
     };
 
     return new EdgeInfo(
@@ -537,17 +522,17 @@ export class EdgeInfo {
           newMetadata = Object.entries(updates.metadata).map(([key, value]) => ({ key, value }));
         }
       }
-      
+
       newData = {
         ...this.data,
         ...(updates.customData || {}),
-        _metadata: newMetadata
+        _metadata: newMetadata,
       };
     }
 
     // Handle vertices conversion
     const newVertices = updates.vertices
-      ? updates.vertices.map(v => v instanceof Point ? v : new Point(v.x, v.y))
+      ? updates.vertices.map(v => (v instanceof Point ? v : new Point(v.x, v.y)))
       : this.vertices;
 
     return new EdgeInfo(
@@ -669,8 +654,6 @@ export class EdgeInfo {
       defaultLabel: this.defaultLabel,
     };
   }
-
-
 
   /**
    * Converts metadata array to Record format
@@ -868,12 +851,16 @@ export class EdgeInfo {
       if (typeof this.router === 'string') {
         const validRouters = ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'];
         if (!validRouters.includes(this.router)) {
-          throw new Error(`Invalid router type: ${this.router}. Must be one of: ${validRouters.join(', ')}`);
+          throw new Error(
+            `Invalid router type: ${this.router}. Must be one of: ${validRouters.join(', ')}`,
+          );
         }
       } else if (typeof this.router === 'object') {
         const validRouters = ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'];
         if (!this.router.name || !validRouters.includes(this.router.name)) {
-          throw new Error(`Invalid router name: ${this.router.name}. Must be one of: ${validRouters.join(', ')}`);
+          throw new Error(
+            `Invalid router name: ${this.router.name}. Must be one of: ${validRouters.join(', ')}`,
+          );
         }
         if (this.router.args && typeof this.router.args !== 'object') {
           throw new Error('Router args must be an object');
@@ -888,12 +875,16 @@ export class EdgeInfo {
       if (typeof this.connector === 'string') {
         const validConnectors = ['normal', 'rounded', 'smooth', 'jumpover'];
         if (!validConnectors.includes(this.connector)) {
-          throw new Error(`Invalid connector type: ${this.connector}. Must be one of: ${validConnectors.join(', ')}`);
+          throw new Error(
+            `Invalid connector type: ${this.connector}. Must be one of: ${validConnectors.join(', ')}`,
+          );
         }
       } else if (typeof this.connector === 'object') {
         const validConnectors = ['normal', 'rounded', 'smooth', 'jumpover'];
         if (!this.connector.name || !validConnectors.includes(this.connector.name)) {
-          throw new Error(`Invalid connector name: ${this.connector.name}. Must be one of: ${validConnectors.join(', ')}`);
+          throw new Error(
+            `Invalid connector name: ${this.connector.name}. Must be one of: ${validConnectors.join(', ')}`,
+          );
         }
         if (this.connector.args && typeof this.connector.args !== 'object') {
           throw new Error('Connector args must be an object');
@@ -909,8 +900,11 @@ export class EdgeInfo {
         throw new Error('Default label must be an object');
       }
       if (this.defaultLabel.position !== undefined) {
-        if (typeof this.defaultLabel.position !== 'number' || 
-            this.defaultLabel.position < 0 || this.defaultLabel.position > 1) {
+        if (
+          typeof this.defaultLabel.position !== 'number' ||
+          this.defaultLabel.position < 0 ||
+          this.defaultLabel.position > 1
+        ) {
           throw new Error('Default label position must be a number between 0 and 1');
         }
       }
@@ -939,7 +933,7 @@ export class EdgeInfo {
   private metadataEquals(other: { _metadata: Metadata[]; [key: string]: any }): boolean {
     const thisMetadata = this.metadata;
     const otherMetadata = other._metadata || [];
-    
+
     if (thisMetadata.length !== otherMetadata.length) {
       return false;
     }
@@ -953,12 +947,12 @@ export class EdgeInfo {
       const otherEntry = otherSorted[index];
       return entry.key === otherEntry.key && entry.value === otherEntry.value;
     });
-    
+
     // Check custom data equality (excluding _metadata)
     const thisCustomData = this.getCustomData();
     const otherCustomData = { ...other };
     delete (otherCustomData as any)._metadata;
-    
+
     return metadataEqual && JSON.stringify(thisCustomData) === JSON.stringify(otherCustomData);
   }
 }

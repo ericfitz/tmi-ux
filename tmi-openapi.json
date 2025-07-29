@@ -15,7 +15,7 @@
       "description": "Production server"
     },
     {
-      "url": "http://localhost:4200",
+      "url": "http://localhost:8080",
       "description": "Local development server"
     }
   ],
@@ -1885,7 +1885,7 @@
                 },
                 {
                   "id": "github",
-                  "name": "GitHub", 
+                  "name": "GitHub",
                   "icon": "fa-brands fa-github",
                   "auth_url": "http://localhost:8080/auth/authorize/github",
                   "redirect_uri": "http://localhost:8080/auth/callback",
@@ -1937,7 +1937,7 @@
             }
           },
           {
-            "name": "state", 
+            "name": "state",
             "in": "query",
             "required": false,
             "description": "CSRF protection state parameter. Recommended for security. Will be included in the callback response.",
@@ -1963,7 +1963,7 @@
                     "value": "https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=random_state_abc123"
                   },
                   "github": {
-                    "summary": "GitHub OAuth authorization URL", 
+                    "summary": "GitHub OAuth authorization URL",
                     "value": "https://github.com/login/oauth/authorize?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=user:email&state=random_state_abc123"
                   },
                   "microsoft": {
@@ -2309,7 +2309,7 @@
                 },
                 "example": {
                   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyNDI2MjJ9.new_jwt_signature",
-                  "refresh_token": "9yMPyCtZq9_new_refresh_token", 
+                  "refresh_token": "9yMPyCtZq9_new_refresh_token",
                   "token_type": "Bearer",
                   "expires_in": 3600
                 }

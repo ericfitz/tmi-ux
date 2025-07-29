@@ -40,17 +40,21 @@ export class DfdExportService {
             this.logger.debug('Using File System Access API for file save');
             const fileHandle = await window.showSaveFilePicker({
               suggestedName: name,
-              types: [{
-                description: `${format.toUpperCase()} files`,
-                accept: { [mimeType]: [`.${format}`] },
-              }],
+              types: [
+                {
+                  description: `${format.toUpperCase()} files`,
+                  accept: { [mimeType]: [`.${format}`] },
+                },
+              ],
             });
 
             const writable = await fileHandle.createWritable();
             await writable.write(blob);
             await writable.close();
-            
-            this.logger.info('File saved successfully using File System Access API', { filename: name });
+
+            this.logger.info('File saved successfully using File System Access API', {
+              filename: name,
+            });
             return; // Success, exit early
           } catch (error) {
             // Handle File System Access API errors
@@ -58,7 +62,10 @@ export class DfdExportService {
               this.logger.info('File save cancelled by user');
               return; // User cancelled, exit without fallback
             } else {
-              this.logger.warn('File System Access API failed, falling back to download method', error);
+              this.logger.warn(
+                'File System Access API failed, falling back to download method',
+                error,
+              );
               // Continue to fallback method below
             }
           }
@@ -76,9 +83,14 @@ export class DfdExportService {
           link.click();
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
-          this.logger.info('File downloaded successfully using fallback method', { filename: name });
+          this.logger.info('File downloaded successfully using fallback method', {
+            filename: name,
+          });
         } catch (fallbackError) {
-          this.logger.error('Both File System Access API and fallback method failed', fallbackError);
+          this.logger.error(
+            'Both File System Access API and fallback method failed',
+            fallbackError,
+          );
           throw fallbackError;
         }
       };
@@ -160,7 +172,11 @@ export class DfdExportService {
    * Format: "{threatModelName}-{diagramName}-DFD.{format}"
    * Names are truncated to 63 characters if longer
    */
-  private generateFilename(format: ExportFormat, threatModelName?: string, diagramName?: string): string {
+  private generateFilename(
+    format: ExportFormat,
+    threatModelName?: string,
+    diagramName?: string,
+  ): string {
     // Helper function to sanitize and truncate names for filenames
     const sanitizeAndTruncate = (name: string, maxLength: number): string => {
       // Remove or replace characters that are invalid in filenames
@@ -169,7 +185,7 @@ export class DfdExportService {
         .replace(/\s+/g, '-') // Replace spaces with dashes
         .replace(/-+/g, '-') // Replace multiple dashes with single dash
         .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
-      
+
       // Truncate to max length
       return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
     };
@@ -190,19 +206,20 @@ export class DfdExportService {
     filenameParts.push('DFD');
 
     // If no names were provided, use default with timestamp
-    if (filenameParts.length === 1) { // Only 'DFD' was added
+    if (filenameParts.length === 1) {
+      // Only 'DFD' was added
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       return `dfd-diagram-${timestamp}.${format}`;
     }
 
     // Join parts and add extension
     const filename = `${filenameParts.join('-')}.${format}`;
-    
-    this.logger.debug('Generated filename', { 
-      threatModelName, 
-      diagramName, 
-      format, 
-      filename 
+
+    this.logger.debug('Generated filename', {
+      threatModelName,
+      diagramName,
+      format,
+      filename,
     });
 
     return filename;

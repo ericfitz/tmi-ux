@@ -1,9 +1,9 @@
 /**
  * Threat Model Management Component
- * 
+ *
  * This component provides the main interface for threat model management and overview.
  * It displays threat model lists, collaboration sessions, and provides navigation to editing features.
- * 
+ *
  * Key functionality:
  * - Displays comprehensive list of available threat models with search and filtering
  * - Shows active collaboration sessions with real-time updates
@@ -86,9 +86,9 @@ export class TmComponent implements OnInit, OnDestroy {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
     this.subscription = this.threatModelService.getThreatModels().subscribe(models => {
       this.threatModels = models;
-      this.logger.debugComponent('TM', 'TmComponent received threat models', { 
+      this.logger.debugComponent('TM', 'TmComponent received threat models', {
         count: models.length,
-        models: models.map(tm => ({ id: tm.id, name: tm.name }))
+        models: models.map(tm => ({ id: tm.id, name: tm.name })),
       });
       // Trigger change detection to update the view
       this.cdr.detectChanges();
@@ -211,7 +211,7 @@ export class TmComponent implements OnInit, OnDestroy {
       // Check if File System Access API is supported
       if ('showOpenFilePicker' in window) {
         this.logger.debugComponent('TM', 'Using File System Access API');
-        
+
         const [handle] = await window.showOpenFilePicker({
           types: [
             {
@@ -236,22 +236,21 @@ export class TmComponent implements OnInit, OnDestroy {
       const content = await file.text();
       const threatModelData = JSON.parse(content) as Record<string, unknown>;
 
-      this.logger.info('File loaded successfully', { 
+      this.logger.info('File loaded successfully', {
         filename: file.name,
         size: file.size,
-        type: file.type 
+        type: file.type,
       });
 
       // Import the threat model
       await this.importThreatModel(threatModelData);
-
     } catch (error) {
       // Check if user cancelled the operation
       if (error instanceof DOMException && error.name === 'AbortError') {
         this.logger.debugComponent('TM', 'File selection cancelled by user');
         return;
       }
-      
+
       // Handle other errors (file parsing, import errors, etc.)
       this.logger.error('Failed to load threat model from file', error);
     }
@@ -265,8 +264,8 @@ export class TmComponent implements OnInit, OnDestroy {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.json';
-      
-      input.onchange = (event) => {
+
+      input.onchange = event => {
         const file = (event.target as HTMLInputElement).files?.[0];
         if (file) {
           resolve(file);
@@ -274,11 +273,11 @@ export class TmComponent implements OnInit, OnDestroy {
           reject(new Error('No file selected'));
         }
       };
-      
+
       input.oncancel = () => {
         reject(new DOMException('User cancelled file selection', 'AbortError'));
       };
-      
+
       // Trigger file picker
       input.click();
     });
@@ -295,16 +294,18 @@ export class TmComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.logger.info('Importing threat model', { 
-        id: data['id'], 
-        name: data['name'] 
+      this.logger.info('Importing threat model', {
+        id: data['id'],
+        name: data['name'],
       });
 
       // Validate the threat model data
       const validationResult = this.validator.validate(data as Partial<ThreatModel>);
       if (!validationResult.valid) {
         this.logger.error('Threat model validation failed', validationResult.errors);
-        this.showError(`Threat model validation failed: ${validationResult.errors.map(e => String(e)).join(', ')}`);
+        this.showError(
+          `Threat model validation failed: ${validationResult.errors.map(e => e.message).join(', ')}`,
+        );
         return;
       }
 
@@ -313,15 +314,15 @@ export class TmComponent implements OnInit, OnDestroy {
       }
 
       // Attempt to import the threat model
-      const result = await this.threatModelService.importThreatModel(
-        data as Partial<ThreatModel> & { id: string; name: string }
-      ).toPromise();
+      const result = await this.threatModelService
+        .importThreatModel(data as Partial<ThreatModel> & { id: string; name: string })
+        .toPromise();
 
       if (result?.conflict?.action === 'prompt') {
         // Handle conflict - ask user what to do
         const resolution = this.showConflictDialog(
           data as Partial<ThreatModel> & { id: string; name: string },
-          result.conflict.existingModel
+          result.conflict.existingModel,
         );
 
         if (resolution === 'cancel') {
@@ -330,10 +331,12 @@ export class TmComponent implements OnInit, OnDestroy {
         }
 
         // Re-import with user's resolution
-        const resolvedResult = await this.threatModelService.importThreatModel(
-          data as Partial<ThreatModel> & { id: string; name: string },
-          resolution
-        ).toPromise();
+        const resolvedResult = await this.threatModelService
+          .importThreatModel(
+            data as Partial<ThreatModel> & { id: string; name: string },
+            resolution,
+          )
+          .toPromise();
 
         if (resolvedResult) {
           this.navigateToImportedModel(resolvedResult.model, resolution === 'overwrite');
@@ -344,29 +347,32 @@ export class TmComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       this.logger.error('Failed to import threat model', error);
-      this.showError(`Failed to import threat model: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.showError(
+        `Failed to import threat model: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
   private navigateToImportedModel(model: ThreatModel, wasConflict: boolean): void {
     const action = wasConflict ? 'updated' : 'imported';
     this.logger.info(`Threat model ${action} successfully`, { id: model.id });
-    
+
     this.snackBar.open(`Threat model "${model.name}" ${action} successfully`, 'Close', {
       duration: 3000,
     });
-    
+
     // Navigate to the imported/updated threat model
     void this.router.navigate(['/tm', model.id]);
   }
 
   private showConflictDialog(
     loadedModel: Partial<ThreatModel> & { id: string; name: string },
-    existingModel: ThreatModel
+    existingModel: ThreatModel,
   ): 'discard' | 'overwrite' | 'cancel' {
     // For now, use a simple browser confirm dialog
     // TODO: Replace with a proper Angular Material dialog
-    const message = `A threat model with the same ID already exists:\n\n` +
+    const message =
+      `A threat model with the same ID already exists:\n\n` +
       `Existing: "${existingModel.name}" (last modified: ${existingModel.modified_at})\n` +
       `Loaded: "${loadedModel.name}"\n\n` +
       `Choose:\n` +
@@ -380,7 +386,7 @@ export class TmComponent implements OnInit, OnDestroy {
   private showError(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 5000,
-      panelClass: ['error-snackbar']
+      panelClass: ['error-snackbar'],
     });
   }
 }

@@ -1,9 +1,9 @@
 /**
  * X6 Cell Types
- * 
+ *
  * This file defines TypeScript type definitions for X6 cell properties and extensions.
  * It provides type safety for X6 graph library integration and custom cell properties.
- * 
+ *
  * Key functionality:
  * - Defines TypeScript interfaces for X6 cell properties and attributes
  * - Provides type safety for custom cell extensions and metadata

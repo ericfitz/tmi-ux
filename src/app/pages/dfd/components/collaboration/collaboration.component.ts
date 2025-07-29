@@ -1,9 +1,9 @@
 /**
  * DFD Collaboration Component
- * 
+ *
  * This component provides real-time collaboration features for the Data Flow Diagram editor.
  * It manages user presence, session sharing, and collaborative editing capabilities.
- * 
+ *
  * Key functionality:
  * - Displays real-time user presence indicators showing who is currently editing
  * - Manages collaboration sessions with session creation and joining capabilities

@@ -89,14 +89,14 @@ export class DfdDiagramService {
           threatModelId,
           cells: diagram.cells || [], // Include the actual diagram cells from threat model
         };
-        
-        this.logger.info('Successfully loaded diagram data from threat model', { 
-          name: diagramData.name, 
+
+        this.logger.info('Successfully loaded diagram data from threat model', {
+          name: diagramData.name,
           id: diagramId,
           threatModelId,
-          cellCount: diagramData.cells?.length || 0
+          cellCount: diagramData.cells?.length || 0,
         });
-        
+
         return {
           success: true,
           diagram: diagramData,
@@ -116,9 +116,7 @@ export class DfdDiagramService {
    * Validate if diagram exists and user has access
    */
   validateDiagramAccess(diagramId: string, threatModelId?: string): Observable<boolean> {
-    return this.loadDiagram(diagramId, threatModelId).pipe(
-      map(result => result.success),
-    );
+    return this.loadDiagram(diagramId, threatModelId).pipe(map(result => result.success));
   }
 
   /**
@@ -142,14 +140,14 @@ export class DfdDiagramService {
    * Load multiple diagram cells with proper history suppression and port visibility management
    */
   loadDiagramCellsBatch(
-    cells: any[], 
-    graph: Graph, 
-    diagramId: string, 
-    nodeConfigurationService: any
+    cells: any[],
+    graph: Graph,
+    diagramId: string,
+    nodeConfigurationService: any,
   ): void {
-    this.logger.info('Loading diagram cells in batch with history suppression', { 
+    this.logger.info('Loading diagram cells in batch with history suppression', {
       cellCount: cells.length,
-      diagramId 
+      diagramId,
     });
 
     try {
@@ -162,7 +160,7 @@ export class DfdDiagramService {
         try {
           const convertedCell = this.convertMockCellToX6Format(cell, nodeConfigurationService);
           convertedCells.push(convertedCell);
-          
+
           // Separate nodes and edges for proper ordering
           if (cell.shape === 'edge' || cell.edge === true) {
             edges.push(convertedCell);
@@ -170,10 +168,10 @@ export class DfdDiagramService {
             nodes.push(convertedCell);
           }
         } catch (error) {
-          this.logger.error('Error converting cell to X6 format', { 
-            cellId: cell.id, 
-            cellShape: cell.shape, 
-            error 
+          this.logger.error('Error converting cell to X6 format', {
+            cellId: cell.id,
+            cellShape: cell.shape,
+            error,
           });
         }
       });
@@ -185,7 +183,7 @@ export class DfdDiagramService {
         () => {
           // Clear existing graph first
           graph.clearCells();
-          
+
           // Add nodes first, then edges (to ensure proper dependencies)
           nodes.forEach(nodeConfig => {
             try {
@@ -195,20 +193,20 @@ export class DfdDiagramService {
               const node = this.nodeService.createNodeFromInfo(graph, nodeInfo, {
                 ensureVisualRendering: true,
                 updatePortVisibility: false, // Will be handled in batch after all nodes/edges
-                suppressHistory: true // Already in atomic operation
+                suppressHistory: true, // Already in atomic operation
               });
               // Apply zIndex after adding to ensure proper ordering
               if (nodeConfig.zIndex !== undefined) {
                 node.setZIndex(nodeConfig.zIndex);
               }
             } catch (error) {
-              this.logger.error('Error adding node during batch load', { 
-                nodeId: nodeConfig.id, 
-                error 
+              this.logger.error('Error adding node during batch load', {
+                nodeId: nodeConfig.id,
+                error,
               });
             }
           });
-          
+
           edges.forEach(edgeConfig => {
             try {
               // Convert X6 config to EdgeInfo domain object
@@ -216,54 +214,49 @@ export class DfdDiagramService {
               // Use infrastructure service instead of direct X6 call
               const edge = this.edgeService.createEdge(graph, edgeInfo, {
                 ensureVisualRendering: true,
-                updatePortVisibility: false // Will be handled in batch after all nodes/edges
+                updatePortVisibility: false, // Will be handled in batch after all nodes/edges
               });
               // Apply zIndex after adding to ensure proper ordering
               if (edgeConfig.zIndex !== undefined) {
                 edge.setZIndex(edgeConfig.zIndex);
               }
             } catch (error) {
-              this.logger.error('Error adding edge during batch load', { 
-                edgeId: edgeConfig.id, 
+              this.logger.error('Error adding edge during batch load', {
+                edgeId: edgeConfig.id,
                 sourceCell: edgeConfig.source?.cell,
                 targetCell: edgeConfig.target?.cell,
-                error 
+                error,
               });
             }
           });
-          
+
           this.logger.debugComponent('DfdDiagram', 'Batch loaded cells into graph', {
             totalCells: convertedCells.length,
             nodes: nodes.length,
-            edges: edges.length
+            edges: edges.length,
           });
-          
+
           return convertedCells;
         },
         {
           includeVisualEffects: false,
           includePortVisibility: false,
           includeHighlighting: false,
-          includeToolChanges: false
-        }
+          includeToolChanges: false,
+        },
       );
 
       // Update port visibility after loading (as separate visual effect)
-      this.historyCoordinator.executeVisualEffect(
-        graph,
-        'diagram-load-port-visibility',
-        () => {
-          // Hide unconnected ports on all nodes
-          this.portStateManager.hideUnconnectedPorts(graph);
-          this.logger.debugComponent('DfdDiagram', 'Updated port visibility after diagram load');
-        }
-      );
+      this.historyCoordinator.executeVisualEffect(graph, 'diagram-load-port-visibility', () => {
+        // Hide unconnected ports on all nodes
+        this.portStateManager.hideUnconnectedPorts(graph);
+        this.logger.debugComponent('DfdDiagram', 'Updated port visibility after diagram load');
+      });
 
       // Fit the graph to show all content
       graph.centerContent();
-      
-      this.logger.info('Successfully loaded diagram cells in batch');
 
+      this.logger.info('Successfully loaded diagram cells in batch');
     } catch (error) {
       this.logger.error('Error in batch loading diagram cells', error);
       throw error;
@@ -279,7 +272,7 @@ export class DfdDiagramService {
     if (mockCell.shape === 'edge' || mockCell.edge === true) {
       return this.convertMockEdgeToX6Format(mockCell);
     }
-    
+
     // Handle nodes
     return this.convertMockNodeToX6Format(mockCell, nodeConfigurationService);
   }
@@ -288,26 +281,29 @@ export class DfdDiagramService {
    * Convert mock node data to proper X6 format
    */
   private convertMockNodeToX6Format(mockCell: any, nodeConfigurationService: any): any {
-    
     // Get the node type from the shape
     const nodeType = mockCell.shape;
-    
+
     // Get the correct X6 shape name
     const x6Shape = getX6ShapeForNodeType(nodeType);
-    
+
     // Extract label from various possible import format locations
     // Note: This is for import/conversion, not live X6 cell manipulation
-    const label = mockCell.attrs?.text?.text || mockCell.value || mockCell.label || this.getDefaultLabelForType(nodeType);
-    
+    const label =
+      mockCell.attrs?.text?.text ||
+      mockCell.value ||
+      mockCell.label ||
+      this.getDefaultLabelForType(nodeType);
+
     // Get proper port configuration for this node type
     const portConfig = nodeConfigurationService.getNodePorts(nodeType);
-    
+
     // Handle position from either direct properties or geometry object
     const x = mockCell.x ?? mockCell.geometry?.x ?? 0;
     const y = mockCell.y ?? mockCell.geometry?.y ?? 0;
     const width = mockCell.width ?? mockCell.geometry?.width ?? 80;
     const height = mockCell.height ?? mockCell.geometry?.height ?? 80;
-    
+
     // Create base configuration
     const cellConfig: any = {
       id: mockCell.id,
@@ -343,7 +339,7 @@ export class DfdDiagramService {
     // Handle different source/target formats
     let source: any;
     let target: any;
-    
+
     if (mockCell.source && typeof mockCell.source === 'object') {
       // New format: { cell: 'id', port?: 'portId' }
       source = mockCell.source;
@@ -351,10 +347,10 @@ export class DfdDiagramService {
       // Legacy format: string IDs or separate properties
       source = {
         cell: mockCell.source || mockCell.sourceNodeId,
-        port: mockCell.sourcePortId || 'right' // Default to right port
+        port: mockCell.sourcePortId || 'right', // Default to right port
       };
     }
-    
+
     if (mockCell.target && typeof mockCell.target === 'object') {
       // New format: { cell: 'id', port?: 'portId' }
       target = mockCell.target;
@@ -362,10 +358,10 @@ export class DfdDiagramService {
       // Legacy format: string IDs or separate properties
       target = {
         cell: mockCell.target || mockCell.targetNodeId,
-        port: mockCell.targetPortId || 'left' // Default to left port
+        port: mockCell.targetPortId || 'left', // Default to left port
       };
     }
-    
+
     // Create edge configuration
     const edgeConfig: any = {
       id: mockCell.id,
@@ -379,37 +375,39 @@ export class DfdDiagramService {
           strokeWidth: 2,
           targetMarker: {
             name: 'classic',
-            size: 8
-          }
-        }
-      }
+            size: 8,
+          },
+        },
+      },
     };
-    
+
     // Add custom attributes if present
     if (mockCell.attrs) {
       edgeConfig.attrs = { ...edgeConfig.attrs, ...mockCell.attrs };
     }
-    
+
     // Add vertices if present
     if (mockCell.vertices && Array.isArray(mockCell.vertices)) {
       edgeConfig.vertices = mockCell.vertices;
     }
-    
+
     // Add labels if present (import/conversion logic)
     // Note: This creates X6 configuration, not live cell manipulation
     if (mockCell.labels && Array.isArray(mockCell.labels)) {
       edgeConfig.labels = mockCell.labels;
     } else if (mockCell.value) {
       // Convert legacy value to label
-      edgeConfig.labels = [{
-        attrs: {
-          text: {
-            text: mockCell.value
-          }
-        }
-      }];
+      edgeConfig.labels = [
+        {
+          attrs: {
+            text: {
+              text: mockCell.value,
+            },
+          },
+        },
+      ];
     }
-    
+
     // Add hybrid data format if present
     if (mockCell.data) {
       if (Array.isArray(mockCell.data)) {
@@ -421,7 +419,7 @@ export class DfdDiagramService {
         edgeConfig.data = mockCell.data;
       }
     }
-    
+
     return edgeConfig;
   }
 
@@ -451,7 +449,7 @@ export class DfdDiagramService {
   private convertX6ConfigToNodeInfo(nodeConfig: any): NodeInfo {
     // Extract hybrid data format (metadata + custom data)
     const hybridData = nodeConfig.data || { _metadata: [] };
-    
+
     // Handle legacy format conversion if needed
     if (hybridData._metadata) {
       // New hybrid format - data is already in correct format
@@ -460,7 +458,7 @@ export class DfdDiagramService {
       // Legacy format - convert to new format if needed
       // For now, keep as-is
     }
-    
+
     return NodeInfo.fromJSON({
       id: nodeConfig.id,
       shape: this.mapShapeToNodeType(nodeConfig.shape),
@@ -471,12 +469,12 @@ export class DfdDiagramService {
       label: nodeConfig.label || '',
       data: hybridData,
       markup: nodeConfig.markup,
-      tools: nodeConfig.tools
+      tools: nodeConfig.tools,
     });
   }
 
   /**
-   * Convert X6 edge config to EdgeInfo domain object  
+   * Convert X6 edge config to EdgeInfo domain object
    */
   private convertX6ConfigToEdgeInfo(edgeConfig: any): EdgeInfo {
     // Extract label from labels array or direct label property
@@ -492,7 +490,7 @@ export class DfdDiagramService {
 
     // Extract hybrid data format (metadata + custom data)
     const hybridData = edgeConfig.data || { _metadata: [] };
-    
+
     // Handle legacy format conversion if needed
     if (hybridData._metadata) {
       // New hybrid format - data is already in correct format
@@ -513,7 +511,7 @@ export class DfdDiagramService {
       tools: edgeConfig.tools,
       router: edgeConfig.router,
       connector: edgeConfig.connector,
-      defaultLabel: edgeConfig.defaultLabel
+      defaultLabel: edgeConfig.defaultLabel,
     });
   }
 
@@ -537,28 +535,28 @@ export class DfdDiagramService {
 
         // Convert current graph state to cells format
         const cells = this.convertGraphToCellsFormat(graph);
-        
+
         // Update the diagram with new cells data
         if (threatModel.diagrams) {
           threatModel.diagrams[diagramIndex] = {
             ...threatModel.diagrams[diagramIndex],
             cells,
-            modified_at: new Date().toISOString()
+            modified_at: new Date().toISOString(),
           };
         }
 
         // Save the updated threat model
         this.threatModelService.updateThreatModel(threatModel).subscribe({
           next: () => {
-            this.logger.info('Successfully saved diagram changes to threat model', { 
-              diagramId, 
+            this.logger.info('Successfully saved diagram changes to threat model', {
+              diagramId,
               threatModelId,
-              cellCount: cells.length 
+              cellCount: cells.length,
             });
           },
-          error: (error) => {
+          error: error => {
             this.logger.error('Failed to save threat model after diagram update', error);
-          }
+          },
         });
 
         return true;
@@ -566,7 +564,7 @@ export class DfdDiagramService {
       catchError(error => {
         this.logger.error('Error saving diagram changes', error);
         return of(false);
-      })
+      }),
     );
   }
 
@@ -575,10 +573,10 @@ export class DfdDiagramService {
    */
   private convertGraphToCellsFormat(graph: Graph): any[] {
     const cells: any[] = [];
-    
+
     // Get all cells from the graph
     const graphCells = graph.getCells();
-    
+
     graphCells.forEach(cell => {
       try {
         if (cell.isNode()) {
@@ -596,32 +594,34 @@ export class DfdDiagramService {
               body: {
                 fill: '#ffffff',
                 stroke: '#000000',
-                strokeWidth: 2
+                strokeWidth: 2,
               },
               text: {
-                text: (cell as any).getLabel ? (cell as any).getLabel() : (cell.getAttrs() as any)?.text?.text || '',
+                text: (cell as any).getLabel
+                  ? (cell as any).getLabel()
+                  : (cell.getAttrs() as any)?.text?.text || '',
                 fontSize: 14,
-                fill: '#000000'
-              }
+                fill: '#000000',
+              },
             },
-            data: this.convertCellDataToArray(cell.getData())
+            data: this.convertCellDataToArray(cell.getData()),
           };
           cells.push(nodeCell);
         } else if (cell.isEdge()) {
           // Convert edge to cell format
           const source = cell.getSource();
           const target = cell.getTarget();
-          
+
           const edgeCell: any = {
             id: cell.id,
             shape: 'edge',
             source: {
               cell: (source as any).cell,
-              port: (source as any).port
+              port: (source as any).port,
             },
             target: {
               cell: (target as any).cell,
-              port: (target as any).port
+              port: (target as any).port,
             },
             vertices: cell.getVertices(),
             zIndex: cell.getZIndex(),
@@ -631,31 +631,33 @@ export class DfdDiagramService {
                 strokeWidth: 2,
                 targetMarker: {
                   name: 'classic',
-                  size: 8
-                }
-              }
+                  size: 8,
+                },
+              },
             },
-            data: this.convertCellDataToArray(cell.getData())
+            data: this.convertCellDataToArray(cell.getData()),
           };
-          
+
           // Add labels if present
           const labels = (cell as any).getLabels ? (cell as any).getLabels() : [];
           if (labels && labels.length > 0) {
             edgeCell.labels = labels;
           }
-          
+
           cells.push(edgeCell);
         }
       } catch (error) {
-        this.logger.error('Error converting cell to save format', { 
-          cellId: cell.id, 
+        this.logger.error('Error converting cell to save format', {
+          cellId: cell.id,
           cellType: cell.isNode() ? 'node' : 'edge',
-          error 
+          error,
         });
       }
     });
-    
-    this.logger.debugComponent('DfdDiagram', 'Converted graph to cells format', { cellCount: cells.length });
+
+    this.logger.debugComponent('DfdDiagram', 'Converted graph to cells format', {
+      cellCount: cells.length,
+    });
     return cells;
   }
 
@@ -675,7 +677,7 @@ export class DfdDiagramService {
       });
       return { _metadata: metadataArray };
     }
-    
+
     // Default empty hybrid format
     return { _metadata: [] };
   }

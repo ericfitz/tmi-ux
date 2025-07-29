@@ -83,18 +83,11 @@
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
-    "copyDefinitionToClipboard": "Copy Definition to Clipboard",
     "editText": "Edit Text",
     "moveBackward": "Move Backward",
     "moveForward": "Move Forward",
     "moveToBack": "Move to Back",
     "moveToFront": "Move to Front"
-  },
-  "diagrams": {
-    "createFirstButton": "Create Your First Diagram",
-    "diagramTitle": "{{name}}",
-    "noItemsMessage": "You Don't Have Any Diagrams Yet.",
-    "pageTitle": "Diagrams"
   },
   "editor": {
     "diagramPrefix": "Diagram:",
@@ -107,10 +100,6 @@
       "textbox": "Text"
     },
     "pageTitle": "Data Flow Diagram Editor",
-    "properties": {
-      "help": "Element properties will appear here when an element is selected.",
-      "title": "Properties"
-    },
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Export as JPEG",
@@ -140,7 +129,6 @@
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "login": {
-    "authenticationFailed": "Authentication failed. Please try again.",
     "chooseMethod": "Choose your login method:",
     "loadingProviders": "Loading authentication providers...",
     "loggingInWith": "Logging in with {{provider}}...",
@@ -160,9 +148,7 @@
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
       "serverConnectionError": "Server Connection Error"
-    },
-    "userProfileTooltip": "{{email}}",
-    "username": "{{username}}"
+    }
   },
   "privacy": {
     "changesContent": "The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
@@ -244,7 +230,6 @@
     "name": "Name",
     "newThreatModel": "New Threat Model",
     "noDiagrams": "No Diagrams Added Yet",
-    "noDocumentDescription": "No Description Provided",
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
     "noPermissions": "No Permissions Defined",
@@ -261,7 +246,6 @@
     "reportButton": "Report",
     "reportTooltip": "Report",
     "sourceCode": "Source Code",
-    "sourceCodeButton": "Source Code",
     "sourceCodeDescriptionPlaceholder": "Describe the source code repository or its purpose",
     "sourceCodeName": "Source Code Name",
     "sourceCodeParameters": "Repository Parameters",
@@ -270,7 +254,6 @@
     "sourceCodeRefValueHint": "Branch name, tag, or commit ID",
     "sourceCodeSubPath": "Sub-path",
     "sourceCodeSubPathHint": "Optional path within the repository",
-    "sourceCodeTooltip": "Source Code",
     "sourceCodeType": "Repository Type",
     "sourceCodeUrl": "Repository URL",
     "tag": "Tag",

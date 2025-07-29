@@ -1,9 +1,9 @@
 /**
  * DFD Edge Service
- * 
+ *
  * This service provides comprehensive edge management functionality for DFD diagrams.
  * It handles edge creation, validation, and operations with connection rule enforcement.
- * 
+ *
  * Key functionality:
  * - Manages edge creation and validation according to DFD rules
  * - Provides connection validation for different node type combinations
@@ -65,9 +65,9 @@ export class DfdEdgeService {
    * DFD connection rules - which shapes can connect to which other shapes
    */
   private readonly connectionRules: Record<string, string[]> = {
-    'process': ['store', 'actor', 'process'],
-    'store': ['process'],
-    'actor': ['process'],
+    process: ['store', 'actor', 'process'],
+    store: ['process'],
+    actor: ['process'],
   };
 
   constructor(
@@ -86,7 +86,12 @@ export class DfdEdgeService {
    * Handle edge added events from the graph adapter
    * Now simplified to just validate the edge without domain model sync
    */
-  handleEdgeAdded(edge: Edge, graph: Graph, diagramId: string, isInitialized: boolean): Observable<void> {
+  handleEdgeAdded(
+    edge: Edge,
+    graph: Graph,
+    diagramId: string,
+    isInitialized: boolean,
+  ): Observable<void> {
     if (!isInitialized) {
       this.logger.warn('Cannot handle edge added: Graph is not initialized');
       throw new Error('Graph is not initialized');
@@ -419,7 +424,6 @@ export class DfdEdgeService {
       this.logger.error('Failed to update edge style', { error, edgeId: edge.id, style });
     }
   }
-
 
   /**
    * Check if edge is connected to a specific node

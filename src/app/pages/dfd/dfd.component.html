@@ -91,11 +91,7 @@
     </div>
 
     <div class="toolbar-group">
-      <button
-        mat-icon-button
-        (click)="showHistory()"
-        [matTooltip]="'Show X6 History'"
-      >
+      <button mat-icon-button (click)="showHistory()" [matTooltip]="'Show X6 History'">
         <mat-icon>history</mat-icon>
       </button>
       <button
@@ -127,7 +123,12 @@
 
       <button
         mat-icon-button
-        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox || selectedCellIsSecurityBoundary"
+        [disabled]="
+          !threatModelId ||
+          !hasExactlyOneSelectedCell ||
+          selectedCellIsTextBox ||
+          selectedCellIsSecurityBoundary
+        "
         (click)="openThreatEditor()"
         [matTooltip]="'editor.toolbar.tooltips.addThreat' | transloco"
       >
@@ -158,11 +159,7 @@
         </button>
       </mat-menu>
 
-      <button
-        mat-icon-button
-        (click)="closeDiagram()"
-        [matTooltip]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="closeDiagram()" [matTooltip]="'common.close' | transloco">
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -224,10 +221,15 @@
         >
         <span>{{ 'editor.toolbar.tooltips.deleteSelected' | transloco }}</span>
       </button>
-      <button 
-        mat-menu-item 
-        (click)="openThreatEditor()" 
-        [disabled]="!threatModelId || !hasExactlyOneSelectedCell || selectedCellIsTextBox || selectedCellIsSecurityBoundary"
+      <button
+        mat-menu-item
+        (click)="openThreatEditor()"
+        [disabled]="
+          !threatModelId ||
+          !hasExactlyOneSelectedCell ||
+          selectedCellIsTextBox ||
+          selectedCellIsSecurityBoundary
+        "
       >
         <mat-icon
           fontSet="material-symbols-outlined"

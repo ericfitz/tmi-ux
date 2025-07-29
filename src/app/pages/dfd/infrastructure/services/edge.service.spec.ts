@@ -38,7 +38,7 @@ describe('EdgeService - X6 Integration Tests', () => {
   beforeEach(() => {
     // Initialize X6 cell extensions
     initializeX6CellExtensions();
-    
+
     // Create mock for LoggerService (cross-cutting concern)
     mockLogger = {
       info: vi.fn(),
@@ -56,11 +56,7 @@ describe('EdgeService - X6 Integration Tests', () => {
     );
     x6CoreOps = new X6CoreOperationsService(mockLogger as unknown as LoggerService);
     // Create EdgeService with real port management services
-    service = new EdgeService(
-      mockLogger as unknown as LoggerService,
-      portStateManager,
-      x6CoreOps,
-    );
+    service = new EdgeService(mockLogger as unknown as LoggerService, portStateManager, x6CoreOps);
 
     // Create real X6 graph instance
     const container = document.createElement('div');
@@ -165,7 +161,6 @@ describe('EdgeService - X6 Integration Tests', () => {
       expect(sourceNode.getPortProp('right', 'attrs/circle/style/visibility')).toBe('hidden');
       expect(targetNode.getPortProp('left', 'attrs/circle/style/visibility')).toBe('hidden');
     });
-
   });
 
   describe('Edge Updates', () => {
@@ -327,5 +322,4 @@ describe('EdgeService - X6 Integration Tests', () => {
       expect(connectedPorts.map(p => p.portId)).not.toContain('bottom');
     });
   });
-
 });

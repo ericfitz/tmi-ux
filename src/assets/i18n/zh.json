@@ -83,18 +83,11 @@
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",
-    "copyDefinitionToClipboard": "复制定义到剪贴板",
     "editText": "编辑文本",
     "moveBackward": "向后移动",
     "moveForward": "向前移动",
     "moveToBack": "移到最后",
     "moveToFront": "移到最前"
-  },
-  "diagrams": {
-    "createFirstButton": "创建您的第一个图表",
-    "diagramTitle": "{{name}}",
-    "noItemsMessage": "您还没有任何图表。",
-    "pageTitle": "我的图表"
   },
   "editor": {
     "diagramPrefix": "图表:",
@@ -108,7 +101,6 @@
     },
     "pageTitle": "数据流图编辑器",
     "properties": {
-      "help": "选择元素后，元素属性将显示在此处。",
       "title": "属性"
     },
     "toolbar": {
@@ -140,7 +132,6 @@
   "homeDescription": "一种协作威胁建模工具，旨在帮助团队识别、分析和记录其系统中的安全威胁。创建、共享和协作编辑威胁模型和图表，以提高应用程序安全性。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "login": {
-    "authenticationFailed": "身份验证失败。请重试。",
     "chooseMethod": "选择您的登录方式：",
     "loggingInWith": "正在使用{{provider}}登录...",
     "loginWith": "使用以下方式登录",
@@ -154,9 +145,7 @@
     "appTitle": "TMI: 威胁建模改进",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "退出登录",
-    "userProfileTooltip": "{{email}}",
-    "username": "{{username}}"
+    "logoutButton": "退出登录"
   },
   "privacy": {
     "changesContent": "运营商可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
@@ -237,7 +226,6 @@
     "name": "名称",
     "newThreatModel": "新威胁模型",
     "noDiagrams": "尚未添加图表",
-    "noDocumentDescription": "没有提供描述",
     "noDocuments": "尚未添加文档",
     "noItemsMessage": "您还没有任何威胁模型。",
     "noPermissions": "未定义权限",
@@ -254,7 +242,6 @@
     "reportButton": "报告",
     "reportTooltip": "报告",
     "sourceCode": "源代码",
-    "sourceCodeButton": "源代码",
     "sourceCodeDescription": "描述",
     "sourceCodeDescriptionPlaceholder": "描述源代码存储库或其用途",
     "sourceCodeName": "源代码名称",
@@ -264,7 +251,6 @@
     "sourceCodeRefValueHint": "分支名称、标签或提交ID",
     "sourceCodeSubPath": "子路径",
     "sourceCodeSubPathHint": "存储库内的可选路径",
-    "sourceCodeTooltip": "源代码",
     "sourceCodeType": "存储库类型",
     "sourceCodeUrl": "存储库URL",
     "tag": "标签",

@@ -8,7 +8,7 @@
 
 /**
  * DFD Integration Tests - History and Styling Interaction
- * 
+ *
  * This test file focuses on the critical interaction between the history system
  * and styling changes. It verifies that visual-only styling changes (selection,
  * hover, creation effects) are properly excluded from history to prevent
@@ -78,7 +78,7 @@ class MockDfdEventHandlersService {
   contextMenuPosition = { x: '0px', y: '0px' };
 }
 
-// Mock edge service to avoid Angular Material dependencies  
+// Mock edge service to avoid Angular Material dependencies
 class MockDfdEdgeService {
   handleEdgeAdded = vi.fn();
   handleEdgeVerticesChanged = vi.fn();
@@ -96,10 +96,21 @@ const mockSVGElement = {
   getCTM: vi.fn(() => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 })),
   getScreenCTM: vi.fn(() => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 })),
   createSVGMatrix: vi.fn(() => ({
-    a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
-    rotate: function (_angle: number) { return this; },
-    translate: function (_x: number, _y: number) { return this; },
-    scale: function (_factor: number) { return this; },
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    e: 0,
+    f: 0,
+    rotate: function (_angle: number) {
+      return this;
+    },
+    translate: function (_x: number, _y: number) {
+      return this;
+    },
+    scale: function (_factor: number) {
+      return this;
+    },
     inverse: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }),
   })),
 };
@@ -176,14 +187,17 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
     // Use mock services to avoid Angular Material dependencies
     edgeService = new MockDfdEdgeService() as any;
     eventHandlersService = new MockDfdEventHandlersService() as any;
-    historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as unknown as LoggerService);
+    historyCoordinator = new GraphHistoryCoordinator(
+      historyManager,
+      mockLogger as unknown as LoggerService,
+    );
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by X6GraphAdapter)
     selectionAdapter = new X6SelectionAdapter(
       mockLogger as unknown as LoggerService,
       selectionService,
-      historyCoordinator
+      historyCoordinator,
     );
 
     // Initialize main adapters
@@ -214,7 +228,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
     selectionAdapter.initializePlugins(graph);
     selectionAdapter.setHistoryController({
       disable: () => historyManager.disable(graph),
-      enable: () => historyManager.enable(graph)
+      enable: () => historyManager.enable(graph),
     });
     selectionAdapter.setupSelectionEvents(graph);
     historyManager.setupHistoryEvents(graph);
@@ -275,12 +289,12 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       // Simulate hover effects manually (since we can't trigger DOM events easily)
       const hoverFilter = DFD_STYLING.HOVER.FILTER_TEMPLATE(
         DFD_STYLING.HOVER.GLOW_BLUR_RADIUS,
-        DFD_STYLING.HOVER.GLOW_COLOR
+        DFD_STYLING.HOVER.GLOW_COLOR,
       );
 
       // Apply hover effect - should NOT create history entry
       node.attr('body/filter', hoverFilter);
-      
+
       expect(node.attr('body/filter')).toBe(hoverFilter);
 
       // CRITICAL: No history should be created
@@ -303,17 +317,17 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       // Apply hover effect programmatically
       const hoverFilter = DFD_STYLING.HOVER.FILTER_TEMPLATE(
         DFD_STYLING.HOVER.GLOW_BLUR_RADIUS,
-        DFD_STYLING.HOVER.GLOW_COLOR
+        DFD_STYLING.HOVER.GLOW_COLOR,
       );
-      
+
       node.attr('text/filter', hoverFilter); // For text-box nodes like 'actor'
-      
+
       // Verify hover effect was applied
       expect(node.attr('text/filter')).toBe(hoverFilter);
 
       // Remove hover effect
       node.attr('text/filter', 'none');
-      
+
       // Verify hover effect was removed
       expect(node.attr('text/filter')).toBe('none');
     });
@@ -328,7 +342,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       for (let opacity = 0.9; opacity >= 0; opacity -= 0.1) {
         const creationFilter = DFD_STYLING.CREATION.FILTER_TEMPLATE(
           DFD_STYLING.CREATION.GLOW_BLUR_RADIUS,
-          DFD_STYLING.CREATION.GLOW_COLOR.replace('0.9', opacity.toFixed(1))
+          DFD_STYLING.CREATION.GLOW_COLOR.replace('0.9', opacity.toFixed(1)),
         );
 
         if (opacity <= DFD_STYLING.ANIMATIONS.FADE_OPACITY_THRESHOLD) {
@@ -394,7 +408,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
 
       // Move node - should CREATE history entry
       node.position(200, 200);
-      
+
       // Wait for any debouncing/batching
       await new Promise(resolve => setTimeout(resolve, 100));
       expect(historyManager.canUndo(graph)).toBe(true);
@@ -468,7 +482,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       StylingVerifier.verifySelectionStyling(node, 'actor');
       expect(historyManager.canUndo(graph)).toBe(true); // Still just one entry
 
-      // 3. Another legitimate change while selected - should create history  
+      // 3. Another legitimate change while selected - should create history
       node.attr('text/text', 'Second Change');
       // Should now have 2 entries (but implementation may batch)
       expect(historyManager.canUndo(graph)).toBe(true);
@@ -504,7 +518,10 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       for (let i = 0; i < 10; i++) {
         const node = nodes[i % nodes.length];
         graph.select(node);
-        StylingVerifier.verifySelectionStyling(node, TestHelpers.getNodeTypeFromCell(node) as NodeType);
+        StylingVerifier.verifySelectionStyling(
+          node,
+          TestHelpers.getNodeTypeFromCell(node) as NodeType,
+        );
         graph.unselect(node);
         StylingVerifier.verifyCleanStyling(node, TestHelpers.getNodeTypeFromCell(node) as NodeType);
       }
@@ -532,24 +549,28 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
 
       // Undo deletion
       historyManager.undo(graph);
-      
+
       // CRITICAL: Restored node should NOT have selection styling artifacts
       const restoredCells = graph.getCells();
       expect(restoredCells).toHaveLength(1);
 
       const restoredNode = restoredCells[0] as Node;
       expect(restoredNode.attr('text/text')).toBe('Changed Text'); // Legitimate change preserved
-      
+
       // CRITICAL: Should not have selection styling
       StylingVerifier.verifyCleanStyling(restoredNode, 'process');
-      
+
       // CRITICAL: Should not be selected
       expect(graph.getSelectedCells()).toHaveLength(0);
     });
   });
 
   // Helper functions
-  function createTestNode(nodeType: NodeType, label: string, position: { x: number; y: number }): Node {
+  function createTestNode(
+    nodeType: NodeType,
+    label: string,
+    position: { x: number; y: number },
+  ): Node {
     const nodeInfo = NodeInfo.create({
       id: `test-node-${Date.now()}-${Math.random()}`,
       type: nodeType,

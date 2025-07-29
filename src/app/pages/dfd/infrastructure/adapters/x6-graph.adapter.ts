@@ -1,9 +1,9 @@
 /**
  * X6 Graph Adapter
- * 
+ *
  * This adapter provides the main interface between the DFD application and the AntV X6 graph library.
  * It handles graph initialization, configuration, and core graph operations.
- * 
+ *
  * Key functionality:
  * - Initializes and configures the X6 graph with all necessary plugins and settings
  * - Provides graph lifecycle management (creation, disposal, cleanup)
@@ -531,7 +531,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       ),
     );
 
-
     return x6Node;
   }
 
@@ -593,7 +592,8 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Set metadata using X6 cell extensions
         if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
-          const metadata = (edgeData.data as { _metadata?: { key: string; value: unknown }[] })._metadata;
+          const metadata = (edgeData.data as { _metadata?: { key: string; value: unknown }[] })
+            ._metadata;
           if (Array.isArray(metadata)) {
             metadata.forEach((entry: { key: string; value: unknown }) => {
               (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
@@ -603,7 +603,6 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Update port visibility after edge creation
         this._updatePortVisibilityAfterEdgeCreation(createdEdge);
-
 
         return createdEdge;
       },
@@ -1082,7 +1081,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
       this._edgeRemoved$.next({ edgeId: edge.id, edge });
-      
+
       // Port visibility is now handled by the EdgeService or other calling services
       // to avoid duplicate updates and ensure proper history suppression
     });
@@ -1271,7 +1270,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Check if the graph has the use method (not available in test mocks)
     if (typeof this._graph.use === 'function') {
       // Selection plugin is initialized by X6SelectionAdapter to avoid duplication
-      
+
       // Enable snapline plugin with red color
       this._graph.use(
         new Snapline({
@@ -1388,10 +1387,10 @@ export class X6GraphAdapter implements IGraphAdapter {
           includePortVisibility: false, // Suppress port visibility changes from history
           includeVisualEffects: false,
           includeHighlighting: false,
-          includeToolChanges: false
-        }
+          includeToolChanges: false,
+        },
       );
-      
+
       this.logger.info(`[DFD] ${cellType} removed via atomic operation`, {
         cellId: cell.id,
       });
@@ -1517,7 +1516,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Use X6's native coordinate transformation methods
     const cellView = this._graph.findViewByCell(cell);
     if (!cellView) {
-      this.logger.debugComponent('X6Graph', 'Could not find cell view for editor', { cellId: cell.id });
+      this.logger.debugComponent('X6Graph', 'Could not find cell view for editor', {
+        cellId: cell.id,
+      });
       return;
     }
 
@@ -1753,7 +1754,6 @@ export class X6GraphAdapter implements IGraphAdapter {
    * Centralized history filtering logic using GraphHistoryCoordinator
    */
   private _shouldIncludeInHistory(event: string, args: any): boolean {
-
     // Completely exclude tools from history
     if (event === 'cell:change:tools') {
       this.logger.debugComponent('X6Graph', 'Excluding tools event');
@@ -1803,11 +1803,14 @@ export class X6GraphAdapter implements IGraphAdapter {
           includePortVisibility: false,
           includeVisualEffects: false,
           includeHighlighting: false,
-          includeToolChanges: false
+          includeToolChanges: false,
         });
-        
-        this.logger.debugComponent('X6Graph', `Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`);
-        
+
+        this.logger.debugComponent(
+          'X6Graph',
+          `Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`,
+        );
+
         if (isPortVisibilityOnly) {
           this.logger.debugComponent('X6Graph', 'Excluding port visibility change');
           return false; // Don't add to history
@@ -1819,7 +1822,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       this.logger.debugComponent('X6Graph', 'Including cell:change:* event with key:', args.key);
       return true;
     }
-
 
     // Allow all other changes (position, size, labels, structure)
     this.logger.debugComponent('X6Graph', 'Including other event type:', event);

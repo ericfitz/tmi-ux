@@ -153,12 +153,15 @@ describe.skip('X6GraphAdapter', () => {
     edgeService = new DfdEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new DfdEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as unknown as LoggerService);
+    historyCoordinator = new GraphHistoryCoordinator(
+      historyManager,
+      mockLogger as unknown as LoggerService,
+    );
 
     // Initialize selection adapter first (required by X6GraphAdapter)
     selectionAdapter = new X6SelectionAdapter(
       mockLogger as unknown as LoggerService,
-      selectionService
+      selectionService,
     );
 
     // Create X6GraphAdapter with real dependencies

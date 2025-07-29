@@ -1,9 +1,9 @@
 /**
  * X6 History Dialog Component
- * 
+ *
  * This component provides a dialog for viewing the X6 graph history in JSON format.
  * It's primarily used for development and debugging purposes to inspect graph history state.
- * 
+ *
  * Key functionality:
  * - Displays complete X6 graph history object as formatted JSON
  * - Provides read-only view of history stack for debugging
@@ -61,7 +61,7 @@ export class X6HistoryDialogComponent {
   ) {
     // Extract history data from the graph
     const historyData = this._extractHistoryData(data.graph);
-    
+
     // Serialize the history to JSON with proper formatting and circular reference handling
     this.historyJson = this._safeStringify(historyData, 2);
   }
@@ -73,11 +73,11 @@ export class X6HistoryDialogComponent {
     try {
       // Use the same method as the existing codebase to get the history plugin
       const historyPlugin = graph.getPlugin('history');
-      
+
       if (!historyPlugin) {
         return {
           error: 'History plugin not available',
-          message: 'The X6 history plugin is not enabled for this graph'
+          message: 'The X6 history plugin is not enabled for this graph',
         };
       }
 
@@ -85,14 +85,15 @@ export class X6HistoryDialogComponent {
       const historyData: any = {
         canUndo: graph.canUndo ? graph.canUndo() : false,
         canRedo: graph.canRedo ? graph.canRedo() : false,
-        enabled: (historyPlugin as any).enabled !== undefined ? (historyPlugin as any).enabled : true,
+        enabled:
+          (historyPlugin as any).enabled !== undefined ? (historyPlugin as any).enabled : true,
       };
 
       // Try to extract undo/redo stacks if available
       if ((historyPlugin as any).undoStack) {
         historyData.undoStack = (historyPlugin as any).undoStack;
       }
-      
+
       if ((historyPlugin as any).redoStack) {
         historyData.redoStack = (historyPlugin as any).redoStack;
       }
@@ -107,7 +108,14 @@ export class X6HistoryDialogComponent {
       }
 
       // Include selected history plugin properties for debugging (avoid complex nested objects)
-      const safeProperties = ['enabled', 'index', 'maxSize', 'ignoreChange', 'beforeAddCommand', 'afterAddCommand'];
+      const safeProperties = [
+        'enabled',
+        'index',
+        'maxSize',
+        'ignoreChange',
+        'beforeAddCommand',
+        'afterAddCommand',
+      ];
       historyData.pluginProperties = {};
       safeProperties.forEach(prop => {
         if ((historyPlugin as any)[prop] !== undefined) {
@@ -116,29 +124,33 @@ export class X6HistoryDialogComponent {
       });
 
       // Add method names for debugging
-      historyData.availableMethods = Object.keys(historyPlugin as any).filter(key => 
-        typeof (historyPlugin as any)[key] === 'function'
+      historyData.availableMethods = Object.keys(historyPlugin as any).filter(
+        key => typeof (historyPlugin as any)[key] === 'function',
       );
 
       // Add summary information about stacks
       if ((historyPlugin as any).undoStack) {
         historyData.undoStackLength = (historyPlugin as any).undoStack.length;
-        historyData.undoStackSummary = (historyPlugin as any).undoStack.map((item: any, index: number) => ({
-          index,
-          type: item?.constructor?.name || 'unknown',
-          hasData: !!item?.data,
-          hasOptions: !!item?.options
-        }));
+        historyData.undoStackSummary = (historyPlugin as any).undoStack.map(
+          (item: any, index: number) => ({
+            index,
+            type: item?.constructor?.name || 'unknown',
+            hasData: !!item?.data,
+            hasOptions: !!item?.options,
+          }),
+        );
       }
-      
+
       if ((historyPlugin as any).redoStack) {
         historyData.redoStackLength = (historyPlugin as any).redoStack.length;
-        historyData.redoStackSummary = (historyPlugin as any).redoStack.map((item: any, index: number) => ({
-          index,
-          type: item?.constructor?.name || 'unknown',
-          hasData: !!item?.data,
-          hasOptions: !!item?.options
-        }));
+        historyData.redoStackSummary = (historyPlugin as any).redoStack.map(
+          (item: any, index: number) => ({
+            index,
+            type: item?.constructor?.name || 'unknown',
+            hasData: !!item?.data,
+            hasOptions: !!item?.options,
+          }),
+        );
       }
 
       return historyData;
@@ -146,7 +158,7 @@ export class X6HistoryDialogComponent {
       return {
         error: 'Failed to extract history data',
         message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        stack: error instanceof Error ? error.stack : undefined,
       };
     }
   }
@@ -156,30 +168,30 @@ export class X6HistoryDialogComponent {
    */
   private _safeStringify(obj: any, indent: number = 0): string {
     const seen = new WeakSet();
-    
+
     const replacerFunction = (_key: string, value: any): any => {
       // Handle null and undefined
       if (value === null || value === undefined) {
         return value;
       }
-      
+
       // Handle primitive types
       if (typeof value !== 'object') {
         return value;
       }
-      
+
       // Handle circular references
       if (seen.has(value)) {
         return '[Circular Reference]';
       }
-      
+
       seen.add(value);
-      
+
       // Handle functions
       if (typeof value === 'function') {
         return `[Function: ${value.name || 'anonymous'}]`;
       }
-      
+
       // Handle arrays
       if (Array.isArray(value)) {
         // Limit array length to prevent massive output
@@ -188,12 +200,12 @@ export class X6HistoryDialogComponent {
         }
         return value;
       }
-      
+
       // Handle DOM elements and complex objects
       if (value instanceof Element || value instanceof Node) {
         return `[DOM Element: ${value.constructor.name}]`;
       }
-      
+
       // Handle objects with too many properties (to prevent huge output)
       if (typeof value === 'object' && value.constructor === Object) {
         const keys = Object.keys(value);
@@ -206,19 +218,23 @@ export class X6HistoryDialogComponent {
           return limitedObj;
         }
       }
-      
+
       return value;
     };
-    
+
     try {
       return JSON.stringify(obj, replacerFunction, indent);
     } catch (error) {
-      return JSON.stringify({
-        error: 'Failed to serialize object',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        objectType: typeof obj,
-        constructor: obj?.constructor?.name || 'unknown'
-      }, null, indent);
+      return JSON.stringify(
+        {
+          error: 'Failed to serialize object',
+          message: error instanceof Error ? error.message : 'Unknown error',
+          objectType: typeof obj,
+          constructor: obj?.constructor?.name || 'unknown',
+        },
+        null,
+        indent,
+      );
     }
   }
 

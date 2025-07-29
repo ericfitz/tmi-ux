@@ -56,7 +56,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
     // Initialize X6 cell extensions and register DFD shapes
     initializeX6CellExtensions();
     registerCustomShapes();
-    
+
     // Create real X6 graph for integration testing
     graph = new Graph({
       container: document.createElement('div'),
@@ -139,7 +139,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
           edgeId: 'test-edge',
           sourceNodeId: sourceNode.id,
           targetNodeId: targetNode.id,
-        })
+        }),
       );
     });
 
@@ -154,7 +154,9 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         await service.handleEdgeAdded(edge, graph, 'test-diagram', false).toPromise();
       }).rejects.toThrow('Graph is not initialized');
 
-      expect(mockLogger.warn).toHaveBeenCalledWith('Cannot handle edge added: Graph is not initialized');
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Cannot handle edge added: Graph is not initialized',
+      );
     });
 
     it('should remove and throw error for edge without valid source/target', async () => {
@@ -208,15 +210,14 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         target: { cell: targetNode.id },
       });
 
-      const vertices = [{ x: 200, y: 150 }, { x: 250, y: 120 }];
+      const vertices = [
+        { x: 200, y: 150 },
+        { x: 250, y: 120 },
+      ];
 
-      const result = await service.handleEdgeVerticesChanged(
-        edge.id,
-        vertices,
-        graph,
-        'test-diagram',
-        true
-      ).toPromise();
+      const result = await service
+        .handleEdgeVerticesChanged(edge.id, vertices, graph, 'test-diagram', true)
+        .toPromise();
 
       expect(result).toBeUndefined(); // void return type
       expect(mockLogger.info).toHaveBeenCalledWith(
@@ -225,7 +226,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
           edgeId: edge.id,
           vertexCount: 2,
           vertices,
-        })
+        }),
       );
     });
 
@@ -233,17 +234,23 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       const vertices = [{ x: 200, y: 150 }];
 
       await expect(async () => {
-        await service.handleEdgeVerticesChanged('edge-id', vertices, graph, 'test-diagram', false).toPromise();
+        await service
+          .handleEdgeVerticesChanged('edge-id', vertices, graph, 'test-diagram', false)
+          .toPromise();
       }).rejects.toThrow('Graph is not initialized');
 
-      expect(mockLogger.warn).toHaveBeenCalledWith('Cannot handle edge vertices changed: Graph is not initialized');
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Cannot handle edge vertices changed: Graph is not initialized',
+      );
     });
 
     it('should throw error for vertices change on non-existent edge', async () => {
       const vertices = [{ x: 200, y: 150 }];
 
       await expect(async () => {
-        await service.handleEdgeVerticesChanged('non-existent-edge', vertices, graph, 'test-diagram', true).toPromise();
+        await service
+          .handleEdgeVerticesChanged('non-existent-edge', vertices, graph, 'test-diagram', true)
+          .toPromise();
       }).rejects.toThrow('Edge not found for vertices update');
     });
   });
@@ -274,7 +281,9 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       const mockInverseEdge = { id: 'inverse-edge-mock' };
       mockEdgeService.createEdge.mockReturnValue(mockInverseEdge);
 
-      const result = await service.addInverseConnection(originalEdge, graph, 'test-diagram').toPromise();
+      const result = await service
+        .addInverseConnection(originalEdge, graph, 'test-diagram')
+        .toPromise();
 
       expect(result).toBeUndefined(); // void return type
       expect(mockEdgeService.createEdge).toHaveBeenCalledWith(
@@ -292,10 +301,16 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         expect.objectContaining({
           ensureVisualRendering: true,
           updatePortVisibility: true,
-        })
+        }),
       );
-      expect(mockX6ZOrderAdapter.setEdgeZOrderFromConnectedNodes).toHaveBeenCalledWith(graph, mockInverseEdge);
-      expect(mockVisualEffectsService.applyCreationHighlight).toHaveBeenCalledWith(mockInverseEdge, graph);
+      expect(mockX6ZOrderAdapter.setEdgeZOrderFromConnectedNodes).toHaveBeenCalledWith(
+        graph,
+        mockInverseEdge,
+      );
+      expect(mockVisualEffectsService.applyCreationHighlight).toHaveBeenCalledWith(
+        mockInverseEdge,
+        graph,
+      );
     });
 
     it('should throw error for inverse connection with missing source/target', async () => {
@@ -353,9 +368,12 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         expect.objectContaining({
           ensureVisualRendering: true,
           updatePortVisibility: true,
-        })
+        }),
       );
-      expect(mockVisualEffectsService.applyCreationHighlight).toHaveBeenCalledWith(mockCreatedEdge, graph);
+      expect(mockVisualEffectsService.applyCreationHighlight).toHaveBeenCalledWith(
+        mockCreatedEdge,
+        graph,
+      );
     });
 
     it('should create edge with custom ports and label', () => {
@@ -382,7 +400,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         targetNode.id,
         'top',
         'bottom',
-        'Custom Flow'
+        'Custom Flow',
       );
 
       expect(result).toBe(mockCreatedEdge);
@@ -403,7 +421,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
             }),
           }),
         }),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -423,7 +441,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         expect.objectContaining({
           sourceNodeId: 'non-existent-source',
           targetNodeId: targetNode.id,
-        })
+        }),
       );
     });
 
@@ -450,7 +468,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         expect.objectContaining({
           sourceType: 'store',
           targetType: 'actor',
-        })
+        }),
       );
     });
   });
@@ -505,10 +523,9 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
 
       service.updateEdgeLabel(mockEdgeWithoutSetLabel, 'New Label');
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Edge does not support setLabel method',
-        { edgeId: mockEdgeWithoutSetLabel.id }
-      );
+      expect(mockLogger.warn).toHaveBeenCalledWith('Edge does not support setLabel method', {
+        edgeId: mockEdgeWithoutSetLabel.id,
+      });
     });
   });
 
@@ -627,7 +644,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         expect.objectContaining({
           nodeId: sourceNode.id,
           edgeCount: 1,
-        })
+        }),
       );
     });
   });
@@ -674,7 +691,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         sourceNode.id,
         targetNode.id,
         'right',
-        'left'
+        'left',
       );
 
       expect(result.valid).toBe(true);
@@ -682,33 +699,21 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
     });
 
     it('should reject connection to non-existent source node', () => {
-      const result = service.validateEdgeConnection(
-        graph,
-        'non-existent-source',
-        targetNode.id
-      );
+      const result = service.validateEdgeConnection(graph, 'non-existent-source', targetNode.id);
 
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Source node not found');
     });
 
     it('should reject connection to non-existent target node', () => {
-      const result = service.validateEdgeConnection(
-        graph,
-        sourceNode.id,
-        'non-existent-target'
-      );
+      const result = service.validateEdgeConnection(graph, sourceNode.id, 'non-existent-target');
 
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Target node not found');
     });
 
     it('should reject self-connection', () => {
-      const result = service.validateEdgeConnection(
-        graph,
-        sourceNode.id,
-        sourceNode.id
-      );
+      const result = service.validateEdgeConnection(graph, sourceNode.id, sourceNode.id);
 
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Cannot connect node to itself');
@@ -725,7 +730,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       const result = service.validateEdgeConnection(
         graph,
         targetNode.id, // datastore
-        externalEntityNode.id // external entity - not allowed
+        externalEntityNode.id, // external entity - not allowed
       );
 
       expect(result.valid).toBe(false);
@@ -738,7 +743,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         sourceNode.id,
         targetNode.id,
         'non-existent-port',
-        'left'
+        'left',
       );
 
       expect(result.valid).toBe(false);
@@ -751,7 +756,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         sourceNode.id,
         targetNode.id,
         'right',
-        'non-existent-port'
+        'non-existent-port',
       );
 
       expect(result.valid).toBe(false);
@@ -771,7 +776,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         sourceNode.id,
         targetNode.id,
         'right',
-        'left'
+        'left',
       );
 
       expect(result.valid).toBe(false);
@@ -796,7 +801,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
           magnetAttribute: 'true',
           portGroup: 'top',
           isValid: true,
-        })
+        }),
       );
     });
 
@@ -817,7 +822,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       expect(result).toBe(false);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdEdge',
-        'isMagnetValid: no magnet found'
+        'isMagnetValid: no magnet found',
       );
     });
 
@@ -842,7 +847,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       expect(result).toBe(true);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdEdge',
-        'Connection validation passed'
+        'Connection validation passed',
       );
     });
 
@@ -862,7 +867,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       expect(result).toBe(false);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdEdge',
-        'Connection rejected: same port on same node'
+        'Connection rejected: same port on same node',
       );
     });
   });
@@ -968,7 +973,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
     it('should throw error for invalid node shape', () => {
       expect(() => {
         service.validateNodeShape('invalid-shape', 'test-node');
-      }).toThrow('Invalid node shape: \'invalid-shape\' is not a recognized shape type');
+      }).toThrow("Invalid node shape: 'invalid-shape' is not a recognized shape type");
     });
 
     it('should throw error for empty node shape', () => {
@@ -1001,7 +1006,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
         expect.objectContaining({
           nodeId: 'test-node',
           shape: 'unexpected-shape',
-        })
+        }),
       );
     });
   });
@@ -1035,7 +1040,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
           error: expect.any(Error),
           sourceNodeId: sourceNode.id,
           targetNodeId: targetNode.id,
-        })
+        }),
       );
     });
 
@@ -1058,7 +1063,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
           error: expect.any(Error),
           edgeId: testEdge.id,
           label: 'New Label',
-        })
+        }),
       );
     });
 
@@ -1082,7 +1087,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
           error: expect.any(Error),
           edgeId: testEdge.id,
           style,
-        })
+        }),
       );
     });
   });

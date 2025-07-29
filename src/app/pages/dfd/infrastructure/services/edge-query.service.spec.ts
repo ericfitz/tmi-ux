@@ -646,9 +646,13 @@ describe('EdgeQueryService', () => {
       const validationResults = service.validateEdgeConnections(graph);
 
       expect(validationResults).toHaveLength(0);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith('DfdEdgeQuery', 'Edge connection validation passed', {
-        totalEdges: 1,
-      });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DfdEdgeQuery',
+        'Edge connection validation passed',
+        {
+          totalEdges: 1,
+        },
+      );
     });
 
     it('should validate edge connections and find issues for invalid edges', () => {

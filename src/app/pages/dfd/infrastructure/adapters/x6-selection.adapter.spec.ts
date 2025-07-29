@@ -32,7 +32,7 @@ function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
   // Mock the getNodeTypeInfo extension that's added in the real application
   (node as any).getNodeTypeInfo = vi.fn(() => ({
     type: nodeType,
-    label: node.getAttrByPath('label') || 'Test Node'
+    label: node.getAttrByPath('label') || 'Test Node',
   }));
   return node;
 }
@@ -139,13 +139,19 @@ describe('X6SelectionAdapter', () => {
     historyManager = new X6HistoryManager(mockLogger as any);
     historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as any);
     x6CoreOps = new X6CoreOperationsService(mockLogger as any);
-    
+
     // Create mock services for EdgeService
     edgeService = {
-      removeEdge: vi.fn().mockReturnValue(true)
+      removeEdge: vi.fn().mockReturnValue(true),
     } as any;
-    
-    adapter = new X6SelectionAdapter(mockLogger as any, selectionService, historyCoordinator, x6CoreOps, edgeService);
+
+    adapter = new X6SelectionAdapter(
+      mockLogger as any,
+      selectionService,
+      historyCoordinator,
+      x6CoreOps,
+      edgeService,
+    );
 
     // Initialize plugins
     adapter.initializePlugins(graph);
@@ -201,23 +207,31 @@ describe('X6SelectionAdapter', () => {
 
     beforeEach(() => {
       // Create test nodes and edges with proper getNodeTypeInfo mocks
-      node = createTestNode(graph, {
-        x: 100,
-        y: 100,
-        width: 80,
-        height: 60,
-        shape: 'process',
-        label: 'Test Process',
-      }, 'process');
+      node = createTestNode(
+        graph,
+        {
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 60,
+          shape: 'process',
+          label: 'Test Process',
+        },
+        'process',
+      );
 
-      const sourceNode = createTestNode(graph, {
-        x: 200,
-        y: 200,
-        width: 80,
-        height: 60,
-        shape: 'actor',
-        label: 'Source',
-      }, 'actor');
+      const sourceNode = createTestNode(
+        graph,
+        {
+          x: 200,
+          y: 200,
+          width: 80,
+          height: 60,
+          shape: 'actor',
+          label: 'Source',
+        },
+        'actor',
+      );
 
       edge = graph.addEdge({
         source: node,
@@ -239,14 +253,18 @@ describe('X6SelectionAdapter', () => {
     });
 
     it('should apply hover effect to text-box node on text element', () => {
-      const textBoxNode = createTestNode(graph, {
-        x: 300,
-        y: 300,
-        width: 100,
-        height: 40,
-        shape: 'text-box',
-        label: 'Text Box',
-      }, 'text-box');
+      const textBoxNode = createTestNode(
+        graph,
+        {
+          x: 300,
+          y: 300,
+          width: 100,
+          height: 40,
+          shape: 'text-box',
+          label: 'Text Box',
+        },
+        'text-box',
+      );
 
       // Mock getNodeTypeInfo method
       (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
@@ -326,30 +344,42 @@ describe('X6SelectionAdapter', () => {
     beforeEach(() => {
       // Create multiple test nodes with proper mocks
       nodes = [
-        createTestNode(graph, {
-          x: 100,
-          y: 100,
-          width: 80,
-          height: 60,
-          shape: 'process',
-          label: 'Process 1',
-        }, 'process'),
-        createTestNode(graph, {
-          x: 200,
-          y: 200,
-          width: 80,
-          height: 60,
-          shape: 'actor',
-          label: 'Actor 1',
-        }, 'actor'),
-        createTestNode(graph, {
-          x: 300,
-          y: 300,
-          width: 80,
-          height: 60,
-          shape: 'store',
-          label: 'Store 1',
-        }, 'store'),
+        createTestNode(
+          graph,
+          {
+            x: 100,
+            y: 100,
+            width: 80,
+            height: 60,
+            shape: 'process',
+            label: 'Process 1',
+          },
+          'process',
+        ),
+        createTestNode(
+          graph,
+          {
+            x: 200,
+            y: 200,
+            width: 80,
+            height: 60,
+            shape: 'actor',
+            label: 'Actor 1',
+          },
+          'actor',
+        ),
+        createTestNode(
+          graph,
+          {
+            x: 300,
+            y: 300,
+            width: 80,
+            height: 60,
+            shape: 'store',
+            label: 'Store 1',
+          },
+          'store',
+        ),
       ];
 
       adapter.setupSelectionEvents(graph);
@@ -474,23 +504,31 @@ describe('X6SelectionAdapter', () => {
     let deletionCallback: any;
 
     beforeEach(() => {
-      node = createTestNode(graph, {
-        x: 100,
-        y: 100,
-        width: 80,
-        height: 60,
-        shape: 'process',
-        label: 'Test Process',
-      }, 'process');
+      node = createTestNode(
+        graph,
+        {
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 60,
+          shape: 'process',
+          label: 'Test Process',
+        },
+        'process',
+      );
 
-      const targetNode = createTestNode(graph, {
-        x: 200,
-        y: 200,
-        width: 80,
-        height: 60,
-        shape: 'actor',
-        label: 'Target',
-      }, 'actor');
+      const targetNode = createTestNode(
+        graph,
+        {
+          x: 200,
+          y: 200,
+          width: 80,
+          height: 60,
+          shape: 'actor',
+          label: 'Target',
+        },
+        'actor',
+      );
 
       edge = graph.addEdge({
         source: node,
@@ -580,10 +618,10 @@ describe('X6SelectionAdapter', () => {
 
       // Verify EdgeService.removeEdge called for edge
       expect(edgeService.removeEdge).toHaveBeenCalledWith(graph, edge.id);
-      
+
       // Verify X6CoreOperationsService.removeCellObject called for node
       expect(x6CoreOps.removeCellObject).toHaveBeenCalledWith(graph, node);
-      
+
       expect(mockLogger.info).toHaveBeenCalledWith('Deleted selected cells', { count: 2 });
     });
 
@@ -610,22 +648,30 @@ describe('X6SelectionAdapter', () => {
 
     beforeEach(() => {
       nodes = [
-        createTestNode(graph, {
-          x: 100,
-          y: 100,
-          width: 80,
-          height: 60,
-          shape: 'process',
-          label: 'Process 1',
-        }, 'process'),
-        createTestNode(graph, {
-          x: 200,
-          y: 200,
-          width: 80,
-          height: 60,
-          shape: 'actor',
-          label: 'Actor 1',
-        }, 'actor'),
+        createTestNode(
+          graph,
+          {
+            x: 100,
+            y: 100,
+            width: 80,
+            height: 60,
+            shape: 'process',
+            label: 'Process 1',
+          },
+          'process',
+        ),
+        createTestNode(
+          graph,
+          {
+            x: 200,
+            y: 200,
+            width: 80,
+            height: 60,
+            shape: 'actor',
+            label: 'Actor 1',
+          },
+          'actor',
+        ),
       ];
     });
 
@@ -710,30 +756,42 @@ describe('X6SelectionAdapter', () => {
 
     beforeEach(() => {
       nodes = [
-        createTestNode(graph, {
-          x: 100,
-          y: 100,
-          width: 80,
-          height: 60,
-          shape: 'process',
-          label: 'Process 1',
-        }, 'process'),
-        createTestNode(graph, {
-          x: 200,
-          y: 150,
-          width: 80,
-          height: 60,
-          shape: 'actor',
-          label: 'Actor 1',
-        }, 'actor'),
-        createTestNode(graph, {
-          x: 300,
-          y: 200,
-          width: 80,
-          height: 60,
-          shape: 'store',
-          label: 'Store 1',
-        }, 'store'),
+        createTestNode(
+          graph,
+          {
+            x: 100,
+            y: 100,
+            width: 80,
+            height: 60,
+            shape: 'process',
+            label: 'Process 1',
+          },
+          'process',
+        ),
+        createTestNode(
+          graph,
+          {
+            x: 200,
+            y: 150,
+            width: 80,
+            height: 60,
+            shape: 'actor',
+            label: 'Actor 1',
+          },
+          'actor',
+        ),
+        createTestNode(
+          graph,
+          {
+            x: 300,
+            y: 200,
+            width: 80,
+            height: 60,
+            shape: 'store',
+            label: 'Store 1',
+          },
+          'store',
+        ),
       ];
     });
 
@@ -843,22 +901,30 @@ describe('X6SelectionAdapter', () => {
 
     beforeEach(() => {
       nodes = [
-        createTestNode(graph, {
-          x: 100,
-          y: 100,
-          width: 80,
-          height: 60,
-          shape: 'process',
-          label: 'Process 1',
-        }, 'process'),
-        createTestNode(graph, {
-          x: 200,
-          y: 200,
-          width: 80,
-          height: 60,
-          shape: 'actor',
-          label: 'Actor 1',
-        }, 'actor'),
+        createTestNode(
+          graph,
+          {
+            x: 100,
+            y: 100,
+            width: 80,
+            height: 60,
+            shape: 'process',
+            label: 'Process 1',
+          },
+          'process',
+        ),
+        createTestNode(
+          graph,
+          {
+            x: 200,
+            y: 200,
+            width: 80,
+            height: 60,
+            shape: 'actor',
+            label: 'Actor 1',
+          },
+          'actor',
+        ),
       ];
     });
 

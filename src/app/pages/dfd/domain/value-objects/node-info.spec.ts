@@ -35,7 +35,21 @@ describe('NodeInfo', () => {
       const parent = null;
 
       // Act
-      const nodeInfo = new NodeInfo(id, shape, x, y, width, height, zIndex, visible, attrs, ports, metadata, angle, parent);
+      const nodeInfo = new NodeInfo(
+        id,
+        shape,
+        x,
+        y,
+        width,
+        height,
+        zIndex,
+        visible,
+        attrs,
+        ports,
+        metadata,
+        angle,
+        parent,
+      );
 
       // Assert
       expect(nodeInfo.id).toBe(id);
@@ -70,7 +84,7 @@ describe('NodeInfo', () => {
         60,
         1,
         true,
-        createDefaultNodeAttrs('process', 'Process')
+        createDefaultNodeAttrs('process', 'Process'),
       );
 
       // Assert
@@ -86,68 +100,60 @@ describe('NodeInfo', () => {
 
     it('should throw error for empty ID', () => {
       // Act & Assert
-      expect(() => new NodeInfo(
-        '',
-        'process',
-        100,
-        100,
-        120,
-        60
-      )).toThrow('Node ID cannot be empty');
+      expect(() => new NodeInfo('', 'process', 100, 100, 120, 60)).toThrow(
+        'Node ID cannot be empty',
+      );
     });
 
     it('should throw error for invalid node type', () => {
       // Act & Assert
-      expect(() => new NodeInfo(
-        'node-1',
-        'invalid-type' as NodeType,
-        100,
-        100,
-        120,
-        60
-      )).toThrow('Invalid node shape: invalid-type');
+      expect(() => new NodeInfo('node-1', 'invalid-type' as NodeType, 100, 100, 120, 60)).toThrow(
+        'Invalid node shape: invalid-type',
+      );
     });
 
     it('should throw error for empty label', () => {
       // Act & Assert
-      expect(() => new NodeInfo(
-        'node-1',
-        'process',
-        100,
-        100,
-        120,
-        60,
-        1,
-        true,
-        { body: {}, text: { text: '' } }
-      )).toThrow('Node label cannot be empty');
+      expect(
+        () =>
+          new NodeInfo('node-1', 'process', 100, 100, 120, 60, 1, true, {
+            body: {},
+            text: { text: '' },
+          }),
+      ).toThrow('Node label cannot be empty');
     });
 
     it('should throw error for invalid dimensions', () => {
       // Act & Assert
-      expect(() => new NodeInfo(
-        'node-1',
-        'process',
-        100,
-        100,
-        0,
-        60,
-        1,
-        true,
-        createDefaultNodeAttrs('process', 'Process')
-      )).toThrow('Node dimensions must be positive');
+      expect(
+        () =>
+          new NodeInfo(
+            'node-1',
+            'process',
+            100,
+            100,
+            0,
+            60,
+            1,
+            true,
+            createDefaultNodeAttrs('process', 'Process'),
+          ),
+      ).toThrow('Node dimensions must be positive');
 
-      expect(() => new NodeInfo(
-        'node-1',
-        'process',
-        100,
-        100,
-        120,
-        -10,
-        1,
-        true,
-        createDefaultNodeAttrs('process', 'Process')
-      )).toThrow('Node dimensions must be positive');
+      expect(
+        () =>
+          new NodeInfo(
+            'node-1',
+            'process',
+            100,
+            100,
+            120,
+            -10,
+            1,
+            true,
+            createDefaultNodeAttrs('process', 'Process'),
+          ),
+      ).toThrow('Node dimensions must be positive');
     });
   });
 
@@ -166,7 +172,12 @@ describe('NodeInfo', () => {
         attrs: createDefaultNodeAttrs('process', 'My Process'),
         angle: 45,
         parent: 'parent-1',
-        data: { _metadata: [{ key: 'category', value: 'business' }, { key: 'priority', value: 'high' }] },
+        data: {
+          _metadata: [
+            { key: 'category', value: 'business' },
+            { key: 'priority', value: 'high' },
+          ],
+        },
       };
 
       // Act
@@ -219,7 +230,6 @@ describe('NodeInfo', () => {
       expect(nodeInfo.visible).toBe(true);
       expect(nodeInfo.getMetadataAsRecord()).toEqual({ category: 'business', priority: 'high' });
     });
-
 
     it('should create NodeInfo using create method', () => {
       // Arrange
@@ -274,7 +284,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Original Process'),
         createDefaultPortConfiguration('process'),
-        { _metadata: [{ key: 'category', value: 'business' }] }
+        { _metadata: [{ key: 'category', value: 'business' }] },
       );
     });
 
@@ -431,7 +441,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Test Process'),
         createDefaultPortConfiguration('process'),
-        { _metadata: [{ key: 'category', value: 'business' }] }
+        { _metadata: [{ key: 'category', value: 'business' }] },
       );
     });
 
@@ -474,7 +484,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Test Process'),
         createDefaultPortConfiguration('process'),
-        { _metadata: [{ key: 'category', value: 'business' }] }
+        { _metadata: [{ key: 'category', value: 'business' }] },
       );
       const different = new NodeInfo(
         'node-2',
@@ -487,7 +497,7 @@ describe('NodeInfo', () => {
         true,
         createDefaultNodeAttrs('process', 'Test Process'),
         createDefaultPortConfiguration('process'),
-        { _metadata: [{ key: 'category', value: 'business' }] }
+        { _metadata: [{ key: 'category', value: 'business' }] },
       );
 
       // Act & Assert
@@ -522,18 +532,17 @@ describe('NodeInfo', () => {
       expect(json.angle).toBe(0);
       expect(json.parent).toBeUndefined();
     });
-
   });
 
   describe('Default Dimensions and Labels', () => {
     it('should have correct default dimensions for each node type', () => {
       const types: NodeType[] = ['actor', 'process', 'store', 'security-boundary', 'text-box'];
       const expectedDimensions = [
-        { width: 120, height: 60 },  // actor
-        { width: 140, height: 80 },  // process  
-        { width: 160, height: 60 },  // store
+        { width: 120, height: 60 }, // actor
+        { width: 140, height: 80 }, // process
+        { width: 160, height: 60 }, // store
         { width: 200, height: 150 }, // security-boundary
-        { width: 100, height: 40 },  // text-box
+        { width: 100, height: 40 }, // text-box
       ];
 
       types.forEach((type, index) => {
@@ -561,13 +570,13 @@ describe('NodeInfo', () => {
         {
           tagName: 'rect',
           selector: 'body',
-          attrs: { fill: '#ffffff', stroke: '#000000' }
+          attrs: { fill: '#ffffff', stroke: '#000000' },
         },
         {
           tagName: 'text',
           selector: 'label',
-          attrs: { fontSize: 14, fill: '#000000' }
-        }
+          attrs: { fontSize: 14, fill: '#000000' },
+        },
       ];
 
       // Act
@@ -579,7 +588,7 @@ describe('NodeInfo', () => {
         width: 120,
         height: 60,
         label: 'Test Process',
-        markup
+        markup,
       });
 
       // Assert
@@ -591,7 +600,7 @@ describe('NodeInfo', () => {
       // Arrange
       const tools = [
         { name: 'boundary', args: { distance: 20 } },
-        { name: 'remove', args: { x: 10, y: 10 } }
+        { name: 'remove', args: { x: 10, y: 10 } },
       ];
 
       // Act
@@ -603,7 +612,7 @@ describe('NodeInfo', () => {
         width: 120,
         height: 60,
         label: 'Test Process',
-        tools
+        tools,
       });
 
       // Assert
@@ -620,7 +629,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process'
+        label: 'Test Process',
       });
 
       // Assert
@@ -643,7 +652,7 @@ describe('NodeInfo', () => {
         height: 60,
         label: 'Test Process',
         markup,
-        tools
+        tools,
       });
 
       // Act
@@ -662,7 +671,7 @@ describe('NodeInfo', () => {
         stroke: '#000000',
         strokeWidth: 3,
         fontSize: 16,
-        fontColor: '#333333'
+        fontColor: '#333333',
       };
 
       // Act
@@ -674,7 +683,7 @@ describe('NodeInfo', () => {
         width: 120,
         height: 60,
         label: 'Test Process',
-        style
+        style,
       });
 
       // Assert
@@ -693,7 +702,7 @@ describe('NodeInfo', () => {
         position: { x: 150, y: 200 },
         width: 120,
         height: 60,
-        label: 'Test Process'
+        label: 'Test Process',
       });
 
       // Assert
@@ -709,7 +718,7 @@ describe('NodeInfo', () => {
         x: 100,
         y: 100,
         size: { width: 200, height: 100 },
-        label: 'Test Process'
+        label: 'Test Process',
       });
 
       // Assert
@@ -725,9 +734,12 @@ describe('NodeInfo', () => {
         NodeInfo.fromJSON({
           id: 'test-node',
           shape: 'process',
-          x: 100, y: 100, width: 120, height: 60,
+          x: 100,
+          y: 100,
+          width: 120,
+          height: 60,
           label: 'Test Process',
-          markup: [{ tagName: '', selector: 'body' }] // Invalid: empty tagName
+          markup: [{ tagName: '', selector: 'body' }], // Invalid: empty tagName
         });
       }).toThrow('Markup element at index 0 must have a valid tagName');
     });
@@ -738,9 +750,12 @@ describe('NodeInfo', () => {
         NodeInfo.fromJSON({
           id: 'test-node',
           shape: 'process',
-          x: 100, y: 100, width: 120, height: 60,
+          x: 100,
+          y: 100,
+          width: 120,
+          height: 60,
           label: 'Test Process',
-          tools: [{ name: '', args: {} }] // Invalid: empty name
+          tools: [{ name: '', args: {} }], // Invalid: empty name
         });
       }).toThrow('Tool at index 0 must have a valid name');
     });
@@ -750,10 +765,13 @@ describe('NodeInfo', () => {
       const nodeInfo = NodeInfo.fromJSON({
         id: 'test-node',
         shape: 'process',
-        x: 100, y: 100, width: 120, height: 60,
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 60,
         label: 'Test Process',
         markup: [{ tagName: 'rect', selector: 'body', attrs: { fill: '#fff' } }],
-        tools: [{ name: 'boundary', args: { distance: 10 } }]
+        tools: [{ name: 'boundary', args: { distance: 10 } }],
       });
 
       // Assert

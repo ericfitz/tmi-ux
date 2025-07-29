@@ -405,7 +405,7 @@ export class X6ZOrderAdapter {
   applyNodeCreationZIndex(graph: Graph, node: Node): void {
     // Get node type using getNodeTypeInfo for reliable node type detection
     let nodeType = 'unknown'; // Default fallback for nodes without type info
-    
+
     if (typeof (node as any).getNodeTypeInfo === 'function') {
       try {
         const nodeTypeInfo = (node as any).getNodeTypeInfo();
@@ -415,7 +415,7 @@ export class X6ZOrderAdapter {
         this.logger.warn('Error calling getNodeTypeInfo extension', {
           nodeId: node.id,
           shape: node.shape,
-          error
+          error,
         });
         nodeType = 'unknown';
       }
@@ -423,7 +423,7 @@ export class X6ZOrderAdapter {
       // If getNodeTypeInfo method doesn't exist, log warning and default to 'unknown'
       this.logger.warn('Node missing getNodeTypeInfo extension', {
         nodeId: node.id,
-        shape: node.shape
+        shape: node.shape,
       });
       nodeType = 'unknown';
     }

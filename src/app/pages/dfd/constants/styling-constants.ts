@@ -1,9 +1,9 @@
 /**
  * DFD Styling Constants
- * 
+ *
  * This file contains centralized styling constants for DFD components to ensure
  * visual consistency across the entire application and testing infrastructure.
- * 
+ *
  * Key functionality:
  * - Defines default styling values for nodes, edges, and visual elements
  * - Provides selection and highlighting style configurations

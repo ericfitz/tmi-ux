@@ -68,13 +68,13 @@ export class X6HistoryManager {
     if (graph && typeof graph.undo === 'function') {
       // Temporarily disable history to prevent undo operations from being recorded
       this.disable(graph);
-      
+
       graph.undo();
       this.logger.info('Undo action performed');
-      
+
       // Re-enable history after undo is complete
       this.enable(graph);
-      
+
       this._emitHistoryStateChange(graph);
     } else {
       this.logger.warn('Undo not available - history plugin may not be enabled');
@@ -88,13 +88,13 @@ export class X6HistoryManager {
     if (graph && typeof graph.redo === 'function') {
       // Temporarily disable history to prevent redo operations from being recorded
       this.disable(graph);
-      
+
       graph.redo();
       this.logger.info('Redo action performed');
-      
+
       // Re-enable history after redo is complete
       this.enable(graph);
-      
+
       this._emitHistoryStateChange(graph);
     } else {
       this.logger.warn('Redo not available - history plugin may not be enabled');
@@ -141,11 +141,16 @@ export class X6HistoryManager {
     this.logger.debug('[X6HistoryManager] Attempting to disable history', {
       hasGraph: !!graph,
       hasHistory: !!(graph && (graph as any).history),
-      hasDisableMethod: !!(graph && (graph as any).history && typeof (graph as any).history.disable === 'function'),
+      hasDisableMethod: !!(
+        graph &&
+        (graph as any).history &&
+        typeof (graph as any).history.disable === 'function'
+      ),
       graphType: graph ? graph.constructor.name : 'undefined',
-      historyType: (graph && (graph as any).history) ? (graph as any).history.constructor.name : 'undefined'
+      historyType:
+        graph && (graph as any).history ? (graph as any).history.constructor.name : 'undefined',
     });
-    
+
     if (graph && (graph as any).history && typeof (graph as any).history.disable === 'function') {
       (graph as any).history.disable();
       this.logger.debug('History tracking disabled');
@@ -179,7 +184,7 @@ export class X6HistoryManager {
    */
   private _cleanupVisualEffectsAfterRestore(graph: Graph): void {
     const cells = graph.getCells();
-    
+
     // CRITICAL FIX: Properly disable history during cleanup to prevent leaks
     this.disable(graph);
     try {
@@ -189,7 +194,7 @@ export class X6HistoryManager {
           if (cell.isNode()) {
             const node = cell;
             this._cleanupNodeVisualEffects(node);
-            
+
             // Update port visibility for all nodes (hide unconnected ports)
             if (this.portStateManager) {
               this.portStateManager.hideUnconnectedNodePorts(graph, node);
@@ -200,65 +205,80 @@ export class X6HistoryManager {
           }
         });
       });
-      
+
       // Clear any selection state since restored cells should not be selected
       // This must also be within the history-disabled context to prevent selection events
       graph.resetSelection();
-      
+
       this.logger.debug('Cleaned up visual effects after history restore', {
         cellsProcessed: cells.length,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } finally {
       // Always re-enable history even if cleanup fails
       this.enable(graph);
     }
   }
-  
+
   /**
    * Clean up visual effects from a restored node
    */
   private _cleanupNodeVisualEffects(node: Node): void {
     const nodeType = this._getNodeType(node);
-    
+
     // Remove selection filter effects
     if (nodeType === 'text-box') {
       const currentFilter = node.attr('text/filter');
-      if (currentFilter && typeof currentFilter === 'string' && DFD_STYLING_HELPERS.isSelectionFilter(currentFilter)) {
+      if (
+        currentFilter &&
+        typeof currentFilter === 'string' &&
+        DFD_STYLING_HELPERS.isSelectionFilter(currentFilter)
+      ) {
         node.attr('text/filter', 'none');
       }
     } else {
       const currentFilter = node.attr('body/filter');
-      if (currentFilter && typeof currentFilter === 'string' && DFD_STYLING_HELPERS.isSelectionFilter(currentFilter)) {
+      if (
+        currentFilter &&
+        typeof currentFilter === 'string' &&
+        DFD_STYLING_HELPERS.isSelectionFilter(currentFilter)
+      ) {
         node.attr('body/filter', 'none');
       }
-      
+
       // Restore default stroke width if it has selection styling
       const currentStrokeWidth = node.attr('body/strokeWidth');
       const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType as any);
-      if (currentStrokeWidth === DFD_STYLING.SELECTION.STROKE_WIDTH && defaultStrokeWidth !== DFD_STYLING.SELECTION.STROKE_WIDTH) {
+      if (
+        currentStrokeWidth === DFD_STYLING.SELECTION.STROKE_WIDTH &&
+        defaultStrokeWidth !== DFD_STYLING.SELECTION.STROKE_WIDTH
+      ) {
         node.attr('body/strokeWidth', defaultStrokeWidth);
       }
     }
-    
+
     // Remove any tools that might be persisted
     node.removeTools();
   }
-  
+
   /**
    * Clean up visual effects from a restored edge
    */
   private _cleanupEdgeVisualEffects(edge: Edge): void {
     // Remove selection filter effects from edges
     const currentFilter = edge.attr('line/filter');
-    if (currentFilter && typeof currentFilter === 'string' && DFD_STYLING_HELPERS.isSelectionFilter(currentFilter)) {
+    if (
+      currentFilter &&
+      typeof currentFilter === 'string' &&
+      DFD_STYLING_HELPERS.isSelectionFilter(currentFilter)
+    ) {
       edge.attr('line/filter', 'none');
     }
-    
+
     // Remove any tools that might be persisted
     edge.removeTools();
   }
-  
+
   /**
    * Get the node type for a given node
    */
@@ -267,7 +287,7 @@ export class X6HistoryManager {
     if ((node as any).getNodeTypeInfo) {
       return (node as any).getNodeTypeInfo().type;
     }
-    
+
     // Fall back to shape-based detection
     const shape = node.shape;
     if (shape?.includes('actor')) return 'actor';
@@ -275,7 +295,7 @@ export class X6HistoryManager {
     if (shape?.includes('store')) return 'store';
     if (shape?.includes('security-boundary')) return 'security-boundary';
     if (shape?.includes('text-box')) return 'text-box';
-    
+
     return 'unknown';
   }
 

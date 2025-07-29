@@ -285,10 +285,13 @@ export class MetadataDialogComponent implements OnInit {
    * Adds a new metadata item to the list
    */
   addItem(): void {
-    const newData = [...this.dataSource.data, {
-      key: '',
-      value: '',
-    }];
+    const newData = [
+      ...this.dataSource.data,
+      {
+        key: '',
+        value: '',
+      },
+    ];
     this.dataSource.data = newData;
   }
 

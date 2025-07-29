@@ -73,7 +73,6 @@ export class NodeInfo {
     return customData;
   }
 
-
   /**
    * Creates NodeInfo from a plain object
    */
@@ -111,7 +110,7 @@ export class NodeInfo {
     const y = data.y ?? data.position?.y ?? 0;
     const width = data.width ?? data.size?.width ?? 120;
     const height = data.height ?? data.size?.height ?? 60;
-    
+
     // Handle legacy label parameter and style convenience property
     let attrs = data.attrs;
     if (!attrs && data.label) {
@@ -137,9 +136,9 @@ export class NodeInfo {
         },
       };
     }
-    
+
     const ports = data.ports || createDefaultPortConfiguration(shape);
-    
+
     // Handle hybrid data format or legacy metadata
     let hybridData = data.data || { _metadata: [] };
     if (!data.data && data.metadata) {
@@ -167,7 +166,6 @@ export class NodeInfo {
     );
   }
 
-
   /**
    * Creates a new NodeInfo instance from a plain object.
    * This is a factory method for creating new instances.
@@ -188,7 +186,7 @@ export class NodeInfo {
 
     const hybridData = {
       _metadata: metadataEntries,
-      ...(data.customData || {})
+      ...(data.customData || {}),
     };
 
     return new NodeInfo(
@@ -435,7 +433,7 @@ export class NodeInfo {
 
     const newData = {
       ...this.data,
-      _metadata: newMetadata
+      _metadata: newMetadata,
     };
 
     return new NodeInfo(
@@ -463,7 +461,7 @@ export class NodeInfo {
   withCustomData(key: string, value: any): NodeInfo {
     const newData = {
       ...this.data,
-      [key]: value
+      [key]: value,
     };
 
     return new NodeInfo(
@@ -491,7 +489,7 @@ export class NodeInfo {
   withCustomDataBatch(customData: Record<string, any>): NodeInfo {
     const newData = {
       ...this.data,
-      ...customData
+      ...customData,
     };
 
     return new NodeInfo(
@@ -678,7 +676,6 @@ export class NodeInfo {
     };
   }
 
-
   /**
    * Validates the node info
    */
@@ -770,7 +767,7 @@ export class NodeInfo {
   private metadataEquals(other: { _metadata: Metadata[]; [key: string]: any }): boolean {
     const thisMetadata = this.metadata;
     const otherMetadata = other._metadata || [];
-    
+
     if (thisMetadata.length !== otherMetadata.length) {
       return false;
     }
@@ -784,12 +781,12 @@ export class NodeInfo {
       const otherEntry = otherSorted[index];
       return entry.key === otherEntry.key && entry.value === otherEntry.value;
     });
-    
+
     // Check custom data equality (excluding _metadata)
     const thisCustomData = this.getCustomData();
     const otherCustomData = { ...other };
     delete (otherCustomData as any)._metadata;
-    
+
     return metadataEqual && JSON.stringify(thisCustomData) === JSON.stringify(otherCustomData);
   }
 }

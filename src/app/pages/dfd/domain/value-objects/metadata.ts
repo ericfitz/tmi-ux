@@ -14,7 +14,6 @@ export interface Metadata {
   value: string;
 }
 
-
 /**
  * Converts an array of Metadata entries to a Record object
  */
@@ -38,7 +37,7 @@ export function recordToMetadata(record: Record<string, string>): Metadata[] {
  */
 export function mergeMetadata(...metadataArrays: Metadata[][]): Metadata[] {
   const combined = new Map<string, string>();
-  
+
   metadataArrays.forEach(array => {
     array.forEach(entry => {
       combined.set(entry.key, entry.value);
@@ -58,7 +57,11 @@ export function filterMetadataByPrefix(metadata: Metadata[], prefix: string): Me
 /**
  * Gets a metadata value by key, with optional default value
  */
-export function getMetadataValue(metadata: Metadata[], key: string, defaultValue?: string): string | undefined {
+export function getMetadataValue(
+  metadata: Metadata[],
+  key: string,
+  defaultValue?: string,
+): string | undefined {
   const entry = metadata.find(m => m.key === key);
   return entry?.value ?? defaultValue;
 }

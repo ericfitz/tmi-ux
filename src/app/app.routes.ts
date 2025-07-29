@@ -1,9 +1,9 @@
 /**
  * Application Route Configuration
- * 
+ *
  * This file defines the main routing configuration for the Angular application.
  * It uses lazy loading for optimal performance and implements route guards for access control.
- * 
+ *
  * Key functionality:
  * - Configures lazy-loaded routes for all main application pages
  * - Implements authentication guards to protect secured routes

@@ -1,9 +1,9 @@
 /**
  * User Presence List Component
- * 
+ *
  * This component manages and displays a list of user presence indicators for all users
  * currently participating in a collaborative DFD editing session.
- * 
+ *
  * Key functionality:
  * - Displays multiple user presence indicators in a organized list
  * - Shows real-time updates of all active collaborators

@@ -83,18 +83,11 @@
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",
-    "copyDefinitionToClipboard": "نسخ التعريف إلى الحافظة",
     "editText": "تحرير النص",
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
     "moveToFront": "نقل إلى المقدمة"
-  },
-  "diagrams": {
-    "createFirstButton": "أنشئ مخططك الأول",
-    "diagramTitle": "{{name}}",
-    "noItemsMessage": "ليس لديك أي مخططات حتى الآن.",
-    "pageTitle": "مخططاتي"
   },
   "editor": {
     "diagramPrefix": "مخطط:",
@@ -108,7 +101,6 @@
     },
     "pageTitle": "محرر مخطط تدفق البيانات",
     "properties": {
-      "help": "ستظهر خصائص العنصر هنا عند تحديد عنصر.",
       "title": "الخصائص"
     },
     "toolbar": {
@@ -140,7 +132,6 @@
   "homeDescription": "أداة تعاونية لنمذجة التهديدات مصممة لمساعدة الفرق على تحديد وتحليل وتوثيق التهديدات الأمنية في أنظمتهم. إنشاء ومشاركة وتحرير نماذج التهديدات والرسوم البيانية بشكل تعاوني لتحسين أمان التطبيق الخاص بك.",
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
   "login": {
-    "authenticationFailed": "فشل في المصادقة. يرجى المحاولة مرة أخرى.",
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
     "loggingInWith": "جاري تسجيل الدخول باستخدام {{provider}}...",
     "loginWith": "تسجيل الدخول باستخدام",
@@ -154,9 +145,7 @@
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "تسجيل الخروج",
-    "userProfileTooltip": "{{email}}",
-    "username": "{{username}}"
+    "logoutButton": "تسجيل الخروج"
   },
   "privacy": {
     "changesContent": "قد يقوم المشغل بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة مع تاريخ \"آخر تحديث\" محدث.",
@@ -238,7 +227,6 @@
     "name": "الاسم",
     "newThreatModel": "نموذج تهديد جديد",
     "noDiagrams": "لم تتم إضافة أي مخططات بعد",
-    "noDocumentDescription": "لم يتم تقديم وصف",
     "noDocuments": "لم تتم إضافة أي وثائق بعد",
     "noItemsMessage": "ليس لديك أي نماذج تهديدات حتى الآن.",
     "noPermissions": "لم يتم تحديد أي أذونات",
@@ -255,7 +243,6 @@
     "reportButton": "تقرير",
     "reportTooltip": "تقرير",
     "sourceCode": "الكود المصدري",
-    "sourceCodeButton": "الكود المصدري",
     "sourceCodeDescriptionPlaceholder": "وصف مستودع الكود المصدري أو الغرض منه",
     "sourceCodeName": "اسم الكود المصدري",
     "sourceCodeParameters": "معاملات المستودع",
@@ -264,7 +251,6 @@
     "sourceCodeRefValueHint": "اسم الفرع أو العلامة أو معرف الالتزام",
     "sourceCodeSubPath": "المسار الفرعي",
     "sourceCodeSubPathHint": "مسار اختياري داخل المستودع",
-    "sourceCodeTooltip": "الكود المصدري",
     "sourceCodeType": "نوع المستودع",
     "sourceCodeUrl": "رابط المستودع",
     "tag": "علامة",

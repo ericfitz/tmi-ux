@@ -13,7 +13,14 @@ import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { LocalOAuthProviderService } from './local-oauth-provider.service';
-import { JwtToken, UserProfile, OAuthResponse, AuthError, UserRole, ProvidersResponse } from '../models/auth.models';
+import {
+  JwtToken,
+  UserProfile,
+  OAuthResponse,
+  AuthError,
+  UserRole,
+  ProvidersResponse,
+} from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -30,9 +37,7 @@ vi.mock('../../../environments/environment', () => ({
       local: {
         enabled: true,
         icon: 'fa-solid fa-laptop-code',
-        users: [
-          { id: 'user1', name: 'Test User', email: 'user1@example.com' },
-        ],
+        users: [{ id: 'user1', name: 'Test User', email: 'user1@example.com' }],
       },
     },
   },
@@ -114,9 +119,9 @@ describe('AuthService', () => {
         icon: 'fa-brands fa-google',
         auth_url: 'http://localhost:8080/auth/authorize/google',
         redirect_uri: 'http://localhost:8080/auth/callback',
-        client_id: 'mock-client-id'
-      }
-    ]
+        client_id: 'mock-client-id',
+      },
+    ],
   };
 
   const mockAuthError: AuthError = {
@@ -220,8 +225,8 @@ describe('AuthService', () => {
       exchangeCodeForUser: vi.fn().mockReturnValue({
         email: 'test@example.com',
         name: 'Test User',
-        picture: 'http://example.com/pic.jpg'
-      })
+        picture: 'http://example.com/pic.jpg',
+      }),
     } as unknown as LocalOAuthProviderService;
 
     // Create the service directly with mocked dependencies
@@ -323,7 +328,7 @@ describe('AuthService', () => {
 
     it('should handle missing provider configuration', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-      
+
       // Mock provider discovery to return empty providers
       vi.mocked(httpClient.get).mockReturnValue(of({ providers: [] }));
 
@@ -363,9 +368,9 @@ describe('AuthService', () => {
     it('should get available providers from TMI server', () => {
       // Mock HTTP response
       vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
-      
+
       const result$ = service.getAvailableProviders();
-      
+
       result$.subscribe(providers => {
         expect(providers).toEqual([
           ...mockProvidersResponse.providers,
@@ -375,20 +380,20 @@ describe('AuthService', () => {
             icon: 'fa-solid fa-laptop-code',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
             redirect_uri: expect.stringContaining('/auth/callback'),
-            client_id: 'local-development'
-          }
+            client_id: 'local-development',
+          },
         ]);
       });
-      
+
       expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/auth/providers`);
     });
 
     it('should handle provider discovery errors gracefully', () => {
       // Mock HTTP error
       vi.mocked(httpClient.get).mockReturnValue(throwError(() => new Error('Network error')));
-      
+
       const result$ = service.getAvailableProviders();
-      
+
       result$.subscribe(providers => {
         expect(providers).toEqual([
           {
@@ -397,23 +402,26 @@ describe('AuthService', () => {
             icon: 'fa-solid fa-laptop-code',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
             redirect_uri: expect.stringContaining('/auth/callback'),
-            client_id: 'local-development'
-          }
+            client_id: 'local-development',
+          },
         ]);
       });
-      
-      expect(loggerService.error).toHaveBeenCalledWith('Failed to fetch OAuth providers', expect.any(Error));
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        'Failed to fetch OAuth providers',
+        expect.any(Error),
+      );
     });
 
     it('should cache provider results', () => {
       // Mock HTTP response
       vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
-      
+
       // First call
       service.getAvailableProviders().subscribe();
       // Second call should use cache
       service.getAvailableProviders().subscribe();
-      
+
       // Should only call HTTP once due to caching
       expect(httpClient.get).toHaveBeenCalledTimes(1);
     });
@@ -478,10 +486,10 @@ describe('AuthService', () => {
 
     it('should handle OAuth errors from TMI callback', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-      
+
       const errorResponse: OAuthResponse = {
         error: 'access_denied',
-        error_description: 'User cancelled authorization'
+        error_description: 'User cancelled authorization',
       };
 
       const result$ = service.handleOAuthCallback(errorResponse);
@@ -491,20 +499,20 @@ describe('AuthService', () => {
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
           code: 'access_denied',
           message: 'User cancelled authorization',
-          retryable: false
+          retryable: false,
         });
       });
     });
 
     it('should handle unexpected callback format', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-      
+
       // Mock receiving code instead of tokens (old-style callback)
       const oldStyleResponse: OAuthResponse = {
         code: 'auth-code',
-        state: 'mock-state-value'
+        state: 'mock-state-value',
       };
-      
+
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'oauth_state') return 'mock-state-value';
         if (key === 'oauth_provider') return 'google'; // Not local
@@ -518,7 +526,7 @@ describe('AuthService', () => {
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
           code: 'unexpected_callback_format',
           message: 'Received authorization code instead of access token from TMI server',
-          retryable: true
+          retryable: true,
         });
       });
     });
@@ -546,7 +554,7 @@ describe('AuthService', () => {
     it('should handle Base64 encoded state parameter from TMI server', () => {
       const originalState = 'test-state-12345';
       const base64State = btoa(originalState); // Base64 encode the state
-      
+
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'oauth_state') return originalState;
         if (key === 'oauth_provider') return 'google';
@@ -557,7 +565,7 @@ describe('AuthService', () => {
         access_token: mockJwtToken.token, // Use valid mock JWT token
         refresh_token: 'mock-refresh-token',
         expires_in: 3600,
-        state: base64State // TMI server returns Base64 encoded state
+        state: base64State, // TMI server returns Base64 encoded state
       };
 
       router.navigate = vi.fn().mockResolvedValue(true);
@@ -583,7 +591,7 @@ describe('AuthService', () => {
 
     it('should handle failed local authentication', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-      
+
       // Make local provider return null (failed authentication)
       localProvider.exchangeCodeForUser = vi.fn().mockReturnValue(null);
 
@@ -601,7 +609,7 @@ describe('AuthService', () => {
 
     it('should handle invalid callback with no valid data', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-      
+
       const invalidResponse: OAuthResponse = {};
 
       const result$ = service.handleOAuthCallback(invalidResponse);
@@ -611,7 +619,7 @@ describe('AuthService', () => {
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
           code: 'invalid_callback',
           message: 'No valid authentication data received in callback',
-          retryable: true
+          retryable: true,
         });
       });
     });
@@ -680,12 +688,16 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${mockJwtToken.token}`
-        }
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/auth/logout`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${mockJwtToken.token}`,
+          },
+        },
+      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
@@ -778,12 +790,16 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${mockJwtToken.token}`
-        }
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/auth/logout`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${mockJwtToken.token}`,
+          },
+        },
+      );
     });
 
     it('should exclude Authorization header when no token is available', () => {
@@ -798,11 +814,15 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/auth/logout`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
     });
 
     it('should handle malformed token gracefully', () => {
@@ -817,11 +837,15 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, {}, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/auth/logout`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
     });
 
     it('should skip server logout for test users', () => {
@@ -832,7 +856,10 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).not.toHaveBeenCalled();
-      expect(loggerService.debugComponent).toHaveBeenCalledWith('Auth', 'Skipping server logout for test user');
+      expect(loggerService.debugComponent).toHaveBeenCalledWith(
+        'Auth',
+        'Skipping server logout for test user',
+      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(router.navigate).toHaveBeenCalledWith(['/']);
@@ -851,14 +878,16 @@ describe('AuthService', () => {
       const networkError = new HttpErrorResponse({
         status: 0,
         statusText: 'Unknown Error',
-        name: 'HttpErrorResponse'
+        name: 'HttpErrorResponse',
       });
 
       vi.mocked(httpClient.post).mockReturnValue(throwError(() => networkError));
 
       service.logout();
 
-      expect(loggerService.warn).toHaveBeenCalledWith('Server unavailable during logout - proceeding with client-side logout');
+      expect(loggerService.warn).toHaveBeenCalledWith(
+        'Server unavailable during logout - proceeding with client-side logout',
+      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(router.navigate).toHaveBeenCalledWith(['/']);
@@ -877,7 +906,7 @@ describe('AuthService', () => {
       const serverError = new HttpErrorResponse({
         status: 500,
         statusText: 'Internal Server Error',
-        error: 'Server Error'
+        error: 'Server Error',
       });
 
       vi.mocked(httpClient.post).mockReturnValue(throwError(() => serverError));
@@ -925,9 +954,9 @@ describe('AuthService', () => {
     it('should handle different test user email patterns', () => {
       const testUsers = [
         'user1@example.com',
-        'user2@example.com', 
+        'user2@example.com',
         'user3@example.com',
-        'demo.user@example.com'
+        'demo.user@example.com',
       ];
 
       testUsers.forEach(email => {
@@ -939,7 +968,7 @@ describe('AuthService', () => {
 
         expect(httpClient.post).not.toHaveBeenCalled();
         expect(service.isAuthenticated).toBe(false);
-        
+
         // Reset for next iteration
         vi.clearAllMocks();
       });
@@ -960,7 +989,10 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalled();
-      expect(loggerService.debugComponent).not.toHaveBeenCalledWith('Auth', 'Skipping server logout for test user');
+      expect(loggerService.debugComponent).not.toHaveBeenCalledWith(
+        'Auth',
+        'Skipping server logout for test user',
+      );
     });
   }); /* End of Enhanced Logout Functionality describe block */
 
@@ -969,22 +1001,22 @@ describe('AuthService', () => {
       it('should successfully refresh token with valid refresh token', () => {
         const currentToken: JwtToken = {
           ...mockJwtToken,
-          refreshToken: 'valid-refresh-token'
+          refreshToken: 'valid-refresh-token',
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
-        
+
         const refreshResponse = {
           access_token: 'new-access-token',
           refresh_token: 'new-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer'
+          token_type: 'Bearer',
         };
-        
+
         vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
-        
+
         const result$ = service.refreshToken();
-        
+
         result$.subscribe(newToken => {
           expect(newToken.token).toBe('new-access-token');
           expect(newToken.refreshToken).toBe('new-refresh-token');
@@ -992,99 +1024,99 @@ describe('AuthService', () => {
           expect(newToken.expiresAt).toBeInstanceOf(Date);
           expect(newToken.expiresAt.getTime()).toBeGreaterThan(Date.now());
         });
-        
+
         expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
-          refresh_token: 'valid-refresh-token'
+          refresh_token: 'valid-refresh-token',
         });
       });
 
       it('should handle refresh token failure and clear auth data', () => {
         const currentToken: JwtToken = {
           ...mockJwtToken,
-          refreshToken: 'expired-refresh-token'
+          refreshToken: 'expired-refresh-token',
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
-        
+
         const error = new HttpErrorResponse({
           status: 401,
           statusText: 'Unauthorized',
-          error: 'Invalid refresh token'
+          error: 'Invalid refresh token',
         });
-        
+
         vi.mocked(httpClient.post).mockReturnValue(throwError(() => error));
-        
+
         const result$ = service.refreshToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('Token refresh failed - please login again');
             expect(service.isAuthenticated).toBe(false);
             expect(service.userProfile).toBeNull();
             expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
             expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_profile');
-          }
+          },
         });
       });
 
       it('should return error when no refresh token is available', () => {
         const tokenWithoutRefresh: JwtToken = {
           ...mockJwtToken,
-          refreshToken: undefined
+          refreshToken: undefined,
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(tokenWithoutRefresh));
-        
+
         const result$ = service.refreshToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('No refresh token available');
             expect(httpClient.post).not.toHaveBeenCalled();
-          }
+          },
         });
       });
 
       it('should return error when no token is stored', () => {
         localStorageMock.getItem.mockReturnValue(null);
-        
+
         const result$ = service.refreshToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('No refresh token available');
             expect(httpClient.post).not.toHaveBeenCalled();
-          }
+          },
         });
       });
 
       it('should handle network errors during refresh', () => {
         const currentToken: JwtToken = {
           ...mockJwtToken,
-          refreshToken: 'valid-refresh-token'
+          refreshToken: 'valid-refresh-token',
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
-        
+
         const networkError = new HttpErrorResponse({
           status: 0,
           statusText: 'Unknown Error',
-          error: new ProgressEvent('Network error')
+          error: new ProgressEvent('Network error'),
         });
-        
+
         vi.mocked(httpClient.post).mockReturnValue(throwError(() => networkError));
-        
+
         const result$ = service.refreshToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('Token refresh failed - please login again');
             expect(loggerService.error).toHaveBeenCalledWith('Token refresh failed', networkError);
-          }
+          },
         });
       });
     });
@@ -1094,11 +1126,11 @@ describe('AuthService', () => {
         const soonToExpireToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'refresh-token',
-          expiresAt: new Date(Date.now() + 30000) // 30 seconds from now
+          expiresAt: new Date(Date.now() + 30000), // 30 seconds from now
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
-        
+
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(true);
       });
@@ -1107,11 +1139,11 @@ describe('AuthService', () => {
         const validToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'refresh-token',
-          expiresAt: new Date(Date.now() + 1800000) // 30 minutes from now
+          expiresAt: new Date(Date.now() + 1800000), // 30 minutes from now
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(validToken));
-        
+
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(false);
       });
@@ -1120,18 +1152,18 @@ describe('AuthService', () => {
         const tokenWithoutRefresh: JwtToken = {
           ...mockJwtToken,
           refreshToken: undefined,
-          expiresAt: new Date(Date.now() + 30000)
+          expiresAt: new Date(Date.now() + 30000),
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(tokenWithoutRefresh));
-        
+
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(false);
       });
 
       it('should return false when no token is stored', () => {
         localStorageMock.getItem.mockReturnValue(null);
-        
+
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(false);
       });
@@ -1141,11 +1173,11 @@ describe('AuthService', () => {
         const exactBoundaryToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'refresh-token',
-          expiresAt: new Date(Date.now() + 60000) // exactly 1 minute
+          expiresAt: new Date(Date.now() + 60000), // exactly 1 minute
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(exactBoundaryToken));
-        
+
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(true);
       });
@@ -1154,11 +1186,11 @@ describe('AuthService', () => {
         const expiredToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'refresh-token',
-          expiresAt: new Date(Date.now() - 1000) // 1 second ago
+          expiresAt: new Date(Date.now() - 1000), // 1 second ago
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredToken));
-        
+
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(true);
       });
@@ -1168,13 +1200,13 @@ describe('AuthService', () => {
       it('should return existing token when valid and no refresh needed', () => {
         const validToken: JwtToken = {
           ...mockJwtToken,
-          expiresAt: new Date(Date.now() + 1800000) // 30 minutes from now
+          expiresAt: new Date(Date.now() + 1800000), // 30 minutes from now
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(validToken));
-        
+
         const result$ = service.getValidToken();
-        
+
         result$.subscribe(token => {
           expect(token).toEqual(validToken);
           expect(httpClient.post).not.toHaveBeenCalled();
@@ -1185,44 +1217,44 @@ describe('AuthService', () => {
         const soonToExpireToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'refresh-token',
-          expiresAt: new Date(Date.now() + 30000) // 30 seconds from now
+          expiresAt: new Date(Date.now() + 30000), // 30 seconds from now
         };
-        
+
         const refreshResponse = {
           access_token: 'new-access-token',
           refresh_token: 'new-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer'
+          token_type: 'Bearer',
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
         vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
-        
+
         const storeTokenSpy = vi.spyOn(service as any, 'storeToken');
-        
+
         const result$ = service.getValidToken();
-        
+
         result$.subscribe(token => {
           expect(token.token).toBe('new-access-token');
           expect(token.refreshToken).toBe('new-refresh-token');
           expect(storeTokenSpy).toHaveBeenCalledWith(token);
         });
-        
+
         expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
-          refresh_token: 'refresh-token'
+          refresh_token: 'refresh-token',
         });
       });
 
       it('should return error when no token is available', () => {
         localStorageMock.getItem.mockReturnValue(null);
-        
+
         const result$ = service.getValidToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('No token available');
-          }
+          },
         });
       });
 
@@ -1230,20 +1262,20 @@ describe('AuthService', () => {
         const expiredTokenWithoutRefresh: JwtToken = {
           ...mockJwtToken,
           refreshToken: undefined,
-          expiresAt: new Date(Date.now() - 1000)
+          expiresAt: new Date(Date.now() - 1000),
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredTokenWithoutRefresh));
-        
+
         const result$ = service.getValidToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('Token expired and no refresh token available');
             expect(service.isAuthenticated).toBe(false);
             expect(service.userProfile).toBeNull();
-          }
+          },
         });
       });
 
@@ -1251,40 +1283,40 @@ describe('AuthService', () => {
         const soonToExpireToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'invalid-refresh-token',
-          expiresAt: new Date(Date.now() + 30000)
+          expiresAt: new Date(Date.now() + 30000),
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
-        
+
         const refreshError = new HttpErrorResponse({
           status: 401,
           statusText: 'Unauthorized',
-          error: 'Invalid refresh token'
+          error: 'Invalid refresh token',
         });
-        
+
         vi.mocked(httpClient.post).mockReturnValue(throwError(() => refreshError));
-        
+
         const result$ = service.getValidToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('Token refresh failed - please login again');
             expect(service.isAuthenticated).toBe(false);
-          }
+          },
         });
       });
 
       it('should handle malformed stored token', () => {
         localStorageMock.getItem.mockReturnValue('invalid-json');
-        
+
         const result$ = service.getValidToken();
-        
+
         result$.subscribe({
           next: () => {},
-          error: (err) => {
+          error: err => {
             expect(err.message).toBe('No token available');
-          }
+          },
         });
       });
     });
@@ -1295,44 +1327,44 @@ describe('AuthService', () => {
         const expiringSoonToken: JwtToken = {
           ...mockJwtToken,
           refreshToken: 'refresh-token-123',
-          expiresAt: new Date(Date.now() + 30000)
+          expiresAt: new Date(Date.now() + 30000),
         };
-        
+
         const refreshResponse = {
           access_token: 'refreshed-access-token',
           refresh_token: 'new-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer'
+          token_type: 'Bearer',
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(expiringSoonToken));
         vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
-        
+
         // First call should trigger refresh
         const result1$ = service.getValidToken();
-        
+
         result1$.subscribe(token => {
           expect(token.token).toBe('refreshed-access-token');
           expect(token.refreshToken).toBe('new-refresh-token');
         });
-        
+
         // Update mock to return the new token
         const newToken: JwtToken = {
-          token: 'refreshed-access-token', 
+          token: 'refreshed-access-token',
           refreshToken: 'new-refresh-token',
           expiresIn: 3600,
-          expiresAt: new Date(Date.now() + 3600000)
+          expiresAt: new Date(Date.now() + 3600000),
         };
-        
+
         localStorageMock.getItem.mockReturnValue(JSON.stringify(newToken));
-        
+
         // Second call should not trigger refresh
         const result2$ = service.getValidToken();
-        
+
         result2$.subscribe(token => {
           expect(token.token).toBe('refreshed-access-token');
         });
-        
+
         // Should only have called refresh once
         expect(httpClient.post).toHaveBeenCalledTimes(1);
       });

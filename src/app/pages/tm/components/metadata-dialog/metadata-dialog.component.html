@@ -1,7 +1,8 @@
 <div class="metadata-dialog">
   <h2 mat-dialog-title>{{ 'threatModels.metadataDialog.title' | transloco }}</h2>
   <div *ngIf="data.objectType" class="dialog-subtitle">
-    {{ 'threatModels.metadataDialog.objectTypes.' + data.objectType | transloco }}<span *ngIf="data.objectName">: {{ data.objectName }}</span>
+    {{ 'threatModels.metadataDialog.objectTypes.' + data.objectType | transloco
+    }}<span *ngIf="data.objectName">: {{ data.objectName }}</span>
   </div>
 
   <mat-dialog-content class="dialog-content">

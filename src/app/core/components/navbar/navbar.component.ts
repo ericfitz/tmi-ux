@@ -14,7 +14,10 @@ import { FeedbackMaterialModule } from '../../../shared/material/feedback-materi
 import { AuthService } from '../../../auth/services/auth.service';
 import { LanguageService, Language } from '../../../i18n/language.service';
 import { LoggerService } from '../../services/logger.service';
-import { ServerConnectionService, ServerConnectionStatus } from '../../services/server-connection.service';
+import {
+  ServerConnectionService,
+  ServerConnectionStatus,
+} from '../../services/server-connection.service';
 
 // Import the MockDataToggleComponent
 import { MockDataToggleComponent } from '../mock-data-toggle/mock-data-toggle.component';
@@ -88,9 +91,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
 
     // Subscribe to server connection status
-    this.serverConnectionSubscription = this.serverConnectionService.connectionStatus$.subscribe(status => {
-      this.serverConnectionStatus = status;
-    });
+    this.serverConnectionSubscription = this.serverConnectionService.connectionStatus$.subscribe(
+      status => {
+        this.serverConnectionStatus = status;
+      },
+    );
   }
 
   ngOnDestroy(): void {

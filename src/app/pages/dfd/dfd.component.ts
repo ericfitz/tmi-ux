@@ -1,9 +1,9 @@
 /**
  * Data Flow Diagram (DFD) Component
- * 
+ *
  * This is the main component for the Data Flow Diagram editor page.
  * It provides a comprehensive diagram editing environment using the X6 graph library.
- * 
+ *
  * Key functionality:
  * - Renders interactive data flow diagrams with nodes (actors, processes, stores) and edges
  * - Supports real-time collaboration with multiple users via WebSocket integration
@@ -229,7 +229,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.hasSelectedCells = selectedCells.length > 0;
         this.hasExactlyOneSelectedCell = selectedCells.length === 1;
         this.selectedCellIsTextBox = selectedCells.some(cell => cell.shape === 'text-box');
-        this.selectedCellIsSecurityBoundary = selectedCells.some(cell => cell.shape === 'security-boundary');
+        this.selectedCellIsSecurityBoundary = selectedCells.some(
+          cell => cell.shape === 'security-boundary',
+        );
         this.cdr.markForCheck();
       }),
     );
@@ -299,7 +301,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         next: result => {
           if (result.success && result.diagram) {
             this.diagramName = result.diagram.name;
-            
+
             // Load the diagram cells into the graph if available
             if (result.diagram.cells && result.diagram.cells.length > 0) {
               if (this._isInitialized) {
@@ -309,7 +311,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.pendingDiagramCells = result.diagram.cells;
               }
             }
-            
+
             this.cdr.markForCheck();
           } else {
             // Handle diagram not found
@@ -344,14 +346,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         // Perform synchronous save attempt (best effort)
         try {
           this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-            next: (success) => {
+            next: success => {
               if (success) {
                 this.logger.info('Diagram changes saved on component destroy');
               }
             },
-            error: (error) => {
+            error: error => {
               this.logger.warn('Could not save diagram changes on component destroy', error);
-            }
+            },
           });
         } catch (error) {
           this.logger.warn('Error attempting to save diagram changes on destroy', error);
@@ -401,7 +403,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    this.facade.onKeyDown(event, this.dfdId || 'default-diagram', this._isInitialized, this.x6GraphAdapter);
+    this.facade.onKeyDown(
+      event,
+      this.dfdId || 'default-diagram',
+      this._isInitialized,
+      this.x6GraphAdapter,
+    );
   }
 
   /**
@@ -433,7 +440,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       const container = this.graphContainer.nativeElement as HTMLElement;
-      
+
       // Initialize the graph using X6GraphAdapter (delegates all X6-specific setup)
       this.x6GraphAdapter.initialize(container);
       this._isInitialized = true;
@@ -449,13 +456,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tooltipAdapter.initialize(graph);
 
       this.logger.info('Graph initialization complete');
-      
+
       // Load any pending diagram cells
       if (this.pendingDiagramCells) {
         this.loadDiagramCells(this.pendingDiagramCells);
         this.pendingDiagramCells = null;
       }
-      
+
       this.cdr.detectChanges();
     } catch (error) {
       this.logger.error('Error initializing graph', error);
@@ -476,10 +483,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.logger.info('Loading diagram cells into graph', { cellCount: cells.length });
 
       // Use the facade service to handle batch loading with proper history management
-      this.facade.loadDiagramCellsBatch(cells, graph, this.dfdId || 'default-diagram', this.nodeConfigurationService);
+      this.facade.loadDiagramCellsBatch(
+        cells,
+        graph,
+        this.dfdId || 'default-diagram',
+        this.nodeConfigurationService,
+      );
       this.logger.info('Successfully loaded diagram cells into graph');
       this.cdr.markForCheck();
-      
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);
     }
@@ -494,7 +505,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (mockCell.shape === 'edge' || mockCell.edge === true) {
       return this.convertMockEdgeToX6Format(mockCell);
     }
-    
+
     // Handle nodes
     return this.convertMockNodeToX6Format(mockCell);
   }
@@ -505,23 +516,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private convertMockNodeToX6Format(mockCell: any): any {
     // Get the node type from the shape (actor, process, store, security-boundary)
     const nodeType = mockCell.shape as NodeType;
-    
+
     // Get the correct X6 shape name
     const x6Shape = getX6ShapeForNodeType(nodeType);
-    
-    // Extract label from various possible import format locations  
+
+    // Extract label from various possible import format locations
     // Note: This is for import/conversion, not live X6 cell manipulation
-    const label = mockCell.attrs?.text?.text || mockCell.value || this.getDefaultLabelForType(nodeType);
-    
+    const label =
+      mockCell.attrs?.text?.text || mockCell.value || this.getDefaultLabelForType(nodeType);
+
     // Get proper port configuration for this node type
     const portConfig = this.nodeConfigurationService.getNodePorts(nodeType);
-    
+
     // Handle position from either direct properties or geometry object
     const x = mockCell.x ?? mockCell.geometry?.x ?? 0;
     const y = mockCell.y ?? mockCell.geometry?.y ?? 0;
     const width = mockCell.width ?? mockCell.geometry?.width ?? 80;
     const height = mockCell.height ?? mockCell.geometry?.height ?? 80;
-    
+
     // Create base configuration with default styling (no custom colors)
     const cellConfig: any = {
       id: mockCell.id,
@@ -556,7 +568,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Handle different source/target formats
     let source: any;
     let target: any;
-    
+
     if (mockCell.source && typeof mockCell.source === 'object') {
       // New format: { cell: 'id', port?: 'portId' }
       source = mockCell.source;
@@ -564,10 +576,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Legacy format: string IDs or separate properties
       source = {
         cell: mockCell.source || mockCell.sourceNodeId,
-        port: mockCell.sourcePortId || 'right' // Default to right port
+        port: mockCell.sourcePortId || 'right', // Default to right port
       };
     }
-    
+
     if (mockCell.target && typeof mockCell.target === 'object') {
       // New format: { cell: 'id', port?: 'portId' }
       target = mockCell.target;
@@ -575,10 +587,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Legacy format: string IDs or separate properties
       target = {
         cell: mockCell.target || mockCell.targetNodeId,
-        port: mockCell.targetPortId || 'left' // Default to left port
+        port: mockCell.targetPortId || 'left', // Default to left port
       };
     }
-    
+
     // Create edge configuration
     const edgeConfig: any = {
       id: mockCell.id,
@@ -592,37 +604,39 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           strokeWidth: 2,
           targetMarker: {
             name: 'classic',
-            size: 8
-          }
-        }
-      }
+            size: 8,
+          },
+        },
+      },
     };
-    
+
     // Add custom attributes if present
     if (mockCell.attrs) {
       edgeConfig.attrs = { ...edgeConfig.attrs, ...mockCell.attrs };
     }
-    
+
     // Add vertices if present
     if (mockCell.vertices && Array.isArray(mockCell.vertices)) {
       edgeConfig.vertices = mockCell.vertices;
     }
-    
+
     // Add labels if present (import/conversion logic)
     // Note: This creates X6 configuration, not live cell manipulation
     if (mockCell.labels && Array.isArray(mockCell.labels)) {
       edgeConfig.labels = mockCell.labels;
     } else if (mockCell.value) {
       // Convert legacy value to label
-      edgeConfig.labels = [{
-        attrs: {
-          text: {
-            text: mockCell.value
-          }
-        }
-      }];
+      edgeConfig.labels = [
+        {
+          attrs: {
+            text: {
+              text: mockCell.value,
+            },
+          },
+        },
+      ];
     }
-    
+
     // Add metadata if present
     if (mockCell.data && Array.isArray(mockCell.data)) {
       const metadata: any = {};
@@ -633,7 +647,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       edgeConfig.data = { metadata };
     }
-    
+
     return edgeConfig;
   }
 
@@ -704,12 +718,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('DOM observation set up for passive event listeners');
   }
 
-
   /**
    * Export the diagram to the specified format
    */
   exportDiagram(format: ExportFormat): void {
-    this.facade.exportDiagram(format, this.threatModelName ?? undefined, this.diagramName ?? undefined);
+    this.facade.exportDiagram(
+      format,
+      this.threatModelName ?? undefined,
+      this.diagramName ?? undefined,
+    );
   }
 
   /**
@@ -774,7 +791,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const cell = selectedCells[0];
     const cellData = cell.getData() || {};
-    
+
     // Convert metadata from object format to array format for the dialog
     const metadataArray: Metadata[] = [];
     if (cellData.metadata && typeof cellData.metadata === 'object') {
@@ -782,10 +799,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         metadataArray.push({ key, value: String(value) });
       });
     }
-    
+
     // Get the cell label using the utility function
     const cellLabel = (cell as any).getLabel() || '';
-    
+
     const dialogData: MetadataDialogData = {
       metadata: metadataArray,
       isReadOnly: false,
@@ -811,17 +828,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               metadataObject[item.key] = item.value || '';
             }
           });
-          
+
           // Update the cell metadata
           const updatedData = { ...cellData, metadata: metadataObject };
           cell.setData(updatedData);
-          
+
           this.logger.info('Updated cell metadata', { cellId: cell.id, metadata: metadataObject });
         }
       }),
     );
   }
-
 
   /**
    * Closes the diagram and navigates back to the threat model editor page
@@ -833,12 +849,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (graph) {
         this.logger.info('Saving diagram changes before closing', {
           threatModelId: this.threatModelId,
-          dfdId: this.dfdId
+          dfdId: this.dfdId,
         });
-        
+
         this._subscriptions.add(
           this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-            next: (success) => {
+            next: success => {
               if (success) {
                 this.logger.info('Diagram changes saved successfully');
               } else {
@@ -847,17 +863,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               // Navigate away regardless of save success/failure
               this.facade.closeDiagram(this.threatModelId, this.dfdId);
             },
-            error: (error) => {
+            error: error => {
               this.logger.error('Error saving diagram changes', error);
               // Navigate away even if save failed
               this.facade.closeDiagram(this.threatModelId, this.dfdId);
-            }
-          })
+            },
+          }),
         );
         return;
       }
     }
-    
+
     // If we don't have the necessary data or graph is not initialized, just close
     this.facade.closeDiagram(this.threatModelId, this.dfdId);
   }
@@ -961,7 +977,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const originalEdge = rightClickedCell;
     const graph = this.x6GraphAdapter.getGraph();
-    
+
     this.facade
       .addInverseConnection(originalEdge, graph, this.dfdId || 'default-diagram')
       .pipe(take(1))

@@ -48,7 +48,7 @@ export class DfdEventHandlersService {
   private _rightClickedCell: Cell | null = null;
   private _selectedCells$ = new BehaviorSubject<Cell[]>([]);
   private _subscriptions = new Subscription();
-  
+
   // Label change observables
   private _labelChanged$ = new Subject<LabelChangeEvent>();
   private _nodeInfoChanged$ = new Subject<NodeInfoChangeEvent>();
@@ -103,7 +103,12 @@ export class DfdEventHandlersService {
   /**
    * Handle keyboard events for delete functionality and undo/redo
    */
-  onKeyDown(event: KeyboardEvent, _diagramId: string, isInitialized: boolean, x6GraphAdapter: any): void {
+  onKeyDown(
+    event: KeyboardEvent,
+    _diagramId: string,
+    isInitialized: boolean,
+    x6GraphAdapter: any,
+  ): void {
     // Only handle keys if the graph container has focus or if no input elements are focused
     const activeElement = document.activeElement;
     const isInputFocused =
@@ -119,14 +124,17 @@ export class DfdEventHandlersService {
         this.onDeleteSelected(isInitialized, x6GraphAdapter);
         return;
       }
-
     }
   }
 
   /**
    * Handle window resize events to update the graph size
    */
-  onWindowResize(graphContainer: ElementRef, resizeTimeout: number | null, x6GraphAdapter: any): number | null {
+  onWindowResize(
+    graphContainer: ElementRef,
+    resizeTimeout: number | null,
+    x6GraphAdapter: any,
+  ): number | null {
     // Handle resize events immediately
     if (resizeTimeout) {
       window.clearTimeout(resizeTimeout);
@@ -161,7 +169,7 @@ export class DfdEventHandlersService {
     }
 
     const graph = x6GraphAdapter.getGraph();
-    
+
     // Delegate to the selection adapter for proper batched deletion
     this.x6SelectionAdapter.deleteSelected(graph);
   }
@@ -241,19 +249,19 @@ export class DfdEventHandlersService {
     // Get the selected cell to determine shape type
     const selectedCell = this._selectedCells$.value[0];
     let shapeType: string | undefined;
-    
+
     if (selectedCell?.shape) {
       // Map DFD shape names to framework shape types
       const shapeMapping: Record<string, string> = {
-        'process': 'Process',
-        'store': 'Store', 
-        'actor': 'Actor',
-        'edge': 'Flow',
+        process: 'Process',
+        store: 'Store',
+        actor: 'Actor',
+        edge: 'Flow',
         // security-boundary and text-box don't map to threat framework shapes
       };
-      
+
       shapeType = shapeMapping[selectedCell.shape];
-      
+
       this.logger.info('Selected cell shape type for threat editor', {
         dfdShape: selectedCell.shape,
         frameworkShapeType: shapeType || 'unmapped',
@@ -272,13 +280,14 @@ export class DfdEventHandlersService {
         }
 
         const currentFrameworkName = threatModel.threat_model_framework;
-        
+
         // Find the framework model that matches the threat model's framework
-        this.frameworkService.loadAllFrameworks()
+        this.frameworkService
+          .loadAllFrameworks()
           .pipe(take(1))
           .subscribe(frameworks => {
             const framework = frameworks.find(f => f.name === currentFrameworkName);
-            
+
             if (!framework) {
               this.logger.warn('Framework not found for threat model', {
                 threatModelFramework: currentFrameworkName,
@@ -540,7 +549,7 @@ export class DfdEventHandlersService {
    */
   setCellLabel(cell: Cell, text: string): boolean {
     const oldLabel = this.getCellLabel(cell);
-    
+
     this.logger.debugComponent('DfdEventHandlers', 'Attempting to set label', {
       cellId: cell.id,
       isNode: cell.isNode(),
@@ -649,7 +658,9 @@ export class DfdEventHandlersService {
    */
   canEditCellLabel(cell: Cell): boolean {
     // Check if cell has the necessary extension methods
-    return typeof (cell as any).setLabel === 'function' && typeof (cell as any).getLabel === 'function';
+    return (
+      typeof (cell as any).setLabel === 'function' && typeof (cell as any).getLabel === 'function'
+    );
   }
 
   /**
@@ -666,8 +677,8 @@ export class DfdEventHandlersService {
    * Batch update multiple cell labels
    */
   batchUpdateLabels(
-    graph: any, 
-    updates: Array<{ cell: Cell; label: string }>
+    graph: any,
+    updates: Array<{ cell: Cell; label: string }>,
   ): Array<{ cell: Cell; success: boolean }> {
     const results: Array<{ cell: Cell; success: boolean }> = [];
 

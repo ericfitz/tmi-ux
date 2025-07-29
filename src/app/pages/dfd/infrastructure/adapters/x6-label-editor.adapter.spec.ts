@@ -48,7 +48,7 @@ describe('X6LabelEditorAdapter', () => {
   beforeEach(() => {
     // Initialize X6 cell extensions
     initializeX6CellExtensions();
-    
+
     // Create mock logger
     mockLogger = {
       info: vi.fn(),
