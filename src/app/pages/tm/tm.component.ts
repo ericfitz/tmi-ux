@@ -39,6 +39,10 @@ import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.servi
 import { LoggerService } from '../../core/services/logger.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { 
+  DeleteThreatModelDialogComponent,
+  DeleteThreatModelDialogData 
+} from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
 
 /**
  * Interface for collaboration session data
@@ -159,9 +163,76 @@ export class TmComponent implements OnInit, OnDestroy {
   deleteThreatModel(id: string, event: MouseEvent): void {
     event.stopPropagation(); // Prevent opening threat model when clicking delete
 
-    this.threatModelService.deleteThreatModel(id).subscribe(success => {
-      if (success) {
-        this.threatModels = this.threatModels.filter(tm => tm.id !== id);
+    // Find the threat model to get its name for the confirmation dialog
+    const threatModel = this.threatModels.find(tm => tm.id === id);
+    if (!threatModel) {
+      this.logger.error('Threat model not found for deletion', { id });
+      return;
+    }
+
+    // Show confirmation dialog
+    const dialogData: DeleteThreatModelDialogData = {
+      id: threatModel.id,
+      name: threatModel.name
+    };
+
+    const dialogRef = this.dialog.open(DeleteThreatModelDialogComponent, {
+      width: '500px',
+      data: dialogData,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        // User confirmed deletion
+        this.threatModelService.deleteThreatModel(id).subscribe({
+          next: success => {
+            if (success) {
+              // Refresh the threat model list from server
+              this.refreshThreatModelList();
+              
+              // Show success message
+              this.snackBar.open(
+                `Threat model "${threatModel.name}" has been deleted.`,
+                'Close',
+                { duration: 3000 }
+              );
+            }
+          },
+          error: error => {
+            this.logger.error('Error deleting threat model', error);
+            this.snackBar.open(
+              'Failed to delete threat model. Please try again.',
+              'Close',
+              { duration: 5000 }
+            );
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Refresh the threat model list from the server
+   */
+  private refreshThreatModelList(): void {
+    this.threatModelService.getThreatModels().subscribe({
+      next: models => {
+        this.threatModels = models;
+        this.logger.debugComponent('TM', 'Threat model list refreshed after deletion', {
+          count: models.length,
+          models: models.map(tm => ({ id: tm.id, name: tm.name })),
+        });
+        // Trigger change detection to update the view
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.logger.error('Error refreshing threat model list', error);
+        this.snackBar.open(
+          'Failed to refresh threat model list. Please reload the page.',
+          'Close',
+          { duration: 5000 }
+        );
       }
     });
   }

@@ -6,7 +6,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageService } from '../../../i18n/language.service';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -106,6 +107,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   frameworks: FrameworkModel[] = [];
 
   private _subscriptions = new Subscription();
+  private _autoSaveSubject = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -191,6 +193,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Set up auto-save subscription with debouncing
+    this._subscriptions.add(
+      this._autoSaveSubject
+        .pipe(
+          debounceTime(1000), // Wait 1 second after last change
+          distinctUntilChanged()
+        )
+        .subscribe(() => {
+          this.performAutoSave();
+        })
+    );
+
     // Load frameworks from JSON files
     this._subscriptions.add(
       this.frameworkService.loadAllFrameworks().subscribe({
@@ -245,6 +259,43 @@ export class TmEditComponent implements OnInit, OnDestroy {
               this.threatModel.threat_model_framework,
               newFramework as string,
             );
+            // Auto-save when framework changes
+            this.autoSaveThreatModel();
+          }
+        }),
+      );
+    }
+
+    // Subscribe to name and description changes for auto-save
+    const nameControl = this.threatModelForm.get('name');
+    const descriptionControl = this.threatModelForm.get('description');
+    const issueUrlControl = this.threatModelForm.get('issue_url');
+
+    if (nameControl) {
+      this._subscriptions.add(
+        nameControl.valueChanges.subscribe(newName => {
+          if (newName && this.threatModel && newName !== this.threatModel.name) {
+            this.autoSaveThreatModel();
+          }
+        }),
+      );
+    }
+
+    if (descriptionControl) {
+      this._subscriptions.add(
+        descriptionControl.valueChanges.subscribe(newDescription => {
+          if (this.threatModel && newDescription !== this.threatModel.description) {
+            this.autoSaveThreatModel();
+          }
+        }),
+      );
+    }
+
+    if (issueUrlControl) {
+      this._subscriptions.add(
+        issueUrlControl.valueChanges.subscribe(newIssueUrl => {
+          if (this.threatModel && newIssueUrl !== this.threatModel.issue_url) {
+            this.autoSaveThreatModel();
           }
         }),
       );
@@ -1641,5 +1692,46 @@ export class TmEditComponent implements OnInit, OnDestroy {
       threatModelId: this.threatModel.id,
       updatedFields: ['name', 'description', 'threat_model_framework', 'issue_url', 'modified_at'],
     });
+  }
+
+  /**
+   * Trigger auto-save by emitting to the auto-save subject
+   * This will be debounced to prevent excessive API calls
+   */
+  private autoSaveThreatModel(): void {
+    this._autoSaveSubject.next();
+  }
+
+  /**
+   * Perform the actual auto-save operation
+   * This method is called after debouncing
+   */
+  private performAutoSave(): void {
+    if (!this.threatModel || this.threatModelForm.invalid || this.isNewThreatModel) {
+      return;
+    }
+
+    // Apply form changes to the threat model
+    this.applyFormChangesToThreatModel();
+
+    // Save to server
+    this._subscriptions.add(
+      this.threatModelService.updateThreatModel(this.threatModel).subscribe({
+        next: result => {
+          if (result) {
+            this.threatModel = result;
+            this.logger.debugComponent('TmEdit', 'Auto-saved threat model changes', {
+              threatModelId: this.threatModel.id,
+              name: this.threatModel.name,
+            });
+          }
+        },
+        error: error => {
+          this.logger.error('Auto-save failed for threat model', error, {
+            threatModelId: this.threatModel?.id,
+          });
+        }
+      })
+    );
   }
 }

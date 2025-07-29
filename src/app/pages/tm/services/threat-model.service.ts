@@ -18,9 +18,9 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subscription, BehaviorSubject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { catchError, switchMap, map } from 'rxjs/operators';
+import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
 import { ThreatModel } from '../models/threat-model.model';
 import { Diagram } from '../models/diagram.model';
@@ -36,6 +36,7 @@ export class ThreatModelService implements OnDestroy {
   private _threatModels: ThreatModel[] = [];
   private _useMockData = false;
   private _subscription: Subscription | null = null;
+  private _threatModelsSubject = new BehaviorSubject<ThreatModel[]>([]);
 
   constructor(
     private apiService: ApiService,
@@ -58,6 +59,7 @@ export class ThreatModelService implements OnDestroy {
       // Initialize threat models based on the mock data setting
       if (useMock) {
         this._threatModels = [...this.mockDataService.getMockThreatModels()];
+        this._threatModelsSubject.next(this._threatModels);
         this.logger.debugComponent(
           'ThreatModelService',
           'ThreatModelService loaded mock threat models',
@@ -68,6 +70,7 @@ export class ThreatModelService implements OnDestroy {
         );
       } else {
         this._threatModels = []; // Will be populated from API when needed
+        this._threatModelsSubject.next(this._threatModels);
         this.logger.debugComponent(
           'ThreatModelService',
           'ThreatModelService using API mode (empty models)',
@@ -87,13 +90,18 @@ export class ThreatModelService implements OnDestroy {
     });
 
     if (this._useMockData) {
-      this.logger.debugComponent('ThreatModelService', 'Returning mock threat models');
-      return of(this._threatModels);
+      this.logger.debugComponent('ThreatModelService', 'Returning reactive mock threat models');
+      return this._threatModelsSubject.asObservable();
     }
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', 'Fetching threat models from API');
     return this.apiService.get<ThreatModel[]>('threat_models').pipe(
+      tap(threatModels => {
+        // Update the subject with API data so subscribers get notified
+        this._threatModels = threatModels;
+        this._threatModelsSubject.next(threatModels);
+      }),
       catchError(error => {
         this.logger.error('Error fetching threat models', error);
         return of([]);
@@ -420,7 +428,18 @@ export class ThreatModelService implements OnDestroy {
 
       const initialLength = this._threatModels.length;
       this._threatModels = this._threatModels.filter(tm => tm.id !== id);
-      return of(this._threatModels.length < initialLength);
+      const wasDeleted = this._threatModels.length < initialLength;
+      
+      if (wasDeleted) {
+        // Notify all subscribers of the updated threat model list
+        this._threatModelsSubject.next([...this._threatModels]);
+        this.logger.debugComponent('ThreatModelService', 'Updated threat model list after deletion', {
+          remainingCount: this._threatModels.length,
+          deletedId: id,
+        });
+      }
+      
+      return of(wasDeleted);
     }
 
     // In a real implementation, this would call the API
@@ -429,6 +448,13 @@ export class ThreatModelService implements OnDestroy {
       `Deleting threat model with ID: ${id} via API`,
     );
     return this.apiService.delete<boolean>(`threat_models/${id}`).pipe(
+      tap(success => {
+        if (success) {
+          // Remove from local cache and notify subscribers
+          this._threatModels = this._threatModels.filter(tm => tm.id !== id);
+          this._threatModelsSubject.next([...this._threatModels]);
+        }
+      }),
       catchError(error => {
         this.logger.error(`Error deleting threat model with ID: ${id}`, error);
         throw error;
@@ -444,5 +470,6 @@ export class ThreatModelService implements OnDestroy {
       this._subscription.unsubscribe();
       this._subscription = null;
     }
+    this._threatModelsSubject.complete();
   }
 }

@@ -284,7 +284,12 @@
       "viewThreat": "View Threat"
     },
     "viewThreat": "View Threat",
-    "yourThreatModels": "Your Threat Models"
+    "yourThreatModels": "Your Threat Models",
+    "deleteConfirmationTitle": "Delete Threat Model",
+    "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
+    "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
+    "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
+    "deleteConfirm": "Delete Threat Model"
   },
   "tos": {
     "contactInfo": {

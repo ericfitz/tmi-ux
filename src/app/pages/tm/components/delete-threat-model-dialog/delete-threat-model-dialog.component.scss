@@ -1,0 +1,58 @@
+.delete-dialog-title {
+  display: flex;
+  align-items: center;
+  color: #d32f2f;
+  
+  .warning-icon {
+    margin-right: 12px;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.delete-dialog-content {
+  .threat-model-name {
+    font-size: 16px;
+    margin: 16px 0;
+    font-weight: 500;
+  }
+  
+  .warning-box {
+    display: flex;
+    align-items: flex-start;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    
+    .warning-icon-small {
+      color: #856404;
+      margin-right: 12px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .warning-text {
+      color: #856404;
+      
+      p {
+        margin: 0 0 8px;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+mat-dialog-actions {
+  button {
+    margin-left: 8px;
+  }
+}
