@@ -133,6 +133,7 @@
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "login": {
     "chooseMethod": "选择您的登录方式：",
+    "loadingProviders": "正在加载身份验证提供程序...",
     "loggingInWith": "正在使用{{provider}}登录...",
     "loginWith": "使用以下方式登录",
     "noProvidersConfigured": "未配置身份验证提供程序。",
@@ -145,7 +146,12 @@
     "appTitle": "TMI: 威胁建模改进",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "退出登录"
+    "logoutButton": "退出登录",
+    "serverStatus": {
+      "noServerConfigured": "未配置服务器",
+      "serverConnected": "服务器已连接",
+      "serverConnectionError": "服务器连接错误"
+    }
   },
   "privacy": {
     "changesContent": "运营商可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
@@ -196,6 +202,7 @@
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
     "details": "威胁模型详情",
     "diagramName": "图表名称",
+    "diagramType": "图表类型",
     "diagrams": "图表",
     "diagramsCount": "图表",
     "documentDescription": "描述",

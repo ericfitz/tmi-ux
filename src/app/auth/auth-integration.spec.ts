@@ -120,12 +120,12 @@ describe('Authentication Integration', () => {
     });
 
     it('should handle OAuth configuration when available', () => {
-      // Test that OAuth configuration works correctly when defined
-      if (environment.oauth?.google?.clientId) {
-        expect(environment.oauth.google.clientId).toBeTruthy();
+      // Test that local OAuth configuration works correctly when defined
+      if (environment.oauth?.local?.enabled) {
+        expect(environment.oauth.local.enabled).toBeTruthy();
       }
-      if (environment.oauth?.google?.redirectUri) {
-        expect(environment.oauth.google.redirectUri).toBeTruthy();
+      if (environment.oauth?.local?.users) {
+        expect(Array.isArray(environment.oauth.local.users)).toBe(true);
       }
     });
   });
@@ -596,10 +596,10 @@ describe('Authentication Integration', () => {
               refresh_token: 'valid-refresh-token',
             });
           },
-          error: (error) => {
+          error: error => {
             // Handle any errors that occur during interceptor processing
             console.warn('Interceptor error (expected in test):', error.message);
-          }
+          },
         });
       });
     });

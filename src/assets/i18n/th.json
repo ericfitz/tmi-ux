@@ -133,6 +133,7 @@
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
+    "loadingProviders": "กำลังโหลดผู้ให้บริการการตรวจสอบสิทธิ์...",
     "loggingInWith": "กำลังเข้าสู่ระบบด้วย {{provider}}...",
     "loginWith": "เข้าสู่ระบบด้วย",
     "noProvidersConfigured": "ไม่มีผู้ให้บริการการตรวจสอบสิทธิ์ที่กำหนดค่าไว้",
@@ -145,7 +146,12 @@
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "ออกจากระบบ"
+    "logoutButton": "ออกจากระบบ",
+    "serverStatus": {
+      "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
+      "serverConnected": "เซิร์ฟเวอร์เชื่อมต่อแล้ว",
+      "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์"
+    }
   },
   "privacy": {
     "changesContent": "ผู้ดำเนินการอาจอัปเดตนโยบายความเป็นส่วนตัวนี้เป็นครั้งคราว การเปลี่ยนแปลงใด ๆ จะถูกโพสต์บนหน้านี้พร้อมกับวันที่ \"อัปเดตล่าสุด\" ที่อัปเดต",
@@ -196,6 +202,7 @@
     "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
     "details": "รายละเอียดแบบจำลองภัยคุกคาม",
     "diagramName": "ชื่อแผนภาพ",
+    "diagramType": "ประเภทแผนภาพ",
     "diagrams": "แผนภาพ",
     "diagramsCount": "แผนภาพ",
     "documentDescription": "คำอธิบาย",

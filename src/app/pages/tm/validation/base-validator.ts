@@ -178,7 +178,8 @@ export class ValidationUtils {
 
     // Enum validation
     if (enumValues && !enumValues.includes(value as string)) {
-      const displayValue = typeof value === 'string' ? value : typeof value === 'number' ? value : '[object]';
+      const displayValue =
+        typeof value === 'string' ? value : typeof value === 'number' ? value : '[object]';
       return ValidationUtils.createError(
         'INVALID_ENUM_VALUE',
         `Field '${field}' value '${displayValue}' is not one of allowed values: ${enumValues.join(', ')}`,

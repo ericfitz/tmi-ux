@@ -133,6 +133,7 @@
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
+    "loadingProviders": "جاري تحميل موفري المصادقة...",
     "loggingInWith": "جاري تسجيل الدخول باستخدام {{provider}}...",
     "loginWith": "تسجيل الدخول باستخدام",
     "noProvidersConfigured": "لم يتم تكوين موفري المصادقة.",
@@ -145,7 +146,12 @@
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "تسجيل الخروج"
+    "logoutButton": "تسجيل الخروج",
+    "serverStatus": {
+      "noServerConfigured": "لم يتم تكوين خادم",
+      "serverConnected": "الخادم متصل",
+      "serverConnectionError": "خطأ في اتصال الخادم"
+    }
   },
   "privacy": {
     "changesContent": "قد يقوم المشغل بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة مع تاريخ \"آخر تحديث\" محدث.",

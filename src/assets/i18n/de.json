@@ -133,6 +133,7 @@
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
+    "loadingProviders": "Lade Authentifizierungsanbieter...",
     "loggingInWith": "Anmelden mit {{provider}}...",
     "loginWith": "Anmelden mit",
     "noProvidersConfigured": "Keine Authentifizierungsanbieter konfiguriert.",
@@ -145,7 +146,12 @@
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
-    "logoutButton": "Abmelden"
+    "logoutButton": "Abmelden",
+    "serverStatus": {
+      "noServerConfigured": "Kein Server konfiguriert",
+      "serverConnected": "Server verbunden",
+      "serverConnectionError": "Server-Verbindungsfehler"
+    }
   },
   "privacy": {
     "changesContent": "Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
