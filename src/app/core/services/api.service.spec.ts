@@ -68,6 +68,7 @@ describe('ApiService', () => {
     loggerService = {
       info: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       error: vi.fn(),
       warn: vi.fn(),
     };

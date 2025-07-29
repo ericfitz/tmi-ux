@@ -97,9 +97,10 @@ export class LoginComponent implements OnInit {
         });
 
         // Auto-login if only one provider available and not handling callback
-        const hasCallbackParams = this.route.snapshot.queryParams['code'] || 
-                                 this.route.snapshot.queryParams['access_token'] || 
-                                 this.route.snapshot.queryParams['error'];
+        const queryParams = this.route.snapshot.queryParams as LoginQueryParams;
+        const hasCallbackParams = queryParams.code || 
+                                 queryParams.access_token || 
+                                 queryParams.error;
         if (providers.length === 1 && !hasCallbackParams) {
           this.login(providers[0].id);
         }

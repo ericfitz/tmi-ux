@@ -1,9 +1,9 @@
 /**
  * Authentication Service
- * 
+ *
  * This service handles all authentication-related functionality for the TMI application.
  * It manages OAuth flows, JWT token storage, user profiles, and session management.
- * 
+ *
  * Key functionality:
  * - Supports multiple OAuth providers (Google, GitHub, etc.) configured via environment
  * - Provides local development authentication for testing
@@ -31,9 +31,16 @@ import {
 
 import { LoggerService } from '../../core/services/logger.service';
 import { environment } from '../../../environments/environment';
-import { AuthError, JwtToken, OAuthResponse, UserProfile, UserRole, OAuthProviderInfo, ProvidersResponse } from '../models/auth.models';
+import {
+  AuthError,
+  JwtToken,
+  OAuthResponse,
+  UserProfile,
+  UserRole,
+  OAuthProviderInfo,
+  ProvidersResponse,
+} from '../models/auth.models';
 import { LocalOAuthProviderService } from './local-oauth-provider.service';
-
 
 /**
  * Service for handling authentication with the TMI server
@@ -175,7 +182,7 @@ export class AuthService {
         map(newToken => {
           this.storeToken(newToken);
           return newToken;
-        })
+        }),
       );
     }
 
@@ -210,7 +217,7 @@ export class AuthService {
           // If refresh fails, clear auth data and return null instead of error
           this.clearAuthData();
           return of(null);
-        })
+        }),
       );
     }
 
@@ -242,7 +249,8 @@ export class AuthService {
         this.userProfileSubject.next(null);
       }
 
-      this.logger.debugComponent('Auth',
+      this.logger.debugComponent(
+        'Auth',
         `Auth status checked: authenticated=${isAuthenticated}, user=${this.userEmail}`,
       );
     } catch (error) {
@@ -258,21 +266,21 @@ export class AuthService {
   getAvailableProviders(): Observable<OAuthProviderInfo[]> {
     // Check cache first
     const now = Date.now();
-    if (this.cachedProviders && (now - this.providersCacheTime) < this.providersCacheExpiry) {
+    if (this.cachedProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
       return of(this.cachedProviders);
     }
 
     this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
-    
+
     return this.http.get<ProvidersResponse>(`${environment.apiUrl}/auth/providers`).pipe(
       map(response => {
         // Add local provider if in development or no other providers available
         const providers = [...response.providers];
-        const shouldShowLocal = environment.oauth?.local?.enabled !== false && (
-          !environment.production || // Development environment
-          providers.length === 0     // Production but no other providers
-        );
-        
+        const shouldShowLocal =
+          environment.oauth?.local?.enabled !== false &&
+          (!environment.production || // Development environment
+            providers.length === 0); // Production but no other providers
+
         if (shouldShowLocal) {
           providers.push({
             id: 'local',
@@ -280,15 +288,17 @@ export class AuthService {
             icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
             auth_url: this.localProvider.buildAuthUrl(''),
             redirect_uri: `${window.location.origin}/auth/callback`,
-            client_id: 'local-development'
+            client_id: 'local-development',
           });
         }
 
         // Cache the results
         this.cachedProviders = providers;
         this.providersCacheTime = now;
-        
-        this.logger.debugComponent('Auth', `Fetched ${providers.length} OAuth providers`, { providers: providers.map(p => ({ id: p.id, name: p.name })) });
+
+        this.logger.debugComponent('Auth', `Fetched ${providers.length} OAuth providers`, {
+          providers: providers.map(p => ({ id: p.id, name: p.name })),
+        });
         return providers;
       }),
       catchError(error => {
@@ -302,14 +312,13 @@ export class AuthService {
             icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
             auth_url: this.localProvider.buildAuthUrl(''),
             redirect_uri: `${window.location.origin}/auth/callback`,
-            client_id: 'local-development'
+            client_id: 'local-development',
           });
         }
         return of(fallbackProviders);
-      })
+      }),
     );
   }
-
 
   /**
    * Initiate login with specified provider (or default if none specified)
@@ -320,12 +329,12 @@ export class AuthService {
       next: providers => {
         const selectedProviderId = providerId || this.defaultProvider;
         const provider = providers.find(p => p.id === selectedProviderId);
-        
+
         if (!provider) {
           this.handleAuthError({
             code: 'provider_not_found',
             message: `Provider ${selectedProviderId} is not configured`,
-            retryable: false
+            retryable: false,
           });
           return;
         }
@@ -340,10 +349,10 @@ export class AuthService {
         this.handleAuthError({
           code: 'provider_discovery_error',
           message: 'Failed to discover OAuth providers',
-          retryable: true
+          retryable: true,
         });
         this.logger.error('Error discovering OAuth providers', error);
-      }
+      },
     });
   }
 
@@ -353,10 +362,10 @@ export class AuthService {
   private initiateTMIOAuthLogin(provider: OAuthProviderInfo): void {
     try {
       this.logger.info(`Initiating TMI OAuth login with ${provider.name}`);
-      this.logger.debugComponent('Auth', `Redirecting to TMI OAuth endpoint`, { 
-        providerId: provider.id, 
+      this.logger.debugComponent('Auth', `Redirecting to TMI OAuth endpoint`, {
+        providerId: provider.id,
         authUrl: provider.auth_url.replace(/\?.*$/, ''), // Remove query params for logging
-        redirectUri: provider.redirect_uri 
+        redirectUri: provider.redirect_uri,
       });
 
       const state = this.generateRandomState();
@@ -367,7 +376,7 @@ export class AuthService {
       const clientCallbackUrl = `${window.location.origin}/auth/callback`;
       const separator = provider.auth_url.includes('?') ? '&' : '?';
       const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}`;
-      
+
       this.logger.debugComponent('Auth', 'Initiating OAuth with client callback', {
         providerId: provider.id,
         generatedState: state,
@@ -376,13 +385,13 @@ export class AuthService {
         clientCallbackUrl,
         finalAuthUrl: authUrl.replace(/\?.*$/, ''), // Log without query params for security
       });
-      
+
       window.location.href = authUrl;
     } catch (error) {
       this.handleAuthError({
         code: 'oauth_init_error',
         message: `Failed to initialize ${provider.name} OAuth flow`,
-        retryable: true
+        retryable: true,
       });
       this.logger.error(`Error initializing ${provider.name} OAuth`, error);
     }
@@ -401,7 +410,7 @@ export class AuthService {
 
       this.logger.debugComponent('Auth', 'Initiating local OAuth', {
         providerId: 'local',
-        generatedState: state
+        generatedState: state,
       });
 
       const authUrl = this.localProvider.buildAuthUrl(state);
@@ -410,12 +419,11 @@ export class AuthService {
       this.handleAuthError({
         code: 'local_auth_error',
         message: 'Failed to initialize local authentication',
-        retryable: true
+        retryable: true,
       });
       this.logger.error('Error initializing local authentication', error);
     }
   }
-
 
   /**
    * Generate a random state string for CSRF protection
@@ -436,10 +444,10 @@ export class AuthService {
     if (!str || str.length === 0) {
       return false;
     }
-    
+
     // Base64 strings should only contain A-Z, a-z, 0-9, +, /, and = for padding
     const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
-    
+
     // Check if it matches Base64 pattern and length is multiple of 4
     return base64Regex.test(str) && str.length % 4 === 0 && str.length > 16;
   }
@@ -452,10 +460,10 @@ export class AuthService {
    */
   handleOAuthCallback(response: OAuthResponse): Observable<boolean> {
     this.logger.info('Handling OAuth callback from TMI proxy');
-    this.logger.debugComponent('Auth', 'Processing OAuth callback', { 
-      hasAccessToken: !!response.access_token, 
+    this.logger.debugComponent('Auth', 'Processing OAuth callback', {
+      hasAccessToken: !!response.access_token,
       hasError: !!response.error,
-      state: response.state ? 'present' : 'missing'
+      state: response.state ? 'present' : 'missing',
     });
 
     // Handle OAuth errors first
@@ -469,18 +477,20 @@ export class AuthService {
       const storedState = localStorage.getItem('oauth_state');
       const providerId = localStorage.getItem('oauth_provider');
       const receivedState = response.state;
-      
+
       this.logger.debugComponent('Auth', 'State parameter validation starting', {
         receivedState: response.state,
         storedState: storedState,
         providerId: providerId,
-        hasAccessToken: !!response.access_token
+        hasAccessToken: !!response.access_token,
       });
-      
+
       // For local provider, enforce strict state validation
       if (providerId === 'local') {
         if (!storedState || storedState !== receivedState) {
-          this.logger.error(`Local provider state mismatch: received "${receivedState}", stored "${storedState}"`);
+          this.logger.error(
+            `Local provider state mismatch: received "${receivedState}", stored "${storedState}"`,
+          );
           this.handleAuthError({
             code: 'invalid_state',
             message: 'Invalid state parameter for local authentication',
@@ -488,17 +498,21 @@ export class AuthService {
           });
           return of(false);
         }
-      } 
+      }
       // For TMI OAuth proxy flows, be more flexible due to server-side state management
       else if (response.access_token) {
         // If we have an access token, this is a TMI OAuth proxy response
         // The TMI server manages OAuth security, so we can be more lenient with state validation
-        this.logger.debugComponent('Auth', 'TMI OAuth proxy detected - using flexible state validation', {
-          receivedState: response.state,
-          storedState: storedState,
-          reason: 'TMI server manages OAuth security and may transform state parameters'
-        });
-        
+        this.logger.debugComponent(
+          'Auth',
+          'TMI OAuth proxy detected - using flexible state validation',
+          {
+            receivedState: response.state,
+            storedState: storedState,
+            reason: 'TMI server manages OAuth security and may transform state parameters',
+          },
+        );
+
         // Try to decode Base64 state if present, but don't fail if it doesn't match
         if (this.isBase64(receivedState)) {
           try {
@@ -506,25 +520,33 @@ export class AuthService {
             this.logger.debugComponent('Auth', 'Decoded Base64 state from TMI server', {
               originalState: response.state,
               decodedState: decodedState,
-              decodedAsHex: Array.from(decodedState).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(''),
-              storedState: storedState
+              decodedAsHex: Array.from(decodedState)
+                .map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
+                .join(''),
+              storedState: storedState,
             });
           } catch (error) {
             this.logger.warn('Failed to decode TMI Base64 state parameter', error);
           }
         }
-        
+
         // For TMI OAuth proxy with access tokens, we trust the server's state management
         // The security is provided by the TMI server's OAuth implementation
-        this.logger.debugComponent('Auth', 'Accepting TMI OAuth proxy state (server manages security)', {
-          receivedState: response.state,
-          storedState: storedState
-        });
+        this.logger.debugComponent(
+          'Auth',
+          'Accepting TMI OAuth proxy state (server manages security)',
+          {
+            receivedState: response.state,
+            storedState: storedState,
+          },
+        );
       }
       // For other flows without access tokens, enforce strict validation
       else {
         if (!storedState || storedState !== receivedState) {
-          this.logger.error(`State parameter mismatch for ${providerId || 'unknown'} provider: received "${receivedState}", stored "${storedState}"`);
+          this.logger.error(
+            `State parameter mismatch for ${providerId || 'unknown'} provider: received "${receivedState}", stored "${storedState}"`,
+          );
           this.handleAuthError({
             code: 'invalid_state',
             message: 'Invalid state parameter, possible CSRF attack',
@@ -551,7 +573,9 @@ export class AuthService {
 
     // If we have a code but no access_token, this might be an old-style callback
     if (response.code) {
-      this.logger.warn('Received authorization code instead of access token - this may indicate server misconfiguration');
+      this.logger.warn(
+        'Received authorization code instead of access token - this may indicate server misconfiguration',
+      );
       this.handleAuthError({
         code: 'unexpected_callback_format',
         message: 'Received authorization code instead of access token from TMI server',
@@ -578,7 +602,7 @@ export class AuthService {
       this.handleAuthError({
         code: 'local_auth_error',
         message: 'Failed to authenticate with local provider',
-        retryable: true
+        retryable: true,
       });
       return of(false);
     }
@@ -600,12 +624,15 @@ export class AuthService {
    * Handle TMI OAuth proxy token response
    * TMI has already exchanged the code and returns tokens directly
    */
-  private handleTMITokenResponse(response: OAuthResponse, providerId: string | null): Observable<boolean> {
+  private handleTMITokenResponse(
+    response: OAuthResponse,
+    providerId: string | null,
+  ): Observable<boolean> {
     try {
-      this.logger.debugComponent('Auth', 'Processing TMI token response', { 
-        providerId, 
+      this.logger.debugComponent('Auth', 'Processing TMI token response', {
+        providerId,
         expiresIn: response.expires_in,
-        hasRefreshToken: !!response.refresh_token 
+        hasRefreshToken: !!response.refresh_token,
       });
 
       // Create JWT token object
@@ -616,7 +643,7 @@ export class AuthService {
         token: response.access_token!,
         refreshToken: response.refresh_token,
         expiresIn: response.expires_in || 3600,
-        expiresAt
+        expiresAt,
       };
 
       // Store token and extract user profile
@@ -647,21 +674,21 @@ export class AuthService {
    */
   private handleOAuthError(error: string, errorDescription?: string): void {
     const errorMap: { [key: string]: string } = {
-      'access_denied': 'User cancelled authorization',
-      'invalid_request': 'Invalid OAuth request',
-      'unauthorized_client': 'Client not authorized',
-      'unsupported_response_type': 'OAuth configuration error',
-      'invalid_scope': 'Invalid permissions requested',
-      'server_error': 'OAuth provider error',
-      'temporarily_unavailable': 'OAuth provider temporarily unavailable'
+      access_denied: 'User cancelled authorization',
+      invalid_request: 'Invalid OAuth request',
+      unauthorized_client: 'Client not authorized',
+      unsupported_response_type: 'OAuth configuration error',
+      invalid_scope: 'Invalid permissions requested',
+      server_error: 'OAuth provider error',
+      temporarily_unavailable: 'OAuth provider temporarily unavailable',
     };
 
     const userMessage = errorMap[error] || 'Authentication failed';
-    
+
     this.handleAuthError({
       code: error,
       message: errorDescription || userMessage,
-      retryable: error !== 'access_denied'
+      retryable: error !== 'access_denied',
     });
   }
 
@@ -675,14 +702,13 @@ export class AuthService {
       name: userInfo.name,
       email: userInfo.email,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (environment.authTokenExpiryMinutes * 60),
-      provider: 'local'
+      exp: Math.floor(Date.now() / 1000) + environment.authTokenExpiryMinutes * 60,
+      provider: 'local',
     };
 
     // Create a fake JWT (just for consistency, server not involved)
-    const fakeJwt = btoa(JSON.stringify(header)) + '.' + 
-                   btoa(JSON.stringify(payload)) + '.' + 
-                   'local-signature';
+    const fakeJwt =
+      btoa(JSON.stringify(header)) + '.' + btoa(JSON.stringify(payload)) + '.' + 'local-signature';
 
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + environment.authTokenExpiryMinutes);
@@ -690,7 +716,7 @@ export class AuthService {
     return {
       token: fakeJwt,
       expiresIn: environment.authTokenExpiryMinutes * 60,
-      expiresAt
+      expiresAt,
     };
   }
 
@@ -772,6 +798,7 @@ export class AuthService {
    * @returns True if user has the role
    */
   hasRole(_role: UserRole): boolean {
+    // TODO: use access checking here
     // This is a placeholder. In a real implementation, we would check the user's roles
     // For now, we'll assume all authenticated users have all roles
     return this.isAuthenticated;
@@ -799,46 +826,50 @@ export class AuthService {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    this.logger.debugComponent('Auth', 'Sending refresh token request', { 
+    this.logger.debugComponent('Auth', 'Sending refresh token request', {
       hasRefreshToken: !!currentToken.refreshToken,
-      tokenExpiry: currentToken.expiresAt.toISOString() 
+      tokenExpiry: currentToken.expiresAt.toISOString(),
     });
 
-    return this.http.post<{ access_token: string; refresh_token: string; expires_in: number; token_type: string }>(
-      `${environment.apiUrl}/auth/refresh`,
-      {
-        refresh_token: currentToken.refreshToken
-      }
-    ).pipe(
-      map(response => {
-        const expiresAt = new Date();
-        expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
-
-        const newToken = {
-          token: response.access_token,
-          refreshToken: response.refresh_token,
-          expiresIn: response.expires_in,
-          expiresAt
-        };
-
-        this.logger.debugComponent('Auth', 'Token refresh successful', { 
-          newExpiry: newToken.expiresAt.toISOString(),
-          hasNewRefreshToken: !!newToken.refreshToken 
-        });
-
-        return newToken;
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.logger.error('Token refresh failed', error);
-        this.logger.debugComponent('Auth', 'Token refresh failed, clearing auth data', { 
-          status: error.status, 
-          message: error.message 
-        });
-        // If refresh fails, clear auth data and redirect to login
-        this.clearAuthData();
-        return throwError(() => new Error('Token refresh failed - please login again'));
+    return this.http
+      .post<{
+        access_token: string;
+        refresh_token: string;
+        expires_in: number;
+        token_type: string;
+      }>(`${environment.apiUrl}/auth/refresh`, {
+        refresh_token: currentToken.refreshToken,
       })
-    );
+      .pipe(
+        map(response => {
+          const expiresAt = new Date();
+          expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
+
+          const newToken = {
+            token: response.access_token,
+            refreshToken: response.refresh_token,
+            expiresIn: response.expires_in,
+            expiresAt,
+          };
+
+          this.logger.debugComponent('Auth', 'Token refresh successful', {
+            newExpiry: newToken.expiresAt.toISOString(),
+            hasNewRefreshToken: !!newToken.refreshToken,
+          });
+
+          return newToken;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          this.logger.error('Token refresh failed', error);
+          this.logger.debugComponent('Auth', 'Token refresh failed, clearing auth data', {
+            status: error.status,
+            message: error.message,
+          });
+          // If refresh fails, clear auth data and redirect to login
+          this.clearAuthData();
+          return throwError(() => new Error('Token refresh failed - please login again'));
+        }),
+      );
   }
 
   /**
@@ -873,9 +904,9 @@ export class AuthService {
     if (this.isAuthenticated) {
       const token = this.getStoredToken();
       const headers: { [key: string]: string } = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       };
-      
+
       // Add Authorization header if we have a token
       if (token?.token) {
         headers['Authorization'] = `Bearer ${token.token}`;
@@ -887,7 +918,9 @@ export class AuthService {
           catchError((error: HttpErrorResponse) => {
             // Log the error but don't fail the logout process
             if (error.status === 0 || error.name === 'HttpErrorResponse') {
-              this.logger.warn('Server unavailable during logout - proceeding with client-side logout');
+              this.logger.warn(
+                'Server unavailable during logout - proceeding with client-side logout',
+              );
             } else {
               this.logger.error('Error during logout', error);
             }

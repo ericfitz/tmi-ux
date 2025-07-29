@@ -34,8 +34,11 @@ import { SharedModule } from '../../shared/shared.module';
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from './models/threat-model.model';
 import { ThreatModelService } from './services/threat-model.service';
+import { ThreatModelValidatorService } from './validation/threat-model-validator.service';
 import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 /**
  * Interface for collaboration session data
@@ -70,9 +73,12 @@ export class TmComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private threatModelService: ThreatModelService,
+    private validator: ThreatModelValidatorService,
     private languageService: LanguageService,
     private collaborationService: DfdCollaborationService,
     private logger: LoggerService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -285,7 +291,8 @@ export class TmComponent implements OnInit, OnDestroy {
     try {
       // Basic validation - check if it has expected threat model structure
       if (typeof data['id'] !== 'string' || typeof data['name'] !== 'string') {
-        throw new Error('Invalid threat model format: missing required fields (id, name)');
+        this.showError('Invalid threat model format: missing required fields (id, name)');
+        return;
       }
 
       this.logger.info('Importing threat model', { 
@@ -293,21 +300,87 @@ export class TmComponent implements OnInit, OnDestroy {
         name: data['name'] 
       });
 
-      // Use the threat model service to import/create the threat model
-      // This will handle the backend integration when available
-      const importedModel = await this.threatModelService.importThreatModel(
+      // Validate the threat model data
+      const validationResult = this.validator.validate(data as Partial<ThreatModel>);
+      if (!validationResult.valid) {
+        this.logger.error('Threat model validation failed', validationResult.errors);
+        this.showError(`Threat model validation failed: ${validationResult.errors.map(e => String(e)).join(', ')}`);
+        return;
+      }
+
+      if (validationResult.warnings.length > 0) {
+        this.logger.warn('Threat model has validation warnings', validationResult.warnings);
+      }
+
+      // Attempt to import the threat model
+      const result = await this.threatModelService.importThreatModel(
         data as Partial<ThreatModel> & { id: string; name: string }
       ).toPromise();
-      
-      if (importedModel) {
-        this.logger.info('Threat model imported successfully', { id: importedModel.id });
-        
-        // Navigate to the imported threat model
-        void this.router.navigate(['/tm', importedModel.id]);
+
+      if (result?.conflict?.action === 'prompt') {
+        // Handle conflict - ask user what to do
+        const resolution = this.showConflictDialog(
+          data as Partial<ThreatModel> & { id: string; name: string },
+          result.conflict.existingModel
+        );
+
+        if (resolution === 'cancel') {
+          this.logger.info('User cancelled import due to conflict');
+          return;
+        }
+
+        // Re-import with user's resolution
+        const resolvedResult = await this.threatModelService.importThreatModel(
+          data as Partial<ThreatModel> & { id: string; name: string },
+          resolution
+        ).toPromise();
+
+        if (resolvedResult) {
+          this.navigateToImportedModel(resolvedResult.model, resolution === 'overwrite');
+        }
+      } else if (result) {
+        // No conflict or already resolved
+        this.navigateToImportedModel(result.model, !!result.conflict);
       }
     } catch (error) {
       this.logger.error('Failed to import threat model', error);
-      throw error;
+      this.showError(`Failed to import threat model: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  private navigateToImportedModel(model: ThreatModel, wasConflict: boolean): void {
+    const action = wasConflict ? 'updated' : 'imported';
+    this.logger.info(`Threat model ${action} successfully`, { id: model.id });
+    
+    this.snackBar.open(`Threat model "${model.name}" ${action} successfully`, 'Close', {
+      duration: 3000,
+    });
+    
+    // Navigate to the imported/updated threat model
+    void this.router.navigate(['/tm', model.id]);
+  }
+
+  private showConflictDialog(
+    loadedModel: Partial<ThreatModel> & { id: string; name: string },
+    existingModel: ThreatModel
+  ): 'discard' | 'overwrite' | 'cancel' {
+    // For now, use a simple browser confirm dialog
+    // TODO: Replace with a proper Angular Material dialog
+    const message = `A threat model with the same ID already exists:\n\n` +
+      `Existing: "${existingModel.name}" (last modified: ${existingModel.modified_at})\n` +
+      `Loaded: "${loadedModel.name}"\n\n` +
+      `Choose:\n` +
+      `OK = Overwrite existing model with loaded data\n` +
+      `Cancel = Keep existing model, discard loaded data`;
+
+    const userChoice = confirm(message);
+    return userChoice ? 'overwrite' : 'discard';
+  }
+
+  private showError(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
   }
 }

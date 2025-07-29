@@ -18,7 +18,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError, retry, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import { LoggerService } from './logger.service';
@@ -51,10 +51,13 @@ export class ApiService {
    */
   get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    this.logger.debug(`GET request to: ${url}`, params);
+    
+    // Log the request details with component-specific debug logging
+    this.logApiRequest('GET', url, undefined, params);
 
     return this.http.get<T>(url, { params }).pipe(
       retry(1),
+      tap((response) => this.logApiResponse('GET', url, response)),
       catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
     );
   }
@@ -66,11 +69,16 @@ export class ApiService {
    */
   post<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    this.logger.debug(`POST request to: ${url}`);
+    
+    // Log the request details with component-specific debug logging
+    this.logApiRequest('POST', url, body);
 
     return this.http
       .post<T>(url, body)
-      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, 'POST', endpoint)));
+      .pipe(
+        tap((response) => this.logApiResponse('POST', url, response)),
+        catchError((error: HttpErrorResponse) => this.handleError(error, 'POST', endpoint)),
+      );
   }
 
   /**
@@ -80,11 +88,16 @@ export class ApiService {
    */
   put<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    this.logger.debug(`PUT request to: ${url}`);
+    
+    // Log the request details with component-specific debug logging
+    this.logApiRequest('PUT', url, body);
 
     return this.http
       .put<T>(url, body)
-      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)));
+      .pipe(
+        tap((response) => this.logApiResponse('PUT', url, response)),
+        catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)),
+      );
   }
 
   /**
@@ -93,11 +106,121 @@ export class ApiService {
    */
   delete<T>(endpoint: string): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
-    this.logger.debug(`DELETE request to: ${url}`);
+    
+    // Log the request details with component-specific debug logging
+    this.logApiRequest('DELETE', url);
 
     return this.http
       .delete<T>(url)
-      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)));
+      .pipe(
+        tap((response) => this.logApiResponse('DELETE', url, response)),
+        catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)),
+      );
+  }
+
+  /**
+   * Log API request details with secret redaction
+   * @param method HTTP method
+   * @param url Full URL
+   * @param body Request body (optional)
+   * @param params Query parameters (optional)
+   */
+  private logApiRequest(
+    method: string,
+    url: string,
+    body?: Record<string, unknown>,
+    params?: Record<string, string | number | boolean>,
+  ): void {
+    // Get headers from the HTTP request (simulated - actual headers are added by interceptor)
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      // Note: Authorization header will be added by JWT interceptor
+    };
+
+    // Log the request with component-specific debug logging
+    this.logger.debugComponent('api', `${method} request details:`, {
+      url,
+      headers: this.redactSecrets(headers),
+      body: body ? this.redactSecrets(body) : undefined,
+      params: params ? this.redactSecrets(params) : undefined,
+    });
+  }
+
+  /**
+   * Redact sensitive information from objects
+   * @param obj Object that may contain sensitive data
+   * @returns Object with sensitive values redacted
+   */
+  private redactSecrets(obj: Record<string, unknown>): Record<string, unknown> {
+    const redacted = { ...obj };
+    const sensitiveKeys = [
+      'authorization',
+      'bearer',
+      'token',
+      'password',
+      'secret',
+      'key',
+      'jwt',
+      'refresh_token',
+      'access_token',
+      'api_key',
+      'apikey',
+    ];
+
+    for (const [key, value] of Object.entries(redacted)) {
+      const lowerKey = key.toLowerCase();
+      const isHeader = key.toLowerCase() === 'authorization';
+      
+      // Check if this key contains sensitive information
+      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+        if (typeof value === 'string' && value.length > 0) {
+          if (isHeader && value.startsWith('Bearer ')) {
+            // Special handling for Bearer tokens - show prefix but redact token
+            const tokenPart = value.substring(7); // Remove 'Bearer '
+            redacted[key] = `Bearer ${this.redactToken(tokenPart)}`;
+          } else {
+            redacted[key] = this.redactToken(value);
+          }
+        } else {
+          redacted[key] = '[REDACTED]';
+        }
+      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        // Recursively redact nested objects
+        redacted[key] = this.redactSecrets(value as Record<string, unknown>);
+      }
+    }
+
+    return redacted;
+  }
+
+  /**
+   * Redact a token while showing first and last few characters for debugging
+   * @param token The token to redact
+   * @returns Redacted token string
+   */
+  private redactToken(token: string): string {
+    if (token.length <= 8) {
+      return '[REDACTED]';
+    }
+    const start = token.substring(0, 4);
+    const end = token.substring(token.length - 4);
+    const middle = '*'.repeat(Math.min(12, token.length - 8));
+    return `${start}${middle}${end}`;
+  }
+
+  /**
+   * Log API response details with secret redaction
+   * @param method HTTP method
+   * @param url Full URL
+   * @param response Response body
+   */
+  private logApiResponse(method: string, url: string, response: unknown): void {
+    // Log the response with component-specific debug logging
+    this.logger.debugComponent('api', `${method} response from ${url}:`, {
+      body: response ? this.redactSecrets(response as Record<string, unknown>) : undefined,
+      // Note: Response headers are not easily accessible from the API service level
+      // They will be logged by the JWT interceptor
+    });
   }
 
   /**

@@ -249,10 +249,10 @@ export class SchemaValidator extends BaseValidator {
         }
 
         // Additional validation: threat_model_id should match the parent threat model
-        if (item?.threat_model_id && context.object?.id && item.threat_model_id !== context.object.id) {
+        if (item?.threat_model_id && (context.object as { id?: string })?.id && item.threat_model_id !== (context.object as { id?: string }).id) {
           this.addError(ValidationUtils.createError(
             'THREAT_MODEL_ID_MISMATCH',
-            `Threat threat_model_id '${item.threat_model_id}' does not match parent ThreatModel id '${context.object.id}'`,
+            `Threat threat_model_id '${item.threat_model_id}' does not match parent ThreatModel id '${(context.object as { id?: string }).id}'`,
             ValidationUtils.buildPath(itemPath, 'threat_model_id'),
             'error'
           ));

@@ -1,7 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Observable, Subject, Subscription, interval, of, take } from '../../core/rxjs-imports';
-import { ReauthDialogComponent } from '../components/reauth-dialog/reauth-dialog.component';
+import { Observable, Subscription, interval, of } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthService } from './auth.service';
@@ -15,20 +13,11 @@ import { JwtToken } from '../models/auth.models';
   providedIn: 'root',
 })
 export class SessionManagerService {
-  // Session timeout warning subject
-  private sessionTimeoutWarning$ = new Subject<number>();
-
-  // Session timeout warning observable
-  sessionTimeoutWarning = this.sessionTimeoutWarning$.asObservable();
-
   // Timer for token expiration check
   private tokenExpiryTimer: Subscription | null = null;
 
-  // Timer for session warning
+  // Timer for session warning (legacy - kept for test user functionality)
   private sessionWarningTimer: Subscription | null = null;
-
-  // Flag to track if a warning is currently displayed
-  private isWarningDisplayed = false;
 
   // Time before expiration to show warning (in milliseconds)
   private readonly warningTime = 5 * 60 * 1000; // 5 minutes
@@ -38,7 +27,6 @@ export class SessionManagerService {
 
   constructor(
     private authService: AuthService,
-    private dialog: MatDialog,
     private logger: LoggerService,
     private ngZone: NgZone,
   ) {
@@ -96,8 +84,6 @@ export class SessionManagerService {
       this.sessionWarningTimer.unsubscribe();
       this.sessionWarningTimer = null;
     }
-
-    this.isWarningDisplayed = false;
   }
 
   /**
@@ -116,27 +102,27 @@ export class SessionManagerService {
 
     if (timeToExpiry <= 0) {
       // Token has expired
-      this.logger.warn('Token has expired');
+      this.logger.warn('Token has expired - attempting refresh');
 
       // Check if this is a test user - if so, silently extend the session
       if (this.authService.isTestUser) {
         this.logger.info('Test user token expired - silently extending session');
         this.silentlyExtendTestUserSession();
       } else {
-        // For OAuth users, handle session timeout normally
-        this.handleSessionTimeout();
+        // For OAuth users, attempt to refresh the token
+        this.attemptTokenRefresh();
       }
-    } else if (timeToExpiry <= this.warningTime && !this.isWarningDisplayed) {
-      // Token is about to expire
-      this.logger.debug(`Token will expire in ${Math.round(timeToExpiry / 1000 / 60)} minutes`);
+    } else if (timeToExpiry <= this.warningTime) {
+      // Token is about to expire - proactively refresh
+      this.logger.debug(`Token will expire in ${Math.round(timeToExpiry / 1000 / 60)} minutes - proactively refreshing`);
 
       // Check if this is a test user - if so, silently extend the session
       if (this.authService.isTestUser) {
         this.logger.info('Test user detected - silently extending session');
         this.silentlyExtendTestUserSession();
       } else {
-        // For OAuth users, show the reauthentication warning
-        this.showExpiryWarning(Math.round(timeToExpiry / 1000 / 60));
+        // For OAuth users, proactively refresh the token
+        this.attemptTokenRefresh();
       }
     }
   }
@@ -152,35 +138,36 @@ export class SessionManagerService {
   }
 
   /**
-   * Show session expiry warning
+   * Show session expiry warning (deprecated - now handled by immediate logout)
    * @param minutesLeft Minutes left before session expires
    */
   private showExpiryWarning(minutesLeft: number): void {
-    this.logger.debug(`Showing session expiry warning: ${minutesLeft} minutes left`);
+    this.logger.debug(`Session expiry warning: ${minutesLeft} minutes left - initiating logout`);
+    
+    // For transparent session management, we no longer show dialogs
+    // Instead, we log out immediately when session is about to expire
+    this.handleSessionTimeout();
+  }
 
-    // Set warning flag
-    this.isWarningDisplayed = true;
-
-    // Emit warning event
-    this.sessionTimeoutWarning$.next(minutesLeft);
-
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true; // Prevent closing by clicking outside or pressing ESC
-    dialogConfig.autoFocus = true; // Focus the first focusable element
-    dialogConfig.data = { reason: 'timeout_warning', minutesLeft };
-
-    const dialogRef = this.dialog.open(ReauthDialogComponent, dialogConfig);
-
-    dialogRef
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe(result => {
-        if (result === true) {
-          this.extendSession();
-        } else {
-          this.authService.logout();
-        }
-      });
+  /**
+   * Attempt to refresh the JWT token proactively
+   * If refresh fails, handle session timeout
+   */
+  private attemptTokenRefresh(): void {
+    this.logger.debug('Attempting proactive token refresh');
+    
+    this.authService.getValidToken().subscribe({
+      next: (newToken) => {
+        this.logger.info('Proactive token refresh successful', { 
+          newExpiry: newToken.expiresAt.toISOString() 
+        });
+      },
+      error: (error) => {
+        this.logger.error('Proactive token refresh failed', error);
+        // If refresh fails, handle session timeout
+        this.handleSessionTimeout();
+      }
+    });
   }
 
   /**
@@ -188,29 +175,13 @@ export class SessionManagerService {
    * Logs out the user and redirects to login page
    */
   private handleSessionTimeout(): void {
-    this.logger.warn('Session timeout - logging out');
-
+    this.logger.warn('Session timeout - logging out user and redirecting to home');
+    
     // Stop timers
     this.stopExpiryTimer();
-
-    // Log out the user
+    
+    // Log out the user (this will clear auth data and redirect to home)
     this.authService.logout();
-
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = { reason: 'session_expired' };
-
-    const dialogRef = this.dialog.open(ReauthDialogComponent, dialogConfig);
-
-    dialogRef
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe(result => {
-        if (result !== true) {
-          this.authService.logout();
-        }
-      });
   }
 
   /**
@@ -221,10 +192,7 @@ export class SessionManagerService {
     this.logger.debug('Extending session');
 
     // TODO: In a real implementation, we would call a refresh token endpoint
-    // For now, we'll just reset the warning flag
-    this.isWarningDisplayed = false;
-
-    // Return success
+    // For now, just return success
     return of(true);
   }
 
@@ -239,18 +207,16 @@ export class SessionManagerService {
       next: success => {
         if (success) {
           this.logger.info('Test user session extended successfully');
-          // Reset the warning flag since we've extended the session
-          this.isWarningDisplayed = false;
         } else {
-          this.logger.error('Failed to extend test user session');
-          // Fall back to showing the warning dialog
-          this.showExpiryWarning(5); // Show with 5 minutes remaining
+          this.logger.error('Failed to extend test user session - logging out');
+          // Fall back to logout if extension fails
+          this.handleSessionTimeout();
         }
       },
       error: error => {
         this.logger.error('Error extending test user session', error);
-        // Fall back to showing the warning dialog
-        this.showExpiryWarning(5); // Show with 5 minutes remaining
+        // Fall back to logout if extension fails
+        this.handleSessionTimeout();
       },
     });
   }

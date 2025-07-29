@@ -13,7 +13,7 @@ export interface ValidationError {
   /** Severity level of the validation error */
   severity: 'error' | 'warning' | 'info';
   /** Additional context data for the error */
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface ValidationResult {
@@ -50,16 +50,16 @@ export interface FieldValidationRule {
   /** Regular expression pattern for string validation */
   pattern?: RegExp;
   /** Custom validation function */
-  customValidator?: (value: any, context: ValidationContext) => ValidationError | null;
+  customValidator?: (value: unknown, context: ValidationContext) => ValidationError | null;
 }
 
 export interface ValidationContext {
   /** The object being validated */
-  object: any;
+  object: unknown;
   /** Current path in the object */
   currentPath: string;
   /** Additional context data */
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 export interface DiagramValidator {
@@ -68,19 +68,19 @@ export interface DiagramValidator {
   /** Version pattern this validator supports (for version flexibility) */
   versionPattern: RegExp;
   /** Validate a diagram object */
-  validate(diagram: any, context: ValidationContext): ValidationError[];
+  validate(diagram: unknown, context: ValidationContext): ValidationError[];
   /** Validate cells within the diagram */
-  validateCells(cells: any[], context: ValidationContext): ValidationError[];
+  validateCells(cells: unknown[], context: ValidationContext): ValidationError[];
 }
 
 export interface ReferenceValidator {
   /** Validate that all references are consistent */
-  validateReferences(threatModel: any, context: ValidationContext): ValidationError[];
+  validateReferences(threatModel: unknown, context: ValidationContext): ValidationError[];
 }
 
 export interface ThreatModelValidator {
   /** Validate the entire threat model */
-  validate(threatModel: any): ValidationResult;
+  validate(threatModel: unknown): ValidationResult;
 }
 
 /**

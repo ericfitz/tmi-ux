@@ -108,58 +108,6 @@ export class MockDataService implements OnDestroy {
   }
 
   /**
-   * Load mock data from JSON files
-   */
-  private loadMockData(): void {
-    if (this._dataLoaded) {
-      return;
-    }
-
-    const mockDataUrls = [
-      'assets/mock-data/threat-model-1.json',
-      'assets/mock-data/threat-model-2.json',
-      'assets/mock-data/threat-model-3.json'
-    ];
-
-    forkJoin(
-      mockDataUrls.map((url, index) => 
-        this.http.get<ThreatModel>(url).pipe(
-          catchError(error => {
-            this.logger.error(`Failed to load mock data from ${url}`, error);
-            return of(null);
-          })
-        ).pipe(
-          map(threatModel => ({
-            threatModel,
-            fileName: url.split('/').pop() || `threat-model-${index + 1}.json`
-          }))
-        )
-      )
-    ).subscribe(results => {
-      // Filter out null values from failed loads and build UUID mapping
-      this._mockThreatModels = [];
-      this._uuidToFileNameMap.clear();
-      
-      results.forEach(result => {
-        if (result.threatModel) {
-          this._mockThreatModels.push(result.threatModel);
-          this._uuidToFileNameMap.set(result.threatModel.id, result.fileName);
-        }
-      });
-      
-      // Initialize diagrams map
-      this.initDiagramsMap();
-      
-      this._dataLoaded = true;
-      
-      this.logger.debugComponent('MockData', 'Mock data loaded successfully', {
-        threatModelCount: this._mockThreatModels.length,
-        diagramCount: this._mockDiagramsMap.size
-      });
-    });
-  }
-
-  /**
    * Get all mock threat models
    * @returns Array of ThreatModel objects
    */
@@ -255,6 +203,58 @@ export class MockDataService implements OnDestroy {
    */
   ngOnDestroy(): void {
     this._useMockData.complete();
+  }
+
+  /**
+   * Load mock data from JSON files
+   */
+  private loadMockData(): void {
+    if (this._dataLoaded) {
+      return;
+    }
+
+    const mockDataUrls = [
+      'assets/mock-data/threat-model-1.json',
+      'assets/mock-data/threat-model-2.json',
+      'assets/mock-data/threat-model-3.json'
+    ];
+
+    forkJoin(
+      mockDataUrls.map((url, index) => 
+        this.http.get<ThreatModel>(url).pipe(
+          catchError(error => {
+            this.logger.error(`Failed to load mock data from ${url}`, error);
+            return of(null);
+          })
+        ).pipe(
+          map(threatModel => ({
+            threatModel,
+            fileName: url.split('/').pop() || `threat-model-${index + 1}.json`
+          }))
+        )
+      )
+    ).subscribe(results => {
+      // Filter out null values from failed loads and build UUID mapping
+      this._mockThreatModels = [];
+      this._uuidToFileNameMap.clear();
+      
+      results.forEach(result => {
+        if (result.threatModel) {
+          this._mockThreatModels.push(result.threatModel);
+          this._uuidToFileNameMap.set(result.threatModel.id, result.fileName);
+        }
+      });
+      
+      // Initialize diagrams map
+      this.initDiagramsMap();
+      
+      this._dataLoaded = true;
+      
+      this.logger.debugComponent('MockData', 'Mock data loaded successfully', {
+        threatModelCount: this._mockThreatModels.length,
+        diagramCount: this._mockDiagramsMap.size
+      });
+    });
   }
 
   /**

@@ -155,7 +155,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   onIssueUrlBlur(): void {
     // Update the initial value with the current form value
-    const currentValue = this.threatModelForm.get('issue_url')?.value || '';
+    const currentValue = this.threatModelForm.get('issue_url')?.value as string || '';
     this.initialIssueUrlValue = currentValue;
     // Exit edit mode when user clicks away from the input
     this.isEditingIssueUrl = false;
@@ -346,7 +346,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     // Get the current framework from the form (which may be different from saved model)
-    const currentFrameworkName = this.threatModelForm.get('threat_model_framework')?.value || this.threatModel?.threat_model_framework;
+    const currentFrameworkName = this.threatModelForm.get('threat_model_framework')?.value as string || this.threatModel?.threat_model_framework;
     
     // Find the framework model that matches the current framework selection
     const framework = this.frameworks.find(f => f.name === currentFrameworkName);
@@ -1575,7 +1575,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValues: ThreatModelFormValues = this.threatModelForm.value;
+    const formValues: ThreatModelFormValues = this.threatModelForm.value as ThreatModelFormValues;
     
     // Update the threat model with form values
     this.threatModel.name = formValues.name;

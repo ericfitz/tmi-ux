@@ -20,12 +20,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap, map } from 'rxjs/operators';
 
 import { ThreatModel } from '../models/threat-model.model';
 import { Diagram } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
+import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
 
 @Injectable({
@@ -37,7 +37,7 @@ export class ThreatModelService implements OnDestroy {
   private _subscription: Subscription | null = null;
 
   constructor(
-    private http: HttpClient,
+    private apiService: ApiService,
     private logger: LoggerService,
     private mockDataService: MockDataService,
   ) {
@@ -80,7 +80,7 @@ export class ThreatModelService implements OnDestroy {
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', 'Fetching threat models from API');
-    return this.http.get<ThreatModel[]>('/api/threat-models').pipe(
+    return this.apiService.get<ThreatModel[]>('threat_models').pipe(
       catchError(error => {
         this.logger.error('Error fetching threat models', error);
         return of([]);
@@ -100,7 +100,7 @@ export class ThreatModelService implements OnDestroy {
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', `Fetching threat model with ID: ${id} from API`);
-    return this.http.get<ThreatModel>(`/api/threat-models/${id}`).pipe(
+    return this.apiService.get<ThreatModel>(`threat_models/${id}`).pipe(
       catchError(error => {
         this.logger.error(`Error fetching threat model with ID: ${id}`, error);
         return of(undefined);
@@ -119,7 +119,7 @@ export class ThreatModelService implements OnDestroy {
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', `Fetching diagrams for threat model with ID: ${threatModelId} from API`);
-    return this.http.get<Diagram[]>(`/api/threat-models/${threatModelId}/diagrams`).pipe(
+    return this.apiService.get<Diagram[]>(`threat_models/${threatModelId}/diagrams`).pipe(
       catchError(error => {
         this.logger.error(
           `Error fetching diagrams for threat model with ID: ${threatModelId}`,
@@ -141,7 +141,7 @@ export class ThreatModelService implements OnDestroy {
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', `Fetching diagram with ID: ${diagramId} from API`);
-    return this.http.get<Diagram>(`/api/threat-models/${threatModelId}/diagrams/${diagramId}`).pipe(
+    return this.apiService.get<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`).pipe(
       catchError(error => {
         this.logger.error(`Error fetching diagram with ID: ${diagramId}`, error);
         return of(undefined);
@@ -198,7 +198,7 @@ export class ThreatModelService implements OnDestroy {
       issue_url: issueUrl,
     };
 
-    return this.http.post<ThreatModel>('/api/threat-models', body).pipe(
+    return this.apiService.post<ThreatModel>('threat_models', body).pipe(
       catchError(error => {
         this.logger.error('Error creating threat model', error);
         throw error;
@@ -208,10 +208,16 @@ export class ThreatModelService implements OnDestroy {
 
   /**
    * Import a threat model from external JSON data
+   * In API mode, checks for existing model and handles conflicts
+   * @param data Validated threat model data from desktop file
+   * @param conflictResolution Optional resolution for conflicts ('discard' | 'overwrite')
    */
-  importThreatModel(data: Partial<ThreatModel> & { id: string; name: string }): Observable<ThreatModel> {
+  importThreatModel(
+    data: Partial<ThreatModel> & { id: string; name: string },
+    conflictResolution?: 'discard' | 'overwrite'
+  ): Observable<{ model: ThreatModel; conflict?: { existingModel: ThreatModel; action: 'prompt' | 'resolved' } }> {
     this.logger.info('Importing threat model', { originalId: data.id, name: data.name });
-
+    
     if (this._useMockData) {
       // Generate a new ID to avoid conflicts
       const importedModel: ThreatModel = {
@@ -224,7 +230,6 @@ export class ThreatModelService implements OnDestroy {
         threat_model_framework: data.threat_model_framework || 'STRIDE', // Provide default if missing
         authorization: data.authorization || [], // Provide default if missing
       };
-
       // Add to local mock data
       this._threatModels.push(importedModel);
       
@@ -233,19 +238,87 @@ export class ThreatModelService implements OnDestroy {
         name: importedModel.name,
         totalCount: this._threatModels.length 
       });
-
-      return of(importedModel);
+      return of({ model: importedModel });
     } else {
-      // For API mode, send the data to the backend
-      this.logger.debugComponent('ThreatModelService', 'Sending threat model to API for import');
+      // For API mode, check if threat model already exists
+      this.logger.debugComponent('ThreatModelService', 'Checking for existing threat model in API');
       
-      return this.http.post<ThreatModel>('/api/threat-models/import', data).pipe(
+      return this.getThreatModelById(data.id).pipe(
+        switchMap(existingModel => {
+          if (existingModel) {
+            this.logger.debugComponent('ThreatModelService', 'Found existing threat model', { 
+              id: existingModel.id, 
+              name: existingModel.name 
+            });
+            
+            // Handle conflict resolution
+            if (conflictResolution === 'discard') {
+              this.logger.info('Discarding loaded threat model due to conflict');
+              return of({ model: existingModel, conflict: { existingModel, action: 'resolved' as const } });
+            } else if (conflictResolution === 'overwrite') {
+              this.logger.info('Overwriting existing threat model');
+              return this.updateExistingThreatModel(data).pipe(
+                map(updatedModel => ({ 
+                  model: updatedModel, 
+                  conflict: { existingModel, action: 'resolved' as const } 
+                }))
+              );
+            } else {
+              // No resolution provided - return conflict for user prompt
+              return of({ model: existingModel, conflict: { existingModel, action: 'prompt' as const } });
+            }
+          } else {
+            // No existing model found - create new one
+            this.logger.debugComponent('ThreatModelService', 'No existing threat model found, creating new one');
+            return this.createNewThreatModelFromImport(data).pipe(
+              map(newModel => ({ model: newModel }))
+            );
+          }
+        }),
         catchError(error => {
           this.logger.error('Failed to import threat model via API', error);
           throw error;
-        }),
+        })
       );
     }
+  }
+
+  /**
+   * Create a new threat model from imported data
+   */
+  private createNewThreatModelFromImport(data: Partial<ThreatModel> & { id: string; name: string }): Observable<ThreatModel> {
+    // Remove the original ID and server-managed timestamps, let the server assign new ones
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, created_at, modified_at, ...importData } = data;
+    
+    const body = {
+      name: data.name,
+      description: data.description || '',
+      threat_model_framework: data.threat_model_framework || 'STRIDE',
+      issue_url: data.issue_url,
+      // Include other relevant fields from the imported data, but exclude fields we've already set above
+      ...Object.fromEntries(
+        Object.entries(importData).filter(([key]) => 
+          !['name', 'description', 'threat_model_framework', 'issue_url'].includes(key)
+        )
+      )
+    };
+
+    return this.apiService.post<ThreatModel>('threat_models', body);
+  }
+
+  /**
+   * Update existing threat model with imported data
+   */
+  private updateExistingThreatModel(data: Partial<ThreatModel> & { id: string; name: string }): Observable<ThreatModel> {
+    // Preserve server-managed fields, update with imported data
+    const updateData = {
+      ...data,
+      // Preserve server timestamp management
+      modified_at: new Date().toISOString()
+    };
+
+    return this.apiService.put<ThreatModel>(`threat_models/${data.id}`, updateData as unknown as Record<string, unknown>);
   }
 
   /**
@@ -267,7 +340,7 @@ export class ThreatModelService implements OnDestroy {
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', `Updating threat model with ID: ${threatModel.id} via API`);
-    return this.http.put<ThreatModel>(`/api/threat-models/${threatModel.id}`, threatModel).pipe(
+    return this.apiService.put<ThreatModel>(`threat_models/${threatModel.id}`, threatModel as unknown as Record<string, unknown>).pipe(
       catchError(error => {
         this.logger.error(`Error updating threat model with ID: ${threatModel.id}`, error);
         throw error;
@@ -289,7 +362,7 @@ export class ThreatModelService implements OnDestroy {
 
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', `Deleting threat model with ID: ${id} via API`);
-    return this.http.delete<boolean>(`/api/threat-models/${id}`).pipe(
+    return this.apiService.delete<boolean>(`threat_models/${id}`).pipe(
       catchError(error => {
         this.logger.error(`Error deleting threat model with ID: ${id}`, error);
         throw error;

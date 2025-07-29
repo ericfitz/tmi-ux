@@ -21,7 +21,7 @@ export class EdgeInfo {
     public readonly attrs: EdgeAttrs = {},
     public readonly labels: EdgeLabel[] = [],
     public readonly vertices: Point[] = [],
-    public readonly data: { _metadata: Metadata[]; [key: string]: any } = { _metadata: [] },
+    public readonly data: { _metadata: Metadata[]; [key: string]: unknown } = { _metadata: [] },
     public readonly markup?: MarkupElement[],
     public readonly tools?: CellTool[],
     public readonly router?: EdgeRouter,
@@ -41,7 +41,7 @@ export class EdgeInfo {
   /**
    * Gets custom data (excluding reserved metadata namespace)
    */
-  getCustomData(): Record<string, any> {
+  getCustomData(): Record<string, unknown> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _metadata: _, ...customData } = this.data;
     return customData;

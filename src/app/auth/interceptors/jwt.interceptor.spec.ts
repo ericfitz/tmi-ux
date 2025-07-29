@@ -33,6 +33,24 @@ describe('JwtInterceptor', () => {
     expiresAt: new Date(Date.now() + 3600000)
   };
 
+  // Helper function to create mock requests
+  const createMockRequest = (url: string, method = 'GET', includeClone = false): HttpRequest<unknown> => {
+    const request = {
+      url,
+      method,
+      headers: {
+        keys: vi.fn().mockReturnValue([]),
+        get: vi.fn().mockReturnValue(null)
+      }
+    } as any;
+    
+    if (includeClone) {
+      request.clone = vi.fn().mockReturnThis();
+    }
+    
+    return request as HttpRequest<unknown>;
+  };
+
   beforeEach(() => {
     const mockAuthService = {
       getValidToken: vi.fn(),
@@ -48,6 +66,7 @@ describe('JwtInterceptor', () => {
     const mockLoggerService = {
       info: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       warn: vi.fn(),
       error: vi.fn()
     };
@@ -67,10 +86,7 @@ describe('JwtInterceptor', () => {
     it('should add Authorization header to API requests', async () => {
       vi.mocked(authService.getValidToken).mockReturnValue(of(mockJwtToken));
 
-      const mockRequest = {
-        url: `${environment.apiUrl}/test`,
-        clone: vi.fn().mockReturnThis()
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'test' }))
@@ -84,7 +100,7 @@ describe('JwtInterceptor', () => {
               Authorization: `Bearer ${mockJwtToken.token}`
             }
           });
-          expect(loggerService.debug).toHaveBeenCalledWith('Adding JWT token to request');
+          expect(loggerService.debugComponent).toHaveBeenCalledWith('api', expect.stringContaining('GET request details:'), expect.any(Object));
           resolve();
         });
       });
@@ -110,9 +126,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to public API endpoints', async () => {
-      const mockRequest = {
-        url: `${environment.apiUrl}/auth/login`
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'login response' }))
@@ -129,9 +143,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to auth exchange endpoints', async () => {
-      const mockRequest = {
-        url: `${environment.apiUrl}/auth/exchange/google`
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/exchange/google`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'exchange response' }))
@@ -148,9 +160,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to auth authorize endpoints', async () => {
-      const mockRequest = {
-        url: `${environment.apiUrl}/auth/authorize/github`
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/authorize/github`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'authorize response' }))
@@ -167,9 +177,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to root health check endpoint', async () => {
-      const mockRequest = {
-        url: environment.apiUrl // This is just "http://localhost:8080" - the root endpoint
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(environment.apiUrl); // This is just "http://localhost:8080" - the root endpoint
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ status: { code: 'OK', time: '2025-07-28T00:58:26.207Z' } }))
@@ -189,10 +197,7 @@ describe('JwtInterceptor', () => {
       const refreshError = new Error('Token refresh failed - please login again');
       vi.mocked(authService.getValidToken).mockReturnValue(throwError(() => refreshError));
 
-      const mockRequest = {
-        url: `${environment.apiUrl}/test`,
-        method: 'GET'
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET');
 
       const mockHandler = {
         handle: vi.fn()
@@ -217,14 +222,58 @@ describe('JwtInterceptor', () => {
       });
     });
 
-    it('should handle 401 errors and trigger logout', async () => {
-      vi.mocked(authService.getValidToken).mockReturnValue(of(mockJwtToken));
+    it('should handle 401 errors with reactive refresh success', async () => {
+      const refreshedToken: JwtToken = {
+        ...mockJwtToken,
+        token: 'refreshed-token'
+      };
 
-      const mockRequest = {
-        url: `${environment.apiUrl}/test`,
-        clone: vi.fn().mockReturnThis(),
-        method: 'GET'
-      } as unknown as HttpRequest<unknown>;
+      // First call returns token, then fails with 401, then refresh succeeds
+      vi.mocked(authService.getValidToken)
+        .mockReturnValueOnce(of(mockJwtToken))
+        .mockReturnValueOnce(of(refreshedToken));
+
+      const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
+
+      const unauthorizedError = new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+        url: `${environment.apiUrl}/test`
+      });
+
+      const mockHandler = {
+        handle: vi.fn()
+          .mockReturnValueOnce(throwError(() => unauthorizedError))
+          .mockReturnValueOnce(of({ data: 'success' }))
+      } as unknown as HttpHandler;
+
+      await new Promise<void>((resolve) => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe({
+          next: (response) => {
+            expect(response).toEqual({ data: 'success' });
+            expect(loggerService.warn).toHaveBeenCalledWith('Received 401 Unauthorized - attempting reactive token refresh');
+            expect(loggerService.info).toHaveBeenCalledWith('Token refresh successful - retrying original request');
+            expect(authService.getValidToken).toHaveBeenCalledTimes(2);
+            expect(mockHandler.handle).toHaveBeenCalledTimes(2);
+            resolve();
+          },
+          error: () => {
+            expect(true).toBe(false); // Should not error
+          }
+        });
+      });
+    });
+
+    it('should handle 401 errors with reactive refresh failure', async () => {
+      const refreshError = new Error('Token refresh failed');
+      
+      // First call returns token, then fails with 401, then refresh fails
+      vi.mocked(authService.getValidToken)
+        .mockReturnValueOnce(of(mockJwtToken))
+        .mockReturnValueOnce(throwError(() => refreshError));
+
+      const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
       const unauthorizedError = new HttpErrorResponse({
         status: 401,
@@ -243,8 +292,9 @@ describe('JwtInterceptor', () => {
             expect(true).toBe(false); // Should not succeed
           },
           error: (error) => {
-            expect(error).toBeInstanceOf(Error);
-            expect(error.message).toContain('Server Error: 401');
+            expect(error).toEqual(refreshError);
+            expect(loggerService.warn).toHaveBeenCalledWith('Received 401 Unauthorized - attempting reactive token refresh');
+            expect(loggerService.error).toHaveBeenCalledWith('Token refresh failed during reactive refresh', refreshError);
             expect(loggerService.warn).toHaveBeenCalledWith('Unauthorized request - redirecting to login');
             expect(authService.logout).toHaveBeenCalledOnce();
             expect(router.navigate).toHaveBeenCalledWith(['/login'], {
@@ -259,11 +309,7 @@ describe('JwtInterceptor', () => {
     it('should handle 403 Forbidden errors', async () => {
       vi.mocked(authService.getValidToken).mockReturnValue(of(mockJwtToken));
 
-      const mockRequest = {
-        url: `${environment.apiUrl}/test`,
-        clone: vi.fn().mockReturnThis(),
-        method: 'GET'
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
       const forbiddenError = new HttpErrorResponse({
         status: 403,
@@ -303,10 +349,7 @@ describe('JwtInterceptor', () => {
 
       vi.mocked(authService.getValidToken).mockReturnValue(of(refreshedToken));
 
-      const mockRequest = {
-        url: `${environment.apiUrl}/test`,
-        clone: vi.fn().mockReturnThis()
-      } as unknown as HttpRequest<unknown>;
+      const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'test' }))

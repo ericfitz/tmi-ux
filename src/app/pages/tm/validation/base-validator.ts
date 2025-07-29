@@ -16,7 +16,7 @@ export class ValidationUtils {
     message: string,
     path: string,
     severity: 'error' | 'warning' | 'info' = 'error',
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ): ValidationError {
     return {
       code,
@@ -70,7 +70,7 @@ export class ValidationUtils {
   /**
    * Get the type of a value
    */
-  static getType(value: any): string {
+  static getType(value: unknown): string {
     if (value === null) return 'null';
     if (Array.isArray(value)) return 'array';
     return typeof value;
@@ -90,7 +90,7 @@ export class ValidationUtils {
    * Validate a single field according to validation rules
    */
   static validateField(
-    value: any,
+    value: unknown,
     rule: FieldValidationRule,
     context: ValidationContext
   ): ValidationError | null {
@@ -118,16 +118,16 @@ export class ValidationUtils {
 
       switch (type) {
         case 'uuid':
-          typeValid = actualType === 'string' && ValidationUtils.isValidUUID(value);
+          typeValid = actualType === 'string' && ValidationUtils.isValidUUID(value as string);
           break;
         case 'email':
-          typeValid = actualType === 'string' && ValidationUtils.isValidEmail(value);
+          typeValid = actualType === 'string' && ValidationUtils.isValidEmail(value as string);
           break;
         case 'url':
-          typeValid = actualType === 'string' && ValidationUtils.isValidURL(value);
+          typeValid = actualType === 'string' && ValidationUtils.isValidURL(value as string);
           break;
         case 'date-time':
-          typeValid = actualType === 'string' && ValidationUtils.isValidDateTime(value);
+          typeValid = actualType === 'string' && ValidationUtils.isValidDateTime(value as string);
           break;
         default:
           typeValid = actualType === type;
@@ -168,10 +168,10 @@ export class ValidationUtils {
     }
 
     // Enum validation
-    if (enumValues && !enumValues.includes(value)) {
+    if (enumValues && !enumValues.includes(value as string)) {
       return ValidationUtils.createError(
         'INVALID_ENUM_VALUE',
-        `Field '${field}' value '${value}' is not one of allowed values: ${enumValues.join(', ')}`,
+        `Field '${field}' value '${String(value)}' is not one of allowed values: ${enumValues.join(', ')}`,
         path,
         'error',
         { allowedValues: enumValues, actualValue: value }
@@ -220,7 +220,7 @@ export abstract class BaseValidator {
    * Validate an object against a set of field rules
    */
   protected validateFields(
-    obj: any,
+    obj: unknown,
     rules: FieldValidationRule[],
     context: ValidationContext
   ): void {
@@ -236,7 +236,7 @@ export abstract class BaseValidator {
   /**
    * Get a nested value from an object using dot notation or array indices
    */
-  protected getNestedValue(obj: any, path: string): any {
+  protected getNestedValue(obj: unknown, path: string): unknown {
     return path.split('.').reduce((current, key) => {
       if (current === null || current === undefined) return undefined;
       
@@ -244,11 +244,11 @@ export abstract class BaseValidator {
       const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
       if (arrayMatch) {
         const [, arrayKey, index] = arrayMatch;
-        const array = current[arrayKey];
+        const array = (current as Record<string, unknown>)[arrayKey];
         return Array.isArray(array) ? array[parseInt(index, 10)] : undefined;
       }
       
-      return current[key];
+      return (current as Record<string, unknown>)[key];
     }, obj);
   }
 

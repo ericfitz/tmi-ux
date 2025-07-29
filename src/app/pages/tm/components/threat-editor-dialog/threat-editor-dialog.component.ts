@@ -173,7 +173,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    */
   onIssueUrlBlur(): void {
     // Update the initial value with the current form value
-    const currentValue = this.threatForm.get('issue_url')?.value || '';
+    const currentValue = this.threatForm.get('issue_url')?.value as string || '';
     this.initialIssueUrlValue = currentValue;
     // Exit edit mode when user clicks away from the input
     this.isEditingIssueUrl = false;

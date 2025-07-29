@@ -4,10 +4,11 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
+  HttpResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
+import { Observable, catchError, throwError, switchMap, tap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthService } from '../services/auth.service';
@@ -59,12 +60,22 @@ export class JwtInterceptor implements HttpInterceptor {
               Authorization: `Bearer ${token.token}`,
             },
           });
-          this.logger.debug('Adding JWT token to request');
-          return next.handle(tokenizedRequest);
+          
+          // Log the complete request details with component-specific debug logging
+          this.logApiRequest(tokenizedRequest);
+          
+          return next.handle(tokenizedRequest).pipe(
+            tap((event) => {
+              if (event instanceof HttpResponse) {
+                this.logApiResponse(tokenizedRequest, event);
+              }
+            }),
+          );
         }),
         catchError((error: HttpErrorResponse) => {
+          // Implement reactive refresh for 401 errors
           if (error.status === 401) {
-            this.handleUnauthorizedError();
+            return this.handleUnauthorizedErrorWithRefresh(request, next);
           }
           return this.handleError(error, request);
         })
@@ -72,7 +83,17 @@ export class JwtInterceptor implements HttpInterceptor {
     }
 
     // For public endpoints or non-API requests, just pass through with error handling
+    // Log public endpoint requests too
+    if (this.isApiRequest(request.url)) {
+      this.logApiRequest(request);
+    }
+    
     return next.handle(request).pipe(
+      tap((event) => {
+        if (event instanceof HttpResponse && this.isApiRequest(request.url)) {
+          this.logApiResponse(request, event);
+        }
+      }),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 && !this.isPublicEndpoint(request.url)) {
           this.handleUnauthorizedError();
@@ -121,7 +142,180 @@ export class JwtInterceptor implements HttpInterceptor {
 
 
   /**
-   * Handle 401 Unauthorized errors
+   * Log API request details with secret redaction
+   * @param request The HTTP request to log
+   */
+  private logApiRequest(request: HttpRequest<unknown>): void {
+    // Extract headers as a plain object
+    const headers: Record<string, string> = {};
+    request.headers.keys().forEach(key => {
+      const value = request.headers.get(key);
+      if (value) {
+        headers[key] = value;
+      }
+    });
+
+    // Log the request with component-specific debug logging
+    this.logger.debugComponent('api', `${request.method} request details:`, {
+      url: request.url,
+      headers: this.redactSecrets(headers),
+      body: request.body ? this.redactSecrets(request.body as Record<string, unknown>) : undefined,
+      params: this.extractUrlParams(request.url),
+    });
+  }
+
+  /**
+   * Extract URL parameters from a URL string
+   * @param url The URL to extract parameters from
+   * @returns Object containing URL parameters
+   */
+  private extractUrlParams(url: string): Record<string, string> | undefined {
+    try {
+      const urlObj = new URL(url);
+      const params: Record<string, string> = {};
+      urlObj.searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
+      return Object.keys(params).length > 0 ? params : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Redact sensitive information from objects
+   * @param obj Object that may contain sensitive data
+   * @returns Object with sensitive values redacted
+   */
+  private redactSecrets(obj: Record<string, unknown>): Record<string, unknown> {
+    const redacted = { ...obj };
+    const sensitiveKeys = [
+      'authorization',
+      'bearer',
+      'token',
+      'password',
+      'secret',
+      'key',
+      'jwt',
+      'refresh_token',
+      'access_token',
+      'api_key',
+      'apikey',
+    ];
+
+    for (const [key, value] of Object.entries(redacted)) {
+      const lowerKey = key.toLowerCase();
+      const isHeader = key.toLowerCase() === 'authorization';
+      
+      // Check if this key contains sensitive information
+      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+        if (typeof value === 'string' && value.length > 0) {
+          if (isHeader && value.startsWith('Bearer ')) {
+            // Special handling for Bearer tokens - show prefix but redact token
+            const tokenPart = value.substring(7); // Remove 'Bearer '
+            redacted[key] = `Bearer ${this.redactToken(tokenPart)}`;
+          } else {
+            redacted[key] = this.redactToken(value);
+          }
+        } else {
+          redacted[key] = '[REDACTED]';
+        }
+      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        // Recursively redact nested objects
+        redacted[key] = this.redactSecrets(value as Record<string, unknown>);
+      }
+    }
+
+    return redacted;
+  }
+
+  /**
+   * Redact a token while showing first and last few characters for debugging
+   * @param token The token to redact
+   * @returns Redacted token string
+   */
+  private redactToken(token: string): string {
+    if (token.length <= 8) {
+      return '[REDACTED]';
+    }
+    const start = token.substring(0, 4);
+    const end = token.substring(token.length - 4);
+    const middle = '*'.repeat(Math.min(12, token.length - 8));
+    return `${start}${middle}${end}`;
+  }
+
+  /**
+   * Log API response details with secret redaction
+   * @param request The original HTTP request
+   * @param response The HTTP response
+   */
+  private logApiResponse(request: HttpRequest<unknown>, response: HttpResponse<unknown>): void {
+    // Extract response headers as a plain object
+    const headers: Record<string, string> = {};
+    response.headers.keys().forEach(key => {
+      const value = response.headers.get(key);
+      if (value) {
+        headers[key] = value;
+      }
+    });
+
+    // Log the response with component-specific debug logging
+    this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: this.redactSecrets(headers),
+      body: response.body ? this.redactSecrets(response.body as Record<string, unknown>) : undefined,
+    });
+  }
+
+  /**
+   * Handle 401 Unauthorized errors with reactive refresh
+   * Attempts to refresh the token and retry the original request
+   * @param request Original request that failed
+   * @param next HTTP handler
+   * @returns Observable of the retried request or error
+   */
+  private handleUnauthorizedErrorWithRefresh(
+    request: HttpRequest<unknown>, 
+    next: HttpHandler
+  ): Observable<HttpEvent<unknown>> {
+    this.logger.warn('Received 401 Unauthorized - attempting reactive token refresh');
+
+    // Attempt to refresh the token
+    return this.authService.getValidToken().pipe(
+      switchMap(newToken => {
+        this.logger.info('Token refresh successful - retrying original request');
+        
+        // Clone the original request with the new token
+        const retryRequest = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${newToken.token}`,
+          },
+        });
+
+        // Log the retry attempt
+        this.logApiRequest(retryRequest);
+
+        // Retry the original request with new token
+        return next.handle(retryRequest).pipe(
+          tap((event) => {
+            if (event instanceof HttpResponse) {
+              this.logApiResponse(retryRequest, event);
+            }
+          })
+        );
+      }),
+      catchError((refreshError) => {
+        // Token refresh failed - logout and redirect
+        this.logger.error('Token refresh failed during reactive refresh', refreshError);
+        this.handleUnauthorizedError();
+        return throwError(() => refreshError as Error);
+      })
+    );
+  }
+
+  /**
+   * Handle 401 Unauthorized errors (fallback when refresh fails)
    * Redirects to login page
    */
   private handleUnauthorizedError(): void {

@@ -593,9 +593,12 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Set metadata using X6 cell extensions
         if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
-          edgeData.data['forEach']((entry: any) => {
-            (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
-          });
+          const metadata = (edgeData.data as { _metadata?: { key: string; value: unknown }[] })._metadata;
+          if (Array.isArray(metadata)) {
+            metadata.forEach((entry: { key: string; value: unknown }) => {
+              (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
+            });
+          }
         }
 
         // Update port visibility after edge creation
