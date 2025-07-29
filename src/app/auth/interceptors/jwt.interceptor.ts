@@ -51,9 +51,15 @@ export class JwtInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Only add token to requests to our API that are not public endpoints
     if (this.isApiRequest(request.url) && !this.isPublicEndpoint(request.url)) {
-      // Get a valid token (with automatic refresh if needed)
-      return this.authService.getValidToken().pipe(
+      // Get a valid token if available (with automatic refresh if needed)
+      return this.authService.getValidTokenIfAvailable().pipe(
         switchMap(token => {
+          if (!token) {
+            // If no token is available after auth was cleared, redirect to login
+            this.handleUnauthorizedError();
+            return throwError(() => new Error('No authentication token available'));
+          }
+
           const tokenizedRequest = request.clone({
             setHeaders: {
               Authorization: `Bearer ${token.token}`,
@@ -282,8 +288,15 @@ export class JwtInterceptor implements HttpInterceptor {
     this.logger.warn('Received 401 Unauthorized - attempting reactive token refresh');
 
     // Attempt to refresh the token
-    return this.authService.getValidToken().pipe(
+    return this.authService.getValidTokenIfAvailable().pipe(
       switchMap(newToken => {
+        if (!newToken) {
+          // If no token available after refresh attempt, redirect to login
+          this.logger.warn('No token available after refresh attempt - redirecting to login');
+          this.handleUnauthorizedError();
+          return throwError(() => new Error('Token refresh failed - no token available'));
+        }
+
         this.logger.info('Token refresh successful - retrying original request');
 
         // Clone the original request with the new token
