@@ -678,7 +678,7 @@ export class AuthService {
       expiresAt.setSeconds(expiresAt.getSeconds() + (response.expires_in || 3600));
 
       const token: JwtToken = {
-        token: response.access_token!,
+        token: response.access_token,
         refreshToken: response.refresh_token,
         expiresIn: response.expires_in || 3600,
         expiresAt,

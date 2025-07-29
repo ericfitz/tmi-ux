@@ -134,8 +134,20 @@ export class TmComponent implements OnInit, OnDestroy {
   /**
    * Format a date according to the current locale
    */
-  formatDate(date: string): string {
+  formatDate(date: string | null | undefined): string {
+    // Handle null, undefined, or empty date strings
+    if (!date) {
+      return '—';
+    }
+
     const dateObj = new Date(date);
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      this.logger.warn('Invalid date provided to formatDate', { date });
+      return '—';
+    }
+
     // Use Intl.DateTimeFormat for more consistent locale-based formatting
     return new Intl.DateTimeFormat(this.currentLocale, {
       year: 'numeric',

@@ -27,6 +27,7 @@ import { Diagram } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +41,7 @@ export class ThreatModelService implements OnDestroy {
     private apiService: ApiService,
     private logger: LoggerService,
     private mockDataService: MockDataService,
+    private authService: AuthService,
   ) {
     // Subscribe to the mock data toggle
     this._subscription = this.mockDataService.useMockData$.subscribe(useMock => {
@@ -193,7 +195,7 @@ export class ThreatModelService implements OnDestroy {
       this.logger.debugComponent('ThreatModelService', 'Creating mock threat model');
 
       const now = new Date().toISOString();
-      const currentUser = 'user@example.com'; // Would come from auth service in real implementation
+      const currentUser = this.authService.userEmail || 'anonymous@example.com';
 
       const newThreatModel = this.mockDataService.createThreatModel({
         id: uuidv4(),
@@ -259,8 +261,8 @@ export class ThreatModelService implements OnDestroy {
         id: uuidv4(),
         created_at: new Date().toISOString(),
         modified_at: new Date().toISOString(),
-        created_by: 'imported', // TODO: Use actual user when auth is implemented
-        owner: 'imported', // TODO: Use actual user when auth is implemented
+        created_by: this.authService.userEmail || 'imported',
+        owner: this.authService.userEmail || 'imported',
         threat_model_framework: data.threat_model_framework || 'STRIDE', // Provide default if missing
         authorization: data.authorization || [], // Provide default if missing
       };

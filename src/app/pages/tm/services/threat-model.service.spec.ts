@@ -11,10 +11,11 @@
 // Import Angular compiler
 import '@angular/compiler';
 
-import { HttpClient } from '@angular/common/http';
 import { ThreatModelService } from './threat-model.service';
 import { LoggerService } from '../../../core/services/logger.service';
+import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { BehaviorSubject, of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -30,7 +31,8 @@ describe('ThreatModelService', () => {
   let service: ThreatModelService;
   let mockDataService: MockDataService;
   let loggerService: LoggerService;
-  let httpClient: HttpClient;
+  let apiService: ApiService;
+  let authService: AuthService;
   let testThreatModel1: any;
   let testThreatModel2: any;
   let testThreatModel3: any;
@@ -75,16 +77,22 @@ describe('ThreatModelService', () => {
       error: vi.fn(),
     } as unknown as LoggerService;
 
-    // Create a simple mock for HttpClient
-    httpClient = {
+    // Create a simple mock for ApiService
+    apiService = {
       get: vi.fn().mockReturnValue(of([])),
       post: vi.fn().mockReturnValue(of({})),
       put: vi.fn().mockReturnValue(of({})),
       delete: vi.fn().mockReturnValue(of(true)),
-    } as unknown as HttpClient;
+    } as unknown as ApiService;
+
+    // Create a mock for AuthService
+    authService = {
+      userEmail: 'test.user@example.com',
+      userProfile: { email: 'test.user@example.com', name: 'Test User' },
+    } as unknown as AuthService;
 
     // Create the service directly with mocked dependencies
-    service = new ThreatModelService(httpClient, loggerService, mockDataService);
+    service = new ThreatModelService(apiService, loggerService, mockDataService, authService);
   });
 
   it('should be created', () => {
