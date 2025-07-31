@@ -107,7 +107,7 @@ export class X6EventHandlers {
 
     // Selection events
     graph.on('selection:changed', ({ added, removed }) => {
-      this.logger.info('Selection changed', {
+      this.logger.info('Selection changed - event handler', {
         addedCount: added.length,
         removedCount: removed.length,
         totalSelected: graph.getSelectedCells().length,

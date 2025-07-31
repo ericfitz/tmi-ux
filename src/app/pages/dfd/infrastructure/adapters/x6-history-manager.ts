@@ -190,17 +190,20 @@ export class X6HistoryManager {
           if (cell.isNode()) {
             const node = cell;
             this._cleanupNodeVisualEffects(node);
-
-            // Update port visibility for all nodes (hide unconnected ports)
-            if (this.portStateManager) {
-              this.portStateManager.hideUnconnectedNodePorts(graph, node);
-            }
           } else if (cell.isEdge()) {
             const edge = cell;
             this._cleanupEdgeVisualEffects(edge);
           }
         });
       });
+
+      // Update port visibility for all nodes after cleanup (show connected, hide unconnected)
+      // Use setTimeout to ensure graph state is fully updated after undo/redo
+      if (this.portStateManager) {
+        setTimeout(() => {
+          this.portStateManager.onConnectionChange(graph);
+        }, 0);
+      }
 
       // Clear any selection state since restored cells should not be selected
       // This must also be within the history-disabled context to prevent selection events

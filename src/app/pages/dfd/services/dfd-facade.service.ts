@@ -135,6 +135,13 @@ export class DfdFacadeService {
   }
 
   /**
+   * Get threat change observable
+   */
+  get threatChanged$(): Observable<any> {
+    return this.eventHandlersService.threatChanged$;
+  }
+
+  /**
    * Handle window resize
    */
   onWindowResize(

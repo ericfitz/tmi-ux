@@ -1343,6 +1343,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Set up port state manager for coordinated hover effects
     this._selectionAdapter.setPortStateManager(this._portStateManager);
+    this._historyManager.setPortStateManager(this._portStateManager);
 
     // Set up history coordinator for port state manager to suppress port visibility from history
     this._portStateManager.setHistoryCoordinator(this._historyCoordinator);

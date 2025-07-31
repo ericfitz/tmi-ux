@@ -164,7 +164,7 @@ export class X6SelectionAdapter {
         });
       });
 
-      this.logger.info('Selection changed', {
+      this.logger.info('Selection changed - visual adapter', {
         added: added.length,
         removed: removed.length,
         total: graph.getSelectedCells().length,

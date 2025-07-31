@@ -418,7 +418,7 @@ describe('X6SelectionAdapter', () => {
       });
 
       // Verify logging
-      expect(mockLogger.info).toHaveBeenCalledWith('Selection changed', {
+      expect(mockLogger.info).toHaveBeenCalledWith('Selection changed - visual adapter', {
         added: 2,
         removed: 0,
         total: expect.any(Number),

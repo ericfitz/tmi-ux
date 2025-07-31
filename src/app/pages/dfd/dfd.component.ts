@@ -248,6 +248,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this._previousCanUndo = canUndo;
           this._previousCanRedo = canRedo;
 
+          // Auto-save diagram when history changes
+          if (this._isInitialized && this.dfdId && this.threatModelId) {
+            const graph = this.x6GraphAdapter.getGraph();
+            if (graph) {
+              this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
+                next: (success) => {
+                  if (success) {
+                    this.logger.info('Auto-saved diagram changes after history change');
+                  } else {
+                    this.logger.warn('Auto-save failed after history change');
+                  }
+                },
+                error: (error) => {
+                  this.logger.error('Error during auto-save after history change', error);
+                }
+              });
+            }
+          }
+
           this.cdr.markForCheck();
         }
       }),
@@ -264,6 +283,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.x6GraphAdapter.edgeVerticesChanged$.subscribe(({ edgeId, vertices }) => {
         this.handleEdgeVerticesChanged(edgeId, vertices);
+      }),
+    );
+
+    // Subscribe to cell data changes (metadata changes) for auto-save
+    this._subscriptions.add(
+      this.x6GraphAdapter.nodeInfoChanged$.subscribe(({ nodeId, newData, oldData }) => {
+        this.logger.info('Cell metadata changed, auto-saving diagram', {
+          nodeId,
+          hasNewData: !!newData,
+          hasOldData: !!oldData,
+        });
+        this.autoSaveDiagram('Cell metadata changed');
+      }),
+    );
+
+    // Subscribe to threat changes for auto-save
+    this._subscriptions.add(
+      this.facade.threatChanged$.subscribe(({ action, threatId, diagramId }) => {
+        this.logger.info('Threat changed, auto-saving diagram', {
+          action,
+          threatId,
+          diagramId,
+        });
+        this.autoSaveDiagram(`Threat ${action}`);
       }),
     );
   }
@@ -989,6 +1032,29 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.error('Error adding inverse connection', error);
         },
       });
+  }
+
+  /**
+   * Auto-save diagram when changes occur
+   */
+  private autoSaveDiagram(reason: string): void {
+    if (this._isInitialized && this.dfdId && this.threatModelId) {
+      const graph = this.x6GraphAdapter.getGraph();
+      if (graph) {
+        this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
+          next: (success) => {
+            if (success) {
+              this.logger.info(`Auto-saved diagram: ${reason}`);
+            } else {
+              this.logger.warn(`Auto-save failed: ${reason}`);
+            }
+          },
+          error: (error) => {
+            this.logger.error(`Error during auto-save (${reason})`, error);
+          }
+        });
+      }
+    }
   }
 
   /**

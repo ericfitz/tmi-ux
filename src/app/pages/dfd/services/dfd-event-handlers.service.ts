@@ -39,6 +39,15 @@ export interface NodeInfoChangeEvent {
 }
 
 /**
+ * Interface for threat change events (for auto-save integration)
+ */
+export interface ThreatChangeEvent {
+  action: 'added' | 'removed' | 'changed';
+  threatId: string;
+  diagramId: string;
+}
+
+/**
  * Service responsible for handling events in DFD diagrams
  * Includes cell label management functionality
  * Simplified to work directly with X6 without command bus
@@ -52,6 +61,9 @@ export class DfdEventHandlersService {
   // Label change observables
   private _labelChanged$ = new Subject<LabelChangeEvent>();
   private _nodeInfoChanged$ = new Subject<NodeInfoChangeEvent>();
+  
+  // Threat change observable
+  private _threatChanged$ = new Subject<ThreatChangeEvent>();
 
   // Context menu position
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -373,6 +385,13 @@ export class DfdEventHandlersService {
                         cellId: newThreat.cell_id,
                         shapeType: shapeType || 'none',
                       });
+                      
+                      // Trigger auto-save for threat addition
+                      this._threatChanged$.next({ 
+                        action: 'added', 
+                        threatId: newThreat.id, 
+                        diagramId: dfdId || '' 
+                      });
                     },
                     error: (error: unknown) => {
                       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -534,6 +553,13 @@ export class DfdEventHandlersService {
    */
   get nodeInfoChanged$(): Observable<NodeInfoChangeEvent> {
     return this._nodeInfoChanged$.asObservable();
+  }
+
+  /**
+   * Observable for threat change events (for auto-save integration)
+   */
+  get threatChanged$(): Observable<ThreatChangeEvent> {
+    return this._threatChanged$.asObservable();
   }
 
   /**
