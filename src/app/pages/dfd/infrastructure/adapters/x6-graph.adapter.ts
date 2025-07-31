@@ -1772,7 +1772,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Exclude zIndex changes (usually for visual layering)
       if (args.key === 'zIndex') {
-        this.logger.debugComponent('X6Graph', 'Excluding zIndex change');
+        // this.logger.debugComponent('X6Graph', 'Excluding zIndex change');
         return false;
       }
 

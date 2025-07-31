@@ -51,7 +51,7 @@ export class X6HistoryManager {
     });
 
     graph.on('history:change', () => {
-      this.logger.debugComponent('X6History', 'History change event fired');
+      // this.logger.debugComponent('X6History', 'History change event fired');
       this._emitHistoryStateChange(graph);
     });
 
