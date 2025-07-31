@@ -1806,13 +1806,13 @@ export class X6GraphAdapter implements IGraphAdapter {
           includeToolChanges: false,
         });
 
-        this.logger.debugComponent(
-          'X6Graph',
-          `Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`,
-        );
+        // this.logger.debugComponent(
+        //   'X6Graph',
+        //   `Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`,
+        // );
 
         if (isPortVisibilityOnly) {
-          this.logger.debugComponent('X6Graph', 'Excluding port visibility change');
+          // this.logger.debugComponent('X6Graph', 'Excluding port visibility change');
           return false; // Don't add to history
         }
         this.logger.debugComponent('X6Graph', 'Including port change - not visibility only');

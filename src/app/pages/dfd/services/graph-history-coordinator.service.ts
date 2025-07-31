@@ -164,10 +164,14 @@ export class GraphHistoryCoordinator {
     operation: () => T,
     options: HistoryOperationOptions = {},
   ): T {
-    this.loggerService.debugComponent('GraphHistoryCoordinator', `Starting atomic operation: ${operationType}`, {
-      options,
-      timestamp: new Date().toISOString(),
-    });
+    this.loggerService.debugComponent(
+      'GraphHistoryCoordinator',
+      `Starting atomic operation: ${operationType}`,
+      {
+        options,
+        timestamp: new Date().toISOString(),
+      },
+    );
 
     try {
       // Configure filters for this operation
@@ -175,13 +179,20 @@ export class GraphHistoryCoordinator {
 
       // Execute in atomic batch to ensure single undo/redo entry
       const result = graph.batchUpdate(`${operationType}-batch`, () => {
-        this.loggerService.debugComponent('GraphHistoryCoordinator', `Executing batched operation: ${operationType}`);
+        this.loggerService.debugComponent(
+          'GraphHistoryCoordinator',
+          `Executing batched operation: ${operationType}`,
+        );
         return operation();
       });
 
-      this.loggerService.debugComponent('GraphHistoryCoordinator', `Completed atomic operation: ${operationType}`, {
-        success: true,
-      });
+      this.loggerService.debugComponent(
+        'GraphHistoryCoordinator',
+        `Completed atomic operation: ${operationType}`,
+        {
+          success: true,
+        },
+      );
 
       return result;
     } catch (error) {
@@ -308,11 +319,12 @@ export class GraphHistoryCoordinator {
       );
 
       // Debug logging for port visibility filtering
-      if (attributePath.includes('port') || attributePath.includes('visibility')) {
-        this.loggerService.debug(
-          `Port visibility check: "${attributePath}" -> excluded: ${isPortVisibility}`,
-        );
-      }
+      //if (attributePath.includes('port') || attributePath.includes('visibility')) {
+      // this.loggerService.debugComponent(
+      //   'GraphHistoryCoordinator',
+      //   `Port visibility check: "${attributePath}" -> excluded: ${isPortVisibility}`,
+      // );
+      //}
 
       return isPortVisibility;
     }
