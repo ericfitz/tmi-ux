@@ -196,6 +196,11 @@
     "createNewThreat": "Create New Threat",
     "createdBy": "Created By:",
     "dashboard": "Dashboard",
+    "deleteConfirm": "Delete Threat Model",
+    "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
+    "deleteConfirmationTitle": "Delete Threat Model",
+    "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
+    "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
     "descriptionPlaceholder": "Describe the Purpose and Scope of This Threat Model",
     "details": "Threat Model Details",
     "diagramName": "Diagram Name",
@@ -284,17 +289,12 @@
       "renameDiagram": "Rename Diagram",
       "viewThreat": "View Threat"
     },
-    "viewThreat": "View Threat",
-    "yourThreatModels": "Your Threat Models",
-    "deleteConfirmationTitle": "Delete Threat Model",
-    "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
-    "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
-    "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
-    "deleteConfirm": "Delete Threat Model",
     "validation": {
       "maxLength": "Maximum length is {{max}} characters",
       "required": "This field is required"
-    }
+    },
+    "viewThreat": "View Threat",
+    "yourThreatModels": "Your Threat Models"
   },
   "tos": {
     "contactInfo": {

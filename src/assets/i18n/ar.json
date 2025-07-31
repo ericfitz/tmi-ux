@@ -199,6 +199,11 @@
     "createNewThreat": "إنشاء تهديد جديد",
     "createdBy": "تم إنشاؤه بواسطة:",
     "dashboard": "لوحة المعلومات",
+    "deleteConfirm": "حذف نموذج التهديد",
+    "deleteConfirmationMessage": "هل أنت متأكد من أنك تريد حذف نموذج التهديد \"{{name}}\"؟",
+    "deleteConfirmationTitle": "حذف نموذج التهديد",
+    "deleteWarningDownload": "فكر في تحميل نسخة محلية أولاً للحفاظ على عملك.",
+    "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
     "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
     "details": "تفاصيل نموذج التهديد",
     "diagramName": "اسم المخطط",
@@ -287,17 +292,12 @@
       "renameDiagram": "إعادة تسمية المخطط",
       "viewThreat": "عرض التهديد"
     },
-    "viewThreat": "عرض التهديد",
-    "yourThreatModels": "نماذج التهديدات الخاصة بك",
-    "deleteConfirmationTitle": "حذف نموذج التهديد",
-    "deleteConfirmationMessage": "هل أنت متأكد من أنك تريد حذف نموذج التهديد \"{{name}}\"؟",
-    "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
-    "deleteWarningDownload": "فكر في تحميل نسخة محلية أولاً للحفاظ على عملك.",
-    "deleteConfirm": "حذف نموذج التهديد",
     "validation": {
       "maxLength": "الطول الأقصى هو {{max}} حرف",
       "required": "هذا الحقل مطلوب"
-    }
+    },
+    "viewThreat": "عرض التهديد",
+    "yourThreatModels": "نماذج التهديدات الخاصة بك"
   },
   "tos": {
     "contactInfo": {

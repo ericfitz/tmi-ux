@@ -199,6 +199,11 @@
     "createNewThreat": "Neue Bedrohung erstellen",
     "createdBy": "Erstellt von:",
     "dashboard": "Dashboard",
+    "deleteConfirm": "Bedrohungsmodell löschen",
+    "deleteConfirmationMessage": "Sind Sie sicher, dass Sie das Bedrohungsmodell \"{{name}}\" löschen möchten?",
+    "deleteConfirmationTitle": "Bedrohungsmodell löschen",
+    "deleteWarningDownload": "Erwägen Sie, zuerst eine lokale Kopie herunterzuladen, um Ihre Arbeit zu bewahren.",
+    "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",
     "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
     "details": "Bedrohungsmodell-Details",
     "diagramName": "Diagrammname",
@@ -287,17 +292,12 @@
       "renameDiagram": "Diagramm umbenennen",
       "viewThreat": "Bedrohung anzeigen"
     },
-    "viewThreat": "Bedrohung anzeigen",
-    "yourThreatModels": "Ihre Bedrohungsmodelle",
-    "deleteConfirmationTitle": "Bedrohungsmodell löschen",
-    "deleteConfirmationMessage": "Sind Sie sicher, dass Sie das Bedrohungsmodell \"{{name}}\" löschen möchten?",
-    "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",
-    "deleteWarningDownload": "Erwägen Sie, zuerst eine lokale Kopie herunterzuladen, um Ihre Arbeit zu bewahren.",
-    "deleteConfirm": "Bedrohungsmodell löschen",
     "validation": {
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
-    }
+    },
+    "viewThreat": "Bedrohung anzeigen",
+    "yourThreatModels": "Ihre Bedrohungsmodelle"
   },
   "tos": {
     "contactInfo": {

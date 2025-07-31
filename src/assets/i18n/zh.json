@@ -199,6 +199,11 @@
     "createNewThreat": "创建新威胁",
     "createdBy": "创建者:",
     "dashboard": "仪表板",
+    "deleteConfirm": "删除威胁模型",
+    "deleteConfirmationMessage": "您确定要删除威胁模型\"{{name}}\"吗？",
+    "deleteConfirmationTitle": "删除威胁模型",
+    "deleteWarningDownload": "考虑先下载本地副本以保存您的工作。",
+    "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
     "details": "威胁模型详情",
     "diagramName": "图表名称",
@@ -287,17 +292,12 @@
       "renameDiagram": "重命名图表",
       "viewThreat": "查看威胁"
     },
-    "viewThreat": "查看威胁",
-    "yourThreatModels": "您的威胁模型",
-    "deleteConfirmationTitle": "删除威胁模型",
-    "deleteConfirmationMessage": "您确定要删除威胁模型\"{{name}}\"吗？",
-    "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",
-    "deleteWarningDownload": "考虑先下载本地副本以保存您的工作。",
-    "deleteConfirm": "删除威胁模型",
     "validation": {
       "maxLength": "最大长度为{{max}}个字符",
       "required": "此字段为必填项"
-    }
+    },
+    "viewThreat": "查看威胁",
+    "yourThreatModels": "您的威胁模型"
   },
   "tos": {
     "contactInfo": {
