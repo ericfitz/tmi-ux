@@ -17,15 +17,7 @@ import { registerCustomShapes } from './x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { X6CoreOperationsService } from '../services/x6-core-operations.service';
 import { EdgeService } from '../services/edge.service';
-
-// Mock logger service
-class MockLoggerService {
-  info = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  debug = vi.fn();
-  debugComponent = vi.fn();
-}
+import { createMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Helper to add getNodeTypeInfo extension mock to nodes
 function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
@@ -134,7 +126,7 @@ describe('X6SelectionAdapter', () => {
     });
 
     // Create services
-    mockLogger = new MockLoggerService();
+    mockLogger = createMockLoggerService() as MockLoggerService;
     selectionService = new SelectionService(mockLogger as any);
     historyManager = new X6HistoryManager(mockLogger as any);
     historyCoordinator = new GraphHistoryCoordinator(historyManager, mockLogger as any);

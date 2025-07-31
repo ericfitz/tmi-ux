@@ -18,6 +18,7 @@ import { MockDataService } from '../../../mocks/mock-data.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { BehaviorSubject, of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createMockLoggerService } from '../../../../testing/mocks';
 
 // Import testing utilities
 import { waitForAsync } from '../../../../testing/async-utils';
@@ -69,13 +70,7 @@ describe('ThreatModelService', () => {
       useMockData$: new BehaviorSubject<boolean>(true),
     } as unknown as MockDataService;
 
-    loggerService = {
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    } as unknown as LoggerService;
+    loggerService = createMockLoggerService() as unknown as LoggerService;
 
     // Create a simple mock for ApiService
     apiService = {

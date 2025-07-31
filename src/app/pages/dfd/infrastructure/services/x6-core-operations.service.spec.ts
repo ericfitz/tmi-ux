@@ -13,16 +13,10 @@ import {
   EdgeCreationConfig,
 } from './x6-core-operations.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService
-interface MockLoggerService {
-  debug: ReturnType<typeof vi.fn>;
-  debugComponent: ReturnType<typeof vi.fn>;
-  info: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-}
 
 describe('X6CoreOperationsService', () => {
   let service: X6CoreOperationsService;
@@ -31,13 +25,7 @@ describe('X6CoreOperationsService', () => {
 
   beforeEach(() => {
     // Create mock for LoggerService
-    mockLogger = {
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create service instance
     service = new X6CoreOperationsService(mockLogger as unknown as LoggerService);

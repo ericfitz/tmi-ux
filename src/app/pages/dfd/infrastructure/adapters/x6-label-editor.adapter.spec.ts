@@ -11,6 +11,7 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { X6LabelEditorAdapter } from './x6-label-editor.adapter';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { createMockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
 Object.defineProperty(SVGElement.prototype, 'getScreenCTM', {
@@ -50,12 +51,7 @@ describe('X6LabelEditorAdapter', () => {
     initializeX6CellExtensions();
 
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-      debug: vi.fn(),
-    } as any;
+    mockLogger = createMockLoggerService();
 
     // Create adapter
     adapter = new X6LabelEditorAdapter(mockLogger);

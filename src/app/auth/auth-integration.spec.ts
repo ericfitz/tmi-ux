@@ -20,20 +20,16 @@ import { roleGuard } from './guards/role.guard';
 import { LoggerService } from '../core/services/logger.service';
 import { LocalOAuthProviderService } from './services/local-oauth-provider.service';
 import { environment } from '../../environments/environment';
+import { 
+  createTypedMockLoggerService, 
+  createTypedMockRouter,
+  createTypedMockHttpClient,
+  type MockLoggerService,
+  type MockRouter,
+  type MockHttpClient
+} from '../../testing/mocks';
 
 // Mock interfaces for type safety
-interface MockLoggerService {
-  info: ReturnType<typeof vi.fn>;
-  debug: ReturnType<typeof vi.fn>;
-  debugComponent: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-}
-
-interface MockRouter {
-  navigate: ReturnType<typeof vi.fn>;
-  url: string;
-}
 
 interface MockStorage {
   getItem: ReturnType<typeof vi.fn>;
@@ -50,7 +46,7 @@ describe('Authentication Integration', () => {
   let authService: AuthService;
   let router: MockRouter;
   let logger: MockLoggerService;
-  let httpClient: HttpClient;
+  let httpClient: MockHttpClient;
   let localStorageMock: MockStorage;
   let localOAuthProvider: LocalOAuthProviderService;
 
@@ -58,25 +54,11 @@ describe('Authentication Integration', () => {
     vi.clearAllMocks();
 
     // Create mocks for dependencies
-    logger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    };
+    logger = createTypedMockLoggerService();
 
-    router = {
-      navigate: vi.fn().mockResolvedValue(true),
-      url: '/test',
-    };
+    router = createTypedMockRouter('/test');
 
-    httpClient = {
-      get: vi.fn().mockReturnValue(of([])),
-      post: vi.fn().mockReturnValue(of({})),
-      put: vi.fn().mockReturnValue(of({})),
-      delete: vi.fn().mockReturnValue(of(true)),
-    } as unknown as HttpClient;
+    httpClient = createTypedMockHttpClient([]);
 
     localStorageMock = {
       getItem: vi.fn().mockReturnValue(null),
@@ -98,7 +80,7 @@ describe('Authentication Integration', () => {
     // Create the service with mocked dependencies
     authService = new AuthService(
       router as unknown as Router,
-      httpClient,
+      httpClient as unknown as HttpClient,
       logger as unknown as LoggerService,
       localOAuthProvider,
     );
@@ -419,7 +401,7 @@ describe('Authentication Integration', () => {
         // Create a new service instance to test initialization
         const restoredAuthService = new AuthService(
           router as unknown as Router,
-          httpClient,
+          httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           localOAuthProvider,
         );
@@ -453,7 +435,7 @@ describe('Authentication Integration', () => {
         // Create a new service instance to test initialization
         const expiredAuthService = new AuthService(
           router as unknown as Router,
-          httpClient,
+          httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           localOAuthProvider,
         );

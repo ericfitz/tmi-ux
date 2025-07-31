@@ -10,6 +10,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { EmbeddingService } from './embedding.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -58,22 +59,16 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
 
 describe('EmbeddingService', () => {
   let service: EmbeddingService;
-  let mockLogger: LoggerService;
+  let mockLogger: MockLoggerService;
   let graph: Graph;
   let container: HTMLElement;
 
   beforeEach(() => {
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    } as any;
+    mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new EmbeddingService(mockLogger);
+    service = new EmbeddingService(mockLogger as unknown as LoggerService);
 
     // Create container
     container = document.createElement('div');

@@ -23,6 +23,14 @@ import {
 } from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
+import { 
+  createTypedMockLoggerService, 
+  createTypedMockRouter,
+  createTypedMockHttpClient,
+  type MockLoggerService,
+  type MockRouter,
+  type MockHttpClient
+} from '../../../testing/mocks';
 
 // Mock the environment module
 vi.mock('../../../environments/environment', () => ({
@@ -46,17 +54,6 @@ vi.mock('../../../environments/environment', () => ({
 import { environment } from '../../../environments/environment';
 
 // Mock interfaces for type safety
-interface MockLoggerService {
-  info: ReturnType<typeof vi.fn>;
-  debug: ReturnType<typeof vi.fn>;
-  debugComponent: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-}
-
-interface MockRouter {
-  navigate: ReturnType<typeof vi.fn>;
-}
 
 interface MockStorage {
   getItem: ReturnType<typeof vi.fn>;
@@ -71,7 +68,7 @@ interface MockCrypto {
 
 describe('AuthService', () => {
   let service: AuthService;
-  let httpClient: HttpClient;
+  let httpClient: MockHttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
   let localProvider: LocalOAuthProviderService;
@@ -151,25 +148,9 @@ describe('AuthService', () => {
     vi.clearAllMocks();
 
     // Create mocks for dependencies
-    loggerService = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    };
-
-    router = {
-      navigate: vi.fn().mockResolvedValue(true),
-    };
-
-    // Create a properly typed mock for HttpClient
-    httpClient = {
-      get: vi.fn().mockReturnValue(of([])),
-      post: vi.fn().mockReturnValue(of({})),
-      put: vi.fn().mockReturnValue(of({})),
-      delete: vi.fn().mockReturnValue(of(true)),
-    } as unknown as HttpClient;
+    loggerService = createTypedMockLoggerService();
+    router = createTypedMockRouter();
+    httpClient = createTypedMockHttpClient([]);
 
     // Create localStorage mock
     localStorageMock = {
@@ -230,7 +211,7 @@ describe('AuthService', () => {
     // Create the service directly with mocked dependencies
     service = new AuthService(
       router as unknown as Router,
-      httpClient,
+      httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       localProvider,
     );

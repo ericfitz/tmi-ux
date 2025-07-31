@@ -11,6 +11,7 @@ import { vi, Mock, beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { VisualEffectsService } from './visual-effects.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock types for better type safety
 interface MockCell extends Partial<Cell> {
@@ -30,7 +31,7 @@ type MockEdge = MockCell;
 
 describe('VisualEffectsService', () => {
   let service: VisualEffectsService;
-  let mockLogger: Partial<LoggerService>;
+  let mockLogger: MockLoggerService;
 
   // Test helper to create mock cells
   const createMockNode = (id: string, nodeType = 'process'): MockNode => ({
@@ -58,16 +59,10 @@ describe('VisualEffectsService', () => {
 
   beforeEach(() => {
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create service directly with mock logger
-    service = new VisualEffectsService(mockLogger as LoggerService);
+    service = new VisualEffectsService(mockLogger as unknown as LoggerService);
   });
 
   afterEach(() => {

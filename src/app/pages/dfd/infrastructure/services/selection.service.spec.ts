@@ -11,6 +11,7 @@ import { Graph, Node } from '@antv/x6';
 import { SelectionService } from './selection.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -59,22 +60,16 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
 
 describe('SelectionService', () => {
   let service: SelectionService;
-  let mockLogger: LoggerService;
+  let mockLogger: MockLoggerService;
   let graph: Graph;
   let container: HTMLElement;
 
   beforeEach(() => {
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    } as any;
+    mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new SelectionService(mockLogger);
+    service = new SelectionService(mockLogger as unknown as LoggerService);
 
     // Create container
     container = document.createElement('div');

@@ -15,16 +15,10 @@ import { VisualEffectsService } from '../infrastructure/services/visual-effects.
 import { EdgeService } from '../infrastructure/services/edge.service';
 import { initializeX6CellExtensions } from '../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../infrastructure/adapters/x6-shape-definitions';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interfaces for complex dependencies
-interface MockLoggerService {
-  info: ReturnType<typeof vi.fn>;
-  debug: ReturnType<typeof vi.fn>;
-  debugComponent: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-}
 
 interface MockX6ZOrderAdapter {
   setEdgeZOrderFromConnectedNodes: ReturnType<typeof vi.fn>;
@@ -65,13 +59,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
     });
 
     // Create mocks for complex dependencies
-    mockLogger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     mockX6ZOrderAdapter = {
       setEdgeZOrderFromConnectedNodes: vi.fn(),

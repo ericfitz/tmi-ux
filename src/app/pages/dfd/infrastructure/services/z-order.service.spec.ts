@@ -9,15 +9,10 @@
 import { Node, Edge } from '@antv/x6';
 import { ZOrderService } from './z-order.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 
 // Mock interfaces for type safety
-interface MockLoggerService {
-  info: ReturnType<typeof vi.fn>;
-  debug: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-}
 
 interface MockNode {
   id: string;
@@ -38,12 +33,7 @@ describe('ZOrderService', () => {
   let mockLogger: MockLoggerService;
 
   beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     service = new ZOrderService(mockLogger as unknown as LoggerService);
   });

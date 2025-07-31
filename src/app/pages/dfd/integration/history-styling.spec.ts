@@ -19,6 +19,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { JSDOM } from 'jsdom';
 
+import { createMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
+
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
 import { SelectionService } from '../infrastructure/services/selection.service';
@@ -45,14 +47,6 @@ import { DiagramEdge } from '../domain/value-objects/diagram-edge';
 import { DFD_STYLING, NodeType } from '../constants/styling-constants';
 import { StylingVerifier, TestHelpers } from './test-helpers/styling-helpers';
 
-// Mock logger service
-class MockLoggerService {
-  debug = vi.fn();
-  info = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  debugComponent = vi.fn();
-}
 
 // Mock event handlers service to avoid Angular Material dependencies
 class MockDfdEventHandlersService {
@@ -166,7 +160,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
     document.body.appendChild(container);
 
     // Initialize services
-    mockLogger = new MockLoggerService();
+    mockLogger = createMockLoggerService() as unknown as MockLoggerService;
     edgeQueryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
     nodeConfigurationService = new NodeConfigurationService();
     embeddingService = new EmbeddingService(mockLogger as unknown as LoggerService);

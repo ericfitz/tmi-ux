@@ -14,16 +14,10 @@ import { PortStateManagerService } from './port-state-manager.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService only (cross-cutting concern)
-interface MockLoggerService {
-  info: ReturnType<typeof vi.fn>;
-  debug: ReturnType<typeof vi.fn>;
-  debugComponent: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-}
 
 describe('EdgeService - X6 Integration Tests', () => {
   let service: EdgeService;
@@ -40,13 +34,7 @@ describe('EdgeService - X6 Integration Tests', () => {
     initializeX6CellExtensions();
 
     // Create mock for LoggerService (cross-cutting concern)
-    mockLogger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create real service instances for integration testing
     queryService = new EdgeQueryService(mockLogger as unknown as LoggerService);

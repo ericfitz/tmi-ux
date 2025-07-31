@@ -9,6 +9,12 @@ import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { JwtToken } from '../models/auth.models';
+import { 
+  createTypedMockLoggerService, 
+  createTypedMockRouter,
+  type MockLoggerService,
+  type MockRouter
+} from '../../../testing/mocks';
 
 // Mock the environment module
 vi.mock('../../../environments/environment', () => ({
@@ -23,8 +29,8 @@ import { environment } from '../../../environments/environment';
 describe('JwtInterceptor', () => {
   let interceptor: JwtInterceptor;
   let authService: AuthService;
-  let router: Router;
-  let loggerService: LoggerService;
+  let router: MockRouter;
+  let loggerService: MockLoggerService;
 
   const mockJwtToken: JwtToken = {
     token: 'mock-jwt-token',
@@ -63,24 +69,11 @@ describe('JwtInterceptor', () => {
       handleAuthError: vi.fn(),
     };
 
-    const mockRouter = {
-      navigate: vi.fn(),
-      url: '/test-path',
-    };
-
-    const mockLoggerService = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
-
     authService = mockAuthService as unknown as AuthService;
-    router = mockRouter as unknown as Router;
-    loggerService = mockLoggerService as unknown as LoggerService;
+    router = createTypedMockRouter('/test-path');
+    loggerService = createTypedMockLoggerService();
 
-    interceptor = new JwtInterceptor(authService, router, loggerService);
+    interceptor = new JwtInterceptor(authService, router as unknown as Router, loggerService as unknown as LoggerService);
   });
 
   describe('Core Functionality', () => {
