@@ -54,7 +54,7 @@ export class SessionManagerService {
    * Checks token expiration periodically
    */
   private startExpiryTimer(): void {
-    this.logger.debug('Starting token expiry timer');
+    this.logger.debugComponent('SessionManager', 'Starting token expiry timer');
 
     // Stop any existing timers
     this.stopExpiryTimer();
@@ -74,13 +74,13 @@ export class SessionManagerService {
    */
   private stopExpiryTimer(): void {
     if (this.tokenExpiryTimer) {
-      this.logger.debug('Stopping token expiry timer');
+      this.logger.debugComponent('SessionManager', 'Stopping token expiry timer');
       this.tokenExpiryTimer.unsubscribe();
       this.tokenExpiryTimer = null;
     }
 
     if (this.sessionWarningTimer) {
-      this.logger.debug('Stopping session warning timer');
+      this.logger.debugComponent('SessionManager', 'Stopping session warning timer');
       this.sessionWarningTimer.unsubscribe();
       this.sessionWarningTimer = null;
     }
@@ -94,7 +94,7 @@ export class SessionManagerService {
     const token = this.authService.getStoredToken();
 
     if (!token) {
-      this.logger.debug('No token found during expiration check');
+      this.logger.debugComponent('SessionManager', 'No token found during expiration check');
       return;
     }
 
@@ -114,7 +114,8 @@ export class SessionManagerService {
       }
     } else if (timeToExpiry <= this.warningTime) {
       // Token is about to expire - proactively refresh
-      this.logger.debug(
+      this.logger.debugComponent(
+        'SessionManager',
         `Token will expire in ${Math.round(timeToExpiry / 1000 / 60)} minutes - proactively refreshing`,
       );
 
@@ -144,7 +145,7 @@ export class SessionManagerService {
    * @param minutesLeft Minutes left before session expires
    */
   private showExpiryWarning(minutesLeft: number): void {
-    this.logger.debug(`Session expiry warning: ${minutesLeft} minutes left - initiating logout`);
+    this.logger.debugComponent('SessionManager', `Session expiry warning: ${minutesLeft} minutes left - initiating logout`);
 
     // For transparent session management, we no longer show dialogs
     // Instead, we log out immediately when session is about to expire
@@ -156,7 +157,7 @@ export class SessionManagerService {
    * If refresh fails, handle session timeout
    */
   private attemptTokenRefresh(): void {
-    this.logger.debug('Attempting proactive token refresh');
+    this.logger.debugComponent('SessionManager', 'Attempting proactive token refresh');
 
     this.authService.getValidToken().subscribe({
       next: newToken => {
@@ -191,7 +192,7 @@ export class SessionManagerService {
    * @returns Observable that resolves to true if session was extended
    */
   extendSession(): Observable<boolean> {
-    this.logger.debug('Extending session');
+    this.logger.debugComponent('SessionManager', 'Extending session');
 
     // TODO: In a real implementation, we would call a refresh token endpoint
     // For now, just return success
@@ -203,7 +204,7 @@ export class SessionManagerService {
    * Calls the AuthService to extend the test user session without showing any UI
    */
   private silentlyExtendTestUserSession(): void {
-    this.logger.debug('Silently extending test user session');
+    this.logger.debugComponent('SessionManager', 'Silently extending test user session');
 
     this.authService.extendTestUserSession().subscribe({
       next: success => {

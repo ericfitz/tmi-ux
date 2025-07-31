@@ -43,7 +43,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
     const allWarnings: ValidationResult['warnings'] = [];
 
     try {
-      this.logger.debug('Starting ThreatModel validation', {
+      this.logger.debugComponent('ThreatModelValidator', 'Starting ThreatModel validation', {
         threatModelId: threatModel?.id,
         threatModelName: threatModel?.name,
         config: validationConfig,
@@ -91,7 +91,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
       const isValid = allErrors.length === 0;
       const result = this.buildResult(isValid, allErrors, allWarnings, startTime, validationConfig);
 
-      this.logger.debug('ThreatModel validation completed', {
+      this.logger.debugComponent('ThreatModelValidator', 'ThreatModel validation completed', {
         valid: isValid,
         errorCount: allErrors.length,
         warningCount: allWarnings.length,
@@ -313,7 +313,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    */
   registerDiagramValidator(validator: any): void {
     DiagramValidatorFactory.registerValidator(validator);
-    this.logger.debug('Registered custom diagram validator', {
+    this.logger.debugComponent('ThreatModelValidator', 'Registered custom diagram validator', {
       diagramType: validator.diagramType,
       versionPattern: validator.versionPattern.source,
     });

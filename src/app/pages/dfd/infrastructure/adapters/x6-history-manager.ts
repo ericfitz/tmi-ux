@@ -51,7 +51,7 @@ export class X6HistoryManager {
     });
 
     graph.on('history:change', () => {
-      this.logger.debug('History change event fired');
+      this.logger.debugComponent('X6History', 'History change event fired');
       this._emitHistoryStateChange(graph);
     });
 
@@ -138,24 +138,22 @@ export class X6HistoryManager {
    * Temporarily disable history tracking
    */
   disable(graph: Graph): void {
-    this.logger.debug('[X6HistoryManager] Attempting to disable history', {
-      hasGraph: !!graph,
-      hasHistory: !!(graph && (graph as any).history),
-      hasDisableMethod: !!(
-        graph &&
-        (graph as any).history &&
-        typeof (graph as any).history.disable === 'function'
-      ),
-      graphType: graph ? graph.constructor.name : 'undefined',
-      historyType:
-        graph && (graph as any).history ? (graph as any).history.constructor.name : 'undefined',
-    });
+    // this.logger.debug('[X6HistoryManager] Attempting to disable history', {
+    //   hasGraph: !!graph,
+    //   hasHistory: !!(graph && (graph as any).history),
+    //   hasDisableMethod: !!(
+    //     graph &&
+    //     (graph as any).history &&
+    //     typeof (graph as any).history.disable === 'function'
+    //   ),
+    //   graphType: graph ? graph.constructor.name : 'undefined',
+    //   historyType:
+    //     graph && (graph as any).history ? (graph as any).history.constructor.name : 'undefined',
+    // });
 
     if (graph && (graph as any).history && typeof (graph as any).history.disable === 'function') {
       (graph as any).history.disable();
-      this.logger.debug('History tracking disabled');
-    } else {
-      this.logger.debug('History disable not available - history plugin may not be enabled yet');
+      this.logger.debugComponent('X6History', 'History tracking disabled');
     }
   }
 
@@ -165,9 +163,7 @@ export class X6HistoryManager {
   enable(graph: Graph): void {
     if (graph && (graph as any).history && typeof (graph as any).history.enable === 'function') {
       (graph as any).history.enable();
-      this.logger.debug('History tracking enabled');
-    } else {
-      this.logger.debug('History enable not available - history plugin may not be enabled yet');
+      this.logger.debugComponent('X6History', 'History tracking enabled');
     }
   }
 
@@ -210,7 +206,7 @@ export class X6HistoryManager {
       // This must also be within the history-disabled context to prevent selection events
       graph.resetSelection();
 
-      this.logger.debug('Cleaned up visual effects after history restore', {
+      this.logger.debugComponent('X6History', 'Cleaned up visual effects after history restore', {
         cellsProcessed: cells.length,
         timestamp: new Date().toISOString(),
       });
@@ -309,7 +305,7 @@ export class X6HistoryManager {
     // Only emit and log if the state has actually changed
     if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
       this._historyChanged$.next({ canUndo, canRedo });
-      this.logger.debug('History state changed', { canUndo, canRedo });
+      this.logger.debugComponent('X6History', 'History state changed', { canUndo, canRedo });
 
       // Update previous state tracking
       this._previousCanUndo = canUndo;

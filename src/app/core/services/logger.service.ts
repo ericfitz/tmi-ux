@@ -29,14 +29,6 @@ export enum LogLevel {
   ERROR = 'ERROR',
 }
 
-/**
- * Interface for variable initialization tracking
- */
-export interface VarInit<T> {
-  name: string;
-  value: T;
-  source?: string;
-}
 
 /**
  * Map of log levels to their priority
@@ -136,58 +128,8 @@ export class LoggerService {
     }
   }
 
-  /**
-   * Log initialization of a variable
-   * @param name Variable name
-   * @param value Variable value
-   * @param source Optional source (class/method/file)
-   * @returns The original value for easy chaining
-   */
-  logInit<T>(name: string, value: T, source?: string): T {
-    return this.logVar({ name, value, source }, 'initialized');
-  }
 
-  /**
-   * Log update of a variable's value
-   * @param name Variable name
-   * @param value New variable value
-   * @param source Optional source (class/method/file)
-   * @returns The original value for easy chaining
-   */
-  logUpdate<T>(name: string, value: T, source?: string): T {
-    return this.logVar({ name, value, source }, 'updated');
-  }
 
-  /**
-   * Log variable initialization or value change
-   * @param varInfo Object containing variable name, value, and optional source
-   * @param operation The operation being performed (initialize, update, etc.)
-   * @returns The original value for easy chaining
-   */
-  logVar<T>(varInfo: VarInit<T>, operation = 'initialized'): T {
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      const source = varInfo.source ? ` in ${varInfo.source}` : '';
-      let valueStr = '';
-
-      try {
-        // For objects and arrays, stringify with pretty printing (2 spaces)
-        if (typeof varInfo.value === 'object' && varInfo.value !== null) {
-          valueStr = JSON.stringify(varInfo.value, null, 2);
-          // Truncate if too long
-          if (valueStr.length > 500) {
-            valueStr = valueStr.substring(0, 500) + '... (truncated)';
-          }
-        } else {
-          valueStr = String(varInfo.value);
-        }
-      } catch {
-        valueStr = '[Unstringifiable value]';
-      }
-
-      this.debug(`Variable '${varInfo.name}'${source} ${operation} to: ${valueStr}`);
-    }
-    return varInfo.value;
-  }
 
   /**
    * Determine if a message at the given level should be logged

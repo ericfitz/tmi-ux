@@ -111,7 +111,7 @@ export class X6KeyboardHandler {
     // Store the initial position for drag completion tracking
     this._initialNodePositions.set(node.id, initialPosition);
 
-    this.logger.debug('Node drag started', {
+    this.logger.debugComponent('X6Keyboard', 'Node drag started', {
       nodeId: node.id,
       initialPosition: { x: initialPosition.x, y: initialPosition.y },
     });

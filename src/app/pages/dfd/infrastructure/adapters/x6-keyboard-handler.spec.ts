@@ -11,6 +11,7 @@ import { Graph, Node } from '@antv/x6';
 import { X6KeyboardHandler } from './x6-keyboard-handler';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Point } from '../../domain/value-objects/point';
+import { createMockLoggerService } from '../../../../../testing/mocks/mock-logger.service';
 
 // Mock SVG methods for X6 compatibility
 Object.defineProperty(SVGElement.prototype, 'getScreenCTM', {
@@ -86,13 +87,7 @@ describe('X6KeyboardHandler', () => {
 
   beforeEach(() => {
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    } as any;
+    mockLogger = createMockLoggerService() as any;
 
     // Create handler
     handler = new X6KeyboardHandler(mockLogger);
@@ -258,7 +253,7 @@ describe('X6KeyboardHandler', () => {
         'Node drag started (handleNodeMouseDown)',
         { nodeId: node.id },
       );
-      expect(mockLogger.debug).toHaveBeenCalledWith('Node drag started', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('X6Keyboard', 'Node drag started', {
         nodeId: node.id,
         initialPosition: { x: 100, y: 100 },
       });

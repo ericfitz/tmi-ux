@@ -16,6 +16,7 @@ import { ValidationConfig } from './types';
 // Mock interfaces for type safety
 interface MockLoggerService {
   debug: ReturnType<typeof vi.fn>;
+  debugComponent: ReturnType<typeof vi.fn>;
   info: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
@@ -32,6 +33,7 @@ describe('ThreatModelValidatorService', () => {
     // Create mock for LoggerService
     mockLogger = {
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       info: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),

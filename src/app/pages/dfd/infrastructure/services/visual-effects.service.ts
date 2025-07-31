@@ -65,13 +65,13 @@ export class VisualEffectsService {
     // Default to light blue if no color provided
     const effectColor = color || { r: 0, g: 150, b: 255 };
 
-    this.logger.info('[VisualEffects] Applying creation highlight', {
-      cellId: cell.id,
-      cellType: cell.isNode() ? 'node' : 'edge',
-      hasActiveEffect: this.activeEffects.has(cell.id),
-      isSelected: this.isCellSelected(cell),
-      color: effectColor,
-    });
+    // this.logger.info('[VisualEffects] Applying creation highlight', {
+    //   cellId: cell.id,
+    //   cellType: cell.isNode() ? 'node' : 'edge',
+    //   hasActiveEffect: this.activeEffects.has(cell.id),
+    //   isSelected: this.isCellSelected(cell),
+    //   color: effectColor,
+    // });
 
     try {
       // Start simple fade-out animation from bright to transparent
@@ -160,12 +160,12 @@ export class VisualEffectsService {
     // Disable history for the entire animation lifecycle
     const historyWasDisabled = this._disableHistoryIfAvailable(graph);
 
-    this.logger.debugComponent('DfdVisualEffects', 'Starting fade animation', {
-      cellId: cell.id,
-      color,
-      startTime,
-      historyWasSuccessfullyDisabled: historyWasDisabled,
-    });
+    // this.logger.debugComponent('DfdVisualEffects', 'Starting fade animation', {
+    //   cellId: cell.id,
+    //   color,
+    //   startTime,
+    //   historyWasSuccessfullyDisabled: historyWasDisabled,
+    // });
 
     const activeEffect: ActiveEffect = {
       timer: null,
@@ -187,13 +187,13 @@ export class VisualEffectsService {
         // Re-enable history now that animation is complete
         this._enableHistoryIfAvailable(graph, historyWasDisabled);
 
-        this.logger.debugComponent(
-          'DfdVisualEffects',
-          'Creation highlight fade complete, history re-enabled',
-          {
-            cellId: cell.id,
-          },
-        );
+        // this.logger.debugComponent(
+        //   'DfdVisualEffects',
+        //   'Creation highlight fade complete, history re-enabled',
+        //   {
+        //     cellId: cell.id,
+        //   },
+        // );
         return;
       }
 
@@ -208,11 +208,11 @@ export class VisualEffectsService {
     };
 
     // Apply initial bright effect immediately (no delay)
-    this.logger.debugComponent('DfdVisualEffects', 'Applying initial bright effect', {
-      cellId: cell.id,
-      opacity: 0.9,
-      color,
-    });
+    // this.logger.debugComponent('DfdVisualEffects', 'Applying initial bright effect', {
+    //   cellId: cell.id,
+    //   opacity: 0.9,
+    //   color,
+    // });
     this.applyFadeEffectDirect(cell, 0.9, color);
 
     // Start the animation
@@ -235,12 +235,12 @@ export class VisualEffectsService {
       const nodeType = nodeTypeInfo?.type || 'unknown';
 
       // Log critical information for debugging
-      this.logger.info('[VisualEffects] Applying creation effect', {
-        cellId: cell.id,
-        nodeType,
-        opacity,
-        willApplyFilter: !DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity),
-      });
+      // this.logger.info('[VisualEffects] Applying creation effect', {
+      //   cellId: cell.id,
+      //   nodeType,
+      //   opacity,
+      //   willApplyFilter: !DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity),
+      // });
 
       if (nodeType === 'text-box') {
         if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
@@ -255,10 +255,10 @@ export class VisualEffectsService {
           const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
           cell.attr('text/filter', filterValue);
 
-          this.logger.info('[VisualEffects] Applied body fill then text filter to text-box', {
-            fillColor: fillColorString,
-            filterValue,
-          });
+          // this.logger.info('[VisualEffects] Applied body fill then text filter to text-box', {
+          //   fillColor: fillColorString,
+          //   filterValue,
+          // });
         }
       } else {
         if (DFD_STYLING_HELPERS.shouldUseNoneFilter(opacity)) {
@@ -266,10 +266,10 @@ export class VisualEffectsService {
         } else {
           const filterValue = DFD_STYLING_HELPERS.getCreationFilterWithColor(color, opacity);
           cell.attr('body/filter', filterValue);
-          this.logger.info('[VisualEffects] Applied body filter to node type', {
-            nodeType,
-            filterValue,
-          });
+          // this.logger.info('[VisualEffects] Applied body filter to node type', {
+          //   nodeType,
+          //   filterValue,
+          // });
         }
       }
     } else if (cell.isEdge()) {
@@ -286,9 +286,9 @@ export class VisualEffectsService {
    * Remove all visual effects from a cell
    */
   private removeAllEffectsFromCell(cell: Cell): void {
-    this.logger.debugComponent('DfdVisualEffects', 'Removing all effects from cell', {
-      cellId: cell.id,
-    });
+    // this.logger.debugComponent('DfdVisualEffects', 'Removing all effects from cell', {
+    //   cellId: cell.id,
+    // });
 
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -376,39 +376,34 @@ export class VisualEffectsService {
       }
     }
 
-    this.logger.debugComponent('DfdVisualEffects', 'Attempting to disable history', {
-      hasGraph: !!graph,
-      hasHistory: !!(graph && graph.history),
-      hasHistoryPlugin: !!historyPlugin,
-      hasDisableMethod: !!(historyPlugin && typeof historyPlugin.disable === 'function'),
-      graphType: graph ? graph.constructor.name : 'undefined',
-      historyType: historyPlugin ? historyPlugin.constructor.name : 'undefined',
-      hasGetPlugin: !!(graph && typeof graph.getPlugin === 'function'),
-      hasPlugins: !!(graph && graph.plugins),
-      pluginsType:
-        graph && graph.plugins
-          ? Array.isArray(graph.plugins)
-            ? 'array'
-            : typeof graph.plugins
-          : 'undefined',
-    });
+    // this.logger.debugComponent('DfdVisualEffects', 'Attempting to disable history', {
+    //   hasGraph: !!graph,
+    //   hasHistory: !!(graph && graph.history),
+    //   hasHistoryPlugin: !!historyPlugin,
+    //   hasDisableMethod: !!(historyPlugin && typeof historyPlugin.disable === 'function'),
+    //   graphType: graph ? graph.constructor.name : 'undefined',
+    //   historyType: historyPlugin ? historyPlugin.constructor.name : 'undefined',
+    //   hasGetPlugin: !!(graph && typeof graph.getPlugin === 'function'),
+    //   hasPlugins: !!(graph && graph.plugins),
+    //   pluginsType:
+    //     graph && graph.plugins
+    //       ? Array.isArray(graph.plugins)
+    //         ? 'array'
+    //         : typeof graph.plugins
+    //       : 'undefined',
+    // });
 
     if (historyPlugin && typeof historyPlugin.disable === 'function') {
       try {
         historyPlugin.disable();
-        this.logger.debugComponent(
-          'DfdVisualEffects',
-          'History tracking disabled for visual effects',
-        );
+        // this.logger.debugComponent(
+        //   'DfdVisualEffects',
+        //   'History tracking disabled for visual effects',
+        // );
         return true;
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to disable history tracking', { error });
       }
-    } else {
-      this.logger.debugComponent(
-        'DFD',
-        '[VisualEffects] History disable not available - history plugin may not be enabled yet',
-      );
     }
     return false;
   }
@@ -452,18 +447,13 @@ export class VisualEffectsService {
     if (historyPlugin && typeof historyPlugin.enable === 'function') {
       try {
         historyPlugin.enable();
-        this.logger.debugComponent(
-          'DfdVisualEffects',
-          'History tracking re-enabled after visual effects',
-        );
+        // this.logger.debugComponent(
+        //   'DfdVisualEffects',
+        //   'History tracking re-enabled after visual effects',
+        // );
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to re-enable history tracking', { error });
       }
-    } else {
-      this.logger.debugComponent(
-        'DFD',
-        '[VisualEffects] History enable not available - history plugin may not be enabled yet',
-      );
     }
   }
 }

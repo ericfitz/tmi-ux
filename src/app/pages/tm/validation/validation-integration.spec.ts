@@ -6,18 +6,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ThreatModelValidatorService } from './threat-model-validator.service';
 import { ValidationConfig } from './types';
+import { createMockLoggerService } from '../../../../testing/mocks/mock-logger.service';
 
 describe('ThreatModel Validation Integration', () => {
   let service: ThreatModelValidatorService;
   let mockLogger: any;
 
   beforeEach(() => {
-    mockLogger = {
-      debug: vi.fn(),
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createMockLoggerService();
 
     service = new ThreatModelValidatorService(mockLogger);
   });
@@ -360,6 +356,6 @@ describe('ThreatModel Validation Integration', () => {
     }
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
-    expect(mockLogger.debug).toHaveBeenCalled();
+    expect(mockLogger.debugComponent).toHaveBeenCalled();
   });
 });

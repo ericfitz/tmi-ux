@@ -57,6 +57,46 @@ expect(graph).to.haveNodeCount(3);
 
 The `mocks` directory contains mock services for testing in isolation. These services provide test doubles for application services, allowing tests to run without depending on external services.
 
+### Shared Mock Services
+
+The testing infrastructure provides standardized mocks for common Angular services to eliminate duplication across test files:
+
+- **LoggerService**: `createMockLoggerService()` / `createTypedMockLoggerService()`
+- **Router**: `createMockRouter()` / `createTypedMockRouter()`
+- **HttpClient**: `createMockHttpClient()` / `createTypedMockHttpClient()`
+
+Example of using shared mocks:
+
+```typescript
+import { 
+  createTypedMockLoggerService, 
+  createTypedMockRouter,
+  createTypedMockHttpClient
+} from '../../../testing/mocks';
+
+let logger: MockLoggerService;
+let router: MockRouter;
+let httpClient: MockHttpClient;
+
+beforeEach(() => {
+  logger = createTypedMockLoggerService();
+  router = createTypedMockRouter('/test-route');
+  httpClient = createTypedMockHttpClient({ success: true });
+});
+```
+
+You can also use the convenience factory functions:
+
+```typescript
+import { createCommonMocks, createTypedMocks } from '../../../testing/mocks';
+
+// For basic usage
+const mocks = createCommonMocks();
+
+// For typed access to mock functions
+const typedMocks = createTypedMocks();
+```
+
 ### Mock Auth Service
 
 The `mock-auth.service.ts` file contains a mock implementation of the authentication service. This service provides methods for simulating user authentication and authorization.

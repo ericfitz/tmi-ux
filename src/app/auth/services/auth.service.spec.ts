@@ -52,7 +52,6 @@ interface MockLoggerService {
   debugComponent: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
-  logInit: ReturnType<typeof vi.fn>;
 }
 
 interface MockRouter {
@@ -158,7 +157,6 @@ describe('AuthService', () => {
       debugComponent: vi.fn(),
       error: vi.fn(),
       warn: vi.fn(),
-      logInit: vi.fn(),
     };
 
     router = {
@@ -931,7 +929,7 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(loggerService.debug).toHaveBeenCalledWith('Server logout request completed');
+      expect(loggerService.debugComponent).toHaveBeenCalledWith('Auth', 'Server logout request completed');
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');

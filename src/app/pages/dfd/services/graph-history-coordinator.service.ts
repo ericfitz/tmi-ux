@@ -202,14 +202,14 @@ export class GraphHistoryCoordinator {
    * @param effect The visual effect operation to execute
    */
   executeVisualEffect(graph: Graph, effectName: string, effect: () => void): void {
-    this.loggerService.debug(`Executing visual effect: ${effectName}`);
+    // this.loggerService.debug(`Executing visual effect: ${effectName}`);
 
     // Disable history for visual effects
     this.x6HistoryManager.disable(graph);
 
     try {
       effect();
-      this.loggerService.debug(`Completed visual effect: ${effectName}`);
+      // this.loggerService.debug(`Completed visual effect: ${effectName}`);
     } catch (error) {
       this.loggerService.error(`Failed visual effect: ${effectName}`, {
         error: error instanceof Error ? error.message : String(error),

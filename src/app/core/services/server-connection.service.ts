@@ -121,7 +121,7 @@ export class ServerConnectionService implements OnDestroy {
         complete: () => {
           // Schedule next health check based on current status
           const nextDelay = this.getHealthCheckDelay();
-          this.logger.debug(
+          this.logger.debugComponent('ServerConnection',
             `Scheduling next health check in ${nextDelay}ms (backoff: ${this._currentBackoffDelay}ms)`,
           );
           this.scheduleNextHealthCheck(nextDelay);
@@ -139,7 +139,7 @@ export class ServerConnectionService implements OnDestroy {
     return this.http.get<{ status: { code: string; time: string } }>(statusEndpoint).pipe(
       map(response => {
         if (response.status?.code === 'OK') {
-          this.logger.debug('Server status check successful');
+          this.logger.debugComponent('ServerConnection', 'Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();

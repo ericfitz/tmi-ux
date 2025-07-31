@@ -28,7 +28,6 @@ interface MockLoggerService {
   debugComponent: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
-  logInit: ReturnType<typeof vi.fn>;
 }
 
 interface MockRouter {
@@ -65,7 +64,6 @@ describe('Authentication Integration', () => {
       debugComponent: vi.fn(),
       error: vi.fn(),
       warn: vi.fn(),
-      logInit: vi.fn(),
     };
 
     router = {

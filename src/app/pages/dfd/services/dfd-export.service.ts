@@ -37,7 +37,7 @@ export class DfdExportService {
         // Check if File System Access API is supported
         if ('showSaveFilePicker' in window) {
           try {
-            this.logger.debug('Using File System Access API for file save');
+            this.logger.debugComponent('DfdExport', 'Using File System Access API for file save');
             const fileHandle = await window.showSaveFilePicker({
               suggestedName: name,
               types: [
@@ -70,7 +70,7 @@ export class DfdExportService {
             }
           }
         } else {
-          this.logger.debug('File System Access API not supported, using fallback download method');
+          this.logger.debugComponent('DfdExport', 'File System Access API not supported, using fallback download method');
         }
 
         // Fallback method for unsupported browsers or API failures
@@ -215,7 +215,7 @@ export class DfdExportService {
     // Join parts and add extension
     const filename = `${filenameParts.join('-')}.${format}`;
 
-    this.logger.debug('Generated filename', {
+    this.logger.debugComponent('DfdExport', 'Generated filename', {
       threatModelName,
       diagramName,
       format,

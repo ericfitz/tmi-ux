@@ -24,7 +24,7 @@ import { LoggerService, LogLevel } from '../../core/services/logger.service';
 export class MyComponent {
   constructor(private logger: LoggerService) {
     // Different log levels
-    logger.debug('Detailed debugging information');
+    logger.debugComponent('MyComponent', 'Detailed debugging information');
     logger.info('Informational message');
     logger.warn('Warning message');
     logger.error('Error message');
@@ -32,22 +32,6 @@ export class MyComponent {
     // You can also include additional data
     logger.error('Failed to load user data', error);
 
-    // Variable initialization logging
-    this.count = logger.logInit('count', 0, 'MyComponent');
-
-    // Variable update logging
-    this.count = logger.logUpdate('count', this.count + 1, 'MyComponent.increment');
-
-    // Object initialization logging
-    this.user = logger.logInit(
-      'user',
-      {
-        id: 123,
-        name: 'John Doe',
-        roles: ['admin', 'user'],
-      },
-      'MyComponent',
-    );
   }
 }
 ```
@@ -104,33 +88,5 @@ import { LogLevel, LoggerService } from '../../core/services/logger.service';
 logger.setLogLevel(LogLevel.DEBUG); // Temporarily enable verbose logging
 ```
 
-### Variable Logging
-
-The logger provides special methods to log variable initialization and updates at the DEBUG level:
-
-```typescript
-// Initialize a variable with logging
-const count = logger.logInit('count', 0, 'MyComponent');
-
-// Update a variable with logging
-this.total = logger.logUpdate('total', this.total + count, 'MyComponent.calculate');
-```
-
-These methods are designed to be used inline with variable assignments, so they return the value being logged:
-
-```typescript
-// This logs the initialization and returns the value for assignment
-this.options = logger.logInit(
-  'options',
-  {
-    theme: 'dark',
-    showNotifications: true,
-    refreshInterval: 60,
-  },
-  'SettingsComponent',
-);
-```
-
-The optional source parameter helps identify where the variable is being set, which is especially useful in larger applications with many components.
 
 For complex objects, the logger will format the output with proper indentation and truncate it if it's too long to display.

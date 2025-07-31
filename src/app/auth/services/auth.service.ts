@@ -253,7 +253,7 @@ export class AuthService {
       // Get token once and use it for validation
       const token = this.getStoredToken();
       const isAuthenticated = this.isTokenValid(token);
-      this.logger.logInit('isAuthenticated', isAuthenticated, 'AuthService.checkAuthStatus');
+      this.logger.debugComponent('Auth', `Variable 'isAuthenticated' in AuthService.checkAuthStatus initialized to: ${isAuthenticated}`);
       this.isAuthenticatedSubject.next(isAuthenticated);
 
       // Load user profile if authenticated
@@ -261,7 +261,7 @@ export class AuthService {
         const storedProfile = localStorage.getItem(this.profileStorageKey);
         if (storedProfile) {
           const userProfile = JSON.parse(storedProfile) as UserProfile;
-          this.logger.logInit('userProfile', userProfile, 'AuthService.checkAuthStatus');
+          this.logger.debugComponent('Auth', `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`, userProfile);
           this.userProfileSubject.next(userProfile);
         }
       } else {
@@ -1031,7 +1031,7 @@ export class AuthService {
         )
         .subscribe({
           next: () => {
-            this.logger.debug('Server logout request completed');
+            this.logger.debugComponent('Auth', 'Server logout request completed');
           },
           error: () => {
             // This should not happen due to catchError, but handle it just in case

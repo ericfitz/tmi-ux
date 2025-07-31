@@ -247,7 +247,7 @@ export class ApiService {
       }
 
       // Log more details in debug mode
-      this.logger.debug('Full error response', error);
+      this.logger.debugComponent('Api', 'Full error response', error);
     }
 
     // Return an observable with a user-facing error message

@@ -14,6 +14,14 @@ import { LoggerService } from './logger.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
+import { 
+  createTypedMockLoggerService, 
+  createTypedMockRouter,
+  createTypedMockHttpClient,
+  type MockLoggerService,
+  type MockRouter,
+  type MockHttpClient
+} from '../../../testing/mocks';
 
 // Mock the environment module
 vi.mock('../../../environments/environment', () => ({
@@ -30,26 +38,13 @@ vi.mock('../../../environments/environment', () => ({
 import { environment } from '../../../environments/environment';
 
 // Mock interfaces for type safety
-interface MockLoggerService {
-  info: ReturnType<typeof vi.fn>;
-  debug: ReturnType<typeof vi.fn>;
-  debugComponent: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-}
-
-interface MockRouter {
-  navigate: ReturnType<typeof vi.fn>;
-  url: string;
-}
-
 interface MockAuthService {
   logout: ReturnType<typeof vi.fn>;
 }
 
 describe('ApiService', () => {
   let service: ApiService;
-  let httpClient: HttpClient;
+  let httpClient: MockHttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
   let authService: MockAuthService;
@@ -66,34 +61,17 @@ describe('ApiService', () => {
     vi.clearAllMocks();
 
     // Create mocks for dependencies
-    loggerService = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    };
-
-    router = {
-      navigate: vi.fn().mockResolvedValue(true),
-      url: '/current-route',
-    };
+    loggerService = createTypedMockLoggerService();
+    router = createTypedMockRouter('/current-route');
+    httpClient = createTypedMockHttpClient(mockSuccessResponse);
 
     authService = {
       logout: vi.fn(),
     };
 
-    // Create a properly typed mock for HttpClient
-    httpClient = {
-      get: vi.fn().mockReturnValue(of(mockSuccessResponse)),
-      post: vi.fn().mockReturnValue(of(mockSuccessResponse)),
-      put: vi.fn().mockReturnValue(of(mockSuccessResponse)),
-      delete: vi.fn().mockReturnValue(of(undefined)), // DELETE returns 204 No Content with no body
-    } as unknown as HttpClient;
-
     // Create the service directly with mocked dependencies
     service = new ApiService(
-      httpClient,
+      httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       router as unknown as Router,
       authService as unknown as AuthService,
@@ -359,7 +337,7 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: () => {
-          expect(loggerService.debug).toHaveBeenCalledWith('Full error response', serverError);
+          expect(loggerService.debugComponent).toHaveBeenCalledWith('Api', 'Full error response', serverError);
         },
       });
     });
