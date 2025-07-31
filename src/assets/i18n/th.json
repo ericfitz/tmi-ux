@@ -288,7 +288,16 @@
       "viewThreat": "ดูภัยคุกคาม"
     },
     "viewThreat": "ดูภัยคุกคาม",
-    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
+    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ",
+    "deleteConfirmationTitle": "ลบแบบจำลองภัยคุกคาม",
+    "deleteConfirmationMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบแบบจำลองภัยคุกคาม \"{{name}}\"?",
+    "deleteWarningPermanent": "การดำเนินการนี้ไม่สามารถยกเลิกได้และจะลบแผนภาพ ภัยคุกคาม และข้อมูลเมตาที่เกี่ยวข้องทั้งหมดอย่างถาวร",
+    "deleteWarningDownload": "พิจารณาดาวน์โหลดสำเนาไว้ในเครื่องก่อนเพื่อเก็บรักษางานของคุณ",
+    "deleteConfirm": "ลบแบบจำลองภัยคุกคาม",
+    "validation": {
+      "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
+      "required": "ช่องนี้จำเป็น"
+    }
   },
   "tos": {
     "contactInfo": {

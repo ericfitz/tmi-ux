@@ -223,7 +223,6 @@ export class JwtInterceptor implements HttpInterceptor {
   private redactSecrets(obj: Record<string, unknown>): Record<string, unknown> {
     const redacted = { ...obj };
     const sensitiveKeys = [
-      'authorization',
       'bearer',
       'token',
       'password',
@@ -238,15 +237,18 @@ export class JwtInterceptor implements HttpInterceptor {
 
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
-      const isHeader = key.toLowerCase() === 'authorization';
+      const isAuthorizationHeader = key.toLowerCase() === 'authorization';
 
-      // Check if this key contains sensitive information
-      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+      // Check if this key contains sensitive information or is the Authorization header
+      if (isAuthorizationHeader || sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
         if (typeof value === 'string' && value.length > 0) {
-          if (isHeader && value.startsWith('Bearer ')) {
+          if (isAuthorizationHeader && value.startsWith('Bearer ')) {
             // Special handling for Bearer tokens - show prefix but redact token
             const tokenPart = value.substring(7); // Remove 'Bearer '
             redacted[key] = `Bearer ${this.redactToken(tokenPart)}`;
+          } else if (isAuthorizationHeader) {
+            // Redact other Authorization header values
+            redacted[key] = this.redactToken(value);
           } else {
             redacted[key] = this.redactToken(value);
           }

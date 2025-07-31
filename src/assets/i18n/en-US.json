@@ -246,6 +246,7 @@
     "reportButton": "Report",
     "reportTooltip": "Report",
     "sourceCode": "Source Code",
+    "sourceCodeDescription": "Description",
     "sourceCodeDescriptionPlaceholder": "Describe the source code repository or its purpose",
     "sourceCodeName": "Source Code Name",
     "sourceCodeParameters": "Repository Parameters",
@@ -289,7 +290,11 @@
     "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
     "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
-    "deleteConfirm": "Delete Threat Model"
+    "deleteConfirm": "Delete Threat Model",
+    "validation": {
+      "maxLength": "Maximum length is {{max}} characters",
+      "required": "This field is required"
+    }
   },
   "tos": {
     "contactInfo": {

@@ -26,7 +26,9 @@
       "WebFetch(domain:x6.antv.vision)",
       "Bash(chmod:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "mcp__ide__executeCode",
+      "Bash(python:*)"
     ]
   },
   "enableAllProjectMcpServers": false

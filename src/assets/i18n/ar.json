@@ -249,6 +249,7 @@
     "reportButton": "تقرير",
     "reportTooltip": "تقرير",
     "sourceCode": "الكود المصدري",
+    "sourceCodeDescription": "الوصف",
     "sourceCodeDescriptionPlaceholder": "وصف مستودع الكود المصدري أو الغرض منه",
     "sourceCodeName": "اسم الكود المصدري",
     "sourceCodeParameters": "معاملات المستودع",
@@ -287,7 +288,16 @@
       "viewThreat": "عرض التهديد"
     },
     "viewThreat": "عرض التهديد",
-    "yourThreatModels": "نماذج التهديدات الخاصة بك"
+    "yourThreatModels": "نماذج التهديدات الخاصة بك",
+    "deleteConfirmationTitle": "حذف نموذج التهديد",
+    "deleteConfirmationMessage": "هل أنت متأكد من أنك تريد حذف نموذج التهديد \"{{name}}\"؟",
+    "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
+    "deleteWarningDownload": "فكر في تحميل نسخة محلية أولاً للحفاظ على عملك.",
+    "deleteConfirm": "حذف نموذج التهديد",
+    "validation": {
+      "maxLength": "الطول الأقصى هو {{max}} حرف",
+      "required": "هذا الحقل مطلوب"
+    }
   },
   "tos": {
     "contactInfo": {
