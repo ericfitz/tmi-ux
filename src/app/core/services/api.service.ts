@@ -144,7 +144,6 @@ export class ApiService {
   private redactSecrets(obj: Record<string, unknown>): Record<string, unknown> {
     const redacted = { ...obj };
     const sensitiveKeys = [
-      'authorization',
       'bearer',
       'token',
       'password',
@@ -159,18 +158,27 @@ export class ApiService {
 
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
-      const isHeader = key.toLowerCase() === 'authorization';
+      const isAuthorizationHeader = key.toLowerCase() === 'authorization';
 
-      // Check if this key contains sensitive information
-      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+      // Handle Authorization header specially (always redact)
+      if (isAuthorizationHeader) {
         if (typeof value === 'string' && value.length > 0) {
-          if (isHeader && value.startsWith('Bearer ')) {
+          if (value.startsWith('Bearer ')) {
             // Special handling for Bearer tokens - show prefix but redact token
             const tokenPart = value.substring(7); // Remove 'Bearer '
             redacted[key] = `Bearer ${this.redactToken(tokenPart)}`;
           } else {
+            // Redact other Authorization header values
             redacted[key] = this.redactToken(value);
           }
+        } else {
+          redacted[key] = '[REDACTED]';
+        }
+      }
+      // Check if the key contains other sensitive information (but not "authorization" in general)
+      else if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+        if (typeof value === 'string' && value.length > 0) {
+          redacted[key] = this.redactToken(value);
         } else {
           redacted[key] = '[REDACTED]';
         }
