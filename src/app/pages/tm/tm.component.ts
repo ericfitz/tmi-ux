@@ -188,8 +188,8 @@ export class TmComponent implements OnInit, OnDestroy {
         this.threatModelService.deleteThreatModel(id).subscribe({
           next: success => {
             if (success) {
-              // Refresh the threat model list from server
-              this.refreshThreatModelList();
+              // No need to manually refresh - the reactive subscription will update automatically
+              this.logger.debugComponent('TM', 'Threat model deleted successfully', { id, name: threatModel.name });
               
               // Show success message
               this.snackBar.open(

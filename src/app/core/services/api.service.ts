@@ -52,12 +52,11 @@ export class ApiService {
   get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
 
-    // Log the request details with component-specific debug logging
-    this.logApiRequest('GET', url, undefined, params);
+    // Request logging handled by JWT interceptor
 
     return this.http.get<T>(url, { params }).pipe(
       retry(1),
-      tap(response => this.logApiResponse('GET', url, response)),
+      // Response logging handled by JWT interceptor
       catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
     );
   }
@@ -70,11 +69,10 @@ export class ApiService {
   post<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
 
-    // Log the request details with component-specific debug logging
-    this.logApiRequest('POST', url, body);
+    // Request logging handled by JWT interceptor
 
     return this.http.post<T>(url, body).pipe(
-      tap(response => this.logApiResponse('POST', url, response)),
+      // Response logging handled by JWT interceptor
       catchError((error: HttpErrorResponse) => this.handleError(error, 'POST', endpoint)),
     );
   }
@@ -87,11 +85,10 @@ export class ApiService {
   put<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
 
-    // Log the request details with component-specific debug logging
-    this.logApiRequest('PUT', url, body);
+    // Request logging handled by JWT interceptor
 
     return this.http.put<T>(url, body).pipe(
-      tap(response => this.logApiResponse('PUT', url, response)),
+      // Response logging handled by JWT interceptor
       catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)),
     );
   }
@@ -103,11 +100,10 @@ export class ApiService {
   delete<T>(endpoint: string): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
 
-    // Log the request details with component-specific debug logging
-    this.logApiRequest('DELETE', url);
+    // Request logging handled by JWT interceptor
 
     return this.http.delete<T>(url).pipe(
-      tap(response => this.logApiResponse('DELETE', url, response)),
+      // Response logging handled by JWT interceptor
       catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)),
     );
   }

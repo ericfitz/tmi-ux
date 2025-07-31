@@ -108,6 +108,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
   private _subscriptions = new Subscription();
   private _autoSaveSubject = new Subject<void>();
+  private _isLoadingInitialData = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -198,9 +199,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this._autoSaveSubject
         .pipe(
           debounceTime(1000), // Wait 1 second after last change
-          distinctUntilChanged()
+          // Remove distinctUntilChanged() since we're emitting void values
         )
         .subscribe(() => {
+          this.logger.debugComponent('TmEdit', 'Auto-save debounce completed, calling performAutoSave');
           this.performAutoSave();
         })
     );
@@ -306,6 +308,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Disable auto-save during initial data loading
+    this._isLoadingInitialData = true;
+    
     this._subscriptions.add(
       this.threatModelService.getThreatModelById(id).subscribe(threatModel => {
         if (threatModel) {
@@ -325,6 +330,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           // Use diagrams directly as they are now Diagram objects
           this.diagrams = threatModel.diagrams || [];
+          
+          // Re-enable auto-save after initial population is complete
+          setTimeout(() => {
+            this._isLoadingInitialData = false;
+          }, 100);
         } else {
           // Handle case where threat model is not found
           this.isNewThreatModel = true;
@@ -361,6 +371,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           // Update framework control disabled state based on threats
           this.updateFrameworkControlState();
+          
+          // Re-enable auto-save after initial population is complete for new models
+          setTimeout(() => {
+            this._isLoadingInitialData = false;
+          }, 100);
         }
       }),
     );
@@ -1699,6 +1714,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * This will be debounced to prevent excessive API calls
    */
   private autoSaveThreatModel(): void {
+    this.logger.debugComponent('TmEdit', 'Auto-save triggered');
     this._autoSaveSubject.next();
   }
 
@@ -1707,12 +1723,30 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * This method is called after debouncing
    */
   private performAutoSave(): void {
-    if (!this.threatModel || this.threatModelForm.invalid || this.isNewThreatModel) {
+    this.logger.debugComponent('TmEdit', 'performAutoSave called', {
+      threatModelExists: !!this.threatModel,
+      formValid: this.threatModelForm.valid,
+      isNewThreatModel: this.isNewThreatModel,
+      isLoadingInitialData: this._isLoadingInitialData,
+      threatModelId: this.threatModel?.id
+    });
+
+    if (!this.threatModel || this.threatModelForm.invalid || this._isLoadingInitialData) {
+      this.logger.debugComponent('TmEdit', 'Auto-save skipped due to conditions', {
+        threatModelExists: !!this.threatModel,
+        formValid: this.threatModelForm.valid,
+        isLoadingInitialData: this._isLoadingInitialData
+      });
       return;
     }
 
     // Apply form changes to the threat model
     this.applyFormChangesToThreatModel();
+
+    this.logger.debugComponent('TmEdit', 'Calling threatModelService.updateThreatModel', {
+      threatModelId: this.threatModel.id,
+      name: this.threatModel.name,
+    });
 
     // Save to server
     this._subscriptions.add(

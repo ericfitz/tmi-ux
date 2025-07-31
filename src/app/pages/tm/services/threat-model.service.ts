@@ -94,19 +94,26 @@ export class ThreatModelService implements OnDestroy {
       return this._threatModelsSubject.asObservable();
     }
 
-    // In a real implementation, this would call the API
-    this.logger.debugComponent('ThreatModelService', 'Fetching threat models from API');
-    return this.apiService.get<ThreatModel[]>('threat_models').pipe(
-      tap(threatModels => {
-        // Update the subject with API data so subscribers get notified
-        this._threatModels = threatModels;
-        this._threatModelsSubject.next(threatModels);
-      }),
-      catchError(error => {
-        this.logger.error('Error fetching threat models', error);
-        return of([]);
-      }),
-    );
+    // For API mode, return reactive subject but fetch initial data if cache is empty
+    this.logger.debugComponent('ThreatModelService', 'API mode - checking if initial fetch needed');
+    if (this._threatModels.length === 0) {
+      this.logger.debugComponent('ThreatModelService', 'Cache empty, fetching threat models from API');
+      this.apiService.get<ThreatModel[]>('threat_models').pipe(
+        tap(threatModels => {
+          // Update the subject with API data so subscribers get notified
+          this._threatModels = threatModels;
+          this._threatModelsSubject.next(threatModels);
+        }),
+        catchError(error => {
+          this.logger.error('Error fetching threat models', error);
+          this._threatModelsSubject.next([]);
+          return of([]);
+        }),
+      ).subscribe();
+    }
+
+    // Always return the reactive subject for consistent behavior
+    return this._threatModelsSubject.asObservable();
   }
 
   /**

@@ -54,13 +54,13 @@ export class JwtInterceptor implements HttpInterceptor {
       // Get a valid token (with automatic refresh if needed)
       return this.authService.getValidToken().pipe(
         switchMap(token => {
-          this.logger.debugComponent('api', 'JWT Interceptor adding token to request', {
-            url: request.url,
-            method: request.method,
-            tokenLength: token.token?.length,
-            tokenPrefix: token.token?.substring(0, 20) + '...',
-            expiresAt: token.expiresAt.toISOString(),
-          });
+          // this.logger.debugComponent('api', 'JWT Interceptor adding token to request', {
+          //   url: request.url,
+          //   method: request.method,
+          //   tokenLength: token.token?.length,
+          //   tokenPrefix: token.token?.substring(0, 20) + '...',
+          //   expiresAt: token.expiresAt.toISOString(),
+          // });
           
           const tokenizedRequest = request.clone({
             setHeaders: {
