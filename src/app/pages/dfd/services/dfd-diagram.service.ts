@@ -148,6 +148,7 @@ export class DfdDiagramService {
     this.logger.info('Loading diagram cells in batch with history suppression', {
       cellCount: cells.length,
       diagramId,
+      cellTypes: cells.map(cell => ({ id: cell.id, shape: cell.shape }))
     });
 
     try {
@@ -176,53 +177,82 @@ export class DfdDiagramService {
         }
       });
 
+      this.logger.info('Starting atomic operation for diagram loading', {
+        nodeCount: nodes.length,
+        edgeCount: edges.length
+      });
+
       // Use history coordinator for atomic batch loading with history suppression
       this.historyCoordinator.executeAtomicOperation(
         graph,
         HISTORY_OPERATION_TYPES.DIAGRAM_LOAD,
         () => {
+          this.logger.info('Inside atomic operation - clearing existing cells');
           // Clear existing graph first
           graph.clearCells();
 
+          this.logger.info('Adding nodes to graph', { nodeCount: nodes.length });
           // Add nodes first, then edges (to ensure proper dependencies)
-          nodes.forEach(nodeConfig => {
+          nodes.forEach((nodeConfig, index) => {
             try {
+              this.logger.info(`Adding node ${index + 1}/${nodes.length}`, { 
+                nodeId: nodeConfig.id, 
+                shape: nodeConfig.shape 
+              });
+              
               // Convert X6 config to NodeInfo domain object
               const nodeInfo = this.convertX6ConfigToNodeInfo(nodeConfig);
+              
               // Use infrastructure service instead of direct X6 call
               const node = this.nodeService.createNodeFromInfo(graph, nodeInfo, {
                 ensureVisualRendering: true,
                 updatePortVisibility: false, // Will be handled in batch after all nodes/edges
                 suppressHistory: true, // Already in atomic operation
               });
+              
               // Apply zIndex after adding to ensure proper ordering
               if (nodeConfig.zIndex !== undefined) {
                 node.setZIndex(nodeConfig.zIndex);
               }
+              
+              this.logger.info(`Successfully added node ${nodeInfo.id}`);
             } catch (error) {
               this.logger.error('Error adding node during batch load', {
                 nodeId: nodeConfig.id,
+                nodeIndex: index,
                 error,
               });
             }
           });
 
-          edges.forEach(edgeConfig => {
+          this.logger.info('Adding edges to graph', { edgeCount: edges.length });
+          edges.forEach((edgeConfig, index) => {
             try {
+              this.logger.info(`Adding edge ${index + 1}/${edges.length}`, { 
+                edgeId: edgeConfig.id,
+                source: edgeConfig.source?.cell,
+                target: edgeConfig.target?.cell
+              });
+              
               // Convert X6 config to EdgeInfo domain object
               const edgeInfo = this.convertX6ConfigToEdgeInfo(edgeConfig);
+              
               // Use infrastructure service instead of direct X6 call
               const edge = this.edgeService.createEdge(graph, edgeInfo, {
                 ensureVisualRendering: true,
                 updatePortVisibility: false, // Will be handled in batch after all nodes/edges
               });
+              
               // Apply zIndex after adding to ensure proper ordering
               if (edgeConfig.zIndex !== undefined) {
                 edge.setZIndex(edgeConfig.zIndex);
               }
+              
+              this.logger.info(`Successfully added edge ${edgeInfo.id}`);
             } catch (error) {
               this.logger.error('Error adding edge during batch load', {
                 edgeId: edgeConfig.id,
+                edgeIndex: index,
                 sourceCell: edgeConfig.source?.cell,
                 targetCell: edgeConfig.target?.cell,
                 error,
@@ -246,6 +276,13 @@ export class DfdDiagramService {
         },
       );
 
+      this.logger.info('Atomic operation completed - checking graph state');
+      const graphCellsAfterLoad = graph.getCells();
+      this.logger.info('Graph state after atomic operation', { 
+        totalCellsInGraph: graphCellsAfterLoad.length,
+        cellIds: graphCellsAfterLoad.map(cell => cell.id)
+      });
+
       // Update port visibility after loading (as separate visual effect)
       this.historyCoordinator.executeVisualEffect(graph, 'diagram-load-port-visibility', () => {
         // Hide unconnected ports on all nodes
@@ -256,7 +293,9 @@ export class DfdDiagramService {
       // Fit the graph to show all content
       graph.centerContent();
 
-      this.logger.info('Successfully loaded diagram cells in batch');
+      this.logger.info('Successfully loaded diagram cells in batch - final graph state', {
+        finalCellCount: graph.getCells().length
+      });
     } catch (error) {
       this.logger.error('Error in batch loading diagram cells', error);
       throw error;

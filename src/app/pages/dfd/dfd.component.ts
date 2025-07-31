@@ -347,24 +347,43 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.logger.info('Loading diagram data', { diagramId, threatModelId: this.threatModelId });
+
     this._subscriptions.add(
       this.facade.loadDiagram(diagramId, this.threatModelId).subscribe({
         next: result => {
+          this.logger.info('Diagram data loaded', { 
+            success: result.success, 
+            hasDiagram: !!result.diagram,
+            diagramName: result.diagram?.name,
+            cellCount: result.diagram?.cells?.length || 0
+          });
+
           if (result.success && result.diagram) {
             this.diagramName = result.diagram.name;
 
             // Load the diagram cells into the graph if available
             if (result.diagram.cells && result.diagram.cells.length > 0) {
+              this.logger.info('Found diagram cells to load', { 
+                cellCount: result.diagram.cells.length,
+                isInitialized: this._isInitialized 
+              });
+
               if (this._isInitialized) {
+                this.logger.info('Graph is initialized - loading cells immediately');
                 this.loadDiagramCells(result.diagram.cells);
               } else {
+                this.logger.info('Graph not yet initialized - storing cells as pending');
                 // Store cells to load after graph is initialized
                 this.pendingDiagramCells = result.diagram.cells;
               }
+            } else {
+              this.logger.info('No diagram cells to load');
             }
 
             this.cdr.markForCheck();
           } else {
+            this.logger.warn('Diagram loading failed or diagram not found', result);
             // Handle diagram not found
             this.facade.closeDiagram(this.threatModelId, this.dfdId);
           }
@@ -390,27 +409,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Save diagram changes before destroying if possible
-    if (this.threatModelId && this.dfdId && this._isInitialized) {
-      const graph = this.x6GraphAdapter.getGraph();
-      if (graph) {
-        // Perform synchronous save attempt (best effort)
-        try {
-          this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-            next: success => {
-              if (success) {
-                this.logger.info('Diagram changes saved on component destroy');
-              }
-            },
-            error: error => {
-              this.logger.warn('Could not save diagram changes on component destroy', error);
-            },
-          });
-        } catch (error) {
-          this.logger.warn('Error attempting to save diagram changes on destroy', error);
-        }
-      }
-    }
+    // Skip saving on destroy since we already save manually in closeDiagram()
+    // This prevents overwriting with empty graph after disposal
+    this.logger.info('Skipping diagram save on destroy - manual save already performed in closeDiagram()');
 
     // Disconnect the mutation observer
     if (this._observer) {
@@ -510,8 +511,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Load any pending diagram cells
       if (this.pendingDiagramCells) {
+        this.logger.info('Loading pending diagram cells after graph initialization', { 
+          cellCount: this.pendingDiagramCells.length 
+        });
         this.loadDiagramCells(this.pendingDiagramCells);
         this.pendingDiagramCells = null;
+      } else {
+        this.logger.info('No pending diagram cells to load');
       }
 
       this.cdr.detectChanges();
@@ -531,7 +537,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      this.logger.info('Loading diagram cells into graph', { cellCount: cells.length });
+      this.logger.info('Loading diagram cells into graph', { 
+        cellCount: cells.length,
+        dfdId: this.dfdId,
+        cells: cells.map(cell => ({ id: cell.id, shape: cell.shape }))
+      });
 
       // Use the facade service to handle batch loading with proper history management
       this.facade.loadDiagramCellsBatch(
@@ -540,7 +550,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dfdId || 'default-diagram',
         this.nodeConfigurationService,
       );
+      
       this.logger.info('Successfully loaded diagram cells into graph');
+      
+      // Check if cells were actually added to the graph
+      const graphCells = graph.getCells();
+      this.logger.info('Graph state after loading', { 
+        totalCellsInGraph: graphCells.length,
+        cellIds: graphCells.map(cell => cell.id)
+      });
+      
       this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);
