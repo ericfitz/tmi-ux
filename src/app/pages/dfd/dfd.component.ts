@@ -248,26 +248,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this._previousCanUndo = canUndo;
           this._previousCanRedo = canRedo;
 
-          // Auto-save diagram when history changes
-          if (this._isInitialized && this.dfdId && this.threatModelId) {
-            const graph = this.x6GraphAdapter.getGraph();
-            if (graph) {
-              this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-                next: (success) => {
-                  if (success) {
-                    this.logger.info('Auto-saved diagram changes after history change');
-                  } else {
-                    this.logger.warn('Auto-save failed after history change');
-                  }
-                },
-                error: (error) => {
-                  this.logger.error('Error during auto-save after history change', error);
-                }
-              });
-            }
-          }
-
           this.cdr.markForCheck();
+        }
+      }),
+    );
+
+    // Subscribe to actual history modifications for auto-save
+    this._subscriptions.add(
+      this.x6GraphAdapter.historyModified$.subscribe(() => {
+        this.logger.info('DFD Component received history modification event');
+
+        // Auto-save diagram when history is actually modified
+        if (this._isInitialized && this.dfdId && this.threatModelId) {
+          const graph = this.x6GraphAdapter.getGraph();
+          if (graph) {
+            this.logger.info('Triggering auto-save after history modification', {
+              dfdId: this.dfdId,
+              threatModelId: this.threatModelId
+            });
+            this.autoSaveDiagram('History modified');
+          } else {
+            this.logger.warn('Cannot auto-save: graph not available');
+          }
+        } else {
+          this.logger.warn('Cannot auto-save: missing requirements', {
+            isInitialized: this._isInitialized,
+            dfdId: this.dfdId,
+            threatModelId: this.threatModelId
+          });
         }
       }),
     );

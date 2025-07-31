@@ -245,6 +245,13 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Observable for when history is actually modified (for auto-save)
+   */
+  get historyModified$(): Observable<void> {
+    return this._historyManager.historyModified$;
+  }
+
+  /**
    * Initialize the graph with the given container element
    */
   initialize(container: HTMLElement): void {

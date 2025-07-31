@@ -11,6 +11,7 @@ import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-consta
 @Injectable()
 export class X6HistoryManager {
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
+  private readonly _historyModified$ = new Subject<void>();
   private portStateManager: any = null;
 
   // Private properties to track previous undo/redo states
@@ -24,6 +25,13 @@ export class X6HistoryManager {
    */
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
     return this._historyChanged$.asObservable();
+  }
+
+  /**
+   * Observable for when history is actually modified (for auto-save)
+   */
+  get historyModified$(): Observable<void> {
+    return this._historyModified$.asObservable();
   }
 
   /**
@@ -51,7 +59,8 @@ export class X6HistoryManager {
     });
 
     graph.on('history:change', () => {
-      // this.logger.debugComponent('X6History', 'History change event fired');
+      this.logger.info('History change event fired - triggering auto-save');
+      this._historyModified$.next();
       this._emitHistoryStateChange(graph);
     });
 
@@ -305,7 +314,7 @@ export class X6HistoryManager {
     const canUndo = this.canUndo(graph);
     const canRedo = this.canRedo(graph);
 
-    // Only emit and log if the state has actually changed
+    // Only emit if the state has actually changed
     if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
       this._historyChanged$.next({ canUndo, canRedo });
       this.logger.debugComponent('X6History', 'History state changed', { canUndo, canRedo });
