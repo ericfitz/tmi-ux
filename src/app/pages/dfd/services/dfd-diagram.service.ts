@@ -461,7 +461,7 @@ export class DfdDiagramService {
 
     return NodeInfo.fromJSON({
       id: nodeConfig.id,
-      shape: this.mapShapeToNodeType(nodeConfig.shape),
+      shape: nodeConfig.shape as NodeType,
       x: nodeConfig.x,
       y: nodeConfig.y,
       width: nodeConfig.width,
@@ -583,7 +583,7 @@ export class DfdDiagramService {
           // Convert node to cell format
           const nodeCell = {
             id: cell.id,
-            shape: this.mapX6ShapeToNodeType(cell.shape),
+            shape: cell.shape,
             x: cell.position().x,
             y: cell.position().y,
             width: cell.size().width,
@@ -682,44 +682,4 @@ export class DfdDiagramService {
     return { _metadata: [] };
   }
 
-  /**
-   * Map X6 shape back to the original node type for saving
-   */
-  private mapX6ShapeToNodeType(shape: string): string {
-    // This maps X6 shapes back to the original node types used in the mock data
-    switch (shape) {
-      case 'rect':
-        return 'actor';
-      case 'ellipse':
-        return 'process';
-      case 'store':
-        return 'store';
-      case 'security-boundary':
-        return 'security-boundary';
-      case 'text-box':
-        return 'text-box';
-      default:
-        return 'actor'; // Fallback
-    }
-  }
-
-  /**
-   * Map X6 shape name back to NodeType for domain object creation
-   */
-  private mapShapeToNodeType(shape: string): NodeType {
-    switch (shape) {
-      case 'rect':
-        return 'actor'; // Default for rect shapes
-      case 'ellipse':
-        return 'process';
-      case 'store':
-        return 'store';
-      case 'security-boundary':
-        return 'security-boundary';
-      case 'text-box':
-        return 'text-box';
-      default:
-        return 'actor'; // Fallback
-    }
-  }
 }
