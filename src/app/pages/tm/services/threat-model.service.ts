@@ -454,14 +454,17 @@ export class ThreatModelService implements OnDestroy {
       'ThreatModelService',
       `Deleting threat model with ID: ${id} via API`,
     );
-    return this.apiService.delete<boolean>(`threat_models/${id}`).pipe(
-      tap(success => {
-        if (success) {
-          // Remove from local cache and notify subscribers
-          this._threatModels = this._threatModels.filter(tm => tm.id !== id);
-          this._threatModelsSubject.next([...this._threatModels]);
-        }
+    return this.apiService.delete<void>(`threat_models/${id}`).pipe(
+      tap(() => {
+        // Successful delete (204 No Content) - remove from local cache and notify subscribers
+        this._threatModels = this._threatModels.filter(tm => tm.id !== id);
+        this._threatModelsSubject.next([...this._threatModels]);
+        this.logger.debugComponent('ThreatModelService', 'Updated threat model list after API deletion', {
+          remainingCount: this._threatModels.length,
+          deletedId: id,
+        });
       }),
+      map(() => true), // Convert successful response to boolean true
       catchError(error => {
         this.logger.error(`Error deleting threat model with ID: ${id}`, error);
         throw error;

@@ -88,7 +88,7 @@ describe('ApiService', () => {
       get: vi.fn().mockReturnValue(of(mockSuccessResponse)),
       post: vi.fn().mockReturnValue(of(mockSuccessResponse)),
       put: vi.fn().mockReturnValue(of(mockSuccessResponse)),
-      delete: vi.fn().mockReturnValue(of(mockSuccessResponse)),
+      delete: vi.fn().mockReturnValue(of(undefined)), // DELETE returns 204 No Content with no body
     } as unknown as HttpClient;
 
     // Create the service directly with mocked dependencies
@@ -126,13 +126,7 @@ describe('ApiService', () => {
         expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
           params: undefined,
         });
-        expect(loggerService.debugComponent).toHaveBeenCalledWith(
-          'api',
-          'GET request details:',
-          expect.objectContaining({
-            url: `${environment.apiUrl}/${testEndpoint}`,
-          }),
-        );
+        // Logging is now handled by JWT interceptor
       });
     });
 
@@ -144,14 +138,7 @@ describe('ApiService', () => {
         expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
           params: testParams,
         });
-        expect(loggerService.debugComponent).toHaveBeenCalledWith(
-          'api',
-          'GET request details:',
-          expect.objectContaining({
-            url: `${environment.apiUrl}/${testEndpoint}`,
-            params: expect.objectContaining(testParams),
-          }),
-        );
+        // Logging is now handled by JWT interceptor
       });
     });
 
@@ -205,14 +192,7 @@ describe('ApiService', () => {
           `${environment.apiUrl}/${testEndpoint}`,
           testBody,
         );
-        expect(loggerService.debugComponent).toHaveBeenCalledWith(
-          'api',
-          'POST request details:',
-          expect.objectContaining({
-            url: `${environment.apiUrl}/${testEndpoint}`,
-            body: expect.objectContaining(testBody),
-          }),
-        );
+        // Logging is now handled by JWT interceptor
       });
     });
 
@@ -246,14 +226,7 @@ describe('ApiService', () => {
           `${environment.apiUrl}/${testEndpoint}`,
           testBody,
         );
-        expect(loggerService.debugComponent).toHaveBeenCalledWith(
-          'api',
-          'PUT request details:',
-          expect.objectContaining({
-            url: `${environment.apiUrl}/${testEndpoint}`,
-            body: expect.objectContaining(testBody),
-          }),
-        );
+        // Logging is now handled by JWT interceptor
       });
     });
 
@@ -279,18 +252,12 @@ describe('ApiService', () => {
 
   describe('DELETE Requests', () => {
     it('should make successful DELETE request', () => {
-      const result$ = service.delete<typeof mockSuccessResponse>(testEndpoint);
+      const result$ = service.delete<undefined>(testEndpoint);
 
       result$.subscribe(result => {
-        expect(result).toEqual(mockSuccessResponse);
+        expect(result).toBeUndefined(); // DELETE returns 204 No Content with no body
         expect(httpClient.delete).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`);
-        expect(loggerService.debugComponent).toHaveBeenCalledWith(
-          'api',
-          'DELETE request details:',
-          expect.objectContaining({
-            url: `${environment.apiUrl}/${testEndpoint}`,
-          }),
-        );
+        // Logging is now handled by JWT interceptor
       });
     });
 
@@ -303,7 +270,7 @@ describe('ApiService', () => {
 
       vi.mocked(httpClient.delete).mockReturnValue(throwError(() => errorResponse));
 
-      const result$ = service.delete<typeof mockSuccessResponse>(testEndpoint);
+      const result$ = service.delete<undefined>(testEndpoint);
 
       result$.subscribe({
         error: error => {
