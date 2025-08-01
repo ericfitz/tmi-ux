@@ -383,7 +383,7 @@ export class TmComponent implements OnInit, OnDestroy {
       });
 
       // Validate the threat model data
-      const validationResult = this.validator.validate(data as Partial<ThreatModel>);
+      const validationResult = this.validator.validate(data as unknown as ThreatModel);
       if (!validationResult.valid) {
         this.logger.error('Threat model validation failed', validationResult.errors);
         this.showError(

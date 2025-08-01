@@ -12,6 +12,7 @@ import { Threat } from '../../models/threat-model.model';
 import { ThreatEditorDialogComponent, ThreatEditorDialogData } from '../threat-editor-dialog/threat-editor-dialog.component';
 import { ThreatModelService } from '../../services/threat-model.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
+import { FrameworkModel } from '../../../../shared/models/framework.model';
 
 interface ThreatUpdateResult {
   name: string;
@@ -143,7 +144,7 @@ export class ThreatsDialogComponent implements OnInit {
   /**
    * Opens the threat editor dialog with the provided data
    */
-  private openThreatEditorDialog(threat: Threat, framework?: Record<string, unknown>): void {
+  private openThreatEditorDialog(threat: Threat, framework?: FrameworkModel): void {
     const dialogData: ThreatEditorDialogData = {
       threat: threat,
       threatModelId: this.data.threatModelId!,

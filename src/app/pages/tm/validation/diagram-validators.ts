@@ -68,14 +68,14 @@ export abstract class BaseDiagramValidator extends BaseValidator implements Diag
   }
 
   /**
-   * Perform diagram type-specific validation (to be implemented by subclasses)
-   */
-  protected abstract validateDiagramSpecific(diagram: Diagram, context: ValidationContext): void;
-
-  /**
    * Validate cells within the diagram (to be implemented by subclasses)
    */
   abstract validateCells(cells: Cell[], context: ValidationContext): ValidationError[];
+
+  /**
+   * Perform diagram type-specific validation (to be implemented by subclasses)
+   */
+  protected abstract validateDiagramSpecific(diagram: Diagram, context: ValidationContext): void;
 }
 
 /**

@@ -29,7 +29,7 @@ export default [
         allowExpressions: true
       }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/member-ordering': 'warn',
+      '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/unbound-method': ['warn', { ignoreStatic: true }],
       '@typescript-eslint/no-floating-promises': 'warn',

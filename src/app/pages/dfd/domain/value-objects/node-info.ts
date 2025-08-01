@@ -27,7 +27,7 @@ export class NodeInfo {
     public readonly visible: boolean = true,
     public readonly attrs: NodeAttrs = createDefaultNodeAttrs('process'),
     public readonly ports: PortConfiguration = createDefaultPortConfiguration('process'),
-    public readonly data: { _metadata: Metadata[]; [key: string]: any } = { _metadata: [] },
+    public readonly data: { [key: string]: any; _metadata: Metadata[] } = { _metadata: [] },
     public readonly angle: number = 0,
     public readonly parent?: string | null,
     public readonly markup?: MarkupElement[],
@@ -93,7 +93,7 @@ export class NodeInfo {
     visible?: boolean;
     angle?: number;
     parent?: string | null;
-    data?: { _metadata: Metadata[]; [key: string]: any };
+    data?: { [key: string]: any; _metadata: Metadata[] };
     metadata?: Record<string, string>; // Legacy field
     markup?: MarkupElement[];
     tools?: CellTool[];
@@ -651,7 +651,7 @@ export class NodeInfo {
     visible: boolean;
     attrs: NodeAttrs;
     ports: PortConfiguration;
-    data: { _metadata: Metadata[]; [key: string]: any };
+    data: { [key: string]: any; _metadata: Metadata[] };
     angle: number;
     parent?: string | null;
     markup?: MarkupElement[];
@@ -764,7 +764,7 @@ export class NodeInfo {
   /**
    * Checks if metadata arrays are equal
    */
-  private metadataEquals(other: { _metadata: Metadata[]; [key: string]: any }): boolean {
+  private metadataEquals(other: { [key: string]: any; _metadata: Metadata[] }): boolean {
     const thisMetadata = this.metadata;
     const otherMetadata = other._metadata || [];
 

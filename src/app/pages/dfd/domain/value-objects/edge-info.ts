@@ -21,7 +21,7 @@ export class EdgeInfo {
     public readonly attrs: EdgeAttrs = {},
     public readonly labels: EdgeLabel[] = [],
     public readonly vertices: Point[] = [],
-    public readonly data: { _metadata: Metadata[]; [key: string]: unknown } = { _metadata: [] },
+    public readonly data: { [key: string]: unknown; _metadata: Metadata[] } = { _metadata: [] },
     public readonly markup?: MarkupElement[],
     public readonly tools?: CellTool[],
     public readonly router?: EdgeRouter,
@@ -65,7 +65,7 @@ export class EdgeInfo {
     vertices?: Point[] | Array<{ x: number; y: number }>;
     zIndex?: number;
     visible?: boolean;
-    data?: { _metadata: Metadata[]; [key: string]: any };
+    data?: { [key: string]: any; _metadata: Metadata[] };
     metadata?: Record<string, string>; // Legacy field
     markup?: MarkupElement[];
     tools?: CellTool[];
@@ -629,7 +629,7 @@ export class EdgeInfo {
     attrs: EdgeAttrs;
     labels: EdgeLabel[];
     vertices: Point[];
-    data: { _metadata: Metadata[]; [key: string]: any };
+    data: { [key: string]: any; _metadata: Metadata[] };
     markup?: MarkupElement[];
     tools?: CellTool[];
     router?: EdgeRouter;
@@ -930,7 +930,7 @@ export class EdgeInfo {
   /**
    * Checks if metadata arrays are equal
    */
-  private metadataEquals(other: { _metadata: Metadata[]; [key: string]: any }): boolean {
+  private metadataEquals(other: { [key: string]: any; _metadata: Metadata[] }): boolean {
     const thisMetadata = this.metadata;
     const otherMetadata = other._metadata || [];
 
