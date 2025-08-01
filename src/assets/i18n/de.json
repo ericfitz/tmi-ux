@@ -67,6 +67,13 @@
     "metadataValue": "Wert",
     "mitigated": "Gemildert",
     "noMetadata": "Keine Metadaten verfügbar",
+    "objectTypes": {
+      "diagram": "Diagramm",
+      "document": "Dokument", 
+      "sourceCode": "Quellcode",
+      "threat": "Bedrohung",
+      "threatModel": "Bedrohungsmodell"
+    },
     "ok": "OK",
     "other": "Andere",
     "priority": "Priorität",

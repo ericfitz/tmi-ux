@@ -67,6 +67,13 @@
     "metadataValue": "Value",
     "mitigated": "Mitigated",
     "noMetadata": "No Metadata Available",
+    "objectTypes": {
+      "diagram": "Diagram",
+      "document": "Document", 
+      "sourceCode": "Source Code",
+      "threat": "Threat",
+      "threatModel": "Threat Model"
+    },
     "ok": "OK",
     "other": "Other",
     "priority": "Priority",

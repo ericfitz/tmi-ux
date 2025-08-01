@@ -67,6 +67,13 @@
     "metadataValue": "值",
     "mitigated": "已缓解",
     "noMetadata": "无可用元数据",
+    "objectTypes": {
+      "diagram": "图表",
+      "document": "文档", 
+      "sourceCode": "源代码",
+      "threat": "威胁",
+      "threatModel": "威胁模型"
+    },
     "ok": "确定",
     "other": "其他",
     "priority": "优先级",
@@ -96,12 +103,12 @@
   "editor": {
     "diagramPrefix": "图表:",
     "nodeLabels": {
-      "actor": "角色",
+      "actor": "外部实体",
       "node": "节点",
-      "process": "处理",
-      "securityBoundary": "安全边界",
+      "process": "处理过程",
+      "securityBoundary": "信任边界",
       "store": "数据存储",
-      "textbox": "文本"
+      "textbox": "文本框"
     },
     "pageTitle": "数据流图编辑器",
     "properties": {

@@ -331,6 +331,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Use diagrams directly as they are now Diagram objects
           this.diagrams = threatModel.diagrams || [];
           
+          // Update DIAGRAMS_BY_ID map with real diagram data
+          this.diagrams.forEach(diagram => {
+            DIAGRAMS_BY_ID.set(diagram.id, diagram);
+          });
+          
           // Re-enable auto-save after initial population is complete
           setTimeout(() => {
             this._isLoadingInitialData = false;
@@ -669,40 +674,51 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((newName: string | undefined) => {
         if (newName && this.threatModel) {
-          // Update the diagram name
-          const diagramToUpdate = DIAGRAMS_BY_ID.get(diagram.id);
-          if (diagramToUpdate) {
-            diagramToUpdate.name = newName;
-            diagramToUpdate.modified_at = new Date().toISOString();
+          // Create updated diagram object
+          const updatedDiagram: Diagram = {
+            ...diagram,
+            name: newName,
+            modified_at: new Date().toISOString()
+          };
 
-            // Update the diagram in the map
-            DIAGRAMS_BY_ID.set(diagram.id, diagramToUpdate);
+          // Update the diagram in the local array
+          const index = this.diagrams.findIndex(d => d.id === diagram.id);
+          if (index !== -1) {
+            this.diagrams[index] = updatedDiagram;
+            // Force change detection by creating a new array reference
+            this.diagrams = [...this.diagrams];
+          }
 
-            // Update the diagram in the local array
-            const index = this.diagrams.findIndex(d => d.id === diagram.id);
-            if (index !== -1) {
-              this.diagrams[index] = diagramToUpdate;
-              // Force change detection by creating a new array reference
-              this.diagrams = [...this.diagrams];
+          // Update the diagram in the threat model's diagrams array
+          if (this.threatModel.diagrams) {
+            const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === diagram.id);
+            if (tmIndex !== -1) {
+              this.threatModel.diagrams[tmIndex] = updatedDiagram;
             }
+          }
 
-            // Update the diagram in the threat model's diagrams array
-            if (this.threatModel.diagrams) {
-              const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === diagram.id);
-              if (tmIndex !== -1) {
-                this.threatModel.diagrams[tmIndex] = diagramToUpdate;
-              }
-            }
+          // Update the diagram in the map for backward compatibility
+          DIAGRAMS_BY_ID.set(diagram.id, updatedDiagram);
 
-            // Update the threat model
-            this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
+          // Update the threat model
+          this._subscriptions.add(
+            this.threatModelService.updateThreatModel(this.threatModel).subscribe({
+              next: result => {
                 if (result) {
                   this.threatModel = result;
+                  // Ensure the diagrams array is updated with the server response
+                  this.diagrams = [...(result.diagrams || [])];
+                  // Update the map with server response data
+                  this.diagrams.forEach(d => {
+                    DIAGRAMS_BY_ID.set(d.id, d);
+                  });
                 }
-              }),
-            );
-          }
+              },
+              error: error => {
+                this.logger.error('Failed to update threat model', error);
+              }
+            }),
+          );
         }
       }),
     );
@@ -1069,7 +1085,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: sourceCode.metadata || [],
       isReadOnly: false,
       objectType: 'SourceCode',
-      objectName: `SourceCode: ${sourceCode.name} (${sourceCode.id})`,
+      objectName: `${this.transloco.translate('common.objectTypes.sourceCode')}: ${sourceCode.name} (${sourceCode.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1122,7 +1138,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: document.metadata || [],
       isReadOnly: false,
       objectType: 'Document',
-      objectName: `Document: ${document.name} (${document.id})`,
+      objectName: `${this.transloco.translate('common.objectTypes.document')}: ${document.name} (${document.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1218,7 +1234,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: this.threatModel.metadata || [],
       isReadOnly: false, // You can add logic here to determine if user has edit permissions
       objectType: 'ThreatModel',
-      objectName: `ThreatModel: ${this.threatModel.name} (${this.threatModel.id})`,
+      objectName: `${this.transloco.translate('common.objectTypes.threatModel')}: ${this.threatModel.name} (${this.threatModel.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1259,7 +1275,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: diagram.metadata || [],
       isReadOnly: false,
       objectType: 'Diagram',
-      objectName: `Diagram: ${diagram.name} (${diagram.id})`,
+      objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1303,7 +1319,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: threat.metadata || [],
       isReadOnly: false,
       objectType: 'Threat',
-      objectName: `Threat: ${threat.name} (${threat.id})`,
+      objectName: `${this.transloco.translate('common.objectTypes.threat')}: ${threat.name} (${threat.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {

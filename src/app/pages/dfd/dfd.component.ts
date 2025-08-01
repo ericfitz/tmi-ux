@@ -35,7 +35,7 @@ import {
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -184,6 +184,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
     private nodeConfigurationService: NodeConfigurationService,
+    private translocoService: TranslocoService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -440,6 +441,35 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dispose the graph adapter
     this.x6GraphAdapter.dispose();
+  }
+
+  /**
+   * Get localized shape name from the raw shape string
+   */
+  private getLocalizedShapeName(rawShape: string): string {
+    // Map node type identifiers to localization keys
+    const shapeKeyMap: { [key: string]: string } = {
+      'actor': 'editor.nodeLabels.actor',
+      'process': 'editor.nodeLabels.process', 
+      'store': 'editor.nodeLabels.store',
+      'security-boundary': 'editor.nodeLabels.securityBoundary',
+      'text-box': 'editor.nodeLabels.textbox',
+      'textbox': 'editor.nodeLabels.textbox', // Alternative form
+      // Legacy support for display names (in case some places still use them)
+      'External Entity': 'editor.nodeLabels.actor',
+      'Process': 'editor.nodeLabels.process', 
+      'Data Store': 'editor.nodeLabels.store',
+      'Trust Boundary': 'editor.nodeLabels.securityBoundary',
+      'Text': 'editor.nodeLabels.textbox'
+    };
+
+    const localizationKey = shapeKeyMap[rawShape];
+    if (localizationKey) {
+      return this.translocoService.translate(localizationKey);
+    }
+    
+    // Fallback to raw shape name if no mapping found
+    return rawShape;
   }
 
   /**
@@ -865,13 +895,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const selectedCell = selectedCells[0];
     const cellShape = selectedCell.shape || 'unknown';
+    const localizedShapeName = this.getLocalizedShapeName(cellShape);
     const cellLabel = this.x6GraphAdapter.getCellLabel(selectedCell);
     const cellId = selectedCell.id;
     
     // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
     const objectName = cellLabel 
-      ? `${cellShape}: ${cellLabel} (${cellId})`
-      : `${cellShape}: (${cellId})`;
+      ? `${localizedShapeName}: ${cellLabel} (${cellId})`
+      : `${localizedShapeName}: (${cellId})`;
 
     // Load the threat model to get threats for this cell
     this._subscriptions.add(
@@ -963,13 +994,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Get cell information for friendly object naming (same as manage threats)
     const cellShape = cell.shape || 'unknown';
+    const localizedShapeName = this.getLocalizedShapeName(cellShape);
     const cellLabel = this.x6GraphAdapter.getCellLabel(cell);
     const cellId = cell.id;
     
     // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
     const objectName = cellLabel 
-      ? `${cellShape}: ${cellLabel} (${cellId})`
-      : `${cellShape}: (${cellId})`;
+      ? `${localizedShapeName}: ${cellLabel} (${cellId})`
+      : `${localizedShapeName}: (${cellId})`;
 
     const dialogData: MetadataDialogData = {
       metadata: metadataArray,

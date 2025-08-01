@@ -295,21 +295,6 @@ mat-card-header {
   }
 }
 
-.document-name-link {
-  color: #1976d2;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
-  max-width: 100%;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
 
 .document-actions {
   display: flex;
@@ -441,6 +426,65 @@ mat-card-header {
 
 // Custom tooltip styling for threat descriptions
 ::ng-deep .threat-description-tooltip {
+  max-width: 400px;
+  white-space: pre-line;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+// Styling for source code and document list layout
+.source-code-content,
+.document-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  overflow: hidden;
+
+  .source-code-name,
+  .document-name {
+    font-weight: 500;
+    color: rgb(0 0 0 / 87%);
+    cursor: pointer;
+    flex: 1; /* Take up available space */
+    min-width: 0; /* Allow flexbox to shrink if needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      color: #1976d2;
+    }
+  }
+
+  .source-code-url-icon,
+  .document-url-icon {
+    color: #1976d2;
+    text-decoration: none;
+    margin-left: 8px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      color: #1565c0;
+    }
+
+    &:visited {
+      color: #7b1fa2;
+    }
+  }
+}
+
+// Custom tooltip styling for source code and document descriptions
+::ng-deep .source-code-description-tooltip,
+::ng-deep .document-description-tooltip {
   max-width: 400px;
   white-space: pre-line;
   font-size: 12px;

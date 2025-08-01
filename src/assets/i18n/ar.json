@@ -67,6 +67,13 @@
     "metadataValue": "القيمة",
     "mitigated": "تم التخفيف",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
+    "objectTypes": {
+      "diagram": "مخطط",
+      "document": "وثيقة", 
+      "sourceCode": "كود المصدر",
+      "threat": "تهديد",
+      "threatModel": "نموذج التهديد"
+    },
     "ok": "موافق",
     "other": "أخرى",
     "priority": "الأولوية",

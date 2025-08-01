@@ -67,6 +67,13 @@
     "metadataValue": "ค่า",
     "mitigated": "ลดความรุนแรง",
     "noMetadata": "ไม่มีข้อมูลเมตา",
+    "objectTypes": {
+      "diagram": "แผนภาพ",
+      "document": "เอกสาร", 
+      "sourceCode": "โค้ดต้นฉบับ",
+      "threat": "ภัยคุกคาม",
+      "threatModel": "โมเดลภัยคุกคาม"
+    },
     "ok": "ตกลง",
     "other": "อื่นๆ",
     "priority": "ความสำคัญ",

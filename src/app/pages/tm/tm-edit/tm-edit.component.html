@@ -280,17 +280,26 @@
           <mat-list>
             <mat-list-item *ngFor="let document of threatModel.documents" class="document-item">
               <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
-              <div matListItemTitle>
+              <div matListItemTitle class="document-content">
+                <span
+                  class="document-name"
+                  [matTooltip]="document.description"
+                  matTooltipClass="document-description-tooltip"
+                  matTooltipPosition="above"
+                >
+                  {{ document.name }}
+                </span>
                 <a
+                  *ngIf="document.url && document.url.trim() !== ''"
                   [href]="document.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="document-name-link"
-                  [matTooltip]="getDocumentTooltip(document)"
+                  class="document-url-icon"
+                  (click)="$event.stopPropagation()"
+                  [matTooltip]="document.url"
                   matTooltipPosition="above"
-                  matTooltipClass="document-tooltip"
                 >
-                  {{ document.name }}
+                  <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
                 </a>
               </div>
               <div matListItemMeta class="document-actions">
@@ -347,18 +356,26 @@
               (click)="editSourceCode(sourceCode, $event)"
             >
               <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
-              <div matListItemTitle>
+              <div matListItemTitle class="source-code-content">
+                <span
+                  class="source-code-name"
+                  [matTooltip]="sourceCode.description"
+                  matTooltipClass="source-code-description-tooltip"
+                  matTooltipPosition="above"
+                >
+                  {{ sourceCode.name }}
+                </span>
                 <a
+                  *ngIf="sourceCode.url && sourceCode.url.trim() !== ''"
                   [href]="sourceCode.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="source-code-name-link"
-                  [matTooltip]="getSourceCodeTooltip(sourceCode)"
-                  matTooltipPosition="above"
-                  matTooltipClass="source-code-tooltip"
+                  class="source-code-url-icon"
                   (click)="$event.stopPropagation()"
+                  [matTooltip]="sourceCode.url"
+                  matTooltipPosition="above"
                 >
-                  {{ sourceCode.name }}
+                  <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
                 </a>
               </div>
               <div matListItemMeta class="source-code-actions">
