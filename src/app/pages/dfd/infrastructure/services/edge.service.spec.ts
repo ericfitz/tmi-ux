@@ -15,7 +15,7 @@ import { X6CoreOperationsService } from './x6-core-operations.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
-import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService only (cross-cutting concern)
 

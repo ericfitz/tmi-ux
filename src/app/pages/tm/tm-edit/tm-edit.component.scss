@@ -332,6 +332,14 @@ mat-card-header {
   }
 }
 
+// Source code and document URL icon styles (higher specificity - must come before mat-icon)
+.source-code-content .source-code-url-icon mat-icon,
+.document-content .document-url-icon mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
 // Styling for the new threat list layout
 .threat-list-item {
   .threat-content {
@@ -465,12 +473,6 @@ mat-card-header {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
 
     &:hover {
       color: #1565c0;

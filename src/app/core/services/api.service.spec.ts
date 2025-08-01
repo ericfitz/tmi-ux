@@ -13,7 +13,7 @@ import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { 
   createTypedMockLoggerService, 
   createTypedMockRouter,

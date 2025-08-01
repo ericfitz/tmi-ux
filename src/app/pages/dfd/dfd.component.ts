@@ -83,7 +83,7 @@ import {
   X6HistoryDialogComponent,
   X6HistoryDialogData,
 } from './components/x6-history-dialog/x6-history-dialog.component';
-import { Metadata, Threat } from '../tm/models/threat-model.model';
+import { Metadata } from '../tm/models/threat-model.model';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
