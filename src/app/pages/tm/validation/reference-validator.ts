@@ -5,7 +5,7 @@
 
 import { ReferenceValidator, ValidationError, ValidationContext } from './types';
 import { BaseValidator, ValidationUtils } from './base-validator';
-import { ThreatModel, Threat } from '../models/threat-model.model';
+import { ThreatModel, Threat, Metadata } from '../models/threat-model.model';
 import { Diagram } from '../models/diagram.model';
 
 /**
@@ -122,13 +122,13 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Validate threat references to diagrams and cells
    */
   private validateThreatReferences(
-    threatModel: any,
+    threatModel: ThreatModel,
     referenceMap: ReferenceMap,
     context: ValidationContext,
   ): void {
     if (!Array.isArray(threatModel.threats)) return;
 
-    threatModel.threats.forEach((threat: any, index: number) => {
+    threatModel.threats.forEach((threat: Threat, index: number) => {
       const threatPath = ValidationUtils.buildPath(
         ValidationUtils.buildPath(context.currentPath, 'threats'),
         index,
@@ -205,7 +205,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Validate document references (if any custom linking exists)
    */
   private validateDocumentReferences(
-    threatModel: any,
+    threatModel: ThreatModel,
     referenceMap: ReferenceMap,
     context: ValidationContext,
   ): void {
@@ -214,7 +214,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Check for any metadata that might reference other entities
     if (Array.isArray(threatModel.documents)) {
-      threatModel.documents.forEach((document: any, index: number) => {
+      threatModel.documents.forEach((document, index: number) => {
         if (Array.isArray(document?.metadata)) {
           const documentPath = ValidationUtils.buildPath(
             ValidationUtils.buildPath(context.currentPath, 'documents'),
@@ -235,13 +235,13 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Validate diagram internal references and consistency
    */
   private validateDiagramInternalReferences(
-    threatModel: any,
+    threatModel: ThreatModel,
     referenceMap: ReferenceMap,
     context: ValidationContext,
   ): void {
     if (!Array.isArray(threatModel.diagrams)) return;
 
-    threatModel.diagrams.forEach((diagram: any, index: number) => {
+    threatModel.diagrams.forEach((diagram: Diagram, index: number) => {
       const diagramPath = ValidationUtils.buildPath(
         ValidationUtils.buildPath(context.currentPath, 'diagrams'),
         index,
@@ -265,7 +265,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Validate cross-references between different entity types
    */
   private validateCrossReferences(
-    threatModel: any,
+    threatModel: ThreatModel,
     referenceMap: ReferenceMap,
     context: ValidationContext,
   ): void {
@@ -309,14 +309,14 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Validate metadata for potential references to other entities
    */
   private validateMetadataReferences(
-    metadata: any[],
+    metadata: Metadata[],
     referenceMap: ReferenceMap,
     basePath: string,
   ): void {
     // This method can be extended to validate metadata that contains
     // references to other entities (e.g., threat IDs, diagram IDs)
 
-    metadata.forEach((item: any, index: number) => {
+    metadata.forEach((item: Metadata, index: number) => {
       if (item?.key && item?.value) {
         const metadataPath = ValidationUtils.buildPath(basePath, index);
 
@@ -350,18 +350,18 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Check for threats that don't reference any diagram
    */
   private validateOrphanedThreats(
-    threatModel: any,
+    threatModel: ThreatModel,
     referenceMap: ReferenceMap,
     context: ValidationContext,
   ): void {
     if (!Array.isArray(threatModel.threats)) return;
 
     const orphanedThreats = threatModel.threats.filter(
-      (threat: any) => !threat?.diagram_id && referenceMap.diagramIds.size > 0,
+      (threat: Threat) => !threat?.diagram_id && referenceMap.diagramIds.size > 0,
     );
 
     if (orphanedThreats.length > 0) {
-      const threatNames = orphanedThreats.map((t: any) => t?.name || t?.id || 'unknown').join(', ');
+      const threatNames = orphanedThreats.map((t: Threat) => t?.name || t?.id || 'unknown').join(', ');
       this.addError(
         ValidationUtils.createError(
           'ORPHANED_THREATS',

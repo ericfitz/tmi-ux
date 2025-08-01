@@ -16,6 +16,8 @@ import { DiagramValidatorFactory } from './diagram-validators';
 import { InternalReferenceValidator } from './reference-validator';
 import { ValidationUtils } from './base-validator';
 import { LoggerService } from '../../../core/services/logger.service';
+import { ThreatModel } from '../models/threat-model.model';
+import { DiagramValidator } from './types';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +31,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Validate a complete ThreatModel object
    */
-  validate(threatModel: any, config: Partial<ValidationConfig> = {}): ValidationResult {
+  validate(threatModel: ThreatModel, config: Partial<ValidationConfig> = {}): ValidationResult {
     const startTime = Date.now();
     const validationConfig = { ...DEFAULT_VALIDATION_CONFIG, ...config };
 
@@ -120,7 +122,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    * Validate diagrams using type-specific validators
    */
   private validateDiagrams(
-    threatModel: any,
+    threatModel: ThreatModel,
     context: ValidationContext,
     config: ValidationConfig,
   ): ValidationResult['errors'] {
@@ -130,7 +132,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
       return errors;
     }
 
-    threatModel.diagrams.forEach((diagram: any, index: number) => {
+    threatModel.diagrams.forEach((diagram, index: number) => {
       const diagramPath = ValidationUtils.buildPath(
         ValidationUtils.buildPath(context.currentPath, 'diagrams'),
         index,
@@ -259,7 +261,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Validate just the schema (useful for quick validation)
    */
-  validateSchema(threatModel: any): ValidationResult {
+  validateSchema(threatModel: ThreatModel): ValidationResult {
     const startTime = Date.now();
     const context: ValidationContext = {
       object: threatModel,
@@ -285,7 +287,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Validate just the references (useful for incremental validation)
    */
-  validateReferences(threatModel: any): ValidationResult {
+  validateReferences(threatModel: ThreatModel): ValidationResult {
     const startTime = Date.now();
     const context: ValidationContext = {
       object: threatModel,
@@ -311,7 +313,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Register a custom diagram validator
    */
-  registerDiagramValidator(validator: any): void {
+  registerDiagramValidator(validator: DiagramValidator): void {
     DiagramValidatorFactory.registerValidator(validator);
     this.logger.debugComponent('ThreatModelValidator', 'Registered custom diagram validator', {
       diagramType: validator.diagramType,

@@ -5,6 +5,8 @@
 
 import { ValidationError, ValidationContext, FieldValidationRule } from './types';
 import { BaseValidator, ValidationUtils } from './base-validator';
+import { ThreatModel, Threat, Metadata, Authorization, Document } from '../models/threat-model.model';
+import { Diagram } from '../models/diagram.model';
 
 /**
  * Schema validator that validates ThreatModel objects against OpenAPI specification
@@ -99,7 +101,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate a ThreatModel object against the OpenAPI schema
    */
-  validateThreatModel(threatModel: any, context: ValidationContext): ValidationError[] {
+  validateThreatModel(threatModel: ThreatModel, context: ValidationContext): ValidationError[] {
     this.clearErrors();
 
     if (!threatModel || typeof threatModel !== 'object') {
@@ -129,7 +131,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate authorization array
    */
-  private validateAuthorizationArray(authorization: any, context: ValidationContext): void {
+  private validateAuthorizationArray(authorization: Authorization[] | undefined, context: ValidationContext): void {
     if (!authorization) return;
 
     if (!Array.isArray(authorization)) {
@@ -154,7 +156,7 @@ export class SchemaValidator extends BaseValidator {
     );
 
     // Additional validation: ensure at least one owner exists
-    const owners = authorization.filter((auth: any) => auth?.role === 'owner');
+    const owners = authorization.filter((auth: Authorization) => auth?.role === 'owner');
     if (owners.length === 0) {
       this.addError(
         ValidationUtils.createError(
@@ -170,7 +172,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate metadata array
    */
-  private validateMetadataArray(metadata: any, context: ValidationContext): void {
+  private validateMetadataArray(metadata: Metadata[] | undefined, context: ValidationContext): void {
     if (!metadata) return;
 
     if (!Array.isArray(metadata)) {
@@ -195,7 +197,7 @@ export class SchemaValidator extends BaseValidator {
     );
 
     // Check for duplicate keys
-    const keys = metadata.map((item: any) => item?.key).filter(Boolean);
+    const keys = metadata.map((item: Metadata) => item?.key).filter(Boolean);
     const duplicateKeys = keys.filter((key: string, index: number) => keys.indexOf(key) !== index);
     if (duplicateKeys.length > 0) {
       this.addError(
@@ -212,7 +214,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate documents array
    */
-  private validateDocumentArray(documents: any, context: ValidationContext): void {
+  private validateDocumentArray(documents: Document[] | undefined, context: ValidationContext): void {
     if (!documents) return;
 
     if (!Array.isArray(documents)) {
@@ -246,7 +248,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate threats array
    */
-  private validateThreatArray(threats: any, context: ValidationContext): void {
+  private validateThreatArray(threats: Threat[] | undefined, context: ValidationContext): void {
     if (!threats) return;
 
     if (!Array.isArray(threats)) {
@@ -296,7 +298,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate diagrams array
    */
-  private validateDiagramArray(diagrams: any, context: ValidationContext): void {
+  private validateDiagramArray(diagrams: Diagram[] | undefined, context: ValidationContext): void {
     if (!diagrams) return;
 
     if (!Array.isArray(diagrams)) {

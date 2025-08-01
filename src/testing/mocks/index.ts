@@ -39,7 +39,14 @@ export {
  * Factory function to create all commonly used mocks
  * Use this when you need multiple mocks in a single test file
  */
-export function createCommonMocks() {
+export function createCommonMocks(): {
+  logger: ReturnType<typeof createMockLoggerService>;
+  router: ReturnType<typeof createMockRouter>;
+  httpClient: ReturnType<typeof createMockHttpClient>;
+  auth: MockAuthService;
+  graph: MockGraphService;
+  websocket: MockWebSocketService;
+} {
   return {
     logger: createMockLoggerService(),
     router: createMockRouter(),
@@ -54,7 +61,11 @@ export function createCommonMocks() {
  * Factory function to create typed mocks
  * Use this when you need to access mock functions directly for assertions
  */
-export function createTypedMocks() {
+export function createTypedMocks(): {
+  logger: ReturnType<typeof createTypedMockLoggerService>;
+  router: ReturnType<typeof createMockRouter>;
+  httpClient: ReturnType<typeof createMockHttpClient>;
+} {
   return {
     logger: createTypedMockLoggerService(),
     router: createTypedMockRouter(),
