@@ -83,9 +83,6 @@ export abstract class BaseDiagramValidator extends BaseValidator implements Diag
  * Supports DFD-1.0.0 and future minor versions (1.0.x)
  */
 export class DfdDiagramValidator extends BaseDiagramValidator {
-  diagramType = 'DFD-1.0.0';
-  versionPattern = /^DFD-1\.0\.\d+$/;
-
   /**
    * Valid cell shapes for DFD diagrams
    */
@@ -98,10 +95,8 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     'edge',
   ];
 
-  protected validateDiagramSpecific(_diagram: Diagram, _context: ValidationContext): void {
-    // No additional validation needed for base DFD structure
-    // Future versions could add specific validation rules here
-  }
+  diagramType = 'DFD-1.0.0';
+  versionPattern = /^DFD-1\.0\.\d+$/;
 
   validateCells(cells: Cell[], context: ValidationContext): ValidationError[] {
     const errors: ValidationError[] = [];
@@ -125,6 +120,11 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     errors.push(...relationshipErrors);
 
     return errors;
+  }
+
+  protected validateDiagramSpecific(_diagram: Diagram, _context: ValidationContext): void {
+    // No additional validation needed for base DFD structure
+    // Future versions could add specific validation rules here
   }
 
   /**

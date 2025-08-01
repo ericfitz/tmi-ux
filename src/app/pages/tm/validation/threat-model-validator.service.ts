@@ -119,146 +119,6 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   }
 
   /**
-   * Validate diagrams using type-specific validators
-   */
-  private validateDiagrams(
-    threatModel: ThreatModel,
-    context: ValidationContext,
-    config: ValidationConfig,
-  ): ValidationResult['errors'] {
-    const errors: ValidationResult['errors'] = [];
-
-    if (!Array.isArray(threatModel?.diagrams)) {
-      return errors;
-    }
-
-    threatModel.diagrams.forEach((diagram, index: number) => {
-      const diagramPath = ValidationUtils.buildPath(
-        ValidationUtils.buildPath(context.currentPath, 'diagrams'),
-        index,
-      );
-
-      const diagramContext: ValidationContext = {
-        ...context,
-        currentPath: diagramPath,
-      };
-
-      // Get appropriate validator for diagram type
-      const validator = DiagramValidatorFactory.getValidator(diagram?.type);
-
-      if (!validator) {
-        // Check if we have custom validators for this type
-        const customValidator = config.diagramValidators.find(v =>
-          v.versionPattern.test(diagram?.type || ''),
-        );
-
-        if (customValidator) {
-          const diagramErrors = customValidator.validate(diagram, diagramContext);
-          errors.push(...diagramErrors);
-        } else {
-          errors.push(
-            ValidationUtils.createError(
-              'UNSUPPORTED_DIAGRAM_TYPE',
-              `No validator found for diagram type '${diagram?.type}'`,
-              ValidationUtils.buildPath(diagramPath, 'type'),
-              'warning',
-              {
-                diagramType: diagram?.type,
-                supportedTypes: DiagramValidatorFactory.getSupportedTypes(),
-              },
-            ),
-          );
-        }
-      } else {
-        const diagramErrors = validator.validate(diagram, diagramContext);
-        errors.push(...diagramErrors);
-      }
-    });
-
-    return errors;
-  }
-
-  /**
-   * Apply custom validation rules
-   */
-  private applyCustomRules(
-    threatModel: any,
-    context: ValidationContext,
-    config: ValidationConfig,
-  ): ValidationResult['errors'] {
-    const errors: ValidationResult['errors'] = [];
-
-    for (const rule of config.customRules) {
-      const value = this.getNestedValue(threatModel, rule.field);
-      const error = ValidationUtils.validateField(value, rule, context);
-      if (error) {
-        errors.push(error);
-      }
-    }
-
-    return errors;
-  }
-
-  /**
-   * Get nested value from object using dot notation
-   */
-  private getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((current, key) => {
-      if (current === null || current === undefined) return undefined;
-
-      const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
-      if (arrayMatch) {
-        const [, arrayKey, index] = arrayMatch;
-        const array = current[arrayKey];
-        return Array.isArray(array) ? array[parseInt(index, 10)] : undefined;
-      }
-
-      return current[key];
-    }, obj);
-  }
-
-  /**
-   * Categorize errors into errors and warnings
-   */
-  private categorizeErrors(
-    errors: ValidationResult['errors'],
-    allErrors: ValidationResult['errors'],
-    allWarnings: ValidationResult['warnings'],
-  ): void {
-    errors.forEach(error => {
-      if (error.severity === 'warning' || error.severity === 'info') {
-        allWarnings.push(error);
-      } else {
-        allErrors.push(error);
-      }
-    });
-  }
-
-  /**
-   * Build the final validation result
-   */
-  private buildResult(
-    valid: boolean,
-    errors: ValidationResult['errors'],
-    warnings: ValidationResult['warnings'],
-    startTime: number,
-    config: ValidationConfig,
-  ): ValidationResult {
-    const endTime = Date.now();
-
-    return {
-      valid,
-      errors,
-      warnings: config.includeWarnings ? warnings : [],
-      metadata: {
-        timestamp: new Date().toISOString(),
-        validatorVersion: '1.0.0',
-        duration: endTime - startTime,
-      },
-    };
-  }
-
-  /**
    * Validate just the schema (useful for quick validation)
    */
   validateSchema(threatModel: ThreatModel): ValidationResult {
@@ -326,5 +186,147 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    */
   getSupportedDiagramTypes(): string[] {
     return DiagramValidatorFactory.getSupportedTypes();
+  }
+
+  /**
+   * Validate diagrams using type-specific validators
+   */
+  private validateDiagrams(
+    threatModel: ThreatModel,
+    context: ValidationContext,
+    config: ValidationConfig,
+  ): ValidationResult['errors'] {
+    const errors: ValidationResult['errors'] = [];
+
+    if (!Array.isArray(threatModel?.diagrams)) {
+      return errors;
+    }
+
+    threatModel.diagrams.forEach((diagram, index: number) => {
+      const diagramPath = ValidationUtils.buildPath(
+        ValidationUtils.buildPath(context.currentPath, 'diagrams'),
+        index,
+      );
+
+      const diagramContext: ValidationContext = {
+        ...context,
+        currentPath: diagramPath,
+      };
+
+      // Get appropriate validator for diagram type
+      const validator = DiagramValidatorFactory.getValidator(diagram?.type);
+
+      if (!validator) {
+        // Check if we have custom validators for this type
+        const customValidator = config.diagramValidators.find(v =>
+          v.versionPattern.test(diagram?.type || ''),
+        );
+
+        if (customValidator) {
+          const diagramErrors = customValidator.validate(diagram, diagramContext);
+          errors.push(...diagramErrors);
+        } else {
+          errors.push(
+            ValidationUtils.createError(
+              'UNSUPPORTED_DIAGRAM_TYPE',
+              `No validator found for diagram type '${diagram?.type}'`,
+              ValidationUtils.buildPath(diagramPath, 'type'),
+              'warning',
+              {
+                diagramType: diagram?.type,
+                supportedTypes: DiagramValidatorFactory.getSupportedTypes(),
+              },
+            ),
+          );
+        }
+      } else {
+        const diagramErrors = validator.validate(diagram, diagramContext);
+        errors.push(...diagramErrors);
+      }
+    });
+
+    return errors;
+  }
+
+  /**
+   * Apply custom validation rules
+   */
+  private applyCustomRules(
+    threatModel: ThreatModel,
+    context: ValidationContext,
+    config: ValidationConfig,
+  ): ValidationResult['errors'] {
+    const errors: ValidationResult['errors'] = [];
+
+    for (const rule of config.customRules) {
+      const value = this.getNestedValue(threatModel, rule.field);
+      const error = ValidationUtils.validateField(value, rule, context);
+      if (error) {
+        errors.push(error);
+      }
+    }
+
+    return errors;
+  }
+
+  /**
+   * Get nested value from object using dot notation
+   */
+  private getNestedValue(obj: unknown, path: string): unknown {
+    return path.split('.').reduce((current: unknown, key: string) => {
+      if (current === null || current === undefined) return undefined;
+      if (typeof current !== 'object') return undefined;
+
+      const currentObj = current as Record<string, unknown>;
+      const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
+      if (arrayMatch) {
+        const [, arrayKey, index] = arrayMatch;
+        const array = currentObj[arrayKey];
+        return Array.isArray(array) ? array[parseInt(index, 10)] : undefined;
+      }
+
+      return currentObj[key];
+    }, obj);
+  }
+
+  /**
+   * Categorize errors into errors and warnings
+   */
+  private categorizeErrors(
+    errors: ValidationResult['errors'],
+    allErrors: ValidationResult['errors'],
+    allWarnings: ValidationResult['warnings'],
+  ): void {
+    errors.forEach(error => {
+      if (error.severity === 'warning' || error.severity === 'info') {
+        allWarnings.push(error);
+      } else {
+        allErrors.push(error);
+      }
+    });
+  }
+
+  /**
+   * Build the final validation result
+   */
+  private buildResult(
+    valid: boolean,
+    errors: ValidationResult['errors'],
+    warnings: ValidationResult['warnings'],
+    startTime: number,
+    config: ValidationConfig,
+  ): ValidationResult {
+    const endTime = Date.now();
+
+    return {
+      valid,
+      errors,
+      warnings: config.includeWarnings ? warnings : [],
+      metadata: {
+        timestamp: new Date().toISOString(),
+        validatorVersion: '1.0.0',
+        duration: endTime - startTime,
+      },
+    };
   }
 }

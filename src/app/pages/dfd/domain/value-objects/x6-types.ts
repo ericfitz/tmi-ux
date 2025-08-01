@@ -83,13 +83,13 @@ export type EdgeRouter =
   | {
       name: 'normal' | 'orth' | 'oneSide' | 'manhattan' | 'metro' | 'er';
       args?: {
+        [key: string]: any;
         /** Padding around obstacles for routing */
         padding?: number;
         /** Grid step size for orthogonal routing */
         step?: number;
         /** Allowed routing directions */
         directions?: ('top' | 'right' | 'bottom' | 'left')[];
-        [key: string]: any;
       };
     };
 
@@ -104,6 +104,7 @@ export type EdgeConnector =
   | {
       name: 'normal' | 'rounded' | 'smooth' | 'jumpover';
       args?: {
+        [key: string]: any;
         /** Radius for rounded connectors */
         radius?: number;
         /** Precision for smooth connectors */
@@ -112,6 +113,5 @@ export type EdgeConnector =
         size?: number;
         /** Jump style for jumpover connectors */
         jump?: 'arc' | 'gap' | 'cubic';
-        [key: string]: any;
       };
     };
