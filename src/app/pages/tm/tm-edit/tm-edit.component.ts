@@ -682,6 +682,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
             const index = this.diagrams.findIndex(d => d.id === diagram.id);
             if (index !== -1) {
               this.diagrams[index] = diagramToUpdate;
+              // Force change detection by creating a new array reference
+              this.diagrams = [...this.diagrams];
+            }
+
+            // Update the diagram in the threat model's diagrams array
+            if (this.threatModel.diagrams) {
+              const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === diagram.id);
+              if (tmIndex !== -1) {
+                this.threatModel.diagrams[tmIndex] = diagramToUpdate;
+              }
             }
 
             // Update the threat model
@@ -1059,7 +1069,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: sourceCode.metadata || [],
       isReadOnly: false,
       objectType: 'SourceCode',
-      objectName: sourceCode.name,
+      objectName: `SourceCode: ${sourceCode.name} (${sourceCode.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1112,7 +1122,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: document.metadata || [],
       isReadOnly: false,
       objectType: 'Document',
-      objectName: document.name,
+      objectName: `Document: ${document.name} (${document.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1208,7 +1218,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: this.threatModel.metadata || [],
       isReadOnly: false, // You can add logic here to determine if user has edit permissions
       objectType: 'ThreatModel',
-      objectName: this.threatModel.name,
+      objectName: `ThreatModel: ${this.threatModel.name} (${this.threatModel.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1249,7 +1259,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: diagram.metadata || [],
       isReadOnly: false,
       objectType: 'Diagram',
-      objectName: diagram.name,
+      objectName: `Diagram: ${diagram.name} (${diagram.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1293,7 +1303,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       metadata: threat.metadata || [],
       isReadOnly: false,
       objectType: 'Threat',
-      objectName: threat.name,
+      objectName: `Threat: ${threat.name} (${threat.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {

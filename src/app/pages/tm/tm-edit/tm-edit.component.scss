@@ -360,11 +360,12 @@ mat-card-header {
       font-weight: 500;
       color: rgb(0 0 0 / 87%);
       cursor: pointer;
-      flex-shrink: 0; /* Prevent name from shrinking too much */
-      max-width: 200px;
+      flex: 1; /* Take up available space */
+      min-width: 0; /* Allow flexbox to shrink if needed */
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      margin-left: 8px;
 
       &:hover {
         color: #1976d2;
@@ -372,10 +373,10 @@ mat-card-header {
     }
 
     .threat-severity {
-      padding: 2px 8px;
+      padding: 4px 8px;
       border-radius: 12px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
       flex-shrink: 0;
       width: 70px;
@@ -383,55 +384,51 @@ mat-card-header {
       display: inline-block;
 
       &.severity-critical {
-        background-color: #ffebee;
-        color: #c62828;
-        border: 1px solid #ef5350;
+        background-color: #d32f2f;
+        color: white;
       }
 
       &.severity-high {
-        background-color: #fff3e0;
-        color: #ef6c00;
-        border: 1px solid #ff9800;
+        background-color: #f57c00;
+        color: white;
       }
 
       &.severity-medium {
-        background-color: #fff8e1;
-        color: #f57f17;
-        border: 1px solid #ffb300;
+        background-color: #fbc02d;
+        color: #333;
       }
 
       &.severity-low {
-        background-color: #e8f5e8;
-        color: #2e7d32;
-        border: 1px solid #4caf50;
+        background-color: #689f38;
+        color: white;
       }
 
       &.severity-none {
-        background-color: #f5f5f5;
-        color: rgb(0 0 0 / 60%);
-        border: 1px solid #e0e0e0;
+        background-color: #9e9e9e;
+        color: white;
       }
 
       &.severity-unknown {
-        background-color: #f3e5f5;
-        color: #7b1fa2;
-        border: 1px solid #ba68c8;
+        background-color: #9e9e9e;
+        color: white;
       }
     }
 
-    .threat-issue-url {
+    .threat-issue-url-icon {
       color: #1976d2;
       text-decoration: none;
-      font-size: 14px;
-      margin-left: auto; /* Push to the right */
-      flex-shrink: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 200px;
+      margin-left: 8px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
 
       &:hover {
-        text-decoration: underline;
         color: #1565c0;
       }
 

@@ -416,7 +416,7 @@
               >skull</mat-icon
             >
             <div matListItemTitle class="threat-content">
-              <span class="threat-severity" [class]="'severity-' + threat.severity.toLowerCase()">
+              <span class="threat-severity" [ngClass]="'severity-' + threat.severity.toLowerCase()">
                 {{ threat.severity }}
               </span>
               <span
@@ -428,16 +428,16 @@
                 {{ threat.name }}
               </span>
               <a
-                *ngIf="threat.issue_url"
+                *ngIf="threat.issue_url && threat.issue_url !== 'n/a' && threat.issue_url.trim() !== ''"
                 [href]="threat.issue_url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="threat-issue-url"
+                class="threat-issue-url-icon"
                 (click)="$event.stopPropagation()"
                 [matTooltip]="threat.issue_url"
                 matTooltipPosition="above"
               >
-                {{ getTruncatedUrl(threat.issue_url) }}
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
               </a>
             </div>
             <div matListItemMeta>

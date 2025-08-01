@@ -961,14 +961,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    // Get the cell label using the utility function
-    const cellLabel = (cell as any).getLabel() || '';
+    // Get cell information for friendly object naming (same as manage threats)
+    const cellShape = cell.shape || 'unknown';
+    const cellLabel = this.x6GraphAdapter.getCellLabel(cell);
+    const cellId = cell.id;
+    
+    // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
+    const objectName = cellLabel 
+      ? `${cellShape}: ${cellLabel} (${cellId})`
+      : `${cellShape}: (${cellId})`;
 
     const dialogData: MetadataDialogData = {
       metadata: metadataArray,
       isReadOnly: false,
-      objectType: 'Cell',
-      objectName: cellLabel,
+      objectType: cellShape,
+      objectName: objectName,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
