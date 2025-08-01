@@ -42,6 +42,17 @@ import {
 } from '../models/auth.models';
 import { LocalOAuthProviderService } from './local-oauth-provider.service';
 
+interface JwtPayload {
+  sub?: string;
+  email?: string;
+  name?: string;
+  iat?: number;
+  exp?: number;
+  provider?: string;
+  aud?: string;
+  iss?: string;
+}
+
 /**
  * Service for handling authentication with the TMI server
  * Manages OAuth flow, JWT tokens, and user profiles
@@ -823,7 +834,7 @@ export class AuthService {
     try {
       // Parse the JWT payload to log token contents (without signature)
       const payload = token.token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload));
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
       this.logger.debugComponent('Auth', 'JWT token payload', {
         sub: decodedPayload.sub,
         email: decodedPayload.email,

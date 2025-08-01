@@ -88,7 +88,7 @@ export class JwtInterceptor implements HttpInterceptor {
               status: error.status,
               statusText: error.statusText,
               errorMessage: error.message,
-              serverErrorBody: error.error,
+              serverErrorBody: error.error as Record<string, unknown>,
               responseHeaders: error.headers?.keys()?.reduce((acc, key) => {
                 const value = error.headers.get(key);
                 if (value) {

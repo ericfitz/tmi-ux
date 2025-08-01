@@ -5,6 +5,8 @@
 
 import { ReferenceValidator, ValidationError, ValidationContext } from './types';
 import { BaseValidator, ValidationUtils } from './base-validator';
+import { ThreatModel, Threat } from '../models/threat-model.model';
+import { Diagram } from '../models/diagram.model';
 
 /**
  * Validates internal reference consistency within a ThreatModel
@@ -13,7 +15,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Validate that all references are consistent within the threat model
    */
-  validateReferences(threatModel: any, context: ValidationContext): ValidationError[] {
+  validateReferences(threatModel: ThreatModel, context: ValidationContext): ValidationError[] {
     this.clearErrors();
 
     if (!threatModel || typeof threatModel !== 'object') {
@@ -48,7 +50,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Build a map of all available references in the threat model
    */
-  private buildReferenceMap(threatModel: any, _context: ValidationContext): ReferenceMap {
+  private buildReferenceMap(threatModel: ThreatModel, _context: ValidationContext): ReferenceMap {
     const referenceMap: ReferenceMap = {
       threatModelId: threatModel.id,
       diagramIds: new Set(),
@@ -60,14 +62,14 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Collect diagram IDs and cell IDs
     if (Array.isArray(threatModel.diagrams)) {
-      threatModel.diagrams.forEach((diagram: any) => {
+      threatModel.diagrams.forEach((diagram: Diagram) => {
         if (diagram?.id) {
           referenceMap.diagramIds.add(diagram.id);
 
           // Collect cell IDs for this diagram
           if (Array.isArray(diagram.cells)) {
             const cellIds = new Set<string>();
-            diagram.cells.forEach((cell: any) => {
+            diagram.cells.forEach((cell) => {
               if (cell?.id) {
                 cellIds.add(cell.id);
               }
@@ -80,7 +82,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Collect document IDs
     if (Array.isArray(threatModel.documents)) {
-      threatModel.documents.forEach((document: any) => {
+      threatModel.documents.forEach((document) => {
         if (document?.id) {
           referenceMap.documentIds.add(document.id);
         }
@@ -89,7 +91,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Collect threat IDs
     if (Array.isArray(threatModel.threats)) {
-      threatModel.threats.forEach((threat: any) => {
+      threatModel.threats.forEach((threat: Threat) => {
         if (threat?.id) {
           referenceMap.threatIds.add(threat.id);
         }
@@ -98,7 +100,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Collect user IDs from authorization
     if (Array.isArray(threatModel.authorization)) {
-      threatModel.authorization.forEach((auth: any) => {
+      threatModel.authorization.forEach((auth) => {
         if (auth?.subject) {
           referenceMap.userIds.add(auth.subject);
         }

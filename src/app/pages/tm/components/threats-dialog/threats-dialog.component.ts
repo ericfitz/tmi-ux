@@ -13,6 +13,19 @@ import { ThreatEditorDialogComponent, ThreatEditorDialogData } from '../threat-e
 import { ThreatModelService } from '../../services/threat-model.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 
+interface ThreatUpdateResult {
+  name: string;
+  description: string;
+  severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+  threat_type: string;
+  score?: number;
+  priority?: string;
+  mitigated?: boolean;
+  status?: string;
+  issue_url?: string;
+  metadata?: Array<{ key: string; value: string }>;
+}
+
 export interface ThreatsDialogData {
   threats: Threat[];
   isReadOnly?: boolean;
@@ -130,7 +143,7 @@ export class ThreatsDialogComponent implements OnInit {
   /**
    * Opens the threat editor dialog with the provided data
    */
-  private openThreatEditorDialog(threat: Threat, framework?: any): void {
+  private openThreatEditorDialog(threat: Threat, framework?: Record<string, unknown>): void {
     const dialogData: ThreatEditorDialogData = {
       threat: threat,
       threatModelId: this.data.threatModelId!,
@@ -147,7 +160,7 @@ export class ThreatsDialogComponent implements OnInit {
       data: dialogData,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: ThreatUpdateResult | null) => {
       if (result) {
         this.logger.info('Threat editor closed with changes, updating threat');
         

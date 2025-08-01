@@ -5,6 +5,7 @@
 
 import { DiagramValidator, ValidationError, ValidationContext } from './types';
 import { BaseValidator, ValidationUtils } from './base-validator';
+import { Diagram, Cell } from '../models/diagram.model';
 
 /**
  * Abstract base class for diagram validators
@@ -16,7 +17,7 @@ export abstract class BaseDiagramValidator extends BaseValidator implements Diag
   /**
    * Validate a diagram object
    */
-  validate(diagram: any, context: ValidationContext): ValidationError[] {
+  validate(diagram: Diagram, context: ValidationContext): ValidationError[] {
     this.clearErrors();
 
     if (!diagram || typeof diagram !== 'object') {
@@ -69,12 +70,12 @@ export abstract class BaseDiagramValidator extends BaseValidator implements Diag
   /**
    * Perform diagram type-specific validation (to be implemented by subclasses)
    */
-  protected abstract validateDiagramSpecific(diagram: any, context: ValidationContext): void;
+  protected abstract validateDiagramSpecific(diagram: Diagram, context: ValidationContext): void;
 
   /**
    * Validate cells within the diagram (to be implemented by subclasses)
    */
-  abstract validateCells(cells: any[], context: ValidationContext): ValidationError[];
+  abstract validateCells(cells: Cell[], context: ValidationContext): ValidationError[];
 }
 
 /**
@@ -97,12 +98,12 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     'edge',
   ];
 
-  protected validateDiagramSpecific(_diagram: any, _context: ValidationContext): void {
+  protected validateDiagramSpecific(_diagram: Diagram, _context: ValidationContext): void {
     // No additional validation needed for base DFD structure
     // Future versions could add specific validation rules here
   }
 
-  validateCells(cells: any[], context: ValidationContext): ValidationError[] {
+  validateCells(cells: Cell[], context: ValidationContext): ValidationError[] {
     const errors: ValidationError[] = [];
 
     if (!Array.isArray(cells)) {
@@ -129,7 +130,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate a single DFD cell
    */
-  private validateDfdCell(cell: any, cellPath: string): ValidationError[] {
+  private validateDfdCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
     if (!cell || typeof cell !== 'object') {
@@ -192,7 +193,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate vertex cell properties
    */
-  private validateVertexCell(cell: any, cellPath: string): ValidationError[] {
+  private validateVertexCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
     // Validate geometry for vertices
@@ -238,7 +239,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate edge cell properties
    */
-  private validateEdgeCell(cell: any, cellPath: string): ValidationError[] {
+  private validateEdgeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
     // Edges should have source and target
@@ -281,7 +282,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate relationships between cells
    */
-  private validateCellRelationships(cells: any[], basePath: string): ValidationError[] {
+  private validateCellRelationships(cells: Cell[], basePath: string): ValidationError[] {
     const errors: ValidationError[] = [];
     const cellIds = new Set<string>();
     const duplicateIds: string[] = [];
