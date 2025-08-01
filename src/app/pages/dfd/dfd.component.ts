@@ -76,10 +76,14 @@ import {
   MetadataDialogData,
 } from '../tm/components/metadata-dialog/metadata-dialog.component';
 import {
+  ThreatsDialogComponent,
+  ThreatsDialogData,
+} from '../tm/components/threats-dialog/threats-dialog.component';
+import {
   X6HistoryDialogComponent,
   X6HistoryDialogData,
 } from './components/x6-history-dialog/x6-history-dialog.component';
-import { Metadata } from '../tm/models/threat-model.model';
+import { Metadata, Threat } from '../tm/models/threat-model.model';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -842,6 +846,93 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   openThreatEditor(): void {
     this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+  }
+
+  /**
+   * Manages threats for the selected cell
+   */
+  manageThreats(): void {
+    const selectedCells = this.x6GraphAdapter.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      this.logger.warn('Manage threats requires exactly one selected cell');
+      return;
+    }
+
+    if (!this.threatModelId) {
+      this.logger.warn('Cannot manage threats: No threat model ID available');
+      return;
+    }
+
+    const selectedCell = selectedCells[0];
+    const cellShape = selectedCell.shape || 'unknown';
+    const cellLabel = this.x6GraphAdapter.getCellLabel(selectedCell);
+    const cellId = selectedCell.id;
+    
+    // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
+    const objectName = cellLabel 
+      ? `${cellShape}: ${cellLabel} (${cellId})`
+      : `${cellShape}: (${cellId})`;
+
+    // Load the threat model to get threats for this cell
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
+      next: threatModel => {
+        if (!threatModel) {
+          this.logger.error('Threat model not found', { id: this.threatModelId });
+          return;
+        }
+
+        // Filter threats for this specific cell and diagram
+        const cellThreats = threatModel.threats?.filter(threat => 
+          threat.cell_id === cellId && threat.diagram_id === this.dfdId
+        ) || [];
+
+        this.logger.info('Found threats for cell', { 
+          cellId, 
+          diagramId: this.dfdId, 
+          threatCount: cellThreats.length 
+        });
+
+        const dialogData: ThreatsDialogData = {
+          threats: cellThreats,
+          isReadOnly: false, // Allow editing for now
+          objectType: cellShape,
+          objectName: objectName,
+          threatModelId: this.threatModelId || undefined,
+          diagramId: this.dfdId || undefined
+        };
+
+        const dialogRef = this.dialog.open(ThreatsDialogComponent, {
+          data: dialogData,
+          width: '800px',
+          maxWidth: '90vw',
+          maxHeight: '80vh',
+          disableClose: false
+        });
+
+        this._subscriptions.add(
+          dialogRef.afterClosed().subscribe(result => {
+            if (result?.action === 'openThreatEditor') {
+              this.logger.info('Opening threat editor from manage threats dialog');
+              // Open the threat editor for this specific cell
+              this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+            } else if (result?.action === 'threatUpdated') {
+              this.logger.info('Threat was updated from manage threats dialog', { 
+                threatId: result.threat?.id 
+              });
+              // Handle threat update - the threat editor already saved the changes
+              // We could reload the threat model or trigger other updates if needed
+            } else if (result) {
+              this.logger.info('Manage threats dialog closed with changes');
+              // Handle any other updates to threats if needed
+            }
+          })
+        );
+      },
+      error: error => {
+        this.logger.error('Failed to load threat model for manage threats', error);
+      }
+    }));
   }
 
   /**

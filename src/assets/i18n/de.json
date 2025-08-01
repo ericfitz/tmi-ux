@@ -58,7 +58,11 @@
     "issueUrl": "Problem-URL",
     "lastModified": "Zuletzt geändert",
     "lastModifiedDate": "Zuletzt geändert: {{date}}",
+    "manageMetadata": "Metadaten verwalten",
+    "manageThreats": "Bedrohungen verwalten",
     "metadata": "Metadaten",
+    "noThreats": "Keine Bedrohungen verfügbar",
+    "threats": "Bedrohungen",
     "metadataKey": "Schlüssel",
     "metadataValue": "Wert",
     "mitigated": "Gemildert",
@@ -222,7 +226,6 @@
     "editThreat": "Bedrohung bearbeiten",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "ID:",
-    "metadataButton": "Metadaten verwalten",
     "metadataDialog": {
       "objectTypes": {
         "Cell": "Zelle",

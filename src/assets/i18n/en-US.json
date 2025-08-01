@@ -58,7 +58,11 @@
     "issueUrl": "Issue URL",
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
+    "manageMetadata": "Manage Metadata",
+    "manageThreats": "Manage Threats",
     "metadata": "Metadata",
+    "noThreats": "No Threats Available",
+    "threats": "Threats",
     "metadataKey": "Key",
     "metadataValue": "Value",
     "mitigated": "Mitigated",
@@ -113,6 +117,7 @@
         "addStore": "Add Store",
         "addTextbox": "Add Text Box",
         "addThreat": "Add Threat",
+        "manageThreats": "Manage Threats",
         "deleteSelected": "Delete Selected",
         "export": "Export...",
         "redo": "Redo",
@@ -219,7 +224,6 @@
     "editThreat": "Edit Threat",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
-    "metadataButton": "Manage Metadata",
     "metadataDialog": {
       "objectTypes": {
         "Cell": "Cell",

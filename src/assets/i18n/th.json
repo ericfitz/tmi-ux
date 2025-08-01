@@ -58,7 +58,11 @@
     "issueUrl": "URL ปัญหา",
     "lastModified": "แก้ไขล่าสุด",
     "lastModifiedDate": "แก้ไขล่าสุด: {{date}}",
+    "manageMetadata": "จัดการข้อมูลเมตา",
+    "manageThreats": "จัดการภัยคุกคาม",
     "metadata": "ข้อมูลเมตา",
+    "noThreats": "ไม่มีภัยคุกคาม",
+    "threats": "ภัยคุกคาม",
     "metadataKey": "คีย์",
     "metadataValue": "ค่า",
     "mitigated": "ลดความรุนแรง",
@@ -222,7 +226,6 @@
     "editThreat": "แก้ไขภัยคุกคาม",
     "frameworkDisabledHint": "ไม่สามารถเปลี่ยนเฟรมเวิร์กได้เมื่อมีภัยคุกคามอยู่",
     "idLabel": "รหัส:",
-    "metadataButton": "จัดการข้อมูลเมตา",
     "metadataDialog": {
       "objectTypes": {
         "Cell": "เซลล์",

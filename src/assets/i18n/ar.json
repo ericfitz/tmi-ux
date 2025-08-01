@@ -58,7 +58,11 @@
     "issueUrl": "رابط المشكلة",
     "lastModified": "آخر تعديل",
     "lastModifiedDate": "آخر تعديل: {{date}}",
+    "manageMetadata": "إدارة البيانات الوصفية",
+    "manageThreats": "إدارة التهديدات",
     "metadata": "البيانات الوصفية",
+    "noThreats": "لا توجد تهديدات متاحة",
+    "threats": "التهديدات",
     "metadataKey": "المفتاح",
     "metadataValue": "القيمة",
     "mitigated": "تم التخفيف",
@@ -222,7 +226,6 @@
     "editThreat": "تحرير التهديد",
     "frameworkDisabledHint": "لا يمكن تغيير الإطار عند وجود تهديدات",
     "idLabel": "المعرف:",
-    "metadataButton": "إدارة البيانات الوصفية",
     "metadataDialog": {
       "objectTypes": {
         "Cell": "خلية",

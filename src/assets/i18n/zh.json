@@ -58,7 +58,11 @@
     "issueUrl": "问题URL",
     "lastModified": "最后修改",
     "lastModifiedDate": "最后修改：{{date}}",
+    "manageMetadata": "管理元数据",
+    "manageThreats": "管理威胁",
     "metadata": "元数据",
+    "noThreats": "无可用威胁",
+    "threats": "威胁",
     "metadataKey": "键",
     "metadataValue": "值",
     "mitigated": "已缓解",
@@ -222,7 +226,6 @@
     "editThreat": "编辑威胁",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
     "idLabel": "ID:",
-    "metadataButton": "管理元数据",
     "metadataDialog": {
       "objectTypes": {
         "Cell": "单元格",

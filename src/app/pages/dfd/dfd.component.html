@@ -116,7 +116,7 @@
         color="primary"
         [disabled]="!hasExactlyOneSelectedCell"
         (click)="manageMetadata()"
-        [matTooltip]="'common.metadata' | transloco"
+        [matTooltip]="'common.manageMetadata' | transloco"
       >
         <mat-icon>list</mat-icon>
       </button>
@@ -132,12 +132,44 @@
         (click)="openThreatEditor()"
         [matTooltip]="'editor.toolbar.tooltips.addThreat' | transloco"
       >
-        <mat-icon
-          fontSet="material-symbols-outlined"
-          fontWeight="100"
-          style="font-variation-settings: 'FILL' 0"
-          >skull</mat-icon
-        >
+        <div class="icon-overlay-container">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >skull</mat-icon
+          >
+          <mat-icon
+            class="overlay-icon"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >add</mat-icon
+          >
+        </div>
+      </button>
+
+      <button
+        mat-icon-button
+        [disabled]="!hasExactlyOneSelectedCell"
+        (click)="manageThreats()"
+        [matTooltip]="'editor.toolbar.tooltips.manageThreats' | transloco"
+      >
+        <div class="icon-overlay-container">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >skull</mat-icon
+          >
+          <mat-icon
+            class="overlay-icon"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >list</mat-icon
+          >
+        </div>
       </button>
 
       <button
