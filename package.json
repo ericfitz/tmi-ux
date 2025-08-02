@@ -45,7 +45,7 @@
     "validate-all": "pnpm run validate-json:i18n && pnpm run validate-jsonc:tsconfig && pnpm run unused-i18n",
     "sort-json": "uv run scripts/sort-json.py -y",
     "compare-json": "uv run scripts/sort-json.py -y",
-    "bump": "pnpm update && pnpm install"
+    "bump": "pnpm update --verbose && pnpm install --verbose"
   },
   "private": true,
   "dependencies": {
