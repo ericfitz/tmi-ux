@@ -1320,6 +1320,94 @@
         },
         "required": ["name", "id"]
       },
+      "TMListItem": {
+        "type": "object",
+        "description": "Enhanced item for threat model list endpoints with key metadata and counts",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the threat model (UUID)",
+            "maxLength": 36,
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the threat model",
+            "maxLength": 256
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the threat model",
+            "maxLength": 1024
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp (RFC3339)",
+            "maxLength": 24
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last modification timestamp (RFC3339)",
+            "maxLength": 24
+          },
+          "owner": {
+            "type": "string",
+            "description": "Username or identifier of the current owner"
+          },
+          "created_by": {
+            "type": "string",
+            "description": "Username or identifier of the creator",
+            "maxLength": 256
+          },
+          "threat_model_framework": {
+            "type": "string",
+            "enum": ["CIA", "STRIDE", "LINDDUN", "DIE", "PLOT4ai"],
+            "description": "The framework used for this threat model"
+          },
+          "issue_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to an issue in an issue tracking system",
+            "maxLength": 1024
+          },
+          "document_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of documents associated with this threat model"
+          },
+          "source_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of source code entries associated with this threat model"
+          },
+          "diagram_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of diagrams associated with this threat model"
+          },
+          "threat_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of threats defined in this threat model"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "modified_at",
+          "owner",
+          "created_by",
+          "threat_model_framework",
+          "document_count",
+          "source_count",
+          "diagram_count",
+          "threat_count"
+        ]
+      },
       "Point": {
         "type": "object",
         "description": "A 2D point with x and y coordinates",
@@ -2567,22 +2655,146 @@
       "post": {
         "tags": ["Authentication"],
         "summary": "Logout user",
-        "description": "Invalidates the user's JWT and ends the session",
+        "description": "Invalidates the user's JWT token by adding it to a blacklist, effectively ending the session. Once logged out, the token cannot be used for further authenticated requests until it naturally expires. The token blacklist is maintained in Redis with automatic cleanup based on token expiration times.",
         "operationId": "logoutUser",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "requestBody": {
+          "description": "Empty request body - token is provided via Authorization header",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "example": {}
+              }
+            }
+          }
+        },
         "responses": {
           "204": {
-            "description": "Session ended successfully"
+            "description": "User logged out successfully. The JWT token has been invalidated and added to the blacklist.",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Unique request identifier for tracking",
+                "schema": {
+                  "type": "string",
+                  "example": "req_abc123def456"
+                }
+              }
+            }
           },
           "401": {
-            "$ref": "#/components/responses/Error"
+            "description": "Authentication failed - invalid, missing, or malformed token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_token": {
+                    "summary": "Missing Authorization header",
+                    "value": {
+                      "error": "unauthorized",
+                      "error_description": "Missing Authorization header"
+                    }
+                  },
+                  "invalid_format": {
+                    "summary": "Invalid Authorization header format",
+                    "value": {
+                      "error": "unauthorized",
+                      "error_description": "Invalid Authorization header format"
+                    }
+                  },
+                  "malformed_token": {
+                    "summary": "Malformed JWT token",
+                    "value": {
+                      "error": "unauthorized",
+                      "error_description": "Invalid token format"
+                    }
+                  },
+                  "blacklisted_token": {
+                    "summary": "Token already blacklisted",
+                    "value": {
+                      "error": "unauthorized",
+                      "error_description": "Token has been revoked"
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/Error"
+            "description": "Internal server error - token blacklisting failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "blacklist_error": {
+                    "summary": "Failed to blacklist token",
+                    "value": {
+                      "error": "server_error",
+                      "error_description": "Failed to logout"
+                    }
+                  },
+                  "service_error": {
+                    "summary": "Authentication service error",
+                    "value": {
+                      "error": "server_error",
+                      "error_description": "Authentication service error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "examples": {
+          "successful_logout": {
+            "summary": "Successful logout with valid token",
+            "description": "A user successfully logs out with a valid JWT token",
+            "value": {
+              "request": {
+                "method": "POST",
+                "url": "/auth/logout",
+                "headers": {
+                  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNjkwMjIyNDAwLCJpYXQiOjE2OTAyMTg4MDB9.signature",
+                  "Content-Type": "application/json"
+                },
+                "body": "{}"
+              },
+              "response": {
+                "status": 204,
+                "body": ""
+              }
+            }
+          },
+          "logout_without_token": {
+            "summary": "Logout attempt without token",
+            "description": "Attempting to logout without providing an Authorization header",
+            "value": {
+              "request": {
+                "method": "POST",
+                "url": "/auth/logout",
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": "{}"
+              },
+              "response": {
+                "status": 401,
+                "body": {
+                  "error": "unauthorized",
+                  "error_description": "Missing Authorization header"
+                }
+              }
+            }
           }
         }
       }
@@ -2591,7 +2803,7 @@
       "get": {
         "tags": ["Threat Models"],
         "summary": "List threat models",
-        "description": "Returns a list of threat models accessible to the authenticated user as name-ID pairs",
+        "description": "Returns a list of threat models accessible to the authenticated user with enhanced metadata and entity counts",
         "security": [
           {
             "bearerAuth": []
@@ -2696,7 +2908,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Paginated list of threat models as name-ID pairs",
+            "description": "Paginated list of threat models with enhanced metadata and entity counts",
             "content": {
               "application/json": {
                 "schema": {
@@ -2709,7 +2921,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/ListItem"
+                            "$ref": "#/components/schemas/TMListItem"
                           }
                         }
                       }
@@ -2719,8 +2931,19 @@
                 "example": {
                   "data": [
                     {
+                      "id": "550e8400-e29b-41d4-a716-446655440000",
                       "name": "System Threat Model",
-                      "id": "550e8400-e29b-41d4-a716-446655440000"
+                      "description": "Comprehensive threat model for our web application system",
+                      "created_at": "2025-04-06T12:00:00Z",
+                      "modified_at": "2025-04-06T14:30:00Z",
+                      "owner": "user@example.com",
+                      "created_by": "admin@example.com",
+                      "threat_model_framework": "STRIDE",
+                      "issue_url": "https://github.com/example/issues/123",
+                      "document_count": 3,
+                      "source_count": 2,
+                      "diagram_count": 1,
+                      "threat_count": 15
                     }
                   ],
                   "pagination": {
