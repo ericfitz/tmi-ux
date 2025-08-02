@@ -1792,6 +1792,46 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "authorizationError": {
+                "summary": "Insufficient permissions for sub-resource access",
+                "value": {
+                  "error": "access_denied",
+                  "error_description": "User does not have sufficient permissions to access this sub-resource",
+                  "details": {
+                    "required_role": "writer",
+                    "user_role": "reader",
+                    "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "resource_type": "threat"
+                  }
+                }
+              },
+              "notFoundError": {
+                "summary": "Sub-resource not found",
+                "value": {
+                  "error": "not_found",
+                  "error_description": "The requested sub-resource does not exist or does not belong to the specified threat model",
+                  "details": {
+                    "resource_id": "550e8400-e29b-41d4-a716-446655440999",
+                    "resource_type": "document",
+                    "threat_model_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              },
+              "validationError": {
+                "summary": "Invalid input data",
+                "value": {
+                  "error": "invalid_input",
+                  "error_description": "The provided data does not meet validation requirements",
+                  "details": {
+                    "field_errors": [
+                      {"field": "name", "message": "Name is required and cannot be empty"},
+                      {"field": "url", "message": "URL must be a valid HTTP/HTTPS URL"}
+                    ]
+                  }
+                }
+              }
             }
           }
         }
@@ -4047,6 +4087,826 @@
           "response": {
             "status": 204
           }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/threats": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "List threats in a threat model",
+        "description": "Returns a paginated list of threats within the specified threat model",
+        "operationId": "getThreatModelThreats",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+            "description": "Maximum number of threats to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {"type": "integer", "minimum": 0, "default": 0},
+            "description": "Number of threats to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of threats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "threats": {"type": "array", "items": {"$ref": "#/components/schemas/Threat"}},
+                    "total_count": {"type": "integer", "description": "Total number of threats in the threat model"}
+                  },
+                  "required": ["threats", "total_count"]
+                },
+                "examples": {
+                  "threatList": {
+                    "summary": "List of threats with metadata",
+                    "value": {
+                      "threats": [
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440003",
+                          "name": "SQL Injection Vulnerability",
+                          "description": "Database injection through malicious SQL queries",
+                          "severity": "High",
+                          "priority": "urgent", 
+                          "status": "active",
+                          "mitigated": false,
+                          "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+                          "created_at": "2025-01-15T10:30:00Z",
+                          "modified_at": "2025-01-15T14:45:00Z",
+                          "metadata": [
+                            {"key": "category", "value": "data_validation"},
+                            {"key": "owasp_top_10", "value": "A03"},
+                            {"key": "assigned_to", "value": "security-team"}
+                          ]
+                        },
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440004",
+                          "name": "Cross-Site Scripting (XSS)",
+                          "description": "Client-side script injection vulnerability",
+                          "severity": "Medium",
+                          "priority": "medium",
+                          "status": "identified",
+                          "mitigated": false,
+                          "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+                          "created_at": "2025-01-15T11:00:00Z",
+                          "modified_at": "2025-01-15T11:00:00Z",
+                          "metadata": [
+                            {"key": "category", "value": "input_validation"},
+                            {"key": "owasp_top_10", "value": "A07"}
+                          ]
+                        }
+                      ],
+                      "total_count": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create a new threat",
+        "description": "Creates a new threat within the specified threat model",
+        "operationId": "createThreatModelThreat",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Threat"}}}
+        },
+        "responses": {
+          "201": {
+            "description": "Threat created successfully",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Threat"}}}
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/threats/{threat_id}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get a specific threat",
+        "description": "Returns details of a specific threat within the threat model",
+        "operationId": "getThreatModelThreat",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Threat details",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Threat"}}}
+          },
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update a threat",
+        "description": "Updates a specific threat within the threat model",
+        "operationId": "updateThreatModelThreat",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Threat"}}}
+        },
+        "responses": {
+          "200": {
+            "description": "Threat updated successfully",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Threat"}}}
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "patch": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Partially update a threat",
+        "description": "Applies JSON patch operations to a specific threat within the threat model",
+        "operationId": "patchThreatModelThreat",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "op": {"type": "string", "enum": ["add", "remove", "replace", "move", "copy", "test"]},
+                    "path": {"type": "string"},
+                    "value": {},
+                    "from": {"type": "string"}
+                  },
+                  "required": ["op", "path"]
+                }
+              },
+              "examples": {
+                "updateThreatDetails": {
+                  "summary": "Update threat name and severity",
+                  "value": [
+                    {"op": "replace", "path": "/name", "value": "Updated SQL Injection Threat"},
+                    {"op": "replace", "path": "/severity", "value": "Critical"},
+                    {"op": "replace", "path": "/description", "value": "Updated description with more details"}
+                  ]
+                },
+                "addMetadata": {
+                  "summary": "Add metadata to a threat", 
+                  "value": [
+                    {"op": "add", "path": "/metadata/-", "value": {"key": "priority", "value": "urgent"}},
+                    {"op": "add", "path": "/metadata/-", "value": {"key": "assigned_to", "value": "security-team"}}
+                  ]
+                },
+                "updateStatus": {
+                  "summary": "Update threat status and mitigation",
+                  "value": [
+                    {"op": "replace", "path": "/status", "value": "mitigated"},
+                    {"op": "replace", "path": "/mitigated", "value": true},
+                    {"op": "replace", "path": "/mitigation", "value": "Implemented input validation and parameterized queries"}
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Threat patched successfully",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Threat"},
+                "examples": {
+                  "patchedThreat": {
+                    "summary": "Successfully patched threat with updated fields",
+                    "value": {
+                      "id": "550e8400-e29b-41d4-a716-446655440003",
+                      "name": "Updated SQL Injection Threat",
+                      "description": "Updated description with more details",
+                      "severity": "Critical",
+                      "priority": "urgent",
+                      "status": "active",
+                      "mitigated": false,
+                      "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
+                      "created_at": "2025-01-15T10:30:00Z",
+                      "modified_at": "2025-01-15T14:45:00Z",
+                      "metadata": [
+                        {"key": "priority", "value": "urgent"},
+                        {"key": "assigned_to", "value": "security-team"},
+                        {"key": "cve_reference", "value": "CVE-2024-1234"}
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete a threat",
+        "description": "Deletes a specific threat from the threat model",
+        "operationId": "deleteThreatModelThreat",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "responses": {
+          "204": {"description": "Threat deleted successfully"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/documents": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "List documents in a threat model",
+        "description": "Returns a paginated list of documents within the specified threat model",
+        "operationId": "getThreatModelDocuments",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+            "description": "Maximum number of documents to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {"type": "integer", "minimum": 0, "default": 0},
+            "description": "Number of documents to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "documents": {"type": "array", "items": {"$ref": "#/components/schemas/Document"}},
+                    "total_count": {"type": "integer", "description": "Total number of documents in the threat model"}
+                  },
+                  "required": ["documents", "total_count"]
+                },
+                "examples": {
+                  "documentList": {
+                    "summary": "List of documents with pagination",
+                    "value": {
+                      "documents": [
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440001",
+                          "name": "Security Requirements Document",
+                          "url": "https://docs.company.com/security-requirements.pdf", 
+                          "description": "Detailed security requirements and compliance standards",
+                          "metadata": [
+                            {"key": "classification", "value": "internal"},
+                            {"key": "version", "value": "1.2"}
+                          ]
+                        },
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440002",
+                          "name": "Architecture Design Document",
+                          "url": "https://docs.company.com/architecture-design.pdf",
+                          "description": "System architecture and design specifications", 
+                          "metadata": [
+                            {"key": "classification", "value": "internal"},
+                            {"key": "version", "value": "2.0"}
+                          ]
+                        }
+                      ],
+                      "total_count": 5
+                    }
+                  },
+                  "emptyList": {
+                    "summary": "Empty document list",
+                    "value": {
+                      "documents": [],
+                      "total_count": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create a new document",
+        "description": "Creates a new document within the specified threat model",
+        "operationId": "createThreatModelDocument",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/Document"},
+              "examples": {
+                "createDocument": {
+                  "summary": "Create a new security document",
+                  "value": {
+                    "name": "Security Requirements Document",
+                    "url": "https://docs.company.com/security-requirements.pdf",
+                    "description": "Detailed security requirements and compliance standards",
+                    "metadata": [
+                      {"key": "classification", "value": "internal"},
+                      {"key": "version", "value": "1.0"},
+                      {"key": "owner", "value": "security-team"}
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Document created successfully",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Document"},
+                "examples": {
+                  "createdDocument": {
+                    "summary": "Successfully created document with generated ID",
+                    "value": {
+                      "id": "550e8400-e29b-41d4-a716-446655440001",
+                      "name": "Security Requirements Document",
+                      "url": "https://docs.company.com/security-requirements.pdf",
+                      "description": "Detailed security requirements and compliance standards",
+                      "metadata": [
+                        {"key": "classification", "value": "internal"},
+                        {"key": "version", "value": "1.0"},
+                        {"key": "owner", "value": "security-team"}
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/documents/{document_id}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get a specific document",
+        "description": "Returns details of a specific document within the threat model",
+        "operationId": "getThreatModelDocument",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the document (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document details",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Document"}}}
+          },
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update a document",
+        "description": "Updates a specific document within the threat model",
+        "operationId": "updateThreatModelDocument",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the document (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Document"}}}
+        },
+        "responses": {
+          "200": {
+            "description": "Document updated successfully",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Document"}}}
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete a document",
+        "description": "Deletes a specific document from the threat model",
+        "operationId": "deleteThreatModelDocument",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the document (UUID)"
+          }
+        ],
+        "responses": {
+          "204": {"description": "Document deleted successfully"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/sources": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "List sources in a threat model",
+        "description": "Returns a paginated list of source code references within the specified threat model",
+        "operationId": "getThreatModelSources",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+            "description": "Maximum number of sources to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {"type": "integer", "minimum": 0, "default": 0},
+            "description": "Number of sources to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of source code references",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sources": {"type": "array", "items": {"$ref": "#/components/schemas/Source"}},
+                    "total_count": {"type": "integer", "description": "Total number of sources in the threat model"}
+                  },
+                  "required": ["sources", "total_count"]
+                },
+                "examples": {
+                  "sourceList": {
+                    "summary": "List of source code references",
+                    "value": {
+                      "sources": [
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440010",
+                          "name": "Authentication Service",
+                          "url": "https://github.com/company/auth-service",
+                          "type": "git",
+                          "description": "Core authentication and authorization service",
+                          "parameters": {
+                            "refType": "branch",
+                            "refValue": "main"
+                          },
+                          "metadata": [
+                            {"key": "language", "value": "go"},
+                            {"key": "coverage", "value": "85%"},
+                            {"key": "security_scan", "value": "passed"}
+                          ]
+                        },
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440011", 
+                          "name": "Database Layer",
+                          "url": "https://github.com/company/db-layer",
+                          "type": "git",
+                          "description": "Database access layer and ORM implementation",
+                          "parameters": {
+                            "refType": "tag",
+                            "refValue": "v1.2.3"
+                          },
+                          "metadata": [
+                            {"key": "language", "value": "go"},
+                            {"key": "database", "value": "postgresql"}
+                          ]
+                        }
+                      ],
+                      "total_count": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create a new source reference",
+        "description": "Creates a new source code reference within the specified threat model",
+        "operationId": "createThreatModelSource",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Source"}}}
+        },
+        "responses": {
+          "201": {
+            "description": "Source reference created successfully",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Source"}}}
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/sources/{source_id}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get a specific source reference",
+        "description": "Returns details of a specific source code reference within the threat model",
+        "operationId": "getThreatModelSource",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the source reference (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source reference details",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Source"}}}
+          },
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update a source reference",
+        "description": "Updates a specific source code reference within the threat model",
+        "operationId": "updateThreatModelSource",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the source reference (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Source"}}}
+        },
+        "responses": {
+          "200": {
+            "description": "Source reference updated successfully",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Source"}}}
+          },
+          "400": {"$ref": "#/components/responses/Error"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete a source reference",
+        "description": "Deletes a specific source code reference from the threat model",
+        "operationId": "deleteThreatModelSource",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid", "maxLength": 36},
+            "description": "Unique identifier of the source reference (UUID)"
+          }
+        ],
+        "responses": {
+          "204": {"description": "Source reference deleted successfully"},
+          "401": {"$ref": "#/components/responses/Error"},
+          "403": {"$ref": "#/components/responses/Error"},
+          "404": {"$ref": "#/components/responses/Error"},
+          "500": {"$ref": "#/components/responses/Error"}
         }
       }
     }
