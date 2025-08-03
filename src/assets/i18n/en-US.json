@@ -249,6 +249,7 @@
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
     "noPermissions": "No Permissions Defined",
+    "owner": "Owner",
     "noSourceCode": "No Source Code Repositories Added Yet",
     "noThreats": "No Threats Defined Yet",
     "pageTitle": "Threat Models",

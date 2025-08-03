@@ -10,6 +10,7 @@ import { Authorization } from '../../models/threat-model.model';
 
 export interface PermissionsDialogData {
   permissions: Authorization[];
+  owner: string;
   isReadOnly?: boolean;
 }
 

@@ -89,7 +89,8 @@ export class TmComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
-    this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
+    // Force refresh on dashboard load to ensure we have the latest data
+    this.subscription = this.threatModelService.getThreatModelList(true).subscribe(models => {
       // Ensure models is always an array
       this.threatModels = models || [];
       this.logger.debugComponent('TM', 'TmComponent received threat model list', {

@@ -86,10 +86,11 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get threat model list items (lightweight data for dashboard)
    */
-  getThreatModelList(): Observable<TMListItem[]> {
+  getThreatModelList(forceRefresh: boolean = false): Observable<TMListItem[]> {
     this.logger.debugComponent('ThreatModelService', 'ThreatModelService.getThreatModelList called', {
       useMockData: this._useMockData,
       threatModelListCount: this._threatModelList.length,
+      forceRefresh: forceRefresh,
       models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
     });
 
@@ -98,32 +99,68 @@ export class ThreatModelService implements OnDestroy {
       return this._threatModelListSubject.asObservable();
     }
 
-    // For API mode, return reactive subject but fetch initial data if cache is empty
-    this.logger.debugComponent('ThreatModelService', 'API mode - checking if initial fetch needed');
-    if (this._threatModelList.length === 0) {
-      this.logger.debugComponent('ThreatModelService', 'Cache empty, fetching threat model list from API');
-      this.apiService.get<{ data: TMListItem[] }>('threat_models').pipe(
-        tap(response => {
-          // Update the subject with API data so subscribers get notified
-          // Handle case where response.data might be undefined or null
-          const threatModelList = response?.data || [];
-          this._threatModelList = threatModelList;
-          this._threatModelListSubject.next(threatModelList);
-          this.logger.debugComponent('ThreatModelService', 'Updated threat model list from API', {
-            count: threatModelList.length,
-            response: response
-          });
-        }),
-        catchError(error => {
-          this.logger.error('Error fetching threat model list', error);
-          this._threatModelListSubject.next([]);
-          return of({ data: [] });
-        }),
-      ).subscribe();
+    // For API mode, return reactive subject but fetch initial data if cache is empty or force refresh
+    this.logger.debugComponent('ThreatModelService', 'API mode - checking if fetch needed');
+    if (this._threatModelList.length === 0 || forceRefresh) {
+      this.logger.debugComponent('ThreatModelService', 'Fetching threat model list from API', {
+        reason: forceRefresh ? 'force refresh' : 'cache empty'
+      });
+      this.fetchThreatModelListFromAPI();
     }
 
     // Always return the reactive subject for consistent behavior
     return this._threatModelListSubject.asObservable();
+  }
+
+  /**
+   * Force refresh the threat model list from the API
+   */
+  refreshThreatModelList(): void {
+    if (!this._useMockData) {
+      this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
+      this.fetchThreatModelListFromAPI();
+    }
+  }
+
+  /**
+   * Private method to fetch threat model list from API
+   */
+  private fetchThreatModelListFromAPI(): void {
+    this.apiService.get<unknown>('threat_models').pipe(
+      tap(response => {
+        this.logger.debugComponent('ThreatModelService', 'Raw API response for threat_models', {
+          response: response,
+          responseType: typeof response,
+          hasData: response !== null && typeof response === 'object' && 'data' in response,
+          isArray: Array.isArray(response)
+        });
+
+        let threatModelList: TMListItem[] = [];
+        
+        // Handle different possible response formats
+        if (response && typeof response === 'object') {
+          if ('data' in response && Array.isArray((response as { data: unknown }).data)) {
+            // Paginated response with data property
+            threatModelList = (response as { data: TMListItem[] }).data;
+          } else if (Array.isArray(response)) {
+            // Direct array response
+            threatModelList = response as TMListItem[];
+          }
+        }
+
+        this._threatModelList = threatModelList;
+        this._threatModelListSubject.next(threatModelList);
+        this.logger.debugComponent('ThreatModelService', 'Updated threat model list from API', {
+          count: threatModelList.length,
+          items: threatModelList.map(tm => ({ id: tm.id, name: tm.name }))
+        });
+      }),
+      catchError(error => {
+        this.logger.error('Error fetching threat model list', error);
+        this._threatModelListSubject.next([]);
+        return of([]);
+      }),
+    ).subscribe();
   }
 
   /**
@@ -293,6 +330,23 @@ export class ThreatModelService implements OnDestroy {
     };
 
     return this.apiService.post<ThreatModel>('threat_models', body).pipe(
+      tap(newThreatModel => {
+        if (newThreatModel) {
+          // Add the new threat model to the list cache and notify subscribers
+          const listItem = this.convertToListItem(newThreatModel);
+          this._threatModelList.push(listItem);
+          this._threatModelListSubject.next([...this._threatModelList]);
+          
+          // Cache the full model
+          this._cachedThreatModels.set(newThreatModel.id, newThreatModel);
+          
+          this.logger.debugComponent('ThreatModelService', 'Added new threat model to cache', {
+            id: newThreatModel.id,
+            name: newThreatModel.name,
+            totalInList: this._threatModelList.length
+          });
+        }
+      }),
       catchError(error => {
         this.logger.error('Error creating threat model', error);
         throw error;
