@@ -328,13 +328,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Update framework control disabled state based on threats
           this.updateFrameworkControlState();
 
-          // Use diagrams directly as they are now Diagram objects
-          this.diagrams = threatModel.diagrams || [];
+          // Load diagrams separately
+          this.loadDiagrams(id);
           
-          // Update DIAGRAMS_BY_ID map with real diagram data
-          this.diagrams.forEach(diagram => {
-            DIAGRAMS_BY_ID.set(diagram.id, diagram);
-          });
+          // Load documents separately  
+          this.loadDocuments(id);
+          
+          // Load source code separately
+          this.loadSourceCode(id);
           
           // Re-enable auto-save after initial population is complete
           setTimeout(() => {
@@ -1791,6 +1792,53 @@ export class TmEditComponent implements OnInit, OnDestroy {
           this.logger.error('Auto-save failed for threat model', error, {
             threatModelId: this.threatModel?.id,
           });
+        }
+      })
+    );
+  }
+
+  /**
+   * Load diagrams for the threat model using separate API call
+   */
+  private loadDiagrams(threatModelId: string): void {
+    this._subscriptions.add(
+      this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(diagrams => {
+        this.diagrams = diagrams;
+        
+        // Update DIAGRAMS_BY_ID map with real diagram data
+        this.diagrams.forEach(diagram => {
+          DIAGRAMS_BY_ID.set(diagram.id, diagram);
+        });
+        
+        // Update threat model diagrams property for consistency
+        if (this.threatModel) {
+          this.threatModel.diagrams = diagrams;
+        }
+      })
+    );
+  }
+
+  /**
+   * Load documents for the threat model using separate API call
+   */
+  private loadDocuments(threatModelId: string): void {
+    this._subscriptions.add(
+      this.threatModelService.getDocumentsForThreatModel(threatModelId).subscribe(documents => {
+        if (this.threatModel) {
+          this.threatModel.documents = documents;
+        }
+      })
+    );
+  }
+
+  /**
+   * Load source code for the threat model using separate API call
+   */
+  private loadSourceCode(threatModelId: string): void {
+    this._subscriptions.add(
+      this.threatModelService.getSourceCodeForThreatModel(threatModelId).subscribe(sourceCode => {
+        if (this.threatModel) {
+          this.threatModel.sourceCode = sourceCode;
         }
       })
     );

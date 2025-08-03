@@ -69,7 +69,7 @@
     "noMetadata": "ไม่มีข้อมูลเมตา",
     "objectTypes": {
       "diagram": "แผนภาพ",
-      "document": "เอกสาร", 
+      "document": "เอกสาร",
       "sourceCode": "โค้ดต้นฉบับ",
       "threat": "ภัยคุกคาม",
       "threatModel": "โมเดลภัยคุกคาม"
@@ -111,9 +111,6 @@
       "textbox": "ข้อความ"
     },
     "pageTitle": "โปรแกรมแก้ไขแผนภาพการไหลของข้อมูล",
-    "properties": {
-      "title": "คุณสมบัติ"
-    },
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "ส่งออกเป็น JPEG",
@@ -131,7 +128,8 @@
         "export": "ส่งออก...",
         "redo": "ทำซ้ำ",
         "share": "แชร์",
-        "undo": "เลิกทำ"
+        "undo": "เลิกทำ",
+        "manageThreats": "จัดการภัยคุกคาม"
       }
     }
   },
@@ -307,7 +305,11 @@
       "required": "ช่องนี้จำเป็น"
     },
     "viewThreat": "ดูภัยคุกคาม",
-    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
+    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ",
+    "documentsCount": "เอกสาร",
+    "owner": "เจ้าของ",
+    "setAsOwner": "ตั้งเป็นเจ้าของ",
+    "sourcesCount": "แหล่งที่มา"
   },
   "tos": {
     "contactInfo": {

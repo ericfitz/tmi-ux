@@ -22,7 +22,7 @@ import { Observable, of, Subscription, BehaviorSubject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
-import { ThreatModel } from '../models/threat-model.model';
+import { ThreatModel, Document as TMDocument, Source } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -274,6 +274,60 @@ export class ThreatModelService implements OnDestroy {
           return of(undefined);
         }),
       );
+  }
+
+  /**
+   * Get documents for a threat model
+   */
+  getDocumentsForThreatModel(threatModelId: string): Observable<TMDocument[]> {
+    if (this._useMockData) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Returning mock documents for threat model with ID: ${threatModelId}`,
+      );
+      return of(this.mockDataService.getMockThreatModels().find(tm => tm.id === threatModelId)?.documents || []);
+    }
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Fetching documents for threat model with ID: ${threatModelId} from API`,
+    );
+    return this.apiService.get<TMDocument[]>(`threat_models/${threatModelId}/documents`).pipe(
+      catchError(error => {
+        this.logger.error(
+          `Error fetching documents for threat model with ID: ${threatModelId}`,
+          error,
+        );
+        return of([]);
+      }),
+    );
+  }
+
+  /**
+   * Get source code references for a threat model
+   */
+  getSourceCodeForThreatModel(threatModelId: string): Observable<Source[]> {
+    if (this._useMockData) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Returning mock source code for threat model with ID: ${threatModelId}`,
+      );
+      return of(this.mockDataService.getMockThreatModels().find(tm => tm.id === threatModelId)?.sourceCode || []);
+    }
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Fetching source code for threat model with ID: ${threatModelId} from API`,
+    );
+    return this.apiService.get<Source[]>(`threat_models/${threatModelId}/sources`).pipe(
+      catchError(error => {
+        this.logger.error(
+          `Error fetching source code for threat model with ID: ${threatModelId}`,
+          error,
+        );
+        return of([]);
+      }),
+    );
   }
 
   /**

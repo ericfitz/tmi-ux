@@ -69,7 +69,7 @@
     "noMetadata": "无可用元数据",
     "objectTypes": {
       "diagram": "图表",
-      "document": "文档", 
+      "document": "文档",
       "sourceCode": "源代码",
       "threat": "威胁",
       "threatModel": "威胁模型"
@@ -111,9 +111,6 @@
       "textbox": "文本框"
     },
     "pageTitle": "数据流图编辑器",
-    "properties": {
-      "title": "属性"
-    },
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "导出为 JPEG",
@@ -131,7 +128,8 @@
         "export": "导出...",
         "redo": "重做",
         "share": "分享",
-        "undo": "撤销"
+        "undo": "撤销",
+        "manageThreats": "管理威胁"
       }
     }
   },
@@ -307,7 +305,11 @@
       "required": "此字段为必填项"
     },
     "viewThreat": "查看威胁",
-    "yourThreatModels": "您的威胁模型"
+    "yourThreatModels": "您的威胁模型",
+    "documentsCount": "文档",
+    "owner": "所有者",
+    "setAsOwner": "设为所有者",
+    "sourcesCount": "源代码"
   },
   "tos": {
     "contactInfo": {

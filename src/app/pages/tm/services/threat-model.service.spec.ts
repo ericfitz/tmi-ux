@@ -136,6 +136,32 @@ describe('ThreatModelService', () => {
           expect(threatModel?.name).toBe('New Test Threat Model');
         });
     }));
+
+    it('should return mock diagrams for a threat model', waitForAsync(() => {
+      service.getDiagramsForThreatModel(testThreatModel1.id).subscribe(diagrams => {
+        expect(diagrams).toBeDefined();
+        expect(Array.isArray(diagrams)).toBe(true);
+        // The mock data service should return diagrams for the threat model
+      });
+    }));
+
+    it('should return mock documents for a threat model', waitForAsync(() => {
+      service.getDocumentsForThreatModel(testThreatModel1.id).subscribe(documents => {
+        expect(documents).toBeDefined();
+        expect(Array.isArray(documents)).toBe(true);
+        // Should return the documents from the threat model
+        expect(documents.length).toBe(testThreatModel1.documents?.length || 0);
+      });
+    }));
+
+    it('should return mock source code for a threat model', waitForAsync(() => {
+      service.getSourceCodeForThreatModel(testThreatModel1.id).subscribe(sourceCode => {
+        expect(sourceCode).toBeDefined();
+        expect(Array.isArray(sourceCode)).toBe(true);
+        // Should return the source code from the threat model
+        expect(sourceCode.length).toBe(testThreatModel1.sourceCode?.length || 0);
+      });
+    }));
   });
 
   describe('with mock data disabled', () => {
@@ -146,13 +172,34 @@ describe('ThreatModelService', () => {
       }
     });
 
-    // Add at least one test to avoid the "No test found in suite" error
-    it('should handle API calls when mock data is disabled', waitForAsync(() => {
-      // Disable mock data
-      (mockDataService.useMockData$ as BehaviorSubject<boolean>).next(false);
+    it('should make API calls for diagrams when mock data is disabled', waitForAsync(() => {
+      const mockDiagrams = [{ id: 'diag1', name: 'Test Diagram' }];
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockDiagrams));
 
-      // This is a placeholder test
-      expect(true).toBe(true);
+      service.getDiagramsForThreatModel(testThreatModel1.id).subscribe(diagrams => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams`);
+        expect(diagrams).toEqual(mockDiagrams);
+      });
+    }));
+
+    it('should make API calls for documents when mock data is disabled', waitForAsync(() => {
+      const mockDocuments = [{ id: 'doc1', name: 'Test Document', url: 'http://example.com' }];
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockDocuments));
+
+      service.getDocumentsForThreatModel(testThreatModel1.id).subscribe(documents => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents`);
+        expect(documents).toEqual(mockDocuments);
+      });
+    }));
+
+    it('should make API calls for source code when mock data is disabled', waitForAsync(() => {
+      const mockSourceCode = [{ id: 'src1', name: 'Test Source', url: 'http://github.com/example' }];
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockSourceCode));
+
+      service.getSourceCodeForThreatModel(testThreatModel1.id).subscribe(sourceCode => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources`);
+        expect(sourceCode).toEqual(mockSourceCode);
+      });
     }));
   });
 });

@@ -46,6 +46,10 @@
   @media (width >= 768px) {
     grid-template-columns: 1fr 1fr;
   }
+
+  @media (width >= 1200px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 }
 
 // Issue URL container with form field and external edit button
@@ -80,14 +84,12 @@
 }
 
 .diagrams-card,
-.documents-card {
+.documents-card,
+.source-code-card,
+.threats-card {
   width: 100%;
   min-width: 0; /* Allow cards to shrink and prevent overflow */
   overflow: hidden; /* Ensure content doesn't exceed card boundaries */
-}
-
-.threats-card {
-  width: 100%;
 }
 
 .metadata-card {

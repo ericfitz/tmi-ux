@@ -108,23 +108,30 @@ def rename_and_save_json(data, original_path, auto_yes):
         print(f"Error: Failed to save sorted JSON to {original_path}: {e}")
         return False
 
-def main(file1_path, file2_path=None, auto_yes=False):
+def main(file1_path, file2_path=None, auto_yes=False, dry_run=False):
     # Load and sort first JSON file
     data1 = load_and_sort_json(file1_path)
     if data1 is None:
         return False
     
-    # Single file mode: sort and save
+    # Single file mode: sort and save (or just show info in dry-run)
     if file2_path is None:
+        if dry_run:
+            print(f"Would sort and save {file1_path}")
+            return True
         return rename_and_save_json(data1, file1_path, auto_yes)
     
-    # Two file mode: sort, compare, and save both
+    # Two file mode: sort, compare, and optionally save both
     data2 = load_and_sort_json(file2_path)
     if data2 is None:
         return False
     
     # Compare keys
     compare_keys(data1, data2, file1_path, file2_path)
+    
+    if dry_run:
+        print(f"\nDry run mode: would sort and save {file1_path} and {file2_path}")
+        return True
     
     # Rename and save sorted JSON files
     success1 = rename_and_save_json(data1, file1_path, auto_yes)
@@ -137,8 +144,9 @@ if __name__ == "__main__":
     parser.add_argument("file1", help="Path to first JSON file")
     parser.add_argument("file2", nargs='?', help="Path to second JSON file (optional)")
     parser.add_argument("-y", "--yes", action="store_true", help="Automatically overwrite files without prompting")
+    parser.add_argument("--dry-run", action="store_true", help="Compare files without modifying them")
     args = parser.parse_args()
     
-    success = main(args.file1, args.file2, args.yes)
+    success = main(args.file1, args.file2, args.yes, args.dry_run)
     if not success:
         exit(1)

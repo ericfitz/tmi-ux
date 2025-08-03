@@ -111,9 +111,6 @@
       "textbox": "نص"
     },
     "pageTitle": "محرر مخطط تدفق البيانات",
-    "properties": {
-      "title": "الخصائص"
-    },
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "تصدير كـ JPEG",
@@ -129,6 +126,7 @@
         "addThreat": "إضافة تهديد",
         "deleteSelected": "حذف المحدد",
         "export": "تصدير...",
+        "manageThreats": "إدارة التهديدات",
         "redo": "إعادة",
         "share": "مشاركة",
         "undo": "تراجع"
@@ -253,6 +251,7 @@
     "noPermissions": "لم يتم تحديد أي أذونات",
     "noSourceCode": "لم يتم إضافة أي مستودعات كود مصدري بعد",
     "noThreats": "لم يتم تحديد أي تهديدات بعد",
+    "owner": "مالك",
     "pageTitle": "نماذج التهديدات",
     "permissions": "الأذونات",
     "permissionsButton": "الأذونات",
@@ -261,6 +260,7 @@
     "permissionsUser": "المستخدم",
     "rename": "إعادة تسمية",
     "renameDiagram": "إعادة تسمية المخطط",
+    "setAsOwner": "تعيين كمالك",
     "reportButton": "تقرير",
     "reportTooltip": "تقرير",
     "sourceCode": "الكود المصدري",
@@ -285,6 +285,8 @@
     "threatType": "نوع التهديد",
     "threats": "التهديدات",
     "threatsCount": "تهديدات",
+    "documentsCount": "وثائق",
+    "sourcesCount": "مصادر",
     "tooltips": {
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",

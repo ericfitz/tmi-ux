@@ -19,6 +19,7 @@ import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { LoggerService } from '../core/services/logger.service';
 import { LocalOAuthProviderService } from './services/local-oauth-provider.service';
+import { ServerConnectionService } from '../core/services/server-connection.service';
 import { environment } from '../../environments/environment';
 import { 
   createTypedMockLoggerService, 
@@ -49,6 +50,7 @@ describe('Authentication Integration', () => {
   let httpClient: MockHttpClient;
   let localStorageMock: MockStorage;
   let localOAuthProvider: LocalOAuthProviderService;
+  let serverConnectionService: { currentStatus: string };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -77,12 +79,18 @@ describe('Authentication Integration', () => {
     // Create local OAuth provider service
     localOAuthProvider = new LocalOAuthProviderService();
 
+    // Create mock server connection service
+    serverConnectionService = {
+      currentStatus: 'connected'
+    };
+
     // Create the service with mocked dependencies
     authService = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       logger as unknown as LoggerService,
       localOAuthProvider,
+      serverConnectionService as unknown as ServerConnectionService,
     );
   });
 
