@@ -97,7 +97,7 @@ export class LoginComponent implements OnInit {
     this.providersLoading = true;
     this.authService.getAvailableProviders().subscribe({
       next: providers => {
-        this.availableProviders = providers;
+        this.availableProviders = this.sortProviders(providers);
         this.providersLoading = false;
         this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, {
           providers: providers.map(p => ({ id: p.id, name: p.name })),
@@ -119,11 +119,25 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Check if we have callback parameters
+   * Sort providers alphabetically by name, with 'test' next to last and 'local' always last
    */
-  private hasCallbackParams(params: LoginQueryParams): boolean {
-    return !!(params.code || params.error);
+  private sortProviders(providers: OAuthProviderInfo[]): OAuthProviderInfo[] {
+    const sorted = [...providers];
+    
+    return sorted.sort((a, b) => {
+      // Local provider always goes last
+      if (a.id === 'local') return 1;
+      if (b.id === 'local') return -1;
+      
+      // Test provider goes next to last (before local)
+      if (a.id === 'test') return 1;
+      if (b.id === 'test') return -1;
+      
+      // All other providers are sorted alphabetically by name
+      return a.name.localeCompare(b.name);
+    });
   }
+
 
   /**
    * Generic login method - works with any configured provider

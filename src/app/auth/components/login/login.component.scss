@@ -60,6 +60,15 @@
     }
   }
 
+  &[data-provider='test'] {
+    background-color: #dc3545;
+    color: white;
+
+    &:hover {
+      background-color: #c82333;
+    }
+  }
+
   &[data-provider='local'] {
     background-color: #6c757d;
     color: white;
