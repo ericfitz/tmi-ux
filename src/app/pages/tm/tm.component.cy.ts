@@ -19,7 +19,53 @@ describe('TmComponent', () => {
   };
 
   const threatModelServiceStub = {
-    getThreatModels: () => of([mockThreatModel1, mockThreatModel2, mockThreatModel3]),
+    getThreatModelList: () => of([
+      {
+        id: mockThreatModel1.id,
+        name: mockThreatModel1.name,
+        description: mockThreatModel1.description,
+        created_at: mockThreatModel1.created_at,
+        modified_at: mockThreatModel1.modified_at,
+        owner: mockThreatModel1.owner,
+        created_by: mockThreatModel1.created_by,
+        threat_model_framework: mockThreatModel1.threat_model_framework,
+        issue_url: mockThreatModel1.issue_url,
+        document_count: mockThreatModel1.documents?.length || 0,
+        source_count: mockThreatModel1.sourceCode?.length || 0,
+        diagram_count: mockThreatModel1.diagrams?.length || 0,
+        threat_count: mockThreatModel1.threats?.length || 0,
+      },
+      {
+        id: mockThreatModel2.id,
+        name: mockThreatModel2.name,
+        description: mockThreatModel2.description,
+        created_at: mockThreatModel2.created_at,
+        modified_at: mockThreatModel2.modified_at,
+        owner: mockThreatModel2.owner,
+        created_by: mockThreatModel2.created_by,
+        threat_model_framework: mockThreatModel2.threat_model_framework,
+        issue_url: mockThreatModel2.issue_url,
+        document_count: mockThreatModel2.documents?.length || 0,
+        source_count: mockThreatModel2.sourceCode?.length || 0,
+        diagram_count: mockThreatModel2.diagrams?.length || 0,
+        threat_count: mockThreatModel2.threats?.length || 0,
+      },
+      {
+        id: mockThreatModel3.id,
+        name: mockThreatModel3.name,
+        description: mockThreatModel3.description,
+        created_at: mockThreatModel3.created_at,
+        modified_at: mockThreatModel3.modified_at,
+        owner: mockThreatModel3.owner,
+        created_by: mockThreatModel3.created_by,
+        threat_model_framework: mockThreatModel3.threat_model_framework,
+        issue_url: mockThreatModel3.issue_url,
+        document_count: mockThreatModel3.documents?.length || 0,
+        source_count: mockThreatModel3.sourceCode?.length || 0,
+        diagram_count: mockThreatModel3.diagrams?.length || 0,
+        threat_count: mockThreatModel3.threats?.length || 0,
+      },
+    ]),
   };
 
   const loggerServiceStub = {

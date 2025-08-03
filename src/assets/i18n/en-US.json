@@ -283,6 +283,8 @@
     "threatType": "Threat Type",
     "threats": "Threats",
     "threatsCount": "Threats",
+    "documentsCount": "Documents",
+    "sourcesCount": "Sources",
     "tooltips": {
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",

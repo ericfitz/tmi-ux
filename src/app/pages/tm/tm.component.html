@@ -49,7 +49,7 @@
             <div class="threat-model-stats">
               <span class="stat">
                 <mat-icon>account_tree</mat-icon>
-                {{ threatModel.diagrams?.length || 0 }}
+                {{ threatModel.diagram_count }}
                 {{ 'threatModels.diagramsCount' | transloco }}
               </span>
               <span class="stat">
@@ -60,7 +60,15 @@
                   class="skull-icon"
                   >skull</mat-icon
                 >
-                {{ threatModel.threats?.length || 0 }} {{ 'threatModels.threatsCount' | transloco }}
+                {{ threatModel.threat_count }} {{ 'threatModels.threatsCount' | transloco }}
+              </span>
+              <span class="stat">
+                <mat-icon>description</mat-icon>
+                {{ threatModel.document_count }} {{ 'threatModels.documentsCount' | transloco }}
+              </span>
+              <span class="stat">
+                <mat-icon>code</mat-icon>
+                {{ threatModel.source_count }} {{ 'threatModels.sourcesCount' | transloco }}
               </span>
             </div>
           </div>

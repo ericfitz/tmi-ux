@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
 import { ThreatModel } from '../models/threat-model.model';
+import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -33,10 +34,11 @@ import { AuthService } from '../../../auth/services/auth.service';
   providedIn: 'root',
 })
 export class ThreatModelService implements OnDestroy {
-  private _threatModels: ThreatModel[] = [];
+  private _threatModelList: TMListItem[] = [];
+  private _cachedThreatModels = new Map<string, ThreatModel>();
   private _useMockData = false;
   private _subscription: Subscription | null = null;
-  private _threatModelsSubject = new BehaviorSubject<ThreatModel[]>([]);
+  private _threatModelListSubject = new BehaviorSubject<TMListItem[]>([]);
 
   constructor(
     private apiService: ApiService,
@@ -56,68 +58,87 @@ export class ThreatModelService implements OnDestroy {
         },
       );
 
-      // Initialize threat models based on the mock data setting
+      // Initialize threat model list based on the mock data setting
       if (useMock) {
-        this._threatModels = [...this.mockDataService.getMockThreatModels()];
-        this._threatModelsSubject.next(this._threatModels);
+        // Convert full mock models to list items
+        const mockModels = this.mockDataService.getMockThreatModels();
+        this._threatModelList = mockModels.map(tm => this.convertToListItem(tm));
+        this._threatModelListSubject.next(this._threatModelList);
         this.logger.debugComponent(
           'ThreatModelService',
-          'ThreatModelService loaded mock threat models',
+          'ThreatModelService loaded mock threat model list',
           {
-            count: this._threatModels.length,
-            models: this._threatModels.map(tm => ({ id: tm.id, name: tm.name })),
+            count: this._threatModelList.length,
+            models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
           },
         );
       } else {
-        this._threatModels = []; // Will be populated from API when needed
-        this._threatModelsSubject.next(this._threatModels);
+        this._threatModelList = []; // Will be populated from API when needed
+        this._threatModelListSubject.next(this._threatModelList);
         this.logger.debugComponent(
           'ThreatModelService',
-          'ThreatModelService using API mode (empty models)',
+          'ThreatModelService using API mode (empty list)',
         );
       }
     });
   }
 
   /**
-   * Get all threat models
+   * Get threat model list items (lightweight data for dashboard)
    */
-  getThreatModels(): Observable<ThreatModel[]> {
-    this.logger.debugComponent('ThreatModelService', 'ThreatModelService.getThreatModels called', {
+  getThreatModelList(): Observable<TMListItem[]> {
+    this.logger.debugComponent('ThreatModelService', 'ThreatModelService.getThreatModelList called', {
       useMockData: this._useMockData,
-      threatModelsCount: this._threatModels.length,
-      models: this._threatModels.map(tm => ({ id: tm.id, name: tm.name })),
+      threatModelListCount: this._threatModelList.length,
+      models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
     });
 
     if (this._useMockData) {
-      this.logger.debugComponent('ThreatModelService', 'Returning reactive mock threat models');
-      return this._threatModelsSubject.asObservable();
+      this.logger.debugComponent('ThreatModelService', 'Returning reactive mock threat model list');
+      return this._threatModelListSubject.asObservable();
     }
 
     // For API mode, return reactive subject but fetch initial data if cache is empty
     this.logger.debugComponent('ThreatModelService', 'API mode - checking if initial fetch needed');
-    if (this._threatModels.length === 0) {
-      this.logger.debugComponent('ThreatModelService', 'Cache empty, fetching threat models from API');
-      this.apiService.get<ThreatModel[]>('threat_models').pipe(
-        tap(threatModels => {
+    if (this._threatModelList.length === 0) {
+      this.logger.debugComponent('ThreatModelService', 'Cache empty, fetching threat model list from API');
+      this.apiService.get<{ data: TMListItem[] }>('threat_models').pipe(
+        tap(response => {
           // Update the subject with API data so subscribers get notified
-          this._threatModels = threatModels;
-          this._threatModelsSubject.next(threatModels);
+          // Handle case where response.data might be undefined or null
+          const threatModelList = response?.data || [];
+          this._threatModelList = threatModelList;
+          this._threatModelListSubject.next(threatModelList);
+          this.logger.debugComponent('ThreatModelService', 'Updated threat model list from API', {
+            count: threatModelList.length,
+            response: response
+          });
         }),
         catchError(error => {
-          this.logger.error('Error fetching threat models', error);
-          this._threatModelsSubject.next([]);
-          return of([]);
+          this.logger.error('Error fetching threat model list', error);
+          this._threatModelListSubject.next([]);
+          return of({ data: [] });
         }),
       ).subscribe();
     }
 
     // Always return the reactive subject for consistent behavior
-    return this._threatModelsSubject.asObservable();
+    return this._threatModelListSubject.asObservable();
   }
 
   /**
-   * Get a threat model by ID
+   * @deprecated Use getThreatModelList() for dashboard, getThreatModelById() for editing
+   * Get all threat models (backwards compatibility)
+   */
+  getThreatModels(): Observable<ThreatModel[]> {
+    this.logger.warn('getThreatModels() is deprecated. Use getThreatModelList() for dashboard or getThreatModelById() for editing.');
+    
+    // Return empty array to encourage migration to new methods
+    return of([]);
+  }
+
+  /**
+   * Get a full threat model by ID (for editing)
    */
   getThreatModelById(id: string): Observable<ThreatModel | undefined> {
     if (this._useMockData) {
@@ -125,16 +146,37 @@ export class ThreatModelService implements OnDestroy {
         'ThreatModelService',
         `Returning mock threat model with ID: ${id}`,
       );
-      const threatModel = this._threatModels.find(tm => tm.id === id);
+      const threatModel = this.mockDataService.getMockThreatModels().find(tm => tm.id === id);
       return of(threatModel);
     }
 
-    // In a real implementation, this would call the API
+    // Check cache first
+    if (this._cachedThreatModels.has(id)) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Returning cached threat model with ID: ${id}`,
+      );
+      return of(this._cachedThreatModels.get(id));
+    }
+
+    // Fetch from API and cache the result
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching threat model with ID: ${id} from API`,
     );
     return this.apiService.get<ThreatModel>(`threat_models/${id}`).pipe(
+      tap(threatModel => {
+        if (threatModel) {
+          // Cache the full model and expire all other cached models
+          this.expireAllCachedModelsExcept(id);
+          this._cachedThreatModels.set(id, threatModel);
+          this.logger.debugComponent(
+            'ThreatModelService',
+            `Cached threat model ${id} and expired others`,
+            { cacheSize: this._cachedThreatModels.size }
+          );
+        }
+      }),
       catchError(error => {
         this.logger.error(`Error fetching threat model with ID: ${id}`, error);
         return of(undefined);
@@ -233,7 +275,11 @@ export class ThreatModelService implements OnDestroy {
         threats: [],
       });
 
-      this._threatModels.push(newThreatModel);
+      // Add to both the list and cache the full model
+      const listItem = this.convertToListItem(newThreatModel);
+      this._threatModelList.push(listItem);
+      this._threatModelListSubject.next([...this._threatModelList]);
+      this._cachedThreatModels.set(newThreatModel.id, newThreatModel);
       return of(newThreatModel);
     }
 
@@ -281,13 +327,16 @@ export class ThreatModelService implements OnDestroy {
         threat_model_framework: data.threat_model_framework || 'STRIDE', // Provide default if missing
         authorization: data.authorization || [], // Provide default if missing
       };
-      // Add to local mock data
-      this._threatModels.push(importedModel);
+      // Add to both the list and cache the full model
+      const listItem = this.convertToListItem(importedModel);
+      this._threatModelList.push(listItem);
+      this._threatModelListSubject.next([...this._threatModelList]);
+      this._cachedThreatModels.set(importedModel.id, importedModel);
 
       this.logger.debugComponent('ThreatModelService', 'Imported threat model to mock data', {
         newId: importedModel.id,
         name: importedModel.name,
-        totalCount: this._threatModels.length,
+        totalCount: this._threatModelList.length,
       });
       return of({ model: importedModel });
     } else {
@@ -398,14 +447,18 @@ export class ThreatModelService implements OnDestroy {
         `Updating mock threat model with ID: ${threatModel.id}`,
       );
 
-      const index = this._threatModels.findIndex(tm => tm.id === threatModel.id);
-      if (index !== -1) {
-        // Update the modified timestamp
-        threatModel.modified_at = new Date().toISOString();
-        this._threatModels[index] = { ...threatModel };
-        return of(this._threatModels[index]);
+      // Update in cache
+      threatModel.modified_at = new Date().toISOString();
+      this._cachedThreatModels.set(threatModel.id, { ...threatModel });
+      
+      // Update in list
+      const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModel.id);
+      if (listIndex !== -1) {
+        this._threatModelList[listIndex] = this.convertToListItem(threatModel);
+        this._threatModelListSubject.next([...this._threatModelList]);
       }
-      return of(threatModel); // Return the original if not found
+      
+      return of(this._cachedThreatModels.get(threatModel.id)!);
     }
 
     // In a real implementation, this would call the API
@@ -433,15 +486,18 @@ export class ThreatModelService implements OnDestroy {
     if (this._useMockData) {
       this.logger.debugComponent('ThreatModelService', `Deleting mock threat model with ID: ${id}`);
 
-      const initialLength = this._threatModels.length;
-      this._threatModels = this._threatModels.filter(tm => tm.id !== id);
-      const wasDeleted = this._threatModels.length < initialLength;
+      const initialLength = this._threatModelList.length;
+      this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
+      const wasDeleted = this._threatModelList.length < initialLength;
       
       if (wasDeleted) {
+        // Remove from cache
+        this._cachedThreatModels.delete(id);
+        
         // Notify all subscribers of the updated threat model list
-        this._threatModelsSubject.next([...this._threatModels]);
+        this._threatModelListSubject.next([...this._threatModelList]);
         this.logger.debugComponent('ThreatModelService', 'Updated threat model list after deletion', {
-          remainingCount: this._threatModels.length,
+          remainingCount: this._threatModelList.length,
           deletedId: id,
         });
       }
@@ -457,10 +513,11 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService.delete<void>(`threat_models/${id}`).pipe(
       tap(() => {
         // Successful delete (204 No Content) - remove from local cache and notify subscribers
-        this._threatModels = this._threatModels.filter(tm => tm.id !== id);
-        this._threatModelsSubject.next([...this._threatModels]);
+        this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
+        this._cachedThreatModels.delete(id);
+        this._threatModelListSubject.next([...this._threatModelList]);
         this.logger.debugComponent('ThreatModelService', 'Updated threat model list after API deletion', {
-          remainingCount: this._threatModels.length,
+          remainingCount: this._threatModelList.length,
           deletedId: id,
         });
       }),
@@ -480,6 +537,44 @@ export class ThreatModelService implements OnDestroy {
       this._subscription.unsubscribe();
       this._subscription = null;
     }
-    this._threatModelsSubject.complete();
+    this._threatModelListSubject.complete();
+    this._cachedThreatModels.clear();
+  }
+
+  /**
+   * Convert a full ThreatModel to a TMListItem
+   */
+  private convertToListItem(threatModel: ThreatModel): TMListItem {
+    return {
+      id: threatModel.id,
+      name: threatModel.name,
+      description: threatModel.description,
+      created_at: threatModel.created_at,
+      modified_at: threatModel.modified_at,
+      owner: threatModel.owner,
+      created_by: threatModel.created_by,
+      threat_model_framework: threatModel.threat_model_framework as TMListItem['threat_model_framework'],
+      issue_url: threatModel.issue_url,
+      document_count: threatModel.documents?.length || 0,
+      source_count: threatModel.sourceCode?.length || 0,
+      diagram_count: threatModel.diagrams?.length || 0,
+      threat_count: threatModel.threats?.length || 0,
+    };
+  }
+
+  /**
+   * Expire all cached threat models except the specified one
+   */
+  private expireAllCachedModelsExcept(keepId: string): void {
+    const keysToDelete = Array.from(this._cachedThreatModels.keys()).filter(id => id !== keepId);
+    keysToDelete.forEach(id => this._cachedThreatModels.delete(id));
+    
+    if (keysToDelete.length > 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        'Expired cached threat models',
+        { expiredCount: keysToDelete.length, keptId: keepId }
+      );
+    }
   }
 }

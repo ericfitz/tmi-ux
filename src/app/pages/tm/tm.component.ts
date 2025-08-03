@@ -33,6 +33,7 @@ import { MaterialModule } from '../../shared/material/material.module';
 import { SharedModule } from '../../shared/shared.module';
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from './models/threat-model.model';
+import { TMListItem } from './models/tm-list-item.model';
 import { ThreatModelService } from './services/threat-model.service';
 import { ThreatModelValidatorService } from './validation/threat-model-validator.service';
 import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
@@ -67,7 +68,7 @@ export interface CollaborationSession {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TmComponent implements OnInit, OnDestroy {
-  threatModels: ThreatModel[] = [];
+  threatModels: TMListItem[] = [];
   collaborationSessions: CollaborationSession[] = [];
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
@@ -88,11 +89,12 @@ export class TmComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
-    this.subscription = this.threatModelService.getThreatModels().subscribe(models => {
-      this.threatModels = models;
-      this.logger.debugComponent('TM', 'TmComponent received threat models', {
-        count: models.length,
-        models: models.map(tm => ({ id: tm.id, name: tm.name })),
+    this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
+      // Ensure models is always an array
+      this.threatModels = models || [];
+      this.logger.debugComponent('TM', 'TmComponent received threat model list', {
+        count: this.threatModels.length,
+        models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
       });
       // Trigger change detection to update the view
       this.cdr.detectChanges();
@@ -132,6 +134,8 @@ export class TmComponent implements OnInit, OnDestroy {
   }
 
   openThreatModel(id: string): void {
+    // When opening a threat model for editing, the service will automatically
+    // expire all other cached models and cache only the one being opened
     void this.router.navigate(['/tm', id]);
   }
 
@@ -216,12 +220,13 @@ export class TmComponent implements OnInit, OnDestroy {
    * Refresh the threat model list from the server
    */
   private refreshThreatModelList(): void {
-    this.threatModelService.getThreatModels().subscribe({
+    this.threatModelService.getThreatModelList().subscribe({
       next: models => {
-        this.threatModels = models;
+        // Ensure models is always an array
+        this.threatModels = models || [];
         this.logger.debugComponent('TM', 'Threat model list refreshed after deletion', {
-          count: models.length,
-          models: models.map(tm => ({ id: tm.id, name: tm.name })),
+          count: this.threatModels.length,
+          models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
         });
         // Trigger change detection to update the view
         this.cdr.detectChanges();

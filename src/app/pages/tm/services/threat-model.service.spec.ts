@@ -102,12 +102,21 @@ describe('ThreatModelService', () => {
       }
     });
 
-    it('should return mock threat models', waitForAsync(() => {
+    it('should return mock threat model list', waitForAsync(() => {
+      service.getThreatModelList().subscribe(threatModelList => {
+        expect(threatModelList.length).toBe(3);
+        expect(threatModelList[0].id).toBe(testThreatModel1.id);
+        expect(threatModelList[0].name).toBe(testThreatModel1.name);
+        expect(threatModelList[0].document_count).toBeDefined();
+        expect(threatModelList[0].diagram_count).toBeDefined();
+        expect(threatModelList[0].threat_count).toBeDefined();
+        expect(threatModelList[0].source_count).toBeDefined();
+      });
+    }));
+
+    it('should return mock threat models (deprecated method)', waitForAsync(() => {
       service.getThreatModels().subscribe(threatModels => {
-        expect(threatModels.length).toBe(3);
-        expect(threatModels).toContain(testThreatModel1);
-        expect(threatModels).toContain(testThreatModel2);
-        expect(threatModels).toContain(testThreatModel3);
+        expect(threatModels.length).toBe(0); // Deprecated method returns empty for efficiency
       });
     }));
 
