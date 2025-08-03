@@ -30,6 +30,10 @@ import {
 } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
+import {
+  ServerConnectionService,
+  ServerConnectionStatus,
+} from '../../core/services/server-connection.service';
 import { environment } from '../../../environments/environment';
 import {
   AuthError,
@@ -94,6 +98,7 @@ export class AuthService {
     private http: HttpClient,
     private logger: LoggerService,
     private localProvider: LocalOAuthProviderService,
+    private serverConnectionService: ServerConnectionService,
   ) {
     this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
@@ -140,6 +145,27 @@ export class AuthService {
   get isTestUser(): boolean {
     const email = this.userEmail;
     return /^user[1-3]@example\.com$/.test(email) || email === 'demo.user@example.com';
+  }
+
+  /**
+   * Check if we're using a local login provider
+   * @returns True if using local authentication
+   */
+  private get isUsingLocalProvider(): boolean {
+    // Check if token exists and decode to get provider information
+    const token = this.getStoredToken();
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const payload = token.token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+      return decodedPayload.provider === 'local';
+    } catch (error) {
+      this.logger.warn('Could not decode token to check provider', error);
+      return false;
+    }
   }
 
   /**
@@ -1004,17 +1030,18 @@ export class AuthService {
     const userEmail = this.userEmail;
     this.logger.info(`Logging out user: ${userEmail}`);
 
-    // Clear authentication data immediately for test users or when server is unavailable
-    if (this.isTestUser) {
-      this.logger.debugComponent('Auth', 'Skipping server logout for test user');
-      this.clearAuthData();
-      this.logger.info('Test user logged out successfully');
-      void this.router.navigate(['/']);
-      return;
-    }
+    // Determine if we should call server logout endpoint
+    const isConnectedToServer = this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED;
+    const isUsingLocalAuth = this.isUsingLocalProvider;
+    const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer && !isUsingLocalAuth && !this.isTestUser;
 
-    // Call logout endpoint if authenticated (only for real users)
-    if (this.isAuthenticated) {
+    if (shouldCallServerLogout) {
+      this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
+        isConnectedToServer,
+        isUsingLocalAuth,
+        isTestUser: this.isTestUser,
+      });
+
       const token = this.getStoredToken();
       const headers: { [key: string]: string } = {
         'Content-Type': 'application/json',
@@ -1056,9 +1083,16 @@ export class AuthService {
           },
         });
     } else {
-      // Not authenticated, just clear any remaining data and redirect
+      // Skip server logout and just clear client-side data
+      this.logger.debugComponent('Auth', 'Skipping server logout', {
+        isConnectedToServer,
+        isUsingLocalAuth,
+        isTestUser: this.isTestUser,
+        isAuthenticated: this.isAuthenticated,
+      });
+      
       this.clearAuthData();
-      this.logger.info('User logged out successfully');
+      this.logger.info('User logged out successfully (client-side only)');
       void this.router.navigate(['/']);
     }
   }

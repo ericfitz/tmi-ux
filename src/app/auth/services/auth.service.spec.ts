@@ -12,6 +12,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
+import {
+  ServerConnectionService,
+  ServerConnectionStatus,
+} from '../../core/services/server-connection.service';
 import { LocalOAuthProviderService } from './local-oauth-provider.service';
 import {
   JwtToken,
@@ -66,12 +70,21 @@ interface MockCrypto {
   getRandomValues: ReturnType<typeof vi.fn>;
 }
 
+// Mock interfaces for ServerConnectionService
+interface MockServerConnectionService {
+  currentStatus: ServerConnectionStatus;
+  connectionStatus$: {
+    subscribe: ReturnType<typeof vi.fn>;
+  };
+}
+
 describe('AuthService', () => {
   let service: AuthService;
   let httpClient: MockHttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
   let localProvider: LocalOAuthProviderService;
+  let serverConnectionService: MockServerConnectionService;
   let localStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
 
@@ -208,12 +221,21 @@ describe('AuthService', () => {
       }),
     } as unknown as LocalOAuthProviderService;
 
+    // Create mock for ServerConnectionService
+    serverConnectionService = {
+      currentStatus: ServerConnectionStatus.CONNECTED,
+      connectionStatus$: {
+        subscribe: vi.fn(),
+      },
+    };
+
     // Create the service directly with mocked dependencies
     service = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       localProvider,
+      serverConnectionService as unknown as ServerConnectionService,
     );
   });
 
@@ -837,7 +859,13 @@ describe('AuthService', () => {
       expect(httpClient.post).not.toHaveBeenCalled();
       expect(loggerService.debugComponent).toHaveBeenCalledWith(
         'Auth',
-        'Skipping server logout for test user',
+        'Skipping server logout',
+        expect.objectContaining({
+          isConnectedToServer: true,
+          isUsingLocalAuth: false,
+          isTestUser: true,
+          isAuthenticated: true,
+        }),
       );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
