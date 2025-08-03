@@ -1192,6 +1192,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: PermissionsDialogData = {
       permissions: this.threatModel.authorization || [],
+      owner: this.threatModel.owner,
       isReadOnly: false, // You can add logic here to determine if user has edit permissions
     };
 

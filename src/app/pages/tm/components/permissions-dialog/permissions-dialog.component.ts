@@ -24,6 +24,14 @@ export interface PermissionsDialogData {
 
       <mat-dialog-content>
         <div class="permissions-content">
+          <!-- Owner Display -->
+          <div class="info-section">
+            <div class="info-field">
+              <span class="info-label">{{ 'threatModels.owner' | transloco }}:</span>
+              <span class="info-value">{{ data.owner }}</span>
+            </div>
+          </div>
+
           <div class="table-container">
             <table
               mat-table
@@ -82,7 +90,16 @@ export interface PermissionsDialogData {
               <!-- Actions Column -->
               <ng-container matColumnDef="actions" *ngIf="!data.isReadOnly">
                 <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | transloco }}</th>
-                <td mat-cell *matCellDef="let auth; let i = index">
+                <td mat-cell *matCellDef="let auth; let i = index" class="actions-cell">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="setAsOwner(i)"
+                    [matTooltip]="'threatModels.setAsOwner' | transloco"
+                    [disabled]="auth.role === 'owner'"
+                  >
+                    <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
+                  </button>
                   <button
                     mat-icon-button
                     color="warn"
@@ -135,6 +152,35 @@ export interface PermissionsDialogData {
         overflow-x: hidden;
       }
 
+      .info-section {
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        font-family: Roboto, Arial, sans-serif;
+      }
+
+      .info-field {
+        display: flex;
+        margin-bottom: 6px;
+        font-size: 14px;
+        align-items: center;
+      }
+
+      .info-field:last-child {
+        margin-bottom: 0;
+      }
+
+      .info-label {
+        font-weight: 500;
+        min-width: 120px;
+        color: rgb(0 0 0 / 70%);
+      }
+
+      .info-value {
+        color: rgb(0 0 0 / 87%);
+      }
+
       .table-container {
         margin: 16px 0;
         width: 100%;
@@ -171,10 +217,10 @@ export interface PermissionsDialogData {
         max-width: 120px;
       }
 
-      /* Make actions column wider */
+      /* Make actions column wider to accommodate both buttons */
       .mat-column-actions {
-        width: 100px;
-        max-width: 100px;
+        width: 140px;
+        max-width: 140px;
         text-align: center;
       }
 
@@ -224,8 +270,8 @@ export interface PermissionsDialogData {
         }
 
         .mat-column-actions {
-          width: 80px;
-          max-width: 80px;
+          width: 120px;
+          max-width: 120px;
         }
 
         .mat-column-subject {
@@ -300,6 +346,16 @@ export class PermissionsDialogComponent implements OnInit {
       this.permissionsDataSource.data.splice(index, 1);
       this.permissionsTable.renderRows();
     }
+  }
+
+  /**
+   * Sets the selected user as owner (placeholder - no functionality yet)
+   * @param _index The index of the permission to set as owner
+   */
+  setAsOwner(_index: number): void {
+    // Placeholder method - no functionality implemented yet
+    // TODO: Implement set as owner functionality
+    // For now, this method does nothing as requested
   }
 
   /**

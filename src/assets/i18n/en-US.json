@@ -260,6 +260,7 @@
     "permissionsUser": "User",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
+    "setAsOwner": "Set as Owner",
     "reportButton": "Report",
     "reportTooltip": "Report",
     "sourceCode": "Source Code",
