@@ -85,6 +85,7 @@ export class ThreatModelService implements OnDestroy {
 
   /**
    * Get threat model list items (lightweight data for dashboard)
+   * Always fetches fresh data from API to minimize stale data issues
    */
   getThreatModelList(forceRefresh: boolean = false): Observable<TMListItem[]> {
     this.logger.debugComponent('ThreatModelService', 'ThreatModelService.getThreatModelList called', {
@@ -99,14 +100,9 @@ export class ThreatModelService implements OnDestroy {
       return this._threatModelListSubject.asObservable();
     }
 
-    // For API mode, return reactive subject but fetch initial data if cache is empty or force refresh
-    this.logger.debugComponent('ThreatModelService', 'API mode - checking if fetch needed');
-    if (this._threatModelList.length === 0 || forceRefresh) {
-      this.logger.debugComponent('ThreatModelService', 'Fetching threat model list from API', {
-        reason: forceRefresh ? 'force refresh' : 'cache empty'
-      });
-      this.fetchThreatModelListFromAPI();
-    }
+    // For API mode, always fetch fresh data to ensure up-to-date information
+    this.logger.debugComponent('ThreatModelService', 'API mode - fetching fresh threat model list from API');
+    this.fetchThreatModelListFromAPI();
 
     // Always return the reactive subject for consistent behavior
     return this._threatModelListSubject.asObservable();
@@ -177,7 +173,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get a full threat model by ID (for editing)
    */
-  getThreatModelById(id: string): Observable<ThreatModel | undefined> {
+  getThreatModelById(id: string, forceRefresh: boolean = false): Observable<ThreatModel | undefined> {
     if (this._useMockData) {
       this.logger.debugComponent(
         'ThreatModelService',
@@ -187,8 +183,8 @@ export class ThreatModelService implements OnDestroy {
       return of(threatModel);
     }
 
-    // Check cache first
-    if (this._cachedThreatModels.has(id)) {
+    // Check cache first unless force refresh is requested
+    if (this._cachedThreatModels.has(id) && !forceRefresh) {
       this.logger.debugComponent(
         'ThreatModelService',
         `Returning cached threat model with ID: ${id}`,
@@ -200,6 +196,7 @@ export class ThreatModelService implements OnDestroy {
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching threat model with ID: ${id} from API`,
+      { forceRefresh }
     );
     return this.apiService.get<ThreatModel>(`threat_models/${id}`).pipe(
       tap(threatModel => {
