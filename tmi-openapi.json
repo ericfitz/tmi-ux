@@ -4313,6 +4313,365 @@
         }
       }
     },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get diagram metadata",
+        "description": "Returns all metadata key-value pairs for the specified diagram",
+        "operationId": "getDiagramMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diagram metadata list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create diagram metadata",
+        "description": "Creates new metadata entry for the specified diagram",
+        "operationId": "createDiagramMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entry created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/{key}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get diagram metadata by key",
+        "description": "Returns a specific metadata entry by key for the specified diagram",
+        "operationId": "getDiagramMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update diagram metadata by key",
+        "description": "Updates a specific metadata entry by key for the specified diagram",
+        "operationId": "updateDiagramMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "New value for the metadata entry"
+                  }
+                },
+                "required": ["value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata entry updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete diagram metadata by key",
+        "description": "Deletes a specific metadata entry by key for the specified diagram",
+        "operationId": "deleteDiagramMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Metadata entry deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create diagram metadata",
+        "description": "Creates multiple metadata entries in a single operation for the specified diagram",
+        "operationId": "bulkCreateDiagramMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "maxItems": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entries created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/threat_models/{threat_model_id}/threats": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -4677,6 +5036,365 @@
         }
       }
     },
+    "/threat_models/{threat_model_id}/threats/{threat_id}/metadata": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get threat metadata",
+        "description": "Returns all metadata key-value pairs for the specified threat",
+        "operationId": "getThreatMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Threat metadata list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create threat metadata",
+        "description": "Creates new metadata entry for the specified threat",
+        "operationId": "createThreatMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entry created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/threats/{threat_id}/metadata/{key}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get threat metadata by key",
+        "description": "Returns a specific metadata entry by key for the specified threat",
+        "operationId": "getThreatMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update threat metadata by key",
+        "description": "Updates a specific metadata entry by key for the specified threat",
+        "operationId": "updateThreatMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "New value for the metadata entry"
+                  }
+                },
+                "required": ["value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata entry updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete threat metadata by key",
+        "description": "Deletes a specific metadata entry by key for the specified threat",
+        "operationId": "deleteThreatMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Metadata entry deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/threats/{threat_id}/metadata/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create threat metadata",
+        "description": "Creates multiple metadata entries in a single operation for the specified threat",
+        "operationId": "bulkCreateThreatMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "maxItems": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entries created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/threat_models/{threat_model_id}/documents": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -4950,6 +5668,365 @@
         }
       }
     },
+    "/threat_models/{threat_model_id}/documents/{document_id}/metadata": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get document metadata",
+        "description": "Returns all metadata key-value pairs for the specified document",
+        "operationId": "getDocumentMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the document (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document metadata list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create document metadata",
+        "description": "Creates new metadata entry for the specified document",
+        "operationId": "createDocumentMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the document (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entry created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/documents/{document_id}/metadata/{key}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get document metadata by key",
+        "description": "Returns a specific metadata entry by key for the specified document",
+        "operationId": "getDocumentMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the document (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update document metadata by key",
+        "description": "Updates a specific metadata entry by key for the specified document",
+        "operationId": "updateDocumentMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the document (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "New value for the metadata entry"
+                  }
+                },
+                "required": ["value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata entry updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete document metadata by key",
+        "description": "Deletes a specific metadata entry by key for the specified document",
+        "operationId": "deleteDocumentMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the document (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Metadata entry deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/documents/{document_id}/metadata/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create document metadata",
+        "description": "Creates multiple metadata entries in a single operation for the specified document",
+        "operationId": "bulkCreateDocumentMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the document (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "maxItems": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entries created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/threat_models/{threat_model_id}/sources": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -5181,6 +6258,658 @@
         ],
         "responses": {
           "204": { "description": "Source reference deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/sources/{source_id}/metadata": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get source metadata",
+        "description": "Returns all metadata key-value pairs for the specified source reference",
+        "operationId": "getSourceMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the source reference (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source metadata list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create source metadata",
+        "description": "Creates new metadata entry for the specified source reference",
+        "operationId": "createSourceMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the source reference (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entry created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/sources/{source_id}/metadata/{key}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get source metadata by key",
+        "description": "Returns a specific metadata entry by key for the specified source reference",
+        "operationId": "getSourceMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the source reference (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update source metadata by key",
+        "description": "Updates a specific metadata entry by key for the specified source reference",
+        "operationId": "updateSourceMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the source reference (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "New value for the metadata entry"
+                  }
+                },
+                "required": ["value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata entry updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete source metadata by key",
+        "description": "Deletes a specific metadata entry by key for the specified source reference",
+        "operationId": "deleteSourceMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the source reference (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Metadata entry deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/sources/{source_id}/metadata/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create source metadata",
+        "description": "Creates multiple metadata entries in a single operation for the specified source reference",
+        "operationId": "bulkCreateSourceMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the source reference (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "maxItems": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entries created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/metadata": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get threat model metadata",
+        "description": "Returns all metadata key-value pairs for the specified threat model",
+        "operationId": "getThreatModelMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Threat model metadata list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create threat model metadata",
+        "description": "Creates new metadata entry for the specified threat model",
+        "operationId": "createThreatModelMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entry created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/metadata/{key}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get threat model metadata by key",
+        "description": "Returns a specific metadata entry by key for the specified threat model",
+        "operationId": "getThreatModelMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update threat model metadata by key",
+        "description": "Updates a specific metadata entry by key for the specified threat model",
+        "operationId": "updateThreatModelMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "New value for the metadata entry"
+                  }
+                },
+                "required": ["value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata entry updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete threat model metadata by key",
+        "description": "Deletes a specific metadata entry by key for the specified threat model",
+        "operationId": "deleteThreatModelMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "description": "Metadata key to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Metadata entry deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/metadata/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create threat model metadata",
+        "description": "Creates multiple metadata entries in a single operation for the specified threat model",
+        "operationId": "bulkCreateThreatModelMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "maxItems": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entries created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
           "401": { "$ref": "#/components/responses/Error" },
           "403": { "$ref": "#/components/responses/Error" },
           "404": { "$ref": "#/components/responses/Error" },
