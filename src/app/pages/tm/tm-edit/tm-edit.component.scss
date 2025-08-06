@@ -38,19 +38,7 @@
   width: 100%;
 }
 
-.cards-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-
-  @media (width >= 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (width >= 1200px) {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
-}
+// Cards are now displayed in a single column via the content-container flex layout
 
 // Issue URL container with form field and external edit button
 .issue-url-container {

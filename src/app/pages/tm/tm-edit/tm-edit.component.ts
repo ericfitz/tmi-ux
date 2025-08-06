@@ -1099,30 +1099,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel && this.threatModel.sourceCode) {
-          // Update the source code metadata
-          const sourceCodeIndex = this.threatModel.sourceCode.findIndex(
-            sc => sc.id === sourceCode.id,
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService.updateSourceMetadata(this.threatModel.id, sourceCode.id, result).subscribe(updatedMetadata => {
+              if (updatedMetadata && this.threatModel && this.threatModel.sourceCode) {
+                const sourceCodeIndex = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+                if (sourceCodeIndex !== -1) {
+                  this.threatModel.sourceCode[sourceCodeIndex].metadata = updatedMetadata;
+                }
+                this.logger.info('Updated source code metadata via API', {
+                  sourceCodeId: sourceCode.id,
+                  metadata: updatedMetadata,
+                });
+              }
+            }),
           );
-          if (sourceCodeIndex !== -1) {
-            this.threatModel.sourceCode[sourceCodeIndex].metadata = result;
-
-            // Update the threat model
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreatModel(this.threatModel)
-                .subscribe(updatedModel => {
-                  if (updatedModel) {
-                    this.threatModel = updatedModel;
-                  }
-                }),
-            );
-
-            this.logger.info('Updated source code metadata', {
-              sourceCodeId: sourceCode.id,
-              metadata: result,
-            });
-          }
         }
       }),
     );
@@ -1152,28 +1143,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel && this.threatModel.documents) {
-          // Update the document metadata
-          const documentIndex = this.threatModel.documents.findIndex(d => d.id === document.id);
-          if (documentIndex !== -1) {
-            this.threatModel.documents[documentIndex].metadata = result;
-
-            // Update the threat model
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreatModel(this.threatModel)
-                .subscribe(updatedModel => {
-                  if (updatedModel) {
-                    this.threatModel = updatedModel;
-                  }
-                }),
-            );
-
-            this.logger.info('Updated document metadata', {
-              documentId: document.id,
-              metadata: result,
-            });
-          }
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService.updateDocumentMetadata(this.threatModel.id, document.id, result).subscribe(updatedMetadata => {
+              if (updatedMetadata && this.threatModel && this.threatModel.documents) {
+                const documentIndex = this.threatModel.documents.findIndex(d => d.id === document.id);
+                if (documentIndex !== -1) {
+                  this.threatModel.documents[documentIndex].metadata = updatedMetadata;
+                }
+                this.logger.info('Updated document metadata via API', {
+                  documentId: document.id,
+                  metadata: updatedMetadata,
+                });
+              }
+            }),
+          );
         }
       }),
     );
@@ -1250,14 +1234,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
-          this.threatModel.metadata = result;
-          this.threatModel.modified_at = new Date().toISOString();
-
-          // Update the threat model
           this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-              if (updatedModel) {
-                this.threatModel = updatedModel;
+            this.threatModelService.updateThreatModelMetadata(this.threatModel.id, result).subscribe(updatedMetadata => {
+              if (updatedMetadata && this.threatModel) {
+                this.threatModel.metadata = updatedMetadata;
+                this.threatModel.modified_at = new Date().toISOString();
               }
             }),
           );
@@ -1290,21 +1271,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result) {
-          // Update the diagram metadata in the local diagrams array
-          const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-          if (diagramIndex !== -1) {
-            this.diagrams[diagramIndex].metadata = result;
-            this.diagrams[diagramIndex].modified_at = new Date().toISOString();
-
-            // Note: The threat model's diagrams array only contains IDs (strings), not full diagram objects
-            // In a real implementation, we would likely update the diagram via a separate API call
-            // For now, we just update the local diagram data
-            this.logger.info('Updated diagram metadata', {
-              diagramId: diagram.id,
-              metadata: result,
-            });
-          }
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService.updateDiagramMetadata(this.threatModel.id, diagram.id, result).subscribe(updatedMetadata => {
+              if (updatedMetadata) {
+                const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
+                if (diagramIndex !== -1) {
+                  this.diagrams[diagramIndex].metadata = updatedMetadata;
+                  this.diagrams[diagramIndex].modified_at = new Date().toISOString();
+                }
+                this.logger.info('Updated diagram metadata via API', {
+                  diagramId: diagram.id,
+                  metadata: updatedMetadata,
+                });
+              }
+            }),
+          );
         }
       }),
     );
@@ -1335,30 +1317,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
-          // Update the threat metadata in the local threats array
-          const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
-          if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
-            this.threatModel.threats[threatIndex].metadata = result;
-            this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
-            this.threatModel.modified_at = new Date().toISOString();
-
-            this.logger.info('Updated threat metadata', {
-              threatId: threat.id,
-              threatName: threat.name,
-              metadata: result,
-            });
-
-            // Update the threat model
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreatModel(this.threatModel)
-                .subscribe(updatedModel => {
-                  if (updatedModel) {
-                    this.threatModel = updatedModel;
-                  }
-                }),
-            );
-          }
+          this._subscriptions.add(
+            this.threatModelService.updateThreatMetadata(this.threatModel.id, threat.id, result).subscribe(updatedMetadata => {
+              if (updatedMetadata && this.threatModel) {
+                const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
+                if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
+                  this.threatModel.threats[threatIndex].metadata = updatedMetadata;
+                  this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
+                }
+                this.logger.info('Updated threat metadata via API', {
+                  threatId: threat.id,
+                  threatName: threat.name,
+                  metadata: updatedMetadata,
+                });
+              }
+            }),
+          );
         }
       }),
     );

@@ -22,7 +22,7 @@ import { Observable, of, Subscription, BehaviorSubject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
-import { ThreatModel, Document as TMDocument, Source } from '../models/threat-model.model';
+import { ThreatModel, Document as TMDocument, Source, Metadata } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -629,6 +629,217 @@ export class ThreatModelService implements OnDestroy {
       map(() => true), // Convert successful response to boolean true
       catchError(error => {
         this.logger.error(`Error deleting threat model with ID: ${id}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for a threat model
+   */
+  getThreatModelMetadata(threatModelId: string): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      return of(threatModel?.metadata || []);
+    }
+
+    return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/metadata`).pipe(
+      catchError(error => {
+        this.logger.error(`Error getting metadata for threat model ID: ${threatModelId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update metadata for a threat model
+   */
+  updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        threatModel.metadata = [...metadata];
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(metadata);
+    }
+
+    return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating metadata for threat model ID: ${threatModelId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for a diagram
+   */
+  getDiagramMetadata(threatModelId: string, diagramId: string): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      const diagram = threatModel?.diagrams?.find(d => d.id === diagramId);
+      return of(diagram?.metadata || []);
+    }
+
+    return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata`).pipe(
+      catchError(error => {
+        this.logger.error(`Error getting metadata for diagram ID: ${diagramId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update metadata for a diagram
+   */
+  updateDiagramMetadata(threatModelId: string, diagramId: string, metadata: Metadata[]): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        const diagram = threatModel.diagrams?.find(d => d.id === diagramId);
+        if (diagram) {
+          diagram.metadata = [...metadata];
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+      }
+      return of(metadata);
+    }
+
+    return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating metadata for diagram ID: ${diagramId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for a threat
+   */
+  getThreatMetadata(threatModelId: string, threatId: string): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      const threat = threatModel?.threats?.find(t => t.id === threatId);
+      return of(threat?.metadata || []);
+    }
+
+    return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/threats/${threatId}/metadata`).pipe(
+      catchError(error => {
+        this.logger.error(`Error getting metadata for threat ID: ${threatId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update metadata for a threat
+   */
+  updateThreatMetadata(threatModelId: string, threatId: string, metadata: Metadata[]): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        const threat = threatModel.threats?.find(t => t.id === threatId);
+        if (threat) {
+          threat.metadata = [...metadata];
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+      }
+      return of(metadata);
+    }
+
+    return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating metadata for threat ID: ${threatId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for a document
+   */
+  getDocumentMetadata(threatModelId: string, documentId: string): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      const document = threatModel?.documents?.find(d => d.id === documentId);
+      return of(document?.metadata || []);
+    }
+
+    return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/documents/${documentId}/metadata`).pipe(
+      catchError(error => {
+        this.logger.error(`Error getting metadata for document ID: ${documentId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update metadata for a document
+   */
+  updateDocumentMetadata(threatModelId: string, documentId: string, metadata: Metadata[]): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        const document = threatModel.documents?.find(d => d.id === documentId);
+        if (document) {
+          document.metadata = [...metadata];
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+      }
+      return of(metadata);
+    }
+
+    return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating metadata for document ID: ${documentId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for a source
+   */
+  getSourceMetadata(threatModelId: string, sourceId: string): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      const source = threatModel?.sourceCode?.find(s => s.id === sourceId);
+      return of(source?.metadata || []);
+    }
+
+    return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/sources/${sourceId}/metadata`).pipe(
+      catchError(error => {
+        this.logger.error(`Error getting metadata for source ID: ${sourceId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update metadata for a source
+   */
+  updateSourceMetadata(threatModelId: string, sourceId: string, metadata: Metadata[]): Observable<Metadata[]> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        const source = threatModel.sourceCode?.find(s => s.id === sourceId);
+        if (source) {
+          source.metadata = [...metadata];
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+      }
+      return of(metadata);
+    }
+
+    return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/sources/${sourceId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating metadata for source ID: ${sourceId}`, error);
         throw error;
       }),
     );

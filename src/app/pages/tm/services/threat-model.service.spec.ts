@@ -54,6 +54,7 @@ describe('ThreatModelService', () => {
     });
 
     // Create spy objects for the dependencies
+    const useMockDataSubject = new BehaviorSubject<boolean>(true);
     mockDataService = {
       getMockThreatModels: vi
         .fn()
@@ -67,7 +68,10 @@ describe('ThreatModelService', () => {
           description: 'Created for testing',
         }),
       ),
-      useMockData$: new BehaviorSubject<boolean>(true),
+      useMockData$: useMockDataSubject,
+      toggleMockData: vi.fn().mockImplementation((useMock: boolean) => {
+        useMockDataSubject.next(useMock);
+      }),
     } as unknown as MockDataService;
 
     loggerService = createMockLoggerService() as unknown as LoggerService;
@@ -199,6 +203,121 @@ describe('ThreatModelService', () => {
       service.getSourceCodeForThreatModel(testThreatModel1.id).subscribe(sourceCode => {
         expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources`);
         expect(sourceCode).toEqual(mockSourceCode);
+      });
+    }));
+  });
+
+  describe('Metadata API Methods', () => {
+    beforeEach(() => {
+      // Disable mock data for these tests
+      mockDataService.toggleMockData(false);
+    });
+
+    it('should get threat model metadata via API', waitForAsync(() => {
+      const mockMetadata = [{ key: 'test-key', value: 'test-value' }];
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
+
+      service.getThreatModelMetadata(testThreatModel1.id).subscribe(metadata => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/metadata`);
+        expect(metadata).toEqual(mockMetadata);
+      });
+    }));
+
+    it('should update threat model metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'updated-key', value: 'updated-value' }];
+      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+
+      service.updateThreatModelMetadata(testThreatModel1.id, metadata).subscribe(result => {
+        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/metadata/bulk`, metadata);
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should get diagram metadata via API', waitForAsync(() => {
+      const mockMetadata = [{ key: 'diagram-key', value: 'diagram-value' }];
+      const diagramId = 'test-diagram-id';
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
+
+      service.getDiagramMetadata(testThreatModel1.id, diagramId).subscribe(metadata => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata`);
+        expect(metadata).toEqual(mockMetadata);
+      });
+    }));
+
+    it('should update diagram metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'diagram-updated', value: 'diagram-updated-value' }];
+      const diagramId = 'test-diagram-id';
+      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+
+      service.updateDiagramMetadata(testThreatModel1.id, diagramId, metadata).subscribe(result => {
+        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata/bulk`, metadata);
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should get threat metadata via API', waitForAsync(() => {
+      const mockMetadata = [{ key: 'threat-key', value: 'threat-value' }];
+      const threatId = 'test-threat-id';
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
+
+      service.getThreatMetadata(testThreatModel1.id, threatId).subscribe(metadata => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}/metadata`);
+        expect(metadata).toEqual(mockMetadata);
+      });
+    }));
+
+    it('should update threat metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'threat-updated', value: 'threat-updated-value' }];
+      const threatId = 'test-threat-id';
+      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+
+      service.updateThreatMetadata(testThreatModel1.id, threatId, metadata).subscribe(result => {
+        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}/metadata/bulk`, metadata);
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should get document metadata via API', waitForAsync(() => {
+      const mockMetadata = [{ key: 'doc-key', value: 'doc-value' }];
+      const documentId = 'test-doc-id';
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
+
+      service.getDocumentMetadata(testThreatModel1.id, documentId).subscribe(metadata => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}/metadata`);
+        expect(metadata).toEqual(mockMetadata);
+      });
+    }));
+
+    it('should update document metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'doc-updated', value: 'doc-updated-value' }];
+      const documentId = 'test-doc-id';
+      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+
+      service.updateDocumentMetadata(testThreatModel1.id, documentId, metadata).subscribe(result => {
+        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}/metadata/bulk`, metadata);
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should get source metadata via API', waitForAsync(() => {
+      const mockMetadata = [{ key: 'source-key', value: 'source-value' }];
+      const sourceId = 'test-source-id';
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
+
+      service.getSourceMetadata(testThreatModel1.id, sourceId).subscribe(metadata => {
+        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata`);
+        expect(metadata).toEqual(mockMetadata);
+      });
+    }));
+
+    it('should update source metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'source-updated', value: 'source-updated-value' }];
+      const sourceId = 'test-source-id';
+      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+
+      service.updateSourceMetadata(testThreatModel1.id, sourceId, metadata).subscribe(result => {
+        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata/bulk`, metadata);
+        expect(result).toEqual(metadata);
       });
     }));
   });
