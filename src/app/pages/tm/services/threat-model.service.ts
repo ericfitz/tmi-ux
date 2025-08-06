@@ -22,7 +22,7 @@ import { Observable, of, Subscription, BehaviorSubject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
-import { ThreatModel, Document as TMDocument, Source, Metadata } from '../models/threat-model.model';
+import { ThreatModel, Document as TMDocument, Source, Metadata, Threat } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -629,6 +629,344 @@ export class ThreatModelService implements OnDestroy {
       map(() => true), // Convert successful response to boolean true
       catchError(error => {
         this.logger.error(`Error deleting threat model with ID: ${id}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Create a new threat in a threat model
+   */
+  createThreat(threatModelId: string, threat: Partial<Threat>): Observable<Threat> {
+    if (this._useMockData) {
+      const newThreat: Threat = {
+        ...threat,
+        id: uuidv4(),
+        threat_model_id: threatModelId,
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      } as Threat;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.threats) {
+          threatModel.threats = [];
+        }
+        threatModel.threats.push(newThreat);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newThreat);
+    }
+
+    return this.apiService.post<Threat>(`threat_models/${threatModelId}/threats`, threat as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error creating threat in threat model ID: ${threatModelId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update a threat in a threat model
+   */
+  updateThreat(threatModelId: string, threatId: string, threat: Partial<Threat>): Observable<Threat> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.threats) {
+        const index = threatModel.threats.findIndex(t => t.id === threatId);
+        if (index !== -1) {
+          threatModel.threats[index] = { ...threatModel.threats[index], ...threat, modified_at: new Date().toISOString() };
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          return of(threatModel.threats[index]);
+        }
+      }
+      return of(threat as Threat);
+    }
+
+    return this.apiService.put<Threat>(`threat_models/${threatModelId}/threats/${threatId}`, threat as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating threat ID: ${threatId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Delete a threat from a threat model
+   */
+  deleteThreat(threatModelId: string, threatId: string): Observable<boolean> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.threats) {
+        const initialLength = threatModel.threats.length;
+        threatModel.threats = threatModel.threats.filter(t => t.id !== threatId);
+        const wasDeleted = threatModel.threats.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    return this.apiService.delete(`threat_models/${threatModelId}/threats/${threatId}`).pipe(
+      map(() => true),
+      catchError(error => {
+        this.logger.error(`Error deleting threat ID: ${threatId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Create a new document in a threat model
+   */
+  createDocument(threatModelId: string, document: Partial<TMDocument>): Observable<TMDocument> {
+    if (this._useMockData) {
+      const newDocument: TMDocument = {
+        ...document,
+        id: uuidv4(),
+        metadata: [],
+      } as TMDocument;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.documents) {
+          threatModel.documents = [];
+        }
+        threatModel.documents.push(newDocument);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newDocument);
+    }
+
+    return this.apiService.post<TMDocument>(`threat_models/${threatModelId}/documents`, document as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error creating document in threat model ID: ${threatModelId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update a document in a threat model
+   */
+  updateDocument(threatModelId: string, documentId: string, document: Partial<TMDocument>): Observable<TMDocument> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.documents) {
+        const index = threatModel.documents.findIndex(d => d.id === documentId);
+        if (index !== -1) {
+          threatModel.documents[index] = { ...threatModel.documents[index], ...document };
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          return of(threatModel.documents[index]);
+        }
+      }
+      return of(document as TMDocument);
+    }
+
+    return this.apiService.put<TMDocument>(`threat_models/${threatModelId}/documents/${documentId}`, document as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating document ID: ${documentId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Delete a document from a threat model
+   */
+  deleteDocument(threatModelId: string, documentId: string): Observable<boolean> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.documents) {
+        const initialLength = threatModel.documents.length;
+        threatModel.documents = threatModel.documents.filter(d => d.id !== documentId);
+        const wasDeleted = threatModel.documents.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    return this.apiService.delete(`threat_models/${threatModelId}/documents/${documentId}`).pipe(
+      map(() => true),
+      catchError(error => {
+        this.logger.error(`Error deleting document ID: ${documentId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Create a new source in a threat model
+   */
+  createSource(threatModelId: string, source: Partial<Source>): Observable<Source> {
+    if (this._useMockData) {
+      const newSource: Source = {
+        ...source,
+        id: uuidv4(),
+        metadata: [],
+      } as Source;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.sourceCode) {
+          threatModel.sourceCode = [];
+        }
+        threatModel.sourceCode.push(newSource);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newSource);
+    }
+
+    return this.apiService.post<Source>(`threat_models/${threatModelId}/sources`, source as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error creating source in threat model ID: ${threatModelId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update a source in a threat model
+   */
+  updateSource(threatModelId: string, sourceId: string, source: Partial<Source>): Observable<Source> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.sourceCode) {
+        const index = threatModel.sourceCode.findIndex(s => s.id === sourceId);
+        if (index !== -1) {
+          threatModel.sourceCode[index] = { ...threatModel.sourceCode[index], ...source };
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          return of(threatModel.sourceCode[index]);
+        }
+      }
+      return of(source as Source);
+    }
+
+    return this.apiService.put<Source>(`threat_models/${threatModelId}/sources/${sourceId}`, source as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating source ID: ${sourceId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Delete a source from a threat model
+   */
+  deleteSource(threatModelId: string, sourceId: string): Observable<boolean> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.sourceCode) {
+        const initialLength = threatModel.sourceCode.length;
+        threatModel.sourceCode = threatModel.sourceCode.filter(s => s.id !== sourceId);
+        const wasDeleted = threatModel.sourceCode.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    return this.apiService.delete(`threat_models/${threatModelId}/sources/${sourceId}`).pipe(
+      map(() => true),
+      catchError(error => {
+        this.logger.error(`Error deleting source ID: ${sourceId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Create a new diagram in a threat model
+   */
+  createDiagram(threatModelId: string, diagram: Partial<Diagram>): Observable<Diagram> {
+    if (this._useMockData) {
+      const newDiagram: Diagram = {
+        ...diagram,
+        id: uuidv4(),
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        metadata: [],
+        cells: [],
+      } as Diagram;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.diagrams) {
+          threatModel.diagrams = [];
+        }
+        (threatModel.diagrams as unknown as string[]).push(newDiagram.id);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newDiagram);
+    }
+
+    return this.apiService.post<Diagram>(`threat_models/${threatModelId}/diagrams`, diagram as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error creating diagram in threat model ID: ${threatModelId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update a diagram in a threat model
+   */
+  updateDiagram(threatModelId: string, diagramId: string, diagram: Partial<Diagram>): Observable<Diagram> {
+    if (this._useMockData) {
+      // For mock mode, we'd need to update the diagram in the mock data service
+      // This is more complex as diagrams are stored separately from threat models
+      return of({ ...diagram, modified_at: new Date().toISOString() } as Diagram);
+    }
+
+    return this.apiService.put<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`, diagram as unknown as Record<string, unknown>).pipe(
+      catchError(error => {
+        this.logger.error(`Error updating diagram ID: ${diagramId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Delete a diagram from a threat model
+   */
+  deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.diagrams) {
+        const initialLength = threatModel.diagrams.length;
+        const filteredDiagrams = (threatModel.diagrams as unknown as string[]).filter(d => d !== diagramId);
+        threatModel.diagrams = filteredDiagrams as unknown as Diagram[];
+        const wasDeleted = filteredDiagrams.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    return this.apiService.delete(`threat_models/${threatModelId}/diagrams/${diagramId}`).pipe(
+      map(() => true),
+      catchError(error => {
+        this.logger.error(`Error deleting diagram ID: ${diagramId}`, error);
         throw error;
       }),
     );

@@ -8,7 +8,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { v4 as uuidv4 } from 'uuid';
 import { LanguageService } from '../../../i18n/language.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { environment } from '../../../../environments/environment';
@@ -477,7 +476,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe(result => {
         if (result && this.threatModel) {
-          const now = new Date().toISOString();
 
           // Type the result to avoid unsafe assignments
           interface ThreatFormResult {
@@ -496,14 +494,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
           const formResult = result as ThreatFormResult;
 
           if (mode === 'create') {
-            // Create a new threat
-            const newThreat: Threat = {
-              id: uuidv4(),
-              threat_model_id: this.threatModel.id,
+            // Create a new threat via API
+            const newThreatData: Partial<Threat> = {
               name: formResult.name,
               description: formResult.description,
-              created_at: now,
-              modified_at: now,
               severity: formResult.severity || 'High',
               threat_type: formResult.threat_type || 'Information Disclosure',
               diagram_id: formResult.diagram_id,
@@ -519,44 +513,44 @@ export class TmEditComponent implements OnInit, OnDestroy {
               ],
             };
 
-            // Add the threat to the threat model
-            if (!this.threatModel.threats) {
-              this.threatModel.threats = [];
-            }
-            this.threatModel.threats.push(newThreat);
-
-            // Update framework control state since we added a threat
-            this.updateFrameworkControlState();
+            this._subscriptions.add(
+              this.threatModelService.createThreat(this.threatModel.id, newThreatData).subscribe(newThreat => {
+                // Add the new threat to local state
+                if (!this.threatModel?.threats) {
+                  this.threatModel!.threats = [];
+                }
+                this.threatModel!.threats.push(newThreat);
+                
+                // Update framework control state since we added a threat
+                this.updateFrameworkControlState();
+              }),
+            );
           } else if (mode === 'edit' && threat) {
-            // Update an existing threat
-            const index = this.threatModel.threats?.findIndex(t => t.id === threat.id) ?? -1;
-            if (index !== -1 && this.threatModel.threats) {
-              this.threatModel.threats[index] = {
-                ...threat,
-                name: formResult.name,
-                description: formResult.description,
-                severity: formResult.severity || threat.severity,
-                threat_type: formResult.threat_type || threat.threat_type,
-                diagram_id: formResult.diagram_id,
-                cell_id: formResult.cell_id,
-                score: formResult.score,
-                priority: formResult.priority,
-                mitigated: formResult.mitigated,
-                status: formResult.status,
-                issue_url: formResult.issue_url,
-                modified_at: now,
-              };
-            }
-          }
+            // Update an existing threat via API
+            const updatedThreatData: Partial<Threat> = {
+              name: formResult.name,
+              description: formResult.description,
+              severity: formResult.severity || threat.severity,
+              threat_type: formResult.threat_type || threat.threat_type,
+              diagram_id: formResult.diagram_id,
+              cell_id: formResult.cell_id,
+              score: formResult.score,
+              priority: formResult.priority,
+              mitigated: formResult.mitigated,
+              status: formResult.status,
+              issue_url: formResult.issue_url,
+            };
 
-          // Update the threat model
-          this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-              if (updatedModel) {
-                this.threatModel = updatedModel;
-              }
-            }),
-          );
+            this._subscriptions.add(
+              this.threatModelService.updateThreat(this.threatModel.id, threat.id, updatedThreatData).subscribe(updatedThreat => {
+                // Update the threat in local state
+                const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
+                if (index !== -1 && this.threatModel?.threats) {
+                  this.threatModel.threats[index] = updatedThreat;
+                }
+              }),
+            );
+          }
         }
       }),
     );
@@ -581,23 +575,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
     );
 
     if (confirmDelete) {
-      // Remove the threat from the threat model
-      const index = this.threatModel.threats.findIndex(t => t.id === threat.id);
-      if (index !== -1) {
-        this.threatModel.threats.splice(index, 1);
-
-        // Update framework control state since we removed a threat
-        this.updateFrameworkControlState();
-
-        // Update the threat model
-        this._subscriptions.add(
-          this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
-            if (result) {
-              this.threatModel = result;
+      // Delete the threat via API
+      this._subscriptions.add(
+        this.threatModelService.deleteThreat(this.threatModel.id, threat.id).subscribe(success => {
+          if (success) {
+            // Remove the threat from local state
+            const index = this.threatModel!.threats!.findIndex(t => t.id === threat.id);
+            if (index !== -1) {
+              this.threatModel!.threats!.splice(index, 1);
+              
+              // Update framework control state since we removed a threat
+              this.updateFrameworkControlState();
             }
-          }),
-        );
-      }
+          }
+        }),
+      );
     }
   }
 
@@ -615,34 +607,34 @@ export class TmEditComponent implements OnInit, OnDestroy {
         .afterClosed()
         .subscribe((diagramData: { name: string; type: string } | undefined) => {
           if (diagramData && this.threatModel) {
-            // Create a new diagram with UUID, name, and type
-            const now = new Date().toISOString();
-            const newDiagram: Diagram = {
-              id: uuidv4(),
+            // Create a new diagram via API
+            const newDiagramData: Partial<Diagram> = {
               name: diagramData.name,
-              created_at: now,
-              modified_at: now,
               type: diagramData.type,
             };
 
-            // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
-            DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
-
-            // Add the diagram object directly to the threat model
-            if (!this.threatModel.diagrams) {
-              this.threatModel.diagrams = [];
-            }
-            this.threatModel.diagrams.push(newDiagram);
-
-            // Update the threat model
             this._subscriptions.add(
-              this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
-                if (result) {
-                  this.threatModel = result;
+              this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe(newDiagram => {
+                // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
+                DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
 
-                  // Add the new diagram to the diagrams array for display
-                  this.diagrams.push(newDiagram);
+                // Add the new diagram to local state
+                if (!this.threatModel?.diagrams) {
+                  this.threatModel!.diagrams = [];
                 }
+                
+                // The API returns diagram objects, but threat model stores IDs or objects
+                if (this.threatModel && this.threatModel.diagrams && 
+                    Array.isArray(this.threatModel.diagrams) && 
+                    this.threatModel.diagrams.length > 0 && 
+                    typeof this.threatModel.diagrams[0] === 'string') {
+                  (this.threatModel.diagrams as unknown as string[]).push(newDiagram.id);
+                } else if (this.threatModel && this.threatModel.diagrams) {
+                  (this.threatModel.diagrams as unknown as Diagram[]).push(newDiagram);
+                }
+
+                // Add the new diagram to the diagrams array for display
+                this.diagrams.push(newDiagram);
               }),
             );
           }
@@ -744,26 +736,29 @@ export class TmEditComponent implements OnInit, OnDestroy {
     );
 
     if (confirmDelete) {
-      // Remove the diagram object from the threat model
-      const index = this.threatModel.diagrams?.findIndex(d => d.id === diagram.id) ?? -1;
-      if (index !== -1 && this.threatModel.diagrams) {
-        this.threatModel.diagrams.splice(index, 1);
-
-        // Remove the diagram from the local array
-        const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-        if (diagramIndex !== -1) {
-          this.diagrams.splice(diagramIndex, 1);
-        }
-
-        // Update the threat model
-        this._subscriptions.add(
-          this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
-            if (result) {
-              this.threatModel = result;
+      // Delete the diagram via API
+      this._subscriptions.add(
+        this.threatModelService.deleteDiagram(this.threatModel.id, diagram.id).subscribe(success => {
+          if (success && this.threatModel && this.threatModel.diagrams) {
+            // Remove the diagram from local state
+            const index = this.threatModel.diagrams.findIndex((d: string | Diagram) => 
+              (typeof d === 'string' ? d : d.id) === diagram.id
+            );
+            if (index !== -1) {
+              this.threatModel.diagrams.splice(index, 1);
             }
-          }),
-        );
-      }
+
+            // Remove the diagram from the local array
+            const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
+            if (diagramIndex !== -1) {
+              this.diagrams.splice(diagramIndex, 1);
+            }
+
+            // Remove from DIAGRAMS_BY_ID map
+            DIAGRAMS_BY_ID.delete(diagram.id);
+          }
+        }),
+      );
     }
   }
 
@@ -784,27 +779,20 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: DocumentFormResult | undefined) => {
         if (result && this.threatModel) {
-          // Create a new document with UUID
-          const newDocument: Document = {
-            id: uuidv4(),
+          // Create a new document via API
+          const newDocumentData: Partial<Document> = {
             name: result.name,
             url: result.url,
             description: result.description || undefined,
-            metadata: [],
           };
 
-          // Add the document to the threat model
-          if (!this.threatModel.documents) {
-            this.threatModel.documents = [];
-          }
-          this.threatModel.documents.push(newDocument);
-
-          // Update the threat model
           this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-              if (updatedModel) {
-                this.threatModel = updatedModel;
+            this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe(newDocument => {
+              // Add the new document to local state
+              if (!this.threatModel?.documents) {
+                this.threatModel!.documents = [];
               }
+              this.threatModel!.documents.push(newDocument);
             }),
           );
         }
@@ -838,28 +826,25 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: DocumentFormResult | undefined) => {
-        if (result && this.threatModel && this.threatModel.documents) {
-          // Update the existing document
-          const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-          if (index !== -1) {
-            this.threatModel.documents[index] = {
-              ...document,
-              name: result.name,
-              url: result.url,
-              description: result.description || undefined,
-            };
+        if (result && this.threatModel) {
+          // Update the document via API
+          const updatedDocumentData: Partial<Document> = {
+            name: result.name,
+            url: result.url,
+            description: result.description || undefined,
+          };
 
-            // Update the threat model
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreatModel(this.threatModel)
-                .subscribe(updatedModel => {
-                  if (updatedModel) {
-                    this.threatModel = updatedModel;
-                  }
-                }),
-            );
-          }
+          this._subscriptions.add(
+            this.threatModelService.updateDocument(this.threatModel.id, document.id, updatedDocumentData).subscribe(updatedDocument => {
+              // Update the document in local state
+              if (this.threatModel && this.threatModel.documents) {
+                const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+                if (index !== -1) {
+                  this.threatModel.documents[index] = updatedDocument;
+                }
+              }
+            }),
+          );
         }
       }),
     );
@@ -886,20 +871,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const confirmDelete = window.confirm(confirmMessage);
 
     if (confirmDelete) {
-      // Remove the document from the threat model
-      const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-      if (index !== -1) {
-        this.threatModel.documents.splice(index, 1);
-
-        // Update the threat model
-        this._subscriptions.add(
-          this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
-            if (result) {
-              this.threatModel = result;
+      // Delete the document via API
+      this._subscriptions.add(
+        this.threatModelService.deleteDocument(this.threatModel.id, document.id).subscribe(success => {
+          if (success && this.threatModel && this.threatModel.documents) {
+            // Remove the document from local state
+            const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+            if (index !== -1) {
+              this.threatModel.documents.splice(index, 1);
             }
-          }),
-        );
-      }
+          }
+        }),
+      );
     }
   }
 
@@ -933,29 +916,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: SourceCodeFormResult | undefined) => {
         if (result && this.threatModel) {
-          // Create a new source code with UUID
-          const newSourceCode: Source = {
-            id: uuidv4(),
+          // Create a new source code via API
+          const newSourceData: Partial<Source> = {
             name: result.name,
             description: result.description || undefined,
             type: result.type,
             url: result.url,
             parameters: result.parameters,
-            metadata: [],
           };
 
-          // Add the source code to the threat model
-          if (!this.threatModel.sourceCode) {
-            this.threatModel.sourceCode = [];
-          }
-          this.threatModel.sourceCode.push(newSourceCode);
-
-          // Update the threat model
           this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-              if (updatedModel) {
-                this.threatModel = updatedModel;
+            this.threatModelService.createSource(this.threatModel.id, newSourceData).subscribe(newSource => {
+              // Add the new source to local state
+              if (!this.threatModel?.sourceCode) {
+                this.threatModel!.sourceCode = [];
               }
+              this.threatModel!.sourceCode.push(newSource);
             }),
           );
         }
@@ -989,30 +965,27 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: SourceCodeFormResult | undefined) => {
-        if (result && this.threatModel && this.threatModel.sourceCode) {
-          // Update the existing source code
-          const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
-          if (index !== -1) {
-            this.threatModel.sourceCode[index] = {
-              ...sourceCode,
-              name: result.name,
-              description: result.description || undefined,
-              type: result.type,
-              url: result.url,
-              parameters: result.parameters,
-            };
+        if (result && this.threatModel) {
+          // Update the source code via API
+          const updatedSourceData: Partial<Source> = {
+            name: result.name,
+            description: result.description || undefined,
+            type: result.type,
+            url: result.url,
+            parameters: result.parameters,
+          };
 
-            // Update the threat model
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreatModel(this.threatModel)
-                .subscribe(updatedModel => {
-                  if (updatedModel) {
-                    this.threatModel = updatedModel;
-                  }
-                }),
-            );
-          }
+          this._subscriptions.add(
+            this.threatModelService.updateSource(this.threatModel.id, sourceCode.id, updatedSourceData).subscribe(updatedSource => {
+              // Update the source in local state
+              if (this.threatModel && this.threatModel.sourceCode) {
+                const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+                if (index !== -1) {
+                  this.threatModel.sourceCode[index] = updatedSource;
+                }
+              }
+            }),
+          );
         }
       }),
     );
@@ -1039,20 +1012,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const confirmDelete = window.confirm(confirmMessage);
 
     if (confirmDelete) {
-      // Remove the source code from the threat model
-      const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
-      if (index !== -1) {
-        this.threatModel.sourceCode.splice(index, 1);
-
-        // Update the threat model
-        this._subscriptions.add(
-          this.threatModelService.updateThreatModel(this.threatModel).subscribe(result => {
-            if (result) {
-              this.threatModel = result;
+      // Delete the source code via API
+      this._subscriptions.add(
+        this.threatModelService.deleteSource(this.threatModel.id, sourceCode.id).subscribe(success => {
+          if (success && this.threatModel && this.threatModel.sourceCode) {
+            // Remove the source from local state
+            const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+            if (index !== -1) {
+              this.threatModel.sourceCode.splice(index, 1);
             }
-          }),
-        );
-      }
+          }
+        }),
+      );
     }
   }
 

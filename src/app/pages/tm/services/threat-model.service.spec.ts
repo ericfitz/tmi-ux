@@ -321,4 +321,151 @@ describe('ThreatModelService', () => {
       });
     }));
   });
+
+  describe('Entity API Methods', () => {
+    beforeEach(() => {
+      // Disable mock data for these tests
+      mockDataService.toggleMockData(false);
+    });
+
+    describe('Threat API Methods', () => {
+      it('should create a threat via API', waitForAsync(() => {
+        const threatData = { name: 'Test Threat', description: 'A test threat', severity: 'High' as const, threat_type: 'Information Disclosure' };
+        const expectedThreat = { ...threatData, id: 'new-threat-id', threat_model_id: testThreatModel1.id };
+        vi.spyOn(apiService, 'post').mockReturnValue(of(expectedThreat));
+
+        service.createThreat(testThreatModel1.id, threatData).subscribe(result => {
+          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats`, threatData);
+          expect(result).toEqual(expectedThreat);
+        });
+      }));
+
+      it('should update a threat via API', waitForAsync(() => {
+        const threatData = { name: 'Updated Threat', severity: 'Critical' as const };
+        const threatId = 'test-threat-id';
+        const expectedThreat = { ...threatData, id: threatId };
+        vi.spyOn(apiService, 'put').mockReturnValue(of(expectedThreat));
+
+        service.updateThreat(testThreatModel1.id, threatId, threatData).subscribe(result => {
+          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}`, threatData);
+          expect(result).toEqual(expectedThreat);
+        });
+      }));
+
+      it('should delete a threat via API', waitForAsync(() => {
+        const threatId = 'test-threat-id';
+        vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
+
+        service.deleteThreat(testThreatModel1.id, threatId).subscribe(result => {
+          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}`);
+          expect(result).toBe(true);
+        });
+      }));
+    });
+
+    describe('Document API Methods', () => {
+      it('should create a document via API', waitForAsync(() => {
+        const documentData = { name: 'Test Doc', url: 'http://example.com', description: 'A test document' };
+        const expectedDocument = { ...documentData, id: 'new-doc-id' };
+        vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDocument));
+
+        service.createDocument(testThreatModel1.id, documentData).subscribe(result => {
+          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents`, documentData);
+          expect(result).toEqual(expectedDocument);
+        });
+      }));
+
+      it('should update a document via API', waitForAsync(() => {
+        const documentData = { name: 'Updated Doc', url: 'http://updated.com' };
+        const documentId = 'test-doc-id';
+        const expectedDocument = { ...documentData, id: documentId };
+        vi.spyOn(apiService, 'put').mockReturnValue(of(expectedDocument));
+
+        service.updateDocument(testThreatModel1.id, documentId, documentData).subscribe(result => {
+          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}`, documentData);
+          expect(result).toEqual(expectedDocument);
+        });
+      }));
+
+      it('should delete a document via API', waitForAsync(() => {
+        const documentId = 'test-doc-id';
+        vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
+
+        service.deleteDocument(testThreatModel1.id, documentId).subscribe(result => {
+          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}`);
+          expect(result).toBe(true);
+        });
+      }));
+    });
+
+    describe('Source API Methods', () => {
+      it('should create a source via API', waitForAsync(() => {
+        const sourceData = { name: 'Test Source', url: 'http://github.com/test', type: 'git' as const };
+        const expectedSource = { ...sourceData, id: 'new-source-id' };
+        vi.spyOn(apiService, 'post').mockReturnValue(of(expectedSource));
+
+        service.createSource(testThreatModel1.id, sourceData).subscribe(result => {
+          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources`, sourceData);
+          expect(result).toEqual(expectedSource);
+        });
+      }));
+
+      it('should update a source via API', waitForAsync(() => {
+        const sourceData = { name: 'Updated Source', url: 'http://github.com/updated' };
+        const sourceId = 'test-source-id';
+        const expectedSource = { ...sourceData, id: sourceId };
+        vi.spyOn(apiService, 'put').mockReturnValue(of(expectedSource));
+
+        service.updateSource(testThreatModel1.id, sourceId, sourceData).subscribe(result => {
+          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}`, sourceData);
+          expect(result).toEqual(expectedSource);
+        });
+      }));
+
+      it('should delete a source via API', waitForAsync(() => {
+        const sourceId = 'test-source-id';
+        vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
+
+        service.deleteSource(testThreatModel1.id, sourceId).subscribe(result => {
+          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}`);
+          expect(result).toBe(true);
+        });
+      }));
+    });
+
+    describe('Diagram API Methods', () => {
+      it('should create a diagram via API', waitForAsync(() => {
+        const diagramData = { name: 'Test Diagram', type: 'DFD-1.0.0' };
+        const expectedDiagram = { ...diagramData, id: 'new-diagram-id' };
+        vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDiagram));
+
+        service.createDiagram(testThreatModel1.id, diagramData).subscribe(result => {
+          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams`, diagramData);
+          expect(result).toEqual(expectedDiagram);
+        });
+      }));
+
+      it('should update a diagram via API', waitForAsync(() => {
+        const diagramData = { name: 'Updated Diagram', type: 'DFD-2.0.0' };
+        const diagramId = 'test-diagram-id';
+        const expectedDiagram = { ...diagramData, id: diagramId };
+        vi.spyOn(apiService, 'put').mockReturnValue(of(expectedDiagram));
+
+        service.updateDiagram(testThreatModel1.id, diagramId, diagramData).subscribe(result => {
+          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}`, diagramData);
+          expect(result).toEqual(expectedDiagram);
+        });
+      }));
+
+      it('should delete a diagram via API', waitForAsync(() => {
+        const diagramId = 'test-diagram-id';
+        vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
+
+        service.deleteDiagram(testThreatModel1.id, diagramId).subscribe(result => {
+          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}`);
+          expect(result).toBe(true);
+        });
+      }));
+    });
+  });
 });
