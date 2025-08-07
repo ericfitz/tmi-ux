@@ -26,6 +26,7 @@ import { LoggerService } from '../core/services/logger.service';
 
 import { ThreatModel } from '../pages/tm/models/threat-model.model';
 import { Diagram } from '../pages/tm/models/diagram.model';
+import { CollaborationSession } from '../core/services/collaboration-session.service';
 
 import { createMockThreatModel } from './factories/threat-model.factory';
 import { createMockDiagram } from './factories/diagram.factory';
@@ -46,6 +47,7 @@ export class MockDataService implements OnDestroy {
 
   // Cached mock data
   private _mockThreatModels: ThreatModel[] = [];
+  private _mockCollaborationSessions: CollaborationSession[] = [];
 
   // Map of all diagrams by ID for quick lookup
   private _mockDiagramsMap = new Map<string, Diagram>();
@@ -67,6 +69,9 @@ export class MockDataService implements OnDestroy {
 
     // Load JSON data on initialization
     this.loadMockData();
+    
+    // Initialize mock collaboration sessions
+    this.initializeMockCollaborationSessions();
   }
 
   // Public observable for components to subscribe to
@@ -201,6 +206,23 @@ export class MockDataService implements OnDestroy {
   }
 
   /**
+   * Get all mock collaboration sessions
+   * @returns Array of CollaborationSession objects
+   */
+  getMockCollaborationSessions(): CollaborationSession[] {
+    return [...this._mockCollaborationSessions];
+  }
+
+  /**
+   * Get a mock collaboration session by ID
+   * @param id The ID of the collaboration session to retrieve
+   * @returns The collaboration session with the specified ID, or undefined if not found
+   */
+  getMockCollaborationSessionById(id: string): CollaborationSession | undefined {
+    return this._mockCollaborationSessions.find(session => session.id === id);
+  }
+
+  /**
    * Clean up resources when the service is destroyed
    */
   ngOnDestroy(): void {
@@ -280,6 +302,49 @@ export class MockDataService implements OnDestroy {
     this.logger.debugComponent(
       'MockData',
       `Initialized diagrams map with ${this._mockDiagramsMap.size} diagrams`,
+    );
+  }
+
+  /**
+   * Initialize mock collaboration sessions with realistic data
+   */
+  private initializeMockCollaborationSessions(): void {
+    this._mockCollaborationSessions = [
+      {
+        id: 'collab-session-1',
+        threatModelId: '550e8400-e29b-41d4-a716-446655440000',
+        threatModelName: 'E-commerce Platform Security Analysis',
+        diagramId: '123e4567-e89b-12d3-a456-426614174000',
+        diagramName: 'Payment Processing Flow',
+        hostUser: 'alice.security@company.com',
+        startedAt: new Date(Date.now() - 15 * 60 * 1000), // Started 15 minutes ago
+        activeUsers: 3,
+      },
+      {
+        id: 'collab-session-2',
+        threatModelId: '550e8400-e29b-41d4-a716-446655440001',
+        threatModelName: 'Cloud Infrastructure Threat Model',
+        diagramId: '223e4567-e89b-12d3-a456-426614174000',
+        diagramName: 'Microservices Architecture',
+        hostUser: 'bob.architect@company.com',
+        startedAt: new Date(Date.now() - 45 * 60 * 1000), // Started 45 minutes ago
+        activeUsers: 2,
+      },
+      {
+        id: 'collab-session-3',
+        threatModelId: '550e8400-e29b-41d4-a716-446655440002',
+        threatModelName: 'Mobile App Security Review',
+        diagramId: '323e4567-e89b-12d3-a456-426614174000',
+        diagramName: 'Authentication Flow',
+        hostUser: 'carol.mobile@company.com',
+        startedAt: new Date(Date.now() - 5 * 60 * 1000), // Started 5 minutes ago
+        activeUsers: 4,
+      },
+    ];
+
+    this.logger.debugComponent(
+      'MockData',
+      `Initialized ${this._mockCollaborationSessions.length} mock collaboration sessions`,
     );
   }
 

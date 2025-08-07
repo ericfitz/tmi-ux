@@ -115,9 +115,10 @@ export class ThreatModelReportService {
     if (threatModel.description) {
       doc.setFontSize(12);
       doc.setTextColor(102, 102, 102);
-      const descriptionLines = doc.splitTextToSize(threatModel.description, contentWidth);
+      const descriptionLines = doc.splitTextToSize(threatModel.description, contentWidth) as string | string[];
+      const linesArray = Array.isArray(descriptionLines) ? descriptionLines : [descriptionLines];
       doc.text(descriptionLines, margin, yPosition);
-      yPosition += descriptionLines.length * 5 + 10;
+      yPosition += linesArray.length * 5 + 10;
     }
 
     // Basic Information Section
@@ -253,21 +254,23 @@ export class ThreatModelReportService {
         currentY = 20;
       }
       
-      const nameLines = doc.splitTextToSize(threat.name, width * 0.28);
-      const descLines = doc.splitTextToSize(threat.description || '', width * 0.9);
+      const nameLines = doc.splitTextToSize(threat.name, width * 0.28) as string | string[];
+      const descLines = doc.splitTextToSize(threat.description || '', width * 0.9) as string | string[];
+      const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
+      const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
       
       doc.text(nameLines, x, currentY);
       doc.text(threat.severity, x + width * 0.3, currentY);
       doc.text(threat.status || 'Unknown', x + width * 0.5, currentY);
       doc.text(threat.threat_type, x + width * 0.7, currentY);
       
-      currentY += Math.max(nameLines.length * 4, 8);
+      currentY += Math.max(nameLinesArray.length * 4, 8);
       
       if (threat.description) {
         doc.setFontSize(8);
         doc.setTextColor(102, 102, 102);
-        doc.text(descLines.slice(0, 2), x, currentY); // Limit to 2 lines
-        currentY += Math.min(descLines.length, 2) * 4 + 4;
+        doc.text(descLinesArray.slice(0, 2), x, currentY); // Limit to 2 lines
+        currentY += Math.min(descLinesArray.length, 2) * 4 + 4;
         doc.setFontSize(9);
         doc.setTextColor(0, 0, 0);
       }
@@ -306,20 +309,23 @@ export class ThreatModelReportService {
         currentY = 20;
       }
       
-      const nameLines = doc.splitTextToSize(document.name, width * 0.35);
-      const urlLines = doc.splitTextToSize(document.url, width * 0.55);
+      const nameLines = doc.splitTextToSize(document.name, width * 0.35) as string | string[];
+      const urlLines = doc.splitTextToSize(document.url, width * 0.55) as string | string[];
+      const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
+      const urlLinesArray = Array.isArray(urlLines) ? urlLines : [urlLines];
       
       doc.text(nameLines, x, currentY);
       doc.text(urlLines, x + width * 0.4, currentY);
       
-      currentY += Math.max(nameLines.length * 4, urlLines.length * 4, 8);
+      currentY += Math.max(nameLinesArray.length * 4, urlLinesArray.length * 4, 8);
       
       if (document.description) {
         doc.setFontSize(8);
         doc.setTextColor(102, 102, 102);
-        const descLines = doc.splitTextToSize(document.description, width * 0.9);
-        doc.text(descLines.slice(0, 2), x, currentY); // Limit to 2 lines
-        currentY += Math.min(descLines.length, 2) * 4 + 4;
+        const descLines = doc.splitTextToSize(document.description, width * 0.9) as string | string[];
+        const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
+        doc.text(descLinesArray.slice(0, 2), x, currentY); // Limit to 2 lines
+        currentY += Math.min(descLinesArray.length, 2) * 4 + 4;
         doc.setFontSize(9);
         doc.setTextColor(0, 0, 0);
       }
@@ -360,8 +366,10 @@ export class ThreatModelReportService {
         currentY = 20;
       }
       
-      const nameLines = doc.splitTextToSize(source.name, width * 0.22);
-      const urlLines = doc.splitTextToSize(source.url, width * 0.25);
+      const nameLines = doc.splitTextToSize(source.name, width * 0.22) as string | string[];
+      const urlLines = doc.splitTextToSize(source.url, width * 0.25) as string | string[];
+      const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
+      const urlLinesArray = Array.isArray(urlLines) ? urlLines : [urlLines];
       const ref = source.parameters ? `${source.parameters.refType}:${source.parameters.refValue}` : '';
       
       doc.text(nameLines, x, currentY);
@@ -369,14 +377,15 @@ export class ThreatModelReportService {
       doc.text(urlLines, x + width * 0.4, currentY);
       doc.text(ref, x + width * 0.7, currentY);
       
-      currentY += Math.max(nameLines.length * 4, urlLines.length * 4, 8);
+      currentY += Math.max(nameLinesArray.length * 4, urlLinesArray.length * 4, 8);
       
       if (source.description) {
         doc.setFontSize(8);
         doc.setTextColor(102, 102, 102);
-        const descLines = doc.splitTextToSize(source.description, width * 0.9);
-        doc.text(descLines.slice(0, 1), x, currentY); // Limit to 1 line
-        currentY += Math.min(descLines.length, 1) * 4 + 4;
+        const descLines = doc.splitTextToSize(source.description, width * 0.9) as string | string[];
+        const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
+        doc.text(descLinesArray.slice(0, 1), x, currentY); // Limit to 1 line
+        currentY += Math.min(descLinesArray.length, 1) * 4 + 4;
         doc.setFontSize(9);
         doc.setTextColor(0, 0, 0);
       }

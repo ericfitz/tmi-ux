@@ -95,7 +95,7 @@
   </div>
 </div>
 
-<div class="collaboration-sessions-container">
+<div class="collaboration-sessions-container" *ngIf="shouldShowCollaboration$ | async">
   <div class="header-row">
     <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
       Available Collaboration Sessions
@@ -104,7 +104,7 @@
 
   <div class="collaboration-sessions-list">
     <mat-card
-      *ngFor="let session of collaborationSessions"
+      *ngFor="let session of collaborationSessions$ | async"
       class="collaboration-session-card"
       (click)="openCollaborationSession(session.diagramId)"
     >
@@ -121,13 +121,19 @@
             <p class="collaboration-session-host">
               <mat-icon>person</mat-icon> Hosted by {{ session.hostUser }}
             </p>
+            <p class="collaboration-session-time">
+              <mat-icon>schedule</mat-icon> Started {{ formatSessionTime(session.startedAt) }}
+            </p>
+            <p class="collaboration-session-users">
+              <mat-icon>group</mat-icon> {{ session.activeUsers }} active users
+            </p>
           </div>
         </div>
         <mat-icon class="join-icon">login</mat-icon>
       </mat-card-content>
     </mat-card>
 
-    <div *ngIf="collaborationSessions.length === 0" class="no-collaboration-sessions">
+    <div *ngIf="(collaborationSessions$ | async)?.length === 0" class="no-collaboration-sessions">
       <mat-icon class="empty-icon">groups_off</mat-icon>
       <p>No active collaboration sessions</p>
     </div>

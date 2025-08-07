@@ -86,3 +86,8 @@ html[dir='rtl'] {
   max-width: 650px !important;
   min-height: 550px !important;
 }
+
+// Multiline tooltip support
+.multiline-tooltip {
+  white-space: pre-line;
+}

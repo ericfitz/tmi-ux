@@ -95,9 +95,28 @@
               }
             },
             "required": ["name", "contact"]
+          },
+          "websocket": {
+            "type": "object",
+            "description": "WebSocket connection information for real-time collaboration",
+            "properties": {
+              "base_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "WebSocket base URL (ws:// or wss:// depending on TLS)",
+                "example": "wss://api.example.com/ws"
+              },
+              "diagram_endpoint": {
+                "type": "string",
+                "description": "WebSocket endpoint template for diagram collaboration",
+                "example": "/ws/diagrams/{diagram_id}",
+                "pattern": "^/ws/diagrams/\\{[a-zA-Z_][a-zA-Z0-9_]*\\}$"
+              }
+            },
+            "required": ["base_url", "diagram_endpoint"]
           }
         },
-        "required": ["status", "service", "api", "operator"],
+        "required": ["status", "service", "api", "operator", "websocket"],
         "example": {
           "status": {
             "code": "OK",
@@ -114,6 +133,10 @@
           "operator": {
             "name": "Example Organization",
             "contact": "api-support@example.com"
+          },
+          "websocket": {
+            "base_url": "wss://api.example.com/ws",
+            "diagram_endpoint": "/ws/diagrams/{diagram_id}"
           }
         }
       },
@@ -2792,6 +2815,76 @@
                 "body": {
                   "error": "unauthorized",
                   "error_description": "Missing Authorization header"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collaboration/sessions": {
+      "get": {
+        "tags": ["Collaboration"],
+        "summary": "List active collaboration sessions",
+        "description": "Returns all currently active collaboration sessions for diagrams. Clients can use this endpoint to discover existing sessions before connecting via WebSocket.",
+        "operationId": "getCollaborationSessions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of active collaboration sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CollaborationSession"
+                  }
+                },
+                "examples": {
+                  "active_sessions": {
+                    "summary": "Multiple active sessions",
+                    "value": [
+                      {
+                        "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "participants": [
+                          {
+                            "user_id": "alice@example.com"
+                          },
+                          {
+                            "user_id": "bob@example.com"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "no_sessions": {
+                    "summary": "No active sessions",
+                    "value": []
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed - invalid, missing, or malformed token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }

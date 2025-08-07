@@ -28,6 +28,32 @@ export enum ServerConnectionStatus {
   CONNECTED = 'CONNECTED',
 }
 
+/**
+ * Interface for server health response based on tmi-openapi.json ApiInfo schema
+ */
+interface ServerHealthResponse {
+  status: {
+    code: 'OK' | 'ERROR';
+    time: string;
+  };
+  service: {
+    name: string;
+    build: string;
+  };
+  api: {
+    version: string;
+    specification: string;
+  };
+  operator: {
+    name: string;
+    contact: string;
+  };
+  websocket: {
+    base_url: string;
+    diagram_endpoint: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,6 +66,7 @@ export class ServerConnectionService implements OnDestroy {
   private readonly MIN_BACKOFF_DELAY = 1000; // 1 second
   private readonly MAX_BACKOFF_DELAY = 30000; // 30 seconds
   private _currentBackoffDelay = this.MIN_BACKOFF_DELAY;
+  private _websocketBaseUrl: string | null = null;
 
   constructor(
     private http: HttpClient,
@@ -151,16 +178,30 @@ export class ServerConnectionService implements OnDestroy {
     // Use the root API endpoint as defined in tmi-openapi.json
     const statusEndpoint = environment.apiUrl.replace('/api', '');
 
-    return this.http.get<{ status: { code: string; time: string } }>(statusEndpoint).pipe(
+    return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {
         if (response.status?.code === 'OK') {
           this.logger.info('Server status check successful');
+          
+          // Extract WebSocket information
+          if (response.websocket?.base_url) {
+            this._websocketBaseUrl = response.websocket.base_url;
+            this.logger.info('WebSocket base URL extracted from server health', { 
+              websocketBaseUrl: this._websocketBaseUrl 
+            });
+            
+            // Automatically connect WebSocket if not already connected
+            this.connectWebSocketIfNeeded();
+          }
+          
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();
         } else {
           this.logger.warn(`Server status check returned non-OK status: ${response.status?.code}`);
           this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+          // Disconnect WebSocket when server is not OK
+          this.disconnectWebSocketIfNeeded();
           // Increase backoff delay for next retry
           this._currentBackoffDelay = this.getNextBackoffDelay();
         }
@@ -168,6 +209,8 @@ export class ServerConnectionService implements OnDestroy {
       catchError((error: HttpErrorResponse) => {
         this.logger.warn(`Server status check failed: ${error.status} ${error.statusText}`);
         this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+        // Disconnect WebSocket when server is unreachable
+        this.disconnectWebSocketIfNeeded();
         // Increase backoff delay for next retry
         this._currentBackoffDelay = this.getNextBackoffDelay();
         // Return empty observable that completes immediately to continue the stream
@@ -187,6 +230,7 @@ export class ServerConnectionService implements OnDestroy {
         this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
         this.resetBackoffDelay();
       } else {
+        // Perform health check which will auto-connect WebSocket if server is available
         this.performHealthCheck().subscribe();
       }
     }
@@ -218,5 +262,42 @@ export class ServerConnectionService implements OnDestroy {
       // Use current backoff delay when not connected
       return this._currentBackoffDelay;
     }
+  }
+
+  /**
+   * Connect WebSocket if we have a URL and are not already connected
+   */
+  private connectWebSocketIfNeeded(): void {
+    if (!this._websocketBaseUrl) {
+      this.logger.warn('No WebSocket base URL available - cannot connect');
+      return;
+    }
+
+    if (this.webSocketAdapter.isConnected) {
+      this.logger.info('WebSocket already connected');
+      return;
+    }
+
+    this.logger.info('Attempting to connect WebSocket', { url: this._websocketBaseUrl });
+    
+    this.webSocketAdapter.connect(this._websocketBaseUrl).subscribe({
+      next: () => {
+        this.logger.info('WebSocket connected successfully');
+      },
+      error: (error) => {
+        this.logger.error('WebSocket connection failed', error);
+      }
+    });
+  }
+
+  /**
+   * Disconnect WebSocket when server connection is lost
+   */
+  private disconnectWebSocketIfNeeded(): void {
+    if (this.webSocketAdapter.isConnected) {
+      this.logger.info('Disconnecting WebSocket due to server connection loss');
+      this.webSocketAdapter.disconnect();
+    }
+    this._websocketBaseUrl = null;
   }
 }

@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { MaterialModule } from '../../shared/material/material.module';
 import { SharedModule } from '../../shared/shared.module';
@@ -37,6 +37,7 @@ import { TMListItem } from './models/tm-list-item.model';
 import { ThreatModelService } from './services/threat-model.service';
 import { ThreatModelValidatorService } from './validation/threat-model-validator.service';
 import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
+import { CollaborationSessionService, CollaborationSession } from '../../core/services/collaboration-session.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -45,19 +46,6 @@ import {
   DeleteThreatModelDialogData 
 } from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
 
-/**
- * Interface for collaboration session data
- */
-export interface CollaborationSession {
-  id: string;
-  threatModelId: string;
-  threatModelName: string;
-  diagramId: string;
-  diagramName: string;
-  hostUser: string;
-  startedAt: Date;
-  activeUsers: number;
-}
 
 @Component({
   selector: 'app-tm',
@@ -69,10 +57,13 @@ export interface CollaborationSession {
 })
 export class TmComponent implements OnInit, OnDestroy {
   threatModels: TMListItem[] = [];
-  collaborationSessions: CollaborationSession[] = [];
+  
+  // Observable streams
+  collaborationSessions$!: Observable<CollaborationSession[]>;
+  shouldShowCollaboration$!: Observable<boolean>;
+  
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
-  private collaborationSubscription: Subscription | null = null;
   private currentLocale: string = 'en-US';
 
   constructor(
@@ -81,6 +72,7 @@ export class TmComponent implements OnInit, OnDestroy {
     private validator: ThreatModelValidatorService,
     private languageService: LanguageService,
     private collaborationService: DfdCollaborationService,
+    private collaborationSessionService: CollaborationSessionService,
     private logger: LoggerService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -89,6 +81,11 @@ export class TmComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
+    
+    // Initialize observable streams
+    this.collaborationSessions$ = this.collaborationSessionService.sessions$;
+    this.shouldShowCollaboration$ = this.collaborationSessionService.shouldShowCollaboration$;
+    
     // Force refresh on dashboard load to ensure we have the latest data
     this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
       // Ensure models is always an array
@@ -109,8 +106,8 @@ export class TmComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
-    // Load active collaboration sessions
-    this.loadCollaborationSessions();
+    // Note: Collaboration sessions are automatically loaded by CollaborationSessionService
+    // No manual loading needed as they are provided via reactive streams
   }
 
   ngOnDestroy(): void {
@@ -119,9 +116,6 @@ export class TmComponent implements OnInit, OnDestroy {
     }
     if (this.languageSubscription) {
       this.languageSubscription.unsubscribe();
-    }
-    if (this.collaborationSubscription) {
-      this.collaborationSubscription.unsubscribe();
     }
   }
 
@@ -163,6 +157,32 @@ export class TmComponent implements OnInit, OnDestroy {
       month: 'numeric',
       day: 'numeric',
     }).format(dateObj);
+  }
+
+  /**
+   * Format session start time as a relative time string
+   */
+  formatSessionTime(startedAt: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - startedAt.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+
+    if (diffMinutes < 1) {
+      return 'just now';
+    } else if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    } else {
+      // For sessions older than 24 hours, show the actual time
+      return new Intl.DateTimeFormat(this.currentLocale, {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(startedAt);
+    }
   }
 
   deleteThreatModel(id: string, event: MouseEvent): void {
@@ -241,41 +261,6 @@ export class TmComponent implements OnInit, OnDestroy {
         );
       }
     });
-  }
-
-  /**
-   * Load active collaboration sessions
-   */
-  private loadCollaborationSessions(): void {
-    // For now, we'll use mock data since the actual implementation would depend on the backend API
-    // In a real implementation, this would fetch active sessions from the server
-
-    // Mock data for demonstration purposes
-    this.collaborationSessions = [
-      {
-        id: '1',
-        threatModelId: '550e8400-e29b-41d4-a716-446655440000',
-        threatModelName: 'System Threat Model',
-        diagramId: '123e4567-e89b-12d3-a456-426614174000',
-        diagramName: 'System Architecture',
-        hostUser: 'John Doe',
-        startedAt: new Date(),
-        activeUsers: 3,
-      },
-      {
-        id: '2',
-        threatModelId: '550e8400-e29b-41d4-a716-446655440001',
-        threatModelName: 'Cloud Infrastructure Threat Model',
-        diagramId: '223e4567-e89b-12d3-a456-426614174000',
-        diagramName: 'Cloud Infrastructure',
-        hostUser: 'Jane Smith',
-        startedAt: new Date(),
-        activeUsers: 2,
-      },
-    ];
-
-    this.logger.info('Loaded collaboration sessions', { count: this.collaborationSessions.length });
-    this.cdr.detectChanges();
   }
 
   /**

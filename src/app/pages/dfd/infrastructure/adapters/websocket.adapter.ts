@@ -43,6 +43,12 @@ export enum MessageType {
   SESSION_JOINED = 'session_joined',
   SESSION_LEFT = 'session_left',
 
+  // Collaboration session announcements
+  SESSION_STARTED = 'session_started',
+  SESSION_ENDED = 'session_ended',
+  SESSION_LIST_REQUEST = 'session_list_request',
+  SESSION_LIST_RESPONSE = 'session_list_response',
+
   // User presence
   USER_PRESENCE_UPDATE = 'user_presence_update',
   USER_CURSOR_UPDATE = 'user_cursor_update',
@@ -495,6 +501,6 @@ export class WebSocketAdapter {
    * Generate unique message ID
    */
   private _generateMessageId(): string {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 }
