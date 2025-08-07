@@ -9,6 +9,8 @@
  * - Provides reactive connection status (NOT_CONFIGURED, ERROR, CONNECTED)
  * - Handles connection error recovery and retry logic
  * - Integrates with environment configuration to detect server settings
+ * - Respects WebSocket connections: skips HTTP health checks when WebSocket is connected
+ *   (WebSocket supports RFC6455 ping/pong, so HTTP polling is redundant when WS is active)
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
@@ -18,6 +20,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
+import { WebSocketAdapter, WebSocketState } from '../../pages/dfd/infrastructure/adapters/websocket.adapter';
 
 export enum ServerConnectionStatus {
   NOT_CONFIGURED = 'NOT_CONFIGURED',
@@ -41,6 +44,7 @@ export class ServerConnectionService implements OnDestroy {
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
+    private webSocketAdapter: WebSocketAdapter,
   ) {
     this.initializeConnectionMonitoring();
   }
@@ -131,8 +135,19 @@ export class ServerConnectionService implements OnDestroy {
 
   /**
    * Perform a single health check against the server
+   * Only performs HTTP health check if WebSocket is not connected
    */
   private performHealthCheck(): Observable<void> {
+    // Check if WebSocket is connected - if so, skip HTTP health check
+    if (this.webSocketAdapter.connectionState === WebSocketState.CONNECTED) {
+      this.logger.info('WebSocket connected - skipping HTTP health check');
+      this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
+      this.resetBackoffDelay();
+      return EMPTY;
+    }
+
+    this.logger.debugComponent('ServerConnection', 'WebSocket not connected - performing HTTP health check');
+
     // Use the root API endpoint as defined in tmi-openapi.json
     const statusEndpoint = environment.apiUrl.replace('/api', '');
 
@@ -163,10 +178,17 @@ export class ServerConnectionService implements OnDestroy {
 
   /**
    * Manually trigger a connection check
+   * Only performs HTTP check if WebSocket is not connected
    */
   public checkConnection(): void {
     if (this.isServerConfigured()) {
-      this.performHealthCheck().subscribe();
+      if (this.webSocketAdapter.connectionState === WebSocketState.CONNECTED) {
+        this.logger.info('WebSocket connected - manual health check not needed');
+        this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
+        this.resetBackoffDelay();
+      } else {
+        this.performHealthCheck().subscribe();
+      }
     }
   }
 
