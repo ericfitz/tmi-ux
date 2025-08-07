@@ -18,6 +18,9 @@ import {
   ServerConnectionService,
   ServerConnectionStatus,
 } from '../../services/server-connection.service';
+import { WebSocketAdapter } from '../../../pages/dfd/infrastructure/adapters/websocket.adapter';
+import { TranslocoService } from '@jsverse/transloco';
+import { environment } from '../../../../environments/environment';
 
 // Import the MockDataToggleComponent
 import { MockDataToggleComponent } from '../mock-data-toggle/mock-data-toggle.component';
@@ -59,6 +62,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private usernameSubscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
   private serverConnectionSubscription: Subscription | null = null;
+  private webSocketConnectionSubscription: Subscription | null = null;
 
   constructor(
     private router: Router,
@@ -67,6 +71,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
+    private webSocketAdapter: WebSocketAdapter,
+    private translocoService: TranslocoService,
   ) {
     // Get available languages
     this.languages = this.languageService.getAvailableLanguages();
@@ -96,6 +102,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.serverConnectionStatus = status;
       },
     );
+
+    // Subscribe to WebSocket connection status changes to trigger tooltip updates
+    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(
+      () => {
+        // This subscription triggers change detection when WebSocket state changes
+        // The tooltip will be updated automatically through Angular's change detection
+      },
+    );
   }
 
   ngOnDestroy(): void {
@@ -114,6 +128,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     if (this.serverConnectionSubscription) {
       this.serverConnectionSubscription.unsubscribe();
+    }
+
+    if (this.webSocketConnectionSubscription) {
+      this.webSocketConnectionSubscription.unsubscribe();
     }
   }
 
@@ -186,9 +204,34 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get the appropriate tooltip text for the server connection status with additional details
+   */
+  getServerStatusTooltip(): string {
+    const baseKey = this.getServerStatusTooltipKey();
+    const baseText = this.translocoService.translate(baseKey);
+    
+    switch (this.serverConnectionStatus) {
+      case ServerConnectionStatus.NOT_CONFIGURED:
+        return baseText;
+      case ServerConnectionStatus.ERROR:
+        return `${baseText}\n${environment.apiUrl}`;
+      case ServerConnectionStatus.CONNECTED: {
+        let tooltip = `${baseText}\n${environment.apiUrl}`;
+        if (this.webSocketAdapter.isConnected) {
+          const wsConnectedText = this.translocoService.translate('navbar.serverStatus.webSocketConnected');
+          tooltip += `\n${wsConnectedText}`;
+        }
+        return tooltip;
+      }
+      default:
+        return baseText;
+    }
+  }
+
+  /**
    * Get the appropriate localization key for the server connection status tooltip
    */
-  getServerStatusTooltipKey(): string {
+  private getServerStatusTooltipKey(): string {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
         return 'navbar.serverStatus.noServerConfigured';

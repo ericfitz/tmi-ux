@@ -159,7 +159,8 @@
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
-      "serverConnectionError": "Server Connection Error"
+      "serverConnectionError": "Server Connection Error",
+      "webSocketConnected": "Web Socket Connected"
     }
   },
   "privacy": {

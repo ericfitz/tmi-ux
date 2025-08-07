@@ -159,7 +159,8 @@
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",
       "serverConnected": "الخادم متصل",
-      "serverConnectionError": "خطأ في اتصال الخادم"
+      "serverConnectionError": "خطأ في اتصال الخادم",
+      "webSocketConnected": "ويب سوكت متصل"
     }
   },
   "privacy": {

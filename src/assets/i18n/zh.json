@@ -159,7 +159,8 @@
     "serverStatus": {
       "noServerConfigured": "未配置服务器",
       "serverConnected": "服务器已连接",
-      "serverConnectionError": "服务器连接错误"
+      "serverConnectionError": "服务器连接错误",
+      "webSocketConnected": "WebSocket已连接"
     }
   },
   "privacy": {

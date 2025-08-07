@@ -159,7 +159,8 @@
     "serverStatus": {
       "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
       "serverConnected": "เซิร์ฟเวอร์เชื่อมต่อแล้ว",
-      "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์"
+      "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์",
+      "webSocketConnected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว"
     }
   },
   "privacy": {
