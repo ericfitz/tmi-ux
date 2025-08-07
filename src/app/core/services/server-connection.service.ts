@@ -15,7 +15,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, timer, Subscription, EMPTY } from 'rxjs';
+import { BehaviorSubject, Observable, timer, Subscription, EMPTY, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
@@ -183,15 +183,13 @@ export class ServerConnectionService implements OnDestroy {
         if (response.status?.code === 'OK') {
           this.logger.info('Server status check successful');
           
-          // Extract WebSocket information
+          // Extract WebSocket information for future use
           if (response.websocket?.base_url) {
             this._websocketBaseUrl = response.websocket.base_url;
             this.logger.info('WebSocket base URL extracted from server health', { 
               websocketBaseUrl: this._websocketBaseUrl 
             });
-            
-            // Automatically connect WebSocket if not already connected
-            this.connectWebSocketIfNeeded();
+            // Note: WebSocket connection will be established on-demand for diagram collaboration
           }
           
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
@@ -200,8 +198,6 @@ export class ServerConnectionService implements OnDestroy {
         } else {
           this.logger.warn(`Server status check returned non-OK status: ${response.status?.code}`);
           this._connectionStatus$.next(ServerConnectionStatus.ERROR);
-          // Disconnect WebSocket when server is not OK
-          this.disconnectWebSocketIfNeeded();
           // Increase backoff delay for next retry
           this._currentBackoffDelay = this.getNextBackoffDelay();
         }
@@ -209,8 +205,6 @@ export class ServerConnectionService implements OnDestroy {
       catchError((error: HttpErrorResponse) => {
         this.logger.warn(`Server status check failed: ${error.status} ${error.statusText}`);
         this._connectionStatus$.next(ServerConnectionStatus.ERROR);
-        // Disconnect WebSocket when server is unreachable
-        this.disconnectWebSocketIfNeeded();
         // Increase backoff delay for next retry
         this._currentBackoffDelay = this.getNextBackoffDelay();
         // Return empty observable that completes immediately to continue the stream
@@ -234,6 +228,14 @@ export class ServerConnectionService implements OnDestroy {
         this.performHealthCheck().subscribe();
       }
     }
+  }
+
+  /**
+   * Get WebSocket base URL for diagram collaboration
+   * Used by collaboration services to build diagram-specific WebSocket URLs
+   */
+  public getWebSocketBaseUrl(): string | null {
+    return this._websocketBaseUrl;
   }
 
   /**
@@ -265,36 +267,74 @@ export class ServerConnectionService implements OnDestroy {
   }
 
   /**
-   * Connect WebSocket if we have a URL and are not already connected
+   * Connect WebSocket for diagram collaboration (not used for general server connection)
+   * This method is available for diagram-specific collaboration services to use
    */
-  private connectWebSocketIfNeeded(): void {
+  public connectWebSocketForDiagram(diagramId: string): Observable<void> {
     if (!this._websocketBaseUrl) {
       this.logger.warn('No WebSocket base URL available - cannot connect');
-      return;
+      return throwError(() => new Error('WebSocket base URL not available'));
     }
 
-    if (this.webSocketAdapter.isConnected) {
-      this.logger.info('WebSocket already connected');
-      return;
+    if (!this.isUserAuthenticated()) {
+      this.logger.warn('User not authenticated - cannot connect to diagram WebSocket');
+      return throwError(() => new Error('User not authenticated'));
     }
 
-    // Build authenticated WebSocket URL
-    const authenticatedUrl = this.buildAuthenticatedWebSocketUrl(this._websocketBaseUrl);
+    // Build diagram-specific WebSocket URL
+    const diagramEndpoint = `/ws/diagrams/${diagramId}`;
+    const fullUrl = this._websocketBaseUrl.replace('/ws', diagramEndpoint);
+    const authenticatedUrl = this.buildAuthenticatedWebSocketUrl(fullUrl);
     
-    this.logger.info('Attempting to connect WebSocket', { url: this._websocketBaseUrl, hasAuth: authenticatedUrl !== this._websocketBaseUrl });
+    if (authenticatedUrl === fullUrl) {
+      this.logger.warn('No valid token available for diagram WebSocket');
+      return throwError(() => new Error('No valid authentication token'));
+    }
     
-    this.webSocketAdapter.connect(authenticatedUrl).subscribe({
-      next: () => {
-        this.logger.info('WebSocket connected successfully');
-      },
-      error: (error) => {
-        this.logger.error('WebSocket connection failed', error);
-      }
+    this.logger.info('Connecting to diagram WebSocket', { 
+      diagramId,
+      hasAuth: true 
     });
+    
+    return this.webSocketAdapter.connect(authenticatedUrl);
   }
 
   /**
-   * Build authenticated WebSocket URL by adding token from localStorage
+   * Check if user is authenticated by checking localStorage token
+   * This avoids circular dependency with AuthService
+   */
+  private isUserAuthenticated(): boolean {
+    try {
+      const tokenJson = localStorage.getItem('auth_token');
+      if (!tokenJson) {
+        return false;
+      }
+
+      const tokenData = JSON.parse(tokenJson) as {
+        token?: string;
+        expiresAt?: string;
+      };
+      
+      if (!tokenData?.token || typeof tokenData.token !== 'string') {
+        return false;
+      }
+
+      // Check if token is expired
+      if (tokenData.expiresAt && typeof tokenData.expiresAt === 'string') {
+        const expiresAt = new Date(tokenData.expiresAt);
+        if (expiresAt <= new Date()) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Build authenticated WebSocket URL by adding token as query parameter
    * This avoids circular dependency with AuthService
    */
   private buildAuthenticatedWebSocketUrl(baseUrl: string): string {
@@ -334,13 +374,13 @@ export class ServerConnectionService implements OnDestroy {
   }
 
   /**
-   * Disconnect WebSocket when server connection is lost
+   * Disconnect any active WebSocket connection
+   * Used for cleanup when server connection is lost
    */
-  private disconnectWebSocketIfNeeded(): void {
+  public disconnectWebSocket(): void {
     if (this.webSocketAdapter.isConnected) {
-      this.logger.info('Disconnecting WebSocket due to server connection loss');
+      this.logger.info('Disconnecting active WebSocket connection');
       this.webSocketAdapter.disconnect();
     }
-    this._websocketBaseUrl = null;
   }
 }

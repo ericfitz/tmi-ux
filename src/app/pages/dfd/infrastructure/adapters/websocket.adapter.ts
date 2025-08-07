@@ -154,7 +154,7 @@ export class WebSocketAdapter {
   }
 
   /**
-   * Connect to WebSocket server
+   * Connect to WebSocket server (URL should already include auth token if needed)
    */
   connect(url: string): Observable<void> {
     return new Observable(observer => {
@@ -168,6 +168,11 @@ export class WebSocketAdapter {
         this._url = url;
         this._connectionState$.next(WebSocketState.CONNECTING);
 
+        this.logger.info('Connecting WebSocket', { 
+          url: url.replace(/\?.*$/, ''), // Don't log query params (including token)
+          hasToken: url.includes('?token=')
+        });
+
         this._socket = new WebSocket(url);
         this._setupEventListeners();
 
@@ -180,10 +185,9 @@ export class WebSocketAdapter {
           observer.complete();
         };
 
-        const errorHandler = (error: Event): void => {
+        const errorHandler = (event: any): void => {
           this._connectionState$.next(WebSocketState.ERROR);
-          const wsError = error as ErrorEvent;
-          const errorMessage = wsError.message || 'WebSocket connection failed';
+          const errorMessage = event.message || event.error?.message || 'WebSocket connection failed';
           this.logger.error('WebSocket connection error', {
             url: url,
             error: errorMessage,
