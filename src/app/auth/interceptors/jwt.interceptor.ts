@@ -61,7 +61,7 @@ export class JwtInterceptor implements HttpInterceptor {
           //   tokenPrefix: token.token?.substring(0, 20) + '...',
           //   expiresAt: token.expiresAt.toISOString(),
           // });
-          
+
           const tokenizedRequest = request.clone({
             setHeaders: {
               Authorization: `Bearer ${token.token}`,
@@ -89,25 +89,31 @@ export class JwtInterceptor implements HttpInterceptor {
               statusText: error.statusText,
               errorMessage: error.message,
               serverErrorBody: error.error as Record<string, unknown>,
-              responseHeaders: error.headers?.keys()?.reduce((acc, key) => {
-                const value = error.headers.get(key);
-                if (value) {
-                  acc[key] = value;
-                }
-                return acc;
-              }, {} as Record<string, string>),
-              requestHeaders: request.headers?.keys()?.reduce((acc, key) => {
-                const value = request.headers.get(key);
-                if (value) {
-                  if (key.toLowerCase() === 'authorization') {
-                    // Show only the Bearer prefix and token type for debugging
-                    acc[key] = value.substring(0, 20) + '...[redacted]';
-                  } else {
+              responseHeaders: error.headers?.keys()?.reduce(
+                (acc, key) => {
+                  const value = error.headers.get(key);
+                  if (value) {
                     acc[key] = value;
                   }
-                }
-                return acc;
-              }, {} as Record<string, string>),
+                  return acc;
+                },
+                {} as Record<string, string>,
+              ),
+              requestHeaders: request.headers?.keys()?.reduce(
+                (acc, key) => {
+                  const value = request.headers.get(key);
+                  if (value) {
+                    if (key.toLowerCase() === 'authorization') {
+                      // Show only the Bearer prefix and token type for debugging
+                      acc[key] = value.substring(0, 20) + '...[redacted]';
+                    } else {
+                      acc[key] = value;
+                    }
+                  }
+                  return acc;
+                },
+                {} as Record<string, string>,
+              ),
             });
             return this.handleUnauthorizedErrorWithRefresh(request, next);
           }
@@ -227,7 +233,6 @@ export class JwtInterceptor implements HttpInterceptor {
       'token',
       'password',
       'secret',
-      'key',
       'jwt',
       'refresh_token',
       'access_token',
@@ -253,7 +258,7 @@ export class JwtInterceptor implements HttpInterceptor {
         } else {
           redacted[key] = '[REDACTED]';
         }
-      } 
+      }
       // Check if the key contains other sensitive information (but not "authorization" in general)
       else if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
         if (typeof value === 'string' && value.length > 0) {

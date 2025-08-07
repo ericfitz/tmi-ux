@@ -113,7 +113,10 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param operations Array of JSON Patch operations
    */
-  patch<T>(endpoint: string, operations: Array<{op: string; path: string; value?: unknown}>): Observable<T> {
+  patch<T>(
+    endpoint: string,
+    operations: Array<{ op: string; path: string; value?: unknown }>,
+  ): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
 
     // Request logging handled by JWT interceptor
@@ -164,7 +167,6 @@ export class ApiService {
       'token',
       'password',
       'secret',
-      'key',
       'jwt',
       'refresh_token',
       'access_token',
