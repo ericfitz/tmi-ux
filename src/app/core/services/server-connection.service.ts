@@ -278,9 +278,12 @@ export class ServerConnectionService implements OnDestroy {
       return;
     }
 
-    this.logger.info('Attempting to connect WebSocket', { url: this._websocketBaseUrl });
+    // Build authenticated WebSocket URL
+    const authenticatedUrl = this.buildAuthenticatedWebSocketUrl(this._websocketBaseUrl);
     
-    this.webSocketAdapter.connect(this._websocketBaseUrl).subscribe({
+    this.logger.info('Attempting to connect WebSocket', { url: this._websocketBaseUrl, hasAuth: authenticatedUrl !== this._websocketBaseUrl });
+    
+    this.webSocketAdapter.connect(authenticatedUrl).subscribe({
       next: () => {
         this.logger.info('WebSocket connected successfully');
       },
@@ -288,6 +291,46 @@ export class ServerConnectionService implements OnDestroy {
         this.logger.error('WebSocket connection failed', error);
       }
     });
+  }
+
+  /**
+   * Build authenticated WebSocket URL by adding token from localStorage
+   * This avoids circular dependency with AuthService
+   */
+  private buildAuthenticatedWebSocketUrl(baseUrl: string): string {
+    try {
+      // Get token directly from localStorage to avoid AuthService circular dependency
+      const tokenJson = localStorage.getItem('auth_token');
+      if (!tokenJson) {
+        return baseUrl;
+      }
+
+      const tokenData = JSON.parse(tokenJson) as {
+        token?: string;
+        expiresAt?: string;
+      };
+      
+      if (!tokenData?.token || typeof tokenData.token !== 'string') {
+        return baseUrl;
+      }
+
+      // Check if token is expired
+      if (tokenData.expiresAt && typeof tokenData.expiresAt === 'string') {
+        const expiresAt = new Date(tokenData.expiresAt);
+        if (expiresAt <= new Date()) {
+          this.logger.warn('Token expired, connecting WebSocket without authentication');
+          return baseUrl;
+        }
+      }
+
+      // Add token as query parameter
+      const url = new URL(baseUrl);
+      url.searchParams.set('token', tokenData.token);
+      return url.toString();
+    } catch (error) {
+      this.logger.warn('Failed to build authenticated WebSocket URL, using base URL', error);
+      return baseUrl;
+    }
   }
 
   /**

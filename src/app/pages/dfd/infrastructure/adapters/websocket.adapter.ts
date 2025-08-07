@@ -23,7 +23,6 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
-import { AuthService } from '../../../../auth/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
@@ -100,10 +99,7 @@ export class WebSocketAdapter {
   private _heartbeatInterval: number | null = null;
   private readonly _destroy$ = new Subject<void>();
 
-  constructor(
-    private authService: AuthService,
-    private logger: LoggerService,
-  ) {}
+  constructor(private logger: LoggerService) {}
 
   // State management
   private readonly _connectionState$ = new BehaviorSubject<WebSocketState>(
@@ -158,7 +154,7 @@ export class WebSocketAdapter {
   }
 
   /**
-   * Connect to WebSocket server with authentication
+   * Connect to WebSocket server
    */
   connect(url: string): Observable<void> {
     return new Observable(observer => {
@@ -169,12 +165,10 @@ export class WebSocketAdapter {
           return;
         }
 
-        // Add authentication token to WebSocket URL if available
-        const authenticatedUrl = this._buildAuthenticatedUrl(url);
-        this._url = authenticatedUrl;
+        this._url = url;
         this._connectionState$.next(WebSocketState.CONNECTING);
 
-        this._socket = new WebSocket(authenticatedUrl);
+        this._socket = new WebSocket(url);
         this._setupEventListeners();
 
         // Wait for connection to open
@@ -191,10 +185,9 @@ export class WebSocketAdapter {
           const wsError = error as ErrorEvent;
           const errorMessage = wsError.message || 'WebSocket connection failed';
           this.logger.error('WebSocket connection error', {
-            url: authenticatedUrl,
+            url: url,
             error: errorMessage,
-            readyState: this._socket?.readyState,
-            hasAuth: !!this.authService.getStoredToken()?.token
+            readyState: this._socket?.readyState
           });
           observer.error(new Error(`WebSocket connection failed: ${errorMessage}`));
         };
@@ -521,27 +514,6 @@ export class WebSocketAdapter {
     this._pendingAcks.clear();
   }
 
-  /**
-   * Build authenticated WebSocket URL with token if available
-   */
-  private _buildAuthenticatedUrl(baseUrl: string): string {
-    try {
-      const token = this.authService.getStoredToken();
-      if (!token?.token) {
-        // No token available, return base URL
-        return baseUrl;
-      }
-
-      // Add token as query parameter
-      const url = new URL(baseUrl);
-      url.searchParams.set('token', token.token);
-      return url.toString();
-    } catch (error) {
-      // If URL parsing fails or token retrieval fails, return base URL
-      this.logger.warn('Failed to build authenticated WebSocket URL, using base URL', error);
-      return baseUrl;
-    }
-  }
 
   /**
    * Generate unique message ID
