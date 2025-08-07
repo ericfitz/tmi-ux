@@ -149,9 +149,9 @@ export class ApiService {
     // Log the request with component-specific debug logging
     this.logger.debugComponent('api', `${method} request details:`, {
       url,
-      headers: this.redactSecrets(headers),
-      body: body ? this.redactSecrets(body) : undefined,
-      params: params ? this.redactSecrets(params) : undefined,
+      headers: this.redactSecrets(headers, true),
+      body: body ? this.redactSecrets(body, false) : undefined,
+      params: params ? this.redactSecrets(params, false) : undefined,
     });
   }
 
@@ -160,7 +160,7 @@ export class ApiService {
    * @param obj Object that may contain sensitive data
    * @returns Object with sensitive values redacted
    */
-  private redactSecrets(obj: Record<string, unknown>): Record<string, unknown> {
+  private redactSecrets(obj: Record<string, unknown>, isHeaderContext = false): Record<string, unknown> {
     const redacted = { ...obj };
     const sensitiveKeys = [
       'bearer',
@@ -176,10 +176,10 @@ export class ApiService {
 
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
-      const isAuthorizationHeader = key.toLowerCase() === 'authorization';
+      const isAuthorizationField = lowerKey === 'authorization';
 
-      // Handle Authorization header specially (always redact)
-      if (isAuthorizationHeader) {
+      // Handle Authorization field - only redact in header context
+      if (isAuthorizationField && isHeaderContext) {
         if (typeof value === 'string' && value.length > 0) {
           if (value.startsWith('Bearer ')) {
             // Special handling for Bearer tokens - show prefix but redact token
@@ -202,7 +202,7 @@ export class ApiService {
         }
       } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         // Recursively redact nested objects
-        redacted[key] = this.redactSecrets(value as Record<string, unknown>);
+        redacted[key] = this.redactSecrets(value as Record<string, unknown>, isHeaderContext);
       }
     }
 
@@ -233,7 +233,7 @@ export class ApiService {
   private logApiResponse(method: string, url: string, response: unknown): void {
     // Log the response with component-specific debug logging
     this.logger.debugComponent('api', `${method} response from ${url}:`, {
-      body: response ? this.redactSecrets(response as Record<string, unknown>) : undefined,
+      body: response ? this.redactSecrets(response as Record<string, unknown>, false) : undefined,
       // Note: Response headers are not easily accessible from the API service level
       // They will be logged by the JWT interceptor
     });

@@ -197,8 +197,8 @@ export class JwtInterceptor implements HttpInterceptor {
     // Log the request with component-specific debug logging
     this.logger.debugComponent('api', `${request.method} request details:`, {
       url: request.url,
-      headers: this.redactSecrets(headers),
-      body: request.body ? this.redactSecrets(request.body as Record<string, unknown>) : undefined,
+      headers: this.redactSecrets(headers, true),
+      body: request.body ? this.redactSecrets(request.body as Record<string, unknown>, false) : undefined,
       params: this.extractUrlParams(request.url),
     });
   }
@@ -226,7 +226,7 @@ export class JwtInterceptor implements HttpInterceptor {
    * @param obj Object that may contain sensitive data
    * @returns Object with sensitive values redacted
    */
-  private redactSecrets(obj: Record<string, unknown>): Record<string, unknown> {
+  private redactSecrets(obj: Record<string, unknown>, isHeaderContext = false): Record<string, unknown> {
     const redacted = { ...obj };
     const sensitiveKeys = [
       'bearer',
@@ -242,10 +242,10 @@ export class JwtInterceptor implements HttpInterceptor {
 
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
-      const isAuthorizationHeader = key.toLowerCase() === 'authorization';
+      const isAuthorizationField = lowerKey === 'authorization';
 
-      // Handle Authorization header specially (always redact)
-      if (isAuthorizationHeader) {
+      // Handle Authorization field - only redact in header context
+      if (isAuthorizationField && isHeaderContext) {
         if (typeof value === 'string' && value.length > 0) {
           if (value.startsWith('Bearer ')) {
             // Special handling for Bearer tokens - show prefix but redact token
@@ -268,7 +268,7 @@ export class JwtInterceptor implements HttpInterceptor {
         }
       } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         // Recursively redact nested objects
-        redacted[key] = this.redactSecrets(value as Record<string, unknown>);
+        redacted[key] = this.redactSecrets(value as Record<string, unknown>, isHeaderContext);
       }
     }
 
@@ -309,9 +309,9 @@ export class JwtInterceptor implements HttpInterceptor {
     this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
       status: response.status,
       statusText: response.statusText,
-      headers: this.redactSecrets(headers),
+      headers: this.redactSecrets(headers, true),
       body: response.body
-        ? this.redactSecrets(response.body as Record<string, unknown>)
+        ? this.redactSecrets(response.body as Record<string, unknown>, false)
         : undefined,
     });
   }
