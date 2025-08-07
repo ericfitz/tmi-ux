@@ -23,6 +23,9 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
+import { AuthService } from '../../../../auth/services/auth.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+
 /**
  * WebSocket connection states
  */
@@ -97,6 +100,11 @@ export class WebSocketAdapter {
   private _heartbeatInterval: number | null = null;
   private readonly _destroy$ = new Subject<void>();
 
+  constructor(
+    private authService: AuthService,
+    private logger: LoggerService,
+  ) {}
+
   // State management
   private readonly _connectionState$ = new BehaviorSubject<WebSocketState>(
     WebSocketState.DISCONNECTED,
@@ -150,7 +158,7 @@ export class WebSocketAdapter {
   }
 
   /**
-   * Connect to WebSocket server
+   * Connect to WebSocket server with authentication
    */
   connect(url: string): Observable<void> {
     return new Observable(observer => {
@@ -161,10 +169,12 @@ export class WebSocketAdapter {
           return;
         }
 
-        this._url = url;
+        // Add authentication token to WebSocket URL if available
+        const authenticatedUrl = this._buildAuthenticatedUrl(url);
+        this._url = authenticatedUrl;
         this._connectionState$.next(WebSocketState.CONNECTING);
 
-        this._socket = new WebSocket(url);
+        this._socket = new WebSocket(authenticatedUrl);
         this._setupEventListeners();
 
         // Wait for connection to open
@@ -176,9 +186,17 @@ export class WebSocketAdapter {
           observer.complete();
         };
 
-        const errorHandler = (_error: Event): void => {
+        const errorHandler = (error: Event): void => {
           this._connectionState$.next(WebSocketState.ERROR);
-          observer.error(new Error('WebSocket connection failed'));
+          const wsError = error as ErrorEvent;
+          const errorMessage = wsError.message || 'WebSocket connection failed';
+          this.logger.error('WebSocket connection error', {
+            url: authenticatedUrl,
+            error: errorMessage,
+            readyState: this._socket?.readyState,
+            hasAuth: !!this.authService.getStoredToken()?.token
+          });
+          observer.error(new Error(`WebSocket connection failed: ${errorMessage}`));
         };
 
         this._socket.addEventListener('open', openHandler, { once: true });
@@ -394,6 +412,12 @@ export class WebSocketAdapter {
 
     setTimeout(() => {
       if (this._url) {
+        this.logger.info('WebSocket attempting reconnection', {
+          attempt: this._reconnectAttempts,
+          maxAttempts: this._maxReconnectAttempts,
+          delay,
+          url: this._url
+        });
         this.connect(this._url).subscribe({
           error: () => this._attemptReconnection(),
         });
@@ -495,6 +519,28 @@ export class WebSocketAdapter {
       pending.reject(new Error('Connection closed'));
     }
     this._pendingAcks.clear();
+  }
+
+  /**
+   * Build authenticated WebSocket URL with token if available
+   */
+  private _buildAuthenticatedUrl(baseUrl: string): string {
+    try {
+      const token = this.authService.getStoredToken();
+      if (!token?.token) {
+        // No token available, return base URL
+        return baseUrl;
+      }
+
+      // Add token as query parameter
+      const url = new URL(baseUrl);
+      url.searchParams.set('token', token.token);
+      return url.toString();
+    } catch (error) {
+      // If URL parsing fails or token retrieval fails, return base URL
+      this.logger.warn('Failed to build authenticated WebSocket URL, using base URL', error);
+      return baseUrl;
+    }
   }
 
   /**
