@@ -47,6 +47,7 @@ import {
   ThreatModel,
 } from '../models/threat-model.model';
 import { ThreatModelService } from '../services/threat-model.service';
+import { ThreatModelReportService } from '../services/threat-model-report.service';
 import { FrameworkService } from '../../../shared/services/framework.service';
 import { FrameworkModel } from '../../../shared/models/framework.model';
 
@@ -113,6 +114,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private threatModelService: ThreatModelService,
+    private threatModelReportService: ThreatModelReportService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     private languageService: LanguageService,
@@ -1345,11 +1347,27 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the report view (placeholder for future functionality)
+   * Generates and saves a PDF report for the current threat model
    */
-  openReport(): void {
-    // TODO: Implement report functionality
-    this.logger.info('Report clicked - functionality to be implemented');
+  async openReport(): Promise<void> {
+    if (!this.threatModel) {
+      this.logger.warn('Cannot generate report: no threat model loaded');
+      return;
+    }
+
+    try {
+      this.logger.info('Generating PDF report', { 
+        threatModelId: this.threatModel.id,
+        threatModelName: this.threatModel.name 
+      });
+
+      await this.threatModelReportService.generateReport(this.threatModel);
+      
+      this.logger.info('PDF report generation completed successfully');
+    } catch (error) {
+      this.logger.error('Failed to generate PDF report', error);
+      // You could show a user notification here if needed
+    }
   }
 
   /**
