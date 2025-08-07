@@ -585,6 +585,66 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Partially update a threat model using PATCH with JSON Patch operations
+   * @param threatModelId The threat model ID
+   * @param updates Object containing the fields to update
+   */
+  patchThreatModel(threatModelId: string, updates: Partial<Pick<ThreatModel, 'name' | 'description' | 'threat_model_framework' | 'issue_url' | 'authorization'>>): Observable<ThreatModel> {
+    if (this._useMockData) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Patching mock threat model with ID: ${threatModelId}`,
+        updates,
+      );
+      
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      if (cachedModel) {
+        // Apply updates to cached model
+        const updatedModel = { 
+          ...cachedModel, 
+          ...updates, 
+          modified_at: new Date().toISOString() 
+        };
+        this._cachedThreatModels.set(threatModelId, updatedModel);
+        
+        // Update in list
+        const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModelId);
+        if (listIndex !== -1) {
+          this._threatModelList[listIndex] = this.convertToListItem(updatedModel);
+          this._threatModelListSubject.next([...this._threatModelList]);
+        }
+        
+        return of(updatedModel);
+      } else {
+        throw new Error(`Threat model with ID ${threatModelId} not found in cache`);
+      }
+    }
+
+    // Convert updates to JSON Patch operations
+    // Note: Do not include modified_at - the server manages timestamps automatically
+    const operations = Object.entries(updates).map(([key, value]) => ({
+      op: 'replace' as const,
+      path: `/${key}`,
+      value
+    }));
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Patching threat model with ID: ${threatModelId} via API`,
+      { updates, operations },
+    );
+
+    return this.apiService
+      .patch<ThreatModel>(`threat_models/${threatModelId}`, operations)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error patching threat model with ID: ${threatModelId}`, error, { updates });
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Delete a threat model
    */
   deleteThreatModel(id: string): Observable<boolean> {

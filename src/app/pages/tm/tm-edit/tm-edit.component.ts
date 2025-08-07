@@ -193,6 +193,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Disable auto-save during initial data loading - MUST be set before form subscriptions
+    this._isLoadingInitialData = true;
+
     // Set up auto-save subscription with debouncing
     this._subscriptions.add(
       this._autoSaveSubject
@@ -252,6 +255,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this._subscriptions.add(
         frameworkControl.valueChanges.subscribe(newFramework => {
           if (
+            !this._isLoadingInitialData &&
             newFramework &&
             this.threatModel &&
             newFramework !== this.threatModel.threat_model_framework
@@ -275,7 +279,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (nameControl) {
       this._subscriptions.add(
         nameControl.valueChanges.subscribe(newName => {
-          if (newName && this.threatModel && newName !== this.threatModel.name) {
+          if (!this._isLoadingInitialData && newName && this.threatModel && newName !== this.threatModel.name) {
             this.autoSaveThreatModel();
           }
         }),
@@ -285,7 +289,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (descriptionControl) {
       this._subscriptions.add(
         descriptionControl.valueChanges.subscribe(newDescription => {
-          if (this.threatModel && newDescription !== this.threatModel.description) {
+          if (!this._isLoadingInitialData && this.threatModel && newDescription !== this.threatModel.description) {
             this.autoSaveThreatModel();
           }
         }),
@@ -295,7 +299,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (issueUrlControl) {
       this._subscriptions.add(
         issueUrlControl.valueChanges.subscribe(newIssueUrl => {
-          if (this.threatModel && newIssueUrl !== this.threatModel.issue_url) {
+          if (!this._isLoadingInitialData && this.threatModel && newIssueUrl !== this.threatModel.issue_url) {
             this.autoSaveThreatModel();
           }
         }),
@@ -306,9 +310,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
       void this.router.navigate(['/tm']);
       return;
     }
-
-    // Disable auto-save during initial data loading
-    this._isLoadingInitialData = true;
     
     this._subscriptions.add(
       this.threatModelService.getThreatModelById(id).subscribe(threatModel => {
@@ -398,18 +399,24 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Get form values with proper typing
     const formValues = this.threatModelForm.getRawValue() as ThreatModelFormValues;
 
-    const updatedThreatModel: ThreatModel = {
-      ...this.threatModel,
+    // Use PATCH to update only the basic fields that changed
+    const updates = {
       name: formValues.name,
       description: formValues.description,
       threat_model_framework: formValues.threat_model_framework,
-      issue_url: formValues.issue_url,
-      modified_at: new Date().toISOString(),
+      issue_url: formValues.issue_url
     };
 
     this._subscriptions.add(
-      this.threatModelService.updateThreatModel(updatedThreatModel).subscribe(result => {
-        this.threatModel = result;
+      this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe(result => {
+        // Update only the basic fields from the result, preserve entities
+        if (this.threatModel) {
+          this.threatModel.name = result.name;
+          this.threatModel.description = result.description;
+          this.threatModel.threat_model_framework = result.threat_model_framework;
+          this.threatModel.issue_url = result.issue_url;
+          this.threatModel.modified_at = result.modified_at;
+        }
         // Show success message or navigate back
       }),
     );
@@ -693,22 +700,34 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Update the diagram in the map for backward compatibility
           DIAGRAMS_BY_ID.set(diagram.id, updatedDiagram);
 
-          // Update the threat model
+          // Update the diagram using the direct diagram API
           this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe({
+            this.threatModelService.updateDiagram(this.threatModel.id, diagram.id, {
+              name: newName
+            }).subscribe({
               next: result => {
                 if (result) {
-                  this.threatModel = result;
-                  // Ensure the diagrams array is updated with the server response
-                  this.diagrams = [...(result.diagrams || [])];
+                  // Update all references to the diagram with server response
+                  const index = this.diagrams.findIndex(d => d.id === result.id);
+                  if (index !== -1) {
+                    this.diagrams[index] = result;
+                    this.diagrams = [...this.diagrams];
+                  }
+                  
+                  // Update the diagram in the threat model's diagrams array
+                  if (this.threatModel?.diagrams) {
+                    const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === result.id);
+                    if (tmIndex !== -1) {
+                      this.threatModel.diagrams[tmIndex] = result;
+                    }
+                  }
+                  
                   // Update the map with server response data
-                  this.diagrams.forEach(d => {
-                    DIAGRAMS_BY_ID.set(d.id, d);
-                  });
+                  DIAGRAMS_BY_ID.set(result.id, result);
                 }
               },
               error: error => {
-                this.logger.error('Failed to update threat model', error);
+                this.logger.error('Failed to update diagram', error);
               }
             }),
           );
@@ -1166,11 +1185,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
           this.threatModel.authorization = result;
           this.threatModel.modified_at = new Date().toISOString();
 
-          // Update the threat model
+          // Create a clean threat model object with only basic fields (no entities)
+          // Use PATCH to update only the authorization field
+          const updates = {
+            authorization: this.threatModel.authorization
+          };
+
+          // Update the threat model with PATCH (only authorization field)
           this._subscriptions.add(
-            this.threatModelService.updateThreatModel(this.threatModel).subscribe(updatedModel => {
-              if (updatedModel) {
-                this.threatModel = updatedModel;
+            this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe(updatedModel => {
+              if (updatedModel && this.threatModel) {
+                // Update only the authorization and modified_at fields from the result
+                this.threatModel.authorization = updatedModel.authorization;
+                this.threatModel.modified_at = updatedModel.modified_at;
               }
             }),
           );
@@ -1716,17 +1743,31 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Apply form changes to the threat model
     this.applyFormChangesToThreatModel();
 
-    this.logger.debugComponent('TmEdit', 'Calling threatModelService.updateThreatModel', {
-      threatModelId: this.threatModel.id,
+    // Use PATCH to auto-save only the basic fields that might have changed
+    const updates = {
       name: this.threatModel.name,
+      description: this.threatModel.description,
+      threat_model_framework: this.threatModel.threat_model_framework,
+      issue_url: this.threatModel.issue_url
+    };
+
+    this.logger.debugComponent('TmEdit', 'Calling threatModelService.patchThreatModel', {
+      threatModelId: this.threatModel.id,
+      updates,
     });
 
-    // Save to server
+    // Save to server with PATCH (only basic fields)
     this._subscriptions.add(
-      this.threatModelService.updateThreatModel(this.threatModel).subscribe({
+      this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe({
         next: result => {
-          if (result) {
-            this.threatModel = result;
+          if (result && this.threatModel) {
+            // Update only the basic fields from the result, preserve entities
+            this.threatModel.name = result.name;
+            this.threatModel.description = result.description;
+            this.threatModel.threat_model_framework = result.threat_model_framework;
+            this.threatModel.issue_url = result.issue_url;
+            this.threatModel.modified_at = result.modified_at;
+            
             this.logger.debugComponent('TmEdit', 'Auto-saved threat model changes', {
               threatModelId: this.threatModel.id,
               name: this.threatModel.name,

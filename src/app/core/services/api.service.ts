@@ -109,6 +109,22 @@ export class ApiService {
   }
 
   /**
+   * Generic PATCH request with JSON Patch operations
+   * @param endpoint The API endpoint (without the base URL)
+   * @param operations Array of JSON Patch operations
+   */
+  patch<T>(endpoint: string, operations: Array<{op: string; path: string; value?: unknown}>): Observable<T> {
+    const url = `${this.apiUrl}/${endpoint}`;
+
+    // Request logging handled by JWT interceptor
+
+    return this.http.patch<T>(url, operations).pipe(
+      // Response logging handled by JWT interceptor
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'PATCH', endpoint)),
+    );
+  }
+
+  /**
    * Log API request details with secret redaction
    * @param method HTTP method
    * @param url Full URL
