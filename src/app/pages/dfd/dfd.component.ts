@@ -260,27 +260,32 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to actual history modifications for auto-save
     this._subscriptions.add(
-      this.x6GraphAdapter.historyModified$.subscribe(() => {
-        this.logger.info('DFD Component received history modification event');
+      this.x6GraphAdapter.historyModified$.subscribe({
+        next: () => {
+          this.logger.info('DFD Component received history modification event');
 
-        // Auto-save diagram when history is actually modified
-        if (this._isInitialized && this.dfdId && this.threatModelId) {
-          const graph = this.x6GraphAdapter.getGraph();
-          if (graph) {
-            this.logger.info('Triggering auto-save after history modification', {
+          // Auto-save diagram when history is actually modified
+          if (this._isInitialized && this.dfdId && this.threatModelId) {
+            const graph = this.x6GraphAdapter.getGraph();
+            if (graph) {
+              this.logger.info('Triggering auto-save after history modification', {
+                dfdId: this.dfdId,
+                threatModelId: this.threatModelId
+              });
+              this.autoSaveDiagram('History modified');
+            } else {
+              this.logger.warn('Cannot auto-save: graph not available');
+            }
+          } else {
+            this.logger.warn('Cannot auto-save: missing requirements', {
+              isInitialized: this._isInitialized,
               dfdId: this.dfdId,
               threatModelId: this.threatModelId
             });
-            this.autoSaveDiagram('History modified');
-          } else {
-            this.logger.warn('Cannot auto-save: graph not available');
           }
-        } else {
-          this.logger.warn('Cannot auto-save: missing requirements', {
-            isInitialized: this._isInitialized,
-            dfdId: this.dfdId,
-            threatModelId: this.threatModelId
-          });
+        },
+        error: (error) => {
+          this.logger.error('Error in history modification subscription', error);
         }
       }),
     );

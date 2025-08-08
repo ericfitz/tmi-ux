@@ -83,10 +83,15 @@ export class DfdEventHandlersService {
   initialize(x6GraphAdapter: any): void {
     // Subscribe to selection state changes
     this._subscriptions.add(
-      x6GraphAdapter.selectionChanged$.subscribe(() => {
-        // Get selected cells directly from the adapter
-        const selectedCells = x6GraphAdapter.getSelectedCells();
-        this._selectedCells$.next(selectedCells);
+      x6GraphAdapter.selectionChanged$.subscribe({
+        next: () => {
+          // Get selected cells directly from the adapter
+          const selectedCells = x6GraphAdapter.getSelectedCells();
+          this._selectedCells$.next(selectedCells);
+        },
+        error: (error: unknown) => {
+          this.logger.error('Error in selection change subscription', error);
+        }
       }),
     );
 

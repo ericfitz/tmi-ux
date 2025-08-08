@@ -225,7 +225,14 @@ export class ServerConnectionService implements OnDestroy {
         this.resetBackoffDelay();
       } else {
         // Perform health check which will auto-connect WebSocket if server is available
-        this.performHealthCheck().subscribe();
+        this.performHealthCheck().subscribe({
+          next: () => {
+            this.logger.debugComponent('ServerConnection', 'Manual health check completed successfully');
+          },
+          error: (error) => {
+            this.logger.error('Manual health check failed', error);
+          }
+        });
       }
     }
   }

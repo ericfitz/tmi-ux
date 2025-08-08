@@ -61,10 +61,19 @@ export class SessionManagerService {
 
     // Run timer outside Angular zone to avoid triggering change detection
     this.ngZone.runOutsideAngular(() => {
-      this.tokenExpiryTimer = interval(this.checkInterval).subscribe(() => {
-        this.ngZone.run(() => {
-          this.checkTokenExpiration();
-        });
+      this.tokenExpiryTimer = interval(this.checkInterval).subscribe({
+        next: () => {
+          this.ngZone.run(() => {
+            this.checkTokenExpiration();
+          });
+        },
+        error: (error) => {
+          this.logger.error('Token expiry timer error', error);
+          // Attempt to restart timer after error
+          this.ngZone.run(() => {
+            this.startExpiryTimer();
+          });
+        }
       });
     });
   }

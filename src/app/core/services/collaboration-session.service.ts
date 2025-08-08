@@ -95,7 +95,14 @@ export class CollaborationSessionService implements OnDestroy {
    * Manually refresh collaboration sessions
    */
   refreshSessions(): void {
-    this.loadSessions().subscribe();
+    this.loadSessions().subscribe({
+      next: () => {
+        this.logger.debugComponent('CollaborationSession', 'Manual sessions refresh completed');
+      },
+      error: (error) => {
+        this.logger.error('Failed to refresh collaboration sessions', error);
+      }
+    });
   }
 
   /**
@@ -113,7 +120,14 @@ export class CollaborationSessionService implements OnDestroy {
         switchMap(() => this.loadSessions()),
         takeUntil(this._destroy$),
       )
-      .subscribe();
+      .subscribe({
+        next: () => {
+          this.logger.debugComponent('CollaborationSession', 'Reactive session loading completed');
+        },
+        error: (error) => {
+          this.logger.error('Reactive session loading failed', error);
+        }
+      });
 
     // Listen for WebSocket session announcements
     this.setupWebSocketListeners();

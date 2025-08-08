@@ -156,7 +156,14 @@ export class ThreatModelService implements OnDestroy {
         this._threatModelListSubject.next([]);
         return of([]);
       }),
-    ).subscribe();
+    ).subscribe({
+      next: () => {
+        this.logger.debugComponent('ThreatModelService', 'Threat model list fetch completed');
+      },
+      error: (error) => {
+        this.logger.error('Unexpected error in threat model list subscription', error);
+      }
+    });
   }
 
   /**
