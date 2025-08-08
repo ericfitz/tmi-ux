@@ -623,27 +623,32 @@ export class TmEditComponent implements OnInit, OnDestroy {
             };
 
             this._subscriptions.add(
-              this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe(newDiagram => {
-                // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
-                DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
+              this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe({
+                next: newDiagram => {
+                  // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
+                  DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
 
-                // Add the new diagram to local state
-                if (!this.threatModel?.diagrams) {
-                  this.threatModel!.diagrams = [];
-                }
-                
-                // The API returns diagram objects, but threat model stores IDs or objects
-                if (this.threatModel && this.threatModel.diagrams && 
-                    Array.isArray(this.threatModel.diagrams) && 
-                    this.threatModel.diagrams.length > 0 && 
-                    typeof this.threatModel.diagrams[0] === 'string') {
-                  (this.threatModel.diagrams as unknown as string[]).push(newDiagram.id);
-                } else if (this.threatModel && this.threatModel.diagrams) {
-                  (this.threatModel.diagrams as unknown as Diagram[]).push(newDiagram);
-                }
+                  // Add the new diagram to local state
+                  if (!this.threatModel?.diagrams) {
+                    this.threatModel!.diagrams = [];
+                  }
+                  
+                  // The API returns diagram objects, but threat model stores IDs or objects
+                  if (this.threatModel && this.threatModel.diagrams && 
+                      Array.isArray(this.threatModel.diagrams) && 
+                      this.threatModel.diagrams.length > 0 && 
+                      typeof this.threatModel.diagrams[0] === 'string') {
+                    (this.threatModel.diagrams as unknown as string[]).push(newDiagram.id);
+                  } else if (this.threatModel && this.threatModel.diagrams) {
+                    (this.threatModel.diagrams as unknown as Diagram[]).push(newDiagram);
+                  }
 
-                // Add the new diagram to the diagrams array for display
-                this.diagrams.push(newDiagram);
+                  // Add the new diagram to the diagrams array for display
+                  this.diagrams.push(newDiagram);
+                },
+                error: error => {
+                  this.logger.error('Failed to create diagram', error);
+                }
               }),
             );
           }
