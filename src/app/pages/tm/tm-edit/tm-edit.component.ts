@@ -524,11 +524,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
             this._subscriptions.add(
               this.threatModelService.createThreat(this.threatModel.id, newThreatData).subscribe(newThreat => {
-                // Add the new threat to local state
+                // Add the new threat to local state (check for duplicates first)
                 if (!this.threatModel?.threats) {
                   this.threatModel!.threats = [];
                 }
-                this.threatModel!.threats.push(newThreat);
+                if (!this.threatModel!.threats.find(t => t.id === newThreat.id)) {
+                  this.threatModel!.threats.push(newThreat);
+                }
                 
                 // Update framework control state since we added a threat
                 this.updateFrameworkControlState();
@@ -643,8 +645,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
                     (this.threatModel.diagrams as unknown as Diagram[]).push(newDiagram);
                   }
 
-                  // Add the new diagram to the diagrams array for display
-                  this.diagrams.push(newDiagram);
+                  // Add the new diagram to the diagrams array for display (check for duplicates first)
+                  if (!this.diagrams.find(d => d.id === newDiagram.id)) {
+                    this.diagrams.push(newDiagram);
+                  }
                 },
                 error: error => {
                   this.logger.error('Failed to create diagram', error);
@@ -814,11 +818,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           this._subscriptions.add(
             this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe(newDocument => {
-              // Add the new document to local state
+              // Add the new document to local state (check for duplicates first)
               if (!this.threatModel?.documents) {
                 this.threatModel!.documents = [];
               }
-              this.threatModel!.documents.push(newDocument);
+              if (!this.threatModel!.documents.find(d => d.id === newDocument.id)) {
+                this.threatModel!.documents.push(newDocument);
+              }
             }),
           );
         }
@@ -953,11 +959,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           this._subscriptions.add(
             this.threatModelService.createSource(this.threatModel.id, newSourceData).subscribe(newSource => {
-              // Add the new source to local state
+              // Add the new source to local state (check for duplicates first)
               if (!this.threatModel?.sourceCode) {
                 this.threatModel!.sourceCode = [];
               }
-              this.threatModel!.sourceCode.push(newSource);
+              if (!this.threatModel!.sourceCode.find(s => s.id === newSource.id)) {
+                this.threatModel!.sourceCode.push(newSource);
+              }
             }),
           );
         }
