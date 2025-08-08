@@ -26,6 +26,12 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "description": "JWT token for authenticated requests"
+      },
+      "websocketAuth": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "token",
+        "description": "JWT token for WebSocket authentication. WebSocket connections must include the JWT token as a query parameter since browsers do not support custom headers for WebSocket connections."
       }
     },
     "schemas": {
@@ -108,12 +114,34 @@
               },
               "diagram_endpoint": {
                 "type": "string",
-                "description": "WebSocket endpoint template for diagram collaboration",
-                "example": "/ws/diagrams/{diagram_id}",
-                "pattern": "^/ws/diagrams/\\{[a-zA-Z_][a-zA-Z0-9_]*\\}$"
+                "description": "WebSocket endpoint template for diagram collaboration. Authentication is handled via query parameter 'token' containing a JWT token.",
+                "example": "/ws/diagrams/{diagram_id}?token={jwt_token}",
+                "pattern": "^/ws/diagrams/\\{[a-zA-Z_][a-zA-Z0-9_]*\\}(\\?token=\\{[a-zA-Z_][a-zA-Z0-9_]*\\})?$"
+              },
+              "authentication": {
+                "type": "object",
+                "description": "Authentication requirements for WebSocket connections",
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": ["query_parameter"],
+                    "description": "Authentication method used for WebSocket connections"
+                  },
+                  "parameter": {
+                    "type": "string",
+                    "description": "Query parameter name for JWT token",
+                    "example": "token"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Authentication description",
+                    "example": "JWT token must be provided as query parameter due to browser WebSocket header limitations"
+                  }
+                },
+                "required": ["method", "parameter", "description"]
               }
             },
-            "required": ["base_url", "diagram_endpoint"]
+            "required": ["base_url", "diagram_endpoint", "authentication"]
           }
         },
         "required": ["status", "service", "api", "operator", "websocket"],
@@ -136,7 +164,12 @@
           },
           "websocket": {
             "base_url": "wss://api.example.com/ws",
-            "diagram_endpoint": "/ws/diagrams/{diagram_id}"
+            "diagram_endpoint": "/ws/diagrams/{diagram_id}?token={jwt_token}",
+            "authentication": {
+              "method": "query_parameter",
+              "parameter": "token",
+              "description": "JWT token must be provided as query parameter due to browser WebSocket header limitations"
+            }
           }
         }
       },
@@ -3451,1320 +3484,6 @@
         }
       }
     },
-    "/threat_models/{threat_model_id}/diagrams": {
-      "get": {
-        "tags": ["Diagrams"],
-        "summary": "List diagrams for a threat model",
-        "description": "Returns a list of diagrams associated with the specified threat model",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 20
-            },
-            "description": "Number of diagrams to return"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 0
-            },
-            "description": "Pagination offset"
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "default": "created_at:desc"
-            },
-            "description": "Sort order (e.g., created_at:desc, name:asc)"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Filter by diagram name (partial match)"
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Filter by diagram description (partial match)"
-          },
-          {
-            "name": "created_after",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter diagrams created after this date (RFC3339 format)"
-          },
-          {
-            "name": "created_before",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter diagrams created before this date (RFC3339 format)"
-          },
-          {
-            "name": "modified_after",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter diagrams modified after this date (RFC3339 format)"
-          },
-          {
-            "name": "modified_before",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "description": "Filter diagrams modified before this date (RFC3339 format)"
-          },
-          {
-            "name": "owner",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Filter by owner username or email"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Paginated list of diagrams as name-ID pairs",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/PaginatedResponse"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/ListItem"
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams?limit=2&offset=0\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 200,
-            "body": {
-              "data": [
-                {
-                  "name": "Workflow Diagram",
-                  "id": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                {
-                  "name": "System Overview",
-                  "id": "456e7890-e12f-34d5-a678-426614174001"
-                }
-              ],
-              "pagination": {
-                "total": 2,
-                "limit": 2,
-                "offset": 0,
-                "has_more": false
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Diagrams"],
-        "summary": "Create a diagram for a threat model",
-        "description": "Creates a new diagram associated with the specified threat model",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name of the diagram"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "Description of the diagram"
-                  }
-                },
-                "required": ["name"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Diagram created successfully",
-            "headers": {
-              "Location": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "URL of the new diagram"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Diagram"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/Error"
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "POST /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"name\": \"New Diagram\", \"description\": \"A test diagram\"}",
-          "response": {
-            "status": 201,
-            "headers": {
-              "Location": "/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000"
-            },
-            "body": {
-              "id": "123e4567-e89b-12d3-a456-426614174000",
-              "name": "New Diagram",
-              "type": "DFD-1.0.0",
-              "description": "A test diagram",
-              "created_at": "2025-04-06T12:00:00Z",
-              "modified_at": "2025-04-06T12:00:00Z",
-              "metadata": [],
-              "cells": []
-            }
-          }
-        }
-      }
-    },
-    "/threat_models/{threat_model_id}/diagrams/{diagram_id}": {
-      "get": {
-        "tags": ["Diagrams"],
-        "summary": "Retrieve a diagram",
-        "description": "Retrieves the full details of a specific diagram within a threat model",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram to retrieve (UUID)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Full diagram details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Diagram"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 200,
-            "body": {
-              "id": "123e4567-e89b-12d3-a456-426614174000",
-              "name": "Workflow Diagram",
-              "type": "DFD-1.0.0",
-              "description": "A process workflow",
-              "created_at": "2025-04-06T12:00:00Z",
-              "modified_at": "2025-04-06T12:30:00Z",
-              "metadata": [],
-              "cells": [
-                {
-                  "id": "actor1",
-                  "shape": "actor",
-                  "x": 50,
-                  "y": 100,
-                  "width": 100,
-                  "height": 80,
-                  "zIndex": 10,
-                  "visible": true,
-                  "attrs": {
-                    "body": {
-                      "fill": "#ffffff",
-                      "stroke": "#000000",
-                      "strokeWidth": 2
-                    },
-                    "text": {
-                      "text": "User",
-                      "fontSize": 14,
-                      "fill": "#000000"
-                    }
-                  },
-                  "ports": {
-                    "groups": {
-                      "out": { "position": "right" }
-                    },
-                    "items": [{ "id": "port_out_1", "group": "out" }]
-                  },
-                  "data": []
-                },
-                {
-                  "id": "process1",
-                  "shape": "process",
-                  "x": 250,
-                  "y": 100,
-                  "width": 120,
-                  "height": 60,
-                  "zIndex": 10,
-                  "visible": true,
-                  "attrs": {
-                    "body": {
-                      "fill": "#ffffff",
-                      "stroke": "#000000",
-                      "strokeWidth": 2
-                    },
-                    "text": {
-                      "text": "Process Request",
-                      "fontSize": 14,
-                      "fill": "#000000"
-                    }
-                  },
-                  "ports": {
-                    "groups": {
-                      "in": { "position": "left" },
-                      "out": { "position": "right" }
-                    },
-                    "items": [
-                      { "id": "port_in_1", "group": "in" },
-                      { "id": "port_out_1", "group": "out" }
-                    ]
-                  },
-                  "data": []
-                },
-                {
-                  "id": "edge1",
-                  "shape": "edge",
-                  "source": {
-                    "cell": "actor1",
-                    "port": "port_out_1"
-                  },
-                  "target": {
-                    "cell": "process1",
-                    "port": "port_in_1"
-                  },
-                  "zIndex": 1,
-                  "visible": true,
-                  "attrs": {
-                    "line": {
-                      "stroke": "#808080",
-                      "strokeWidth": 1,
-                      "targetMarker": {
-                        "name": "classic",
-                        "size": 8
-                      }
-                    }
-                  },
-                  "labels": [
-                    {
-                      "attrs": {
-                        "text": {
-                          "text": "Request",
-                          "fontSize": 12,
-                          "fill": "#333333"
-                        }
-                      },
-                      "position": 0.5
-                    }
-                  ],
-                  "vertices": [],
-                  "data": []
-                }
-              ]
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["Diagrams"],
-        "summary": "Update a diagram",
-        "description": "Fully updates a diagram within a threat model; restricted to writer/owner roles",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram to update (UUID)"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Diagram"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Diagram updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Diagram"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/Error"
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"name\": \"Updated Diagram\", \"type\": \"DFD-1.0.0\", \"description\": \"Updated description\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"metadata\": [], \"cells\": [{\"id\": \"node1\", \"shape\": \"store\", \"x\": 200, \"y\": 100, \"width\": 140, \"height\": 70, \"zIndex\": 10, \"visible\": true, \"attrs\": {\"body\": {\"fill\": \"#f0f0f0\", \"stroke\": \"#333333\", \"strokeWidth\": 2}, \"text\": {\"text\": \"Data Store\", \"fontSize\": 14, \"fill\": \"#333333\"}}, \"data\": []}]}",
-          "response": {
-            "status": 200,
-            "body": {
-              "id": "123e4567-e89b-12d3-a456-426614174000",
-              "name": "Updated Diagram",
-              "type": "DFD-1.0.0",
-              "description": "Updated description",
-              "created_at": "2025-04-06T12:00:00Z",
-              "modified_at": "2025-04-06T12:45:00Z",
-              "metadata": [],
-              "cells": [
-                {
-                  "id": "node1",
-                  "shape": "store",
-                  "x": 200,
-                  "y": 100,
-                  "width": 140,
-                  "height": 70,
-                  "zIndex": 10,
-                  "visible": true,
-                  "attrs": {
-                    "body": {
-                      "fill": "#f0f0f0",
-                      "stroke": "#333333",
-                      "strokeWidth": 2
-                    },
-                    "text": {
-                      "text": "Data Store",
-                      "fontSize": 14,
-                      "fill": "#333333"
-                    }
-                  },
-                  "data": []
-                }
-              ]
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": ["Diagrams"],
-        "summary": "Partially update a diagram",
-        "description": "Applies JSON Patch operations to a diagram within a threat model; restricted to writer/owner roles",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram to update (UUID)"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "op": {
-                      "type": "string",
-                      "enum": ["add", "replace", "remove", "move", "copy", "test"],
-                      "description": "Patch operation type"
-                    },
-                    "path": {
-                      "type": "string",
-                      "description": "JSON path to target"
-                    },
-                    "value": {
-                      "description": "Value to apply"
-                    }
-                  },
-                  "required": ["op", "path"]
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Diagram updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Diagram"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/Error"
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "PATCH /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Patched Diagram\"}, {\"op\": \"add\", \"path\": \"/cells/-\", \"value\": {\"id\": \"node1\", \"shape\": \"actor\", \"x\": 150, \"y\": 150, \"width\": 100, \"height\": 50, \"zIndex\": 10, \"visible\": true, \"attrs\": {\"body\": {\"fill\": \"#ffffff\", \"stroke\": \"#000000\", \"strokeWidth\": 2}, \"text\": {\"text\": \"User\", \"fontSize\": 14, \"fill\": \"#000000\"}}, \"data\": []}}]",
-          "response": {
-            "status": 200,
-            "body": {
-              "id": "123e4567-e89b-12d3-a456-426614174000",
-              "name": "Patched Diagram",
-              "type": "DFD-1.0.0",
-              "description": "A process workflow",
-              "created_at": "2025-04-06T12:00:00Z",
-              "modified_at": "2025-04-06T12:45:00Z",
-              "metadata": [],
-              "cells": [
-                {
-                  "id": "node1",
-                  "shape": "actor",
-                  "x": 150,
-                  "y": 150,
-                  "width": 100,
-                  "height": 50,
-                  "zIndex": 10,
-                  "visible": true,
-                  "attrs": {
-                    "body": {
-                      "fill": "#ffffff",
-                      "stroke": "#000000",
-                      "strokeWidth": 2
-                    },
-                    "text": {
-                      "text": "User",
-                      "fontSize": 14,
-                      "fill": "#000000"
-                    }
-                  },
-                  "data": []
-                }
-              ],
-              "version": "1.0"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Diagrams"],
-        "summary": "Delete a diagram",
-        "description": "Deletes a diagram within a threat model; restricted to owner role",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram to delete (UUID)"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Diagram deleted successfully"
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "DELETE /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 204
-          }
-        }
-      }
-    },
-    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate": {
-      "get": {
-        "tags": ["Collaboration"],
-        "summary": "Get collaboration session status",
-        "description": "Returns details of an active collaboration session for a diagram within a threat model",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Session details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CollaborationSession"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "GET /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 200,
-            "body": {
-              "session_id": "abc123-session-uuid",
-              "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
-              "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
-              "participants": [
-                {
-                  "user_id": "user@example.com",
-                  "joined_at": "2025-04-06T12:02:00Z"
-                }
-              ],
-              "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Collaboration"],
-        "summary": "Join or start collaboration session",
-        "description": "Joins an existing session or starts a new one for a diagram within a threat model; writers/owners can start, readers can only join",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Session joined or started successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CollaborationSession"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "POST /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 200,
-            "body": {
-              "session_id": "abc123-session-uuid",
-              "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
-              "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
-              "participants": [
-                {
-                  "user_id": "user@example.com",
-                  "joined_at": "2025-04-06T12:02:00Z"
-                }
-              ],
-              "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Collaboration"],
-        "summary": "Leave collaboration session",
-        "description": "Removes the user from an active collaboration session for a diagram within a threat model",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Left session successfully"
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "403": {
-            "$ref": "#/components/responses/Error"
-          },
-          "404": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "DELETE /threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/collaborate\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 204
-          }
-        }
-      }
-    },
-    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata": {
-      "get": {
-        "tags": ["Threat Model Sub-Resources"],
-        "summary": "Get diagram metadata",
-        "description": "Returns all metadata key-value pairs for the specified diagram",
-        "operationId": "getDiagramMetadata",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Diagram metadata list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Metadata"
-                  }
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/components/responses/Error" },
-          "403": { "$ref": "#/components/responses/Error" },
-          "404": { "$ref": "#/components/responses/Error" },
-          "500": { "$ref": "#/components/responses/Error" }
-        }
-      },
-      "post": {
-        "tags": ["Threat Model Sub-Resources"],
-        "summary": "Create diagram metadata",
-        "description": "Creates new metadata entry for the specified diagram",
-        "operationId": "createDiagramMetadata",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Metadata"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Metadata entry created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Metadata"
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/Error" },
-          "401": { "$ref": "#/components/responses/Error" },
-          "403": { "$ref": "#/components/responses/Error" },
-          "404": { "$ref": "#/components/responses/Error" },
-          "500": { "$ref": "#/components/responses/Error" }
-        }
-      }
-    },
-    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/{key}": {
-      "get": {
-        "tags": ["Threat Model Sub-Resources"],
-        "summary": "Get diagram metadata by key",
-        "description": "Returns a specific metadata entry by key for the specified diagram",
-        "operationId": "getDiagramMetadataByKey",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          },
-          {
-            "name": "key",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 255
-            },
-            "description": "Metadata key to retrieve"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Metadata entry",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Metadata"
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/components/responses/Error" },
-          "403": { "$ref": "#/components/responses/Error" },
-          "404": { "$ref": "#/components/responses/Error" },
-          "500": { "$ref": "#/components/responses/Error" }
-        }
-      },
-      "put": {
-        "tags": ["Threat Model Sub-Resources"],
-        "summary": "Update diagram metadata by key",
-        "description": "Updates a specific metadata entry by key for the specified diagram",
-        "operationId": "updateDiagramMetadataByKey",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          },
-          {
-            "name": "key",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 255
-            },
-            "description": "Metadata key to update"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "value": {
-                    "type": "string",
-                    "description": "New value for the metadata entry"
-                  }
-                },
-                "required": ["value"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Metadata entry updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Metadata"
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/Error" },
-          "401": { "$ref": "#/components/responses/Error" },
-          "403": { "$ref": "#/components/responses/Error" },
-          "404": { "$ref": "#/components/responses/Error" },
-          "500": { "$ref": "#/components/responses/Error" }
-        }
-      },
-      "delete": {
-        "tags": ["Threat Model Sub-Resources"],
-        "summary": "Delete diagram metadata by key",
-        "description": "Deletes a specific metadata entry by key for the specified diagram",
-        "operationId": "deleteDiagramMetadataByKey",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          },
-          {
-            "name": "key",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 255
-            },
-            "description": "Metadata key to delete"
-          }
-        ],
-        "responses": {
-          "204": { "description": "Metadata entry deleted successfully" },
-          "401": { "$ref": "#/components/responses/Error" },
-          "403": { "$ref": "#/components/responses/Error" },
-          "404": { "$ref": "#/components/responses/Error" },
-          "500": { "$ref": "#/components/responses/Error" }
-        }
-      }
-    },
-    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/bulk": {
-      "post": {
-        "tags": ["Threat Model Sub-Resources"],
-        "summary": "Bulk create diagram metadata",
-        "description": "Creates multiple metadata entries in a single operation for the specified diagram",
-        "operationId": "bulkCreateDiagramMetadata",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "threat_model_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the threat model (UUID)"
-          },
-          {
-            "name": "diagram_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "maxLength": 36
-            },
-            "description": "Unique identifier of the diagram (UUID)"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Metadata"
-                },
-                "maxItems": 20
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Metadata entries created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Metadata"
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/Error" },
-          "401": { "$ref": "#/components/responses/Error" },
-          "403": { "$ref": "#/components/responses/Error" },
-          "404": { "$ref": "#/components/responses/Error" },
-          "500": { "$ref": "#/components/responses/Error" }
-        }
-      }
-    },
     "/threat_models/{threat_model_id}/threats": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -5488,6 +4207,341 @@
         }
       }
     },
+    "/threat_models/{threat_model_id}/threats/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create threats",
+        "description": "Creates multiple threats in a single operation for the specified threat model",
+        "operationId": "bulkCreateThreatModelThreats",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "maxLength": 36 },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Threat" },
+                "maxItems": 20,
+                "description": "Array of threats to create"
+              },
+              "examples": {
+                "bulkCreateThreats": {
+                  "summary": "Create multiple threats at once",
+                  "value": [
+                    {
+                      "name": "SQL Injection Attack",
+                      "description": "Attacker injects malicious SQL code through user input",
+                      "impact": "High",
+                      "likelihood": "Medium",
+                      "risk_rating": "High",
+                      "metadata": [
+                        { "key": "category", "value": "injection" },
+                        { "key": "stride", "value": "tampering" }
+                      ]
+                    },
+                    {
+                      "name": "Cross-Site Scripting (XSS)",
+                      "description": "Malicious scripts executed in user's browser",
+                      "impact": "Medium",
+                      "likelihood": "High",
+                      "risk_rating": "High",
+                      "metadata": [
+                        { "key": "category", "value": "xss" },
+                        { "key": "stride", "value": "tampering" }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Threats created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Threat" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk update threats",
+        "description": "Updates multiple threats in a single operation for the specified threat model",
+        "operationId": "bulkUpdateThreatModelThreats",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "maxLength": 36 },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Threat" },
+                "maxItems": 20,
+                "description": "Array of threats to update (must include id field)"
+              },
+              "examples": {
+                "bulkUpdateThreats": {
+                  "summary": "Update multiple threats at once",
+                  "value": [
+                    {
+                      "id": "750e8400-e29b-41d4-a716-446655440001",
+                      "name": "Updated SQL Injection Attack",
+                      "description": "Updated description for SQL injection vulnerability",
+                      "impact": "High",
+                      "likelihood": "Low",
+                      "risk_rating": "Medium",
+                      "metadata": [
+                        { "key": "category", "value": "injection" },
+                        { "key": "mitigation", "value": "parameterized-queries" }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Threats updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Threat" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/threats/batch/patch": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Batch patch threats",
+        "description": "Applies JSON Patch operations to multiple threats in a single operation",
+        "operationId": "batchPatchThreatModelThreats",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "maxLength": 36 },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patches": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "threat_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "ID of the threat to patch"
+                        },
+                        "operations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "op": {
+                                "type": "string",
+                                "enum": ["add", "replace", "remove", "move", "copy", "test"],
+                                "description": "Patch operation type"
+                              },
+                              "path": {
+                                "type": "string",
+                                "description": "JSON path to target"
+                              },
+                              "value": {
+                                "description": "Value to apply"
+                              }
+                            },
+                            "required": ["op", "path"]
+                          }
+                        }
+                      },
+                      "required": ["threat_id", "operations"]
+                    },
+                    "maxItems": 10
+                  }
+                },
+                "required": ["patches"]
+              },
+              "examples": {
+                "batchPatchThreats": {
+                  "summary": "Patch multiple threats with different operations",
+                  "value": {
+                    "patches": [
+                      {
+                        "threat_id": "750e8400-e29b-41d4-a716-446655440001",
+                        "operations": [
+                          { "op": "replace", "path": "/risk_rating", "value": "Medium" },
+                          { "op": "replace", "path": "/likelihood", "value": "Low" }
+                        ]
+                      },
+                      {
+                        "threat_id": "750e8400-e29b-41d4-a716-446655440002",
+                        "operations": [
+                          { "op": "add", "path": "/metadata/-", "value": { "key": "reviewed", "value": "true" } }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Threats patched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Threat" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/threats/batch": {
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Batch delete threats",
+        "description": "Deletes multiple threats in a single operation for the specified threat model",
+        "operationId": "batchDeleteThreatModelThreats",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "maxLength": 36 },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "threat_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 20,
+                    "description": "Array of threat IDs to delete"
+                  }
+                },
+                "required": ["threat_ids"]
+              },
+              "examples": {
+                "batchDeleteThreats": {
+                  "summary": "Delete multiple threats by ID",
+                  "value": {
+                    "threat_ids": [
+                      "750e8400-e29b-41d4-a716-446655440001",
+                      "750e8400-e29b-41d4-a716-446655440002",
+                      "750e8400-e29b-41d4-a716-446655440003"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Threats deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted_count": {
+                      "type": "integer",
+                      "description": "Number of threats successfully deleted"
+                    },
+                    "deleted_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "description": "Array of successfully deleted threat IDs"
+                    }
+                  },
+                  "required": ["deleted_count", "deleted_ids"]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/threat_models/{threat_model_id}/documents": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -6120,6 +5174,111 @@
         }
       }
     },
+    "/threat_models/{threat_model_id}/documents/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create documents",
+        "description": "Creates multiple documents in a single operation for the specified threat model",
+        "operationId": "bulkCreateThreatModelDocuments",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "maxLength": 36 },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Document" },
+                "maxItems": 20,
+                "description": "Array of documents to create"
+              },
+              "examples": {
+                "bulkCreateDocuments": {
+                  "summary": "Create multiple documents at once",
+                  "value": [
+                    {
+                      "name": "Architecture Document",
+                      "url": "https://docs.company.com/architecture.pdf",
+                      "description": "System architecture documentation",
+                      "metadata": [
+                        { "key": "type", "value": "architecture" },
+                        { "key": "version", "value": "2.1" }
+                      ]
+                    },
+                    {
+                      "name": "Security Requirements",
+                      "url": "https://docs.company.com/security.pdf",
+                      "description": "Security requirements and compliance standards",
+                      "metadata": [
+                        { "key": "classification", "value": "internal" },
+                        { "key": "department", "value": "security" }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Documents created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Document" }
+                },
+                "examples": {
+                  "bulkCreatedDocuments": {
+                    "summary": "Successfully created documents with generated IDs",
+                    "value": [
+                      {
+                        "id": "550e8400-e29b-41d4-a716-446655440001",
+                        "name": "Architecture Document",
+                        "url": "https://docs.company.com/architecture.pdf",
+                        "description": "System architecture documentation",
+                        "metadata": [
+                          { "key": "type", "value": "architecture" },
+                          { "key": "version", "value": "2.1" }
+                        ],
+                        "created_at": "2025-04-06T12:00:00Z",
+                        "modified_at": "2025-04-06T12:00:00Z"
+                      },
+                      {
+                        "id": "550e8400-e29b-41d4-a716-446655440002",
+                        "name": "Security Requirements",
+                        "url": "https://docs.company.com/security.pdf",
+                        "description": "Security requirements and compliance standards",
+                        "metadata": [
+                          { "key": "classification", "value": "internal" },
+                          { "key": "department", "value": "security" }
+                        ],
+                        "created_at": "2025-04-06T12:00:00Z",
+                        "modified_at": "2025-04-06T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/threat_models/{threat_model_id}/sources": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -6717,6 +5876,111 @@
         }
       }
     },
+    "/threat_models/{threat_model_id}/sources/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create sources",
+        "description": "Creates multiple source references in a single operation for the specified threat model",
+        "operationId": "bulkCreateThreatModelSources",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "maxLength": 36 },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Source" },
+                "maxItems": 20,
+                "description": "Array of source references to create"
+              },
+              "examples": {
+                "bulkCreateSources": {
+                  "summary": "Create multiple source references at once",
+                  "value": [
+                    {
+                      "name": "User Authentication Module",
+                      "url": "https://github.com/company/repo/blob/main/auth/user.go",
+                      "description": "Core user authentication logic",
+                      "metadata": [
+                        { "key": "language", "value": "go" },
+                        { "key": "maintainer", "value": "security-team" }
+                      ]
+                    },
+                    {
+                      "name": "Database Connection Pool",
+                      "url": "https://github.com/company/repo/blob/main/db/pool.go",
+                      "description": "Database connection management",
+                      "metadata": [
+                        { "key": "type", "value": "infrastructure" },
+                        { "key": "criticality", "value": "high" }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sources created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Source" }
+                },
+                "examples": {
+                  "bulkCreatedSources": {
+                    "summary": "Successfully created sources with generated IDs",
+                    "value": [
+                      {
+                        "id": "650e8400-e29b-41d4-a716-446655440001",
+                        "name": "User Authentication Module",
+                        "url": "https://github.com/company/repo/blob/main/auth/user.go",
+                        "description": "Core user authentication logic",
+                        "metadata": [
+                          { "key": "language", "value": "go" },
+                          { "key": "maintainer", "value": "security-team" }
+                        ],
+                        "created_at": "2025-04-06T12:00:00Z",
+                        "modified_at": "2025-04-06T12:00:00Z"
+                      },
+                      {
+                        "id": "650e8400-e29b-41d4-a716-446655440002",
+                        "name": "Database Connection Pool",
+                        "url": "https://github.com/company/repo/blob/main/db/pool.go",
+                        "description": "Database connection management",
+                        "metadata": [
+                          { "key": "type", "value": "infrastructure" },
+                          { "key": "criticality", "value": "high" }
+                        ],
+                        "created_at": "2025-04-06T12:00:00Z",
+                        "modified_at": "2025-04-06T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/threat_models/{threat_model_id}/metadata": {
       "get": {
         "tags": ["Threat Model Sub-Resources"],
@@ -6972,6 +6236,885 @@
               "maxLength": 36
             },
             "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Metadata"
+                },
+                "maxItems": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entries created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "List threat model diagrams",
+        "description": "Returns all diagrams associated with a specific threat model",
+        "operationId": "getThreatModelDiagrams",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "description": "Maximum number of items to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Number of items to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of diagrams",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Diagram"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create a new diagram",
+        "description": "Creates a new diagram within the specified threat model",
+        "operationId": "createThreatModelDiagram",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Diagram"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Diagram created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Diagram"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get a specific diagram",
+        "description": "Retrieves a specific diagram from the threat model",
+        "operationId": "getThreatModelDiagram",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diagram details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Diagram"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update a diagram",
+        "description": "Completely replaces a diagram with new data",
+        "operationId": "updateThreatModelDiagram",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Diagram"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Diagram updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Diagram"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Partially update a diagram",
+        "description": "Apply JSON Patch operations to update specific parts of a diagram",
+        "operationId": "patchThreatModelDiagram",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "op": {
+                      "type": "string",
+                      "enum": ["add", "remove", "replace", "move", "copy", "test"]
+                    },
+                    "path": { "type": "string" },
+                    "value": {},
+                    "from": { "type": "string" }
+                  },
+                  "required": ["op", "path"]
+                }
+              },
+              "examples": {
+                "updateName": {
+                  "summary": "Update diagram name",
+                  "value": [
+                    {
+                      "op": "replace",
+                      "path": "/name",
+                      "value": "Updated Diagram Name"
+                    }
+                  ]
+                },
+                "addCell": {
+                  "summary": "Add a new cell to the diagram",
+                  "value": [
+                    {
+                      "op": "add",
+                      "path": "/cells/-",
+                      "value": {
+                        "id": "new-cell-id",
+                        "shape": "process",
+                        "x": 100,
+                        "y": 100,
+                        "width": 120,
+                        "height": 60,
+                        "label": "New Process"
+                      }
+                    }
+                  ]
+                },
+                "addMetadata": {
+                  "summary": "Add metadata to diagram",
+                  "value": [
+                    {
+                      "op": "add",
+                      "path": "/metadata/-",
+                      "value": {
+                        "key": "version",
+                        "value": "2.0"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Diagram updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Diagram"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "422": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete a diagram",
+        "description": "Permanently removes a diagram from the threat model",
+        "operationId": "deleteThreatModelDiagram",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Diagram deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate": {
+      "get": {
+        "tags": ["Collaboration"],
+        "summary": "Get diagram collaboration session",
+        "description": "Retrieves the current collaboration session details for a diagram",
+        "operationId": "getDiagramCollaborationSession",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collaboration session details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollaborationSession"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Collaboration"],
+        "summary": "Start diagram collaboration session",
+        "description": "Creates a new collaboration session for real-time diagram editing",
+        "operationId": "startDiagramCollaborationSession",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Collaboration session started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollaborationSession"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "409": { 
+            "description": "Collaboration session already exists",
+            "$ref": "#/components/responses/Error"
+          },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Collaboration"],
+        "summary": "End diagram collaboration session",
+        "description": "Terminates the active collaboration session for a diagram",
+        "operationId": "endDiagramCollaborationSession",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Collaboration session ended successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get diagram metadata",
+        "description": "Retrieves all metadata entries for the specified diagram",
+        "operationId": "getDiagramMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of metadata entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Metadata"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Create diagram metadata",
+        "description": "Creates a new metadata entry for the specified diagram",
+        "operationId": "createDiagramMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metadata entry created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/{key}": {
+      "get": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Get diagram metadata by key",
+        "description": "Retrieves a specific metadata entry for the diagram by key",
+        "operationId": "getDiagramMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "description": "Metadata key to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Update diagram metadata by key",
+        "description": "Updates or creates a metadata entry for the diagram with the specified key",
+        "operationId": "updateDiagramMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "description": "Metadata key to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "description": "Metadata value"
+                  }
+                },
+                "required": ["value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata entry updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Delete diagram metadata by key",
+        "description": "Removes a specific metadata entry for the diagram by key",
+        "operationId": "deleteDiagramMetadataByKey",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "description": "Metadata key to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Metadata entry deleted successfully" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/bulk": {
+      "post": {
+        "tags": ["Threat Model Sub-Resources"],
+        "summary": "Bulk create diagram metadata",
+        "description": "Creates multiple metadata entries in a single operation for the specified diagram",
+        "operationId": "bulkCreateDiagramMetadata",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "threat_model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "description": "Unique identifier of the diagram (UUID)"
           }
         ],
         "requestBody": {
