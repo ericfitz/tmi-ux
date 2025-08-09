@@ -98,6 +98,13 @@ export class ServerConnectionService implements OnDestroy {
       return;
     }
 
+    // Check if only local provider is enabled (no server required)
+    if (this.isOnlyLocalProviderEnabled()) {
+      this.logger.info('Only local provider enabled - server monitoring disabled');
+      this._connectionStatus$.next(ServerConnectionStatus.NOT_CONFIGURED);
+      return;
+    }
+
     this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
 
     // Start periodic health checks
@@ -114,6 +121,19 @@ export class ServerConnectionService implements OnDestroy {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Check if only the local provider is enabled
+   * When only local provider is available, we don't need server connectivity
+   */
+  private isOnlyLocalProviderEnabled(): boolean {
+    // Check if local provider is enabled and is the default
+    const localEnabled = environment.oauth?.local?.enabled !== false;
+    const defaultProvider = environment.defaultAuthProvider || 'local';
+    
+    // If local is enabled and is the default provider, assume server-less mode
+    return localEnabled && defaultProvider === 'local';
   }
 
   /**
@@ -189,7 +209,7 @@ export class ServerConnectionService implements OnDestroy {
    * Manually trigger a connection check
    */
   public checkConnection(): void {
-    if (this.isServerConfigured()) {
+    if (this.isServerConfigured() && !this.isOnlyLocalProviderEnabled()) {
       this.performHealthCheck().subscribe({
         next: () => {
           this.logger.debugComponent(
@@ -201,6 +221,11 @@ export class ServerConnectionService implements OnDestroy {
           this.logger.error('HTTP health check failed', error);
         },
       });
+    } else {
+      this.logger.debugComponent(
+        'ServerConnection',
+        'Connection check skipped - server monitoring disabled',
+      );
     }
   }
 

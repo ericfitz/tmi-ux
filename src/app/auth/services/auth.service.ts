@@ -318,12 +318,22 @@ export class AuthService {
   /**
    * Get available authentication providers from TMI server
    * Uses caching to avoid repeated API calls
+   * Falls back to local provider only when server is not available
    */
   getAvailableProviders(): Observable<OAuthProviderInfo[]> {
     // Check cache first
     const now = Date.now();
     if (this.cachedProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
       return of(this.cachedProviders);
+    }
+
+    // Check server connection status first
+    const serverStatus = this.serverConnectionService.currentStatus;
+    if (serverStatus !== ServerConnectionStatus.CONNECTED) {
+      this.logger.debugComponent('Auth', 'Server not connected, using local provider only', {
+        serverStatus,
+      });
+      return this.getFallbackProviders();
     }
 
     this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
@@ -359,21 +369,36 @@ export class AuthService {
       }),
       catchError(error => {
         this.logger.error('Failed to fetch OAuth providers', error);
-        // Fallback to local provider only
-        const fallbackProviders: OAuthProviderInfo[] = [];
-        if (environment.oauth?.local?.enabled !== false) {
-          fallbackProviders.push({
-            id: 'local',
-            name: 'Local Development',
-            icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
-            auth_url: this.localProvider.buildAuthUrl(''),
-            redirect_uri: `${window.location.origin}/auth/callback`,
-            client_id: 'local-development',
-          });
-        }
-        return of(fallbackProviders);
+        return this.getFallbackProviders();
       }),
     );
+  }
+
+  /**
+   * Get fallback providers (local provider only) when server is unavailable
+   */
+  private getFallbackProviders(): Observable<OAuthProviderInfo[]> {
+    const fallbackProviders: OAuthProviderInfo[] = [];
+    if (environment.oauth?.local?.enabled !== false) {
+      fallbackProviders.push({
+        id: 'local',
+        name: 'Local Development',
+        icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
+        auth_url: this.localProvider.buildAuthUrl(''),
+        redirect_uri: `${window.location.origin}/auth/callback`,
+        client_id: 'local-development',
+      });
+    }
+
+    // Cache the results
+    this.cachedProviders = fallbackProviders;
+    this.providersCacheTime = Date.now();
+
+    this.logger.debugComponent('Auth', `Using fallback providers: ${fallbackProviders.length}`, {
+      providers: fallbackProviders.map(p => ({ id: p.id, name: p.name })),
+    });
+
+    return of(fallbackProviders);
   }
 
   /**

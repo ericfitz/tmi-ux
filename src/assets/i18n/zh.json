@@ -154,7 +154,15 @@
     "oauthFailed": "OAuth身份验证失败。请重试。",
     "pleaseSignIn": "请登录以继续。",
     "title": "登录TMI",
-    "unexpectedError": "OAuth身份验证过程中发生意外错误。"
+    "unexpectedError": "OAuth身份验证过程中发生意外错误。",
+    "local": {
+      "title": "本地开发登录",
+      "subtitle": "请输入您的电子邮件地址进行测试",
+      "emailLabel": "电子邮件地址",
+      "emailRequired": "电子邮件地址为必填项",
+      "emailInvalid": "请输入有效的电子邮件地址",
+      "loginButton": "登录"
+    }
   },
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",

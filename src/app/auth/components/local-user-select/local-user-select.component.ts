@@ -1,14 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocalOAuthProviderService } from '../../services/local-oauth-provider.service';
 
 @Component({
   selector: 'app-local-user-select',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    TranslocoModule,
+  ],
   template: `
     <div class="local-auth-container">
       <mat-card class="auth-card">
@@ -16,28 +28,39 @@ import { LocalOAuthProviderService } from '../../services/local-oauth-provider.s
           <div class="header-with-icon">
             <i class="fa-solid fa-laptop-code local-icon"></i>
             <div>
-              <mat-card-title>Local Development Login</mat-card-title>
-              <mat-card-subtitle>Select a user for testing</mat-card-subtitle>
+              <mat-card-title>{{ 'login.local.title' | transloco }}</mat-card-title>
+              <mat-card-subtitle>{{ 'login.local.subtitle' | transloco }}</mat-card-subtitle>
             </div>
           </div>
         </mat-card-header>
         <mat-card-content>
-          <div class="user-list">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            <mat-form-field appearance="outline" class="email-field">
+              <mat-label>{{ 'login.local.emailLabel' | transloco }}</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                [placeholder]="'login.local.emailLabel' | transloco"
+                autocomplete="email"
+              />
+              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+                {{ 'login.local.emailRequired' | transloco }}
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+                {{ 'login.local.emailInvalid' | transloco }}
+              </mat-error>
+            </mat-form-field>
             <button
-              mat-stroked-button
-              *ngFor="let user of users"
-              (click)="selectUser(user.id)"
-              class="user-button"
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="loginForm.invalid"
+              class="login-button"
             >
-              <div class="user-info">
-                <i class="fa-solid fa-user user-icon"></i>
-                <div class="user-details">
-                  <div class="user-name">{{ user.name }}</div>
-                  <div class="user-email">{{ user.email }}</div>
-                </div>
-              </div>
+              {{ 'login.local.loginButton' | transloco }}
             </button>
-          </div>
+          </form>
         </mat-card-content>
       </mat-card>
     </div>
@@ -68,62 +91,39 @@ import { LocalOAuthProviderService } from '../../services/local-oauth-provider.s
         color: #6c757d;
       }
 
-      .user-list {
+      .login-form {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 16px;
+        margin-top: 16px;
       }
 
-      .user-button {
-        padding: 16px;
-        text-align: left;
-        transition: background-color 0.2s ease;
-
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.04);
-        }
+      .email-field {
+        width: 100%;
       }
 
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .user-icon {
-        font-size: 20px;
-        color: #6c757d;
-        width: 24px;
-        text-align: center;
-      }
-
-      .user-details {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .user-name {
-        font-weight: 500;
+      .login-button {
+        align-self: stretch;
+        padding: 12px 0;
         font-size: 16px;
-      }
-
-      .user-email {
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.6);
+        font-weight: 500;
       }
     `,
   ],
 })
 export class LocalUserSelectComponent implements OnInit {
-  users: Array<{ id: string; name: string; email: string; picture?: string }> = [];
+  loginForm: FormGroup;
   private state: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private localProvider: LocalOAuthProviderService,
     private router: Router,
+    private fb: FormBuilder,
   ) {
-    this.users = this.localProvider.getUsers();
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+    });
   }
 
   ngOnInit(): void {
@@ -132,10 +132,13 @@ export class LocalUserSelectComponent implements OnInit {
     });
   }
 
-  selectUser(userId: string): void {
-    const code = this.localProvider.generateAuthCode(userId);
-    void this.router.navigate(['/auth/callback'], {
-      queryParams: { code, state: this.state },
-    });
+  onSubmit(): void {
+    if (this.loginForm.valid) {
+      const email = this.loginForm.get('email')?.value as string;
+      const code = this.localProvider.generateAuthCodeForEmail(email);
+      void this.router.navigate(['/auth/callback'], {
+        queryParams: { code, state: this.state },
+      });
+    }
   }
 }

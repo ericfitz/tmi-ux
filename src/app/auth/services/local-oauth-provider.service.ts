@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { UserProfile } from '../models/auth.models';
 
 /**
@@ -10,18 +9,6 @@ import { UserProfile } from '../models/auth.models';
   providedIn: 'root',
 })
 export class LocalOAuthProviderService {
-  private readonly users = environment.oauth?.local?.users || [
-    { id: 'user1', name: 'User One', email: 'user1@example.com' },
-    { id: 'user2', name: 'User Two', email: 'user2@example.com' },
-    { id: 'user3', name: 'User Three', email: 'user3@example.com' },
-  ];
-
-  /**
-   * Get available test users
-   */
-  getUsers(): Array<{ id: string; name: string; email: string; picture?: string }> {
-    return this.users;
-  }
 
   /**
    * Build authorization URL for local provider
@@ -37,10 +24,10 @@ export class LocalOAuthProviderService {
   }
 
   /**
-   * Generate mock authorization code for local user
+   * Generate mock authorization code for local user by email
    */
-  generateAuthCode(userId: string): string {
-    return btoa(`local:${userId}:${Date.now()}`);
+  generateAuthCodeForEmail(email: string): string {
+    return btoa(`local:${email}:${Date.now()}`);
   }
 
   /**
@@ -49,19 +36,31 @@ export class LocalOAuthProviderService {
   exchangeCodeForUser(code: string): UserProfile | null {
     try {
       const decoded = atob(code);
-      const [provider, userId] = decoded.split(':');
+      const [provider, email] = decoded.split(':');
       if (provider !== 'local') return null;
 
-      const user = this.users.find(user => user.id === userId);
-      if (!user) return null;
+      // Generate a display name from the email
+      const name = this.generateDisplayName(email);
 
       return {
-        email: user.email,
-        name: user.name,
-        picture: user.picture,
+        email,
+        name,
+        picture: undefined,
       };
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Generate a display name from an email address
+   */
+  private generateDisplayName(email: string): string {
+    // Extract the part before @ and capitalize first letter of each word
+    const username = email.split('@')[0];
+    return username
+      .split(/[._-]/)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(' ');
   }
 }

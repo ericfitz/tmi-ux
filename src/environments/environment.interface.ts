@@ -129,16 +129,6 @@ export interface Environment {
        * Default: 'fa-solid fa-laptop-code'
        */
       icon?: string;
-
-      /**
-       * Available test users for local development
-       */
-      users?: Array<{
-        id: string;
-        name: string;
-        email: string;
-        picture?: string;
-      }>;
     };
   };
 

@@ -154,7 +154,15 @@
     "oauthFailed": "OAuth authentication failed. Please try again.",
     "pleaseSignIn": "Please sign in to continue.",
     "title": "Login to TMI",
-    "unexpectedError": "An unexpected error occurred during OAuth."
+    "unexpectedError": "An unexpected error occurred during OAuth.",
+    "local": {
+      "title": "Local Development Login",
+      "subtitle": "Enter your email address for testing",
+      "emailLabel": "Email Address",
+      "emailRequired": "Email address is required",
+      "emailInvalid": "Please enter a valid email address",
+      "loginButton": "Login"
+    }
   },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
