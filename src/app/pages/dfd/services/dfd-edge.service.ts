@@ -203,21 +203,41 @@ export class DfdEdgeService {
       originalTargetPort: targetPortId,
     });
 
+    // Get the original edge's vertices and label
+    const originalVertices = edge.getVertices();
+    const originalLabel = (edge as any).getLabel() || 'Flow';
+
+    // Process the original edge vertices if needed
+    let processedOriginalVertices = [...originalVertices];
+    if (originalVertices.length === 0) {
+      // Add a vertex at the center and move it perpendicular to the source-destination line
+      processedOriginalVertices = this._addCenterVertexToStraightEdge(edge, graph);
+      // Update the original edge with the new vertex
+      edge.setVertices(processedOriginalVertices);
+    }
+
+    // Calculate mirrored vertices for the inverse edge
+    const inverseVertices = this._mirrorVerticesAroundSourceTargetLine(
+      processedOriginalVertices,
+      edge,
+      graph,
+    );
+
+    // Process label for inverse edge
+    const inverseLabel = this._processLabelForInverse(originalLabel);
+
     // Generate a new UUID for the inverse edge
     const inverseEdgeId = uuidv4();
 
-    // Get the original edge's label for consistency using the correct label extraction method
-    const originalLabel = (edge as any).getLabel() || 'Flow';
-
     try {
-      // Create inverse EdgeInfo domain object
+      // Create inverse EdgeInfo domain object with vertices (without label initially)
       const inverseEdgeInfo = EdgeInfo.create({
         id: inverseEdgeId,
         sourceNodeId: targetNodeId, // Swap source and target for inverse
         targetNodeId: sourceNodeId,
         sourcePortId: targetPortId,
         targetPortId: sourcePortId,
-        label: originalLabel,
+        vertices: inverseVertices,
       });
 
       // Delegate to EdgeService for X6 operations (proper layered architecture)
@@ -226,6 +246,9 @@ export class DfdEdgeService {
         updatePortVisibility: true,
       });
 
+      // Set the label using the utility function
+      this.updateEdgeLabel(inverseEdge, inverseLabel);
+
       // Apply proper zIndex using the same logic as normal edge creation (application layer)
       this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
 
@@ -233,7 +256,7 @@ export class DfdEdgeService {
       this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
 
       this.logger.info(
-        'Inverse edge created successfully directly in X6 with creation highlight (batched)',
+        'Inverse edge created successfully with vertex processing and label customization',
         {
           originalEdgeId: edge.id,
           inverseEdgeId,
@@ -241,6 +264,11 @@ export class DfdEdgeService {
           newTarget: sourceNodeId,
           newSourcePort: targetPortId,
           newTargetPort: sourcePortId,
+          originalVertexCount: originalVertices.length,
+          processedVertexCount: processedOriginalVertices.length,
+          inverseVertexCount: inverseVertices.length,
+          originalLabel,
+          inverseLabel,
           appliedZIndexLogic: true,
         },
       );
@@ -250,6 +278,119 @@ export class DfdEdgeService {
       this.logger.error('Error creating inverse edge directly in X6', error);
       throw error;
     }
+  }
+
+  /**
+   * Add a vertex at the geometric center of a straight edge and move it perpendicular to the edge line
+   */
+  private _addCenterVertexToStraightEdge(edge: Edge, graph: Graph): Array<{ x: number; y: number }> {
+    // Get the actual geometric points where the edge connects to the nodes
+    const sourcePoint = edge.getSourcePoint();
+    const targetPoint = edge.getTargetPoint();
+
+    if (!sourcePoint || !targetPoint) {
+      this.logger.warn('Cannot add center vertex: unable to get edge connection points');
+      return [];
+    }
+
+    // Calculate the geometric center of the edge
+    const centerX = (sourcePoint.x + targetPoint.x) / 2;
+    const centerY = (sourcePoint.y + targetPoint.y) / 2;
+
+    // Calculate the direction vector of the edge
+    const dx = targetPoint.x - sourcePoint.x;
+    const dy = targetPoint.y - sourcePoint.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    if (length === 0) {
+      // If source and target are at the same position, just offset vertically
+      return [{ x: centerX, y: centerY - 15 }];
+    }
+
+    // Create perpendicular vector (rotate 90 degrees)
+    const perpX = -dy / length; // Perpendicular vector
+    const perpY = dx / length;
+
+    // Move 15 pixels perpendicular from the geometric center
+    const vertexX = centerX + perpX * 15;
+    const vertexY = centerY + perpY * 15;
+
+    return [{ x: vertexX, y: vertexY }];
+  }
+
+  /**
+   * Mirror vertices around the line from source connection point to target connection point
+   */
+  private _mirrorVerticesAroundSourceTargetLine(
+    originalVertices: Array<{ x: number; y: number }>,
+    edge: Edge,
+    graph: Graph,
+  ): Array<{ x: number; y: number }> {
+    // Get the actual geometric points where the edge connects to the nodes
+    const sourcePoint = edge.getSourcePoint();
+    const targetPoint = edge.getTargetPoint();
+
+    if (!sourcePoint || !targetPoint) {
+      this.logger.warn('Cannot mirror vertices: unable to get edge connection points');
+      return [];
+    }
+
+    // Calculate line parameters for mirroring using actual connection points
+    const lineStartX = sourcePoint.x;
+    const lineStartY = sourcePoint.y;
+    const lineDx = targetPoint.x - sourcePoint.x;
+    const lineDy = targetPoint.y - sourcePoint.y;
+
+    // Mirror each vertex
+    return originalVertices.map(vertex => {
+      // Vector from line start to point
+      const pointDx = vertex.x - lineStartX;
+      const pointDy = vertex.y - lineStartY;
+
+      // Project the point onto the line
+      const lineLengthSquared = lineDx * lineDx + lineDy * lineDy;
+      if (lineLengthSquared === 0) {
+        // If line has no length, return the point as is
+        return { x: vertex.x, y: vertex.y };
+      }
+
+      const t = (pointDx * lineDx + pointDy * lineDy) / lineLengthSquared;
+      const projectionX = lineStartX + t * lineDx;
+      const projectionY = lineStartY + t * lineDy;
+
+      // Calculate the mirrored point
+      const mirroredX = 2 * projectionX - vertex.x;
+      const mirroredY = 2 * projectionY - vertex.y;
+
+      return { x: mirroredX, y: mirroredY };
+    });
+  }
+
+  /**
+   * Process label for inverse edge, swapping request/query with response/reply
+   */
+  private _processLabelForInverse(originalLabel: string): string {
+    if (!originalLabel || originalLabel.trim() === '') {
+      return originalLabel;
+    }
+
+    const label = originalLabel.trim();
+
+    // Check if the label ends with request or query (case-insensitive)
+    if (/\brequest$/i.test(label)) {
+      return label.replace(/\brequest$/i, 'response');
+    } else if (/\bquery$/i.test(label)) {
+      return label.replace(/\bquery$/i, 'response');
+    }
+    // Check if the label ends with response or reply (case-insensitive)
+    else if (/\bresponse$/i.test(label)) {
+      return label.replace(/\bresponse$/i, 'request');
+    } else if (/\breply$/i.test(label)) {
+      return label.replace(/\breply$/i, 'request');
+    }
+
+    // If none of the patterns match, return the original label
+    return originalLabel;
   }
 
   // ========================================
