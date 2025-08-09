@@ -107,28 +107,27 @@ export class DfdCollaborationService {
         // Update collaboration state
         this._isCollaborating$.next(true);
 
-        // Add current user as owner
-        const currentUser: CollaborationUser = {
-          id: this._authService.username || 'current-user',
-          name: this._authService.username || 'Current User',
-          role: 'owner',
-          status: 'active',
-        };
-
-        // Convert API participants to CollaborationUser format
-        const collaborationUsers = session.participants.map(participant => ({
+        // Convert API participants to CollaborationUser format, using email addresses consistently
+        const currentUserEmail = this._authService.userEmail || 'current-user';
+        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => ({
           id: participant.user_id,
-          name: participant.user_id, // Use user_id as name for now
-          role: 'writer' as const, // Default role for other participants
+          name: participant.user_id, // Use email address as display name
+          role: participant.user_id === currentUserEmail ? 'owner' as const : 'writer' as const, // Owner is the current user who started session
           status: 'active' as const,
         }));
 
-        // Add current user if not already in participants
-        const allUsers = collaborationUsers.some(u => u.id === currentUser.id) 
-          ? collaborationUsers 
-          : [currentUser, ...collaborationUsers];
+        // If current user is not in participants list, add them as owner
+        if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
+          const currentUser: CollaborationUser = {
+            id: currentUserEmail,
+            name: currentUserEmail, // Use email address consistently
+            role: 'owner',
+            status: 'active',
+          };
+          collaborationUsers.unshift(currentUser); // Add owner at the beginning
+        }
 
-        this._collaborationUsers$.next(allUsers);
+        this._collaborationUsers$.next(collaborationUsers);
       }),
       map(() => true),
       catchError((error) => {
@@ -279,7 +278,8 @@ export class DfdCollaborationService {
     }
 
     const users = this._collaborationUsers$.value;
-    const currentUser = users.find(user => user.id === 'current-user');
+    const currentUserEmail = this._authService.userEmail || 'current-user';
+    const currentUser = users.find(user => user.id === currentUserEmail);
 
     return currentUser ? currentUser.role : null;
   }
@@ -306,6 +306,24 @@ export class DfdCollaborationService {
       default:
         return false;
     }
+  }
+
+  /**
+   * Check if the current user is the owner of the collaboration session
+   * @returns boolean indicating if the current user is the owner
+   */
+  public isCurrentUserOwner(): boolean {
+    return this.getCurrentUserRole() === 'owner';
+  }
+
+  /**
+   * Check if a specific user is the current user
+   * @param userId The user ID to check
+   * @returns boolean indicating if this is the current user
+   */
+  public isCurrentUser(userId: string): boolean {
+    const currentUserEmail = this._authService.userEmail || 'current-user';
+    return userId === currentUserEmail;
   }
 
   /**

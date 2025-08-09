@@ -234,6 +234,23 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Check if the current user is the owner of the collaboration session
+   * @returns boolean indicating if the current user is the owner
+   */
+  isCurrentUserOwner(): boolean {
+    return this._collaborationService.isCurrentUserOwner();
+  }
+
+  /**
+   * Check if a specific user is the current user
+   * @param userId The user ID to check
+   * @returns boolean indicating if this is the current user
+   */
+  isCurrentUser(userId: string): boolean {
+    return this._collaborationService.isCurrentUser(userId);
+  }
+
+  /**
    * Get the status color for a user
    * @param status The user's status
    * @returns A CSS color class

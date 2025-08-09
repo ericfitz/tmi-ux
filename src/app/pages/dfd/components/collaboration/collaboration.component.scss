@@ -99,20 +99,43 @@
         .user-name {
           font-weight: 500;
           margin-right: 8px;
+          flex-grow: 1;
         }
 
-        .user-role {
-          font-size: 12px;
-          color: rgb(0 0 0 / 60%);
-          background-color: rgb(0 0 0 / 5%);
-          padding: 2px 6px;
-          border-radius: 12px;
+        .user-permissions {
+          display: flex;
+          align-items: center;
+          margin-left: 8px;
+
+          .permission-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            
+            &.owner-icon {
+              color: #ff9800; // Orange for owner
+            }
+            
+            &.writer-icon {
+              color: #4caf50; // Green for writer
+            }
+            
+            &.reader-icon {
+              color: #757575; // Grey for reader
+            }
+          }
         }
       }
 
       .user-actions {
         display: flex;
         align-items: center;
+        
+        button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
       }
     }
   }

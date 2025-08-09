@@ -73,53 +73,63 @@
           <div class="user-info">
             <div class="user-status" [ngClass]="getStatusColor(user.status)"></div>
             <div class="user-name">{{ user.name }}</div>
-            <div class="user-role">{{ 'collaboration.roles.' + user.role | transloco }}</div>
+            <div class="user-permissions">
+              <!-- Owner icon -->
+              <mat-icon 
+                *ngIf="user.role === 'owner'"
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+                class="permission-icon owner-icon"
+                [matTooltip]="'collaboration.roles.owner' | transloco"
+              >
+                lock_person
+              </mat-icon>
+              
+              <!-- Writer icon -->
+              <mat-icon 
+                *ngIf="user.role === 'writer'"
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+                class="permission-icon writer-icon"
+                [matTooltip]="'collaboration.roles.writer' | transloco"
+              >
+                edit
+              </mat-icon>
+              
+              <!-- Reader icon -->
+              <mat-icon 
+                *ngIf="user.role === 'reader'"
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+                class="permission-icon reader-icon"
+                [matTooltip]="'collaboration.roles.reader' | transloco"
+              >
+                no_edit
+              </mat-icon>
+            </div>
           </div>
           <div
             class="user-actions"
-            *ngIf="hasPermission('changeRole') && user.id !== 'current-user'"
+            *ngIf="isCurrentUserOwner() && !isCurrentUser(user.id)"
           >
+            <!-- Remove user button (only shown to owner for other users) -->
             <button
               mat-icon-button
-              [matMenuTriggerFor]="userMenu"
-              [matTooltip]="'collaboration.changeRole' | transloco"
+              color="warn"
+              (click)="removeUser(user.id)"
+              [matTooltip]="'collaboration.removeFromSession' | transloco"
             >
               <mat-icon
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
               >
-                settings
+                delete
               </mat-icon>
             </button>
-            <mat-menu #userMenu="matMenu">
-              <button
-                mat-menu-item
-                (click)="updateUserRole(user.id, 'owner')"
-                [disabled]="user.role === 'owner'"
-              >
-                {{ 'collaboration.makeOwner' | transloco }}
-              </button>
-              <button
-                mat-menu-item
-                (click)="updateUserRole(user.id, 'writer')"
-                [disabled]="user.role === 'writer'"
-              >
-                {{ 'collaboration.makeWriter' | transloco }}
-              </button>
-              <button
-                mat-menu-item
-                (click)="updateUserRole(user.id, 'reader')"
-                [disabled]="user.role === 'reader'"
-              >
-                {{ 'collaboration.makeReader' | transloco }}
-              </button>
-              <mat-divider></mat-divider>
-              <button mat-menu-item (click)="removeUser(user.id)" *ngIf="hasPermission('remove')">
-                <mat-icon color="warn">person_remove</mat-icon>
-                <span class="warn-text">{{ 'collaboration.removeUser' | transloco }}</span>
-              </button>
-            </mat-menu>
           </div>
         </div>
       </div>
