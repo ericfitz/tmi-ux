@@ -50,7 +50,6 @@ vi.mock('../../../environments/environment', () => ({
       local: {
         enabled: true,
         icon: 'fa-solid fa-laptop-code',
-        users: [{ id: 'user1', name: 'Test User', email: 'user1@example.com' }],
       },
     },
   },

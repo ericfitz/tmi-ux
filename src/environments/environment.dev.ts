@@ -20,11 +20,6 @@ export const environment: Environment = {
     local: {
       enabled: true,
       icon: 'fa-solid fa-laptop-code',
-      users: [
-        { id: 'user1', name: 'Alice Developer', email: 'user1@example.com' },
-        { id: 'user2', name: 'Bob Tester', email: 'user2@example.com' },
-        { id: 'user3', name: 'Charlie Admin', email: 'user3@example.com' },
-      ],
     },
   },
 };
