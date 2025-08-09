@@ -5,22 +5,19 @@
  * It provides reactive streams for connection status and handles periodic health checks.
  *
  * Key functionality:
- * - Monitors server connectivity through periodic health checks
+ * - Monitors server connectivity through periodic HTTP health checks
  * - Provides reactive connection status (NOT_CONFIGURED, ERROR, CONNECTED)
- * - Handles connection error recovery and retry logic
+ * - Handles connection error recovery and retry logic with exponential backoff
  * - Integrates with environment configuration to detect server settings
- * - Respects WebSocket connections: skips HTTP health checks when WebSocket is connected
- *   (WebSocket supports RFC6455 ping/pong, so HTTP polling is redundant when WS is active)
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, timer, Subscription, EMPTY, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, timer, Subscription, EMPTY } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
-import { WebSocketAdapter, WebSocketState } from '../../pages/dfd/infrastructure/adapters/websocket.adapter';
 
 export enum ServerConnectionStatus {
   NOT_CONFIGURED = 'NOT_CONFIGURED',
@@ -48,10 +45,6 @@ interface ServerHealthResponse {
     name: string;
     contact: string;
   };
-  websocket: {
-    base_url: string;
-    diagram_endpoint: string;
-  };
 }
 
 @Injectable({
@@ -66,12 +59,10 @@ export class ServerConnectionService implements OnDestroy {
   private readonly MIN_BACKOFF_DELAY = 1000; // 1 second
   private readonly MAX_BACKOFF_DELAY = 30000; // 30 seconds
   private _currentBackoffDelay = this.MIN_BACKOFF_DELAY;
-  private _websocketBaseUrl: string | null = null;
 
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
-    private webSocketAdapter: WebSocketAdapter,
   ) {
     this.initializeConnectionMonitoring();
   }
@@ -162,18 +153,9 @@ export class ServerConnectionService implements OnDestroy {
 
   /**
    * Perform a single health check against the server
-   * Only performs HTTP health check if WebSocket is not connected
    */
   private performHealthCheck(): Observable<void> {
-    // Check if WebSocket is connected - if so, skip HTTP health check
-    if (this.webSocketAdapter.connectionState === WebSocketState.CONNECTED) {
-      this.logger.info('WebSocket connected - skipping HTTP health check');
-      this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
-      this.resetBackoffDelay();
-      return EMPTY;
-    }
-
-    this.logger.debugComponent('ServerConnection', 'WebSocket not connected - performing HTTP health check');
+    this.logger.debugComponent('ServerConnection', 'Performing HTTP health check');
 
     // Use the root API endpoint as defined in tmi-openapi.json
     const statusEndpoint = environment.apiUrl.replace('/api', '');
@@ -182,16 +164,6 @@ export class ServerConnectionService implements OnDestroy {
       map(response => {
         if (response.status?.code === 'OK') {
           this.logger.info('Server status check successful');
-          
-          // Extract WebSocket information for future use
-          if (response.websocket?.base_url) {
-            this._websocketBaseUrl = response.websocket.base_url;
-            this.logger.info('WebSocket base URL extracted from server health', { 
-              websocketBaseUrl: this._websocketBaseUrl 
-            });
-            // Note: WebSocket connection will be established on-demand for diagram collaboration
-          }
-          
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();
@@ -215,34 +187,21 @@ export class ServerConnectionService implements OnDestroy {
 
   /**
    * Manually trigger a connection check
-   * Only performs HTTP check if WebSocket is not connected
    */
   public checkConnection(): void {
     if (this.isServerConfigured()) {
-      if (this.webSocketAdapter.connectionState === WebSocketState.CONNECTED) {
-        this.logger.info('WebSocket connected - manual health check not needed');
-        this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
-        this.resetBackoffDelay();
-      } else {
-        // Perform health check which will auto-connect WebSocket if server is available
-        this.performHealthCheck().subscribe({
-          next: () => {
-            this.logger.debugComponent('ServerConnection', 'Manual health check completed successfully');
-          },
-          error: (error) => {
-            this.logger.error('Manual health check failed', error);
-          }
-        });
-      }
+      this.performHealthCheck().subscribe({
+        next: () => {
+          this.logger.debugComponent(
+            'ServerConnection',
+            'HTTP health check completed successfully',
+          );
+        },
+        error: error => {
+          this.logger.error('HTTP health check failed', error);
+        },
+      });
     }
-  }
-
-  /**
-   * Get WebSocket base URL for diagram collaboration
-   * Used by collaboration services to build diagram-specific WebSocket URLs
-   */
-  public getWebSocketBaseUrl(): string | null {
-    return this._websocketBaseUrl;
   }
 
   /**
@@ -270,124 +229,6 @@ export class ServerConnectionService implements OnDestroy {
     } else {
       // Use current backoff delay when not connected
       return this._currentBackoffDelay;
-    }
-  }
-
-  /**
-   * Connect WebSocket for diagram collaboration (not used for general server connection)
-   * This method is available for diagram-specific collaboration services to use
-   */
-  public connectWebSocketForDiagram(diagramId: string): Observable<void> {
-    if (!this._websocketBaseUrl) {
-      this.logger.warn('No WebSocket base URL available - cannot connect');
-      return throwError(() => new Error('WebSocket base URL not available'));
-    }
-
-    if (!this.isUserAuthenticated()) {
-      this.logger.warn('User not authenticated - cannot connect to diagram WebSocket');
-      return throwError(() => new Error('User not authenticated'));
-    }
-
-    // Build diagram-specific WebSocket URL
-    const diagramEndpoint = `/ws/diagrams/${diagramId}`;
-    const fullUrl = this._websocketBaseUrl.replace('/ws', diagramEndpoint);
-    const authenticatedUrl = this.buildAuthenticatedWebSocketUrl(fullUrl);
-    
-    if (authenticatedUrl === fullUrl) {
-      this.logger.warn('No valid token available for diagram WebSocket');
-      return throwError(() => new Error('No valid authentication token'));
-    }
-    
-    this.logger.info('Connecting to diagram WebSocket', { 
-      diagramId,
-      hasAuth: true 
-    });
-    
-    return this.webSocketAdapter.connect(authenticatedUrl);
-  }
-
-  /**
-   * Check if user is authenticated by checking localStorage token
-   * This avoids circular dependency with AuthService
-   */
-  private isUserAuthenticated(): boolean {
-    try {
-      const tokenJson = localStorage.getItem('auth_token');
-      if (!tokenJson) {
-        return false;
-      }
-
-      const tokenData = JSON.parse(tokenJson) as {
-        token?: string;
-        expiresAt?: string;
-      };
-      
-      if (!tokenData?.token || typeof tokenData.token !== 'string') {
-        return false;
-      }
-
-      // Check if token is expired
-      if (tokenData.expiresAt && typeof tokenData.expiresAt === 'string') {
-        const expiresAt = new Date(tokenData.expiresAt);
-        if (expiresAt <= new Date()) {
-          return false;
-        }
-      }
-
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  /**
-   * Build authenticated WebSocket URL by adding token as query parameter
-   * This avoids circular dependency with AuthService
-   */
-  private buildAuthenticatedWebSocketUrl(baseUrl: string): string {
-    try {
-      // Get token directly from localStorage to avoid AuthService circular dependency
-      const tokenJson = localStorage.getItem('auth_token');
-      if (!tokenJson) {
-        return baseUrl;
-      }
-
-      const tokenData = JSON.parse(tokenJson) as {
-        token?: string;
-        expiresAt?: string;
-      };
-      
-      if (!tokenData?.token || typeof tokenData.token !== 'string') {
-        return baseUrl;
-      }
-
-      // Check if token is expired
-      if (tokenData.expiresAt && typeof tokenData.expiresAt === 'string') {
-        const expiresAt = new Date(tokenData.expiresAt);
-        if (expiresAt <= new Date()) {
-          this.logger.warn('Token expired, connecting WebSocket without authentication');
-          return baseUrl;
-        }
-      }
-
-      // Add token as query parameter
-      const url = new URL(baseUrl);
-      url.searchParams.set('token', tokenData.token);
-      return url.toString();
-    } catch (error) {
-      this.logger.warn('Failed to build authenticated WebSocket URL, using base URL', error);
-      return baseUrl;
-    }
-  }
-
-  /**
-   * Disconnect any active WebSocket connection
-   * Used for cleanup when server connection is lost
-   */
-  public disconnectWebSocket(): void {
-    if (this.webSocketAdapter.isConnected) {
-      this.logger.info('Disconnecting active WebSocket connection');
-      this.webSocketAdapter.disconnect();
     }
   }
 }
