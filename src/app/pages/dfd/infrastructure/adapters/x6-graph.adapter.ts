@@ -482,6 +482,13 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Get the X6 History Manager for direct access to history operations
+   */
+  getHistoryManager(): X6HistoryManager {
+    return this._historyManager;
+  }
+
+  /**
    * Add a node to the graph
    */
   addNode(node: DiagramNode): Node {

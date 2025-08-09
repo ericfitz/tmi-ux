@@ -577,28 +577,46 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      this.logger.info('Loading diagram cells into graph', { 
+      this.logger.info('Loading diagram cells into graph with history disabled', { 
         cellCount: cells.length,
         dfdId: this.dfdId,
         cells: cells.map(cell => ({ id: cell.id, shape: cell.shape }))
       });
 
-      // Use the facade service to handle batch loading with proper history management
-      this.facade.loadDiagramCellsBatch(
-        cells,
-        graph,
-        this.dfdId || 'default-diagram',
-        this.nodeConfigurationService,
-      );
-      
-      this.logger.info('Successfully loaded diagram cells into graph');
-      
-      // Check if cells were actually added to the graph
-      const graphCells = graph.getCells();
-      this.logger.info('Graph state after loading', { 
-        totalCellsInGraph: graphCells.length,
-        cellIds: graphCells.map(cell => cell.id)
-      });
+      // CRITICAL: Disable history tracking before loading diagram cells to prevent
+      // initial diagram load from creating history entries
+      const historyManager = this.x6GraphAdapter.getHistoryManager();
+      if (historyManager) {
+        historyManager.disable(graph);
+        this.logger.info('History tracking disabled for initial diagram load');
+      }
+
+      try {
+        // Use the facade service to handle batch loading with proper history management
+        this.facade.loadDiagramCellsBatch(
+          cells,
+          graph,
+          this.dfdId || 'default-diagram',
+          this.nodeConfigurationService,
+        );
+        
+        this.logger.info('Successfully loaded diagram cells into graph');
+        
+        // Check if cells were actually added to the graph
+        const graphCells = graph.getCells();
+        this.logger.info('Graph state after loading', { 
+          totalCellsInGraph: graphCells.length,
+          cellIds: graphCells.map(cell => cell.id)
+        });
+      } finally {
+        // CRITICAL: Re-enable history tracking after diagram is fully loaded
+        if (historyManager) {
+          // Clear any history entries that might have been created during initialization
+          historyManager.clearHistory(graph);
+          historyManager.enable(graph);
+          this.logger.info('History tracking re-enabled after diagram load completed');
+        }
+      }
       
       this.cdr.markForCheck();
     } catch (error) {
