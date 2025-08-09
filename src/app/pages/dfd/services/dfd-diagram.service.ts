@@ -506,15 +506,23 @@ export class DfdDiagramService {
    * Convert X6 edge config to EdgeInfo domain object
    */
   private convertX6ConfigToEdgeInfo(edgeConfig: any): EdgeInfo {
-    // Extract label from labels array or direct label property
-    let label = '';
-    if (edgeConfig.labels && edgeConfig.labels.length > 0) {
-      const firstLabel = edgeConfig.labels[0];
-      if (firstLabel.attrs?.text?.text) {
-        label = firstLabel.attrs.text.text;
-      }
+    // Extract labels array directly if present, otherwise create from single label
+    let labels: any[] = [];
+    
+    if (edgeConfig.labels && Array.isArray(edgeConfig.labels)) {
+      // Use existing labels array directly for X6 compatibility
+      labels = edgeConfig.labels;
     } else if (edgeConfig.label) {
-      label = edgeConfig.label;
+      // Convert single label to X6 labels format
+      labels = [
+        {
+          attrs: {
+            text: {
+              text: edgeConfig.label,
+            },
+          },
+        },
+      ];
     }
 
     // Extract hybrid data format (metadata + custom data)
@@ -533,7 +541,7 @@ export class DfdDiagramService {
       id: edgeConfig.id,
       source: edgeConfig.source,
       target: edgeConfig.target,
-      label,
+      labels, // Pass the full labels array instead of a simple string
       vertices: edgeConfig.vertices || [],
       data: hybridData,
       markup: edgeConfig.markup,
