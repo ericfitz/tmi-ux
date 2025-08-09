@@ -38,6 +38,23 @@ export interface CollaborationSession {
 }
 
 /**
+ * Interface for server collaboration session response
+ */
+interface ServerCollaborationSession {
+  session_id: string;
+  threat_model_id: string;
+  threat_model_name?: string;
+  diagram_id: string;
+  diagram_name?: string;
+  participants: Array<{
+    user_id: string;
+    joined_at?: string;
+  }>;
+  websocket_url: string;
+  started_at?: string;
+}
+
+/**
  * Interface for session started/ended WebSocket messages
  */
 export interface SessionAnnouncement {
@@ -170,7 +187,13 @@ export class CollaborationSessionService implements OnDestroy {
       return this.requestSessionsViaWebSocket();
     } else {
       // Fallback to HTTP API
-      return this.requestSessionsViaHttp();
+      return this.requestSessionsViaHttp().pipe(
+        map(sessions => {
+          this.logger.info('Loaded sessions from HTTP API', { count: sessions.length, sessions });
+          this._sessions$.next(sessions);
+          return sessions;
+        })
+      );
     }
   }
 
@@ -203,13 +226,37 @@ export class CollaborationSessionService implements OnDestroy {
   private requestSessionsViaHttp(): Observable<CollaborationSession[]> {
     const url = `${environment.apiUrl}/collaboration/sessions`;
     
-    return this.http.get<{ sessions: CollaborationSession[] }>(url).pipe(
-      map(response => response.sessions || []),
+    return this.http.get<ServerCollaborationSession[]>(url).pipe(
+      map(response => {
+        // Transform server response to match our CollaborationSession interface
+        return response.map(session => this.transformServerSession(session));
+      }),
       catchError(error => {
         this.logger.error('Failed to load sessions via HTTP', error);
         return of([]);
       }),
     );
+  }
+
+  /**
+   * Transform server session data to CollaborationSession format
+   */
+  private transformServerSession(serverSession: ServerCollaborationSession): CollaborationSession {
+    this.logger.debugComponent('CollaborationSession', 'Transforming server session', serverSession);
+    
+    const session: CollaborationSession = {
+      id: serverSession.session_id,
+      threatModelId: serverSession.threat_model_id,
+      threatModelName: serverSession.threat_model_name || `TM ${serverSession.threat_model_id.slice(0, 8)}`,
+      diagramId: serverSession.diagram_id,
+      diagramName: serverSession.diagram_name || `Diagram ${serverSession.diagram_id.slice(0, 8)}`,
+      hostUser: serverSession.participants[0]?.user_id || 'Unknown User',
+      startedAt: new Date(serverSession.started_at || serverSession.participants[0]?.joined_at || Date.now()),
+      activeUsers: serverSession.participants.length,
+    };
+    
+    this.logger.debugComponent('CollaborationSession', 'Transformed session', session);
+    return session;
   }
 
   /**

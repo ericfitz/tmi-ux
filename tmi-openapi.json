@@ -1304,11 +1304,21 @@
             "description": "Unique identifier of the associated threat model (UUID)",
             "maxLength": 36
           },
+          "threat_model_name": {
+            "type": "string",
+            "description": "Name of the associated threat model",
+            "maxLength": 256
+          },
           "diagram_id": {
             "type": "string",
             "format": "uuid",
             "description": "Unique identifier of the associated diagram (UUID)",
             "maxLength": 36
+          },
+          "diagram_name": {
+            "type": "string",
+            "description": "Name of the associated diagram",
+            "maxLength": 256
           },
           "participants": {
             "type": "array",
@@ -1340,14 +1350,18 @@
         "required": [
           "session_id",
           "threat_model_id",
+          "threat_model_name",
           "diagram_id",
+          "diagram_name",
           "participants",
           "websocket_url"
         ],
         "example": {
           "session_id": "D7744D3A-ED22-40AF-862B-29786CAD0007",
           "threat_model_id": "5311D207-AFD5-4A1A-BA83-14C1445DC257",
+          "threat_model_name": "E-commerce Platform Security Analysis",
           "diagram_id": "DFF7F4A9-CBCE-4001-9198-2706C86F7EF3",
+          "diagram_name": "User Authentication Flow",
           "participants": [
             {
               "user_id": "user@example.com",
