@@ -333,12 +333,14 @@ export class DfdCollaborationService {
   private _connectToWebSocket(websocketUrl: string): void {
     this._logger.info('Connecting to collaboration WebSocket', { websocketUrl });
 
-    try {
-      this._webSocketAdapter.connect(websocketUrl);
-      this._logger.info('WebSocket connection initiated');
-    } catch (error) {
-      this._logger.error('Failed to connect to WebSocket', error);
-    }
+    this._webSocketAdapter.connect(websocketUrl).subscribe({
+      next: () => {
+        this._logger.info('WebSocket connection established successfully');
+      },
+      error: (error) => {
+        this._logger.error('Failed to connect to WebSocket', error);
+      }
+    });
   }
 
   /**
