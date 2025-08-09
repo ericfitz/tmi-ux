@@ -52,7 +52,7 @@ export class DfdDiagramService {
    * Returns observable with load result
    */
   loadDiagram(diagramId: string, threatModelId?: string): Observable<DiagramLoadResult> {
-    this.logger.info('Loading diagram data', { diagramId, threatModelId });
+    this.logger.info('Loading diagram data using dedicated diagram endpoint', { diagramId, threatModelId });
 
     if (!threatModelId) {
       this.logger.error('Threat model ID is required to load diagram data');
@@ -62,24 +62,14 @@ export class DfdDiagramService {
       });
     }
 
-    // Load diagram data from the threat model service
-    return this.threatModelService.getThreatModelById(threatModelId).pipe(
-      map(threatModel => {
-        if (!threatModel) {
-          this.logger.warn('Threat model not found', { threatModelId });
-          return {
-            success: false,
-            error: `Threat model with ID ${threatModelId} not found`,
-          };
-        }
-
-        // Find the diagram within the threat model
-        const diagram = threatModel.diagrams?.find(d => d.id === diagramId);
+    // Use the dedicated diagram endpoint instead of fetching the entire threat model
+    return this.threatModelService.getDiagramById(threatModelId, diagramId).pipe(
+      map(diagram => {
         if (!diagram) {
-          this.logger.warn('Diagram not found in threat model', { diagramId, threatModelId });
+          this.logger.warn('Diagram not found', { diagramId, threatModelId });
           return {
             success: false,
-            error: `Diagram with ID ${diagramId} not found in threat model`,
+            error: `Diagram with ID ${diagramId} not found`,
           };
         }
 
@@ -87,10 +77,10 @@ export class DfdDiagramService {
           id: diagramId,
           name: diagram.name,
           threatModelId,
-          cells: diagram.cells || [], // Include the actual diagram cells from threat model
+          cells: diagram.cells || [], // Use the diagram cells directly from the diagram endpoint
         };
 
-        this.logger.info('Successfully loaded diagram data from threat model', {
+        this.logger.info('Successfully loaded diagram data using dedicated endpoint', {
           name: diagramData.name,
           id: diagramId,
           threatModelId,
@@ -103,7 +93,7 @@ export class DfdDiagramService {
         };
       }),
       catchError(error => {
-        this.logger.error('Error loading diagram data from threat model', error);
+        this.logger.error('Error loading diagram data using dedicated endpoint', error);
         return of({
           success: false,
           error: 'Failed to load diagram data',
@@ -558,50 +548,29 @@ export class DfdDiagramService {
    * Save diagram changes back to the threat model
    */
   saveDiagramChanges(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
-    this.logger.info('Saving diagram changes back to threat model', { diagramId, threatModelId });
+    this.logger.info('Saving diagram changes using PATCH', { diagramId, threatModelId });
 
-    return this.threatModelService.getThreatModelById(threatModelId).pipe(
-      map(threatModel => {
-        if (!threatModel) {
-          throw new Error(`Threat model with ID ${threatModelId} not found`);
-        }
+    // Convert current graph state to cells format
+    const cells = this.convertGraphToCellsFormat(graph);
+    this.logger.debug('[DfdDiagram] Converted graph to cells format', { cellCount: cells.length });
 
-        // Find the diagram within the threat model
-        const diagramIndex = threatModel.diagrams?.findIndex(d => d.id === diagramId);
-        if (diagramIndex === -1 || diagramIndex === undefined) {
-          throw new Error(`Diagram with ID ${diagramId} not found in threat model`);
-        }
-
-        // Convert current graph state to cells format
-        const cells = this.convertGraphToCellsFormat(graph);
-
-        // Update the diagram with new cells data
-        if (threatModel.diagrams) {
-          threatModel.diagrams[diagramIndex] = {
-            ...threatModel.diagrams[diagramIndex],
-            cells,
-            modified_at: new Date().toISOString(),
-          };
-        }
-
-        // Save the updated threat model
-        this.threatModelService.updateThreatModel(threatModel).subscribe({
-          next: () => {
-            this.logger.info('Successfully saved diagram changes to threat model', {
-              diagramId,
-              threatModelId,
-              cellCount: cells.length,
-            });
-          },
-          error: error => {
-            this.logger.error('Failed to save threat model after diagram update', error);
-          },
+    // Use the new PATCH method for diagram-only updates instead of updating the entire threat model
+    return this.threatModelService.patchDiagramCells(threatModelId, diagramId, cells).pipe(
+      map(updatedDiagram => {
+        this.logger.info('Successfully saved diagram changes using PATCH', {
+          diagramId,
+          threatModelId,
+          cellCount: cells.length,
+          diagramName: updatedDiagram.name
         });
-
         return true;
       }),
       catchError(error => {
-        this.logger.error('Error saving diagram changes', error);
+        this.logger.error('Error saving diagram changes using PATCH', error, {
+          diagramId,
+          threatModelId,
+          cellCount: cells.length
+        });
         return of(false);
       }),
     );

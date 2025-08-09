@@ -24,7 +24,7 @@ import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
 import { ThreatModel, Document as TMDocument, Source, Metadata, Threat } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
-import { Diagram } from '../models/diagram.model';
+import { Diagram, Cell } from '../models/diagram.model';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
@@ -222,6 +222,63 @@ export class ThreatModelService implements OnDestroy {
         this.logger.error(`Error fetching threat model with ID: ${id}`, error);
         return of(undefined);
       }),
+    );
+  }
+
+  /**
+   * Get basic threat model info (name, id, etc.) without loading full data
+   * This is more efficient than getThreatModelById when you only need basic info
+   */
+  getThreatModelBasicInfo(threatModelId: string): Observable<Pick<ThreatModel, 'id' | 'name' | 'description' | 'owner' | 'created_at' | 'modified_at'> | undefined> {
+    if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        return of({
+          id: threatModel.id,
+          name: threatModel.name,
+          description: threatModel.description,
+          owner: threatModel.owner,
+          created_at: threatModel.created_at,
+          modified_at: threatModel.modified_at
+        });
+      }
+      return of(undefined);
+    }
+
+    // For real API, we could use a dedicated lightweight endpoint if available
+    // For now, fall back to the list endpoint and find the specific threat model
+    return this.getThreatModelList().pipe(
+      map(threatModels => {
+        const listItem = threatModels.find(tm => tm.id === threatModelId);
+        if (!listItem) {
+          return undefined;
+        }
+        return {
+          id: listItem.id,
+          name: listItem.name,
+          description: listItem.description,
+          owner: listItem.owner,
+          created_at: listItem.created_at,
+          modified_at: listItem.modified_at
+        };
+      }),
+      catchError(error => {
+        this.logger.error(`Error getting basic info for threat model ID: ${threatModelId}`, error);
+        // Fallback to full getThreatModelById if list approach fails
+        return this.getThreatModelById(threatModelId).pipe(
+          map(threatModel => {
+            if (!threatModel) return undefined;
+            return {
+              id: threatModel.id,
+              name: threatModel.name,
+              description: threatModel.description,
+              owner: threatModel.owner,
+              created_at: threatModel.created_at,
+              modified_at: threatModel.modified_at
+            };
+          })
+        );
+      })
     );
   }
 
@@ -1008,6 +1065,67 @@ export class ThreatModelService implements OnDestroy {
         throw error;
       }),
     );
+  }
+
+  /**
+   * Patch diagram cells using JSON Patch operations
+   * This method uses the PATCH endpoint specifically for diagram updates
+   * instead of updating the entire threat model
+   */
+  patchDiagramCells(
+    threatModelId: string, 
+    diagramId: string, 
+    cells: Cell[]
+  ): Observable<Diagram> {
+    if (this._useMockData) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Patching mock diagram cells for diagram ID: ${diagramId}`,
+        { cellCount: cells.length }
+      );
+      
+      // For mock mode, simulate the patch operation
+      const mockDiagram: Diagram = {
+        id: diagramId,
+        name: 'Mock Diagram',
+        type: 'DFD-1.0.0',
+        cells: cells,
+        metadata: [],
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString()
+      };
+      
+      return of(mockDiagram);
+    }
+
+    // Create JSON Patch operations for the cells update
+    const operations = [
+      {
+        op: 'replace' as const,
+        path: '/cells',
+        value: cells
+      },
+      {
+        op: 'replace' as const,
+        path: '/modified_at',
+        value: new Date().toISOString()
+      }
+    ];
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Patching diagram cells for diagram ID: ${diagramId} via API`,
+      { threatModelId, diagramId, cellCount: cells.length }
+    );
+
+    return this.apiService
+      .patch<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`, operations)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error patching diagram cells for diagram ID: ${diagramId}`, error);
+          throw error;
+        }),
+      );
   }
 
   /**

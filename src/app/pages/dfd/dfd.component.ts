@@ -330,19 +330,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Loads the threat model data for the given threat model ID
+   * Loads basic threat model info (name, etc.) for the given threat model ID
+   * Uses lightweight method instead of fetching entire threat model
    */
   private loadThreatModelData(threatModelId: string): void {
     this._subscriptions.add(
-      this.threatModelService.getThreatModelById(threatModelId).subscribe({
-        next: threatModel => {
-          if (threatModel) {
-            this.threatModelName = threatModel.name;
+      this.threatModelService.getThreatModelBasicInfo(threatModelId).subscribe({
+        next: threatModelInfo => {
+          if (threatModelInfo) {
+            this.threatModelName = threatModelInfo.name;
             this.cdr.markForCheck();
           }
         },
         error: error => {
-          this.logger.error('Error loading threat model data', error);
+          this.logger.error('Error loading threat model basic info', error);
         },
       }),
     );
