@@ -163,7 +163,7 @@ export class ServerConnectionService implements OnDestroy {
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {
         if (response.status?.code === 'OK') {
-          this.logger.info('Server status check successful');
+          this.logger.debugComponent('ServerConnection', 'Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();
