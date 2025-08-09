@@ -327,7 +327,13 @@ export class AuthService {
       return of(this.cachedProviders);
     }
 
-    // Check server connection status first
+    // Check if we're in local-only mode (no server required)
+    if (this.isOnlyLocalProviderEnabled()) {
+      this.logger.debugComponent('Auth', 'Local-only mode detected, using local provider only');
+      return this.getFallbackProviders();
+    }
+
+    // Check server connection status for server-required modes
     const serverStatus = this.serverConnectionService.currentStatus;
     if (serverStatus !== ServerConnectionStatus.CONNECTED) {
       this.logger.debugComponent('Auth', 'Server not connected, using local provider only', {
@@ -372,6 +378,19 @@ export class AuthService {
         return this.getFallbackProviders();
       }),
     );
+  }
+
+  /**
+   * Check if only the local provider is enabled
+   * When only local provider is available, we don't need server connectivity
+   */
+  private isOnlyLocalProviderEnabled(): boolean {
+    // Check if local provider is enabled and is the default
+    const localEnabled = environment.oauth?.local?.enabled !== false;
+    const defaultProvider = environment.defaultAuthProvider || 'local';
+    
+    // If local is enabled and is the default provider, assume server-less mode
+    return localEnabled && defaultProvider === 'local';
   }
 
   /**

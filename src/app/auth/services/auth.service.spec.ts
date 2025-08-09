@@ -45,6 +45,7 @@ vi.mock('../../../environments/environment', () => ({
     authTokenExpiryMinutes: 60,
     operatorName: 'TMI Operator (Test)',
     operatorContact: 'test@example.com',
+    defaultAuthProvider: 'test', // Set to test provider for server-mode tests
     oauth: {
       local: {
         enabled: true,
@@ -123,10 +124,10 @@ describe('AuthService', () => {
   const mockProvidersResponse: ProvidersResponse = {
     providers: [
       {
-        id: 'google',
-        name: 'Google',
-        icon: 'fa-brands fa-google',
-        auth_url: 'http://localhost:8080/auth/authorize/google',
+        id: 'test',
+        name: 'Test Provider',
+        icon: 'fa-solid fa-flask',
+        auth_url: 'http://localhost:8080/auth/authorize/test',
         redirect_uri: 'http://localhost:8080/auth/callback',
         client_id: 'mock-client-id',
       },
@@ -321,10 +322,9 @@ describe('AuthService', () => {
 
       expect(cryptoMock.getRandomValues).toHaveBeenCalled();
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'local');
-      expect(localProvider.buildAuthUrl).toHaveBeenCalledWith(expect.any(String));
-      expect(window.location.href).toBe('http://localhost:4200/local/auth?state=mock-state');
-      expect(loggerService.info).toHaveBeenCalledWith('Initiating local provider login');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
+      expect(window.location.href).toBe('http://localhost:8080/auth/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Fauth%2Fcallback');
+      expect(loggerService.info).toHaveBeenCalledWith('Initiating TMI OAuth login with Test Provider');
     });
 
     it('should handle missing provider configuration', () => {
@@ -425,6 +425,33 @@ describe('AuthService', () => {
 
       // Should only call HTTP once due to caching
       expect(httpClient.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should skip server requests in local-only mode', () => {
+      // Temporarily mock environment to simulate local-only mode
+      const originalEnvironment = vi.mocked(environment);
+      vi.mocked(environment).defaultAuthProvider = 'local';
+
+      const result$ = service.getAvailableProviders();
+
+      result$.subscribe(providers => {
+        expect(providers).toEqual([
+          {
+            id: 'local',
+            name: 'Local Development',
+            icon: 'fa-solid fa-laptop-code',
+            auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
+            redirect_uri: expect.stringContaining('/auth/callback'),
+            client_id: 'local-development',
+          },
+        ]);
+      });
+
+      // Should not make any HTTP requests
+      expect(httpClient.get).not.toHaveBeenCalled();
+
+      // Restore original environment
+      vi.mocked(environment).defaultAuthProvider = originalEnvironment.defaultAuthProvider;
     });
   }); /* End of OAuth Login describe block */
 
