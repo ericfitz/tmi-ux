@@ -329,9 +329,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       statusText = this._translocoService.translate('collaboration.websocketStatus.notConnected');
     }
 
-    // Get the WebSocket URL from the collaboration service
-    // For now, we'll show a generic URL since we don't have direct access to it
-    const wsUrl = 'WebSocket URL: (active session)';
+    // Get the actual WebSocket URL from the collaboration service
+    const wsUrl = this._collaborationService.currentWebSocketUrl || 'WebSocket URL: (unavailable)';
 
     return `${statusText}\n${wsUrl}`;
   }

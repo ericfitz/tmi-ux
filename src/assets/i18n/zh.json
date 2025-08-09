@@ -39,7 +39,12 @@
     },
     "shareLinkHeader": "分享协作链接",
     "startCollaboration": "开始协作",
-    "title": "协作"
+    "title": "协作",
+    "websocketStatus": {
+      "connected": "WebSocket 已连接",
+      "noSession": "没有活跃的协作会话",
+      "notConnected": "WebSocket 未连接"
+    }
   },
   "common": {
     "actions": "操作",
@@ -61,12 +66,11 @@
     "manageMetadata": "管理元数据",
     "manageThreats": "管理威胁",
     "metadata": "元数据",
-    "noThreats": "无可用威胁",
-    "threats": "威胁",
     "metadataKey": "键",
     "metadataValue": "值",
     "mitigated": "已缓解",
     "noMetadata": "无可用元数据",
+    "noThreats": "无可用威胁",
     "objectTypes": {
       "diagram": "图表",
       "document": "文档",
@@ -87,6 +91,7 @@
     "severityNone": "无",
     "severityUnknown": "未知",
     "status": "状态",
+    "threats": "威胁",
     "validation": {
       "maxLength": "最大长度为{{max}}个字符",
       "required": "此字段为必填项"
@@ -126,10 +131,10 @@
         "addThreat": "添加威胁",
         "deleteSelected": "删除所选",
         "export": "导出...",
+        "manageThreats": "管理威胁",
         "redo": "重做",
         "share": "分享",
-        "undo": "撤销",
-        "manageThreats": "管理威胁"
+        "undo": "撤销"
       }
     }
   },
@@ -225,6 +230,7 @@
     "documentName": "文档名称",
     "documentUrl": "文档链接",
     "documents": "文档",
+    "documentsCount": "文档",
     "downloadButton": "下载到桌面",
     "downloadTooltip": "下载到桌面",
     "editDocument": "编辑文档",
@@ -252,6 +258,7 @@
     "noPermissions": "未定义权限",
     "noSourceCode": "尚未添加源代码存储库",
     "noThreats": "尚未定义威胁",
+    "owner": "所有者",
     "pageTitle": "威胁模型",
     "permissions": "权限",
     "permissionsButton": "权限",
@@ -262,6 +269,7 @@
     "renameDiagram": "重命名图表",
     "reportButton": "报告",
     "reportTooltip": "报告",
+    "setAsOwner": "设为所有者",
     "sourceCode": "源代码",
     "sourceCodeDescription": "描述",
     "sourceCodeDescriptionPlaceholder": "描述源代码存储库或其用途",
@@ -274,6 +282,7 @@
     "sourceCodeSubPathHint": "存储库内的可选路径",
     "sourceCodeType": "存储库类型",
     "sourceCodeUrl": "存储库URL",
+    "sourcesCount": "源代码",
     "tag": "标签",
     "threatDescription": "威胁描述",
     "threatDescriptionPlaceholder": "详细描述威胁",
@@ -306,11 +315,7 @@
       "required": "此字段为必填项"
     },
     "viewThreat": "查看威胁",
-    "yourThreatModels": "您的威胁模型",
-    "documentsCount": "文档",
-    "owner": "所有者",
-    "setAsOwner": "设为所有者",
-    "sourcesCount": "源代码"
+    "yourThreatModels": "您的威胁模型"
   },
   "tos": {
     "contactInfo": {

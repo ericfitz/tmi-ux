@@ -182,43 +182,16 @@ export class CollaborationSessionService implements OnDestroy {
   private loadRealSessions(): Observable<CollaborationSession[]> {
     this.logger.info('Loading collaboration sessions from server');
 
-    // If WebSocket is connected, use WebSocket to request sessions
-    if (this.webSocketAdapter.isConnected) {
-      return this.requestSessionsViaWebSocket();
-    } else {
-      // Fallback to HTTP API
-      return this.requestSessionsViaHttp().pipe(
-        map(sessions => {
-          this.logger.info('Loaded sessions from HTTP API', { count: sessions.length, sessions });
-          this._sessions$.next(sessions);
-          return sessions;
-        })
-      );
-    }
+    // Always use HTTP API to load sessions - WebSocket is only for real-time updates
+    return this.requestSessionsViaHttp().pipe(
+      map(sessions => {
+        this.logger.info('Loaded sessions from HTTP API', { count: sessions.length, sessions });
+        this._sessions$.next(sessions);
+        return sessions;
+      })
+    );
   }
 
-  /**
-   * Request sessions via WebSocket
-   */
-  private requestSessionsViaWebSocket(): Observable<CollaborationSession[]> {
-    return this.webSocketAdapter
-      .sendMessageWithResponse<{ sessions: CollaborationSession[] }>(
-        {
-          type: MessageType.SESSION_LIST_REQUEST,
-          data: {},
-        },
-        MessageType.SESSION_LIST_RESPONSE,
-        5000,
-      )
-      .pipe(
-        map(response => response.sessions),
-        catchError(error => {
-          this.logger.error('Failed to load sessions via WebSocket', error);
-          // Fallback to HTTP
-          return this.requestSessionsViaHttp();
-        }),
-      );
-  }
 
   /**
    * Request sessions via HTTP API
@@ -279,14 +252,6 @@ export class CollaborationSessionService implements OnDestroy {
         this.handleSessionEnded(announcement.session);
       });
 
-    // Listen for session list responses
-    this.webSocketAdapter
-      .getMessagesOfType<{ sessions: CollaborationSession[] }>(MessageType.SESSION_LIST_RESPONSE)
-      .pipe(takeUntil(this._destroy$))
-      .subscribe(response => {
-        this.logger.info('Received session list from WebSocket', { count: response.sessions.length });
-        this._sessions$.next(response.sessions);
-      });
   }
 
   /**

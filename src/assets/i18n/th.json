@@ -39,7 +39,12 @@
     },
     "shareLinkHeader": "แชร์ลิงก์การทำงานร่วมกัน",
     "startCollaboration": "เริ่มการทำงานร่วมกัน",
-    "title": "การทำงานร่วมกัน"
+    "title": "การทำงานร่วมกัน",
+    "websocketStatus": {
+      "connected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว",
+      "noSession": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",
+      "notConnected": "เว็บซ็อกเก็ตไม่ได้เชื่อมต่อ"
+    }
   },
   "common": {
     "actions": "การกระทำ",
@@ -61,12 +66,11 @@
     "manageMetadata": "จัดการข้อมูลเมตา",
     "manageThreats": "จัดการภัยคุกคาม",
     "metadata": "ข้อมูลเมตา",
-    "noThreats": "ไม่มีภัยคุกคาม",
-    "threats": "ภัยคุกคาม",
     "metadataKey": "คีย์",
     "metadataValue": "ค่า",
     "mitigated": "ลดความรุนแรง",
     "noMetadata": "ไม่มีข้อมูลเมตา",
+    "noThreats": "ไม่มีภัยคุกคาม",
     "objectTypes": {
       "diagram": "แผนภาพ",
       "document": "เอกสาร",
@@ -87,6 +91,7 @@
     "severityNone": "ไม่มี",
     "severityUnknown": "ไม่ทราบ",
     "status": "สถานะ",
+    "threats": "ภัยคุกคาม",
     "validation": {
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
       "required": "ฟิลด์นี้จำเป็น"
@@ -126,10 +131,10 @@
         "addThreat": "เพิ่มภัยคุกคาม",
         "deleteSelected": "ลบที่เลือก",
         "export": "ส่งออก...",
+        "manageThreats": "จัดการภัยคุกคาม",
         "redo": "ทำซ้ำ",
         "share": "แชร์",
-        "undo": "เลิกทำ",
-        "manageThreats": "จัดการภัยคุกคาม"
+        "undo": "เลิกทำ"
       }
     }
   },
@@ -225,6 +230,7 @@
     "documentName": "ชื่อเอกสาร",
     "documentUrl": "URL เอกสาร",
     "documents": "เอกสาร",
+    "documentsCount": "เอกสาร",
     "downloadButton": "ดาวน์โหลดไปยังเดสก์ทอป",
     "downloadTooltip": "ดาวน์โหลดไปยังเดสก์ทอป",
     "editDocument": "แก้ไขเอกสาร",
@@ -252,6 +258,7 @@
     "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
     "noSourceCode": "ยังไม่มีที่เก็บซอร์สโค้ดเพิ่ม",
     "noThreats": "ยังไม่มีการกำหนดภัยคุกคาม",
+    "owner": "เจ้าของ",
     "pageTitle": "แบบจำลองภัยคุกคาม",
     "permissions": "สิทธิ์การเข้าถึง",
     "permissionsButton": "สิทธิ์การเข้าถึง",
@@ -262,6 +269,7 @@
     "renameDiagram": "เปลี่ยนชื่อแผนภาพ",
     "reportButton": "รายงาน",
     "reportTooltip": "รายงาน",
+    "setAsOwner": "ตั้งเป็นเจ้าของ",
     "sourceCode": "ซอร์สโค้ด",
     "sourceCodeDescription": "คำอธิบาย",
     "sourceCodeDescriptionPlaceholder": "อธิบายที่เก็บซอร์สโค้ดหรือวัตถุประสงค์",
@@ -274,6 +282,7 @@
     "sourceCodeSubPathHint": "เส้นทางเสริมภายในที่เก็บ",
     "sourceCodeType": "ประเภทที่เก็บ",
     "sourceCodeUrl": "URL ที่เก็บ",
+    "sourcesCount": "แหล่งที่มา",
     "tag": "Tag",
     "threatDescription": "คำอธิบายภัยคุกคาม",
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
@@ -306,11 +315,7 @@
       "required": "ช่องนี้จำเป็น"
     },
     "viewThreat": "ดูภัยคุกคาม",
-    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ",
-    "documentsCount": "เอกสาร",
-    "owner": "เจ้าของ",
-    "setAsOwner": "ตั้งเป็นเจ้าของ",
-    "sourcesCount": "แหล่งที่มา"
+    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
   },
   "tos": {
     "contactInfo": {

@@ -39,7 +39,12 @@
     },
     "shareLinkHeader": "Kollaborationslink teilen",
     "startCollaboration": "Zusammenarbeit starten",
-    "title": "Zusammenarbeit"
+    "title": "Zusammenarbeit",
+    "websocketStatus": {
+      "connected": "Websocket Verbunden",
+      "noSession": "Keine Kollaborationssitzung Aktiv",
+      "notConnected": "Websocket Nicht Verbunden"
+    }
   },
   "common": {
     "actions": "Aktionen",
@@ -61,15 +66,14 @@
     "manageMetadata": "Metadaten verwalten",
     "manageThreats": "Bedrohungen verwalten",
     "metadata": "Metadaten",
-    "noThreats": "Keine Bedrohungen verfügbar",
-    "threats": "Bedrohungen",
     "metadataKey": "Schlüssel",
     "metadataValue": "Wert",
     "mitigated": "Gemildert",
     "noMetadata": "Keine Metadaten verfügbar",
+    "noThreats": "Keine Bedrohungen verfügbar",
     "objectTypes": {
       "diagram": "Diagramm",
-      "document": "Dokument", 
+      "document": "Dokument",
       "sourceCode": "Quellcode",
       "threat": "Bedrohung",
       "threatModel": "Bedrohungsmodell"
@@ -87,6 +91,7 @@
     "severityNone": "Keine",
     "severityUnknown": "Unbekannt",
     "status": "Status",
+    "threats": "Bedrohungen",
     "validation": {
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
@@ -225,6 +230,7 @@
     "documentName": "Dokumentname",
     "documentUrl": "Dokument-URL",
     "documents": "Dokumente",
+    "documentsCount": "Dokumente",
     "downloadButton": "Auf Desktop herunterladen",
     "downloadTooltip": "Auf Desktop herunterladen",
     "editDocument": "Dokument bearbeiten",
@@ -261,9 +267,9 @@
     "permissionsUser": "Benutzer",
     "rename": "Umbenennen",
     "renameDiagram": "Diagramm umbenennen",
-    "setAsOwner": "Als Besitzer festlegen",
     "reportButton": "Bericht",
     "reportTooltip": "Bericht",
+    "setAsOwner": "Als Besitzer festlegen",
     "sourceCode": "Quellcode",
     "sourceCodeDescription": "Beschreibung",
     "sourceCodeDescriptionPlaceholder": "Beschreiben Sie das Quellcode-Repository oder seinen Zweck",
@@ -276,6 +282,7 @@
     "sourceCodeSubPathHint": "Optionaler Pfad innerhalb des Repositories",
     "sourceCodeType": "Repository-Typ",
     "sourceCodeUrl": "Repository-URL",
+    "sourcesCount": "Quellen",
     "tag": "Tag",
     "threatDescription": "Bedrohungsbeschreibung",
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
@@ -286,8 +293,6 @@
     "threatType": "Bedrohungstyp",
     "threats": "Bedrohungen",
     "threatsCount": "Bedrohungen",
-    "documentsCount": "Dokumente",
-    "sourcesCount": "Quellen",
     "tooltips": {
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",

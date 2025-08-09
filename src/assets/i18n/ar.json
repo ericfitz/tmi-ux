@@ -39,7 +39,12 @@
     },
     "shareLinkHeader": "مشاركة رابط التعاون",
     "startCollaboration": "بدء التعاون",
-    "title": "التعاون"
+    "title": "التعاون",
+    "websocketStatus": {
+      "connected": "ويب سوكيت متصل",
+      "noSession": "لا توجد جلسة تعاون نشطة",
+      "notConnected": "ويب سوكيت غير متصل"
+    }
   },
   "common": {
     "actions": "الإجراءات",
@@ -61,15 +66,14 @@
     "manageMetadata": "إدارة البيانات الوصفية",
     "manageThreats": "إدارة التهديدات",
     "metadata": "البيانات الوصفية",
-    "noThreats": "لا توجد تهديدات متاحة",
-    "threats": "التهديدات",
     "metadataKey": "المفتاح",
     "metadataValue": "القيمة",
     "mitigated": "تم التخفيف",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
+    "noThreats": "لا توجد تهديدات متاحة",
     "objectTypes": {
       "diagram": "مخطط",
-      "document": "وثيقة", 
+      "document": "وثيقة",
       "sourceCode": "كود المصدر",
       "threat": "تهديد",
       "threatModel": "نموذج التهديد"
@@ -87,6 +91,7 @@
     "severityNone": "لا شيء",
     "severityUnknown": "غير معروف",
     "status": "الحالة",
+    "threats": "التهديدات",
     "validation": {
       "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
       "required": "هذا الحقل مطلوب"
@@ -225,6 +230,7 @@
     "documentName": "اسم الوثيقة",
     "documentUrl": "رابط الوثيقة",
     "documents": "الوثائق",
+    "documentsCount": "وثائق",
     "downloadButton": "تنزيل إلى سطح المكتب",
     "downloadTooltip": "تنزيل إلى سطح المكتب",
     "editDocument": "تحرير الوثيقة",
@@ -261,9 +267,9 @@
     "permissionsUser": "المستخدم",
     "rename": "إعادة تسمية",
     "renameDiagram": "إعادة تسمية المخطط",
-    "setAsOwner": "تعيين كمالك",
     "reportButton": "تقرير",
     "reportTooltip": "تقرير",
+    "setAsOwner": "تعيين كمالك",
     "sourceCode": "الكود المصدري",
     "sourceCodeDescription": "الوصف",
     "sourceCodeDescriptionPlaceholder": "وصف مستودع الكود المصدري أو الغرض منه",
@@ -276,6 +282,7 @@
     "sourceCodeSubPathHint": "مسار اختياري داخل المستودع",
     "sourceCodeType": "نوع المستودع",
     "sourceCodeUrl": "رابط المستودع",
+    "sourcesCount": "مصادر",
     "tag": "علامة",
     "threatDescription": "وصف التهديد",
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
@@ -286,8 +293,6 @@
     "threatType": "نوع التهديد",
     "threats": "التهديدات",
     "threatsCount": "تهديدات",
-    "documentsCount": "وثائق",
-    "sourcesCount": "مصادر",
     "tooltips": {
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",

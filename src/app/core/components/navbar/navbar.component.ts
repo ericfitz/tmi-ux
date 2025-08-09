@@ -215,14 +215,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
         return baseText;
       case ServerConnectionStatus.ERROR:
         return `${baseText}\n${environment.apiUrl}`;
-      case ServerConnectionStatus.CONNECTED: {
-        let tooltip = `${baseText}\n${environment.apiUrl}`;
-        if (this.webSocketAdapter.isConnected) {
-          const wsConnectedText = this.translocoService.translate('navbar.serverStatus.webSocketConnected');
-          tooltip += `\n${wsConnectedText}`;
-        }
-        return tooltip;
-      }
+      case ServerConnectionStatus.CONNECTED:
+        return `${baseText}\n${environment.apiUrl}`;
       default:
         return baseText;
     }

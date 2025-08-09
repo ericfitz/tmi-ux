@@ -42,8 +42,8 @@
     "title": "Collaboration",
     "websocketStatus": {
       "connected": "Websocket Connected",
-      "notConnected": "Websocket Not Connected",
-      "noSession": "No collaboration session active"
+      "noSession": "No Collaboration Session Active",
+      "notConnected": "Websocket Not Connected"
     }
   },
   "common": {
@@ -66,15 +66,14 @@
     "manageMetadata": "Manage Metadata",
     "manageThreats": "Manage Threats",
     "metadata": "Metadata",
-    "noThreats": "No Threats Available",
-    "threats": "Threats",
     "metadataKey": "Key",
     "metadataValue": "Value",
     "mitigated": "Mitigated",
     "noMetadata": "No Metadata Available",
+    "noThreats": "No Threats Available",
     "objectTypes": {
       "diagram": "Diagram",
-      "document": "Document", 
+      "document": "Document",
       "sourceCode": "Source Code",
       "threat": "Threat",
       "threatModel": "Threat Model"
@@ -92,6 +91,7 @@
     "severityNone": "None",
     "severityUnknown": "Unknown",
     "status": "Status",
+    "threats": "Threats",
     "validation": {
       "maxLength": "Maximum length is {{max}} characters",
       "required": "This field is required"
@@ -129,9 +129,9 @@
         "addStore": "Add Store",
         "addTextbox": "Add Text Box",
         "addThreat": "Add Threat",
-        "manageThreats": "Manage Threats",
         "deleteSelected": "Delete Selected",
         "export": "Export...",
+        "manageThreats": "Manage Threats",
         "redo": "Redo",
         "share": "Share",
         "undo": "Undo"
@@ -230,6 +230,7 @@
     "documentName": "Document Name",
     "documentUrl": "Document URL",
     "documents": "Documents",
+    "documentsCount": "Documents",
     "downloadButton": "Download to Desktop",
     "downloadTooltip": "Download to Desktop",
     "editDocument": "Edit Document",
@@ -255,9 +256,9 @@
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
     "noPermissions": "No Permissions Defined",
-    "owner": "Owner",
     "noSourceCode": "No Source Code Repositories Added Yet",
     "noThreats": "No Threats Defined Yet",
+    "owner": "Owner",
     "pageTitle": "Threat Models",
     "permissions": "Permissions",
     "permissionsButton": "Permissions",
@@ -266,9 +267,9 @@
     "permissionsUser": "User",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
-    "setAsOwner": "Set as Owner",
     "reportButton": "Report",
     "reportTooltip": "Report",
+    "setAsOwner": "Set as Owner",
     "sourceCode": "Source Code",
     "sourceCodeDescription": "Description",
     "sourceCodeDescriptionPlaceholder": "Describe the source code repository or its purpose",
@@ -281,6 +282,7 @@
     "sourceCodeSubPathHint": "Optional path within the repository",
     "sourceCodeType": "Repository Type",
     "sourceCodeUrl": "Repository URL",
+    "sourcesCount": "Sources",
     "tag": "Tag",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
@@ -291,8 +293,6 @@
     "threatType": "Threat Type",
     "threats": "Threats",
     "threatsCount": "Threats",
-    "documentsCount": "Documents",
-    "sourcesCount": "Sources",
     "tooltips": {
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",

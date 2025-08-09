@@ -62,6 +62,14 @@ export class DfdCollaborationService {
   }
 
   /**
+   * Get the current WebSocket URL for the active collaboration session
+   * @returns The WebSocket URL or null if no session is active
+   */
+  get currentWebSocketUrl(): string | null {
+    return this._currentSession?.websocket_url || null;
+  }
+
+  /**
    * Set the diagram context for collaboration
    * @param threatModelId The threat model ID
    * @param diagramId The diagram ID
