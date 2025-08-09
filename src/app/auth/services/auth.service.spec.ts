@@ -428,8 +428,8 @@ describe('AuthService', () => {
 
     it('should skip server requests in local-only mode', () => {
       // Temporarily mock environment to simulate local-only mode
-      const originalEnvironment = vi.mocked(environment);
-      vi.mocked(environment).defaultAuthProvider = 'local';
+      const originalAuthMode = vi.mocked(environment).authMode;
+      vi.mocked(environment).authMode = 'local-only';
 
       const result$ = service.getAvailableProviders();
 
@@ -450,7 +450,7 @@ describe('AuthService', () => {
       expect(httpClient.get).not.toHaveBeenCalled();
 
       // Restore original environment
-      vi.mocked(environment).defaultAuthProvider = originalEnvironment.defaultAuthProvider;
+      vi.mocked(environment).authMode = originalAuthMode;
     });
   }); /* End of OAuth Login describe block */
 
