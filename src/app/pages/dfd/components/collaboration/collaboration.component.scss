@@ -10,6 +10,19 @@
   color: #4caf50;
 }
 
+// WebSocket connection status indicator styles (matching navbar server status)
+.websocket-status-not-configured .mat-icon {
+  color: #666; // Dark grey
+}
+
+.websocket-status-error .mat-icon {
+  color: #f44336; // Red
+}
+
+.websocket-status-connected .mat-icon {
+  color: #4caf50; // Green
+}
+
 // Status indicators
 .user-status {
   width: 10px;

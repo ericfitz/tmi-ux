@@ -1,4 +1,16 @@
 <div class="collaboration-container">
+  <!-- WebSocket Connection Status Icon -->
+  <span
+    [matTooltip]="getWebSocketStatusTooltip()"
+    matTooltipPosition="below"
+    matTooltipClass="multiline-tooltip"
+    style="display: inline-block; margin-right: 8px"
+  >
+    <button mat-icon-button [class]="getWebSocketStatusIconClass()" disabled>
+      <mat-icon fontSet="material-symbols-outlined">{{ getWebSocketStatusIcon() }}</mat-icon>
+    </button>
+  </span>
+
   <!-- Main collaboration button with badge showing number of users when active -->
   <button
     mat-icon-button

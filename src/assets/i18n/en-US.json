@@ -39,7 +39,12 @@
     },
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
-    "title": "Collaboration"
+    "title": "Collaboration",
+    "websocketStatus": {
+      "connected": "Websocket Connected",
+      "notConnected": "Websocket Not Connected",
+      "noSession": "No collaboration session active"
+    }
   },
   "common": {
     "actions": "Actions",

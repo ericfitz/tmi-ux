@@ -39,7 +39,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
@@ -49,6 +49,7 @@ import {
   DfdCollaborationService,
   CollaborationUser,
 } from '../../services/dfd-collaboration.service';
+import { WebSocketAdapter } from '../../infrastructure/adapters/websocket.adapter';
 
 /**
  * Component for managing collaboration in the DFD editor
@@ -93,6 +94,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     private _collaborationService: DfdCollaborationService,
     private _dialog: MatDialog,
     private _snackBar: MatSnackBar,
+    private _webSocketAdapter: WebSocketAdapter,
+    private _translocoService: TranslocoService,
     @Inject(DOCUMENT) private _document: Document,
   ) {}
 
@@ -113,6 +116,15 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         this.collaborationUsers = users;
         this._cdr.markForCheck();
       }),
+    );
+
+    // Subscribe to WebSocket connection state changes to trigger tooltip updates
+    this._subscriptions.add(
+      this._webSocketAdapter.connectionState$.subscribe(() => {
+        // This subscription triggers change detection when WebSocket state changes
+        // The tooltip will be updated automatically through Angular's change detection
+        this._cdr.markForCheck();
+      })
     );
   }
 
@@ -266,5 +278,61 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       default:
         return '';
     }
+  }
+
+  /**
+   * Get the appropriate Material icon for the current WebSocket connection status
+   */
+  getWebSocketStatusIcon(): string {
+    if (!this.isCollaborating) {
+      return 'sensors'; // No session started - use neutral sensors icon
+    }
+
+    // Collaboration session is active
+    if (this._webSocketAdapter.isConnected) {
+      return 'sensors'; // Connected and healthy
+    } else {
+      return 'sensors_off'; // Not connected or not healthy
+    }
+  }
+
+  /**
+   * Get the appropriate CSS class for the WebSocket connection status icon
+   */
+  getWebSocketStatusIconClass(): string {
+    if (!this.isCollaborating) {
+      return 'websocket-status-not-configured'; // No session - grey color
+    }
+
+    // Collaboration session is active
+    if (this._webSocketAdapter.isConnected) {
+      return 'websocket-status-connected'; // Connected - green color
+    } else {
+      return 'websocket-status-error'; // Not connected - red color
+    }
+  }
+
+  /**
+   * Get the appropriate tooltip text for the WebSocket connection status
+   */
+  getWebSocketStatusTooltip(): string {
+    if (!this.isCollaborating) {
+      const notConnectedText = this._translocoService.translate('collaboration.websocketStatus.notConnected');
+      return notConnectedText + '\n' + this._translocoService.translate('collaboration.websocketStatus.noSession');
+    }
+
+    // Collaboration session is active
+    let statusText: string;
+    if (this._webSocketAdapter.isConnected) {
+      statusText = this._translocoService.translate('collaboration.websocketStatus.connected');
+    } else {
+      statusText = this._translocoService.translate('collaboration.websocketStatus.notConnected');
+    }
+
+    // Get the WebSocket URL from the collaboration service
+    // For now, we'll show a generic URL since we don't have direct access to it
+    const wsUrl = 'WebSocket URL: (active session)';
+
+    return `${statusText}\n${wsUrl}`;
   }
 }
