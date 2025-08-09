@@ -1376,6 +1376,30 @@
         },
         "required": ["name", "id"]
       },
+      "DiagramListItem": {
+        "type": "object",
+        "description": "A simplified diagram item for list endpoints, containing id, name, and type",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the diagram (UUID)",
+            "maxLength": 36,
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the diagram",
+            "maxLength": 256
+          },
+          "type": {
+            "type": "string",
+            "enum": ["DFD-1.0.0"],
+            "description": "Type of the diagram"
+          }
+        },
+        "required": ["id", "name", "type"]
+      },
       "TMListItem": {
         "type": "object",
         "description": "Enhanced item for threat model list endpoints with key metadata and counts",
@@ -6321,22 +6345,23 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/PaginatedResponse"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Diagram"
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DiagramListItem"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "name": "System Architecture Diagram",
+                    "type": "DFD-1.0.0"
+                  },
+                  {
+                    "id": "456e7890-e89b-12d3-a456-426614174001",
+                    "name": "Data Flow Diagram",
+                    "type": "DFD-1.0.0"
+                  }
+                ]
               }
             }
           },
