@@ -351,31 +351,44 @@ export class DfdCollaborationService {
   /**
    * Convert relative WebSocket URL from server to absolute URL pointing to API server
    * @param websocketUrl The WebSocket URL (may be relative or absolute)
-   * @returns Full WebSocket URL
+   * @returns Full WebSocket URL with JWT token as query parameter
    */
   private _getFullWebSocketUrl(websocketUrl: string): string {
-    // If already absolute, return as-is
+    let fullUrl: string;
+
+    // If already absolute, use as-is
     if (websocketUrl.startsWith('ws://') || websocketUrl.startsWith('wss://')) {
-      return websocketUrl;
-    }
-
-    // Convert HTTP API URL to WebSocket URL
-    const apiUrl = environment.apiUrl;
-    let wsUrl: string;
-
-    if (apiUrl.startsWith('https://')) {
-      wsUrl = apiUrl.replace('https://', 'wss://');
-    } else if (apiUrl.startsWith('http://')) {
-      wsUrl = apiUrl.replace('http://', 'ws://');
+      fullUrl = websocketUrl;
     } else {
-      // Default to ws:// for local development
-      wsUrl = `ws://${apiUrl}`;
+      // Convert HTTP API URL to WebSocket URL
+      const apiUrl = environment.apiUrl;
+      let wsUrl: string;
+
+      if (apiUrl.startsWith('https://')) {
+        wsUrl = apiUrl.replace('https://', 'wss://');
+      } else if (apiUrl.startsWith('http://')) {
+        wsUrl = apiUrl.replace('http://', 'ws://');
+      } else {
+        // Default to ws:// for local development
+        wsUrl = `ws://${apiUrl}`;
+      }
+
+      // Ensure websocketUrl starts with / for proper URL construction
+      const path = websocketUrl.startsWith('/') ? websocketUrl : `/${websocketUrl}`;
+      
+      fullUrl = `${wsUrl}${path}`;
     }
 
-    // Ensure websocketUrl starts with / for proper URL construction
-    const path = websocketUrl.startsWith('/') ? websocketUrl : `/${websocketUrl}`;
-    
-    return `${wsUrl}${path}`;
+    // Add JWT token as query parameter for authentication
+    const token = this._authService.getStoredToken();
+    if (token && token.token) {
+      const separator = fullUrl.includes('?') ? '&' : '?';
+      fullUrl = `${fullUrl}${separator}token=${encodeURIComponent(token.token)}`;
+    } else {
+      this._logger.warn('No JWT token available for WebSocket authentication');
+    }
+
+    return fullUrl;
   }
 
   /**
