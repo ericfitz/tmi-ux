@@ -5,6 +5,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
 import { WebSocketAdapter } from '../infrastructure/adapters/websocket.adapter';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Represents a user in a collaboration session
@@ -331,9 +332,13 @@ export class DfdCollaborationService {
    * @param websocketUrl The WebSocket URL provided by the API
    */
   private _connectToWebSocket(websocketUrl: string): void {
-    this._logger.info('Connecting to collaboration WebSocket', { websocketUrl });
+    const fullWebSocketUrl = this._getFullWebSocketUrl(websocketUrl);
+    this._logger.info('Connecting to collaboration WebSocket', { 
+      originalUrl: websocketUrl, 
+      fullUrl: fullWebSocketUrl 
+    });
 
-    this._webSocketAdapter.connect(websocketUrl).subscribe({
+    this._webSocketAdapter.connect(fullWebSocketUrl).subscribe({
       next: () => {
         this._logger.info('WebSocket connection established successfully');
       },
@@ -341,6 +346,36 @@ export class DfdCollaborationService {
         this._logger.error('Failed to connect to WebSocket', error);
       }
     });
+  }
+
+  /**
+   * Convert relative WebSocket URL from server to absolute URL pointing to API server
+   * @param websocketUrl The WebSocket URL (may be relative or absolute)
+   * @returns Full WebSocket URL
+   */
+  private _getFullWebSocketUrl(websocketUrl: string): string {
+    // If already absolute, return as-is
+    if (websocketUrl.startsWith('ws://') || websocketUrl.startsWith('wss://')) {
+      return websocketUrl;
+    }
+
+    // Convert HTTP API URL to WebSocket URL
+    const apiUrl = environment.apiUrl;
+    let wsUrl: string;
+
+    if (apiUrl.startsWith('https://')) {
+      wsUrl = apiUrl.replace('https://', 'wss://');
+    } else if (apiUrl.startsWith('http://')) {
+      wsUrl = apiUrl.replace('http://', 'ws://');
+    } else {
+      // Default to ws:// for local development
+      wsUrl = `ws://${apiUrl}`;
+    }
+
+    // Ensure websocketUrl starts with / for proper URL construction
+    const path = websocketUrl.startsWith('/') ? websocketUrl : `/${websocketUrl}`;
+    
+    return `${wsUrl}${path}`;
   }
 
   /**

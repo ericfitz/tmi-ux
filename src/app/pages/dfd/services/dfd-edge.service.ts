@@ -211,7 +211,7 @@ export class DfdEdgeService {
     let processedOriginalVertices = [...originalVertices];
     if (originalVertices.length === 0) {
       // Add a vertex at the center and move it perpendicular to the source-destination line
-      processedOriginalVertices = this._addCenterVertexToStraightEdge(edge, graph);
+      processedOriginalVertices = this._addCenterVertexToStraightEdge(edge);
       // Update the original edge with the new vertex
       edge.setVertices(processedOriginalVertices);
     }
@@ -220,7 +220,6 @@ export class DfdEdgeService {
     const inverseVertices = this._mirrorVerticesAroundSourceTargetLine(
       processedOriginalVertices,
       edge,
-      graph,
     );
 
     // Process label for inverse edge
@@ -283,7 +282,7 @@ export class DfdEdgeService {
   /**
    * Add a vertex at the geometric center of a straight edge and move it perpendicular to the edge line
    */
-  private _addCenterVertexToStraightEdge(edge: Edge, graph: Graph): Array<{ x: number; y: number }> {
+  private _addCenterVertexToStraightEdge(edge: Edge): Array<{ x: number; y: number }> {
     // Get the actual geometric points where the edge connects to the nodes
     const sourcePoint = edge.getSourcePoint();
     const targetPoint = edge.getTargetPoint();
@@ -324,7 +323,6 @@ export class DfdEdgeService {
   private _mirrorVerticesAroundSourceTargetLine(
     originalVertices: Array<{ x: number; y: number }>,
     edge: Edge,
-    graph: Graph,
   ): Array<{ x: number; y: number }> {
     // Get the actual geometric points where the edge connects to the nodes
     const sourcePoint = edge.getSourcePoint();

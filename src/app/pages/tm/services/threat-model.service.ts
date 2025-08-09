@@ -1466,9 +1466,9 @@ export class ThreatModelService implements OnDestroy {
           websocketUrl: session.websocket_url
         });
       }),
-      catchError(error => {
+      catchError((error: unknown) => {
         this.logger.error('Error starting collaboration session', error);
-        return throwError(() => error);
+        return throwError(() => error instanceof Error ? error : new Error(String(error)));
       })
     );
   }
@@ -1491,9 +1491,9 @@ export class ThreatModelService implements OnDestroy {
       tap(() => {
         this.logger.info('Collaboration session ended', { threatModelId, diagramId });
       }),
-      catchError(error => {
+      catchError((error: unknown) => {
         this.logger.error('Error ending collaboration session', error);
-        return throwError(() => error);
+        return throwError(() => error instanceof Error ? error : new Error(String(error)));
       })
     );
   }
