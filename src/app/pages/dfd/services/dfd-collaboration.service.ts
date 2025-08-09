@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { WebSocketAdapter } from '../infrastructure/adapters/websocket.adapter';
 
 /**
  * Represents a user in a collaboration session
@@ -12,6 +15,20 @@ export interface CollaborationUser {
   role: 'owner' | 'writer' | 'reader';
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
+}
+
+/**
+ * Represents a collaboration session from the API
+ */
+interface CollaborationSession {
+  session_id: string;
+  threat_model_id: string;
+  diagram_id: string;
+  participants: Array<{
+    user_id: string;
+    joined_at: string;
+  }>;
+  websocket_url: string;
 }
 
 /**
@@ -29,14 +46,29 @@ export class DfdCollaborationService {
   private _collaborationUsers$ = new BehaviorSubject<CollaborationUser[]>([]);
   public collaborationUsers$ = this._collaborationUsers$.asObservable();
 
-  // WebSocket connection
-  private _webSocket: WebSocket | null = null;
+  // Current session information
+  private _currentSession: CollaborationSession | null = null;
+  private _threatModelId: string | null = null;
+  private _diagramId: string | null = null;
 
   constructor(
     private _logger: LoggerService,
     private _authService: AuthService,
+    private _threatModelService: ThreatModelService,
+    private _webSocketAdapter: WebSocketAdapter,
   ) {
     this._logger.info('DfdCollaborationService initialized');
+  }
+
+  /**
+   * Set the diagram context for collaboration
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   */
+  setDiagramContext(threatModelId: string, diagramId: string): void {
+    this._threatModelId = threatModelId;
+    this._diagramId = diagramId;
+    this._logger.info('Diagram context set for collaboration', { threatModelId, diagramId });
   }
 
   /**
@@ -46,30 +78,64 @@ export class DfdCollaborationService {
   public startCollaboration(): Observable<boolean> {
     this._logger.info('Starting collaboration session');
 
-    // In a real implementation, this would establish a WebSocket connection
-    // and send the current diagram state to the server
+    if (!this._threatModelId || !this._diagramId) {
+      this._logger.error('Cannot start collaboration: diagram context not set');
+      return throwError(() => new Error('Diagram context not set. Call setDiagramContext() first.'));
+    }
 
-    // For now, we'll simulate a successful connection
-    setTimeout(() => {
-      this._isCollaborating$.next(true);
+    if (this._isCollaborating$.value) {
+      this._logger.warn('Collaboration session already active');
+      return throwError(() => new Error('Collaboration session is already active'));
+    }
 
-      // Add the current user as the owner
-      const currentUser: CollaborationUser = {
-        id: 'current-user',
-        name: this._authService.username || 'Current User', // Use actual username or fallback
-        role: 'owner',
-        status: 'active',
-      };
+    // Make API call to start collaboration session
+    return this._threatModelService.startDiagramCollaborationSession(this._threatModelId, this._diagramId).pipe(
+      tap((session: CollaborationSession) => {
+        this._logger.info('Collaboration session started successfully', {
+          sessionId: session.session_id,
+          threatModelId: session.threat_model_id,
+          diagramId: session.diagram_id,
+          websocketUrl: session.websocket_url
+        });
 
-      this._collaborationUsers$.next([currentUser]);
-    }, 500);
+        // Store the session
+        this._currentSession = session;
 
-    return new Observable<boolean>(observer => {
-      setTimeout(() => {
-        observer.next(true);
-        observer.complete();
-      }, 500);
-    });
+        // Connect to WebSocket
+        this._connectToWebSocket(session.websocket_url);
+
+        // Update collaboration state
+        this._isCollaborating$.next(true);
+
+        // Add current user as owner
+        const currentUser: CollaborationUser = {
+          id: this._authService.username || 'current-user',
+          name: this._authService.username || 'Current User',
+          role: 'owner',
+          status: 'active',
+        };
+
+        // Convert API participants to CollaborationUser format
+        const collaborationUsers = session.participants.map(participant => ({
+          id: participant.user_id,
+          name: participant.user_id, // Use user_id as name for now
+          role: 'writer' as const, // Default role for other participants
+          status: 'active' as const,
+        }));
+
+        // Add current user if not already in participants
+        const allUsers = collaborationUsers.some(u => u.id === currentUser.id) 
+          ? collaborationUsers 
+          : [currentUser, ...collaborationUsers];
+
+        this._collaborationUsers$.next(allUsers);
+      }),
+      map(() => true),
+      catchError((error) => {
+        this._logger.error('Failed to start collaboration session', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -79,21 +145,44 @@ export class DfdCollaborationService {
   public endCollaboration(): Observable<boolean> {
     this._logger.info('Ending collaboration session');
 
-    // In a real implementation, this would close the WebSocket connection
-    // and notify the server that the session is ending
-
-    if (this._webSocket) {
-      this._webSocket.close();
-      this._webSocket = null;
+    if (!this._currentSession) {
+      this._logger.warn('No active collaboration session to end');
+      return throwError(() => new Error('No active collaboration session'));
     }
 
-    this._isCollaborating$.next(false);
-    this._collaborationUsers$.next([]);
+    // Make API call to end collaboration session
+    return this._threatModelService.endDiagramCollaborationSession(
+      this._currentSession.threat_model_id, 
+      this._currentSession.diagram_id
+    ).pipe(
+      tap(() => {
+        this._logger.info('Collaboration session ended successfully', {
+          sessionId: this._currentSession?.session_id,
+          threatModelId: this._currentSession?.threat_model_id,
+          diagramId: this._currentSession?.diagram_id
+        });
 
-    return new Observable<boolean>(observer => {
-      observer.next(true);
-      observer.complete();
-    });
+        // Disconnect WebSocket
+        this._disconnectFromWebSocket();
+
+        // Clear session state
+        this._currentSession = null;
+        this._isCollaborating$.next(false);
+        this._collaborationUsers$.next([]);
+      }),
+      map(() => true),
+      catchError((error) => {
+        this._logger.error('Failed to end collaboration session', error);
+        
+        // Even if API call fails, clean up local state
+        this._disconnectFromWebSocket();
+        this._currentSession = null;
+        this._isCollaborating$.next(false);
+        this._collaborationUsers$.next([]);
+        
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -216,6 +305,35 @@ export class DfdCollaborationService {
         return role === 'owner';
       default:
         return false;
+    }
+  }
+
+  /**
+   * Connect to WebSocket for real-time collaboration
+   * @param websocketUrl The WebSocket URL provided by the API
+   */
+  private _connectToWebSocket(websocketUrl: string): void {
+    this._logger.info('Connecting to collaboration WebSocket', { websocketUrl });
+
+    try {
+      this._webSocketAdapter.connect(websocketUrl);
+      this._logger.info('WebSocket connection initiated');
+    } catch (error) {
+      this._logger.error('Failed to connect to WebSocket', error);
+    }
+  }
+
+  /**
+   * Disconnect from WebSocket
+   */
+  private _disconnectFromWebSocket(): void {
+    this._logger.info('Disconnecting from collaboration WebSocket');
+
+    try {
+      this._webSocketAdapter.disconnect();
+      this._logger.info('WebSocket disconnected');
+    } catch (error) {
+      this._logger.error('Error disconnecting from WebSocket', error);
     }
   }
 }

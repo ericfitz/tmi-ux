@@ -18,13 +18,27 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { Observable, of, Subscription, BehaviorSubject } from 'rxjs';
+import { Observable, of, Subscription, BehaviorSubject, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 
 import { ThreatModel, Document as TMDocument, Source, Metadata, Threat } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram, Cell } from '../models/diagram.model';
+
+/**
+ * Collaboration session interface matching the API specification
+ */
+interface CollaborationSession {
+  session_id: string;
+  threat_model_id: string;
+  diagram_id: string;
+  participants: Array<{
+    user_id: string;
+    joined_at: string;
+  }>;
+  websocket_url: string;
+}
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
@@ -1415,5 +1429,98 @@ export class ThreatModelService implements OnDestroy {
         { expiredCount: keysToDelete.length, keptId: keepId }
       );
     }
+  }
+
+  /**
+   * Start a collaboration session for a diagram
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<CollaborationSession>
+   */
+  startDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<CollaborationSession> {
+    this.logger.info('Starting diagram collaboration session', { threatModelId, diagramId });
+
+    if (this._useMockData) {
+      // For mock data, simulate a collaboration session
+      const mockSession = {
+        session_id: `session-${Date.now()}`,
+        threat_model_id: threatModelId,
+        diagram_id: diagramId,
+        participants: [
+          {
+            user_id: this.authService.username || 'current-user',
+            joined_at: new Date().toISOString()
+          }
+        ],
+        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`
+      };
+      return of(mockSession);
+    }
+
+    return this.apiService.post<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`, {}).pipe(
+      tap(session => {
+        this.logger.info('Collaboration session started', { 
+          sessionId: session.session_id,
+          threatModelId, 
+          diagramId,
+          websocketUrl: session.websocket_url
+        });
+      }),
+      catchError(error => {
+        this.logger.error('Error starting collaboration session', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * End a collaboration session for a diagram
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<void>
+   */
+  endDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<void> {
+    this.logger.info('Ending diagram collaboration session', { threatModelId, diagramId });
+
+    if (this._useMockData) {
+      // For mock data, just simulate success
+      return of(undefined);
+    }
+
+    return this.apiService.delete<void>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`).pipe(
+      tap(() => {
+        this.logger.info('Collaboration session ended', { threatModelId, diagramId });
+      }),
+      catchError(error => {
+        this.logger.error('Error ending collaboration session', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get current collaboration session for a diagram
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<CollaborationSession | null>
+   */
+  getDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<CollaborationSession | null> {
+    this.logger.info('Getting diagram collaboration session', { threatModelId, diagramId });
+
+    if (this._useMockData) {
+      // For mock data, return null (no active session)
+      return of(null);
+    }
+
+    return this.apiService.get<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`).pipe(
+      catchError((error: { status: number }) => {
+        if (error.status === 404) {
+          // No active session
+          return of(null);
+        }
+        this.logger.error('Error getting collaboration session', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

@@ -71,6 +71,7 @@ import { GraphHistoryCoordinator } from './services/graph-history-coordinator.se
 import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
+import { DfdCollaborationService } from './services/dfd-collaboration.service';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
@@ -132,6 +133,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // Threat Model Service
     ThreatModelService,
+
+    // Collaboration Service
+    DfdCollaborationService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -185,6 +189,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     private nodeConfigurationService: NodeConfigurationService,
     private translocoService: TranslocoService,
+    private collaborationService: DfdCollaborationService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -200,6 +205,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       threatModelId: this.threatModelId,
       dfdId: this.dfdId,
     });
+
+    // Set collaboration context if we have the required parameters
+    if (this.threatModelId && this.dfdId) {
+      this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
+    }
   }
 
   ngOnInit(): void {
