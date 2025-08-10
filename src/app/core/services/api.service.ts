@@ -121,7 +121,9 @@ export class ApiService {
 
     // Request logging handled by JWT interceptor
 
-    return this.http.patch<T>(url, operations).pipe(
+    return this.http.patch<T>(url, operations, {
+      headers: { 'Content-Type': 'application/json-patch+json' }
+    }).pipe(
       // Response logging handled by JWT interceptor
       catchError((error: HttpErrorResponse) => this.handleError(error, 'PATCH', endpoint)),
     );
