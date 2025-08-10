@@ -31,6 +31,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
+import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interceptor';
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
@@ -56,7 +57,14 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     // Add Transloco root module
     importProvidersFrom(TranslocoRootModule),
-    // Register JWT Interceptor
+    // Register HTTP interceptors (order matters - first registered runs first)
+    // 1. HttpLoggingInterceptor - logs all HTTP requests/responses and categorizes errors
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpLoggingInterceptor,
+      multi: true,
+    },
+    // 2. JwtInterceptor - handles JWT token attachment and auth-specific errors
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,

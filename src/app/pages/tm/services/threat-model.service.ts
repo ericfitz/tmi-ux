@@ -138,12 +138,6 @@ export class ThreatModelService implements OnDestroy {
   private fetchThreatModelListFromAPI(): void {
     this.apiService.get<unknown>('threat_models').pipe(
       tap(response => {
-        this.logger.debugComponent('ThreatModelService', 'Raw API response for threat_models', {
-          response: response,
-          responseType: typeof response,
-          hasData: response !== null && typeof response === 'object' && 'data' in response,
-          isArray: Array.isArray(response)
-        });
 
         let threatModelList: TMListItem[] = [];
         

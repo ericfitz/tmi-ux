@@ -4,11 +4,10 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-  HttpResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, catchError, throwError, switchMap, tap } from '../../core/rxjs-imports';
+import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthService } from '../services/auth.service';
@@ -68,15 +67,7 @@ export class JwtInterceptor implements HttpInterceptor {
             },
           });
 
-          // Log the complete request details with component-specific debug logging
-          this.logApiRequest(tokenizedRequest);
-
           return next.handle(tokenizedRequest).pipe(
-            tap(event => {
-              if (event instanceof HttpResponse) {
-                this.logApiResponse(tokenizedRequest, event);
-              }
-            }),
           );
         }),
         catchError((error: HttpErrorResponse) => {
@@ -123,17 +114,7 @@ export class JwtInterceptor implements HttpInterceptor {
     }
 
     // For public endpoints or non-API requests, just pass through with error handling
-    // Log public endpoint requests too
-    if (this.isApiRequest(request.url)) {
-      this.logApiRequest(request);
-    }
-
     return next.handle(request).pipe(
-      tap(event => {
-        if (event instanceof HttpResponse && this.isApiRequest(request.url)) {
-          this.logApiResponse(request, event);
-        }
-      }),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 && !this.isPublicEndpoint(request.url)) {
           this.handleUnauthorizedError();
@@ -180,141 +161,6 @@ export class JwtInterceptor implements HttpInterceptor {
     });
   }
 
-  /**
-   * Log API request details with secret redaction
-   * @param request The HTTP request to log
-   */
-  private logApiRequest(request: HttpRequest<unknown>): void {
-    // Extract headers as a plain object
-    const headers: Record<string, string> = {};
-    request.headers.keys().forEach(key => {
-      const value = request.headers.get(key);
-      if (value) {
-        headers[key] = value;
-      }
-    });
-
-    // Log the request with component-specific debug logging
-    this.logger.debugComponent('api', `${request.method} request details:`, {
-      url: request.url,
-      headers: this.redactSecrets(headers, true),
-      body: request.body ? this.redactSecrets(request.body as Record<string, unknown>, false) : undefined,
-      params: this.extractUrlParams(request.url),
-    });
-  }
-
-  /**
-   * Extract URL parameters from a URL string
-   * @param url The URL to extract parameters from
-   * @returns Object containing URL parameters
-   */
-  private extractUrlParams(url: string): Record<string, string> | undefined {
-    try {
-      const urlObj = new URL(url);
-      const params: Record<string, string> = {};
-      urlObj.searchParams.forEach((value, key) => {
-        params[key] = value;
-      });
-      return Object.keys(params).length > 0 ? params : undefined;
-    } catch {
-      return undefined;
-    }
-  }
-
-  /**
-   * Redact sensitive information from objects
-   * @param obj Object that may contain sensitive data
-   * @returns Object with sensitive values redacted
-   */
-  private redactSecrets(obj: Record<string, unknown>, isHeaderContext = false): Record<string, unknown> {
-    const redacted = { ...obj };
-    const sensitiveKeys = [
-      'bearer',
-      'token',
-      'password',
-      'secret',
-      'jwt',
-      'refresh_token',
-      'access_token',
-      'api_key',
-      'apikey',
-    ];
-
-    for (const [key, value] of Object.entries(redacted)) {
-      const lowerKey = key.toLowerCase();
-      const isAuthorizationField = lowerKey === 'authorization';
-
-      // Handle Authorization field - only redact in header context
-      if (isAuthorizationField && isHeaderContext) {
-        if (typeof value === 'string' && value.length > 0) {
-          if (value.startsWith('Bearer ')) {
-            // Special handling for Bearer tokens - show prefix but redact token
-            const tokenPart = value.substring(7); // Remove 'Bearer '
-            redacted[key] = `Bearer ${this.redactToken(tokenPart)}`;
-          } else {
-            // Redact other Authorization header values
-            redacted[key] = this.redactToken(value);
-          }
-        } else {
-          redacted[key] = '[REDACTED]';
-        }
-      }
-      // Check if the key contains other sensitive information (but not "authorization" in general)
-      else if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
-        if (typeof value === 'string' && value.length > 0) {
-          redacted[key] = this.redactToken(value);
-        } else {
-          redacted[key] = '[REDACTED]';
-        }
-      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-        // Recursively redact nested objects
-        redacted[key] = this.redactSecrets(value as Record<string, unknown>, isHeaderContext);
-      }
-    }
-
-    return redacted;
-  }
-
-  /**
-   * Redact a token while showing first and last few characters for debugging
-   * @param token The token to redact
-   * @returns Redacted token string
-   */
-  private redactToken(token: string): string {
-    if (token.length <= 8) {
-      return '[REDACTED]';
-    }
-    const start = token.substring(0, 4);
-    const end = token.substring(token.length - 4);
-    const middle = '*'.repeat(Math.min(12, token.length - 8));
-    return `${start}${middle}${end}`;
-  }
-
-  /**
-   * Log API response details with secret redaction
-   * @param request The original HTTP request
-   * @param response The HTTP response
-   */
-  private logApiResponse(request: HttpRequest<unknown>, response: HttpResponse<unknown>): void {
-    // Extract response headers as a plain object
-    const headers: Record<string, string> = {};
-    response.headers.keys().forEach(key => {
-      const value = response.headers.get(key);
-      if (value) {
-        headers[key] = value;
-      }
-    });
-
-    // Log the response with component-specific debug logging
-    this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: this.redactSecrets(headers, true),
-      body: response.body
-        ? this.redactSecrets(response.body as Record<string, unknown>, false)
-        : undefined,
-    });
-  }
 
   /**
    * Handle 401 Unauthorized errors with reactive refresh
@@ -348,16 +194,8 @@ export class JwtInterceptor implements HttpInterceptor {
           },
         });
 
-        // Log the retry attempt
-        this.logApiRequest(retryRequest);
-
         // Retry the original request with new token
         return next.handle(retryRequest).pipe(
-          tap(event => {
-            if (event instanceof HttpResponse) {
-              this.logApiResponse(retryRequest, event);
-            }
-          }),
         );
       }),
       catchError(refreshError => {
@@ -386,65 +224,30 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   /**
-   * Handle HTTP errors
+   * Handle authentication errors (401/403 only)
    * @param error HTTP error response
    * @param request Original request
    * @returns Observable that throws the error
    */
-  private handleError(error: HttpErrorResponse, request: HttpRequest<unknown>): Observable<never> {
-    let errorMessage = '';
-    let authError: AuthError | null = null;
-
-    if (error.error instanceof ErrorEvent) {
-      // Client-side error
-      errorMessage = `Client Error: ${error.error.message}`;
-      authError = {
-        code: 'client_error',
-        message: error.error.message,
-        retryable: true,
+  private handleError(error: HttpErrorResponse, _request: HttpRequest<unknown>): Observable<never> {
+    // Only handle auth-related errors in JWT interceptor
+    if (error.status === 401) {
+      const authError: AuthError = {
+        code: 'unauthorized',
+        message: 'Authentication required',
+        retryable: false,
       };
-    } else {
-      // Server-side error
-      const status = error.status || 'Unknown';
-      const statusText = error.statusText || 'Unknown Error';
-      const method = request?.method || 'Unknown';
-      const url = request?.url || 'Unknown URL';
-      errorMessage = `Server Error: ${status} ${statusText} for ${method} ${url}`;
-
-      // Create auth error based on status code
-      switch (error.status) {
-        case 401:
-          authError = {
-            code: 'unauthorized',
-            message: 'Authentication required',
-            retryable: false,
-          };
-          break;
-        case 403:
-          authError = {
-            code: 'forbidden',
-            message: 'You do not have permission to access this resource',
-            retryable: false,
-          };
-          break;
-        default:
-          authError = {
-            code: 'api_error',
-            message: error.message,
-            retryable: true,
-          };
-      }
-    }
-
-    // Log the error
-    this.logger.error(errorMessage, error);
-
-    // Emit the auth error
-    if (authError) {
+      this.authService.handleAuthError(authError);
+    } else if (error.status === 403) {
+      const authError: AuthError = {
+        code: 'forbidden',
+        message: 'You do not have permission to access this resource',
+        retryable: false,
+      };
       this.authService.handleAuthError(authError);
     }
 
-    // Return an observable with a user-facing error message
-    return throwError(() => new Error(errorMessage));
+    // Return the original error (logging is handled by HttpLoggingInterceptor)
+    return throwError(() => error);
   }
 }

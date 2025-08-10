@@ -185,7 +185,7 @@ export class CollaborationSessionService implements OnDestroy {
     // Always use HTTP API to load sessions - WebSocket is only for real-time updates
     return this.requestSessionsViaHttp().pipe(
       map(sessions => {
-        this.logger.info('Loaded sessions from HTTP API', { count: sessions.length, sessions });
+        this.logger.info('Loaded sessions from HTTP API', { count: sessions.length });
         this._sessions$.next(sessions);
         return sessions;
       })

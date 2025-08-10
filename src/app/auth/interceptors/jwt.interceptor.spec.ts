@@ -98,11 +98,6 @@ describe('JwtInterceptor', () => {
               Authorization: `Bearer ${mockJwtToken.token}`,
             },
           });
-          expect(loggerService.debugComponent).toHaveBeenCalledWith(
-            'api',
-            expect.stringContaining('GET request details:'),
-            expect.any(Object),
-          );
           resolve();
         });
       });
@@ -220,8 +215,8 @@ describe('JwtInterceptor', () => {
         },
         error: error => {
           expect(error).toBeInstanceOf(Error);
-          // When no token is available, error gets wrapped by handleError as server error
-          expect(error.message).toContain('Server Error: Unknown Unknown Error');
+          // When no token is available, JWT interceptor returns a descriptive error
+          expect(error.message).toContain('No token available');
         },
       });
     });
@@ -344,8 +339,8 @@ describe('JwtInterceptor', () => {
             expect(true).toBe(false); // Should not succeed
           },
           error: error => {
-            expect(error).toBeInstanceOf(Error);
-            expect(error.message).toContain('Server Error: 403');
+            expect(error).toBeInstanceOf(HttpErrorResponse);
+            expect(error.status).toBe(403);
             expect(authService.handleAuthError).toHaveBeenCalledWith({
               code: 'forbidden',
               message: 'You do not have permission to access this resource',
