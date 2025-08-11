@@ -556,16 +556,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'common.close',
       ];
 
-      // Log the problematic labels that are not showing
-      this.logger.info('Checking translations for problematic labels:', {
-        source: this.dialogSource,
-        threatName: this.translocoService.translate('threatEditor.threatName'),
-        threatDescription: this.translocoService.translate('threatEditor.threatDescription'),
-        priority: this.translocoService.translate('common.priority'),
-        issueUrl: this.translocoService.translate('common.issueUrl'),
-        diagramId: this.translocoService.translate('common.diagramId'),
-        cellId: this.translocoService.translate('common.cellId'),
-      });
 
       // Diagnostic check for form field classes
       setTimeout(() => {
