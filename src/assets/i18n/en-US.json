@@ -97,6 +97,9 @@
       "required": "This field is required"
     }
   },
+  "errors": {
+    "validationError": "Validation Error"
+  },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
     "editText": "Edit Text",

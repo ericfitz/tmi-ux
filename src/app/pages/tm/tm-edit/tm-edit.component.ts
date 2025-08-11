@@ -516,10 +516,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               mitigated: formResult.mitigated || false,
               status: formResult.status || 'Open',
               issue_url: formResult.issue_url,
-              metadata: [
-                { key: 'CVSS', value: formResult.score?.toString() || '7.3' },
-                { key: 'Issue ID', value: 'jira-10881' },
-              ],
+              metadata: [],
             };
 
             this._subscriptions.add(

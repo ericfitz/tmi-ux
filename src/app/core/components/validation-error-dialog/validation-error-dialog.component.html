@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>{{ 'errors.validationError' | transloco }}: {{ data.error }}</h2>
+<mat-dialog-content>
+  <p class="error-description">
+    {{ getErrorAtText() }}
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="onClose()">
+    {{ 'common.ok' | transloco }}
+  </button>
+</mat-dialog-actions>
