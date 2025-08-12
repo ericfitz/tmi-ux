@@ -979,8 +979,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           dialogRef.afterClosed().subscribe(result => {
             if (result?.action === 'openThreatEditor') {
               this.logger.info('Opening threat editor from manage threats dialog');
-              // Open the threat editor for this specific cell
-              this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+              // Open the threat editor for this specific cell and reopen manage threats dialog after
+              this.openThreatEditorAndReopenManageThreats(cellId, cellShape, objectName);
             } else if (result?.action === 'threatUpdated') {
               this.logger.info('Threat was updated from manage threats dialog', { 
                 threatId: result.threat?.id 
@@ -998,6 +998,105 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.error('Failed to load threat model for manage threats', error);
       }
     }));
+  }
+
+  /**
+   * Opens threat editor and then reopens manage threats dialog after threat creation
+   */
+  private openThreatEditorAndReopenManageThreats(cellId: string, cellShape: string, objectName: string): void {
+    if (!this.threatModelId) {
+      this.logger.warn('Cannot open threat editor: No threat model ID available');
+      return;
+    }
+
+    const originalThreatChangedSubscription = this.facade.threatChanged$.subscribe(threatChangeEvent => {
+      if (threatChangeEvent.action === 'added') {
+        this.logger.info('Threat was added, reopening manage threats dialog');
+        
+        // Small delay to allow the threat to be fully saved
+        setTimeout(() => {
+          this.reopenManageThreatsDialog(cellId, cellShape, objectName);
+        }, 100);
+        
+        // Unsubscribe from this specific subscription
+        originalThreatChangedSubscription.unsubscribe();
+      }
+    });
+    
+    // Store the subscription for cleanup
+    this._subscriptions.add(originalThreatChangedSubscription);
+    
+    // Open the threat editor
+    this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+  }
+
+  /**
+   * Reopens the manage threats dialog with fresh data
+   */
+  private reopenManageThreatsDialog(cellId: string, cellShape: string, objectName: string): void {
+    if (!this.threatModelId) {
+      return;
+    }
+
+    // Reload the threat model and reopen the dialog
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(this.threatModelId, true).subscribe({ // Force refresh
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found during reopen', { id: this.threatModelId });
+            return;
+          }
+
+          // Filter threats for this specific cell and diagram
+          const cellThreats = threatModel.threats?.filter(threat => 
+            threat.cell_id === cellId && threat.diagram_id === this.dfdId
+          ) || [];
+
+          this.logger.info('Reopening manage threats dialog with updated data', { 
+            cellId, 
+            diagramId: this.dfdId, 
+            threatCount: cellThreats.length 
+          });
+
+          const dialogData: ThreatsDialogData = {
+            threats: cellThreats,
+            isReadOnly: false,
+            objectType: cellShape,
+            objectName: objectName,
+            threatModelId: this.threatModelId || undefined,
+            diagramId: this.dfdId || undefined
+          };
+
+          const dialogRef = this.dialog.open(ThreatsDialogComponent, {
+            data: dialogData,
+            width: '800px',
+            maxWidth: '90vw',
+            maxHeight: '80vh',
+            disableClose: false
+          });
+
+          // Handle the reopened dialog the same way as the original
+          this._subscriptions.add(
+            dialogRef.afterClosed().subscribe(result => {
+              if (result?.action === 'openThreatEditor') {
+                this.logger.info('Opening threat editor again from reopened manage threats dialog');
+                // Recursively handle opening threat editor again
+                this.openThreatEditorAndReopenManageThreats(cellId, cellShape, objectName);
+              } else if (result?.action === 'threatUpdated') {
+                this.logger.info('Threat was updated from reopened manage threats dialog', { 
+                  threatId: result.threat?.id 
+                });
+              } else if (result) {
+                this.logger.info('Reopened manage threats dialog closed with changes');
+              }
+            })
+          );
+        },
+        error: error => {
+          this.logger.error('Failed to reload threat model for manage threats reopen', error);
+        }
+      })
+    );
   }
 
   /**

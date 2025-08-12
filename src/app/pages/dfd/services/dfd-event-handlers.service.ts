@@ -376,12 +376,8 @@ export class DfdEventHandlersService {
                     metadata: formResult.metadata || [],
                   };
 
-                  // Add the new threat to the threat model
-                  const updatedThreats = [...(threatModel.threats || []), newThreat];
-                  const updatedThreatModel = { ...threatModel, threats: updatedThreats };
-
-                  // Update the threat model via the service
-                  this.threatModelService.updateThreatModel(updatedThreatModel).subscribe({
+                  // Create the new threat using the proper API endpoint
+                  this.threatModelService.createThreat(threatModelId, newThreat).subscribe({
                     next: () => {
                       this.logger.info('Threat added successfully from DFD', {
                         threatId: newThreat.id,
