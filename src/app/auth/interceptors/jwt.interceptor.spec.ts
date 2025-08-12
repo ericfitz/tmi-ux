@@ -144,7 +144,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to auth exchange endpoints', async () => {
-      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/exchange/google`);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/token/google`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'exchange response' })),

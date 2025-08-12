@@ -26,10 +26,9 @@ export class JwtInterceptor implements HttpInterceptor {
     '/version',
     '/auth/callback',
     '/auth/providers',
-    '/auth/token',
     '/auth/refresh',
     '/auth/login/*',
-    '/auth/exchange/*',
+    '/auth/token/*',
   ];
 
   constructor(
@@ -150,7 +149,7 @@ export class JwtInterceptor implements HttpInterceptor {
     }
 
     return this.publicEndpoints.some(endpoint => {
-      // Handle exact matches and wildcard matches (for paths like /auth/login/* and /auth/exchange/*)
+      // Handle exact matches and wildcard matches (for paths like /auth/login/* and /auth/token/*)
       if (endpoint.endsWith('/*')) {
         const baseEndpoint = endpoint.slice(0, -2);
         return path.startsWith(baseEndpoint);
