@@ -262,12 +262,27 @@ export class TmEditComponent implements OnInit, OnDestroy {
             this.threatModel &&
             newFramework !== this.threatModel.threat_model_framework
           ) {
-            this.handleFrameworkChange(
-              this.threatModel.threat_model_framework,
-              newFramework as string,
-            );
-            // Auto-save when framework changes
-            this.autoSaveThreatModel();
+            // Don't trigger framework change logic if we're just setting the framework to STRIDE
+            // for the first time (oldFramework is empty) and we have no threats yet
+            const isInitialFrameworkSet = 
+              !this.threatModel.threat_model_framework && 
+              newFramework === 'STRIDE' && 
+              (!this.threatModel.threats || this.threatModel.threats.length === 0);
+            
+            if (!isInitialFrameworkSet) {
+              this.handleFrameworkChange(
+                this.threatModel.threat_model_framework,
+                newFramework as string,
+              );
+            }
+            
+            // Always update the model framework field to keep it in sync
+            this.threatModel.threat_model_framework = newFramework as string;
+            
+            // Auto-save when framework changes (but not for initial set)
+            if (!isInitialFrameworkSet) {
+              this.autoSaveThreatModel();
+            }
           }
         }),
       );
@@ -379,6 +394,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           // Update framework control disabled state based on threats
           this.updateFrameworkControlState();
+          
+          // For new models, trigger an immediate auto-save to ensure the framework is persisted
+          if (this.isNewThreatModel) {
+            // Save immediately to ensure framework is set on server
+            setTimeout(() => {
+              this.autoSaveThreatModel();
+            }, 50);
+          }
           
           // Re-enable auto-save after initial population is complete for new models
           setTimeout(() => {
