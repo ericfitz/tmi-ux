@@ -237,31 +237,6 @@ export class TmComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Refresh the threat model list from the server
-   */
-  private refreshThreatModelList(): void {
-    this.threatModelService.getThreatModelList().subscribe({
-      next: models => {
-        // Ensure models is always an array
-        this.threatModels = models || [];
-        this.logger.debugComponent('TM', 'Threat model list refreshed after deletion', {
-          count: this.threatModels.length,
-          models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
-        });
-        // Trigger change detection to update the view
-        this.cdr.detectChanges();
-      },
-      error: error => {
-        this.logger.error('Error refreshing threat model list', error);
-        this.snackBar.open(
-          'Failed to refresh threat model list. Please reload the page.',
-          'Close',
-          { duration: 5000 }
-        );
-      }
-    });
-  }
 
   /**
    * Navigate to the DFD page for a specific diagram

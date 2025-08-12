@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -12,8 +12,6 @@ import { MaterialModule } from '../../../shared/material/material.module';
   standalone: true,
   imports: [CommonModule, RouterModule, MaterialModule, TranslocoModule],
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent {
   constructor() {}
-
-  ngOnInit(): void {}
 }

@@ -1,4 +1,1 @@
-/**
- * Type for port directions
- */
-export type PortDirection = 'top' | 'right' | 'bottom' | 'left';
+// This file is intentionally empty - reserved for future DFD type definitions
