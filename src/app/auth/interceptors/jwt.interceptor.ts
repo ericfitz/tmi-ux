@@ -24,12 +24,11 @@ export class JwtInterceptor implements HttpInterceptor {
   private readonly publicEndpoints = [
     '/',
     '/version',
-    '/auth/login',
     '/auth/callback',
     '/auth/providers',
     '/auth/token',
     '/auth/refresh',
-    '/auth/authorize/*',
+    '/auth/login/*',
     '/auth/exchange/*',
   ];
 
@@ -67,8 +66,7 @@ export class JwtInterceptor implements HttpInterceptor {
             },
           });
 
-          return next.handle(tokenizedRequest).pipe(
-          );
+          return next.handle(tokenizedRequest).pipe();
         }),
         catchError((error: HttpErrorResponse) => {
           // Log the 401 error details for diagnosis
@@ -152,7 +150,7 @@ export class JwtInterceptor implements HttpInterceptor {
     }
 
     return this.publicEndpoints.some(endpoint => {
-      // Handle exact matches and wildcard matches (for paths like /auth/authorize/* and /auth/exchange/*)
+      // Handle exact matches and wildcard matches (for paths like /auth/login/* and /auth/exchange/*)
       if (endpoint.endsWith('/*')) {
         const baseEndpoint = endpoint.slice(0, -2);
         return path.startsWith(baseEndpoint);
@@ -160,7 +158,6 @@ export class JwtInterceptor implements HttpInterceptor {
       return path === endpoint || path.startsWith(endpoint + '/');
     });
   }
-
 
   /**
    * Handle 401 Unauthorized errors with reactive refresh
@@ -195,8 +192,7 @@ export class JwtInterceptor implements HttpInterceptor {
         });
 
         // Retry the original request with new token
-        return next.handle(retryRequest).pipe(
-        );
+        return next.handle(retryRequest).pipe();
       }),
       catchError(refreshError => {
         // Token refresh failed - logout and redirect

@@ -9,11 +9,11 @@ import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { JwtToken } from '../models/auth.models';
-import { 
-  createTypedMockLoggerService, 
+import {
+  createTypedMockLoggerService,
   createTypedMockRouter,
   type MockLoggerService,
-  type MockRouter
+  type MockRouter,
 } from '../../../testing/mocks';
 
 // Mock the environment module
@@ -73,7 +73,11 @@ describe('JwtInterceptor', () => {
     router = createTypedMockRouter('/test-path');
     loggerService = createTypedMockLoggerService();
 
-    interceptor = new JwtInterceptor(authService, router as unknown as Router, loggerService as unknown as LoggerService);
+    interceptor = new JwtInterceptor(
+      authService,
+      router as unknown as Router,
+      loggerService as unknown as LoggerService,
+    );
   });
 
   describe('Core Functionality', () => {
@@ -123,7 +127,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to public API endpoints', async () => {
-      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login`);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login/github`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'login response' })),
@@ -157,7 +161,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to auth authorize endpoints', async () => {
-      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/authorize/github`);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login/github`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'authorize response' })),
@@ -194,7 +198,9 @@ describe('JwtInterceptor', () => {
 
     it('should handle token refresh failure', () => {
       // Mock to return error (no token available)
-      vi.mocked(authService.getValidToken).mockReturnValue(throwError(() => new Error('No token available')));
+      vi.mocked(authService.getValidToken).mockReturnValue(
+        throwError(() => new Error('No token available')),
+      );
 
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET');
 
@@ -228,10 +234,8 @@ describe('JwtInterceptor', () => {
       };
 
       // First call returns token, then fails with 401, then refresh succeeds
-      vi.mocked(authService.getValidToken)
-        .mockReturnValueOnce(of(mockJwtToken));
-      vi.mocked(authService.getValidTokenIfAvailable)
-        .mockReturnValueOnce(of(refreshedToken));
+      vi.mocked(authService.getValidToken).mockReturnValueOnce(of(mockJwtToken));
+      vi.mocked(authService.getValidTokenIfAvailable).mockReturnValueOnce(of(refreshedToken));
 
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 
@@ -273,10 +277,8 @@ describe('JwtInterceptor', () => {
 
     it('should handle 401 errors with reactive refresh failure', async () => {
       // First call returns token, then fails with 401, then refresh returns null
-      vi.mocked(authService.getValidToken)
-        .mockReturnValueOnce(of(mockJwtToken));
-      vi.mocked(authService.getValidTokenIfAvailable)
-        .mockReturnValueOnce(of(null));
+      vi.mocked(authService.getValidToken).mockReturnValueOnce(of(mockJwtToken));
+      vi.mocked(authService.getValidTokenIfAvailable).mockReturnValueOnce(of(null));
 
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET', true);
 

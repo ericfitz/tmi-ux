@@ -27,13 +27,13 @@ import {
 } from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
-import { 
-  createTypedMockLoggerService, 
+import {
+  createTypedMockLoggerService,
   createTypedMockRouter,
   createTypedMockHttpClient,
   type MockLoggerService,
   type MockRouter,
-  type MockHttpClient
+  type MockHttpClient,
 } from '../../../testing/mocks';
 
 // Mock the environment module
@@ -126,7 +126,7 @@ describe('AuthService', () => {
         id: 'test',
         name: 'Test Provider',
         icon: 'fa-solid fa-flask',
-        auth_url: 'http://localhost:8080/auth/authorize/test',
+        auth_url: 'http://localhost:8080/auth/login/test',
         redirect_uri: 'http://localhost:8080/auth/callback',
         client_id: 'mock-client-id',
       },
@@ -322,8 +322,12 @@ describe('AuthService', () => {
       expect(cryptoMock.getRandomValues).toHaveBeenCalled();
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
-      expect(window.location.href).toBe('http://localhost:8080/auth/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Fauth%2Fcallback');
-      expect(loggerService.info).toHaveBeenCalledWith('Initiating TMI OAuth login with Test Provider');
+      expect(window.location.href).toBe(
+        'http://localhost:8080/auth/login/test?state=00000000000000000000000000000000&client_callback=undefined%2Fauth%2Fcallback',
+      );
+      expect(loggerService.info).toHaveBeenCalledWith(
+        'Initiating TMI OAuth login with Test Provider',
+      );
     });
 
     it('should handle missing provider configuration', () => {
@@ -964,7 +968,10 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(loggerService.debugComponent).toHaveBeenCalledWith('Auth', 'Server logout request completed');
+      expect(loggerService.debugComponent).toHaveBeenCalledWith(
+        'Auth',
+        'Server logout request completed',
+      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
