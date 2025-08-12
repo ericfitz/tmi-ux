@@ -636,11 +636,19 @@
                 "default": 0
               },
               "attrs": {
-                "$ref": "#/components/schemas/NodeAttrs",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/NodeAttrs"
+                  }
+                ],
                 "description": "Visual styling attributes for the node"
               },
               "ports": {
-                "$ref": "#/components/schemas/PortConfiguration",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PortConfiguration"
+                  }
+                ],
                 "description": "Port configuration for connections"
               },
               "parent": {
@@ -832,15 +840,27 @@
                 "description": "Edge type identifier"
               },
               "source": {
-                "$ref": "#/components/schemas/EdgeTerminal",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EdgeTerminal"
+                  }
+                ],
                 "description": "Source connection point"
               },
               "target": {
-                "$ref": "#/components/schemas/EdgeTerminal",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EdgeTerminal"
+                  }
+                ],
                 "description": "Target connection point"
               },
               "attrs": {
-                "$ref": "#/components/schemas/EdgeAttrs",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EdgeAttrs"
+                  }
+                ],
                 "description": "Visual styling attributes for the edge"
               },
               "labels": {
@@ -858,15 +878,27 @@
                 "description": "Intermediate waypoints for edge routing"
               },
               "router": {
-                "$ref": "#/components/schemas/EdgeRouter",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EdgeRouter"
+                  }
+                ],
                 "description": "Edge routing algorithm configuration for path calculation"
               },
               "connector": {
-                "$ref": "#/components/schemas/EdgeConnector",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EdgeConnector"
+                  }
+                ],
                 "description": "Edge connector style configuration for visual appearance"
               },
               "defaultLabel": {
-                "$ref": "#/components/schemas/EdgeLabel",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EdgeLabel"
+                  }
+                ],
                 "description": "Default label configuration applied to edges without explicit labels"
               },
               "label": {
@@ -1787,26 +1819,6 @@
               }
             }
           }
-        },
-        "example": {
-          "groups": {
-            "in": {
-              "position": "left"
-            },
-            "out": {
-              "position": "right"
-            }
-          },
-          "items": [
-            {
-              "id": "port_in_1",
-              "group": "in"
-            },
-            {
-              "id": "port_out_1",
-              "group": "out"
-            }
-          ]
         }
       },
       "PaginatedResponse": {
@@ -1815,6 +1827,9 @@
         "properties": {
           "data": {
             "type": "array",
+            "items": {
+              "type": "object"
+            },
             "description": "Array of items for the current page"
           },
           "pagination": {
@@ -2407,36 +2422,36 @@
                   "required": [
                     "providers"
                   ]
+                },
+                "example": {
+                  "providers": [
+                    {
+                      "id": "google",
+                      "name": "Google",
+                      "icon": "fa-brands fa-google",
+                      "auth_url": "http://localhost:8080/auth/login/google",
+                      "redirect_uri": "http://localhost:8080/auth/callback",
+                      "client_id": "675196260523-e8ppeu62pv222jhnpebe929b2tgl2jm0.apps.googleusercontent.com"
+                    },
+                    {
+                      "id": "github",
+                      "name": "GitHub",
+                      "icon": "fa-brands fa-github",
+                      "auth_url": "http://localhost:8080/auth/login/github",
+                      "redirect_uri": "http://localhost:8080/auth/callback",
+                      "client_id": "your-github-client-id"
+                    },
+                    {
+                      "id": "microsoft",
+                      "name": "Microsoft",
+                      "icon": "fa-brands fa-microsoft",
+                      "auth_url": "http://localhost:8080/auth/login/microsoft",
+                      "redirect_uri": "http://localhost:8080/auth/callback",
+                      "client_id": "your-microsoft-client-id"
+                    }
+                  ]
                 }
               }
-            },
-            "example": {
-              "providers": [
-                {
-                  "id": "google",
-                  "name": "Google",
-                  "icon": "fa-brands fa-google",
-                  "auth_url": "http://localhost:8080/auth/authorize/google",
-                  "redirect_uri": "http://localhost:8080/auth/callback",
-                  "client_id": "675196260523-e8ppeu62pv222jhnpebe929b2tgl2jm0.apps.googleusercontent.com"
-                },
-                {
-                  "id": "github",
-                  "name": "GitHub",
-                  "icon": "fa-brands fa-github",
-                  "auth_url": "http://localhost:8080/auth/authorize/github",
-                  "redirect_uri": "http://localhost:8080/auth/callback",
-                  "client_id": "your-github-client-id"
-                },
-                {
-                  "id": "microsoft",
-                  "name": "Microsoft",
-                  "icon": "fa-brands fa-microsoft",
-                  "auth_url": "http://localhost:8080/auth/authorize/microsoft",
-                  "redirect_uri": "http://localhost:8080/auth/callback",
-                  "client_id": "your-microsoft-client-id"
-                }
-              ]
             }
           },
           "500": {
@@ -2445,7 +2460,7 @@
         }
       }
     },
-    "/auth/authorize/{provider}": {
+    "/auth/login/{provider}": {
       "get": {
         "tags": [
           "Authentication"
@@ -2500,21 +2515,7 @@
                   "type": "string",
                   "format": "uri"
                 },
-                "description": "OAuth provider authorization URL with client_id, redirect_uri, response_type, scope, and state parameters",
-                "examples": {
-                  "google": {
-                    "summary": "Google OAuth authorization URL",
-                    "value": "https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=random_state_abc123"
-                  },
-                  "github": {
-                    "summary": "GitHub OAuth authorization URL",
-                    "value": "https://github.com/login/oauth/authorize?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=user:email&state=random_state_abc123"
-                  },
-                  "microsoft": {
-                    "summary": "Microsoft OAuth authorization URL",
-                    "value": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email+User.Read&state=random_state_abc123"
-                  }
-                }
+                "description": "OAuth provider authorization URL with client_id, redirect_uri, response_type, scope, and state parameters"
               }
             }
           },
@@ -2538,162 +2539,10 @@
               }
             }
           }
-        },
-        "examples": {
-          "client_callback_flow": {
-            "summary": "OAuth flow with client callback (Recommended for SPAs)",
-            "description": "Complete OAuth flow where TMI redirects back to the client application with tokens",
-            "value": {
-              "step1": {
-                "description": "Client initiates OAuth with callback URL",
-                "request": "GET /auth/authorize/google?state=abc123&client_callback=http%3A%2F%2Flocalhost%3A4200%2Fauth%2Fcallback"
-              },
-              "step2": {
-                "description": "TMI redirects to OAuth provider",
-                "response": "302 Redirect to https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=server_generated_state"
-              },
-              "step3": {
-                "description": "OAuth provider redirects back to TMI",
-                "callback": "GET /auth/callback?code=oauth_authorization_code&state=server_generated_state"
-              },
-              "step4": {
-                "description": "TMI processes OAuth and redirects to client with tokens",
-                "response": "302 Redirect to http://localhost:4200/auth/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=abc123"
-              }
-            }
-          },
-          "legacy_flow": {
-            "summary": "Legacy OAuth flow (JSON response)",
-            "description": "Traditional OAuth flow where TMI returns tokens as JSON",
-            "value": {
-              "step1": {
-                "description": "Client initiates OAuth without callback URL",
-                "request": "GET /auth/authorize/google?state=abc123"
-              },
-              "step2": {
-                "description": "TMI redirects to OAuth provider",
-                "response": "302 Redirect to https://accounts.google.com/o/oauth2/auth?client_id=your_client_id&redirect_uri=http://localhost:8080/auth/callback&response_type=code&scope=openid+profile+email&state=server_generated_state"
-              },
-              "step3": {
-                "description": "OAuth provider redirects back to TMI",
-                "callback": "GET /auth/callback?code=oauth_authorization_code&state=server_generated_state"
-              },
-              "step4": {
-                "description": "TMI returns tokens as JSON response",
-                "response": {
-                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                  "token_type": "Bearer",
-                  "expires_in": 3600
-                }
-              }
-            }
-          }
         }
       }
     },
-    "/auth/login": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Initiate OAuth login",
-        "description": "Redirects the user to an OAuth provider for authentication",
-        "operationId": "initiateOAuthLogin",
-        "parameters": [
-          {
-            "name": "redirect_uri",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Optional URI to redirect to after login"
-          }
-        ],
-        "responses": {
-          "302": {
-            "description": "Redirect to OAuth provider",
-            "headers": {
-              "Location": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "URL of the OAuth provider's authorization endpoint"
-              }
-            }
-          }
-        },
-        "example": {
-          "request": "GET /auth/login?redirect_uri=https://client.example.com/callback",
-          "response": {
-            "status": 302,
-            "headers": {
-              "Location": "https://oauth-provider.com/auth?client_id=abc&response_type=code&redirect_uri=https://client.example.com/callback"
-            }
-          }
-        }
-      }
-    },
-    "/auth/token": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Exchange authorization code for JWT",
-        "description": "Exchanges an OAuth authorization code for a JWT token",
-        "operationId": "exchangeToken",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "Authorization code from OAuth provider"
-                  },
-                  "provider": {
-                    "type": "string",
-                    "description": "OAuth provider identifier"
-                  },
-                  "redirect_uri": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "Redirect URI used in the authorization request"
-                  }
-                },
-                "required": [
-                  "code",
-                  "provider"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "JWT issued successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthTokenResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/Error"
-          },
-          "401": {
-            "$ref": "#/components/responses/Error"
-          },
-          "500": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/auth/exchange/{provider}": {
+    "/auth/token/{provider}": {
       "post": {
         "tags": [
           "Authentication"
@@ -2745,11 +2594,6 @@
                   "code",
                   "redirect_uri"
                 ]
-              },
-              "example": {
-                "code": "4/0AX4XfWiXY2BZ_example_auth_code_from_google",
-                "state": "random_state_value_abc123",
-                "redirect_uri": "https://your-web-app.com/auth/callback"
               }
             }
           }
@@ -2856,9 +2700,6 @@
                 "required": [
                   "refresh_token"
                 ]
-              },
-              "example": {
-                "refresh_token": "8xLOxBtZp8_example_refresh_token"
               }
             }
           }
@@ -2938,10 +2779,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Internal server error",
-                  "error_description": "Unable to process token refresh request"
                 }
               }
             }
@@ -3076,10 +2913,10 @@
               "Location": {
                 "schema": {
                   "type": "string",
-                  "format": "uri"
+                  "format": "uri",
+                  "example": "http://localhost:4200/auth/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=random_state_abc123"
                 },
-                "description": "Client callback URL with access_token, refresh_token, expires_in, token_type, and state as query parameters",
-                "example": "http://localhost:4200/auth/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=random_state_abc123"
+                "description": "Client callback URL with access_token, refresh_token, expires_in, token_type, and state as query parameters"
               }
             }
           },
@@ -3180,64 +3017,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "blacklist_error": {
-                    "summary": "Failed to blacklist token",
-                    "value": {
-                      "error": "server_error",
-                      "error_description": "Failed to logout"
-                    }
-                  },
-                  "service_error": {
-                    "summary": "Authentication service error",
-                    "value": {
-                      "error": "server_error",
-                      "error_description": "Authentication service error"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "examples": {
-          "successful_logout": {
-            "summary": "Successful logout with valid token",
-            "description": "A user successfully logs out with a valid JWT token",
-            "value": {
-              "request": {
-                "method": "POST",
-                "url": "/auth/logout",
-                "headers": {
-                  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiZXhwIjoxNjkwMjIyNDAwLCJpYXQiOjE2OTAyMTg4MDB9.signature",
-                  "Content-Type": "application/json"
-                },
-                "body": "{}"
-              },
-              "response": {
-                "status": 204,
-                "body": ""
-              }
-            }
-          },
-          "logout_without_token": {
-            "summary": "Logout attempt without token",
-            "description": "Attempting to logout without providing an Authorization header",
-            "value": {
-              "request": {
-                "method": "POST",
-                "url": "/auth/logout",
-                "headers": {
-                  "Content-Type": "application/json"
-                },
-                "body": "{}"
-              },
-              "response": {
-                "status": 401,
-                "body": {
-                  "error": "unauthorized",
-                  "error_description": "Missing Authorization header"
                 }
               }
             }
@@ -3671,46 +3450,6 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        },
-        "example": {
-          "request": "PUT /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n{\"id\": \"550e8400-e29b-41d4-a716-446655440000\", \"name\": \"Updated Threat Model\", \"description\": \"Updated threats\", \"created_at\": \"2025-04-06T12:00:00Z\", \"modified_at\": \"2025-04-06T12:00:00Z\", \"owner\": \"user@example.com\", \"created_by\": \"user@example.com\", \"threat_model_framework\": \"STRIDE\", \"authorization\": [{\"subject\": \"user@example.com\", \"role\": \"owner\"}], \"metadata\": [], \"documents\": [], \"sourceCode\": [{\"id\": \"6ba7b810-1dad-11d1-8080-00c04fd430c8\", \"name\": \"GitHub Repo\", \"description\": \"Technical design document for the Example application\", \"type\": \"git\", \"url\": \"https://github.com/ericfitz/tmi-ux.git\", \"parameters\": {\"refType\": \"branch\", \"refValue\": \"main\"}, \"metadata\": []}], \"diagrams\": [], \"threats\": []}",
-          "response": {
-            "status": 200,
-            "body": {
-              "id": "550e8400-e29b-41d4-a716-446655440000",
-              "name": "Updated Threat Model",
-              "description": "Updated threats",
-              "created_at": "2025-04-06T12:00:00Z",
-              "modified_at": "2025-04-06T12:45:00Z",
-              "owner": "user@example.com",
-              "created_by": "user@example.com",
-              "threat_model_framework": "STRIDE",
-              "authorization": [
-                {
-                  "subject": "user@example.com",
-                  "role": "owner"
-                }
-              ],
-              "metadata": [],
-              "documents": [],
-              "sourceCode": [
-                {
-                  "id": "6ba7b810-1dad-11d1-8080-00c04fd430c8",
-                  "name": "GitHub Repo",
-                  "description": "Source code for the tmi-ux application",
-                  "type": "git",
-                  "url": "https://github.com/ericfitz/tmi-ux.git",
-                  "parameters": {
-                    "refType": "branch",
-                    "refValue": "main"
-                  },
-                  "metadata": []
-                }
-              ],
-              "diagrams": [],
-              "threats": []
-            }
-          }
         }
       },
       "patch": {
@@ -3801,48 +3540,6 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        },
-        "example": {
-          "request": "PATCH /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>\nContent-Type: application/json\n[{\"op\": \"add\", \"path\": \"/threats/-\", \"value\": {\"id\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\", \"threat_model_id\": \"550e8400-e29b-41d4-a716-446655440000\", \"name\": \"Data Breach\", \"description\": \"Unauthorized access\", \"created_at\": \"2025-04-06T12:01:00Z\", \"modified_at\": \"2025-04-06T12:01:00Z\", \"severity\": \"High\", \"priority\": \"High\", \"mitigated\": false, \"status\": \"Open\", \"threat_type\": \"Information Disclosure\", \"metadata\": []}}]",
-          "response": {
-            "status": 200,
-            "body": {
-              "id": "550e8400-e29b-41d4-a716-446655440000",
-              "name": "System Threat Model",
-              "description": "Threats for system X",
-              "created_at": "2025-04-06T12:00:00Z",
-              "modified_at": "2025-04-06T12:01:00Z",
-              "owner": "user@example.com",
-              "created_by": "user@example.com",
-              "threat_model_framework": "STRIDE",
-              "authorization": [
-                {
-                  "subject": "user@example.com",
-                  "role": "owner"
-                }
-              ],
-              "metadata": [],
-              "documents": [],
-              "sourceCode": [],
-              "diagrams": [],
-              "threats": [
-                {
-                  "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-                  "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
-                  "name": "Data Breach",
-                  "description": "Unauthorized access",
-                  "created_at": "2025-04-06T12:01:00Z",
-                  "modified_at": "2025-04-06T12:01:00Z",
-                  "severity": "High",
-                  "priority": "High",
-                  "mitigated": false,
-                  "status": "Open",
-                  "threat_type": "Information Disclosure",
-                  "metadata": []
-                }
-              ]
-            }
-          }
         }
       },
       "delete": {
@@ -3885,12 +3582,6 @@
           },
           "500": {
             "$ref": "#/components/responses/Error"
-          }
-        },
-        "example": {
-          "request": "DELETE /threat_models/550e8400-e29b-41d4-a716-446655440000\nAuthorization: Bearer <JWT>",
-          "response": {
-            "status": 204
           }
         }
       }
@@ -5337,44 +5028,25 @@
               "maxLength": 36
             },
             "description": "Unique identifier of the threat model (UUID)"
+          },
+          {
+            "name": "threat_ids",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "maxItems": 20,
+              "minItems": 1
+            },
+            "description": "Comma-separated list of threat IDs to delete (e.g., id1,id2,id3)"
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "threat_ids": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "maxItems": 20,
-                    "description": "Array of threat IDs to delete"
-                  }
-                },
-                "required": [
-                  "threat_ids"
-                ]
-              },
-              "examples": {
-                "batchDeleteThreats": {
-                  "summary": "Delete multiple threats by ID",
-                  "value": {
-                    "threat_ids": [
-                      "750e8400-e29b-41d4-a716-446655440001",
-                      "750e8400-e29b-41d4-a716-446655440002",
-                      "750e8400-e29b-41d4-a716-446655440003"
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Threats deleted successfully",
@@ -8472,7 +8144,6 @@
             "$ref": "#/components/responses/Error"
           },
           "409": {
-            "description": "Collaboration session already exists",
             "$ref": "#/components/responses/Error"
           },
           "500": {
