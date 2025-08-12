@@ -370,7 +370,7 @@ export class DfdEventHandlersService {
                     cell_id: formResult.cell_id || selectedCell?.id || '',
                     score: formResult.score || 10.0,
                     priority: formResult.priority || 'High',
-                    issue_url: formResult.issue_url || 'n/a',
+                    issue_url: formResult.issue_url || '',
                     mitigated: formResult.mitigated || false,
                     status: formResult.status || 'Open',
                     metadata: formResult.metadata || [],

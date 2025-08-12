@@ -414,7 +414,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           priority: 'High',
           mitigated: false,
           status: 'Open',
-          issue_url: 'n/a',
+          issue_url: '',
           metadata: [],
         };
       }

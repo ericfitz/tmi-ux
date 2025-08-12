@@ -422,7 +422,7 @@ export class ThreatModelService implements OnDestroy {
         modified_at: now,
         owner: currentUser,
         created_by: currentUser,
-        threat_model_framework: framework,
+        threat_model_framework: framework || 'STRIDE',
         issue_url: issueUrl,
         authorization: [
           {
@@ -448,7 +448,7 @@ export class ThreatModelService implements OnDestroy {
     const body = {
       name,
       description,
-      threat_model_framework: framework,
+      threat_model_framework: framework || 'STRIDE',
       issue_url: issueUrl,
     };
 
