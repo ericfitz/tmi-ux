@@ -175,10 +175,10 @@
   },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
+    "copyUserEmail": "Copy User Email to Clipboard",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
     "logoutButton": "Logout",
-    "copyUserProfile": "Copy User Profile to Clipboard",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",

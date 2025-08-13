@@ -15,10 +15,11 @@ import { environment } from '../../../../environments/environment';
 export interface CollaborationUser {
   id: string;
   name: string;
-  role: 'owner' | 'writer' | 'reader';
+  permission: 'writer' | 'reader'; // Based on threat model permissions
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
   isPresenter?: boolean;
+  isSessionManager?: boolean; // True for the person who created the session
   lastActivity?: Date;
 }
 
@@ -100,7 +101,90 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Start a collaboration session
+   * Join an existing collaboration session
+   * @returns Observable<boolean> indicating success or failure
+   */
+  public joinCollaboration(): Observable<boolean> {
+    this._logger.info('Joining existing collaboration session');
+
+    if (!this._threatModelId || !this._diagramId) {
+      this._logger.error('Cannot join collaboration: diagram context not set');
+      return throwError(() => new Error('Diagram context not set. Call setDiagramContext() first.'));
+    }
+
+    if (this._isCollaborating$.value) {
+      this._logger.warn('Collaboration session already active');
+      return throwError(() => new Error('Collaboration session is already active'));
+    }
+
+    // Get existing collaboration session
+    return this._threatModelService.getDiagramCollaborationSession(this._threatModelId, this._diagramId).pipe(
+      tap((session: CollaborationSession | null) => {
+        if (!session) {
+          throw new Error('No active collaboration session found to join. You can only join existing sessions.');
+        }
+
+        this._logger.info('Joining existing collaboration session', {
+          sessionId: session.session_id,
+          threatModelId: session.threat_model_id,
+          diagramId: session.diagram_id,
+          websocketUrl: session.websocket_url
+        });
+
+        // Store the session
+        this._currentSession = session;
+
+        // Set up WebSocket listeners before connecting
+        this._setupWebSocketListeners();
+
+        // Connect to WebSocket
+        this._connectToWebSocket(session.websocket_url);
+
+        // Update collaboration state
+        this._isCollaborating$.next(true);
+        
+        // Show session joined notification
+        this._notificationService.showSessionEvent('userJoined').subscribe();
+
+        // Convert API participants to CollaborationUser format with correct permissions
+        const currentUserEmail = this._authService.userEmail || 'current-user';
+        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => ({
+          id: participant.user_id,
+          name: participant.user_id, // Use email address as display name
+          permission: 'writer' as const, // TODO: Get actual permission from threat model
+          status: 'active' as const,
+          isSessionManager: false, // Joining users are never session managers
+        }));
+
+        // Mark the first participant as session manager (the one who created the session)
+        if (collaborationUsers.length > 0) {
+          collaborationUsers[0].isSessionManager = true;
+        }
+
+        // If current user is not in participants list, add them as a regular member
+        if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
+          const currentUser: CollaborationUser = {
+            id: currentUserEmail,
+            name: currentUserEmail,
+            permission: 'writer', // TODO: Get actual permission from threat model
+            status: 'active',
+            isSessionManager: false, // Joining user is never session manager
+          };
+          collaborationUsers.push(currentUser);
+        }
+
+        this._collaborationUsers$.next(collaborationUsers);
+      }),
+      map(() => true),
+      catchError((error) => {
+        this._logger.error('Failed to join collaboration session', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Start a new collaboration session (session manager only)
    * @returns Observable<boolean> indicating success or failure
    */
   public startCollaboration(): Observable<boolean> {
@@ -146,19 +230,21 @@ export class DfdCollaborationService implements OnDestroy {
         const collaborationUsers: CollaborationUser[] = session.participants.map(participant => ({
           id: participant.user_id,
           name: participant.user_id, // Use email address as display name
-          role: participant.user_id === currentUserEmail ? 'owner' as const : 'writer' as const, // Owner is the current user who started session
+          permission: 'writer' as const, // TODO: Get actual permission from threat model
           status: 'active' as const,
+          isSessionManager: participant.user_id === currentUserEmail, // Session manager is the creator
         }));
 
-        // If current user is not in participants list, add them as owner
+        // If current user is not in participants list, add them as session manager (since they're creating it)
         if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
           const currentUser: CollaborationUser = {
             id: currentUserEmail,
             name: currentUserEmail, // Use email address consistently
-            role: 'owner',
+            permission: 'writer', // TODO: Get actual permission from threat model
             status: 'active',
+            isSessionManager: true, // Creator is always session manager
           };
-          collaborationUsers.unshift(currentUser); // Add owner at the beginning
+          collaborationUsers.unshift(currentUser); // Add session manager at the beginning
         }
 
         this._collaborationUsers$.next(collaborationUsers);
@@ -183,8 +269,8 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('No active collaboration session'));
     }
 
-    if (this.isCurrentUserOwner()) {
-      this._logger.warn('Session owners should use endCollaboration() instead of leaveSession()');
+    if (this.isCurrentUserSessionManager()) {
+      this._logger.info('Session manager leaving - this will end the session for all users');
       return this.endCollaboration();
     }
 
@@ -271,11 +357,11 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Invite a user to the collaboration session
    * @param email The email of the user to invite
-   * @param role The role to assign to the user
+   * @param permission The permission to assign to the user
    * @returns Observable<boolean> indicating success or failure
    */
-  public inviteUser(email: string, role: 'owner' | 'writer' | 'reader'): Observable<boolean> {
-    this._logger.info('Inviting user to collaboration session', { email, role });
+  public inviteUser(email: string, permission: 'writer' | 'reader'): Observable<boolean> {
+    this._logger.info('Inviting user to collaboration session', { email, permission });
 
     // In a real implementation, this would send an invitation to the server
     // which would then notify the user via email or in-app notification
@@ -289,8 +375,9 @@ export class DfdCollaborationService implements OnDestroy {
         const newUser: CollaborationUser = {
           id: `user-${Math.floor(Math.random() * 1000)}`,
           name: email.split('@')[0], // Use the part before @ as the name
-          role,
+          permission,
           status: 'disconnected', // Start as disconnected until they accept
+          isSessionManager: false, // Invited users are never session managers
         };
 
         // Add the new user to the list
@@ -325,22 +412,25 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Update a user's role in the collaboration session
+   * Update a user's permission in the collaboration session (session manager only)
    * @param userId The ID of the user to update
-   * @param role The new role to assign
+   * @param permission The new permission to assign
    * @returns Observable<boolean> indicating success or failure
    */
-  public updateUserRole(userId: string, role: 'owner' | 'writer' | 'reader'): Observable<boolean> {
-    this._logger.info('Updating user role in collaboration session', { userId, role });
+  public updateUserPermission(userId: string, permission: 'writer' | 'reader'): Observable<boolean> {
+    this._logger.info('Updating user permission in collaboration session', { userId, permission });
 
-    // In a real implementation, this would notify the server to update the user's role
+    if (!this.isCurrentUserSessionManager()) {
+      return throwError(() => new Error('Only session manager can update user permissions'));
+    }
 
+    // In a real implementation, this would notify the server to update the user's permission
     // For now, we'll just update the user in our local list
     return new Observable<boolean>(observer => {
       const users = this._collaborationUsers$.value;
       const updatedUsers = users.map(user => {
         if (user.id === userId) {
-          return { ...user, role };
+          return { ...user, permission };
         }
         return user;
       });
@@ -353,10 +443,10 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Get the current user's role in the collaboration session
-   * @returns The current user's role, or null if not in a session
+   * Get the current user's permission in the collaboration session
+   * @returns The current user's permission, or null if not in a session
    */
-  public getCurrentUserRole(): 'owner' | 'writer' | 'reader' | null {
+  public getCurrentUserPermission(): 'writer' | 'reader' | null {
     if (!this._isCollaborating$.value) {
       return null;
     }
@@ -365,7 +455,7 @@ export class DfdCollaborationService implements OnDestroy {
     const currentUserEmail = this._authService.userEmail || 'current-user';
     const currentUser = users.find(user => user.id === currentUserEmail);
 
-    return currentUser ? currentUser.role : null;
+    return currentUser ? currentUser.permission : null;
   }
 
   /**
@@ -373,31 +463,37 @@ export class DfdCollaborationService implements OnDestroy {
    * @param permission The permission to check
    * @returns boolean indicating if the user has the permission
    */
-  public hasPermission(permission: 'edit' | 'invite' | 'remove' | 'changeRole'): boolean {
-    const role = this.getCurrentUserRole();
+  public hasPermission(permission: 'edit' | 'manageSession'): boolean {
+    const userPermission = this.getCurrentUserPermission();
 
-    if (!role) {
+    if (!userPermission) {
       return false;
     }
 
     switch (permission) {
       case 'edit':
-        return role === 'owner' || role === 'writer';
-      case 'invite':
-      case 'remove':
-      case 'changeRole':
-        return role === 'owner';
+        return userPermission === 'writer'; // Only writers can edit
+      case 'manageSession':
+        return this.isCurrentUserSessionManager(); // Only session manager can manage session
       default:
         return false;
     }
   }
 
   /**
-   * Check if the current user is the owner of the collaboration session
-   * @returns boolean indicating if the current user is the owner
+   * Check if the current user is the session manager (created the session)
+   * @returns boolean indicating if the current user is the session manager
    */
-  public isCurrentUserOwner(): boolean {
-    return this.getCurrentUserRole() === 'owner';
+  public isCurrentUserSessionManager(): boolean {
+    if (!this._isCollaborating$.value) {
+      return false;
+    }
+
+    const users = this._collaborationUsers$.value;
+    const currentUserEmail = this._authService.userEmail || 'current-user';
+    const currentUser = users.find(user => user.id === currentUserEmail);
+
+    return currentUser?.isSessionManager || false;
   }
 
   /**
@@ -453,8 +549,8 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('Current user not identified'));
     }
 
-    if (this.isCurrentUserOwner()) {
-      // Owners can become presenter immediately
+    if (this.isCurrentUserSessionManager()) {
+      // Session managers can become presenter immediately
       return this.setPresenter(currentUserId);
     }
 
@@ -484,8 +580,8 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public approvePresenterRequest(userId: string): Observable<boolean> {
-    if (!this.isCurrentUserOwner()) {
-      return throwError(() => new Error('Only session owners can approve presenter requests'));
+    if (!this.isCurrentUserSessionManager()) {
+      return throwError(() => new Error('Only session manager can approve presenter requests'));
     }
 
     this._logger.info('Approving presenter request', { userId });
@@ -503,8 +599,8 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public denyPresenterRequest(userId: string): Observable<boolean> {
-    if (!this.isCurrentUserOwner()) {
-      return throwError(() => new Error('Only session owners can deny presenter requests'));
+    if (!this.isCurrentUserSessionManager()) {
+      return throwError(() => new Error('Only session manager can deny presenter requests'));
     }
 
     this._logger.info('Denying presenter request', { userId });
@@ -538,8 +634,8 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public setPresenter(userId: string | null): Observable<boolean> {
-    if (!this.isCurrentUserOwner()) {
-      return throwError(() => new Error('Only session owners can set presenter'));
+    if (!this.isCurrentUserSessionManager()) {
+      return throwError(() => new Error('Only session manager can set presenter'));
     }
 
     this._logger.info('Setting presenter', { userId });
@@ -824,9 +920,10 @@ export class DfdCollaborationService implements OnDestroy {
       const updatedUsers: CollaborationUser[] = message.data.users.map((user: any) => ({
         id: user.id,
         name: user.name,
-        role: user.role || 'reader',
+        permission: user.permission || 'reader',
         status: user.status || 'active',
         isPresenter: user.isPresenter || false,
+        isSessionManager: user.isSessionManager || false,
         lastActivity: new Date(user.lastActivity || Date.now())
       }));
       
@@ -845,9 +942,10 @@ export class DfdCollaborationService implements OnDestroy {
       const newUser: CollaborationUser = {
         id: message.data.user.id,
         name: message.data.user.name,
-        role: message.data.user.role || 'reader',
+        permission: message.data.user.permission || 'reader',
         status: message.data.user.status || 'active',
         isPresenter: message.data.user.isPresenter || false,
+        isSessionManager: message.data.user.isSessionManager || false,
         lastActivity: new Date()
       };
       
@@ -882,7 +980,7 @@ export class DfdCollaborationService implements OnDestroy {
         this._logger.info('User left collaboration session', { userId });
         
         // If the current user was removed, redirect to dashboard
-        if (userId === currentUserId && !this.isCurrentUserOwner()) {
+        if (userId === currentUserId && !this.isCurrentUserSessionManager()) {
           this._logger.info('Current user was removed from session, redirecting to dashboard');
           this._cleanupSessionState();
           this._redirectToDashboard();
@@ -897,9 +995,9 @@ export class DfdCollaborationService implements OnDestroy {
   private _handleSessionEnded(message: any): void {
     this._logger.debug('Session ended via WebSocket', message);
     
-    // If current user is not the owner and session was ended, redirect to dashboard
-    if (!this.isCurrentUserOwner() && this._currentSession) {
-      this._logger.info('Session ended by owner, redirecting non-owner to dashboard');
+    // If current user is not the session manager and session was ended, redirect to dashboard
+    if (!this.isCurrentUserSessionManager() && this._currentSession) {
+      this._logger.info('Session ended by session manager, redirecting other users to dashboard');
       this._cleanupSessionState();
       this._redirectToDashboard();
     }

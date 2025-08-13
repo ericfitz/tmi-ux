@@ -169,8 +169,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   toggleCollaboration(): void {
     if (this.isCollaborating) {
-      // Check if current user is owner to determine which action to take
-      if (this._collaborationService.isCurrentUserOwner()) {
+      // Check if current user is session manager to determine which action to take
+      if (this._collaborationService.isCurrentUserSessionManager()) {
         this._collaborationService
           .endCollaboration()
           .pipe(take(1))
@@ -246,19 +246,19 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update a user's role in the collaboration session
+   * Update a user's permission in the collaboration session
    * @param userId The ID of the user to update
-   * @param role The new role to assign
+   * @param permission The new permission to assign
    */
-  updateUserRole(userId: string, role: 'owner' | 'writer' | 'reader'): void {
+  updateUserPermission(userId: string, permission: 'writer' | 'reader'): void {
     this._collaborationService
-      .updateUserRole(userId, role)
+      .updateUserPermission(userId, permission)
       .pipe(take(1))
       .subscribe(success => {
         if (success) {
-          this._logger.info('User role updated successfully', { userId, role });
+          this._logger.info('User permission updated successfully', { userId, permission });
         } else {
-          this._logger.error('Failed to update user role', { userId, role });
+          this._logger.error('Failed to update user permission', { userId, permission });
         }
       });
   }
@@ -268,16 +268,16 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * @param permission The permission to check
    * @returns boolean indicating if the user has the permission
    */
-  hasPermission(permission: 'edit' | 'invite' | 'remove' | 'changeRole'): boolean {
+  hasPermission(permission: 'edit' | 'manageSession'): boolean {
     return this._collaborationService.hasPermission(permission);
   }
 
   /**
-   * Check if the current user is the owner of the collaboration session
-   * @returns boolean indicating if the current user is the owner
+   * Check if the current user is the session manager of the collaboration session
+   * @returns boolean indicating if the current user is the session manager
    */
-  isCurrentUserOwner(): boolean {
-    return this._collaborationService.isCurrentUserOwner();
+  isCurrentUserSessionManager(): boolean {
+    return this._collaborationService.isCurrentUserSessionManager();
   }
 
   /**
@@ -314,7 +314,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Approve presenter request (owner only)
+   * Approve presenter request (session manager only)
    * @param userId The user ID to approve
    */
   approvePresenterRequest(userId: string): void {
@@ -331,7 +331,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Deny presenter request (owner only)
+   * Deny presenter request (session manager only)
    * @param userId The user ID to deny
    */
   denyPresenterRequest(userId: string): void {
@@ -348,7 +348,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Take back presenter privileges (owner only)
+   * Take back presenter privileges (session manager only)
    */
   takeBackPresenterPrivileges(): void {
     this._collaborationService.takeBackPresenterPrivileges().pipe(take(1)).subscribe({
@@ -364,7 +364,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Clear presenter (owner only)
+   * Clear presenter (session manager only)
    */
   clearPresenter(): void {
     this._collaborationService.setPresenter(null).pipe(take(1)).subscribe({

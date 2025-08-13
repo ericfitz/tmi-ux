@@ -57,10 +57,10 @@
         <ng-container *ngIf="!isCollaborating">
           {{ 'collaboration.startCollaboration' | transloco }}
         </ng-container>
-        <ng-container *ngIf="isCollaborating && isCurrentUserOwner()">
+        <ng-container *ngIf="isCollaborating && isCurrentUserSessionManager()">
           {{ 'collaboration.endCollaboration' | transloco }}
         </ng-container>
-        <ng-container *ngIf="isCollaborating && !isCurrentUserOwner()">
+        <ng-container *ngIf="isCollaborating && !isCurrentUserSessionManager()">
           {{ 'collaboration.leaveSession' | transloco }}
         </ng-container>
       </button>
@@ -102,21 +102,21 @@
                 podium
               </mat-icon>
               
-              <!-- Owner icon -->
+              <!-- Session Manager icon -->
               <mat-icon 
-                *ngIf="user.role === 'owner'"
+                *ngIf="user.isSessionManager"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
-                class="permission-icon owner-icon"
-                [matTooltip]="'collaboration.roles.owner' | transloco"
+                class="permission-icon session-manager-icon"
+                matTooltip="Session Manager"
               >
-                lock_person
+                star
               </mat-icon>
               
               <!-- Writer icon -->
               <mat-icon 
-                *ngIf="user.role === 'writer'"
+                *ngIf="user.permission === 'writer'"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
@@ -128,7 +128,7 @@
               
               <!-- Reader icon -->
               <mat-icon 
-                *ngIf="user.role === 'reader'"
+                *ngIf="user.permission === 'reader'"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
@@ -141,7 +141,7 @@
           </div>
           <div
             class="user-actions"
-            *ngIf="isCurrentUserOwner() && !isCurrentUser(user.id)"
+            *ngIf="isCurrentUserSessionManager() && !isCurrentUser(user.id)"
           >
             <!-- Make presenter button (only for owners, for other users) -->
             <button
@@ -188,33 +188,33 @@
 
       <!-- Current user presenter controls -->
       <div class="presenter-controls">
-        <!-- Request presenter button (non-owners who aren't presenter) -->
+        <!-- Request presenter button (non-session-managers who aren't presenter) -->
         <button
           mat-flat-button
           color="accent"
-          *ngIf="!isCurrentUserOwner() && !isCurrentUserPresenter()"
+          *ngIf="!isCurrentUserSessionManager() && !isCurrentUserPresenter()"
           (click)="requestPresenterPrivileges()"
         >
           <mat-icon fontSet="material-symbols-outlined">podium</mat-icon>
           {{ 'collaboration.requestPresenter' | transloco }}
         </button>
 
-        <!-- Take back presenter button (owners when someone else is presenter) -->
+        <!-- Take back presenter button (session managers when someone else is presenter) -->
         <button
           mat-flat-button
           color="primary"
-          *ngIf="isCurrentUserOwner() && currentPresenterId && !isCurrentUserPresenter()"
+          *ngIf="isCurrentUserSessionManager() && currentPresenterId && !isCurrentUserPresenter()"
           (click)="takeBackPresenterPrivileges()"
         >
           <mat-icon fontSet="material-symbols-outlined">podium</mat-icon>
           {{ 'collaboration.takeBackPresenter' | transloco }}
         </button>
 
-        <!-- Clear presenter button (owners when they are presenter) -->
+        <!-- Clear presenter button (session managers when they are presenter) -->
         <button
           mat-flat-button
           color="warn"
-          *ngIf="isCurrentUserOwner() && isCurrentUserPresenter()"
+          *ngIf="isCurrentUserSessionManager() && isCurrentUserPresenter()"
           (click)="clearPresenter()"
         >
           <mat-icon fontSet="material-symbols-outlined">speaker_notes_off</mat-icon>
@@ -229,8 +229,8 @@
       </div>
     </div>
 
-    <!-- Pending presenter requests section (only for owners) -->
-    <div *ngIf="isCurrentUserOwner() && pendingPresenterRequests.length > 0" class="presenter-requests-section">
+    <!-- Pending presenter requests section (only for session managers) -->
+    <div *ngIf="isCurrentUserSessionManager() && pendingPresenterRequests.length > 0" class="presenter-requests-section">
       <div class="presenter-requests-header">
         <h4>{{ 'collaboration.presenterRequests' | transloco }}</h4>
       </div>

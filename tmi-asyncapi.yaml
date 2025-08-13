@@ -6,14 +6,14 @@ info:
   description: |
     AsyncAPI specification for the Collaborative Threat Modeling Interface (TMI) WebSocket messaging.
     This API enables real-time collaborative editing of threat model diagrams with role-based access control.
-    
+
     ## Features
     - Real-time collaborative diagram editing
     - Role-based access control (reader/writer/owner permissions)
     - JWT token authentication
     - Session management with automatic cleanup
     - Diagram operation validation
-    
+
     ## Connection Flow
     1. Authenticate with JWT token
     2. Validate access permissions for the diagram
@@ -28,7 +28,7 @@ servers:
     description: Local development server
     security:
       - jwtAuth: []
-    
+
   production:
     host: api.tmi.example.com
     protocol: wss
@@ -42,7 +42,7 @@ channels:
     description: |
       WebSocket endpoint for collaborative diagram editing. Each diagram has its own collaboration session.
       Users must have at least reader permissions on the parent threat model to connect.
-      
+
       ## Session Management
       - Sessions are automatically created when first client connects
       - Sessions include automatic cleanup after 15 minutes of inactivity
@@ -110,7 +110,7 @@ operations:
     description: |
       Send a diagram operation (add, update, or remove) to be applied to the diagram
       and broadcasted to all connected participants.
-      
+
       ## Rate Limits
       - Message size limit: 4KB per message
       - Operation size limit: 50KB per operation
@@ -125,7 +125,7 @@ operations:
       - $ref: '#/components/messages/ResyncRequestMessage'
       - $ref: '#/components/messages/UndoRequestMessage'
       - $ref: '#/components/messages/RedoRequestMessage'
-    
+
   receiveDiagramEvents:
     action: receive
     channel:
@@ -134,7 +134,7 @@ operations:
     description: |
       Receive real-time events including diagram operations from other users,
       join/leave notifications, and session updates.
-      
+
       ## Connection Management
       - Read timeout: 60 seconds with ping/pong keepalive
       - Automatic reconnection recommended for production clients
@@ -162,7 +162,7 @@ components:
         type: string
         format: uuid
         example: '550e8400-e29b-41d4-a716-446655440000'
-    
+
     DiagramId:
       description: Unique identifier of the diagram
       schema:
@@ -195,7 +195,7 @@ components:
                 width: 120
                 height: 80
                 label: User Authentication
-                
+
         - name: UpdateCellOperation
           summary: Example of updating an existing cell
           payload:
@@ -206,7 +206,7 @@ components:
                 label: Updated Authentication Process
                 x: 110
                 y: 160
-                
+
         - name: RemoveCellOperation
           summary: Example of removing a cell from the diagram
           payload:
@@ -348,7 +348,7 @@ components:
       summary: Request to become the active presenter
       description: |
         Message sent by users requesting to become the active presenter. Only the session
-        owner can approve presenter requests.
+        manager can approve presenter requests.
       payload:
         $ref: '#/components/schemas/PresenterRequestPayload'
       examples:
@@ -363,7 +363,7 @@ components:
       title: Presenter Request Denied Message
       summary: Notification that presenter request was denied
       description: |
-        Message sent by server to requester when presenter request is denied by the owner.
+        Message sent by server to requester when presenter request is denied by the session manager.
         Only sent to the requesting user.
       payload:
         $ref: '#/components/schemas/PresenterDeniedPayload'
@@ -372,7 +372,7 @@ components:
           summary: Example of presenter request denial
           payload:
             message_type: presenter_denied
-            user_id: owner@example.com
+            user_id: sessionmanager@example.com
             target_user: bob@example.com
 
     ChangePresenterMessage:
@@ -380,16 +380,16 @@ components:
       title: Change Presenter Message
       summary: Owner changes the active presenter
       description: |
-        Message sent by session owner to change the active presenter. Only accepted
-        from the session owner.
+        Message sent by session manager to change the active presenter. Only accepted
+        from the session manager.
       payload:
         $ref: '#/components/schemas/ChangePresenterPayload'
       examples:
         - name: ChangePresenter
-          summary: Example of owner changing presenter
+          summary: Example of session manager changing presenter
           payload:
             message_type: change_presenter
-            user_id: owner@example.com
+            user_id: sessionmanager@example.com
             new_presenter: alice@example.com
 
     CurrentPresenterMessage:
@@ -834,8 +834,8 @@ components:
           const: presenter_denied
         user_id:
           type: string
-          description: Session owner who denied the request
-          example: owner@example.com
+          description: Session manager who denied the request
+          example: sessionmanager@example.com
         target_user:
           type: string
           description: User whose request was denied
@@ -854,8 +854,8 @@ components:
           const: change_presenter
         user_id:
           type: string
-          description: Session owner (must be owner)
-          example: owner@example.com
+          description: Session manager
+          example: sessionmanager@example.com
         new_presenter:
           type: string
           description: User to become the new presenter
@@ -1087,19 +1087,19 @@ components:
       description: |
         JWT token authentication for WebSocket connections. Authentication is handled by 
         server-side middleware that validates JWT tokens provided as query parameters.
-        
+
         ## Authentication Flow
         1. Client includes JWT token as query parameter: `?token=eyJ0eXAiOiJKV1Q...`
         2. Server middleware validates token and extracts user claims
         3. Server verifies user has at least reader access to the threat model
         4. Server verifies the diagram exists within the specified threat model
         5. WebSocket connection is established if all validations pass
-        
+
         ## Access Control
         - Users need minimum reader permissions on the parent threat model
         - Diagram must exist within the specified threat model
         - Token must contain valid user identification claims (sub, email)
-        
+
         Example: ws://localhost:8080/threat_models/123/diagrams/456/ws?token=eyJ0eXAiOiJKV1Q...
 
 traits:
@@ -1107,7 +1107,7 @@ traits:
     description: This operation requires JWT authentication
     security:
       - jwtAuth: []
-  
+
   rateLimited:
     description: |
       This operation is subject to rate limiting and connection management:

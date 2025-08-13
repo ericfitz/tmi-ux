@@ -188,17 +188,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Copy user profile to clipboard
+   * Copy user email to clipboard
    */
-  copyUserProfileToClipboard(): void {
+  copyUserEmailToClipboard(): void {
     try {
-      // Serialize user profile data
-      const userProfile = this.serializeUserProfile();
+      const userEmail = this.authService.userEmail || '';
       
-      // Copy to clipboard
-      void navigator.clipboard.writeText(JSON.stringify(userProfile, null, 2));
+      if (!userEmail) {
+        this.logger.warn('No user email available to copy');
+        return;
+      }
+      
+      // Copy email as plain string to clipboard
+      void navigator.clipboard.writeText(userEmail);
+      this.logger.info('User email copied to clipboard', { email: userEmail });
     } catch (error) {
-      this.logger.error('Error copying user profile to clipboard', error);
+      this.logger.error('Error copying user email to clipboard', error);
     }
   }
 

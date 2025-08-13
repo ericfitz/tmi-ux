@@ -248,9 +248,8 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
     }
 
-    const currentRole = this.collaborationService.getCurrentUserRole();
-    if (currentRole !== 'owner') {
-      return throwError(() => new Error('Only owner can change presenter'));
+    if (!this.collaborationService.isCurrentUserSessionManager()) {
+      return throwError(() => new Error('Only session manager can change presenter'));
     }
 
     const message: ChangePresenterMessage = {

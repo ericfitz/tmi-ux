@@ -63,9 +63,9 @@
 
         <!-- Context menu for user profile button -->
         <mat-menu #userProfileContextMenu="matMenu">
-          <button mat-menu-item (click)="copyUserProfileToClipboard()" *ngIf="isDevelopmentMode">
+          <button mat-menu-item (click)="copyUserEmailToClipboard()" *ngIf="isDevelopmentMode">
             <mat-icon>content_copy</mat-icon>
-            <span [transloco]="'navbar.copyUserProfile'">Copy User Profile to Clipboard</span>
+            <span [transloco]="'navbar.copyUserEmail'">Copy User Email to Clipboard</span>
           </button>
         </mat-menu>
         <button mat-button (click)="logout()">

@@ -169,6 +169,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   
   // Collaborative editing state
   private isApplyingRemoteChange = false;
+  private _webSocketHandlersInitialized = false;
   isReadOnlyMode = false;
 
   // Route parameters
@@ -256,8 +257,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         dfdId: this.dfdId
       });
       
-      // Start collaboration session
-      this.collaborationService.startCollaboration().subscribe({
+      // Join existing collaboration session
+      this.collaborationService.joinCollaboration().subscribe({
         next: (success) => {
           this.logger.info('Collaboration session joined successfully', { success });
         },
@@ -311,6 +312,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cdr.markForCheck();
         }
       }),
+    );
+
+    // Subscribe to collaboration state changes to initialize collaborative operations
+    this._subscriptions.add(
+      this.collaborationService.isCollaborating$.subscribe(isCollaborating => {
+        if (isCollaborating && this.threatModelId && this.dfdId) {
+          // Initialize collaborative operation service when collaboration starts
+          const currentUserId = this.collaborationService.getCurrentUserId();
+          if (currentUserId) {
+            this.collaborativeOperationService.initialize({
+              diagramId: this.dfdId,
+              threatModelId: this.threatModelId,
+              userId: currentUserId
+            });
+            this.logger.info('Initialized CollaborativeOperationService for active collaboration', {
+              diagramId: this.dfdId,
+              threatModelId: this.threatModelId,
+              userId: currentUserId
+            });
+          }
+          
+          // Initialize WebSocket handlers only when collaboration is active and not already initialized
+          if (!this._webSocketHandlersInitialized) {
+            this.initializeWebSocketHandlers();
+            this._webSocketHandlersInitialized = true;
+          }
+        }
+      })
     );
 
     // Subscribe to actual history modifications for auto-save
@@ -383,64 +412,93 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     );
 
-    // Initialize WebSocket message handlers for collaborative editing
-    this.initializeWebSocketHandlers();
+    // WebSocket handlers will be initialized when collaboration becomes active
   }
 
   /**
    * Initialize WebSocket message handlers for collaborative editing
+   * Only called when collaboration is active
    */
   private initializeWebSocketHandlers(): void {
+    this.logger.info('Initializing WebSocket handlers for collaborative editing');
+    
     // Handle incoming diagram operations from other users
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation')
-        .subscribe(message => this.handleRemoteDiagramOperation(message))
+        .subscribe({
+          next: message => this.handleRemoteDiagramOperation(message),
+          error: error => this.logger.error('Error in diagram operation WebSocket handler', error)
+        })
     );
 
     // Handle authorization denied messages
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<AuthorizationDeniedMessage>('authorization_denied')
-        .subscribe(message => this.handleAuthorizationDenied(message))
+        .subscribe({
+          next: message => this.handleAuthorizationDenied(message),
+          error: error => this.logger.error('Error in authorization denied WebSocket handler', error)
+        })
     );
 
     // Handle state correction messages
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<StateCorrectionMessage>('state_correction')
-        .subscribe(message => this.handleStateCorrection(message))
+        .subscribe({
+          next: message => this.handleStateCorrection(message),
+          error: error => this.logger.error('Error in state correction WebSocket handler', error)
+        })
     );
 
     // Handle history operation responses
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<HistoryOperationMessage>('history_operation')
-        .subscribe(message => this.handleHistoryOperation(message))
+        .subscribe({
+          next: message => this.handleHistoryOperation(message),
+          error: error => this.logger.error('Error in history operation WebSocket handler', error)
+        })
     );
 
     // Handle resync responses
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<ResyncResponseMessage>('resync_response')
-        .subscribe(message => this.handleResyncResponse(message))
+        .subscribe({
+          next: message => this.handleResyncResponse(message),
+          error: error => this.logger.error('Error in resync response WebSocket handler', error)
+        })
     );
 
     // Handle presenter mode messages
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
-        .subscribe(message => this.handlePresenterChange(message))
+        .subscribe({
+          next: message => this.handlePresenterChange(message),
+          error: error => this.logger.error('Error in presenter change WebSocket handler', error)
+        })
     );
 
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor')
-        .subscribe(message => this.handlePresenterCursor(message))
+        .subscribe({
+          next: message => this.handlePresenterCursor(message),
+          error: error => this.logger.error('Error in presenter cursor WebSocket handler', error)
+        })
     );
 
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection')
-        .subscribe(message => this.handlePresenterSelection(message))
+        .subscribe({
+          next: message => this.handlePresenterSelection(message),
+          error: error => this.logger.error('Error in presenter selection WebSocket handler', error)
+        })
     );
 
     // Handle presenter requests
     this._subscriptions.add(
       this.webSocketAdapter.getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
-        .subscribe(message => this.handlePresenterRequest(message))
+        .subscribe({
+          next: message => this.handlePresenterRequest(message),
+          error: error => this.logger.error('Error in presenter request WebSocket handler', error)
+        })
     );
 
     // Handle presenter denials
@@ -1800,7 +1858,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle presenter requests from other users
    */
   private handlePresenterRequest(message: PresenterRequestMessage): void {
-    if (this.collaborationService.isCurrentUserOwner()) {
+    if (this.collaborationService.isCurrentUserSessionManager()) {
       // Add to pending requests
       this.collaborationService.addPresenterRequest(message.user_id);
       this.logger.info('Presenter request received', { userId: message.user_id });
