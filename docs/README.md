@@ -1,4 +1,4 @@
-# Context Directory
+# Docs Directory
 
 ## Overview
 
@@ -17,3 +17,9 @@ AI assistants should update this list whenever adding a new file, or when you di
 
 - authentication-flow.png
   This is a swimlane diagram describing how the different OAuth parties interact when authenticating a user to the application.
+
+- UNUSED_I18N_KEYS_VERIFICATION.md
+  Manual verification report of unused localization keys with detailed analysis of false positives and script limitations for i18n key cleanup.
+
+- x6-integration.md
+  Comprehensive guide for X6 graph library integration including custom shapes, routing algorithms, markup definitions, and TypeScript support for the TMI diagramming system.
