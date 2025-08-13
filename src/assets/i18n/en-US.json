@@ -39,9 +39,17 @@
     "removeUser": "Remove User",
     "roles": {
       "owner": "Owner",
+      "presenter": "Presenter",
       "reader": "Reader",
       "writer": "Writer"
     },
+    "requestPresenter": "Request Presenter",
+    "takeBackPresenter": "Take Back Presenter",
+    "clearPresenter": "Clear Presenter",
+    "currentPresenter": "Current Presenter",
+    "presenterRequests": "Presenter Requests",
+    "approvePresenterRequest": "Approve Presenter Request",
+    "denyPresenterRequest": "Deny Presenter Request",
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
     "title": "Collaboration",

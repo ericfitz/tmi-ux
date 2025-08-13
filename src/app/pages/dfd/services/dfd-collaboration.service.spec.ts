@@ -31,6 +31,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
   let mockThreatModelService: any;
   let mockWebSocketAdapter: any;
   let mockNotificationService: any;
+  let mockRouter: any;
 
   beforeEach(() => {
     // Create mocks
@@ -38,6 +39,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       info: vi.fn(),
       error: vi.fn(),
       warn: vi.fn(),
+      debug: vi.fn(),
     };
 
     mockAuthService = {
@@ -61,6 +63,8 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       connectionState$: new Subject(),
       errors$: new Subject(),
       messages$: new Subject(),
+      getMessagesOfType: vi.fn().mockReturnValue(of({})),
+      sendMessage: vi.fn(),
     };
 
     mockNotificationService = {
@@ -73,6 +77,10 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       showSuccess: vi.fn(),
     };
 
+    mockRouter = {
+      navigate: vi.fn().mockResolvedValue(true),
+    };
+
     // Create service instance directly
     service = new DfdCollaborationService(
       mockLoggerService,
@@ -80,6 +88,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       mockThreatModelService,
       mockWebSocketAdapter,
       mockNotificationService,
+      mockRouter,
     );
 
     // Set up diagram context
@@ -92,8 +101,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z' }],
+      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
       websocket_url: fullUrl,
+      session_manager: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -109,8 +119,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z' }],
+      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
       websocket_url: fullUrl,
+      session_manager: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -126,8 +137,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z' }],
+      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
       websocket_url: relativeUrl,
+      session_manager: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -144,8 +156,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z' }],
+      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
       websocket_url: relativeUrl,
+      session_manager: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -165,8 +178,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z' }],
+      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
       websocket_url: relativeUrl,
+      session_manager: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));

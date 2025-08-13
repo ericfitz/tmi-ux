@@ -1351,6 +1351,12 @@
             "maxLength": 36,
             "readOnly": true
           },
+          "session_manager": {
+            "type": "string",
+            "description": "Username or identifier of the session manager (may be email address or other format)",
+            "maxLength": 256,
+            "readOnly": true
+          },
           "threat_model_id": {
             "type": "string",
             "format": "uuid",
@@ -1389,6 +1395,15 @@
                   "format": "date-time",
                   "description": "Join timestamp",
                   "maxLength": 36
+                },
+                "permissions": {
+                  "type": "string",
+                  "enum": [
+                    "reader",
+                    "writer"
+                  ],
+                  "description": "User's permissions for the current diagram in the current session (reader|writer)",
+                  "maxLength": 6
                 }
               }
             },
@@ -1402,6 +1417,7 @@
         },
         "required": [
           "session_id",
+          "session_manager",
           "threat_model_id",
           "threat_model_name",
           "diagram_id",
@@ -1411,6 +1427,7 @@
         ],
         "example": {
           "session_id": "D7744D3A-ED22-40AF-862B-29786CAD0007",
+          "session_manager": "admin@example.com",
           "threat_model_id": "5311D207-AFD5-4A1A-BA83-14C1445DC257",
           "threat_model_name": "E-commerce Platform Security Analysis",
           "diagram_id": "DFF7F4A9-CBCE-4001-9198-2706C86F7EF3",
@@ -1418,7 +1435,8 @@
           "participants": [
             {
               "user_id": "user@example.com",
-              "joined_at": "2025-04-06T12:02:00Z"
+              "joined_at": "2025-04-06T12:02:00Z",
+              "permissions": "writer"
             }
           ],
           "websocket_url": "wss://api.example.com/threat_models/5311D207-AFD5-4A1A-BA83-14C1445DC257/diagrams/DFF7F4A9-CBCE-4001-9198-2706C86F7EF3/ws"

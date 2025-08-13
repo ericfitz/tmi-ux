@@ -208,14 +208,20 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Copy the current URL to clipboard
+   * Copy the current URL to clipboard with collaboration join parameters
    */
   copyLinkToClipboard(): void {
     try {
-      const currentUrl = this._document.location.href;
-      navigator.clipboard.writeText(currentUrl).then(
+      const currentUrl = new URL(this._document.location.href);
+      
+      // Add the joinCollaboration query parameter like the dashboard join button
+      currentUrl.searchParams.set('joinCollaboration', 'true');
+      
+      const urlWithParams = currentUrl.toString();
+      
+      navigator.clipboard.writeText(urlWithParams).then(
         () => {
-          this._logger.info('URL copied to clipboard', { url: currentUrl });
+          this._logger.info('Collaboration URL copied to clipboard', { url: urlWithParams });
           this._notificationService.showSuccess('Link copied to clipboard').subscribe();
         },
         (error: unknown) => {

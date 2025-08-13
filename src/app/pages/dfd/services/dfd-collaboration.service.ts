@@ -33,8 +33,10 @@ interface CollaborationSession {
   participants: Array<{
     user_id: string;
     joined_at: string;
+    permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
+  session_manager?: string;
 }
 
 /**
@@ -148,29 +150,31 @@ export class DfdCollaborationService implements OnDestroy {
 
         // Convert API participants to CollaborationUser format with correct permissions
         const currentUserEmail = this._authService.userEmail || 'current-user';
-        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => ({
-          id: participant.user_id,
-          name: participant.user_id, // Use email address as display name
-          permission: 'writer' as const, // TODO: Get actual permission from threat model
-          status: 'active' as const,
-          isSessionManager: false, // Joining users are never session managers
-        }));
-
-        // Mark the first participant as session manager (the one who created the session)
-        if (collaborationUsers.length > 0) {
-          collaborationUsers[0].isSessionManager = true;
-        }
-
-        // If current user is not in participants list, add them as a regular member
-        if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
-          const currentUser: CollaborationUser = {
-            id: currentUserEmail,
-            name: currentUserEmail,
-            permission: 'writer', // TODO: Get actual permission from threat model
-            status: 'active',
-            isSessionManager: false, // Joining user is never session manager
+        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
+          if (!participant.permissions) {
+            this._logger.error('Server error: participant missing permissions field', {
+              sessionId: session.session_id,
+              participantId: participant.user_id,
+              participant
+            });
+            throw new Error(`Server error: participant ${participant.user_id} missing permissions field`);
+          }
+          return {
+            id: participant.user_id,
+            name: participant.user_id, // Use email address as display name
+            permission: participant.permissions, // Use permissions from API response - required field
+            status: 'active' as const,
+            isSessionManager: participant.user_id === session.session_manager, // Use session_manager field from API
           };
-          collaborationUsers.push(currentUser);
+        });
+
+        // Check if current user is in the participants list - if not, this is an error condition
+        if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
+          this._logger.error('Current user not found in collaboration session participants list', {
+            currentUser: currentUserEmail,
+            sessionId: session.session_id,
+            participants: session.participants.map(p => p.user_id)
+          });
         }
 
         this._collaborationUsers$.next(collaborationUsers);
@@ -226,26 +230,25 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService.showSessionEvent('started').subscribe();
 
         // Convert API participants to CollaborationUser format, using email addresses consistently
-        const currentUserEmail = this._authService.userEmail || 'current-user';
-        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => ({
-          id: participant.user_id,
-          name: participant.user_id, // Use email address as display name
-          permission: 'writer' as const, // TODO: Get actual permission from threat model
-          status: 'active' as const,
-          isSessionManager: participant.user_id === currentUserEmail, // Session manager is the creator
-        }));
-
-        // If current user is not in participants list, add them as session manager (since they're creating it)
-        if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
-          const currentUser: CollaborationUser = {
-            id: currentUserEmail,
-            name: currentUserEmail, // Use email address consistently
-            permission: 'writer', // TODO: Get actual permission from threat model
-            status: 'active',
-            isSessionManager: true, // Creator is always session manager
+        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
+          if (!participant.permissions) {
+            this._logger.error('Server error: participant missing permissions field', {
+              sessionId: session.session_id,
+              participantId: participant.user_id,
+              participant
+            });
+            throw new Error(`Server error: participant ${participant.user_id} missing permissions field`);
+          }
+          return {
+            id: participant.user_id,
+            name: participant.user_id, // Use email address as display name
+            permission: participant.permissions, // Use permissions from API response - required field
+            status: 'active' as const,
+            isSessionManager: participant.user_id === session.session_manager, // Use session_manager field from API
           };
-          collaborationUsers.unshift(currentUser); // Add session manager at the beginning
-        }
+        });
+
+        // Server guarantees the creating user will be included in the participants list
 
         this._collaborationUsers$.next(collaborationUsers);
       }),

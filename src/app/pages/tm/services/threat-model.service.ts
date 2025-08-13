@@ -36,8 +36,10 @@ interface CollaborationSession {
   participants: Array<{
     user_id: string;
     joined_at: string;
+    permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
+  session_manager?: string;
 }
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -1432,7 +1434,14 @@ export class ThreatModelService implements OnDestroy {
    * @returns Observable<CollaborationSession>
    */
   startDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<CollaborationSession> {
-    this.logger.info('Starting diagram collaboration session', { threatModelId, diagramId });
+    this.logger.info('Starting diagram collaboration session', { 
+      threatModelId, 
+      diagramId,
+      currentUser: this.authService.username,
+      userEmail: this.authService.userEmail,
+      isAuthenticated: !!this.authService.getStoredToken(),
+      useMockData: this._useMockData
+    });
 
     if (this._useMockData) {
       // For mock data, simulate a collaboration session
@@ -1443,10 +1452,12 @@ export class ThreatModelService implements OnDestroy {
         participants: [
           {
             user_id: this.authService.username || 'current-user',
-            joined_at: new Date().toISOString()
+            joined_at: new Date().toISOString(),
+            permissions: 'writer' as const
           }
         ],
-        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`
+        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
+        session_manager: this.authService.username || 'current-user'
       };
       return of(mockSession);
     }
@@ -1457,11 +1468,26 @@ export class ThreatModelService implements OnDestroy {
           sessionId: session.session_id,
           threatModelId, 
           diagramId,
-          websocketUrl: session.websocket_url
+          websocketUrl: session.websocket_url,
+          sessionManager: session.session_manager,
+          participantCount: session.participants?.length || 0,
+          participants: session.participants?.map(p => ({ 
+            id: p.user_id, 
+            permissions: p.permissions,
+            joined_at: p.joined_at 
+          }))
         });
       }),
       catchError((error: unknown) => {
-        this.logger.error('Error starting collaboration session', error);
+        this.logger.error('Error starting collaboration session - detailed server error', {
+          threatModelId,
+          diagramId,
+          error,
+          errorStatus: (error as any)?.status,
+          errorMessage: (error as any)?.message,
+          errorBody: (error as any)?.error,
+          errorUrl: (error as any)?.url
+        });
         return throwError(() => error instanceof Error ? error : new Error(String(error)));
       })
     );
