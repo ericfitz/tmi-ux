@@ -248,6 +248,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
+    // Check for collaboration join request
+    const joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration');
+    if (joinCollaboration === 'true' && this.threatModelId && this.dfdId) {
+      this.logger.info('Auto-joining collaboration session from navigation', {
+        threatModelId: this.threatModelId,
+        dfdId: this.dfdId
+      });
+      
+      // Start collaboration session
+      this.collaborationService.startCollaboration().subscribe({
+        next: (success) => {
+          this.logger.info('Collaboration session joined successfully', { success });
+        },
+        error: (error) => {
+          this.logger.error('Failed to join collaboration session', error);
+        }
+      });
+    }
+
     // Initialize event handlers
     this.facade.initializeEventHandlers(this.x6GraphAdapter);
     

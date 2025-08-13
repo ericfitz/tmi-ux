@@ -48,10 +48,7 @@ import { X6HistoryManager } from './x6-history-manager';
 import { X6SelectionAdapter } from './x6-selection.adapter';
 import { X6EventLoggerService } from './x6-event-logger.service';
 import { DfdEdgeService } from '../../services/dfd-edge.service';
-import {
-  GraphHistoryCoordinator,
-  HISTORY_OPERATION_TYPES,
-} from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { X6CoreOperationsService } from '../services/x6-core-operations.service';
 
 // Import the extracted shape definitions
@@ -506,7 +503,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Use centralized history coordinator for consistent filtering and atomic batching
     const x6Node = this._historyCoordinator.executeAtomicOperation(
       graph,
-      HISTORY_OPERATION_TYPES.NODE_CREATION_DOMAIN,
       () => {
         const createdNode = this._x6CoreOps.addNode(graph, {
           id: node.id,
@@ -538,11 +534,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         this._zOrderAdapter.applyNodeCreationZIndex(graph, createdNode);
 
         return createdNode;
-      },
-      // Use default options for domain node creation (excludes visual effects)
-      this._historyCoordinator.getDefaultOptionsForOperation(
-        HISTORY_OPERATION_TYPES.NODE_CREATION_DOMAIN,
-      ),
+      }
     );
 
     return x6Node;
@@ -583,7 +575,6 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Use centralized history coordinator for consistent filtering and atomic batching
     const x6Edge = this._historyCoordinator.executeAtomicOperation(
       graph,
-      HISTORY_OPERATION_TYPES.EDGE_CREATION,
       () => {
         const edgeParams = {
           id: edgeData.id,
@@ -619,9 +610,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         this._updatePortVisibilityAfterEdgeCreation(createdEdge);
 
         return createdEdge;
-      },
-      // Use default options for edge creation (excludes visual effects)
-      this._historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.EDGE_CREATION),
+      }
     );
 
     return x6Edge;
@@ -1394,16 +1383,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (this._graph) {
       this._historyCoordinator.executeAtomicOperation(
         this._graph,
-        HISTORY_OPERATION_TYPES.TOOL_DELETION,
         () => {
           this._x6CoreOps.removeCellObject(this._graph!, cell);
-        },
-        {
-          includePortVisibility: false, // Suppress port visibility changes from history
-          includeVisualEffects: false,
-          includeHighlighting: false,
-          includeToolChanges: false,
-        },
+        }
       );
 
       this.logger.info(`[DFD] ${cellType} removed via atomic operation`, {
@@ -1799,7 +1781,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Check if all actual changes are visual-only
         const isOnlyVisualAttributes = actualChanges.every(changePath => {
-          const isExcluded = this._historyCoordinator.shouldExcludeAttribute(changePath);
+          const isExcluded = this._historyCoordinator.shouldExcludeAttribute();
           this.logger.debugComponent('X6Graph', `Checking ${changePath}: excluded=${isExcluded}`);
           return isExcluded;
         });
@@ -1813,18 +1795,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Handle port changes - check if they're only visibility changes
       if (args.key === 'ports' && args.options && args.options.propertyPath) {
-        const propertyPath = args.options.propertyPath;
-        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute(propertyPath, {
-          includePortVisibility: false,
-          includeVisualEffects: false,
-          includeHighlighting: false,
-          includeToolChanges: false,
-        });
-
-        // this.logger.debugComponent(
-        //   'X6Graph',
-        //   `Port change at ${propertyPath}: excluded=${isPortVisibilityOnly}`,
-        // );
+        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute();
 
         if (isPortVisibilityOnly) {
           // this.logger.debugComponent('X6Graph', 'Excluding port visibility change');

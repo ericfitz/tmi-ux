@@ -100,6 +100,16 @@
     <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
       Available Collaboration Sessions
     </h2>
+    <div class="header-actions">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="refreshCollaborationSessions()"
+        [matTooltip]="'common.refresh' | transloco"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="collaboration-sessions-list">
@@ -129,7 +139,11 @@
             </p>
           </div>
         </div>
-        <mat-icon class="join-icon">login</mat-icon>
+        <mat-icon 
+          class="join-icon"
+          [matTooltip]="'collaboration.joinSession' | transloco"
+          matTooltipPosition="left"
+        >login</mat-icon>
       </mat-card-content>
     </mat-card>
 

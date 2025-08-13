@@ -54,11 +54,15 @@
         >
           {{ isCollaborating ? 'stop' : 'play_arrow' }}
         </mat-icon>
-        {{
-          isCollaborating
-            ? ('collaboration.endCollaboration' | transloco)
-            : ('collaboration.startCollaboration' | transloco)
-        }}
+        <ng-container *ngIf="!isCollaborating">
+          {{ 'collaboration.startCollaboration' | transloco }}
+        </ng-container>
+        <ng-container *ngIf="isCollaborating && isCurrentUserOwner()">
+          {{ 'collaboration.endCollaboration' | transloco }}
+        </ng-container>
+        <ng-container *ngIf="isCollaborating && !isCurrentUserOwner()">
+          {{ 'collaboration.leaveSession' | transloco }}
+        </ng-container>
       </button>
     </div>
 

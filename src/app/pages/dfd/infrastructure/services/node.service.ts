@@ -32,10 +32,7 @@ import { X6ZOrderAdapter } from '../adapters/x6-z-order.adapter';
 import { NodeConfigurationService } from './node-configuration.service';
 import { VisualEffectsService } from './visual-effects.service';
 import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
-import {
-  GraphHistoryCoordinator,
-  HISTORY_OPERATION_TYPES,
-} from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';
 
 /**
@@ -162,8 +159,6 @@ export class DfdNodeService {
 
       this.historyCoordinator.executeCompoundOperation(
         graph,
-        HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
-        // Structural changes (recorded in history)
         () => {
           const node = this.x6CoreOps.addNode(graph, nodeConfig);
           if (!node) {
@@ -172,18 +167,14 @@ export class DfdNodeService {
           // Apply proper z-index using ZOrderService after node creation
           this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
           createdNode = node; // Capture the created node for visual effects
-          return node;
-        },
-        // Visual effects (excluded from history)
-        () => {
+          
+          // Apply visual effects
           if (createdNode) {
             this.visualEffectsService.applyCreationHighlight(createdNode, graph);
           }
-        },
-        // Use default options for node creation (excludes visual effects)
-        this.historyCoordinator.getDefaultOptionsForOperation(
-          HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
-        ),
+          
+          return node;
+        }
       );
 
       this.logger.info(

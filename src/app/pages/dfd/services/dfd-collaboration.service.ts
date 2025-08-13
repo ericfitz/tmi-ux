@@ -1,10 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, Subscription } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { WebSocketAdapter, WebSocketState } from '../infrastructure/adapters/websocket.adapter';
+import { WebSocketAdapter, WebSocketState, MessageType } from '../infrastructure/adapters/websocket.adapter';
 import { DfdNotificationService } from './dfd-notification.service';
 import { environment } from '../../../../environments/environment';
 
@@ -18,6 +19,7 @@ export interface CollaborationUser {
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
   isPresenter?: boolean;
+  lastActivity?: Date;
 }
 
 /**
@@ -64,6 +66,7 @@ export class DfdCollaborationService implements OnDestroy {
   
   // Subscription management
   private _subscriptions = new Subscription();
+  private _webSocketListenersSetup = false;
 
   constructor(
     private _logger: LoggerService,
@@ -71,9 +74,10 @@ export class DfdCollaborationService implements OnDestroy {
     private _threatModelService: ThreatModelService,
     private _webSocketAdapter: WebSocketAdapter,
     private _notificationService: DfdNotificationService,
+    private _router: Router,
   ) {
     this._logger.info('DfdCollaborationService initialized');
-    this._setupWebSocketListeners();
+    // WebSocket listeners will be set up when collaboration is actually started
   }
 
   /**
@@ -125,6 +129,9 @@ export class DfdCollaborationService implements OnDestroy {
         // Store the session
         this._currentSession = session;
 
+        // Set up WebSocket listeners before connecting
+        this._setupWebSocketListeners();
+
         // Connect to WebSocket
         this._connectToWebSocket(session.websocket_url);
 
@@ -165,7 +172,47 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * End the current collaboration session
+   * Leave the current collaboration session (for non-owners)
+   * @returns Observable<boolean> indicating success or failure
+   */
+  public leaveSession(): Observable<boolean> {
+    this._logger.info('Leaving collaboration session');
+
+    if (!this._currentSession) {
+      this._logger.warn('No active collaboration session to leave');
+      return throwError(() => new Error('No active collaboration session'));
+    }
+
+    if (this.isCurrentUserOwner()) {
+      this._logger.warn('Session owners should use endCollaboration() instead of leaveSession()');
+      return this.endCollaboration();
+    }
+
+    // Send leave message via WebSocket
+    const currentUserId = this.getCurrentUserId();
+    if (currentUserId) {
+      this._webSocketAdapter.sendTMIMessage({
+        event: 'leave',
+        user_id: currentUserId,
+        timestamp: new Date().toISOString()
+      }).subscribe({
+        next: () => this._logger.info('Leave session message sent'),
+        error: (error) => this._logger.error('Failed to send leave session message', error)
+      });
+    }
+
+    // Clean up local state and redirect
+    this._cleanupSessionState();
+    this._redirectToDashboard();
+
+    return new Observable<boolean>(observer => {
+      observer.next(true);
+      observer.complete();
+    });
+  }
+
+  /**
+   * End the current collaboration session (for owners)
    * @returns Observable<boolean> indicating success or failure
    */
   public endCollaboration(): Observable<boolean> {
@@ -658,7 +705,8 @@ export class DfdCollaborationService implements OnDestroy {
 
     try {
       this._webSocketAdapter.disconnect();
-      this._logger.info('WebSocket disconnected');
+      this._webSocketListenersSetup = false; // Reset flag for next collaboration session
+      this._logger.info('WebSocket disconnected and listeners reset');
     } catch (error) {
       this._logger.error('Error disconnecting from WebSocket', error);
     }
@@ -666,8 +714,16 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Setup WebSocket listeners for connection state and collaboration events
+   * Only sets up listeners once and only when collaboration is actually starting
    */
   private _setupWebSocketListeners(): void {
+    if (this._webSocketListenersSetup) {
+      this._logger.debug('WebSocket listeners already set up, skipping');
+      return;
+    }
+
+    this._logger.info('Setting up WebSocket listeners for active collaboration session');
+    
     // Listen to connection state changes
     this._subscriptions.add(
       this._webSocketAdapter.connectionState$.subscribe((state: WebSocketState) => {
@@ -681,13 +737,50 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService.showWebSocketError(error, () => this._retryWebSocketConnection()).subscribe();
       })
     );
+
+    // Listen to user presence updates
+    this._subscriptions.add(
+      this._webSocketAdapter.getMessagesOfType(MessageType.USER_PRESENCE_UPDATE).subscribe((message) => {
+        this._handleUserPresenceUpdate(message);
+      })
+    );
+
+    // Listen to session joined events
+    this._subscriptions.add(
+      this._webSocketAdapter.getMessagesOfType(MessageType.SESSION_JOINED).subscribe((message) => {
+        this._handleUserJoinedSession(message);
+      })
+    );
+
+    // Listen to session left events
+    this._subscriptions.add(
+      this._webSocketAdapter.getMessagesOfType(MessageType.SESSION_LEFT).subscribe((message) => {
+        this._handleUserLeftSession(message);
+      })
+    );
+
+    // Listen to session ended events
+    this._subscriptions.add(
+      this._webSocketAdapter.getMessagesOfType(MessageType.SESSION_ENDED).subscribe((message) => {
+        this._handleSessionEnded(message);
+      })
+    );
+    
+    this._webSocketListenersSetup = true;
   }
 
   /**
    * Handle WebSocket state changes and show appropriate notifications
+   * Only shows notifications when there's an active collaboration session
    */
   private _handleWebSocketStateChange(state: WebSocketState): void {
-    this._logger.debug('WebSocket state changed', { state });
+    this._logger.debug('WebSocket state changed', { state, hasActiveSession: !!this._currentSession });
+
+    // Only show notifications if there's an active collaboration session
+    if (!this._currentSession) {
+      this._logger.debug('No active collaboration session - suppressing WebSocket state notifications');
+      return;
+    }
 
     switch (state) {
       case WebSocketState.CONNECTING:
@@ -718,6 +811,121 @@ export class DfdCollaborationService implements OnDestroy {
       this._logger.warn('Cannot retry WebSocket connection - no session URL available');
       this._notificationService.showError('Cannot retry connection - no active session').subscribe();
     }
+  }
+
+  /**
+   * Handle user presence update messages from WebSocket
+   */
+  private _handleUserPresenceUpdate(message: any): void {
+    this._logger.debug('Received user presence update', message);
+    
+    if (message.data && message.data.users) {
+      // Update collaboration users list with real-time data
+      const updatedUsers: CollaborationUser[] = message.data.users.map((user: any) => ({
+        id: user.id,
+        name: user.name,
+        role: user.role || 'reader',
+        status: user.status || 'active',
+        isPresenter: user.isPresenter || false,
+        lastActivity: new Date(user.lastActivity || Date.now())
+      }));
+      
+      this._collaborationUsers$.next(updatedUsers);
+      this._logger.info('Updated collaboration users from WebSocket', { userCount: updatedUsers.length });
+    }
+  }
+
+  /**
+   * Handle user joined session messages from WebSocket
+   */
+  private _handleUserJoinedSession(message: any): void {
+    this._logger.debug('User joined session', message);
+    
+    if (message.data && message.data.user) {
+      const newUser: CollaborationUser = {
+        id: message.data.user.id,
+        name: message.data.user.name,
+        role: message.data.user.role || 'reader',
+        status: message.data.user.status || 'active',
+        isPresenter: message.data.user.isPresenter || false,
+        lastActivity: new Date()
+      };
+      
+      // Add user to current list
+      const currentUsers = this._collaborationUsers$.value;
+      const userExists = currentUsers.some(user => user.id === newUser.id);
+      
+      if (!userExists) {
+        const updatedUsers = [...currentUsers, newUser];
+        this._collaborationUsers$.next(updatedUsers);
+        this._logger.info('User joined collaboration session', { userId: newUser.id, userName: newUser.name });
+      }
+    }
+  }
+
+  /**
+   * Handle user left session messages from WebSocket
+   */
+  private _handleUserLeftSession(message: any): void {
+    this._logger.debug('User left session', message);
+    
+    if (message.data && message.data.userId) {
+      const userId = message.data.userId;
+      const currentUserId = this.getCurrentUserId();
+      
+      // Remove user from current list
+      const currentUsers = this._collaborationUsers$.value;
+      const updatedUsers = currentUsers.filter(user => user.id !== userId);
+      
+      if (updatedUsers.length !== currentUsers.length) {
+        this._collaborationUsers$.next(updatedUsers);
+        this._logger.info('User left collaboration session', { userId });
+        
+        // If the current user was removed, redirect to dashboard
+        if (userId === currentUserId && !this.isCurrentUserOwner()) {
+          this._logger.info('Current user was removed from session, redirecting to dashboard');
+          this._cleanupSessionState();
+          this._redirectToDashboard();
+        }
+      }
+    }
+  }
+
+  /**
+   * Handle session ended messages from WebSocket
+   */
+  private _handleSessionEnded(message: any): void {
+    this._logger.debug('Session ended via WebSocket', message);
+    
+    // If current user is not the owner and session was ended, redirect to dashboard
+    if (!this.isCurrentUserOwner() && this._currentSession) {
+      this._logger.info('Session ended by owner, redirecting non-owner to dashboard');
+      this._cleanupSessionState();
+      this._redirectToDashboard();
+    }
+  }
+
+  /**
+   * Clean up session state without API calls
+   */
+  private _cleanupSessionState(): void {
+    this._disconnectFromWebSocket();
+    this._currentSession = null;
+    this._isCollaborating$.next(false);
+    this._collaborationUsers$.next([]);
+    this._currentPresenterId$.next(null);
+    this._pendingPresenterRequests$.next([]);
+  }
+
+  /**
+   * Redirect user to dashboard
+   */
+  private _redirectToDashboard(): void {
+    this._router.navigate(['/tm']).then(() => {
+      this._logger.info('Redirected to dashboard');
+    }).catch((error) => {
+      this._logger.error('Failed to redirect to dashboard', error);
+    });
   }
 
   /**

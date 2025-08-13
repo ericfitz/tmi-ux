@@ -6,7 +6,6 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
 import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
 import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
-import { HISTORY_OPERATION_TYPES } from './graph-history-coordinator.service';
 import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
 import { DfdNodeService } from '../infrastructure/services/node.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
@@ -180,7 +179,6 @@ export class DfdDiagramService {
       // Use history coordinator for atomic batch loading with history suppression
       this.historyCoordinator.executeAtomicOperation(
         graph,
-        HISTORY_OPERATION_TYPES.DIAGRAM_LOAD,
         () => {
           this.logger.info('Inside atomic operation - clearing existing cells');
           // Clear existing graph first
@@ -262,13 +260,7 @@ export class DfdDiagramService {
           });
 
           return convertedCells;
-        },
-        {
-          includeVisualEffects: false,
-          includePortVisibility: false,
-          includeHighlighting: false,
-          includeToolChanges: false,
-        },
+        }
       );
 
       this.logger.info('Atomic operation completed - checking graph state');
@@ -279,7 +271,7 @@ export class DfdDiagramService {
       });
 
       // Update port visibility after loading (as separate visual effect)
-      this.historyCoordinator.executeVisualEffect(graph, 'diagram-load-port-visibility', () => {
+      this.historyCoordinator.executeVisualEffect(graph, () => {
         // Hide unconnected ports on all nodes
         this.portStateManager.hideUnconnectedPorts(graph);
         this.logger.debugComponent('DfdDiagram', 'Updated port visibility after diagram load');

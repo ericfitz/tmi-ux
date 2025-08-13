@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
+import { Component, OnInit, OnDestroy, isDevMode, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 // Import only the specific Material modules needed
 import { CoreMaterialModule } from '../../../shared/material/core-material.module';
@@ -56,6 +57,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   // Server connection status
   serverConnectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED;
   ServerConnectionStatus = ServerConnectionStatus; // Expose enum to template
+
+  // Menu trigger reference
+  @ViewChild('userProfileButton', { read: MatMenuTrigger }) userProfileMenuTrigger!: MatMenuTrigger;
 
   // Subscriptions
   private authSubscription: Subscription | null = null;
@@ -169,6 +173,73 @@ export class NavbarComponent implements OnInit, OnDestroy {
       width: '400px',
       disableClose: false,
     });
+  }
+
+  /**
+   * Handle right-click context menu on user profile button (development only)
+   */
+  openUserProfileContextMenu(event: MouseEvent): void {
+    if (!this.isDevelopmentMode) {
+      return; // Do nothing in production
+    }
+    
+    event.preventDefault(); // Prevent default browser context menu
+    this.userProfileMenuTrigger.openMenu(); // Open the context menu
+  }
+
+  /**
+   * Copy user profile to clipboard
+   */
+  copyUserProfileToClipboard(): void {
+    try {
+      // Serialize user profile data
+      const userProfile = this.serializeUserProfile();
+      
+      // Copy to clipboard
+      void navigator.clipboard.writeText(JSON.stringify(userProfile, null, 2));
+    } catch (error) {
+      this.logger.error('Error copying user profile to clipboard', error);
+    }
+  }
+
+  /**
+   * Serialize current user profile data
+   */
+  private serializeUserProfile(): Record<string, unknown> {
+    // Get user profile from localStorage
+    const storedProfile = localStorage.getItem('user_profile');
+    let userProfile: Record<string, unknown> = {};
+    
+    if (storedProfile) {
+      try {
+        userProfile = JSON.parse(storedProfile) as Record<string, unknown>;
+      } catch (error) {
+        this.logger.warn('Error parsing stored user profile', error);
+      }
+    }
+
+    // Create comprehensive user profile object
+    return {
+      // Authentication state
+      isAuthenticated: this.isAuthenticated,
+      username: this.username,
+      userEmail: this.userEmail,
+      
+      // Stored profile data
+      storedProfile: userProfile,
+      
+      // Current session info
+      currentLanguage: this.currentLanguage,
+      isDevelopmentMode: this.isDevelopmentMode,
+      
+      // Timestamp
+      exportedAt: new Date().toISOString(),
+      
+      // Environment info
+      environment: {
+        production: environment.production
+      }
+    };
   }
 
   /**

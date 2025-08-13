@@ -28,6 +28,7 @@ import {
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 
 import { MaterialModule } from '../../shared/material/material.module';
 import { SharedModule } from '../../shared/shared.module';
@@ -239,12 +240,37 @@ export class TmComponent implements OnInit, OnDestroy {
 
 
   /**
+   * Refresh the collaboration sessions list
+   */
+  refreshCollaborationSessions(): void {
+    this.logger.info('Manually refreshing collaboration sessions');
+    this.collaborationSessionService.refreshSessions();
+  }
+
+  /**
    * Navigate to the DFD page for a specific diagram
    * @param diagramId The ID of the diagram to open
    */
   openCollaborationSession(diagramId: string): void {
     this.logger.info('Opening collaboration session', { diagramId });
-    void this.router.navigate(['/dfd', diagramId]);
+    
+    // Find the session data to get the threat model ID
+    this.collaborationSessions$.pipe(
+      take(1),
+      map(sessions => sessions.find(session => session.diagramId === diagramId))
+    ).subscribe(session => {
+      if (!session) {
+        this.logger.error('Collaboration session not found', { diagramId });
+        return;
+      }
+
+      // Navigate to DFD page with collaboration context using correct nested route
+      void this.router.navigate(['/tm', session.threatModelId, 'dfd', diagramId], {
+        queryParams: {
+          joinCollaboration: 'true'
+        }
+      });
+    });
   }
 
   /**

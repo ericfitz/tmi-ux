@@ -169,16 +169,30 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   toggleCollaboration(): void {
     if (this.isCollaborating) {
-      this._collaborationService
-        .endCollaboration()
-        .pipe(take(1))
-        .subscribe(success => {
-          if (success) {
-            this._logger.info('Collaboration ended successfully');
-          } else {
-            this._logger.error('Failed to end collaboration');
-          }
-        });
+      // Check if current user is owner to determine which action to take
+      if (this._collaborationService.isCurrentUserOwner()) {
+        this._collaborationService
+          .endCollaboration()
+          .pipe(take(1))
+          .subscribe(success => {
+            if (success) {
+              this._logger.info('Collaboration ended successfully');
+            } else {
+              this._logger.error('Failed to end collaboration');
+            }
+          });
+      } else {
+        this._collaborationService
+          .leaveSession()
+          .pipe(take(1))
+          .subscribe(success => {
+            if (success) {
+              this._logger.info('Left collaboration session successfully');
+            } else {
+              this._logger.error('Failed to leave collaboration session');
+            }
+          });
+      }
     } else {
       this._collaborationService
         .startCollaboration()

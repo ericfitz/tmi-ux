@@ -6,10 +6,7 @@ import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
-import {
-  GraphHistoryCoordinator,
-  HISTORY_OPERATION_TYPES,
-} from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { X6CoreOperationsService } from '../services/x6-core-operations.service';
 // Note: DfdNodeService will be used for node deletion when removeNode method is available
 import { EdgeService } from '../services/edge.service';
@@ -112,7 +109,7 @@ export class X6SelectionAdapter {
     graph.on('cell:mouseenter', ({ cell }: { cell: Cell }) => {
       if (!this.selectedCells.has(cell.id)) {
         // Use centralized history coordinator to exclude visual effects from history
-        this.historyCoordinator.executeVisualEffect(graph, `hover-enter-${cell.id}`, () => {
+        this.historyCoordinator.executeVisualEffect(graph, () => {
           this.applyHoverEffect(cell);
 
           // Show ports for nodes during hover (if port state manager available)
@@ -126,7 +123,7 @@ export class X6SelectionAdapter {
     graph.on('cell:mouseleave', ({ cell }: { cell: Cell }) => {
       if (!this.selectedCells.has(cell.id)) {
         // Use centralized history coordinator to exclude visual effects from history
-        this.historyCoordinator.executeVisualEffect(graph, `hover-leave-${cell.id}`, () => {
+        this.historyCoordinator.executeVisualEffect(graph, () => {
           this.removeHoverEffect(cell);
 
           // Hide unconnected ports for nodes when hover ends (if port state manager available)
@@ -140,7 +137,7 @@ export class X6SelectionAdapter {
     // Handle selection changes
     graph.on('selection:changed', ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
       // Use history coordinator to exclude all selection-related visual effects from history
-      this.historyCoordinator.executeVisualEffect(graph, `selection-changed-${Date.now()}`, () => {
+      this.historyCoordinator.executeVisualEffect(graph, () => {
         // Batch all selection styling changes to prevent history pollution
         graph.batchUpdate(() => {
           // Apply glow effects and tools to newly selected cells
@@ -231,7 +228,6 @@ export class X6SelectionAdapter {
     // Use history coordinator to ensure proper atomic deletion with port visibility suppression
     this.historyCoordinator.executeAtomicOperation(
       graph,
-      HISTORY_OPERATION_TYPES.CELL_DELETION,
       () => {
         selectedCells.forEach(cell => {
           if (cell.isEdge()) {
@@ -243,13 +239,7 @@ export class X6SelectionAdapter {
             this.x6CoreOps.removeCellObject(graph, cell);
           }
         });
-      },
-      {
-        includePortVisibility: false, // Suppress port visibility changes from history
-        includeVisualEffects: false,
-        includeHighlighting: false,
-        includeToolChanges: false,
-      },
+      }
     );
 
     this.logger.info('Deleted selected cells', { count: selectedCells.length });
@@ -316,7 +306,6 @@ export class X6SelectionAdapter {
     // Use centralized history coordinator for consistent filtering and atomic batching
     const groupNode = this.historyCoordinator.executeAtomicOperation(
       graph,
-      HISTORY_OPERATION_TYPES.GROUP_CREATION,
       () => {
         // Create group node using X6CoreOperationsService
         const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
@@ -331,9 +320,7 @@ export class X6SelectionAdapter {
         });
 
         return createdGroupNode;
-      },
-      // Use default options for group creation (excludes visual effects)
-      this.historyCoordinator.getDefaultOptionsForOperation(HISTORY_OPERATION_TYPES.GROUP_CREATION),
+      }
     );
 
     this.logger.info('Created group with nodes', {
