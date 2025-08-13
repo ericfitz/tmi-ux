@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, throwError, Subscription } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { WebSocketAdapter } from '../infrastructure/adapters/websocket.adapter';
+import { WebSocketAdapter, WebSocketState } from '../infrastructure/adapters/websocket.adapter';
+import { DfdNotificationService } from './dfd-notification.service';
 import { environment } from '../../../../environments/environment';
 
 /**
@@ -16,6 +17,7 @@ export interface CollaborationUser {
   role: 'owner' | 'writer' | 'reader';
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
+  isPresenter?: boolean;
 }
 
 /**
@@ -38,7 +40,7 @@ interface CollaborationSession {
 @Injectable({
   providedIn: 'root',
 })
-export class DfdCollaborationService {
+export class DfdCollaborationService implements OnDestroy {
   // Observable for collaboration status
   private _isCollaborating$ = new BehaviorSubject<boolean>(false);
   public isCollaborating$ = this._isCollaborating$.asObservable();
@@ -47,18 +49,31 @@ export class DfdCollaborationService {
   private _collaborationUsers$ = new BehaviorSubject<CollaborationUser[]>([]);
   public collaborationUsers$ = this._collaborationUsers$.asObservable();
 
+  // Presenter state tracking
+  private _currentPresenterId$ = new BehaviorSubject<string | null>(null);
+  public currentPresenterId$ = this._currentPresenterId$.asObservable();
+
+  // Pending presenter requests (for session owners)
+  private _pendingPresenterRequests$ = new BehaviorSubject<string[]>([]);
+  public pendingPresenterRequests$ = this._pendingPresenterRequests$.asObservable();
+
   // Current session information
   private _currentSession: CollaborationSession | null = null;
   private _threatModelId: string | null = null;
   private _diagramId: string | null = null;
+  
+  // Subscription management
+  private _subscriptions = new Subscription();
 
   constructor(
     private _logger: LoggerService,
     private _authService: AuthService,
     private _threatModelService: ThreatModelService,
     private _webSocketAdapter: WebSocketAdapter,
+    private _notificationService: DfdNotificationService,
   ) {
     this._logger.info('DfdCollaborationService initialized');
+    this._setupWebSocketListeners();
   }
 
   /**
@@ -115,6 +130,9 @@ export class DfdCollaborationService {
 
         // Update collaboration state
         this._isCollaborating$.next(true);
+        
+        // Show session started notification
+        this._notificationService.showSessionEvent('started').subscribe();
 
         // Convert API participants to CollaborationUser format, using email addresses consistently
         const currentUserEmail = this._authService.userEmail || 'current-user';
@@ -177,6 +195,11 @@ export class DfdCollaborationService {
         this._currentSession = null;
         this._isCollaborating$.next(false);
         this._collaborationUsers$.next([]);
+        this._currentPresenterId$.next(null);
+        this._pendingPresenterRequests$.next([]);
+        
+        // Show session ended notification
+        this._notificationService.showSessionEvent('ended').subscribe();
       }),
       map(() => true),
       catchError((error) => {
@@ -187,6 +210,11 @@ export class DfdCollaborationService {
         this._currentSession = null;
         this._isCollaborating$.next(false);
         this._collaborationUsers$.next([]);
+        this._currentPresenterId$.next(null);
+        this._pendingPresenterRequests$.next([]);
+        
+        // Show session ended notification even on error
+        this._notificationService.showSessionEvent('ended').subscribe();
         
         return throwError(() => error);
       })
@@ -336,6 +364,219 @@ export class DfdCollaborationService {
   }
 
   /**
+   * Get the current user's ID (email)
+   * @returns The current user's email or null if not authenticated
+   */
+  public getCurrentUserId(): string | null {
+    return this._authService.userEmail;
+  }
+
+  /**
+   * Check if the current user is the presenter
+   * @returns boolean indicating if current user is presenter
+   */
+  public isCurrentUserPresenter(): boolean {
+    const currentUserId = this.getCurrentUserId();
+    return currentUserId === this._currentPresenterId$.value;
+  }
+
+  /**
+   * Get current collaboration status
+   * @returns boolean indicating if currently collaborating
+   */
+  public isCollaborating(): boolean {
+    return this._isCollaborating$.value;
+  }
+
+  /**
+   * Get the current presenter's user ID
+   * @returns The presenter's user ID or null if no presenter
+   */
+  public getCurrentPresenterId(): string | null {
+    return this._currentPresenterId$.value;
+  }
+
+  /**
+   * Request presenter privileges (for non-owners)
+   * @returns Observable<boolean> indicating if request was sent successfully
+   */
+  public requestPresenterPrivileges(): Observable<boolean> {
+    const currentUserId = this.getCurrentUserId();
+    if (!currentUserId) {
+      return throwError(() => new Error('Current user not identified'));
+    }
+
+    if (this.isCurrentUserOwner()) {
+      // Owners can become presenter immediately
+      return this.setPresenter(currentUserId);
+    }
+
+    this._logger.info('Requesting presenter privileges', { userId: currentUserId });
+
+    // Send presenter request via WebSocket
+    return this._webSocketAdapter.sendTMIMessage({
+      message_type: 'presenter_request',
+      user_id: currentUserId
+    }).pipe(
+      map(() => {
+        // Show request sent notification
+        this._notificationService.showPresenterEvent('requestSent').subscribe();
+        return true;
+      }),
+      catchError((error) => {
+        this._logger.error('Failed to send presenter request', error);
+        this._notificationService.showOperationError('send presenter request', error.message || 'Unknown error').subscribe();
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Approve a presenter request (owner only)
+   * @param userId The user ID to approve as presenter
+   * @returns Observable<boolean> indicating success
+   */
+  public approvePresenterRequest(userId: string): Observable<boolean> {
+    if (!this.isCurrentUserOwner()) {
+      return throwError(() => new Error('Only session owners can approve presenter requests'));
+    }
+
+    this._logger.info('Approving presenter request', { userId });
+
+    // Remove from pending requests
+    const pendingRequests = this._pendingPresenterRequests$.value;
+    this._pendingPresenterRequests$.next(pendingRequests.filter(id => id !== userId));
+
+    return this.setPresenter(userId);
+  }
+
+  /**
+   * Deny a presenter request (owner only)
+   * @param userId The user ID to deny presenter privileges
+   * @returns Observable<boolean> indicating success
+   */
+  public denyPresenterRequest(userId: string): Observable<boolean> {
+    if (!this.isCurrentUserOwner()) {
+      return throwError(() => new Error('Only session owners can deny presenter requests'));
+    }
+
+    this._logger.info('Denying presenter request', { userId });
+
+    // Remove from pending requests
+    const pendingRequests = this._pendingPresenterRequests$.value;
+    this._pendingPresenterRequests$.next(pendingRequests.filter(id => id !== userId));
+
+    // Send denial via WebSocket
+    return this._webSocketAdapter.sendTMIMessage({
+      message_type: 'presenter_denied',
+      user_id: this.getCurrentUserId() || '',
+      target_user: userId
+    }).pipe(
+      map(() => {
+        // Show denial notification (for owner)
+        this._notificationService.showPresenterEvent('requestDenied').subscribe();
+        return true;
+      }),
+      catchError((error) => {
+        this._logger.error('Failed to send presenter denial', error);
+        this._notificationService.showOperationError('deny presenter request', error.message || 'Unknown error').subscribe();
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Set presenter (owner only)
+   * @param userId The user ID to set as presenter, or null to clear presenter
+   * @returns Observable<boolean> indicating success
+   */
+  public setPresenter(userId: string | null): Observable<boolean> {
+    if (!this.isCurrentUserOwner()) {
+      return throwError(() => new Error('Only session owners can set presenter'));
+    }
+
+    this._logger.info('Setting presenter', { userId });
+
+    // Update local state
+    this._currentPresenterId$.next(userId);
+    this._updateUsersPresenterStatus(userId);
+
+    // Send presenter update via WebSocket
+    return this._webSocketAdapter.sendTMIMessage({
+      message_type: 'presenter_update',
+      user_id: userId || undefined
+    }).pipe(
+      map(() => {
+        // Show presenter assigned notification
+        const currentUserId = this.getCurrentUserId();
+        if (userId === currentUserId) {
+          this._notificationService.showPresenterEvent('assigned').subscribe();
+        } else if (userId) {
+          const user = this._collaborationUsers$.value.find(u => u.id === userId);
+          this._notificationService.showPresenterEvent('assigned', user?.name || userId).subscribe();
+        } else {
+          this._notificationService.showPresenterEvent('cleared').subscribe();
+        }
+        return true;
+      }),
+      catchError((error) => {
+        this._logger.error('Failed to send presenter update', error);
+        // Revert local state on error
+        this._currentPresenterId$.next(null);
+        this._updateUsersPresenterStatus(null);
+        this._notificationService.showOperationError('update presenter', error.message || 'Unknown error').subscribe();
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Take back presenter privileges (owner only)
+   * @returns Observable<boolean> indicating success
+   */
+  public takeBackPresenterPrivileges(): Observable<boolean> {
+    const currentUserId = this.getCurrentUserId();
+    if (!currentUserId) {
+      return throwError(() => new Error('Current user not identified'));
+    }
+
+    return this.setPresenter(currentUserId);
+  }
+
+  /**
+   * Add a presenter request to pending list
+   * @param userId The user ID requesting presenter privileges
+   */
+  public addPresenterRequest(userId: string): void {
+    const pendingRequests = this._pendingPresenterRequests$.value;
+    if (!pendingRequests.includes(userId)) {
+      this._pendingPresenterRequests$.next([...pendingRequests, userId]);
+    }
+  }
+
+  /**
+   * Update the current presenter ID (for external updates)
+   * @param presenterId The user ID of the current presenter
+   */
+  public updatePresenterId(presenterId: string | null): void {
+    this._currentPresenterId$.next(presenterId);
+    this._updateUsersPresenterStatus(presenterId);
+  }
+
+  /**
+   * Update users' presenter status based on current presenter
+   * @param presenterId The user ID of the current presenter
+   */
+  public _updateUsersPresenterStatus(presenterId: string | null): void {
+    const users = this._collaborationUsers$.value;
+    const updatedUsers = users.map(user => ({
+      ...user,
+      isPresenter: user.id === presenterId
+    }));
+    this._collaborationUsers$.next(updatedUsers);
+  }
+
+  /**
    * Connect to WebSocket for real-time collaboration
    * @param websocketUrl The WebSocket URL provided by the API
    */
@@ -352,6 +593,16 @@ export class DfdCollaborationService {
       },
       error: (error) => {
         this._logger.error('Failed to connect to WebSocket', error);
+        this._notificationService.showWebSocketError(
+          {
+            type: error.type || 'connection_failed',
+            message: error.message || 'Failed to connect to collaboration server',
+            originalError: error,
+            isRecoverable: true,
+            retryable: true
+          },
+          () => this._retryWebSocketConnection()
+        ).subscribe();
       }
     });
   }
@@ -410,6 +661,77 @@ export class DfdCollaborationService {
       this._logger.info('WebSocket disconnected');
     } catch (error) {
       this._logger.error('Error disconnecting from WebSocket', error);
+    }
+  }
+
+  /**
+   * Setup WebSocket listeners for connection state and collaboration events
+   */
+  private _setupWebSocketListeners(): void {
+    // Listen to connection state changes
+    this._subscriptions.add(
+      this._webSocketAdapter.connectionState$.subscribe((state: WebSocketState) => {
+        this._handleWebSocketStateChange(state);
+      })
+    );
+
+    // Listen to connection errors
+    this._subscriptions.add(
+      this._webSocketAdapter.errors$.subscribe((error) => {
+        this._notificationService.showWebSocketError(error, () => this._retryWebSocketConnection()).subscribe();
+      })
+    );
+  }
+
+  /**
+   * Handle WebSocket state changes and show appropriate notifications
+   */
+  private _handleWebSocketStateChange(state: WebSocketState): void {
+    this._logger.debug('WebSocket state changed', { state });
+
+    switch (state) {
+      case WebSocketState.CONNECTING:
+        this._notificationService.showWebSocketStatus(state).subscribe();
+        break;
+      case WebSocketState.CONNECTED:
+        this._notificationService.showWebSocketStatus(state).subscribe();
+        break;
+      case WebSocketState.DISCONNECTED:
+      case WebSocketState.ERROR:
+      case WebSocketState.FAILED:
+        this._notificationService.showWebSocketStatus(state, () => this._retryWebSocketConnection()).subscribe();
+        break;
+      case WebSocketState.RECONNECTING:
+        this._notificationService.showWebSocketStatus(state).subscribe();
+        break;
+    }
+  }
+
+  /**
+   * Retry WebSocket connection
+   */
+  private _retryWebSocketConnection(): void {
+    if (this._currentSession?.websocket_url) {
+      this._logger.info('Retrying WebSocket connection');
+      this._connectToWebSocket(this._currentSession.websocket_url);
+    } else {
+      this._logger.warn('Cannot retry WebSocket connection - no session URL available');
+      this._notificationService.showError('Cannot retry connection - no active session').subscribe();
+    }
+  }
+
+  /**
+   * Clean up resources and subscriptions
+   */
+  ngOnDestroy(): void {
+    this._logger.info('DfdCollaborationService destroying');
+    this._subscriptions.unsubscribe();
+    
+    // End collaboration if active
+    if (this._isCollaborating$.value) {
+      this.endCollaboration().subscribe({
+        error: (error) => this._logger.error('Error ending collaboration on destroy', error)
+      });
     }
   }
 }

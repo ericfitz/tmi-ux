@@ -23,6 +23,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { Graph } from '@antv/x6';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
@@ -385,5 +386,56 @@ export class DfdNodeService {
     }
 
     return nodeConfig;
+  }
+
+  /**
+   * Create node from remote WebSocket operation with proper visual effects
+   */
+  createNodeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
+    // Convert WebSocket cell data to NodeInfo format
+    const nodeInfo = this.convertWebSocketCellToNodeInfo(cellData);
+    
+    // Create node using existing infrastructure
+    const node = this.createNodeFromInfo(graph, nodeInfo, {
+      suppressHistory: options?.suppressHistory ?? true,
+      ensureVisualRendering: options?.ensureVisualRendering ?? true,
+      updatePortVisibility: options?.updatePortVisibility ?? true
+    });
+
+    // Apply visual effects for remote operations (different color to distinguish)
+    if (options?.applyVisualEffects && node) {
+      // TODO: Apply creation highlight with green color for remote operations
+      // this.visualEffectsService.applyCreationHighlight(node, graph, '#00ff00');
+    }
+  }
+
+  /**
+   * Remove node from remote WebSocket operation
+   */
+  removeNodeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
+    const cell = graph.getCellById(cellId);
+    if (cell && cell.isNode()) {
+      // Use existing core operations service
+      this.x6CoreOps.removeNode(graph, cellId, {
+        suppressErrors: options?.suppressErrors ?? false,
+        logOperation: options?.logOperation ?? true
+      });
+    }
+  }
+
+  /**
+   * Convert WebSocket cell data to NodeInfo format
+   */
+  private convertWebSocketCellToNodeInfo(cellData: any): any {
+    return {
+      id: cellData.id,
+      type: cellData.shape as NodeType,
+      x: cellData.x,
+      y: cellData.y,
+      width: cellData.width,
+      height: cellData.height,
+      label: cellData.label || '',
+      data: cellData.data || {}
+    };
   }
 }

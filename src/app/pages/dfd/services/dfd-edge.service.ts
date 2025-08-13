@@ -831,4 +831,43 @@ export class DfdEdgeService {
     const allowedTargets = this.connectionRules[sourceShape];
     return allowedTargets ? allowedTargets.includes(targetShape) : false;
   }
+
+  /**
+   * Create edge from remote WebSocket operation
+   */
+  createEdgeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
+    // Convert WebSocket cell data to EdgeInfo format
+    const edgeInfo = this.convertWebSocketCellToEdgeInfo(cellData);
+    
+    // Create edge using infrastructure EdgeService
+    this.edgeService.createEdge(graph, edgeInfo, {
+      ensureVisualRendering: options?.ensureVisualRendering ?? true,
+      updatePortVisibility: options?.updatePortVisibility ?? true
+    });
+  }
+
+  /**
+   * Remove edge from remote WebSocket operation
+   */
+  removeEdgeFromRemoteOperation(graph: Graph, cellId: string, _options: any): void {
+    const cell = graph.getCellById(cellId);
+    if (cell && cell.isEdge()) {
+      // Use infrastructure EdgeService (doesn't take options parameter)
+      this.edgeService.removeEdge(graph, cellId);
+    }
+  }
+
+  /**
+   * Convert WebSocket cell data to EdgeInfo format
+   */
+  private convertWebSocketCellToEdgeInfo(cellData: any): any {
+    return {
+      id: cellData.id,
+      source: cellData.source,
+      target: cellData.target,
+      vertices: cellData.vertices || [],
+      labels: cellData.labels || [],
+      data: cellData.data || {}
+    };
+  }
 }

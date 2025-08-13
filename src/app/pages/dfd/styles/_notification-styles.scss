@@ -1,0 +1,188 @@
+/**
+ * Notification styles for DFD collaboration notifications
+ * These styles provide consistent theming for different notification types
+ */
+
+/* stylelint-disable no-descending-specificity */
+
+// Success notifications (green theme)
+.notification-success {
+  --mdc-snackbar-container-color: #4caf50 !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: #4caf50 !important;
+    
+    .mdc-snackbar__surface {
+      background-color: #4caf50 !important;
+      color: #fff !important;
+    }
+    
+    .mdc-snackbar__label {
+      color: #fff !important;
+    }
+    
+    .mat-mdc-snack-bar-action {
+      .mat-mdc-button {
+        color: #fff !important;
+        
+        &:hover {
+          background-color: rgb(255 255 255 / 10%) !important;
+        }
+      }
+    }
+  }
+}
+
+// Info notifications (blue theme)
+.notification-info {
+  --mdc-snackbar-container-color: #2196f3 !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: #2196f3 !important;
+    
+    .mdc-snackbar__surface {
+      background-color: #2196f3 !important;
+      color: #fff !important;
+    }
+    
+    .mdc-snackbar__label {
+      color: #fff !important;
+    }
+    
+    .mat-mdc-snack-bar-action {
+      .mat-mdc-button {
+        color: #fff !important;
+        
+        &:hover {
+          background-color: rgb(255 255 255 / 10%) !important;
+        }
+      }
+    }
+  }
+}
+
+// Warning notifications (orange theme)
+.notification-warning {
+  --mdc-snackbar-container-color: #ff9800 !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: #ff9800 !important;
+    
+    .mdc-snackbar__surface {
+      background-color: #ff9800 !important;
+      color: #fff !important;
+    }
+    
+    .mdc-snackbar__label {
+      color: #fff !important;
+    }
+    
+    .mat-mdc-snack-bar-action {
+      .mat-mdc-button {
+        color: #fff !important;
+        
+        &:hover {
+          background-color: rgb(255 255 255 / 10%) !important;
+        }
+      }
+    }
+  }
+}
+
+// Error notifications (red theme)
+.notification-error {
+  --mdc-snackbar-container-color: #f44336 !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  
+  .mat-mdc-snack-bar-container {
+    background-color: #f44336 !important;
+    
+    .mdc-snackbar__surface {
+      background-color: #f44336 !important;
+      color: #fff !important;
+    }
+    
+    .mdc-snackbar__label {
+      color: #fff !important;
+    }
+    
+    .mat-mdc-snack-bar-action {
+      .mat-mdc-button {
+        color: #fff !important;
+        
+        &:hover {
+          background-color: rgb(255 255 255 / 10%) !important;
+        }
+      }
+    }
+  }
+}
+
+// Shared animation improvements for all notification types
+.notification-success .mat-mdc-snack-bar-container .mdc-snackbar__surface,
+.notification-info .mat-mdc-snack-bar-container .mdc-snackbar__surface,
+.notification-warning .mat-mdc-snack-bar-container .mdc-snackbar__surface,
+.notification-error .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%) !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease-in-out !important;
+}
+
+.notification-success .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
+.notification-info .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
+.notification-warning .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
+.notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button {
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-radius: 2px !important;
+  padding: 0 12px !important;
+  min-width: 64px !important;
+}
+
+.notification-success .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
+.notification-info .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
+.notification-warning .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
+.notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus {
+  outline: 2px solid rgb(255 255 255 / 30%) !important;
+  outline-offset: 2px !important;
+}
+
+// Dark theme overrides (if needed)
+@media (prefers-color-scheme: dark) {
+  .notification-success {
+    --mdc-snackbar-container-color: #388e3c !important;
+  }
+  
+  .notification-info {
+    --mdc-snackbar-container-color: #1976d2 !important;
+  }
+  
+  .notification-warning {
+    --mdc-snackbar-container-color: #f57c00 !important;
+  }
+  
+  .notification-error {
+    --mdc-snackbar-container-color: #d32f2f !important;
+  }
+}
+
+// Responsive positioning
+@media (width <= 768px) {
+  .notification-success,
+  .notification-info,
+  .notification-warning,
+  .notification-error {
+    .mat-mdc-snack-bar-container {
+      margin: 8px !important;
+      max-width: calc(100vw - 16px) !important;
+      
+      .mdc-snackbar__surface {
+        border-radius: 8px !important;
+      }
+    }
+  }
+}

@@ -60,13 +60,17 @@
   }
 
   .copy-link-section,
-  .users-section {
+  .users-section,
+  .presenter-section,
+  .presenter-requests-section {
     padding: 8px 16px;
     border-top: 1px solid rgb(0 0 0 / 12%);
   }
 
   .copy-link-header,
-  .users-header {
+  .users-header,
+  .presenter-header,
+  .presenter-requests-header {
     margin-bottom: 8px;
 
     h4 {
@@ -78,15 +82,41 @@
   }
 
   .copy-link-action,
-  .collaboration-action {
+  .collaboration-action,
+  .presenter-controls {
     display: flex;
     justify-content: center;
     padding: 8px 0;
-
+    
     button {
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+  }
+
+  .presenter-controls {
+    flex-direction: column;
+
+    .current-presenter-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background-color: rgb(156 39 176 / 10%); // Light purple background
+      border-radius: 4px;
+      margin-top: 8px;
+
+      .presenter-icon {
+        color: #9c27b0; // Purple
+        font-size: 18px;
+      }
+
+      span {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgb(0 0 0 / 80%);
+      }
     }
   }
 
@@ -136,6 +166,10 @@
             &.reader-icon {
               color: #757575; // Grey for reader
             }
+            
+            &.presenter-icon {
+              color: #9c27b0; // Purple for presenter
+            }
           }
         }
       }
@@ -176,6 +210,33 @@
 // Fix for mat-menu width
 ::ng-deep .mat-mdc-menu-panel.collaboration-menu {
   max-width: 350px !important;
+}
+
+
+// Presenter requests styling
+.presenter-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .presenter-request-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: rgb(255 152 0 / 10%); // Light orange background
+    border-radius: 4px;
+
+    .request-user-name {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 4px;
+    }
+  }
 }
 
 // Responsive adjustments

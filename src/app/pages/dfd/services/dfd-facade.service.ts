@@ -365,4 +365,40 @@ export class DfdFacadeService {
   saveDiagramChanges(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
     return this.diagramService.saveDiagramChanges(graph, diagramId, threatModelId);
   }
+
+  // ===============================
+  // Remote Operation Methods for WebSocket Integration
+  // ===============================
+
+  /**
+   * Create node from remote WebSocket operation
+   */
+  createNodeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
+    // Use existing node service with remote operation options
+    this.nodeService.createNodeFromRemoteOperation(graph, cellData, options);
+  }
+
+  /**
+   * Create edge from remote WebSocket operation
+   */
+  createEdgeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
+    // Use existing edge service with remote operation options
+    this.edgeService.createEdgeFromRemoteOperation(graph, cellData, options);
+  }
+
+  /**
+   * Remove node from remote WebSocket operation
+   */
+  removeNodeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
+    // Use existing node service with remote operation options
+    this.nodeService.removeNodeFromRemoteOperation(graph, cellId, options);
+  }
+
+  /**
+   * Remove edge from remote WebSocket operation
+   */
+  removeEdgeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
+    // Use existing edge service with remote operation options
+    this.edgeService.removeEdgeFromRemoteOperation(graph, cellId, options);
+  }
 }

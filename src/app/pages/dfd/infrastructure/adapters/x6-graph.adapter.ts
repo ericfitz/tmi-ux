@@ -1890,4 +1890,48 @@ export class X6GraphAdapter implements IGraphAdapter {
     findChangesInObject(current, previous);
     return changes;
   }
+
+  /**
+   * Set graph to read-only mode for users without edit permissions
+   */
+  setReadOnlyMode(readOnly: boolean): void {
+    const graph = this.getGraph();
+    if (!graph) {
+      this.logger.warn('Cannot set read-only mode: graph not initialized');
+      return;
+    }
+
+    if (readOnly) {
+      // Disable selection via the selection adapter
+      this._selectionAdapter.disableSelection(graph);
+      
+      // Disable keyboard handling
+      this._keyboardHandler.cleanup();
+      
+      // Make all cells non-interactive
+      graph.getCells().forEach(cell => {
+        cell.prop('movable', false);
+        cell.prop('resizable', false);
+        cell.prop('rotatable', false);
+        cell.removeTool('*'); // Remove all editing tools
+      });
+
+      this.logger.info('Graph set to read-only mode');
+    } else {
+      // Re-enable selection via the selection adapter
+      this._selectionAdapter.enableSelection(graph);
+      
+      // Re-enable keyboard handling
+      this._keyboardHandler.setupKeyboardHandling(graph);
+      
+      // Make cells interactive again
+      graph.getCells().forEach(cell => {
+        cell.prop('movable', true);
+        cell.prop('resizable', true);
+        cell.prop('rotatable', true);
+      });
+
+      this.logger.info('Graph set to edit mode');
+    }
+  }
 }
