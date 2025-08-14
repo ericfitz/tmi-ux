@@ -25,6 +25,33 @@ TMI (Threat Modeling Improved) is a server based threat modeling web application
 
 The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
 
+## Shared Resources
+
+This repository includes shared resources from the TMI backend repository via git subtree:
+
+- **Location**: `shared-api/` directory
+- **Source**: Subtree from the [TMI repository](https://github.com/ericfitz/tmi)
+- **Contents**:
+  - **API Specifications**: OpenAPI 3.0 REST API spec and AsyncAPI WebSocket spec
+  - **Documentation**: Client integration guides, OAuth setup, authorization patterns
+  - **SDK Examples**: Reference implementations (Python SDK)
+
+### Key Shared Files
+
+- `shared-api/api-specs/tmi-openapi.json` - OpenAPI 3.0 REST API specification
+- `shared-api/api-specs/tmi-asyncapi.yaml` - AsyncAPI WebSocket specification  
+- `shared-api/docs/AUTHORIZATION.md` - Authorization and RBAC documentation
+- `shared-api/docs/CLIENT_INTEGRATION_GUIDE.md` - Complete client integration guide
+- `shared-api/docs/CLIENT_OAUTH_INTEGRATION.md` - OAuth setup and configuration
+
+### Updating Shared Resources
+
+To pull the latest shared resources from the TMI repository:
+
+```bash
+git subtree pull --prefix=shared-api https://github.com/ericfitz/tmi.git shared --squash
+```
+
 ## Demo Videos
 
 NEW! [Demo 2025-08-05](https://youtu.be/dH9V-7fmbLI) Walkthrough of all basic functionality with voiceover
