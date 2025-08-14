@@ -44,7 +44,7 @@ describe('EdgeInfo', () => {
         attrs,
         labels,
         vertices,
-        metadata,
+        { _metadata: metadata },
       );
 
       // Assert
@@ -176,7 +176,7 @@ describe('EdgeInfo', () => {
           { x: 150, y: 150 },
           { x: 200, y: 200 },
         ],
-        data: [{ key: 'style', value: 'solid' }],
+        data: { _metadata: [{ key: 'style', value: 'solid' }] },
       };
 
       // Act
@@ -394,7 +394,7 @@ describe('EdgeInfo', () => {
       expect(updated).not.toBe(originalEdgeInfo);
       expect(updated.target.cell).toBe(newTargetId);
       expect(updated.target.port).toBe(newTargetPortId);
-      expect(updated.sourceNodeId).toBe(originalEdgeInfo.sourceNodeId);
+      expect(updated.source.cell).toBe(originalEdgeInfo.source.cell);
       expect(originalEdgeInfo.target.cell).toBe('target'); // Original unchanged
     });
   });

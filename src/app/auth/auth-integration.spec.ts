@@ -112,8 +112,8 @@ describe('Authentication Integration', () => {
       if (environment.oauth?.local?.enabled) {
         expect(environment.oauth.local.enabled).toBeTruthy();
       }
-      if (environment.oauth?.local?.users) {
-        expect(Array.isArray(environment.oauth.local.users)).toBe(true);
+      if (environment.oauth?.local?.icon) {
+        expect(typeof environment.oauth.local.icon).toBe('string');
       }
     });
   });
@@ -412,6 +412,7 @@ describe('Authentication Integration', () => {
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           localOAuthProvider,
+          serverConnectionService as unknown as ServerConnectionService,
         );
 
         // Should restore authentication state
@@ -446,6 +447,7 @@ describe('Authentication Integration', () => {
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           localOAuthProvider,
+          serverConnectionService as unknown as ServerConnectionService,
         );
 
         // Should not restore authentication state with expired token

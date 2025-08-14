@@ -46,7 +46,7 @@ describe('NodeInfo', () => {
         visible,
         attrs,
         ports,
-        metadata,
+        { _metadata: metadata },
         angle,
         parent,
       );

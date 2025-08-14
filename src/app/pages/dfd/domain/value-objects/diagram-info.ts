@@ -431,7 +431,11 @@ export class DiagramInfo {
 
     return thisSorted.every((cell, index) => {
       const otherCell = otherSorted[index];
-      return cell.equals(otherCell);
+      // Ensure both cells are of the same type before comparing
+      if (cell.shape !== otherCell.shape) {
+        return false;
+      }
+      return cell.equals(otherCell as any);
     });
   }
 }

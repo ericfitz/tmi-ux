@@ -121,6 +121,13 @@ describe.skip('X6GraphAdapter', () => {
   let edgeService: DfdEdgeService;
   let eventHandlersService: DfdEventHandlersService;
   let historyCoordinator: GraphHistoryCoordinator;
+  let visualEffectsService: any;
+  let coreEdgeService: any;
+  let threatModelService: any;
+  let frameworkService: any;
+  let dialog: any;
+  let router: any;
+  let x6CoreOps: any;
 
   beforeEach(() => {
     // Create DOM container for X6 graph
@@ -131,6 +138,15 @@ describe.skip('X6GraphAdapter', () => {
 
     // Create mock logger
     mockLogger = new MockLoggerService();
+
+    // Create mock services for dependencies
+    visualEffectsService = { applyEffect: vi.fn(), removeEffect: vi.fn() };
+    coreEdgeService = { addEdge: vi.fn(), removeEdge: vi.fn(), updateEdge: vi.fn() };
+    threatModelService = { getCurrentThreatModel: vi.fn() };
+    frameworkService = { getFramework: vi.fn() };
+    dialog = { open: vi.fn() };
+    router = { navigate: vi.fn() };
+    x6CoreOps = { addNode: vi.fn(), removeNode: vi.fn() };
 
     // Create real service instances for integration testing
     edgeQueryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
@@ -150,18 +166,32 @@ describe.skip('X6GraphAdapter', () => {
     );
     historyManager = new X6HistoryManager(mockLogger as unknown as LoggerService);
     x6EventLogger = new X6EventLoggerService(mockLogger as unknown as LoggerService);
-    edgeService = new DfdEdgeService(mockLogger as unknown as LoggerService);
-    eventHandlersService = new DfdEventHandlersService(mockLogger as unknown as LoggerService);
-    selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator(
-      historyManager,
+    edgeService = new DfdEdgeService(
       mockLogger as unknown as LoggerService,
+      zOrderAdapter,
+      historyManager,
+      visualEffectsService,
+      coreEdgeService
     );
+    selectionService = new SelectionService(mockLogger as unknown as LoggerService);
+    historyCoordinator = new GraphHistoryCoordinator();
 
     // Initialize selection adapter first (required by X6GraphAdapter)
     selectionAdapter = new X6SelectionAdapter(
       mockLogger as unknown as LoggerService,
       selectionService,
+      historyCoordinator,
+      x6CoreOps,
+      coreEdgeService
+    );
+
+    eventHandlersService = new DfdEventHandlersService(
+      mockLogger as unknown as LoggerService,
+      selectionAdapter,
+      threatModelService,
+      frameworkService,
+      dialog,
+      router
     );
 
     // Create X6GraphAdapter with real dependencies
@@ -178,8 +208,8 @@ describe.skip('X6GraphAdapter', () => {
       selectionAdapter,
       x6EventLogger,
       edgeService,
-      eventHandlersService,
       historyCoordinator,
+      x6CoreOps,
     );
 
     // Initialize the adapter with the container
@@ -219,7 +249,7 @@ describe.skip('X6GraphAdapter', () => {
         true, // visible
         { text: { text: 'User' } }, // attrs with label
         {}, // ports
-        [{ key: 'type', value: 'actor' }], // Store original type in metadata
+        { _metadata: [{ key: 'type', value: 'actor' }] }, // Store original type in metadata
       );
       const actorNode = new DiagramNode(nodeData);
 
@@ -286,7 +316,7 @@ describe.skip('X6GraphAdapter', () => {
         true, // visible
         { text: { text: 'Trust Boundary' } }, // attrs with label
         {}, // ports
-        [{ key: 'type', value: 'security-boundary' }], // data
+        { _metadata: [{ key: 'type', value: 'security-boundary' }] }, // data
       );
       const boundaryNode = new DiagramNode(nodeData);
 

@@ -63,8 +63,11 @@ export function createCommonMocks(): {
  */
 export function createTypedMocks(): {
   logger: ReturnType<typeof createTypedMockLoggerService>;
-  router: ReturnType<typeof createMockRouter>;
-  httpClient: ReturnType<typeof createMockHttpClient>;
+  router: ReturnType<typeof createTypedMockRouter>;
+  httpClient: ReturnType<typeof createTypedMockHttpClient>;
+  auth: MockAuthService;
+  graph: MockGraphService;
+  websocket: MockWebSocketService;
 } {
   return {
     logger: createTypedMockLoggerService(),

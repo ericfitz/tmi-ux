@@ -118,7 +118,7 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 400 errors as "Validation error"', () => {
-      const mockRequest = new HttpRequest('POST', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('POST', 'http://localhost:8080/api/test', {});
       const mockError = new HttpErrorResponse({
         status: 400,
         statusText: 'Bad Request',
@@ -138,7 +138,7 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 422 errors as "Validation error"', () => {
-      const mockRequest = new HttpRequest('POST', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('POST', 'http://localhost:8080/api/test', {});
       const mockError = new HttpErrorResponse({
         status: 422,
         statusText: 'Unprocessable Entity',
