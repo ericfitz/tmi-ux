@@ -229,6 +229,13 @@ export class WebSocketAdapter {
           hasToken: url.includes('?token=')
         });
 
+        // Log WebSocket connection request with component debug logging
+        this.logger.debugComponent('websocket-api', 'WebSocket connection request:', {
+          url: url.replace(/\?.*$/, ''), // Redact query params for security
+          protocol: 'WebSocket',
+          hasAuthToken: url.includes('?token=')
+        });
+
         this._socket = new WebSocket(url);
         this._setupEventListeners();
 
@@ -237,6 +244,14 @@ export class WebSocketAdapter {
           this._connectionState$.next(WebSocketState.CONNECTED);
           this._reconnectAttempts = 0;
           this._startHeartbeat();
+          
+          // Log successful WebSocket connection with component debug logging
+          this.logger.debugComponent('websocket-api', 'WebSocket connection established:', {
+            url: url.replace(/\?.*$/, ''),
+            readyState: this._socket?.readyState,
+            protocol: this._socket?.protocol || 'none'
+          });
+          
           observer.next();
           observer.complete();
         };
@@ -278,6 +293,13 @@ export class WebSocketAdapter {
     this._stopHeartbeat();
 
     if (this._socket) {
+      // Log WebSocket disconnection with component debug logging
+      this.logger.debugComponent('websocket-api', 'WebSocket disconnection requested:', {
+        url: this._url?.replace(/\?.*$/, ''),
+        readyState: this._socket.readyState,
+        connectionHealth: this._connectionHealth
+      });
+      
       this._socket.close(1000, 'Client disconnect');
       this._socket = null;
     }
@@ -301,6 +323,16 @@ export class WebSocketAdapter {
           id: this._generateMessageId(),
           timestamp: Date.now(),
         };
+
+        // Log WebSocket message send with component debug logging
+        this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
+          messageId: fullMessage.id,
+          messageType: fullMessage.type,
+          sessionId: fullMessage.sessionId,
+          userId: fullMessage.userId,
+          requiresAck: fullMessage.requiresAck,
+          body: this._redactSensitiveData(fullMessage.data)
+        });
 
         this._socket!.send(JSON.stringify(fullMessage));
 
@@ -429,6 +461,15 @@ export class WebSocketAdapter {
           const message = parsedMessage as T;
           const messageTypeToCheck = (message as any).message_type || (message as any).event;
           if (messageTypeToCheck === messageType) {
+            // Log incoming TMI message with component debug logging
+            this.logger.debugComponent('websocket-api', 'TMI WebSocket message received:', {
+              messageType: messageTypeToCheck,
+              userId: (message as any).user_id,
+              operationId: (message as any).operation_id,
+              hasOperation: !!(message as any).operation,
+              body: this._redactSensitiveData(message as any)
+            });
+            
             observer.next(message);
           }
         } catch (error) {
@@ -459,6 +500,15 @@ export class WebSocketAdapter {
         this.logger.debug('Sending TMI message', { 
           type: (message as any).message_type || (message as any).event,
           userId: (message as any).user_id
+        });
+
+        // Log WebSocket message send with component debug logging
+        this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
+          messageType: (message as any).message_type || (message as any).event,
+          userId: (message as any).user_id,
+          operationId: (message as any).operation_id,
+          hasOperation: !!(message as any).operation,
+          body: this._redactSensitiveData(message)
         });
 
         this._socket!.send(JSON.stringify(message));
@@ -532,6 +582,17 @@ export class WebSocketAdapter {
         if (message.requiresAck) {
           this._sendAcknowledgment(message.id);
         }
+
+        // Log incoming WebSocket message with component debug logging
+        this.logger.debugComponent('websocket-api', 'WebSocket message received:', {
+          messageId: message.id,
+          messageType: message.type,
+          sessionId: message.sessionId,
+          userId: message.userId,
+          timestamp: message.timestamp,
+          requiresAck: message.requiresAck,
+          body: this._redactSensitiveData(message.data)
+        });
 
         this._messages$.next(message);
         this._updateConnectionHealth(5); // Small health boost for successful message
@@ -1017,5 +1078,64 @@ export class WebSocketAdapter {
     });
     
     this._errors$.next(wsError);
+  }
+
+  /**
+   * Redact sensitive information from WebSocket message data
+   * @param data Message data that may contain sensitive information
+   * @returns Object with sensitive values redacted
+   */
+  private _redactSensitiveData(data: any): any {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    const redacted = { ...data };
+    const sensitiveKeys = [
+      'bearer',
+      'token',
+      'password',
+      'secret',
+      'jwt',
+      'refresh_token',
+      'access_token',
+      'api_key',
+      'apikey',
+      'authorization',
+      'auth'
+    ];
+
+    for (const [key, value] of Object.entries(redacted)) {
+      const lowerKey = key.toLowerCase();
+      
+      // Check if the key contains sensitive information
+      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+        if (typeof value === 'string' && value.length > 0) {
+          redacted[key] = this._redactToken(value);
+        } else {
+          redacted[key] = '[REDACTED]';
+        }
+      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        // Recursively redact nested objects
+        redacted[key] = this._redactSensitiveData(value);
+      }
+    }
+
+    return redacted;
+  }
+
+  /**
+   * Redact a token while showing first and last few characters for debugging
+   * @param token The token to redact
+   * @returns Redacted token string
+   */
+  private _redactToken(token: string): string {
+    if (token.length <= 8) {
+      return '[REDACTED]';
+    }
+    const start = token.substring(0, 4);
+    const end = token.substring(token.length - 4);
+    const middle = '*'.repeat(Math.min(12, token.length - 8));
+    return `${start}${middle}${end}`;
   }
 }

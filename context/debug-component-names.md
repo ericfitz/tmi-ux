@@ -17,6 +17,8 @@ export const environment = {
 
 ### Application Core
 - **App** - Main application component and initialization
+- **api** - HTTP API request and response logging (via interceptor)
+- **websocket-api** - WebSocket API request and response logging (via WebSocket adapter)
 - **MockData** - Mock data service for development/testing
 - **MockDataToggle** - Mock data toggle component
 
@@ -77,6 +79,6 @@ export const environment = {
 3. **Include the service/component type** in the name when helpful (Service, Dialog, Guard, etc.)
 4. **Keep names concise** but descriptive enough to identify the source
 
-## Total Component Count: 25
+## Total Component Count: 26
 
 This list represents all components that currently use debug logging in the codebase as of the last update.

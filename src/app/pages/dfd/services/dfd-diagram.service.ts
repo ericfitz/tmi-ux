@@ -601,7 +601,7 @@ export class DfdDiagramService {
 
         // Check if error is authentication-related (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
-          this.logger.error('Authentication error - fallback not appropriate', { error });
+          this.logger.debug('User lacks edit permissions - operation blocked as expected', { error: error.message });
           return throwError(() => error);
         }
 
@@ -695,7 +695,7 @@ export class DfdDiagramService {
 
         // Check if error is recoverable (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
-          this.logger.error('Authentication error - fallback not appropriate', { error });
+          this.logger.debug('User lacks edit permissions - operation blocked as expected', { error: error.message });
           return throwError(() => error);
         }
 
