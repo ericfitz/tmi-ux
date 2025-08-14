@@ -168,9 +168,10 @@ export class DfdCollaborationService implements OnDestroy {
           };
         });
 
-        // Check if current user is in the participants list - if not, this is an error condition
+        // Check if current user is in the participants list
+        // If not, they may be added after WebSocket connection, so we'll refresh after connection
         if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
-          this._logger.error('Current user not found in collaboration session participants list', {
+          this._logger.info('Current user not yet in participants list, will refresh after WebSocket connection', {
             currentUser: currentUserEmail,
             sessionId: session.session_id,
             participants: session.participants.map(p => p.user_id)
@@ -736,6 +737,8 @@ export class DfdCollaborationService implements OnDestroy {
     this._webSocketAdapter.connect(fullWebSocketUrl).subscribe({
       next: () => {
         this._logger.info('WebSocket connection established successfully');
+        // Refresh session status after connection to get updated participant list
+        this._refreshSessionStatus('WebSocket connection established');
       },
       error: (error) => {
         this._logger.error('Failed to connect to WebSocket', error);
