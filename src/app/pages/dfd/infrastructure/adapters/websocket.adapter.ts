@@ -433,55 +433,65 @@ export class WebSocketAdapter {
    */
   getTMIMessagesOfType<T extends TMIWebSocketMessage>(messageType: TMIMessageType): Observable<T> {
     return new Observable(observer => {
-      if (!this._socket) {
-        observer.error(new Error('WebSocket not connected'));
-        return;
-      }
+      let messageHandler: ((event: MessageEvent) => void) | null = null;
+      let connectionSubscription: any = null;
 
-      const messageHandler = (event: MessageEvent) => {
-        try {
-          const rawData = event.data;
-          
-          // Parse JSON
-          let parsedMessage: any;
-          try {
-            parsedMessage = JSON.parse(rawData);
-          } catch (jsonError) {
-            this._handleMalformedMessage('Invalid JSON format in TMI message', jsonError, rawData);
-            return;
-          }
+      // Wait for connection to be established
+      connectionSubscription = this.connectionState$.subscribe(state => {
+        if (state === WebSocketState.CONNECTED && this._socket && !messageHandler) {
+          // Set up message handler once connected
+          messageHandler = (event: MessageEvent) => {
+            try {
+              const rawData = event.data;
+              
+              // Parse JSON
+              let parsedMessage: any;
+              try {
+                parsedMessage = JSON.parse(rawData);
+              } catch (jsonError) {
+                this._handleMalformedMessage('Invalid JSON format in TMI message', jsonError, rawData);
+                return;
+              }
 
-          // Validate TMI message structure
-          const validationResult = this._validateTMIMessage(parsedMessage);
-          if (!validationResult.isValid) {
-            this._handleMalformedMessage(`TMI message validation failed: ${validationResult.error}`, null, rawData);
-            return;
-          }
+              // Validate TMI message structure
+              const validationResult = this._validateTMIMessage(parsedMessage);
+              if (!validationResult.isValid) {
+                this._handleMalformedMessage(`TMI message validation failed: ${validationResult.error}`, null, rawData);
+                return;
+              }
 
-          const message = parsedMessage as T;
-          const messageTypeToCheck = (message as any).message_type || (message as any).event;
-          if (messageTypeToCheck === messageType) {
-            // Log incoming TMI message with component debug logging
-            this.logger.debugComponent('websocket-api', 'TMI WebSocket message received:', {
-              messageType: messageTypeToCheck,
-              userId: (message as any).user_id,
-              operationId: (message as any).operation_id,
-              hasOperation: !!(message as any).operation,
-              body: this._redactSensitiveData(message as any)
-            });
-            
-            observer.next(message);
-          }
-        } catch (error) {
-          this._handleMalformedMessage('Unexpected error processing TMI message', error, event.data);
+              const message = parsedMessage as T;
+              const messageTypeToCheck = (message as any).message_type || (message as any).event;
+              if (messageTypeToCheck === messageType) {
+                // Log incoming TMI message with component debug logging
+                this.logger.debugComponent('websocket-api', 'TMI WebSocket message received:', {
+                  messageType: messageTypeToCheck,
+                  userId: (message as any).user_id,
+                  operationId: (message as any).operation_id,
+                  hasOperation: !!(message as any).operation,
+                  body: this._redactSensitiveData(message as any)
+                });
+                
+                observer.next(message);
+              }
+            } catch (error) {
+              this._handleMalformedMessage('Unexpected error processing TMI message', error, event.data);
+            }
+          };
+
+          this._socket.addEventListener('message', messageHandler);
         }
-      };
-
-      this._socket.addEventListener('message', messageHandler);
+      });
 
       return () => {
-        if (this._socket) {
+        // Clean up message handler
+        if (this._socket && messageHandler) {
           this._socket.removeEventListener('message', messageHandler);
+        }
+        
+        // Clean up connection subscription
+        if (connectionSubscription) {
+          connectionSubscription.unsubscribe();
         }
       };
     });
