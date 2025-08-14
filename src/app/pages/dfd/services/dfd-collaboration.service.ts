@@ -864,6 +864,27 @@ export class DfdCollaborationService implements OnDestroy {
         this._handleSessionEnded(message);
       })
     );
+
+    // Listen to TMI join events (legacy format from CLIENT_INTEGRATION_GUIDE.md)
+    this._subscriptions.add(
+      this._webSocketAdapter.getTMIMessagesOfType('join').subscribe((message) => {
+        this._handleTMIUserJoined(message as { event: string; user_id: string; timestamp: string });
+      })
+    );
+
+    // Listen to TMI leave events (legacy format from CLIENT_INTEGRATION_GUIDE.md) 
+    this._subscriptions.add(
+      this._webSocketAdapter.getTMIMessagesOfType('leave').subscribe((message) => {
+        this._handleTMIUserLeft(message as { event: string; user_id: string; timestamp: string });
+      })
+    );
+
+    // Listen to TMI presenter change events
+    this._subscriptions.add(
+      this._webSocketAdapter.getTMIMessagesOfType('current_presenter').subscribe((message) => {
+        this._handleTMIPresenterChanged(message as { message_type: string; current_presenter: string });
+      })
+    );
     
     this._webSocketListenersSetup = true;
   }
@@ -1004,6 +1025,156 @@ export class DfdCollaborationService implements OnDestroy {
       this._cleanupSessionState();
       this._redirectToDashboard();
     }
+  }
+
+  /**
+   * Handle TMI user joined event (legacy format from CLIENT_INTEGRATION_GUIDE.md)
+   * Calls REST API to get updated session status and refresh participants list
+   */
+  private _handleTMIUserJoined(message: { event: string; user_id: string; timestamp: string }): void {
+    this._logger.debug('TMI user joined event received', message);
+    
+    if (!message || !message.user_id) {
+      this._logger.warn('Invalid TMI user joined message received', message);
+      return;
+    }
+    
+    // Show immediate notification
+    const displayName = this._getUserDisplayName(message.user_id);
+    this._notificationService.showSessionEvent('userJoined', displayName).subscribe();
+    
+    // Refresh participant list from REST API to get accurate session state
+    this._refreshSessionStatus('User joined session');
+  }
+
+  /**
+   * Handle TMI user left event (legacy format from CLIENT_INTEGRATION_GUIDE.md)
+   * Calls REST API to get updated session status and refresh participants list
+   */
+  private _handleTMIUserLeft(message: { event: string; user_id: string; timestamp: string }): void {
+    this._logger.debug('TMI user left event received', message);
+    
+    if (!message || !message.user_id) {
+      this._logger.warn('Invalid TMI user left message received', message);
+      return;
+    }
+    
+    // Show immediate notification
+    const displayName = this._getUserDisplayName(message.user_id);
+    this._notificationService.showSessionEvent('userLeft', displayName).subscribe();
+    
+    // Check if the current user left (shouldn't happen but handle gracefully)
+    const currentUserId = this.getCurrentUserId();
+    if (message.user_id === currentUserId && !this.isCurrentUserSessionManager()) {
+      this._logger.warn('Current user received leave event, cleaning up session');
+      this._cleanupSessionState();
+      this._redirectToDashboard();
+      return;
+    }
+    
+    // Refresh participant list from REST API to get accurate session state
+    this._refreshSessionStatus('User left session');
+  }
+
+  /**
+   * Handle TMI presenter changed event
+   * Calls REST API to get updated session status and refresh participants list
+   */
+  private _handleTMIPresenterChanged(message: { message_type: string; current_presenter: string }): void {
+    this._logger.debug('TMI presenter changed event received', message);
+    
+    if (!message || !message.current_presenter) {
+      this._logger.warn('Invalid TMI presenter changed message received', message);
+      return;
+    }
+    
+    // Update local presenter state
+    this._currentPresenterId$.next(message.current_presenter);
+    this._updateUsersPresenterStatus(message.current_presenter);
+    
+    // Show notification about presenter change
+    const displayName = this._getUserDisplayName(message.current_presenter);
+    const currentUserId = this.getCurrentUserId();
+    
+    if (message.current_presenter === currentUserId) {
+      this._notificationService.showPresenterEvent('assigned').subscribe();
+    } else {
+      this._notificationService.showPresenterEvent('assigned', displayName).subscribe();
+    }
+    
+    // Refresh participant list from REST API to get accurate session state including presenter info
+    this._refreshSessionStatus('Presenter changed');
+  }
+
+  /**
+   * Refresh session status by calling REST API and updating participant list
+   * This follows the CLIENT_INTEGRATION_GUIDE.md recommendation to call REST API on participant changes
+   */
+  private _refreshSessionStatus(reason: string): void {
+    if (!this._currentSession || !this._threatModelId || !this._diagramId) {
+      this._logger.warn('Cannot refresh session status - no active session', { reason });
+      return;
+    }
+
+    this._logger.info('Refreshing session status from REST API', { reason });
+
+    this._threatModelService.getDiagramCollaborationSession(this._threatModelId, this._diagramId)
+      .subscribe({
+        next: (session: CollaborationSession | null) => {
+          if (session) {
+            this._logger.info('Session status refreshed successfully', { 
+              reason,
+              participantCount: session.participants.length 
+            });
+            
+            // Update session data
+            this._currentSession = session;
+            
+            // Convert API participants to CollaborationUser format
+            const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
+              if (!participant.permissions) {
+                this._logger.error('Server error: participant missing permissions field', {
+                  sessionId: session.session_id,
+                  participantId: participant.user_id,
+                  participant
+                });
+                throw new Error(`Server error: participant ${participant.user_id} missing permissions field`);
+              }
+              return {
+                id: participant.user_id,
+                name: participant.user_id, // Use email address as display name
+                permission: participant.permissions, // Use permissions from API response
+                status: 'active' as const,
+                isSessionManager: participant.user_id === session.session_manager,
+              };
+            });
+
+            // Update the participants list
+            this._collaborationUsers$.next(collaborationUsers);
+            
+          } else {
+            this._logger.warn('No active session found during refresh - session may have ended', { reason });
+            // Session no longer exists, clean up
+            this._cleanupSessionState();
+            this._redirectToDashboard();
+          }
+        },
+        error: (error) => {
+          this._logger.error('Failed to refresh session status', { reason, error });
+          // Don't clean up session on error, as this might be a temporary network issue
+        }
+      });
+  }
+
+  /**
+   * Get user display name from user ID (email)
+   */
+  private _getUserDisplayName(userId: string): string {
+    if (!userId || typeof userId !== 'string') {
+      return 'Unknown User';
+    }
+    // Convert email to display name or use user directory
+    return userId.split('@')[0] || userId;
   }
 
   /**

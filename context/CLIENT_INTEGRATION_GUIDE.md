@@ -7,6 +7,7 @@ This guide provides frontend developers with everything needed to implement coll
 ## Table of Contents
 
 - [Quick Start](#quick-start)
+- [Collaboration Session Management](#collaboration-session-management)
 - [Authentication & Connection](#authentication--connection)
 - [Message Types & Protocol](#message-types--protocol)
 - [Core Collaborative Features](#core-collaborative-features)
@@ -66,6 +67,535 @@ await client.sendBatchOperation([
   { id: 'cell-2', operation: 'update', data: cellData2 }
 ]);
 ```
+
+## Collaboration Session Management
+
+### Overview
+
+Before establishing a WebSocket connection for real-time collaboration, clients must use the REST API to manage collaboration sessions. This section covers the complete flow from discovering sessions to joining them.
+
+### 1. Discovering Available Sessions
+
+**GET /collaboration/sessions** - List all active sessions
+
+```javascript
+async function getActiveCollaborationSessions(jwtToken) {
+  const response = await fetch('/collaboration/sessions', {
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to get sessions: ${response.status}`);
+  }
+  
+  const sessions = await response.json();
+  return sessions;
+}
+
+// Response format - Array of CollaborationSession objects:
+// [
+//   {
+//     "session_id": "053d62c1-8a5d-48db-8a0a-707cacceb6ab",
+//     "session_manager": "testuser-25542959@test.tmi", 
+//     "threat_model_id": "60fd469a-e3aa-4d04-9ed7-f3203162563d",
+//     "threat_model_name": "My Threat Model",
+//     "diagram_id": "422b993e-a0ff-416a-8a6b-5dff8b4d6eef",
+//     "diagram_name": "Main DFD",
+//     "participants": [
+//       {
+//         "user_id": "testuser-25542959@test.tmi",
+//         "joined_at": "2025-08-14T02:45:13.534Z",
+//         "permissions": "writer"
+//       }
+//     ],
+//     "websocket_url": "ws://localhost:8080/threat_models/60fd.../diagrams/422b.../ws"
+//   }
+// ]
+```
+
+### 2. Starting a New Collaboration Session
+
+**POST /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate** - Start or join session
+
+```javascript
+async function startOrJoinCollaborationSession(threatModelId, diagramId, jwtToken) {
+  const response = await fetch(
+    `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`, 
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+      // No body required - user identity comes from JWT
+    }
+  );
+  
+  if (!response.ok) {
+    throw new Error(`Failed to join session: ${response.status} ${response.statusText}`);
+  }
+  
+  const session = await response.json();
+  return session;
+}
+
+// Success Response (200 OK) - CollaborationSession object:
+// {
+//   "session_id": "053d62c1-8a5d-48db-8a0a-707cacceb6ab",
+//   "session_manager": "testuser-25542959@test.tmi",
+//   "threat_model_id": "60fd469a-e3aa-4d04-9ed7-f3203162563d", 
+//   "threat_model_name": "My Threat Model",
+//   "diagram_id": "422b993e-a0ff-416a-8a6b-5dff8b4d6eef",
+//   "diagram_name": "Main DFD",
+//   "participants": [
+//     {
+//       "user_id": "testuser-25542959@test.tmi", // Original session creator
+//       "joined_at": "2025-08-14T02:45:10.000Z",
+//       "permissions": "writer"
+//     },
+//     {
+//       "user_id": "testuser-20492675@test.tmi", // Current user (newly joined)
+//       "joined_at": "2025-08-14T02:45:13.534Z", 
+//       "permissions": "writer"
+//     }
+//   ],
+//   "websocket_url": "ws://localhost:8080/threat_models/60fd.../diagrams/422b.../ws"
+// }
+```
+
+### 3. Complete Session Join Flow
+
+**CRITICAL**: The REST API call must complete BEFORE establishing the WebSocket connection to ensure proper participant registration.
+
+```javascript
+class CollaborationSessionManager {
+  constructor(jwtToken) {
+    this.jwtToken = jwtToken;
+    this.currentSession = null;
+    this.wsClient = null;
+  }
+  
+  async joinCollaborationSession(threatModelId, diagramId) {
+    try {
+      // Step 1: Join session via REST API (REQUIRED FIRST STEP)
+      console.log('Step 1: Joining collaboration session via REST API...');
+      this.currentSession = await this.startOrJoinSession(threatModelId, diagramId);
+      
+      // Step 2: Verify you're included in participants list  
+      console.log('Step 2: Verifying participant registration...');
+      const currentUser = this.parseJWT(this.jwtToken).sub; // or .email
+      const isParticipant = this.currentSession.participants.some(
+        p => p.user_id === currentUser
+      );
+      
+      if (!isParticipant) {
+        throw new Error('Failed to register as session participant');
+      }
+      
+      console.log(`✅ Successfully joined session with ${this.currentSession.participants.length} participants`);
+      
+      // Step 3: Establish WebSocket connection using provided URL
+      console.log('Step 3: Establishing WebSocket connection...');
+      await this.connectWebSocket();
+      
+      console.log('✅ Collaboration session ready!');
+      return this.currentSession;
+      
+    } catch (error) {
+      console.error('Failed to join collaboration session:', error);
+      
+      // Clean up on failure
+      if (this.wsClient) {
+        this.wsClient.disconnect();
+        this.wsClient = null;
+      }
+      this.currentSession = null;
+      
+      throw error;
+    }
+  }
+  
+  async startOrJoinSession(threatModelId, diagramId) {
+    const response = await fetch(
+      `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.jwtToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Session join failed: ${response.status} - ${errorText}`);
+    }
+    
+    return await response.json();
+  }
+  
+  async connectWebSocket() {
+    if (!this.currentSession) {
+      throw new Error('No active session - call joinCollaborationSession() first');
+    }
+    
+    // Use the websocket_url from the session response
+    const wsUrl = this.currentSession.websocket_url + `?token=${this.jwtToken}`;
+    
+    this.wsClient = new TMICollaborativeClient({
+      websocketUrl: wsUrl,
+      jwtToken: this.jwtToken,
+      diagramId: this.currentSession.diagram_id,
+      threatModelId: this.currentSession.threat_model_id
+    });
+    
+    await this.wsClient.connect();
+    
+    // Set up session-specific event handlers
+    this.setupSessionEventHandlers();
+  }
+  
+  setupSessionEventHandlers() {
+    this.wsClient.on('connected', () => {
+      console.log('WebSocket connected to collaboration session');
+    });
+    
+    this.wsClient.on('diagram_operation', (operation) => {
+      console.log(`Received operation from ${operation.user_id}`);
+      // Apply operation to your diagram editor
+    });
+    
+    this.wsClient.on('current_presenter', (message) => {
+      console.log(`Presenter changed to: ${message.current_presenter}`);
+      // Update UI to reflect presenter change
+    });
+  }
+  
+  parseJWT(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64).split('').map(c => 
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join('')
+    );
+    return JSON.parse(jsonPayload);
+  }
+}
+```
+
+### 4. Error Handling During Session Join
+
+```javascript
+class SessionJoinErrorHandler {
+  async joinWithRetry(threatModelId, diagramId, maxRetries = 3) {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.sessionManager.joinCollaborationSession(threatModelId, diagramId);
+      } catch (error) {
+        lastError = error;
+        console.warn(`Session join attempt ${attempt} failed:`, error.message);
+        
+        if (attempt < maxRetries) {
+          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+          console.log(`Retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    
+    throw new Error(`Failed to join session after ${maxRetries} attempts: ${lastError.message}`);
+  }
+  
+  handleSessionJoinError(error, response) {
+    switch (response.status) {
+      case 401:
+        return 'Authentication failed. Please log in again.';
+      case 403:
+        return 'You do not have permission to access this diagram.';
+      case 404:
+        return 'Diagram or threat model not found.';
+      case 500:
+        return 'Server error. Please try again later.';
+      default:
+        return `Failed to join collaboration session: ${error.message}`;
+    }
+  }
+}
+```
+
+### 5. Checking Session Status
+
+**GET /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate** - Get current session
+
+```javascript
+async function getSessionStatus(threatModelId, diagramId, jwtToken) {
+  const response = await fetch(
+    `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
+    {
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  
+  if (response.status === 404) {
+    return null; // No active session
+  }
+  
+  if (!response.ok) {
+    throw new Error(`Failed to get session status: ${response.status}`);
+  }
+  
+  return await response.json(); // CollaborationSession object
+}
+```
+
+### 6. Leaving a Session  
+
+**DELETE /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate** - Leave session
+
+```javascript
+async function leaveCollaborationSession(threatModelId, diagramId, jwtToken) {
+  // First close WebSocket connection
+  if (this.wsClient) {
+    this.wsClient.disconnect();
+    this.wsClient = null;
+  }
+  
+  // Then notify server via REST API
+  const response = await fetch(
+    `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  
+  if (!response.ok && response.status !== 404) {
+    console.warn(`Failed to leave session cleanly: ${response.status}`);
+  }
+  
+  this.currentSession = null;
+}
+```
+
+### Key Integration Points
+
+**✅ Prerequisites for Collaboration:**
+1. Valid JWT token with appropriate permissions (reader/writer/owner)
+2. Access to the specific threat model and diagram  
+3. Network connectivity to both REST API and WebSocket endpoints
+
+**✅ Critical Sequence:**
+1. **REST API first** - Call POST `/threat_models/{id}/diagrams/{id}/collaborate`
+2. **Verify participation** - Check you're in the `participants` array
+3. **WebSocket second** - Connect using the provided `websocket_url`
+4. **Handle events** - Set up message handlers for collaborative features
+
+**⚠️ Common Pitfalls:**
+- **Never skip the REST API call** - WebSocket-only connections will fail authorization
+- **Check participant list** - Ensure you're registered before proceeding
+- **Use provided WebSocket URL** - Don't construct it manually, use the one from the session response
+- **Handle connection failures gracefully** - Both REST and WebSocket can fail independently
+
+This session management layer ensures proper authorization and participant tracking before engaging in real-time collaboration.
+
+### 7. Participant Updates via WebSocket Events
+
+**IMPORTANT**: After completing the REST API + WebSocket connection flow, clients do **NOT** need to poll the REST API again unless they want updated participant information when users join/leave.
+
+#### Join/Leave Event Handling
+
+The server automatically sends WebSocket messages when users join or leave the session:
+
+```javascript
+class ParticipantManager {
+  constructor(wsClient, sessionManager) {
+    this.wsClient = wsClient;
+    this.sessionManager = sessionManager;
+    this.currentParticipants = [];
+    
+    // Listen for user join/leave events
+    this.setupParticipantEventListeners();
+  }
+  
+  setupParticipantEventListeners() {
+    // Handle user joining the session
+    this.wsClient.on('message', (message) => {
+      if (message.event === 'join') {
+        console.log(`User ${message.user_id} joined the session`);
+        this.handleUserJoined(message.user_id, message.timestamp);
+      }
+      
+      if (message.event === 'leave') {
+        console.log(`User ${message.user_id} left the session`);
+        this.handleUserLeft(message.user_id, message.timestamp);
+      }
+    });
+  }
+  
+  async handleUserJoined(userId, timestamp) {
+    // Show immediate notification
+    this.showNotification(`${this.getDisplayName(userId)} joined the session`, 'info');
+    
+    // Optionally refresh participant list with full details
+    if (this.needsParticipantDetails) {
+      await this.refreshParticipantList();
+    }
+  }
+  
+  async handleUserLeft(userId, timestamp) {
+    // Show immediate notification  
+    this.showNotification(`${this.getDisplayName(userId)} left the session`, 'info');
+    
+    // Remove from local participant list
+    this.currentParticipants = this.currentParticipants.filter(p => p.user_id !== userId);
+    this.updateParticipantUI();
+    
+    // Optionally refresh participant list for accurate state
+    if (this.needsParticipantDetails) {
+      await this.refreshParticipantList();
+    }
+  }
+  
+  async refreshParticipantList() {
+    try {
+      // Get updated session info from REST API
+      const session = await this.sessionManager.getSessionStatus(
+        this.sessionManager.currentSession.threat_model_id,
+        this.sessionManager.currentSession.diagram_id
+      );
+      
+      if (session && session.participants) {
+        this.currentParticipants = session.participants;
+        this.updateParticipantUI();
+        console.log(`Updated participant list: ${session.participants.length} participants`);
+      }
+    } catch (error) {
+      console.warn('Failed to refresh participant list:', error);
+    }
+  }
+  
+  updateParticipantUI() {
+    // Update your UI to show current participants with their permissions
+    const participantElements = this.currentParticipants.map(p => `
+      <div class="participant">
+        <span class="user-name">${this.getDisplayName(p.user_id)}</span>
+        <span class="permission-badge ${p.permissions}">${p.permissions}</span>
+        <span class="join-time">${this.formatTime(p.joined_at)}</span>
+      </div>
+    `);
+    
+    document.getElementById('participants-list').innerHTML = participantElements.join('');
+  }
+  
+  getDisplayName(userId) {
+    // Convert email to display name or use user directory
+    return userId.split('@')[0] || userId;
+  }
+  
+  formatTime(timestamp) {
+    return new Date(timestamp).toLocaleTimeString();
+  }
+}
+```
+
+#### WebSocket Message Format
+
+**Join Event:**
+```javascript
+{
+  "event": "join",
+  "user_id": "testuser-20492675@test.tmi", 
+  "timestamp": "2025-08-14T02:45:13.534Z"
+}
+```
+
+**Leave Event:**
+```javascript
+{
+  "event": "leave", 
+  "user_id": "testuser-20492675@test.tmi",
+  "timestamp": "2025-08-14T02:45:20.123Z"
+}
+```
+
+#### Complete Integration Example
+
+```javascript
+class CollaborationClient {
+  async initializeCollaboration(threatModelId, diagramId) {
+    // Step 1: Join via REST API
+    const session = await this.sessionManager.joinCollaborationSession(threatModelId, diagramId);
+    console.log(`Joined session with ${session.participants.length} participants`);
+    
+    // Step 2: Set up participant tracking
+    this.participantManager = new ParticipantManager(this.wsClient, this.sessionManager);
+    this.participantManager.currentParticipants = session.participants;
+    this.participantManager.updateParticipantUI();
+    
+    // Step 3: Set up collaboration features
+    this.setupDiagramCollaboration();
+    
+    console.log('✅ Collaboration fully initialized');
+  }
+  
+  setupDiagramCollaboration() {
+    // Handle diagram operations
+    this.wsClient.on('diagram_operation', (operation) => {
+      if (operation.user_id !== this.currentUser.email) {
+        this.applyRemoteOperation(operation);
+        
+        // Show who made the change
+        this.participantManager.showNotification(
+          `${this.participantManager.getDisplayName(operation.user_id)} updated the diagram`,
+          'info'
+        );
+      }
+    });
+    
+    // Handle presenter mode changes
+    this.wsClient.on('current_presenter', (message) => {
+      this.handlePresenterChange(message.current_presenter);
+    });
+  }
+}
+```
+
+#### Key Points for Participant Management
+
+**✅ Automatic Notifications:**
+- WebSocket join/leave events are sent automatically
+- No additional REST API calls required for basic awareness
+- Events include user ID and timestamp
+
+**✅ When to Refresh Participant List:**
+- **Basic apps**: Just show join/leave notifications, don't refresh
+- **Detailed apps**: Refresh after join/leave to get permission levels and accurate timestamps  
+- **Dashboard apps**: Refresh to show participant count and detailed participant info
+
+**✅ Performance Considerations:**
+- Join/leave events are lightweight and frequent
+- Only refresh full participant list when you need detailed information
+- Consider debouncing refresh calls if multiple users join/leave rapidly
+
+**❌ What NOT to do:**
+- Don't poll the REST API continuously for participant updates
+- Don't refresh participant list on every join/leave unless needed
+- Don't assume join/leave events include permission information
+
+The WebSocket events provide real-time awareness of participant changes, while the REST API provides detailed participant information when needed.
 
 ## Authentication & Connection
 
@@ -192,6 +722,20 @@ this.ws.send(JSON.stringify({
 #### Core Message Handler
 ```javascript
 handleMessage(message) {
+  // Handle legacy event format (join/leave events)
+  if (message.event) {
+    switch (message.event) {
+      case 'join':
+        this.handleUserJoined(message);
+        break;
+      case 'leave':
+        this.handleUserLeft(message);
+        break;
+    }
+    return;
+  }
+
+  // Handle standard message format
   switch (message.message_type) {
     case 'diagram_operation':
       this.handleDiagramOperation(message);
@@ -223,6 +767,27 @@ handleMessage(message) {
       
     default:
       console.warn('Unknown message type:', message.message_type);
+  }
+}
+
+// Handle user join/leave events
+handleUserJoined(message) {
+  console.log(`User ${message.user_id} joined at ${message.timestamp}`);
+  this.emit('user_joined', message);
+  
+  // Update participant list if needed
+  if (this.participantManager) {
+    this.participantManager.handleUserJoined(message.user_id, message.timestamp);
+  }
+}
+
+handleUserLeft(message) {
+  console.log(`User ${message.user_id} left at ${message.timestamp}`);
+  this.emit('user_left', message);
+  
+  // Update participant list if needed
+  if (this.participantManager) {
+    this.participantManager.handleUserLeft(message.user_id, message.timestamp);
   }
 }
 ```
@@ -688,6 +1253,37 @@ class ValidationManager {
 ## TypeScript Definitions
 
 ```typescript
+// Collaboration Session Types
+interface CollaborationSession {
+  session_id: string;
+  session_manager: string;
+  threat_model_id: string;
+  threat_model_name: string;
+  diagram_id: string;
+  diagram_name: string;
+  participants: SessionParticipant[];
+  websocket_url: string;
+}
+
+interface SessionParticipant {
+  user_id: string;
+  joined_at: string; // ISO 8601 timestamp
+  permissions: 'reader' | 'writer';
+}
+
+interface SessionManagerConfig {
+  jwtToken: string;
+  baseUrl?: string;
+  maxRetries?: number;
+  retryDelay?: number;
+}
+
+interface SessionJoinResult {
+  session: CollaborationSession;
+  isNewSession: boolean;
+  participantCount: number;
+}
+
 // Message Types
 interface DiagramOperationMessage {
   message_type: 'diagram_operation';
@@ -768,6 +1364,32 @@ interface HistoryOperationMessage {
   operation_type: 'undo' | 'redo';
   message: 'resync_required' | 'no_operations_to_undo' | 'no_operations_to_redo';
 }
+
+// Participant Join/Leave Events (Legacy Format)
+interface UserJoinedEvent {
+  event: 'join';
+  user_id: string;
+  timestamp: string; // ISO 8601 timestamp
+}
+
+interface UserLeftEvent {
+  event: 'leave';
+  user_id: string;
+  timestamp: string; // ISO 8601 timestamp
+}
+
+// Union type for all WebSocket messages
+type WebSocketMessage = DiagramOperationMessage | 
+                       PresenterRequestMessage | 
+                       CurrentPresenterMessage | 
+                       PresenterCursorMessage |
+                       AuthorizationDeniedMessage |
+                       StateCorrectionMessage |
+                       ResyncResponseMessage |
+                       UndoRequestMessage |
+                       HistoryOperationMessage |
+                       UserJoinedEvent |
+                       UserLeftEvent;
 
 // Client Configuration
 interface TMIClientConfig {

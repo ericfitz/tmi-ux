@@ -18,6 +18,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, Subscription, BehaviorSubject, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
@@ -44,6 +45,13 @@ interface CollaborationSession {
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
+
+/**
+ * Type guard to check if an error is an HttpErrorResponse
+ */
+function isHttpErrorResponse(error: unknown): error is HttpErrorResponse {
+  return error instanceof HttpErrorResponse;
+}
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Injectable({
@@ -1479,15 +1487,23 @@ export class ThreatModelService implements OnDestroy {
         });
       }),
       catchError((error: unknown) => {
-        this.logger.error('Error starting collaboration session - detailed server error', {
-          threatModelId,
-          diagramId,
-          error,
-          errorStatus: (error as any)?.status,
-          errorMessage: (error as any)?.message,
-          errorBody: (error as any)?.error,
-          errorUrl: (error as any)?.url
-        });
+        if (isHttpErrorResponse(error)) {
+          this.logger.error('Error starting collaboration session - detailed server error', {
+            threatModelId,
+            diagramId,
+            error,
+            errorStatus: error.status,
+            errorMessage: error.message,
+            errorBody: error.error as unknown,
+            errorUrl: error.url
+          });
+        } else {
+          this.logger.error('Error starting collaboration session - unknown error', {
+            threatModelId,
+            diagramId,
+            error
+          });
+        }
         return throwError(() => error instanceof Error ? error : new Error(String(error)));
       })
     );

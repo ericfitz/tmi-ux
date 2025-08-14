@@ -64,13 +64,18 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       errors$: new Subject(),
       messages$: new Subject(),
       getMessagesOfType: vi.fn().mockReturnValue(of({})),
+      getTMIMessagesOfType: vi.fn().mockReturnValue(of({})),
       sendMessage: vi.fn(),
+      sendTMIMessage: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockNotificationService = {
       showSessionEvent: vi.fn().mockReturnValue(of(undefined)),
       showWebSocketConnectionStatus: vi.fn().mockReturnValue(of(undefined)),
+      showWebSocketStatus: vi.fn().mockReturnValue(of(undefined)),
+      showWebSocketError: vi.fn().mockReturnValue(of(undefined)),
       showPresenterEvent: vi.fn().mockReturnValue(of(undefined)),
+      showOperationError: vi.fn().mockReturnValue(of(undefined)),
       showError: vi.fn(),
       showWarning: vi.fn(),
       showInfo: vi.fn(),
