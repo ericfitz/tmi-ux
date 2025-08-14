@@ -139,6 +139,10 @@ def main(main_file_path, diff_files=None, auto_yes=False, dry_run=False):
     # If diff files specified, compare each one against the main file
     if diff_files:
         for diff_file in diff_files:
+            # Skip if this diff file is the same as the main file
+            if os.path.abspath(diff_file) == os.path.abspath(main_file_path):
+                continue
+                
             if not os.path.exists(diff_file):
                 print(f"Warning: Diff file {diff_file} not found, skipping.")
                 continue

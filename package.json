@@ -45,6 +45,8 @@
     "validate-all": "pnpm run validate-json:i18n && pnpm run validate-jsonc:tsconfig && pnpm run unused-i18n",
     "sort-json": "uv run scripts/sort-json.py -y",
     "compare-json": "uv run scripts/sort-json.py -y",
+    "check-i18n": "python3 scripts/sort-json.py src/assets/i18n/en-US.json --diff src/assets/i18n/* -y",
+    "check-i18n:dry-run": "python3 scripts/sort-json.py src/assets/i18n/en-US.json --diff src/assets/i18n/* -y --dry-run",
     "bump": "pnpm update --verbose && pnpm install --verbose"
   },
   "private": true,

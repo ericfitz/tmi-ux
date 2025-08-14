@@ -22,23 +22,36 @@
     "title": "เกี่ยวกับ TMI"
   },
   "collaboration": {
+    "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
     "changeRole": "เปลี่ยนบทบาท",
+    "clearPresenter": "ล้างผู้นำเสนอ",
     "collaboratorsHeader": "ผู้ร่วมงาน",
     "copyLink": "คัดลอกลิงก์",
+    "currentPresenter": "ผู้นำเสนอปัจจุบัน",
+    "denyPresenterRequest": "ปฏิเสธคำขอเป็นผู้นำเสนอ",
     "endCollaboration": "สิ้นสุดการทำงานร่วมกัน",
+    "joinSession": "เข้าร่วมเซสชัน",
+    "leaveSession": "ออกจากเซสชัน",
     "makeOwner": "ทำให้เป็นเจ้าของ",
+    "makePresenter": "ทำให้เป็นผู้นำเสนอ",
     "makeReader": "ทำให้เป็นผู้อ่าน",
     "makeWriter": "ทำให้เป็นผู้เขียน",
     "manageCollaboration": "จัดการการทำงานร่วมกัน",
+    "presenterHeader": "การควบคุมผู้นำเสนอ",
+    "presenterRequests": "คำขอเป็นผู้นำเสนอ",
+    "removeFromSession": "ลบออกจากเซสชัน",
     "removeUser": "ลบผู้ใช้",
+    "requestPresenter": "ขอเป็นผู้นำเสนอ",
     "roles": {
       "owner": "เจ้าของ",
+      "presenter": "ผู้นำเสนอ",
       "reader": "ผู้อ่าน",
       "writer": "ผู้เขียน"
     },
     "shareLinkHeader": "แชร์ลิงก์การทำงานร่วมกัน",
     "startCollaboration": "เริ่มการทำงานร่วมกัน",
+    "takeBackPresenter": "เอาผู้นำเสนอกลับ",
     "title": "การทำงานร่วมกัน",
     "websocketStatus": {
       "connected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว",
@@ -81,6 +94,7 @@
     "ok": "ตกลง",
     "other": "อื่นๆ",
     "priority": "ความสำคัญ",
+    "refresh": "รีเฟรช",
     "save": "บันทึก",
     "score": "คะแนน",
     "severity": "ความรุนแรง",
@@ -138,6 +152,9 @@
       }
     }
   },
+  "errors": {
+    "validationError": "ข้อผิดพลาดในการตรวจสอบ"
+  },
   "footer": {
     "about": "เกี่ยวกับ",
     "privacy": "นโยบายความเป็นส่วนตัว",
@@ -148,24 +165,25 @@
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
     "loadingProviders": "กำลังโหลดผู้ให้บริการการตรวจสอบสิทธิ์...",
+    "local": {
+      "emailInvalid": "กรุณาป้อนที่อยู่อีเมลที่ถูกต้อง",
+      "emailLabel": "ที่อยู่อีเมล",
+      "emailRequired": "ต้องระบุที่อยู่อีเมล",
+      "loginButton": "เข้าสู่ระบบ",
+      "subtitle": "กรุณาป้อนที่อยู่อีเมลของคุณสำหรับการทดสอบ",
+      "title": "เข้าสู่ระบบสำหรับการพัฒนาระบบในเครื่อง"
+    },
     "loggingInWith": "กำลังเข้าสู่ระบบด้วย {{provider}}...",
     "loginWith": "เข้าสู่ระบบด้วย",
     "noProvidersConfigured": "ไม่มีผู้ให้บริการการตรวจสอบสิทธิ์ที่กำหนดค่าไว้",
     "oauthFailed": "การตรวจสอบสิทธิ์ OAuth ล้มเหลว กรุณาลองใหม่อีกครั้ง",
     "pleaseSignIn": "กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ",
     "title": "เข้าสู่ระบบ TMI",
-    "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิดระหว่างการตรวจสอบสิทธิ์ OAuth",
-    "local": {
-      "title": "เข้าสู่ระบบสำหรับการพัฒนาระบบในเครื่อง",
-      "subtitle": "กรุณาป้อนที่อยู่อีเมลของคุณสำหรับการทดสอบ",
-      "emailLabel": "ที่อยู่อีเมล",
-      "emailRequired": "ต้องระบุที่อยู่อีเมล",
-      "emailInvalid": "กรุณาป้อนที่อยู่อีเมลที่ถูกต้อง",
-      "loginButton": "เข้าสู่ระบบ"
-    }
+    "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิดระหว่างการตรวจสอบสิทธิ์ OAuth"
   },
   "navbar": {
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
+    "copyUserEmail": "คัดลอกอีเมลผู้ใช้ไปยังคลิปบอร์ด",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
     "logoutButton": "ออกจากระบบ",

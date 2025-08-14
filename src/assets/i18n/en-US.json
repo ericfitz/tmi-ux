@@ -22,10 +22,14 @@
     "title": "About TMI"
   },
   "collaboration": {
+    "approvePresenterRequest": "Approve Presenter Request",
     "availableCollaborationSessions": "Available Collaboration Sessions",
     "changeRole": "Change Role",
+    "clearPresenter": "Clear Presenter",
     "collaboratorsHeader": "Collaborators",
     "copyLink": "Copy Link",
+    "currentPresenter": "Current Presenter",
+    "denyPresenterRequest": "Deny Presenter Request",
     "endCollaboration": "End Collaboration",
     "joinSession": "Join Session",
     "leaveSession": "Leave Session",
@@ -35,23 +39,19 @@
     "makeWriter": "Make Writer",
     "manageCollaboration": "Manage Collaboration",
     "presenterHeader": "Presenter Controls",
+    "presenterRequests": "Presenter Requests",
     "removeFromSession": "Remove from Session",
     "removeUser": "Remove User",
+    "requestPresenter": "Request Presenter",
     "roles": {
       "owner": "Owner",
       "presenter": "Presenter",
       "reader": "Reader",
       "writer": "Writer"
     },
-    "requestPresenter": "Request Presenter",
-    "takeBackPresenter": "Take Back Presenter",
-    "clearPresenter": "Clear Presenter",
-    "currentPresenter": "Current Presenter",
-    "presenterRequests": "Presenter Requests",
-    "approvePresenterRequest": "Approve Presenter Request",
-    "denyPresenterRequest": "Deny Presenter Request",
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
+    "takeBackPresenter": "Take Back Presenter",
     "title": "Collaboration",
     "websocketStatus": {
       "connected": "Websocket Connected",
@@ -111,9 +111,6 @@
       "required": "This field is required"
     }
   },
-  "errors": {
-    "validationError": "Validation Error"
-  },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
     "editText": "Edit Text",
@@ -155,6 +152,9 @@
       }
     }
   },
+  "errors": {
+    "validationError": "Validation Error"
+  },
   "footer": {
     "about": "About",
     "privacy": "Privacy Policy",
@@ -165,21 +165,21 @@
   "login": {
     "chooseMethod": "Choose your login method:",
     "loadingProviders": "Loading authentication providers...",
+    "local": {
+      "emailInvalid": "Please enter a valid email address",
+      "emailLabel": "Email Address",
+      "emailRequired": "Email address is required",
+      "loginButton": "Login",
+      "subtitle": "Enter your email address for testing",
+      "title": "Local Development Login"
+    },
     "loggingInWith": "Logging in with {{provider}}...",
     "loginWith": "Login with",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed. Please try again.",
     "pleaseSignIn": "Please sign in to continue.",
     "title": "Login to TMI",
-    "unexpectedError": "An unexpected error occurred during OAuth.",
-    "local": {
-      "title": "Local Development Login",
-      "subtitle": "Enter your email address for testing",
-      "emailLabel": "Email Address",
-      "emailRequired": "Email address is required",
-      "emailInvalid": "Please enter a valid email address",
-      "loginButton": "Login"
-    }
+    "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
