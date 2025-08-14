@@ -103,11 +103,11 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Join an existing collaboration session
+   * Join an existing collaboration session using PUT method
    * @returns Observable<boolean> indicating success or failure
    */
   public joinCollaboration(): Observable<boolean> {
-    this._logger.info('Joining existing collaboration session');
+    this._logger.info('Joining existing collaboration session using PUT method');
 
     if (!this._threatModelId || !this._diagramId) {
       this._logger.error('Cannot join collaboration: diagram context not set');
@@ -119,14 +119,10 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('Collaboration session is already active'));
     }
 
-    // Get existing collaboration session
-    return this._threatModelService.getDiagramCollaborationSession(this._threatModelId, this._diagramId).pipe(
-      tap((session: CollaborationSession | null) => {
-        if (!session) {
-          throw new Error('No active collaboration session found to join. You can only join existing sessions.');
-        }
-
-        this._logger.info('Joining existing collaboration session', {
+    // Use PUT method to join existing collaboration session
+    return this._threatModelService.joinDiagramCollaborationSession(this._threatModelId, this._diagramId).pipe(
+      tap((session: CollaborationSession) => {
+        this._logger.info('Successfully joined existing collaboration session', {
           sessionId: session.session_id,
           threatModelId: session.threat_model_id,
           diagramId: session.diagram_id,
@@ -149,7 +145,6 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService.showSessionEvent('userJoined').subscribe();
 
         // Convert API participants to CollaborationUser format with correct permissions
-        const currentUserEmail = this._authService.userEmail || 'current-user';
         const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
           if (!participant.permissions) {
             this._logger.error('Server error: participant missing permissions field', {
@@ -168,28 +163,98 @@ export class DfdCollaborationService implements OnDestroy {
           };
         });
 
-        // Check if current user is in the participants list
-        // If not, they may be added after WebSocket connection, so we'll refresh after connection
-        if (!collaborationUsers.some(u => u.id === currentUserEmail)) {
-          this._logger.info('Current user not yet in participants list, will refresh after WebSocket connection', {
-            currentUser: currentUserEmail,
-            sessionId: session.session_id,
-            participants: session.participants.map(p => p.user_id)
-          });
-        }
-
         this._collaborationUsers$.next(collaborationUsers);
       }),
       map(() => true),
       catchError((error) => {
-        this._logger.error('Failed to join collaboration session', error);
+        this._logger.error('Failed to join collaboration session via PUT', error);
         return throwError(() => error);
       })
     );
   }
 
   /**
-   * Start a new collaboration session (session manager only)
+   * Smart collaboration starter: Try to create a session, if it exists then join it
+   * This implements the pattern recommended in CLIENT_INTEGRATION_GUIDE.md
+   * @returns Observable<boolean> indicating success or failure
+   */
+  public startOrJoinCollaboration(): Observable<boolean> {
+    this._logger.info('Smart collaboration starter: attempting to create or join session');
+
+    if (!this._threatModelId || !this._diagramId) {
+      this._logger.error('Cannot start/join collaboration: diagram context not set');
+      return throwError(() => new Error('Diagram context not set. Call setDiagramContext() first.'));
+    }
+
+    if (this._isCollaborating$.value) {
+      this._logger.warn('Collaboration session already active');
+      return throwError(() => new Error('Collaboration session is already active'));
+    }
+
+    // Use smart session handler that tries POST first, then PUT on 409
+    return this._threatModelService.startOrJoinDiagramCollaborationSession(this._threatModelId, this._diagramId).pipe(
+      tap((result: {session: CollaborationSession, isNewSession: boolean}) => {
+        const session = result.session;
+        
+        this._logger.info('Smart collaboration handler succeeded', {
+          sessionId: session.session_id,
+          threatModelId: session.threat_model_id,
+          diagramId: session.diagram_id,
+          websocketUrl: session.websocket_url,
+          isNewSession: result.isNewSession
+        });
+
+        // Store the session
+        this._currentSession = session;
+
+        // Set up WebSocket listeners before connecting
+        this._setupWebSocketListeners();
+
+        // Connect to WebSocket
+        this._connectToWebSocket(session.websocket_url);
+
+        // Update collaboration state
+        this._isCollaborating$.next(true);
+        
+        // Show appropriate notification based on whether session was created or joined
+        if (result.isNewSession) {
+          this._notificationService.showSessionEvent('started').subscribe();
+        } else {
+          this._notificationService.showSessionEvent('userJoined').subscribe();
+        }
+
+        // Convert API participants to CollaborationUser format
+        const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
+          if (!participant.permissions) {
+            this._logger.error('Server error: participant missing permissions field', {
+              sessionId: session.session_id,
+              participantId: participant.user_id,
+              participant
+            });
+            throw new Error(`Server error: participant ${participant.user_id} missing permissions field`);
+          }
+          return {
+            id: participant.user_id,
+            name: participant.user_id, // Use email address as display name
+            permission: participant.permissions, // Use permissions from API response
+            status: 'active' as const,
+            isSessionManager: participant.user_id === session.session_manager,
+          };
+        });
+
+        this._collaborationUsers$.next(collaborationUsers);
+      }),
+      map(() => true),
+      catchError((error) => {
+        this._logger.error('Smart collaboration starter failed', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Start a new collaboration session (session manager only) - DEPRECATED
+   * Use startOrJoinCollaboration() instead for better UX
    * @returns Observable<boolean> indicating success or failure
    */
   public startCollaboration(): Observable<boolean> {

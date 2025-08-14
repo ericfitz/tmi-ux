@@ -1559,4 +1559,137 @@ export class ThreatModelService implements OnDestroy {
       })
     );
   }
+
+  /**
+   * Join an existing collaboration session for a diagram (PUT method)
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<CollaborationSession>
+   */
+  joinDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<CollaborationSession> {
+    this.logger.info('Joining existing diagram collaboration session', { 
+      threatModelId, 
+      diagramId,
+      currentUser: this.authService.username,
+      userEmail: this.authService.userEmail,
+      isAuthenticated: !!this.authService.getStoredToken(),
+      useMockData: this._useMockData
+    });
+
+    if (this._useMockData) {
+      // For mock data, simulate joining a collaboration session
+      const mockSession = {
+        session_id: `session-${Date.now()}`,
+        threat_model_id: threatModelId,
+        diagram_id: diagramId,
+        participants: [
+          {
+            user_id: 'existing-user@example.com',
+            joined_at: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
+            permissions: 'writer' as const
+          },
+          {
+            user_id: this.authService.username || 'current-user',
+            joined_at: new Date().toISOString(),
+            permissions: 'writer' as const
+          }
+        ],
+        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
+        session_manager: 'existing-user@example.com'
+      };
+      return of(mockSession);
+    }
+
+    return this.apiService.put<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`, {}).pipe(
+      tap(session => {
+        this.logger.info('Successfully joined collaboration session', { 
+          sessionId: session.session_id,
+          threatModelId, 
+          diagramId,
+          websocketUrl: session.websocket_url,
+          sessionManager: session.session_manager,
+          participantCount: session.participants?.length || 0,
+          participants: session.participants?.map(p => ({ 
+            id: p.user_id, 
+            permissions: p.permissions,
+            joined_at: p.joined_at 
+          }))
+        });
+      }),
+      catchError((error: unknown) => {
+        if (isHttpErrorResponse(error)) {
+          this.logger.error('Error joining collaboration session - detailed server error', {
+            threatModelId,
+            diagramId,
+            error,
+            errorStatus: error.status,
+            errorMessage: error.message,
+            errorBody: error.error as unknown,
+            errorUrl: error.url
+          });
+        } else {
+          this.logger.error('Error joining collaboration session - unknown error', {
+            threatModelId,
+            diagramId,
+            error
+          });
+        }
+        return throwError(() => error instanceof Error ? error : new Error(String(error)));
+      })
+    );
+  }
+
+  /**
+   * Smart session handler: Try to create a session, if it exists then join it
+   * This implements the pattern recommended in CLIENT_INTEGRATION_GUIDE.md
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<CollaborationSession> with isNewSession flag
+   */
+  startOrJoinDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<{session: CollaborationSession, isNewSession: boolean}> {
+    this.logger.info('Smart session handler: trying to create or join collaboration session', { 
+      threatModelId, 
+      diagramId
+    });
+
+    if (this._useMockData) {
+      // For mock data, always simulate creating a new session
+      return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
+        map(session => ({ session, isNewSession: true }))
+      );
+    }
+
+    // Try creating first (POST)
+    return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
+      map(session => {
+        this.logger.info('Session created successfully', { sessionId: session.session_id });
+        return { session, isNewSession: true };
+      }),
+      catchError((error: unknown) => {
+        if (isHttpErrorResponse(error) && error.status === 409) {
+          // Session already exists (409 conflict), join it instead (PUT)
+          this.logger.info('Session already exists, attempting to join', { 
+            threatModelId, 
+            diagramId,
+            errorStatus: error.status 
+          });
+          
+          return this.joinDiagramCollaborationSession(threatModelId, diagramId).pipe(
+            map(session => {
+              this.logger.info('Successfully joined existing session', { sessionId: session.session_id });
+              return { session, isNewSession: false };
+            })
+          );
+        }
+        
+        // For other errors, re-throw
+        this.logger.error('Smart session handler failed with non-409 error', {
+          threatModelId,
+          diagramId,
+          error
+        });
+        return throwError(() => error);
+      })
+    );
+  }
 }

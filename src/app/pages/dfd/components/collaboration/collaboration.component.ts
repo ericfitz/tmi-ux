@@ -195,13 +195,13 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       }
     } else {
       this._collaborationService
-        .startCollaboration()
+        .startOrJoinCollaboration()
         .pipe(take(1))
         .subscribe(success => {
           if (success) {
-            this._logger.info('Collaboration started successfully');
+            this._logger.info('Collaboration started or joined successfully');
           } else {
-            this._logger.error('Failed to start collaboration');
+            this._logger.error('Failed to start or join collaboration');
           }
         });
     }
