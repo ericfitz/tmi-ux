@@ -12,7 +12,6 @@ import { JSDOM } from 'jsdom';
 import { X6SelectionAdapter } from './x6-selection.adapter';
 import { SelectionService } from '../services/selection.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { X6HistoryManager } from './x6-history-manager';
 import { registerCustomShapes } from './x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { X6CoreOperationsService } from '../services/x6-core-operations.service';
@@ -101,7 +100,6 @@ describe('X6SelectionAdapter', () => {
   let mockLogger: MockLoggerService;
   let selectionService: SelectionService;
   let historyCoordinator: GraphHistoryCoordinator;
-  let historyManager: X6HistoryManager;
   let x6CoreOps: X6CoreOperationsService;
   let edgeService: EdgeService;
   let container: HTMLElement;
@@ -128,7 +126,6 @@ describe('X6SelectionAdapter', () => {
     // Create services
     mockLogger = createTypedMockLoggerService();
     selectionService = new SelectionService(mockLogger as any);
-    historyManager = new X6HistoryManager(mockLogger as any);
     historyCoordinator = new GraphHistoryCoordinator();
     x6CoreOps = new X6CoreOperationsService(mockLogger as any);
 

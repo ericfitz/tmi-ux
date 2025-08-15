@@ -29,7 +29,6 @@ import { NodeInfo } from '../../domain/value-objects/node-info';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { X6EventLoggerService } from './x6-event-logger.service';
 import { DfdEdgeService } from '../../services/dfd-edge.service';
-import { DfdEventHandlersService } from '../../services/dfd-event-handlers.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 // Mock LoggerService for integration testing
@@ -119,14 +118,9 @@ describe.skip('X6GraphAdapter', () => {
   let historyManager: X6HistoryManager;
   let x6EventLogger: X6EventLoggerService;
   let edgeService: DfdEdgeService;
-  let eventHandlersService: DfdEventHandlersService;
   let historyCoordinator: GraphHistoryCoordinator;
   let visualEffectsService: any;
   let coreEdgeService: any;
-  let threatModelService: any;
-  let frameworkService: any;
-  let dialog: any;
-  let router: any;
   let x6CoreOps: any;
 
   beforeEach(() => {
@@ -142,10 +136,6 @@ describe.skip('X6GraphAdapter', () => {
     // Create mock services for dependencies
     visualEffectsService = { applyEffect: vi.fn(), removeEffect: vi.fn() };
     coreEdgeService = { addEdge: vi.fn(), removeEdge: vi.fn(), updateEdge: vi.fn() };
-    threatModelService = { getCurrentThreatModel: vi.fn() };
-    frameworkService = { getFramework: vi.fn() };
-    dialog = { open: vi.fn() };
-    router = { navigate: vi.fn() };
     x6CoreOps = { addNode: vi.fn(), removeNode: vi.fn() };
 
     // Create real service instances for integration testing
@@ -185,14 +175,6 @@ describe.skip('X6GraphAdapter', () => {
       coreEdgeService
     );
 
-    eventHandlersService = new DfdEventHandlersService(
-      mockLogger as unknown as LoggerService,
-      selectionAdapter,
-      threatModelService,
-      frameworkService,
-      dialog,
-      router
-    );
 
     // Create X6GraphAdapter with real dependencies
     adapter = new X6GraphAdapter(

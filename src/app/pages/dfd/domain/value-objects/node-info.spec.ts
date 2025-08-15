@@ -67,7 +67,7 @@ describe('NodeInfo', () => {
       expect(nodeInfo.ports).toBe(ports);
       expect(nodeInfo.zIndex).toBe(zIndex);
       expect(nodeInfo.visible).toBe(visible);
-      expect(nodeInfo.data).toBe(metadata);
+      expect(nodeInfo.data).toEqual({ _metadata: metadata });
       expect(nodeInfo.angle).toBe(angle);
       expect(nodeInfo.parent).toBe(parent);
       expect(nodeInfo.attrs?.text?.text).toBe('Test Process');
