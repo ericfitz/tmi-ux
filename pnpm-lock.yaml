@@ -125,8 +125,8 @@ importers:
         specifier: ^9.33.0
         version: 9.33.0
       '@testing-library/angular':
-        specifier: ^17.4.0
-        version: 17.4.0(49bc62a21e087273abc1186199e77f00)
+        specifier: ^18.0.0
+        version: 18.0.0(b3aa8474e410079652cd3c9e9d7bd2bd)
       '@types/cypress-image-snapshot':
         specifier: ^3.1.9
         version: 3.1.9
@@ -1069,6 +1069,10 @@ packages:
 
   '@babel/runtime@7.28.2':
     resolution: {integrity: sha512-KHp2IflsnGywDjBWDkR9iEqiWSpc8GIi0lgTT3mOElT0PP1tG26P4tmFI2YvAdzgq9RGyoHZQEIEdZy6Ec5xCA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.28.3':
+    resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.27.2':
@@ -2296,14 +2300,13 @@ packages:
     resolution: {integrity: sha512-hVJD77oT67aowHxwT4+M6PGOp+E2LtLdTK3+FC0lBO9T7sYwItDMXZ7Z07IDCvR1M717a4axbIWckrW67KMP/w==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  '@testing-library/angular@17.4.0':
-    resolution: {integrity: sha512-xxh2tllgvpPD7lF8k2v7CGN4S5gj5zwaMA4kkM8lAZFbDj2vdW6zdVN0CxXZJy219JlztR+py2BM0KepuCKyLw==}
+  '@testing-library/angular@18.0.0':
+    resolution: {integrity: sha512-0seNMa4ql2I3VD7CtnI9i4sFgxEgRES+EtGid8H4MTuOK/dlj457mVk8tWdFjPQPC/cPromcUNw0is1ogO3DSA==}
     peerDependencies:
-      '@angular/animations': '>= 17.0.0'
-      '@angular/common': '>= 17.0.0'
-      '@angular/core': '>= 17.0.0'
-      '@angular/platform-browser': '>= 17.0.0'
-      '@angular/router': '>= 17.0.0'
+      '@angular/common': '>= 20.0.0'
+      '@angular/core': '>= 20.0.0'
+      '@angular/platform-browser': '>= 20.0.0'
+      '@angular/router': '>= 20.0.0'
       '@testing-library/dom': ^10.0.0
 
   '@testing-library/dom@10.4.0':
@@ -7814,6 +7817,8 @@ snapshots:
 
   '@babel/runtime@7.28.2': {}
 
+  '@babel/runtime@7.28.3': {}
+
   '@babel/template@7.27.2':
     dependencies:
       '@babel/code-frame': 7.27.1
@@ -8780,9 +8785,8 @@ snapshots:
       '@sigstore/core': 2.0.0
       '@sigstore/protobuf-specs': 0.4.3
 
-  '@testing-library/angular@17.4.0(49bc62a21e087273abc1186199e77f00)':
+  '@testing-library/angular@18.0.0(b3aa8474e410079652cd3c9e9d7bd2bd)':
     dependencies:
-      '@angular/animations': 20.1.7(@angular/common@20.1.7(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1))
       '@angular/common': 20.1.7(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1)
       '@angular/platform-browser': 20.1.7(@angular/animations@20.1.7(@angular/common@20.1.7(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.1.7(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.7(@angular/compiler@20.1.7)(rxjs@7.8.2)(zone.js@0.15.1))
@@ -8793,7 +8797,7 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.27.1
-      '@babel/runtime': 7.28.2
+      '@babel/runtime': 7.28.3
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       chalk: 4.1.2
