@@ -45,6 +45,11 @@
       <mat-card-header>
         <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
         <div class="header-actions">
+          <!-- Save state indicator -->
+          <app-save-indicator 
+            [formId]="formId"
+            class="save-indicator">
+          </app-save-indicator>
           <button
             mat-icon-button
             color="primary"
@@ -109,9 +114,27 @@
         </div>
 
         <form [formGroup]="threatModelForm" class="threat-model-form">
+          <!-- Explicit Save All button -->
+          <div class="save-actions">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="button"
+              [disabled]="!saveState?.hasUnsavedChanges || saveState?.status === 'saving'"
+              (click)="saveAllFields()"
+              tabindex="10">
+              <mat-icon *ngIf="saveState?.status === 'saving'">hourglass_empty</mat-icon>
+              <mat-icon *ngIf="saveState?.status !== 'saving'">save</mat-icon>
+              <span [transloco]="'common.save'">Save All Changes</span>
+            </button>
+          </div>
           <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'threatModels.name'">Name</mat-label>
-            <input matInput formControlName="name" />
+            <input 
+              matInput 
+              formControlName="name" 
+              tabindex="1"
+              (blur)="onFieldBlur('name', $event)" />
             <mat-error *ngIf="threatModelForm.get('name')?.hasError('required')">
               {{ 'common.validation.required' | transloco }}
             </mat-error>
@@ -126,7 +149,9 @@
               matInput
               formControlName="description"
               rows="4"
+              tabindex="2"
               placeholder="{{ 'threatModels.descriptionPlaceholder' | transloco }}"
+              (blur)="onFieldBlur('description', $event)"
             ></textarea>
             <mat-error *ngIf="threatModelForm.get('description')?.hasError('maxlength')">
               {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
@@ -141,7 +166,9 @@
               >
               <mat-select
                 formControlName="threat_model_framework"
+                tabindex="3"
                 [attr.aria-label]="'threatModels.threatModelFramework' | transloco"
+                (selectionChange)="onFrameworkChange($event)"
               >
                 <mat-option *ngFor="let framework of frameworks" [value]="framework.name">
                   {{ framework.name }}
@@ -157,45 +184,22 @@
               </mat-error>
             </mat-form-field>
 
-            <!-- Issue URL field with external edit button -->
-            <div class="issue-url-container">
-              <mat-form-field appearance="outline" class="issue-url-field" floatLabel="always">
-                <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
-
-                <!-- Use ng-container with if-else to ensure exactly one control is always present -->
-                <ng-container *ngIf="shouldShowIssueUrlHyperlink(); else inputMode">
-                  <input
-                    matInput
-                    readonly
-                    [value]="initialIssueUrlValue"
-                    class="url-view-content"
-                    (click)="openUrlInNewTab(initialIssueUrlValue)"
-                    style="cursor: pointer; color: #1976d2; text-decoration: underline"
-                  />
-                </ng-container>
-
-                <ng-template #inputMode>
-                  <input
-                    matInput
-                    formControlName="issue_url"
-                    type="url"
-                    (blur)="onIssueUrlBlur()"
-                  />
-                </ng-template>
-              </mat-form-field>
-
-              <!-- Edit button outside the form field -->
-              <button
-                mat-icon-button
-                class="external-edit-button"
-                (click)="editIssueUrl()"
-                [matTooltip]="'common.edit' | transloco"
-                [attr.aria-label]="'common.edit' | transloco"
-                *ngIf="shouldShowIssueUrlHyperlink()"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-            </div>
+            <!-- Standardized Issue URL field -->
+            <mat-form-field appearance="outline">
+              <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
+              <input
+                matInput
+                formControlName="issue_url"
+                type="url"
+                tabindex="4"
+                placeholder="https://example.com/issue/123"
+                (blur)="onFieldBlur('issue_url', $event)"
+              />
+              <mat-hint>Enter a URL to track this threat model in an external system</mat-hint>
+              <mat-error *ngIf="threatModelForm.get('issue_url')?.hasError('url')">
+                {{ 'common.validation.invalidUrl' | transloco }}
+              </mat-error>
+            </mat-form-field>
           </div>
         </form>
       </mat-card-content>

@@ -545,7 +545,7 @@ func (s *DiagramSession) processDiagramOperation(op DiagramOperation) {
 #### AsyncAPI Schema Updates (Required Before Coding)
 Before starting implementation, must complete AsyncAPI specification updates:
 
-1. **Update tmi-asyncapi.yaml** with all new message types from section 12
+1. **Update tmi-asyncapi.yml** with all new message types from section 12
 2. **Validate AsyncAPI schema** using `make validate-asyncapi` 
 3. **Research Go AsyncAPI libraries** for potential code generation benefits
 
@@ -710,7 +710,7 @@ func (h *WebSocketHub) HandleDebugControl(c *gin.Context) {
 
 #### Phase 0: Pre-Implementation (✅ COMPLETED)
 **Goal:** Complete AsyncAPI updates and tooling research
-- [x] Update tmi-asyncapi.yaml with all new message types
+- [x] Update tmi-asyncapi.yml with all new message types
 - [x] Research and evaluate Go AsyncAPI code generation libraries
 - [x] Implement debug logging infrastructure (mutation and WebSocket logging)
 - [x] Test debug logging controls and verify log output quality
@@ -763,7 +763,7 @@ The AsyncAPI specification must be updated with all new message types **before s
 - Documentation-first development approach
 - Validation of message structure before coding begins
 
-#### New Message Types Needed (Add to tmi-asyncapi.yaml)
+#### New Message Types Needed (Add to tmi-asyncapi.yml)
 ```yaml
 components:
   messages:

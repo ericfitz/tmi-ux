@@ -12,15 +12,6 @@ Additional product documentation that is intended to be exposed to users of the 
 
 AI assistants should update this list whenever adding a new file, or when you discover an expected file is no longer present.
 
-- authorization.md
-  This file describes how authorization checks are performed by the TMI server and how they are expected to be performed in this project. (Note: Canonical version is now in shared-api/docs/AUTHORIZATION.md)
-
-- CLIENT_INTEGRATION_GUIDE.md
-  Complete WebSocket client integration guide for collaborative diagram editing with real-time operations, presenter mode, conflict resolution, and TypeScript definitions. (Note: Canonical version is now in shared-api/docs/CLIENT_INTEGRATION_GUIDE.md)
-
-- CLIENT_OAUTH_INTEGRATION.md
-  Client developer guide for TMI OAuth integration including provider discovery, token management, error handling, and complete implementation examples. (Note: Canonical version is now in shared-api/docs/CLIENT_OAUTH_INTEGRATION.md)
-
 - COLLABORATIVE_EDITING.md
   High-level plan and architecture for implementing collaborative diagram editing with WebSocket communication, permission models, and X6-specific implementation details.
 
@@ -48,8 +39,12 @@ AI assistants should update this list whenever adding a new file, or when you di
 - PDF_REPORT_DIAGRAM_RENDERING_DESIGN.md
   Design document for implementing pre-rendered diagram storage to enable full diagram inclusion in PDF reports using stored PNG/SVG images.
 
-- tmi_api_server_authentication.md
-  This file describes how the application and the TMI server will jointly implement OAuth authentication.
+## Removed Files
 
-- tmi-server-integration-plan.md
-  This file describes how we will integrate the application and the TMI server.
+The following files were previously in this directory but have been moved to their canonical locations:
+
+- authorization.md → shared-api/docs/AUTHORIZATION.md
+- CLIENT_INTEGRATION_GUIDE.md → shared-api/docs/CLIENT_INTEGRATION_GUIDE.md  
+- CLIENT_OAUTH_INTEGRATION.md → shared-api/docs/CLIENT_OAUTH_INTEGRATION.md
+- tmi_api_server_authentication.md → moved/merged with other auth documentation
+- tmi-server-integration-plan.md → moved/merged with other integration documentation

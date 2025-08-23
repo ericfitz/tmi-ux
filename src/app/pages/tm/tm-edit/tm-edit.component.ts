@@ -13,6 +13,13 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { environment } from '../../../../environments/environment';
 import { MockDataService } from '../../../mocks/mock-data.service';
 
+// Enhanced save behavior imports
+import { SaveStateService, SaveState } from '../../../shared/services/save-state.service';
+import { ConnectionMonitorService, ConnectionStatus } from '../../../shared/services/connection-monitor.service';
+import { NotificationService } from '../../../shared/services/notification.service';
+import { FormValidationService } from '../../../shared/services/form-validation.service';
+import { SaveIndicatorComponent } from '../../../shared/components/save-indicator/save-indicator.component';
+
 import { MaterialModule } from '../../../shared/material/material.module';
 import { SharedModule } from '../../../shared/shared.module';
 import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
@@ -91,6 +98,7 @@ interface SourceCodeFormResult {
     TranslocoModule,
     ReactiveFormsModule,
     RouterModule,
+    SaveIndicatorComponent,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
@@ -105,6 +113,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
   isEditingIssueUrl = false;
   initialIssueUrlValue = '';
   frameworks: FrameworkModel[] = [];
+
+  // Enhanced save behavior properties
+  saveState: SaveState | undefined;
+  connectionStatus: ConnectionStatus | undefined;
+  formId: string = '';
 
   private _subscriptions = new Subscription();
   private _autoSaveSubject = new Subject<void>();
@@ -122,6 +135,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private transloco: TranslocoService,
     private frameworkService: FrameworkService,
     private mockDataService: MockDataService,
+    // Enhanced save behavior services
+    private saveStateService: SaveStateService,
+    private connectionMonitorService: ConnectionMonitorService,
+    private notificationService: NotificationService,
+    private formValidationService: FormValidationService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -163,16 +181,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-  /**
-   * Handle blur event on issue URL input
-   */
-  onIssueUrlBlur(): void {
-    // Update the initial value with the current form value
-    const currentValue = (this.threatModelForm.get('issue_url')?.value as string) || '';
-    this.initialIssueUrlValue = currentValue;
-    // Exit edit mode when user clicks away from the input
-    this.isEditingIssueUrl = false;
-  }
 
   /**
    * Check if we should show the hyperlink view for issue URL
@@ -195,18 +203,23 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Disable auto-save during initial data loading - MUST be set before form subscriptions
+    // Initialize form ID for save state tracking
+    this.formId = `tm-edit-${this.route.snapshot.paramMap.get('id') || 'new'}`;
+    
+    // Disable auto-save during initial data loading
     this._isLoadingInitialData = true;
 
-    // Set up auto-save subscription with debouncing
+    // Initialize enhanced save services
+    this.initializeSaveServices();
+
+    // Set up enhanced auto-save subscription with shorter debounce for blur events
     this._subscriptions.add(
       this._autoSaveSubject
         .pipe(
-          debounceTime(1000), // Wait 1 second after last change
-          // Remove distinctUntilChanged() since we're emitting void values
+          debounceTime(300), // Shorter debounce for blur events
         )
         .subscribe(() => {
-          this.logger.debugComponent('TmEdit', 'Auto-save debounce completed, calling performAutoSave');
+          this.logger.debugComponent('TmEdit', 'Blur auto-save triggered, calling performAutoSave');
           this.performAutoSave();
         })
     );
@@ -414,6 +427,144 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
+    this.saveStateService.destroySaveState(this.formId);
+  }
+
+  /**
+   * Initialize enhanced save services and monitoring
+   */
+  private initializeSaveServices(): void {
+    // Initialize save state tracking
+    const saveState$ = this.saveStateService.initializeSaveState(this.formId);
+    this._subscriptions.add(
+      saveState$.subscribe(state => {
+        this.saveState = state;
+      })
+    );
+
+    // Monitor connection status
+    this._subscriptions.add(
+      this.connectionMonitorService.getConnectionStatus().subscribe(status => {
+        this.connectionStatus = status;
+        this.handleConnectionStatusChange(status);
+      })
+    );
+
+    // Start connection monitoring
+    this.connectionMonitorService.startMonitoring();
+  }
+
+  /**
+   * Handle connection status changes
+   */
+  private handleConnectionStatusChange(status: ConnectionStatus): void {
+    const previousStatus = this.connectionStatus;
+    
+    // Show connection error notification if needed
+    if (!status.isServerReachable && this.connectionMonitorService.shouldShowConnectionError()) {
+      this.notificationService.showConnectionError(true, () => {
+        this.connectionMonitorService.checkServerConnectivity().subscribe();
+      });
+    }
+
+    // Auto-retry saves when connection is restored
+    if (previousStatus && !previousStatus.isServerReachable && status.isServerReachable) {
+      this.notificationService.showConnectionRestored();
+      
+      // Retry any unsaved changes
+      if (this.saveState?.hasUnsavedChanges) {
+        this.logger.info('Connection restored, retrying unsaved changes');
+        this.performAutoSave();
+      }
+    }
+  }
+
+  /**
+   * Handle blur events on form fields with change detection and auto-save
+   */
+  onFrameworkChange(event: any): void {
+    this.onFieldBlur('threat_model_framework', event);
+  }
+
+  onFieldBlur(fieldName: string, event: Event): void {
+    if (this._isLoadingInitialData) return;
+
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    const currentValue = target.value;
+
+    this.logger.debugComponent('TmEdit', 'Field blur event', { fieldName, currentValue });
+
+    // Check if value actually changed using save state service
+    const hasChanged = this.saveStateService.markFieldChanged(this.formId, fieldName, currentValue);
+    
+    if (hasChanged) {
+      this.logger.debugComponent('TmEdit', 'Field value changed, triggering auto-save', { fieldName });
+      
+      // Validate field before auto-save
+      const validationRules = this.formValidationService.getThreatModelValidationRules();
+      const fieldValidators = validationRules[fieldName] || [];
+      
+      const validation = this.formValidationService.validateField(
+        this.formId,
+        fieldName,
+        currentValue,
+        fieldValidators,
+        false // Don't log validation errors on blur
+      );
+
+      if (validation.isValid) {
+        // Trigger auto-save for valid changes
+        this.saveStateService.updateSaveStatus(this.formId, 'saving');
+        this._autoSaveSubject.next();
+      } else {
+        // Show field-level validation feedback but don't log
+        this.logger.debugComponent('TmEdit', 'Field validation failed on blur', {
+          fieldName,
+          errors: validation.errorMessages
+        });
+      }
+    }
+  }
+
+  /**
+   * Enhanced issue URL blur handler that replaces the old toggle pattern
+   */
+  onIssueUrlBlur(event: Event): void {
+    this.onFieldBlur('issue_url', event);
+    
+    // Update the display value for consistency
+    const currentValue = (this.threatModelForm.get('issue_url')?.value as string) || '';
+    this.initialIssueUrlValue = currentValue;
+    this.isEditingIssueUrl = false;
+  }
+
+  /**
+   * Manual save all fields (explicit save button)
+   */
+  saveAllFields(): void {
+    if (this.threatModelForm.invalid || !this.threatModel) {
+      // Show validation errors for explicit save attempt
+      const formData = this.threatModelForm.getRawValue();
+      const validationRules = this.formValidationService.getThreatModelValidationRules();
+      
+      const validation = this.formValidationService.validateForm(
+        this.formId,
+        formData,
+        validationRules,
+        true // Log validation errors on explicit save
+      );
+
+      if (!validation.isValid) {
+        validation.errorMessages.forEach(error => {
+          this.notificationService.showValidationError('Form', error);
+        });
+      }
+      return;
+    }
+
+    this.logger.info('Manual save all fields triggered');
+    this.saveStateService.updateSaveStatus(this.formId, 'saving');
+    this.performAutoSave();
   }
 
   saveThreatModel(): void {
@@ -1770,7 +1921,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Perform the actual auto-save operation
+   * Perform the actual auto-save operation with enhanced error handling
    * This method is called after debouncing
    */
   private performAutoSave(): void {
@@ -1779,10 +1930,12 @@ export class TmEditComponent implements OnInit, OnDestroy {
       formValid: this.threatModelForm.valid,
       isNewThreatModel: this.isNewThreatModel,
       isLoadingInitialData: this._isLoadingInitialData,
-      threatModelId: this.threatModel?.id
+      threatModelId: this.threatModel?.id,
+      hasUnsavedChanges: this.saveState?.hasUnsavedChanges
     });
 
     if (!this.threatModel || this.threatModelForm.invalid || this._isLoadingInitialData) {
+      this.saveStateService.updateSaveStatus(this.formId, 'error', 'Cannot save: form is invalid or still loading');
       this.logger.debugComponent('TmEdit', 'Auto-save skipped due to conditions', {
         threatModelExists: !!this.threatModel,
         formValid: this.threatModelForm.valid,
@@ -1791,43 +1944,83 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Check if we actually have unsaved changes
+    if (!this.saveState?.hasUnsavedChanges) {
+      this.logger.debugComponent('TmEdit', 'Auto-save skipped: no unsaved changes');
+      return;
+    }
+
     // Apply form changes to the threat model
     this.applyFormChangesToThreatModel();
 
-    // Use PATCH to auto-save only the basic fields that might have changed
-    const updates = {
-      name: this.threatModel.name,
-      description: this.threatModel.description,
-      threat_model_framework: this.threatModel.threat_model_framework,
-      issue_url: this.threatModel.issue_url
-    };
+    // Build updates object with only changed fields
+    const changedFields = this.saveState.changedFields;
+    const updates: Record<string, any> = {};
+    
+    changedFields.forEach(fieldName => {
+      switch (fieldName) {
+        case 'name':
+          updates['name'] = this.threatModel!.name;
+          break;
+        case 'description':
+          updates['description'] = this.threatModel!.description;
+          break;
+        case 'threat_model_framework':
+          updates['threat_model_framework'] = this.threatModel!.threat_model_framework;
+          break;
+        case 'issue_url':
+          updates['issue_url'] = this.threatModel!.issue_url;
+          break;
+      }
+    });
+
+    if (Object.keys(updates).length === 0) {
+      this.logger.debugComponent('TmEdit', 'Auto-save skipped: no valid changes to save');
+      this.saveStateService.updateSaveStatus(this.formId, 'clean');
+      return;
+    }
 
     this.logger.debugComponent('TmEdit', 'Calling threatModelService.patchThreatModel', {
       threatModelId: this.threatModel.id,
       updates,
+      changedFields: Array.from(changedFields)
     });
 
-    // Save to server with PATCH (only basic fields)
+    // Save to server with PATCH (only changed fields)
     this._subscriptions.add(
       this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe({
         next: result => {
           if (result && this.threatModel) {
-            // Update only the basic fields from the result, preserve entities
-            this.threatModel.name = result.name;
-            this.threatModel.description = result.description;
-            this.threatModel.threat_model_framework = result.threat_model_framework;
-            this.threatModel.issue_url = result.issue_url;
+            // Update the threat model with server response
+            Object.keys(updates).forEach(key => {
+              (this.threatModel as any)[key] = (result as any)[key];
+            });
             this.threatModel.modified_at = result.modified_at;
+            
+            // Update save state with successfully saved fields
+            this.saveStateService.updateOriginalValues(this.formId, updates);
+            this.saveStateService.updateSaveStatus(this.formId, 'saved');
             
             this.logger.debugComponent('TmEdit', 'Auto-saved threat model changes', {
               threatModelId: this.threatModel.id,
+              savedFields: Object.keys(updates),
               name: this.threatModel.name,
             });
           }
         },
         error: error => {
+          this.saveStateService.updateSaveStatus(this.formId, 'error', error.message);
+          
+          // Show detailed error notification to user
+          this.notificationService.showSaveError(
+            error,
+            'threat model changes',
+            () => this.performAutoSave() // Retry function
+          );
+
           this.logger.error('Auto-save failed for threat model', error, {
             threatModelId: this.threatModel?.id,
+            attemptedUpdates: updates
           });
         }
       })

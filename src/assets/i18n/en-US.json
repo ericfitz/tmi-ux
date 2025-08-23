@@ -108,7 +108,26 @@
     "threats": "Threats",
     "validation": {
       "maxLength": "Maximum length is {{max}} characters",
-      "required": "This field is required"
+      "required": "This field is required",
+      "invalidUrl": "Please enter a valid URL"
+    }
+  },
+  "saveIndicator": {
+    "clean": "No changes",
+    "dirty": "Unsaved changes",
+    "dirtyOne": "1 field has unsaved changes",
+    "dirtyMany": "{{count}} fields have unsaved changes",
+    "saving": "Saving...",
+    "saved": "All changes saved",
+    "savedAt": "Saved {{time}}",
+    "error": "Save failed",
+    "errorWithMessage": "Save failed: {{message}}",
+    "unknown": "Save state unknown",
+    "debugChangedFields": "Changed fields: {{fields}}",
+    "timeAgo": {
+      "seconds": "{{count}} seconds ago",
+      "minutes": "{{count}} minutes ago",  
+      "hours": "{{count}} hours ago"
     }
   },
   "contextMenu": {

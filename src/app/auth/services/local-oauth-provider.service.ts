@@ -9,7 +9,6 @@ import { UserProfile } from '../models/auth.models';
   providedIn: 'root',
 })
 export class LocalOAuthProviderService {
-
   /**
    * Build authorization URL for local provider
    * Points to local user selection component
@@ -20,7 +19,7 @@ export class LocalOAuthProviderService {
       state,
       response_type: 'code',
     });
-    return `${window.location.origin}/auth/local-select?${params}`;
+    return `${window.location.origin}/oauth2/local-select?${params}`;
   }
 
   /**

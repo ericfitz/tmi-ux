@@ -16,6 +16,13 @@ import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 
+// Enhanced save behavior imports
+import { SaveStateService, SaveState } from '../../../../shared/services/save-state.service';
+import { ConnectionMonitorService, ConnectionStatus } from '../../../../shared/services/connection-monitor.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { FormValidationService } from '../../../../shared/services/form-validation.service';
+import { SaveIndicatorComponent } from '../../../../shared/components/save-indicator/save-indicator.component';
+
 /**
  * Interface for threat form values
  */
@@ -82,6 +89,7 @@ export interface ThreatEditorDialogData {
     MatCheckboxModule,
     ReactiveFormsModule,
     TranslocoModule,
+    SaveIndicatorComponent,
   ],
   templateUrl: './threat-editor-dialog.component.html',
   styleUrls: ['./threat-editor-dialog.component.scss'],
@@ -110,6 +118,13 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   // Track dialog source for debugging
   dialogSource: string = '';
 
+  // Enhanced save behavior properties
+  formId: string;
+  saveState: SaveState | undefined;
+  connectionStatus: ConnectionStatus | undefined;
+  private _subscriptions: Subscription = new Subscription();
+  private _originalThreat: Threat | null = null;
+
   constructor(
     private dialogRef: MatDialogRef<ThreatEditorDialogComponent>,
     private fb: FormBuilder,
@@ -117,7 +132,15 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     private languageService: LanguageService,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: ThreatEditorDialogData,
+    // Enhanced save behavior services
+    private saveStateService: SaveStateService,
+    private connectionMonitorService: ConnectionMonitorService,
+    private notificationService: NotificationService,
+    private formValidationService: FormValidationService,
   ) {
+    // Create unique form ID for this dialog instance
+    this.formId = `threat-editor-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+  
     this.threatForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
@@ -494,6 +517,35 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Force translation update when direction changes
       this.forceTranslationUpdate();
     });
+
+    // Initialize enhanced save behavior
+    this.initializeEnhancedSaveBehavior();
+  }
+
+  /**
+   * Initialize enhanced save behavior services
+   */
+  private initializeEnhancedSaveBehavior(): void {
+    // Store original threat for change detection
+    this._originalThreat = this.data.threat ? { ...this.data.threat } : null;
+    
+    // Initialize save state with form values
+    const initialValues = this.threatForm.getRawValue();
+    this._subscriptions.add(
+      this.saveStateService.initializeSaveState(this.formId, initialValues).subscribe(state => {
+        this.saveState = state;
+      })
+    );
+    
+    // Monitor connection status
+    this._subscriptions.add(
+      this.connectionMonitorService.getConnectionStatus().subscribe(status => {
+        this.connectionStatus = status;
+      })
+    );
+    
+    // Start connection monitoring
+    this.connectionMonitorService.startMonitoring();
   }
 
   /**
@@ -634,6 +686,96 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.directionSubscription.unsubscribe();
       this.directionSubscription = null;
     }
+    
+    // Clean up enhanced save behavior
+    this._subscriptions.unsubscribe();
+    this.connectionMonitorService.stopMonitoring();
+    this.saveStateService.destroySaveState(this.formId);
+  }
+
+  /**
+   * Handle blur events on form fields with change detection and auto-save
+   */
+  onFieldBlur(fieldName: string, event: Event): void {
+    if (this.isViewOnly) return;
+    
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    const currentValue = target.value;
+    
+    // Get original value for comparison
+    const originalValue = this._originalThreat ? (this._originalThreat as any)[fieldName] : '';
+    
+    // Only save if value actually changed
+    if (currentValue !== originalValue) {
+      // Validate field before saving
+      const threatValidationRules = this.getThreatValidationRules();
+      const validators = threatValidationRules[fieldName] || [];
+      const validation = this.formValidationService.validateField(
+        this.formId,
+        fieldName,
+        currentValue,
+        validators
+      );
+      
+      if (validation.isValid) {
+        this.saveStateService.markFieldChanged(this.formId, fieldName, currentValue);
+        this.performAutoSave();
+      } else {
+        // Show validation error
+        validation.errorMessages.forEach(error => {
+          this.notificationService.showValidationError('Threat', error);
+        });
+      }
+    }
+  }
+
+  /**
+   * Handle selection change events for mat-select fields
+   */
+  onSelectionChange(fieldName: string, value: any): void {
+    if (this.isViewOnly) return;
+    
+    // Get original value for comparison
+    const originalValue = this._originalThreat ? (this._originalThreat as any)[fieldName] : '';
+    
+    // Only save if value actually changed
+    if (value !== originalValue) {
+      this.saveStateService.markFieldChanged(this.formId, fieldName, value);
+      this.performAutoSave();
+    }
+  }
+
+  /**
+   * Performs auto-save for threat changes
+   */
+  private performAutoSave(): void {
+    if (this.threatForm.invalid || this.isViewOnly) return;
+    
+    this.saveStateService.updateSaveStatus(this.formId, 'saving');
+    
+    // In a real implementation, this would make an API call
+    // For now, simulate the save operation
+    setTimeout(() => {
+      const currentValues = this.threatForm.getRawValue();
+      this.saveStateService.updateOriginalValues(this.formId, currentValues);
+      this.saveStateService.updateSaveStatus(this.formId, 'saved');
+      
+      // Update original threat to reflect saved state
+      if (this._originalThreat) {
+        Object.assign(this._originalThreat, currentValues);
+      }
+    }, 300);
+  }
+
+  /**
+   * Get validation rules for threat fields
+   */
+  private getThreatValidationRules(): any {
+    return {
+      name: [(value: string) => value && value.trim().length > 0 ? null : { required: true }],
+      description: [(value: string) => value && value.length <= 500 ? null : { maxLength: { max: 500, actual: value?.length || 0 } }],
+      threat_type: [(value: string) => value && value.trim().length > 0 ? null : { required: true }]
+    };
   }
 
   /**

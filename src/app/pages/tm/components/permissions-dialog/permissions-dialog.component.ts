@@ -1,12 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { Authorization } from '../../models/threat-model.model';
+
+// Enhanced save behavior imports
+import { SaveStateService, SaveState } from '../../../../shared/services/save-state.service';
+import { ConnectionMonitorService, ConnectionStatus } from '../../../../shared/services/connection-monitor.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { FormValidationService } from '../../../../shared/services/form-validation.service';
+import { SaveIndicatorComponent } from '../../../../shared/components/save-indicator/save-indicator.component';
 
 export interface PermissionsDialogData {
   permissions: Authorization[];
@@ -17,10 +25,16 @@ export interface PermissionsDialogData {
 @Component({
   selector: 'app-permissions-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule, TranslocoModule],
+  imports: [CommonModule, MaterialModule, TranslocoModule, SaveIndicatorComponent],
   template: `
     <div class="permissions-dialog">
-      <h2 mat-dialog-title [transloco]="'threatModels.permissions'">Permissions</h2>
+      <h2 mat-dialog-title>
+        {{ 'threatModels.permissions' | transloco }}
+        <app-save-indicator
+          [formId]="formId"
+          class="header-save-indicator"
+        ></app-save-indicator>
+      </h2>
 
       <mat-dialog-content>
         <div class="permissions-content">
@@ -249,6 +263,13 @@ export interface PermissionsDialogData {
         gap: 8px;
       }
 
+      // Save indicator styling
+      .header-save-indicator {
+        margin-left: 12px;
+        display: inline-flex;
+        align-items: center;
+      }
+
       /* Responsive adjustments */
       @media (max-width: 768px) {
         .permissions-dialog {
@@ -281,47 +302,141 @@ export interface PermissionsDialogData {
     `,
   ],
 })
-export class PermissionsDialogComponent implements OnInit {
+export class PermissionsDialogComponent implements OnInit, OnDestroy {
   permissionsDataSource = new MatTableDataSource<Authorization>([]);
   displayedColumns: string[] = [];
 
   @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
   @ViewChild('permissionsSort') permissionsSort!: MatSort;
 
+  // Enhanced save behavior properties
+  formId: string;
+  saveState: SaveState | undefined;
+  connectionStatus: ConnectionStatus | undefined;
+  private _subscriptions: Subscription = new Subscription();
+  private _originalPermissions: Authorization[] = [];
+
   constructor(
     public dialogRef: MatDialogRef<PermissionsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
-  ) {}
+    // Enhanced save behavior services
+    private saveStateService: SaveStateService,
+    private connectionMonitorService: ConnectionMonitorService,
+    private notificationService: NotificationService,
+    private formValidationService: FormValidationService,
+  ) {
+    // Create unique form ID for this dialog instance
+    this.formId = `permissions-dialog-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+  }
 
   ngOnInit(): void {
     this.permissionsDataSource.data = [...this.data.permissions];
     this.displayedColumns = this.data.isReadOnly
       ? ['subject', 'role']
       : ['subject', 'role', 'actions'];
+
+    // Store original permissions for change detection
+    this._originalPermissions = JSON.parse(JSON.stringify(this.data.permissions));
+
+    // Initialize save state
+    this._subscriptions.add(
+      this.saveStateService.initializeSaveState(this.formId, this._originalPermissions).subscribe(state => {
+        this.saveState = state;
+      })
+    );
+
+    // Monitor connection status
+    this._subscriptions.add(
+      this.connectionMonitorService.getConnectionStatus().subscribe(status => {
+        this.connectionStatus = status;
+      })
+    );
+
+    // Start connection monitoring
+    this.connectionMonitorService.startMonitoring();
+  }
+
+  ngOnDestroy(): void {
+    this._subscriptions.unsubscribe();
+    this.connectionMonitorService.stopMonitoring();
+    this.saveStateService.destroySaveState(this.formId);
   }
 
   /**
-   * Updates the subject (user) of a permission
+   * Validates a subject (user) field
+   * @param subject The subject to validate
+   * @returns True if valid, false otherwise
+   */
+  private validateSubject(subject: string): boolean {
+    return !!subject && subject.trim().length > 0;
+  }
+
+  /**
+   * Performs auto-save for individual permission field changes
+   * @param index The index of the permission that changed
+   * @param field The field that changed
+   * @param newValue The new value
+   */
+  private performAutoSave(index: number, field: string, newValue: string): void {
+    this.saveStateService.markFieldChanged(this.formId, `permission_${index}_${field}`, newValue);
+    this.saveStateService.updateSaveStatus(this.formId, 'saving');
+
+    // In a real implementation, this would make an API call
+    // For now, simulate the save operation
+    setTimeout(() => {
+      // Update original permissions to reflect saved state
+      if (this._originalPermissions[index]) {
+        (this._originalPermissions[index] as any)[field] = newValue;
+      }
+      this.saveStateService.updateOriginalValues(this.formId, this._originalPermissions);
+      this.saveStateService.updateSaveStatus(this.formId, 'saved');
+    }, 300);
+  }
+
+  /**
+   * Updates the subject (user) of a permission with change detection and auto-save
    * @param index The index of the permission to update
    * @param event The blur event containing the new subject value
    */
   updatePermissionSubject(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
+    const newSubject = input.value.trim();
+
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].subject = input.value;
-      this.permissionsTable.renderRows();
+      const originalSubject = this._originalPermissions[index]?.subject || '';
+      
+      // Only update if value actually changed
+      if (originalSubject !== newSubject) {
+        // Validate the field before saving
+        if (this.validateSubject(newSubject)) {
+          this.permissionsDataSource.data[index].subject = newSubject;
+          this.permissionsTable.renderRows();
+          this.performAutoSave(index, 'subject', newSubject);
+        } else {
+          this.notificationService.showValidationError(
+            'Permissions',
+            'Subject field cannot be empty'
+          );
+        }
+      }
     }
   }
 
   /**
-   * Updates the role of a permission
+   * Updates the role of a permission with change detection and auto-save
    * @param index The index of the permission to update
    * @param event The selection change event containing the new role value
    */
   updatePermissionRole(index: number, event: { value: 'reader' | 'writer' | 'owner' }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].role = event.value;
-      this.permissionsTable.renderRows();
+      const originalRole = this._originalPermissions[index]?.role || '';
+      
+      // Only update if value actually changed
+      if (originalRole !== event.value) {
+        this.permissionsDataSource.data[index].role = event.value;
+        this.permissionsTable.renderRows();
+        this.performAutoSave(index, 'role', event.value);
+      }
     }
   }
 

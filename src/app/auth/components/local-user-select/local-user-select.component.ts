@@ -136,7 +136,7 @@ export class LocalUserSelectComponent implements OnInit {
     if (this.loginForm.valid) {
       const email = this.loginForm.get('email')?.value as string;
       const code = this.localProvider.generateAuthCodeForEmail(email);
-      void this.router.navigate(['/auth/callback'], {
+      void this.router.navigate(['/oauth2/callback'], {
         queryParams: { code, state: this.state },
       });
     }

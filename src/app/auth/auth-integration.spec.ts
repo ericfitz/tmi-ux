@@ -21,13 +21,13 @@ import { LoggerService } from '../core/services/logger.service';
 import { LocalOAuthProviderService } from './services/local-oauth-provider.service';
 import { ServerConnectionService } from '../core/services/server-connection.service';
 import { environment } from '../../environments/environment';
-import { 
-  createTypedMockLoggerService, 
+import {
+  createTypedMockLoggerService,
   createTypedMockRouter,
   createTypedMockHttpClient,
   type MockLoggerService,
   type MockRouter,
-  type MockHttpClient
+  type MockHttpClient,
 } from '../../testing/mocks';
 
 // Mock interfaces for type safety
@@ -81,7 +81,7 @@ describe('Authentication Integration', () => {
 
     // Create mock server connection service
     serverConnectionService = {
-      currentStatus: 'connected'
+      currentStatus: 'connected',
     };
 
     // Create the service with mocked dependencies
@@ -289,7 +289,7 @@ describe('Authentication Integration', () => {
 
                     // Verify refresh was called
                     expect(httpClient.post).toHaveBeenCalledWith(
-                      `${environment.apiUrl}/auth/refresh`,
+                      `${environment.apiUrl}/oauth2/refresh`,
                       { refresh_token: 'valid-refresh-token' },
                     );
 
@@ -582,7 +582,7 @@ describe('Authentication Integration', () => {
         result$.subscribe({
           next: () => {
             // Verify that getValidToken was called (which triggers refresh)
-            expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
+            expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/refresh`, {
               refresh_token: 'valid-refresh-token',
             });
           },

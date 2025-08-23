@@ -127,7 +127,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to public API endpoints', async () => {
-      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login/github`);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/oauth2/authorize/github`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'login response' })),
@@ -144,7 +144,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to auth exchange endpoints', async () => {
-      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/token/google`);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/oauth2/token/google`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'exchange response' })),
@@ -161,7 +161,7 @@ describe('JwtInterceptor', () => {
     });
 
     it('should not add Authorization header to auth authorize endpoints', async () => {
-      const mockRequest = createMockRequest(`${environment.apiUrl}/auth/login/github`);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/oauth2/authorize/github`);
 
       const mockHandler = {
         handle: vi.fn().mockReturnValue(of({ data: 'authorize response' })),

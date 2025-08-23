@@ -18,6 +18,12 @@ AI assistants should update this list whenever adding a new file, or when you di
 - authentication-flow.png
   This is a swimlane diagram describing how the different OAuth parties interact when authenticating a user to the application.
 
+- autosave-data-modeling-architecture.md
+  Architecture documentation for the auto-save data modeling system, describing how data changes are tracked and persisted automatically in the application.
+
+- enhanced-save-behavior-implementation-plan.md
+  Comprehensive implementation plan for unified "on blur with auto save" pattern across TMI-UX application with explicit save buttons, validation, visual feedback, and enhanced user experience through optimized tab navigation. Currently tracks Phase 3 completion with dialog standardization.
+
 - UNUSED_I18N_KEYS_VERIFICATION.md
   Manual verification report of unused localization keys with detailed analysis of false positives and script limitations for i18n key cleanup.
 

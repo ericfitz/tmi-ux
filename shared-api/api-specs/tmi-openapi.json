@@ -129,7 +129,7 @@
           },
           "api": {
             "version": "1.0",
-            "specification": "https://github.com/ericfitz/tmi/blob/main/tmi-openapi.json"
+            "specification": "https://github.com/ericfitz/tmi/blob/main/shared/api-specs/tmi-openapi.json"
           },
           "operator": {
             "name": "Example Organization",
@@ -1300,7 +1300,7 @@
         "example": {
           "error": "invalid_request",
           "error_description": "The request is missing a required parameter",
-          "error_uri": "https://docs.example.com/auth/errors/invalid_request"
+          "error_uri": "https://docs.example.com/oauth2/errors/invalid_request"
         }
       },
       "AuthTokenResponse": {
@@ -2378,7 +2378,7 @@
         }
       }
     },
-    "/auth/providers": {
+    "/oauth2/providers": {
       "get": {
         "tags": [
           "Authentication"
@@ -2447,24 +2447,24 @@
                       "id": "google",
                       "name": "Google",
                       "icon": "fa-brands fa-google",
-                      "auth_url": "http://localhost:8080/auth/login/google",
-                      "redirect_uri": "http://localhost:8080/auth/callback",
+                      "auth_url": "http://localhost:8080/oauth2/authorize/google",
+                      "redirect_uri": "http://localhost:8080/oauth2/callback",
                       "client_id": "675196260523-e8ppeu62pv222jhnpebe929b2tgl2jm0.apps.googleusercontent.com"
                     },
                     {
                       "id": "github",
                       "name": "GitHub",
                       "icon": "fa-brands fa-github",
-                      "auth_url": "http://localhost:8080/auth/login/github",
-                      "redirect_uri": "http://localhost:8080/auth/callback",
+                      "auth_url": "http://localhost:8080/oauth2/authorize/github",
+                      "redirect_uri": "http://localhost:8080/oauth2/callback",
                       "client_id": "your-github-client-id"
                     },
                     {
                       "id": "microsoft",
                       "name": "Microsoft",
                       "icon": "fa-brands fa-microsoft",
-                      "auth_url": "http://localhost:8080/auth/login/microsoft",
-                      "redirect_uri": "http://localhost:8080/auth/callback",
+                      "auth_url": "http://localhost:8080/oauth2/authorize/microsoft",
+                      "redirect_uri": "http://localhost:8080/oauth2/callback",
                       "client_id": "your-microsoft-client-id"
                     }
                   ]
@@ -2478,7 +2478,7 @@
         }
       }
     },
-    "/auth/login/{provider}": {
+    "/oauth2/authorize/{provider}": {
       "get": {
         "tags": [
           "Authentication"
@@ -2493,13 +2493,7 @@
             "required": true,
             "description": "OAuth provider identifier",
             "schema": {
-              "type": "string",
-              "enum": [
-                "github",
-                "google",
-                "microsoft",
-                "test"
-              ]
+              "type": "string"
             }
           },
           {
@@ -2521,6 +2515,17 @@
             "schema": {
               "type": "string",
               "example": "random_state_abc123"
+            }
+          },
+          {
+            "name": "login_hint",
+            "in": "query",
+            "required": false,
+            "description": "User identity hint for test OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the test provider (ignored by production providers like Google, GitHub, etc.). Must be 3-20 characters, alphanumeric and hyphens only.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9-]{3,20}$",
+              "example": "alice"
             }
           }
         ],
@@ -2560,7 +2565,7 @@
         }
       }
     },
-    "/auth/token/{provider}": {
+    "/oauth2/token/{provider}": {
       "post": {
         "tags": [
           "Authentication"
@@ -2575,12 +2580,7 @@
             "required": true,
             "description": "OAuth provider identifier",
             "schema": {
-              "type": "string",
-              "enum": [
-                "google",
-                "github",
-                "microsoft"
-              ]
+              "type": "string"
             }
           }
         ],
@@ -2605,7 +2605,7 @@
                     "type": "string",
                     "format": "uri",
                     "description": "Redirect URI used in the authorization request (must match exactly)",
-                    "example": "https://your-web-app.com/auth/callback"
+                    "example": "https://your-web-app.com/oauth2/callback"
                   }
                 },
                 "required": [
@@ -2645,7 +2645,7 @@
                     "summary": "Invalid provider",
                     "value": {
                       "error": "Invalid provider: invalid_provider",
-                      "error_description": "Provider 'invalid_provider' is not supported. Supported providers: google, github, microsoft"
+                      "error_description": "Provider 'invalid_provider' is not configured or supported"
                     }
                   },
                   "missing_code": {
@@ -2695,7 +2695,7 @@
         }
       }
     },
-    "/auth/refresh": {
+    "/oauth2/refresh": {
       "post": {
         "tags": [
           "Authentication"
@@ -2804,7 +2804,7 @@
         }
       }
     },
-    "/auth/me": {
+    "/oauth2/userinfo": {
       "get": {
         "tags": [
           "Authentication"
@@ -2887,7 +2887,7 @@
         }
       }
     },
-    "/auth/callback": {
+    "/oauth2/callback": {
       "get": {
         "tags": [
           "Authentication"
@@ -2932,7 +2932,7 @@
                 "schema": {
                   "type": "string",
                   "format": "uri",
-                  "example": "http://localhost:4200/auth/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=random_state_abc123"
+                  "example": "http://localhost:4200/oauth2/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&expires_in=3600&token_type=Bearer&state=random_state_abc123"
                 },
                 "description": "Client callback URL with access_token, refresh_token, expires_in, token_type, and state as query parameters"
               }
@@ -2950,7 +2950,7 @@
         }
       }
     },
-    "/auth/logout": {
+    "/oauth2/revoke": {
       "post": {
         "tags": [
           "Authentication"
@@ -7055,7 +7055,7 @@
                   "value": [
                     {
                       "name": "User Authentication Module",
-                      "url": "https://github.com/company/repo/blob/main/auth/user.go",
+                      "url": "https://github.com/company/repo/blob/main/oauth2/user.go",
                       "description": "Core user authentication logic",
                       "metadata": [
                         {
@@ -7107,7 +7107,7 @@
                       {
                         "id": "650e8400-e29b-41d4-a716-446655440001",
                         "name": "User Authentication Module",
-                        "url": "https://github.com/company/repo/blob/main/auth/user.go",
+                        "url": "https://github.com/company/repo/blob/main/oauth2/user.go",
                         "description": "Core user authentication logic",
                         "metadata": [
                           {
@@ -8167,7 +8167,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["error", "join_url"],
+                  "required": [
+                    "error",
+                    "join_url"
+                  ],
                   "properties": {
                     "error": {
                       "type": "string",
