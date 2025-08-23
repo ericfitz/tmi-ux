@@ -1,12 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { Metadata } from '../../models/threat-model.model';
+
+// Enhanced save behavior imports
+import { SaveStateService, SaveState } from '../../../../shared/services/save-state.service';
+import { ConnectionMonitorService, ConnectionStatus } from '../../../../shared/services/connection-monitor.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { FormValidationService } from '../../../../shared/services/form-validation.service';
+import { SaveIndicatorComponent } from '../../../../shared/components/save-indicator/save-indicator.component';
 
 export interface MetadataDialogData {
   metadata: Metadata[];
@@ -18,7 +26,7 @@ export interface MetadataDialogData {
 @Component({
   selector: 'app-metadata-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule, TranslocoModule],
+  imports: [CommonModule, MaterialModule, TranslocoModule, SaveIndicatorComponent],
   templateUrl: './metadata-dialog.component.html',
   styles: [
     `
@@ -240,45 +248,144 @@ export interface MetadataDialogData {
     `,
   ],
 })
-export class MetadataDialogComponent implements OnInit {
+export class MetadataDialogComponent implements OnInit, OnDestroy {
   dataSource = new MatTableDataSource<Metadata>([]);
   displayedColumns: string[] = [];
 
   @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
   @ViewChild('metadataSort') metadataSort!: MatSort;
 
+  // Enhanced save behavior properties
+  formId: string;
+  saveState: SaveState | undefined;
+  connectionStatus: ConnectionStatus | undefined;
+  private _subscriptions: Subscription = new Subscription();
+  private _originalMetadata: Metadata[] = [];
+
   constructor(
     public dialogRef: MatDialogRef<MetadataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: MetadataDialogData,
-  ) {}
+    // Enhanced save behavior services
+    private saveStateService: SaveStateService,
+    private connectionMonitorService: ConnectionMonitorService,
+    private notificationService: NotificationService,
+    private formValidationService: FormValidationService,
+  ) {
+    // Create unique form ID for this dialog instance
+    this.formId = `metadata-dialog-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+  }
 
   ngOnInit(): void {
     this.dataSource.data = [...this.data.metadata];
     this.displayedColumns = this.data.isReadOnly ? ['key', 'value'] : ['key', 'value', 'actions'];
+    
+    // Store original metadata for change detection
+    this._originalMetadata = JSON.parse(JSON.stringify(this.data.metadata)) as Metadata[];
+    
+    // Initialize save state
+    this._subscriptions.add(
+      this.saveStateService.initializeSaveState(this.formId, this._originalMetadata as unknown as Record<string, unknown>).subscribe(state => {
+        this.saveState = state;
+      })
+    );
+    
+    // Monitor connection status
+    this._subscriptions.add(
+      this.connectionMonitorService.getConnectionStatus().subscribe(status => {
+        this.connectionStatus = status;
+      })
+    );
+    
+    // Start connection monitoring
+    this.connectionMonitorService.startMonitoring();
+  }
+
+  ngOnDestroy(): void {
+    this._subscriptions.unsubscribe();
+    this.connectionMonitorService.stopMonitoring();
+    this.saveStateService.destroySaveState(this.formId);
   }
 
   /**
-   * Updates the key of a metadata item
+   * Updates the key of a metadata item with change detection and auto-save
    * @param index The index of the metadata item to update
    * @param event The blur event containing the new key value
    */
   updateKey(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
+    const newKey = input.value.trim();
+    
     if (index >= 0 && index < this.dataSource.data.length) {
-      this.dataSource.data[index].key = input.value;
+      const originalItem = this._originalMetadata[index];
+      const currentItem = this.dataSource.data[index];
+      
+      // Only update if value actually changed
+      if (originalItem && currentItem.key !== newKey) {
+        currentItem.key = newKey;
+        
+        // Mark field as changed and trigger auto-save
+        this.saveStateService.markFieldChanged(this.formId, `metadata_${index}_key`, newKey);
+        this.performAutoSave(index, 'key', newKey);
+      }
     }
   }
 
   /**
-   * Updates the value of a metadata item
+   * Updates the value of a metadata item with change detection and auto-save
    * @param index The index of the metadata item to update
    * @param event The blur event containing the new value
    */
   updateValue(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
+    const newValue = input.value.trim();
+    
     if (index >= 0 && index < this.dataSource.data.length) {
-      this.dataSource.data[index].value = input.value;
+      const originalItem = this._originalMetadata[index];
+      const currentItem = this.dataSource.data[index];
+      
+      // Only update if value actually changed
+      if (originalItem && currentItem.value !== newValue) {
+        currentItem.value = newValue;
+        
+        // Mark field as changed and trigger auto-save
+        this.saveStateService.markFieldChanged(this.formId, `metadata_${index}_value`, newValue);
+        this.performAutoSave(index, 'value', newValue);
+      }
     }
+  }
+
+  /**
+   * Performs auto-save for individual metadata field changes
+   */
+  private performAutoSave(index: number, field: 'key' | 'value', newValue: string): void {
+    // Validate the field before saving
+    if (!newValue) {
+      this.notificationService.showValidationError('Metadata', `${field} cannot be empty`);
+      return;
+    }
+    
+    this.saveStateService.updateSaveStatus(this.formId, 'saving');
+    
+    // In a real implementation, this would make an API call to save the metadata
+    // For now, simulate the save operation
+    setTimeout(() => {
+      this.saveStateService.updateOriginalValues(this.formId, this.dataSource.data as unknown as Record<string, unknown>);
+      this.saveStateService.updateSaveStatus(this.formId, 'saved');
+      
+      // Update original metadata to reflect saved state
+      this._originalMetadata = JSON.parse(JSON.stringify(this.dataSource.data)) as Metadata[];
+    }, 300);
+  }
+
+  /**
+   * Gets filtered metadata - removes empty entries and validates
+   * @returns Valid metadata entries (both key and value must be non-empty)
+   */
+  private getValidMetadata(): Metadata[] {
+    return this.dataSource.data.filter(item => 
+      item.key && item.key.trim() !== '' && 
+      item.value && item.value.trim() !== ''
+    );
   }
 
   /**
@@ -309,9 +416,11 @@ export class MetadataDialogComponent implements OnInit {
 
   /**
    * Saves the metadata and closes the dialog
+   * Only saves valid metadata entries (non-empty key and value pairs)
    */
   save(): void {
-    this.dialogRef.close(this.dataSource.data);
+    const validMetadata = this.getValidMetadata();
+    this.dialogRef.close(validMetadata);
   }
 
   /**

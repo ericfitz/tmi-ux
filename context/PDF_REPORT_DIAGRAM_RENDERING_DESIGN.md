@@ -46,7 +46,7 @@ export interface Diagram {
 ```
 
 #### 1.2 Update API Specification
-**File**: `tmi-openapi.json`
+**File**: `shared-api/api-specs/tmi-openapi.json`
 
 Add new fields to diagram schema:
 - `renderedImage` object with PNG data, metadata, and timestamps

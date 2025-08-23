@@ -317,6 +317,7 @@ export class MockDataService implements OnDestroy {
         diagramId: '123e4567-e89b-12d3-a456-426614174000',
         diagramName: 'Payment Processing Flow',
         hostUser: 'alice.security@company.com',
+        sessionManager: 'alice.security@company.com',
         startedAt: new Date(Date.now() - 15 * 60 * 1000), // Started 15 minutes ago
         activeUsers: 3,
       },
@@ -327,6 +328,7 @@ export class MockDataService implements OnDestroy {
         diagramId: '223e4567-e89b-12d3-a456-426614174000',
         diagramName: 'Microservices Architecture',
         hostUser: 'bob.architect@company.com',
+        sessionManager: 'bob.architect@company.com',
         startedAt: new Date(Date.now() - 45 * 60 * 1000), // Started 45 minutes ago
         activeUsers: 2,
       },
@@ -337,6 +339,7 @@ export class MockDataService implements OnDestroy {
         diagramId: '323e4567-e89b-12d3-a456-426614174000',
         diagramName: 'Authentication Flow',
         hostUser: 'carol.mobile@company.com',
+        sessionManager: 'carol.mobile@company.com',
         startedAt: new Date(Date.now() - 5 * 60 * 1000), // Started 5 minutes ago
         activeUsers: 4,
       },

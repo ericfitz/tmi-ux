@@ -342,6 +342,6 @@ Add X6 properties progressively:
 ## Resources
 
 - [AntV X6 Documentation](https://x6.antv.vision/en/)
-- [TMI OpenAPI Schema](../tmi-openapi.json)
+- [TMI OpenAPI Schema](../shared-api/api-specs/tmi-openapi.json)
 - [X6 Type Definitions](../src/app/pages/dfd/domain/value-objects/x6-types.ts)
 - [Domain Object Tests](../src/app/pages/dfd/domain/value-objects/node-info.spec.ts)

@@ -12,7 +12,7 @@ import { JSDOM } from 'jsdom';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { ZOrderService } from '../services/z-order.service';
 import { registerCustomShapes } from './x6-shape-definitions';
-import { createMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Helper to add getNodeTypeInfo extension mock to nodes
 function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
@@ -122,7 +122,7 @@ describe('X6ZOrderAdapter', () => {
     graph.isSelected = vi.fn().mockReturnValue(false);
 
     // Create mock logger and real services
-    mockLogger = createMockLoggerService() as MockLoggerService;
+    mockLogger = createTypedMockLoggerService();
     zOrderService = new ZOrderService(mockLogger as any);
     adapter = new X6ZOrderAdapter(mockLogger as any, zOrderService);
   });

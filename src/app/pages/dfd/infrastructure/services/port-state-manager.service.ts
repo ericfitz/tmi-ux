@@ -54,7 +54,7 @@ export class PortStateManagerService {
    */
   private _executePortOperation(graph: Graph, operationName: string, operation: () => void): void {
     if (this._historyCoordinator) {
-      this._historyCoordinator.executeVisualEffect(graph, operationName, operation);
+      this._historyCoordinator.executeVisualEffect(graph, operation);
     } else {
       // Fallback: execute directly if no history coordinator available
       this._logger.warn('No history coordinator available for port operation', { operationName });

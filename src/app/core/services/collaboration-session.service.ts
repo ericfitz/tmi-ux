@@ -33,6 +33,7 @@ export interface CollaborationSession {
   diagramId: string;
   diagramName: string;
   hostUser: string;
+  sessionManager: string;
   startedAt: Date;
   activeUsers: number;
 }
@@ -49,8 +50,10 @@ interface ServerCollaborationSession {
   participants: Array<{
     user_id: string;
     joined_at?: string;
+    permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
+  session_manager?: string;
   started_at?: string;
 }
 
@@ -224,6 +227,7 @@ export class CollaborationSessionService implements OnDestroy {
       diagramId: serverSession.diagram_id,
       diagramName: serverSession.diagram_name || `Diagram ${serverSession.diagram_id.slice(0, 8)}`,
       hostUser: serverSession.participants[0]?.user_id || 'Unknown User',
+      sessionManager: serverSession.session_manager || serverSession.participants[0]?.user_id || 'Unknown User',
       startedAt: new Date(serverSession.started_at || serverSession.participants[0]?.joined_at || Date.now()),
       activeUsers: serverSession.participants.length,
     };

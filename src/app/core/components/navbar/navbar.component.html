@@ -50,13 +50,24 @@
         <button
           mat-button
           (click)="openUserPreferences()"
+          (contextmenu)="openUserProfileContextMenu($event)"
           class="user-profile-button"
           [matTooltip]="userEmail"
           matTooltipPosition="below"
+          [matMenuTriggerFor]="userProfileContextMenu"
+          #userProfileButton
         >
           <mat-icon>person</mat-icon>
           <span>{{ username }}</span>
         </button>
+
+        <!-- Context menu for user profile button -->
+        <mat-menu #userProfileContextMenu="matMenu">
+          <button mat-menu-item (click)="copyUserEmailToClipboard()" *ngIf="isDevelopmentMode">
+            <mat-icon>content_copy</mat-icon>
+            <span [transloco]="'navbar.copyUserEmail'">Copy User Email to Clipboard</span>
+          </button>
+        </mat-menu>
         <button mat-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span [transloco]="'navbar.logoutButton'">Logout</span>

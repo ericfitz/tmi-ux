@@ -4,6 +4,7 @@
       <h1 class="page-title">
         {{ 'editor.diagramPrefix' | transloco }}
         {{ diagramName || ('editor.pageTitle' | transloco) }}
+        <span *ngIf="isReadOnlyMode" class="read-only-indicator">(Read Only)</span>
       </h1>
     </div>
     <app-dfd-collaboration></app-dfd-collaboration>
@@ -15,6 +16,7 @@
         mat-icon-button
         color="primary"
         (click)="addGraphNode('actor')"
+        [disabled]="isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.addActor' | transloco"
       >
         <mat-icon
@@ -28,6 +30,7 @@
         mat-icon-button
         color="accent"
         (click)="addGraphNode('process')"
+        [disabled]="isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.addProcess' | transloco"
       >
         <mat-icon
@@ -41,6 +44,7 @@
         mat-icon-button
         color="warn"
         (click)="addGraphNode('store')"
+        [disabled]="isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.addStore' | transloco"
       >
         <mat-icon
@@ -54,6 +58,7 @@
         mat-icon-button
         color="basic"
         (click)="addGraphNode('security-boundary')"
+        [disabled]="isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.addSecurityBoundary' | transloco"
       >
         <mat-icon fontSet="material-symbols-outlined">select</mat-icon>
@@ -62,6 +67,7 @@
         mat-icon-button
         color="basic"
         (click)="addGraphNode('text-box')"
+        [disabled]="isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.addTextbox' | transloco"
       >
         <mat-icon
@@ -78,7 +84,7 @@
         mat-icon-button
         color="basic"
         (click)="deleteSelected()"
-        [disabled]="!hasSelectedCells"
+        [disabled]="!hasSelectedCells || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.deleteSelected' | transloco"
       >
         <mat-icon
@@ -97,7 +103,7 @@
       <button
         mat-icon-button
         (click)="undo()"
-        [disabled]="!canUndo"
+        [disabled]="!canUndo || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.undo' | transloco"
       >
         <mat-icon>undo</mat-icon>
@@ -105,7 +111,7 @@
       <button
         mat-icon-button
         (click)="redo()"
-        [disabled]="!canRedo"
+        [disabled]="!canRedo || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.redo' | transloco"
       >
         <mat-icon>redo</mat-icon>
@@ -218,33 +224,33 @@
       ></button>
     </div>
     <mat-menu #cellContextMenu="matMenu">
-      <button mat-menu-item (click)="editCellText()">
+      <button mat-menu-item (click)="editCellText()" [disabled]="isReadOnlyMode">
         <mat-icon>edit</mat-icon>
         <span>{{ 'contextMenu.editText' | transloco }}</span>
       </button>
       <mat-divider></mat-divider>
-      <button mat-menu-item (click)="moveForward()">
+      <button mat-menu-item (click)="moveForward()" [disabled]="isReadOnlyMode">
         <mat-icon>flip_to_front</mat-icon>
         <span>{{ 'contextMenu.moveForward' | transloco }}</span>
       </button>
-      <button mat-menu-item (click)="moveBackward()">
+      <button mat-menu-item (click)="moveBackward()" [disabled]="isReadOnlyMode">
         <mat-icon>flip_to_back</mat-icon>
         <span>{{ 'contextMenu.moveBackward' | transloco }}</span>
       </button>
-      <button mat-menu-item (click)="moveToFront()">
+      <button mat-menu-item (click)="moveToFront()" [disabled]="isReadOnlyMode">
         <mat-icon>vertical_align_top</mat-icon>
         <span>{{ 'contextMenu.moveToFront' | transloco }}</span>
       </button>
-      <button mat-menu-item (click)="moveToBack()">
+      <button mat-menu-item (click)="moveToBack()" [disabled]="isReadOnlyMode">
         <mat-icon>vertical_align_bottom</mat-icon>
         <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
       </button>
-      <button mat-menu-item (click)="addInverseConnection()" *ngIf="isRightClickedCellEdge()">
+      <button mat-menu-item (click)="addInverseConnection()" *ngIf="isRightClickedCellEdge()" [disabled]="isReadOnlyMode">
         <mat-icon>swap_horiz</mat-icon>
         <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
       </button>
       <mat-divider></mat-divider>
-      <button mat-menu-item (click)="deleteSelected()" [disabled]="!hasSelectedCells">
+      <button mat-menu-item (click)="deleteSelected()" [disabled]="!hasSelectedCells || isReadOnlyMode">
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -260,7 +266,8 @@
           !threatModelId ||
           !hasExactlyOneSelectedCell ||
           selectedCellIsTextBox ||
-          selectedCellIsSecurityBoundary
+          selectedCellIsSecurityBoundary ||
+          isReadOnlyMode
         "
       >
         <mat-icon

@@ -23,6 +23,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { Graph } from '@antv/x6';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
@@ -31,10 +32,7 @@ import { X6ZOrderAdapter } from '../adapters/x6-z-order.adapter';
 import { NodeConfigurationService } from './node-configuration.service';
 import { VisualEffectsService } from './visual-effects.service';
 import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
-import {
-  GraphHistoryCoordinator,
-  HISTORY_OPERATION_TYPES,
-} from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';
 
 /**
@@ -161,8 +159,6 @@ export class DfdNodeService {
 
       this.historyCoordinator.executeCompoundOperation(
         graph,
-        HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
-        // Structural changes (recorded in history)
         () => {
           const node = this.x6CoreOps.addNode(graph, nodeConfig);
           if (!node) {
@@ -171,18 +167,14 @@ export class DfdNodeService {
           // Apply proper z-index using ZOrderService after node creation
           this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
           createdNode = node; // Capture the created node for visual effects
-          return node;
-        },
-        // Visual effects (excluded from history)
-        () => {
+          
+          // Apply visual effects
           if (createdNode) {
             this.visualEffectsService.applyCreationHighlight(createdNode, graph);
           }
-        },
-        // Use default options for node creation (excludes visual effects)
-        this.historyCoordinator.getDefaultOptionsForOperation(
-          HISTORY_OPERATION_TYPES.NODE_CREATION_USER,
-        ),
+          
+          return node;
+        }
       );
 
       this.logger.info(
@@ -385,5 +377,56 @@ export class DfdNodeService {
     }
 
     return nodeConfig;
+  }
+
+  /**
+   * Create node from remote WebSocket operation with proper visual effects
+   */
+  createNodeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
+    // Convert WebSocket cell data to NodeInfo format
+    const nodeInfo = this.convertWebSocketCellToNodeInfo(cellData);
+    
+    // Create node using existing infrastructure
+    const node = this.createNodeFromInfo(graph, nodeInfo, {
+      suppressHistory: options?.suppressHistory ?? true,
+      ensureVisualRendering: options?.ensureVisualRendering ?? true,
+      updatePortVisibility: options?.updatePortVisibility ?? true
+    });
+
+    // Apply visual effects for remote operations (different color to distinguish)
+    if (options?.applyVisualEffects && node) {
+      // TODO: Apply creation highlight with green color for remote operations
+      // this.visualEffectsService.applyCreationHighlight(node, graph, '#00ff00');
+    }
+  }
+
+  /**
+   * Remove node from remote WebSocket operation
+   */
+  removeNodeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
+    const cell = graph.getCellById(cellId);
+    if (cell && cell.isNode()) {
+      // Use existing core operations service
+      this.x6CoreOps.removeNode(graph, cellId, {
+        suppressErrors: options?.suppressErrors ?? false,
+        logOperation: options?.logOperation ?? true
+      });
+    }
+  }
+
+  /**
+   * Convert WebSocket cell data to NodeInfo format
+   */
+  private convertWebSocketCellToNodeInfo(cellData: any): any {
+    return {
+      id: cellData.id,
+      type: cellData.shape as NodeType,
+      x: cellData.x,
+      y: cellData.y,
+      width: cellData.width,
+      height: cellData.height,
+      label: cellData.label || '',
+      data: cellData.data || {}
+    };
   }
 }

@@ -4,10 +4,13 @@ This file provides guidance to AI coding assistants like Claude Code, Cline, Roo
 
 ## API and Backend
 
-- Backend API specification is available in `tmi-openapi.json`
+- Backend API specification is available in `shared-api/api-specs/tmi-openapi.json` (shared subtree from TMI repository)
+- WebSocket API specification is available in `shared-api/api-specs/tmi-asyncapi.yaml`
 - Local development server runs at http://localhost:4200
 - API URL is configured in environment files (e.g., environment.dev.ts)
-- Authentication and authorization details are documented in `AUTHORIZATION.md` in the context folder
+- Authentication and authorization details are documented in `shared-api/docs/AUTHORIZATION.md`
+- Client integration guide is available in `shared-api/docs/CLIENT_INTEGRATION_GUIDE.md`
+- OAuth integration details are in `shared-api/docs/CLIENT_OAUTH_INTEGRATION.md`
 - The server uses a role-based access control model with Owner, Writer, and Reader roles
 - Authorization middleware enforces permissions for object access and modification
 

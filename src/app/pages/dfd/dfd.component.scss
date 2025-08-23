@@ -24,6 +24,13 @@
 
 .page-title {
   margin: 0 0 2px;
+
+  .read-only-indicator {
+    color: #ff9800;
+    font-size: 0.8em;
+    font-weight: normal;
+    margin-left: 8px;
+  }
 }
 
 // Toolbar styles

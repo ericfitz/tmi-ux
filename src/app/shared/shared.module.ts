@@ -19,9 +19,37 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { MaterialModule } from './material/material.module';
+import { SaveIndicatorComponent } from './components/save-indicator/save-indicator.component';
+
+// Import services to ensure they are provided
+import { SaveStateService } from './services/save-state.service';
+import { ConnectionMonitorService } from './services/connection-monitor.service';
+import { NotificationService } from './services/notification.service';
+import { FormValidationService } from './services/form-validation.service';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MaterialModule],
-  exports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MaterialModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    MaterialModule,
+    SaveIndicatorComponent // Standalone component
+  ],
+  exports: [
+    CommonModule, 
+    FormsModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    MaterialModule,
+    SaveIndicatorComponent // Export for use in other modules
+  ],
+  providers: [
+    // Explicitly provide services (though they use providedIn: 'root')
+    SaveStateService,
+    ConnectionMonitorService,
+    NotificationService,
+    FormValidationService
+  ]
 })
 export class SharedModule {}

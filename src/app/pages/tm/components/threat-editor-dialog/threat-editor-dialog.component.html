@@ -1,4 +1,14 @@
-<h2 mat-dialog-title>{{ dialogTitle | transloco }}</h2>
+<h2 mat-dialog-title>
+  {{ dialogTitle | transloco }}
+  <!-- Save state indicator -->
+  <app-save-indicator 
+    [formId]="formId"
+    [size]="16"
+    [tooltipPosition]="'above'"
+    [showDebugInfo]="false"
+    style="margin-left: 8px;">
+  </app-save-indicator>
+</h2>
 <mat-dialog-content [dir]="currentDirection">
   <!-- Force translation update -->
   <div style="display: none">{{ 'threatEditor.threatName' | transloco }}</div>
@@ -37,7 +47,11 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.threatName' | transloco }}</mat-label>
-        <input matInput formControlName="name" />
+        <input 
+          matInput 
+          formControlName="name" 
+          tabindex="1"
+          (blur)="onFieldBlur('name', $event)" />
         <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
@@ -54,7 +68,9 @@
           matInput
           formControlName="description"
           rows="3"
+          tabindex="2"
           placeholder="{{ 'threatEditor.threatDescriptionPlaceholder' | transloco }}"
+          (blur)="onFieldBlur('description', $event)"
         ></textarea>
         <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
           {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
@@ -66,7 +82,10 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.threatType' | transloco }}</mat-label>
-        <mat-select formControlName="threat_type">
+        <mat-select 
+          formControlName="threat_type"
+          tabindex="6"
+          (selectionChange)="onSelectionChange('threat_type', $event.value)">
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
@@ -82,7 +101,10 @@
       <!-- Severity field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
-        <mat-select formControlName="severity">
+        <mat-select 
+          formControlName="severity"
+          tabindex="3"
+          (selectionChange)="onSelectionChange('severity', $event.value)">
           <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
           <mat-option value="None">{{ 'common.severityNone' | transloco }}</mat-option>
           <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
@@ -128,7 +150,12 @@
           </ng-container>
 
           <ng-template #inputMode>
-            <input matInput formControlName="issue_url" type="url" (blur)="onIssueUrlBlur()" />
+            <input 
+              matInput 
+              formControlName="issue_url" 
+              type="url" 
+              tabindex="7"
+              (blur)="onFieldBlur('issue_url', $event)" />
           </ng-template>
         </mat-form-field>
 

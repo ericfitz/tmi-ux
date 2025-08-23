@@ -14,7 +14,7 @@ import { EmbeddingService } from '../services/embedding.service';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { ZOrderService } from '../services/z-order.service';
 import { registerCustomShapes } from './x6-shape-definitions';
-import { createMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods that X6 expects
 const mockSVGElement = {
@@ -105,7 +105,7 @@ describe('X6EmbeddingAdapter', () => {
     });
 
     // Create services
-    mockLogger = createMockLoggerService() as MockLoggerService;
+    mockLogger = createTypedMockLoggerService();
     embeddingService = new EmbeddingService(mockLogger as any);
     zOrderService = new ZOrderService(mockLogger as any);
     x6ZOrderAdapter = new X6ZOrderAdapter(mockLogger as any, zOrderService);
@@ -325,6 +325,7 @@ describe('X6EmbeddingAdapter', () => {
       // Mock removeFromParent to actually remove the parent relationship
       childNode.removeFromParent = vi.fn(() => {
         (childNode as any).setParent(null);
+        return childNode;
       });
 
       adapter.unembedNode(graph, childNode);

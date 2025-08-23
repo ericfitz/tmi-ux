@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError, timeout } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
 import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
 import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
-import { HISTORY_OPERATION_TYPES } from './graph-history-coordinator.service';
 import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
 import { DfdNodeService } from '../infrastructure/services/node.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
 import { NodeInfo, NodeType } from '../domain/value-objects/node-info';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
+import { DfdCollaborationService } from './dfd-collaboration.service';
+import { CollaborativeOperationService } from './collaborative-operation.service';
+import { CellOperation } from '../models/websocket-message.types';
 
 /**
  * Interface for diagram data
@@ -45,6 +47,8 @@ export class DfdDiagramService {
     private portStateManager: PortStateManagerService,
     private nodeService: DfdNodeService,
     private edgeService: EdgeService,
+    private collaborationService: DfdCollaborationService,
+    private collaborativeOperationService: CollaborativeOperationService,
   ) {}
 
   /**
@@ -175,7 +179,6 @@ export class DfdDiagramService {
       // Use history coordinator for atomic batch loading with history suppression
       this.historyCoordinator.executeAtomicOperation(
         graph,
-        HISTORY_OPERATION_TYPES.DIAGRAM_LOAD,
         () => {
           this.logger.info('Inside atomic operation - clearing existing cells');
           // Clear existing graph first
@@ -257,13 +260,7 @@ export class DfdDiagramService {
           });
 
           return convertedCells;
-        },
-        {
-          includeVisualEffects: false,
-          includePortVisibility: false,
-          includeHighlighting: false,
-          includeToolChanges: false,
-        },
+        }
       );
 
       this.logger.info('Atomic operation completed - checking graph state');
@@ -274,7 +271,7 @@ export class DfdDiagramService {
       });
 
       // Update port visibility after loading (as separate visual effect)
-      this.historyCoordinator.executeVisualEffect(graph, 'diagram-load-port-visibility', () => {
+      this.historyCoordinator.executeVisualEffect(graph, () => {
         // Hide unconnected ports on all nodes
         this.portStateManager.hideUnconnectedPorts(graph);
         this.logger.debugComponent('DfdDiagram', 'Updated port visibility after diagram load');
@@ -554,18 +551,97 @@ export class DfdDiagramService {
 
   /**
    * Save diagram changes back to the threat model
+   * Routes to WebSocket for collaborative sessions, REST for solo editing
+   * Implements graceful fallback to REST when WebSocket fails
    */
   saveDiagramChanges(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
-    this.logger.info('Saving diagram changes using PATCH', { diagramId, threatModelId });
+    // Check if in collaborative mode
+    if (this.collaborationService.isCollaborating()) {
+      this.logger.debug('Collaborative mode: attempting WebSocket save with REST fallback');
+      
+      // In collaborative mode, try WebSocket first, but fall back to REST if WebSocket fails
+      // For bulk save operations (like auto-save), we need to convert the entire graph state
+      return this._saveViaWebSocketWithFallback(graph, diagramId, threatModelId);
+    }
+
+    // Solo mode: use existing REST PATCH operation
+    return this.saveViaREST(graph, diagramId, threatModelId);
+  }
+
+  /**
+   * Attempt save via WebSocket, falling back to REST if WebSocket fails
+   */
+  private _saveViaWebSocketWithFallback(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
+    // Convert current graph state to cell operations (full state sync)
+    const cells = this.convertGraphToCellsFormat(graph);
+    const operations: CellOperation[] = cells.map(cell => ({
+      id: cell.id,
+      operation: 'update', // For bulk save, treat all as updates
+      data: cell
+    }));
+
+    this.logger.debug('Attempting WebSocket bulk save', { 
+      cellCount: cells.length,
+      diagramId,
+      threatModelId 
+    });
+
+    // Try WebSocket operation with timeout
+    return this.collaborativeOperationService.sendDiagramOperation(operations).pipe(
+      timeout(15000), // 15 second timeout for WebSocket operations
+      map(() => {
+        this.logger.info('WebSocket bulk save successful');
+        return true;
+      }),
+      catchError((error) => {
+        this.logger.warn('WebSocket bulk save failed, falling back to REST', {
+          error: error.message,
+          cellCount: cells.length
+        });
+
+        // Check if error is authentication-related (don't fallback for auth errors)
+        if (this._isAuthenticationError(error)) {
+          this.logger.debug('User lacks edit permissions - operation blocked as expected', { error: error.message });
+          return throwError(() => error);
+        }
+
+        // Attempt REST fallback
+        this.logger.info('Executing REST fallback for bulk save operation');
+        return this.saveViaREST(graph, diagramId, threatModelId).pipe(
+          map((success) => {
+            if (success) {
+              this.logger.info('REST fallback successful - diagram saved via REST API');
+            } else {
+              this.logger.error('REST fallback failed - diagram not saved');
+            }
+            return success;
+          }),
+          catchError((restError) => {
+            this.logger.error('Both WebSocket and REST bulk save operations failed', {
+              webSocketError: error.message,
+              restError: restError.message
+            });
+            return of(false); // Return false instead of throwing to match REST behavior
+          })
+        );
+      })
+    );
+  }
+
+  /**
+   * Save diagram changes via REST API (non-collaborative mode)
+   */
+  private saveViaREST(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
+    this.logger.info('Saving diagram changes using REST PATCH', { diagramId, threatModelId });
 
     // Convert current graph state to cells format
     const cells = this.convertGraphToCellsFormat(graph);
     this.logger.debug('[DfdDiagram] Converted graph to cells format', { cellCount: cells.length });
 
-    // Use the new PATCH method for diagram-only updates instead of updating the entire threat model
+    // Use the PATCH method for diagram-only updates
     return this.threatModelService.patchDiagramCells(threatModelId, diagramId, cells).pipe(
       map(updatedDiagram => {
-        this.logger.info('Successfully saved diagram changes using PATCH', {
+        this.logger.info('Successfully saved diagram changes using REST PATCH', {
           diagramId,
           threatModelId,
           cellCount: cells.length,
@@ -574,7 +650,7 @@ export class DfdDiagramService {
         return true;
       }),
       catchError(error => {
-        this.logger.error('Error saving diagram changes using PATCH', error, {
+        this.logger.error('Error saving diagram changes using REST PATCH', error, {
           diagramId,
           threatModelId,
           cellCount: cells.length
@@ -582,6 +658,74 @@ export class DfdDiagramService {
         return of(false);
       }),
     );
+  }
+
+  /**
+   * Send incremental cell operations via WebSocket for collaborative editing
+   * Falls back to REST save if WebSocket fails
+   */
+  sendCollaborativeOperation(operations: CellOperation[], graph?: Graph, diagramId?: string, threatModelId?: string): Observable<void> {
+    if (!this.collaborationService.isCollaborating()) {
+      return throwError(() => new Error('Not in collaborative mode'));
+    }
+
+    this.logger.debug('Sending collaborative operation', { 
+      operationCount: operations.length,
+      operations: operations.map(op => ({ id: op.id, operation: op.operation }))
+    });
+
+    // Try WebSocket operation first with timeout
+    return this.collaborativeOperationService.sendDiagramOperation(operations).pipe(
+      timeout(15000), // 15 second timeout for WebSocket operations
+      catchError((error) => {
+        this.logger.warn('WebSocket operation failed, attempting REST fallback', {
+          error: error.message,
+          operationCount: operations.length
+        });
+
+        // Check if we have the necessary parameters for REST fallback
+        if (!graph || !diagramId || !threatModelId) {
+          this.logger.error('REST fallback not possible - missing required parameters', {
+            hasGraph: !!graph,
+            hasDiagramId: !!diagramId,
+            hasThreatModelId: !!threatModelId
+          });
+          return throwError(() => new Error(`WebSocket operation failed and REST fallback not available: ${error.message}`));
+        }
+
+        // Check if error is recoverable (don't fallback for auth errors)
+        if (this._isAuthenticationError(error)) {
+          this.logger.debug('User lacks edit permissions - operation blocked as expected', { error: error.message });
+          return throwError(() => error);
+        }
+
+        // Attempt REST fallback
+        this.logger.info('Falling back to REST save due to WebSocket failure');
+        return this.saveViaREST(graph, diagramId, threatModelId).pipe(
+          map(() => {
+            this.logger.info('REST fallback successful - operation completed via REST API');
+            // Return void to match WebSocket operation signature
+          }),
+          catchError((restError) => {
+            this.logger.error('Both WebSocket and REST operations failed', {
+              webSocketError: error.message,
+              restError: restError.message
+            });
+            return throwError(() => new Error(`WebSocket failed: ${error.message}. REST fallback also failed: ${restError.message}`));
+          })
+        );
+      })
+    );
+  }
+
+  /**
+   * Check if error is authentication-related and shouldn't trigger fallback
+   */
+  private _isAuthenticationError(error: any): boolean {
+    return error.message?.includes('401') || 
+           error.message?.includes('403') || 
+           error.message?.includes('permission') ||
+           error.message?.includes('Unauthorized');
   }
 
   /**

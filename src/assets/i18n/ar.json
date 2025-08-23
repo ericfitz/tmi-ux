@@ -22,23 +22,36 @@
     "title": "حول تي إم آي"
   },
   "collaboration": {
+    "approvePresenterRequest": "الموافقة على طلب المقدم",
     "availableCollaborationSessions": "جلسات التعاون المتاحة",
     "changeRole": "تغيير الدور",
+    "clearPresenter": "إزالة المقدم",
     "collaboratorsHeader": "المتعاونون",
     "copyLink": "نسخ الرابط",
+    "currentPresenter": "المقدم الحالي",
+    "denyPresenterRequest": "رفض طلب المقدم",
     "endCollaboration": "إنهاء التعاون",
+    "joinSession": "الانضمام إلى الجلسة",
+    "leaveSession": "مغادرة الجلسة",
     "makeOwner": "جعله مالكًا",
+    "makePresenter": "جعله مقدمًا",
     "makeReader": "جعله قارئًا",
     "makeWriter": "جعله كاتبًا",
     "manageCollaboration": "إدارة التعاون",
+    "presenterHeader": "عناصر التحكم في العرض",
+    "presenterRequests": "طلبات التقديم",
+    "removeFromSession": "إزالة من الجلسة",
     "removeUser": "إزالة المستخدم",
+    "requestPresenter": "طلب المقدم",
     "roles": {
       "owner": "مالك",
+      "presenter": "مقدم",
       "reader": "قارئ",
       "writer": "كاتب"
     },
     "shareLinkHeader": "مشاركة رابط التعاون",
     "startCollaboration": "بدء التعاون",
+    "takeBackPresenter": "استرداد المقدم",
     "title": "التعاون",
     "websocketStatus": {
       "connected": "ويب سوكيت متصل",
@@ -81,6 +94,7 @@
     "ok": "موافق",
     "other": "أخرى",
     "priority": "الأولوية",
+    "refresh": "تحديث",
     "save": "حفظ",
     "score": "النتيجة",
     "severity": "الخطورة",
@@ -138,6 +152,9 @@
       }
     }
   },
+  "errors": {
+    "validationError": "خطأ في التحقق"
+  },
   "footer": {
     "about": "حول",
     "privacy": "سياسة الخصوصية",
@@ -148,24 +165,25 @@
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
     "loadingProviders": "جاري تحميل موفري المصادقة...",
+    "local": {
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "emailRequired": "عنوان البريد الإلكتروني مطلوب",
+      "loginButton": "تسجيل الدخول",
+      "subtitle": "أدخل عنوان بريدك الإلكتروني للاختبار",
+      "title": "تسجيل الدخول المحلي للتطوير"
+    },
     "loggingInWith": "جاري تسجيل الدخول باستخدام {{provider}}...",
     "loginWith": "تسجيل الدخول باستخدام",
     "noProvidersConfigured": "لم يتم تكوين موفري المصادقة.",
     "oauthFailed": "فشل في مصادقة OAuth. يرجى المحاولة مرة أخرى.",
     "pleaseSignIn": "يرجى تسجيل الدخول للمتابعة.",
     "title": "تسجيل الدخول إلى تي إم آي",
-    "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth.",
-    "local": {
-      "title": "تسجيل الدخول المحلي للتطوير",
-      "subtitle": "أدخل عنوان بريدك الإلكتروني للاختبار",
-      "emailLabel": "عنوان البريد الإلكتروني",
-      "emailRequired": "عنوان البريد الإلكتروني مطلوب",
-      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
-      "loginButton": "تسجيل الدخول"
-    }
+    "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },
   "navbar": {
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
+    "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
     "logoutButton": "تسجيل الخروج",

@@ -54,11 +54,15 @@
         >
           {{ isCollaborating ? 'stop' : 'play_arrow' }}
         </mat-icon>
-        {{
-          isCollaborating
-            ? ('collaboration.endCollaboration' | transloco)
-            : ('collaboration.startCollaboration' | transloco)
-        }}
+        <ng-container *ngIf="!isCollaborating">
+          {{ 'collaboration.startCollaboration' | transloco }}
+        </ng-container>
+        <ng-container *ngIf="isCollaborating && isCurrentUserSessionManager()">
+          {{ 'collaboration.endCollaboration' | transloco }}
+        </ng-container>
+        <ng-container *ngIf="isCollaborating && !isCurrentUserSessionManager()">
+          {{ 'collaboration.leaveSession' | transloco }}
+        </ng-container>
       </button>
     </div>
 
@@ -86,21 +90,33 @@
             <div class="user-status" [ngClass]="getStatusColor(user.status)"></div>
             <div class="user-name">{{ user.name }}</div>
             <div class="user-permissions">
-              <!-- Owner icon -->
+              <!-- Presenter icon -->
               <mat-icon 
-                *ngIf="user.role === 'owner'"
+                *ngIf="user.isPresenter"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
-                class="permission-icon owner-icon"
-                [matTooltip]="'collaboration.roles.owner' | transloco"
+                class="permission-icon presenter-icon"
+                [matTooltip]="'collaboration.roles.presenter' | transloco"
               >
-                lock_person
+                podium
+              </mat-icon>
+              
+              <!-- Session Manager icon -->
+              <mat-icon 
+                *ngIf="user.isSessionManager"
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+                class="permission-icon session-manager-icon"
+                matTooltip="Session Manager"
+              >
+                star
               </mat-icon>
               
               <!-- Writer icon -->
               <mat-icon 
-                *ngIf="user.role === 'writer'"
+                *ngIf="user.permission === 'writer'"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
@@ -112,21 +128,38 @@
               
               <!-- Reader icon -->
               <mat-icon 
-                *ngIf="user.role === 'reader'"
+                *ngIf="user.permission === 'reader'"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
                 class="permission-icon reader-icon"
                 [matTooltip]="'collaboration.roles.reader' | transloco"
               >
-                no_edit
+                edit_off
               </mat-icon>
             </div>
           </div>
           <div
             class="user-actions"
-            *ngIf="isCurrentUserOwner() && !isCurrentUser(user.id)"
+            *ngIf="isCurrentUserSessionManager() && !isCurrentUser(user.id)"
           >
+            <!-- Make presenter button (only for owners, for other users) -->
+            <button
+              mat-icon-button
+              color="accent"
+              *ngIf="!user.isPresenter"
+              (click)="approvePresenterRequest(user.id)"
+              [matTooltip]="'collaboration.makePresenter' | transloco"
+            >
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+              >
+                podium
+              </mat-icon>
+            </button>
+
             <!-- Remove user button (only shown to owner for other users) -->
             <button
               mat-icon-button
@@ -141,6 +174,85 @@
               >
                 delete
               </mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Presenter controls section (only visible when collaborating) -->
+    <div *ngIf="isCollaborating" class="presenter-section">
+      <div class="presenter-header">
+        <h4>{{ 'collaboration.presenterHeader' | transloco }}</h4>
+      </div>
+
+      <!-- Current user presenter controls -->
+      <div class="presenter-controls">
+        <!-- Request presenter button (non-session-managers who aren't presenter) -->
+        <button
+          mat-flat-button
+          color="accent"
+          *ngIf="!isCurrentUserSessionManager() && !isCurrentUserPresenter()"
+          (click)="requestPresenterPrivileges()"
+        >
+          <mat-icon fontSet="material-symbols-outlined">podium</mat-icon>
+          {{ 'collaboration.requestPresenter' | transloco }}
+        </button>
+
+        <!-- Take back presenter button (session managers when someone else is presenter) -->
+        <button
+          mat-flat-button
+          color="primary"
+          *ngIf="isCurrentUserSessionManager() && currentPresenterId && !isCurrentUserPresenter()"
+          (click)="takeBackPresenterPrivileges()"
+        >
+          <mat-icon fontSet="material-symbols-outlined">podium</mat-icon>
+          {{ 'collaboration.takeBackPresenter' | transloco }}
+        </button>
+
+        <!-- Clear presenter button (session managers when they are presenter) -->
+        <button
+          mat-flat-button
+          color="warn"
+          *ngIf="isCurrentUserSessionManager() && isCurrentUserPresenter()"
+          (click)="clearPresenter()"
+        >
+          <mat-icon fontSet="material-symbols-outlined">speaker_notes_off</mat-icon>
+          {{ 'collaboration.clearPresenter' | transloco }}
+        </button>
+
+        <!-- Current presenter indicator -->
+        <div *ngIf="currentPresenterId" class="current-presenter-info">
+          <mat-icon class="presenter-icon">podium</mat-icon>
+          <span>{{ 'collaboration.currentPresenter' | transloco }}: {{ getPresenterName() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending presenter requests section (only for session managers) -->
+    <div *ngIf="isCurrentUserSessionManager() && pendingPresenterRequests.length > 0" class="presenter-requests-section">
+      <div class="presenter-requests-header">
+        <h4>{{ 'collaboration.presenterRequests' | transloco }}</h4>
+      </div>
+      <div class="presenter-requests-list">
+        <div *ngFor="let requestUserId of pendingPresenterRequests" class="presenter-request-item">
+          <span class="request-user-name">{{ getRequestUserName(requestUserId) }}</span>
+          <div class="request-actions">
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="approvePresenterRequest(requestUserId)"
+              [matTooltip]="'collaboration.approvePresenterRequest' | transloco"
+            >
+              <mat-icon>check</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="denyPresenterRequest(requestUserId)"
+              [matTooltip]="'collaboration.denyPresenterRequest' | transloco"
+            >
+              <mat-icon>close</mat-icon>
             </button>
           </div>
         </div>

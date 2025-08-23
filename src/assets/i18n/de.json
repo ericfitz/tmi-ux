@@ -22,23 +22,36 @@
     "title": "Über TMI"
   },
   "collaboration": {
+    "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
     "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen",
     "changeRole": "Rolle ändern",
+    "clearPresenter": "Präsentator entfernen",
     "collaboratorsHeader": "Mitarbeiter",
     "copyLink": "Link kopieren",
+    "currentPresenter": "Aktueller Präsentator",
+    "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
     "endCollaboration": "Zusammenarbeit beenden",
+    "joinSession": "Sitzung beitreten",
+    "leaveSession": "Sitzung verlassen",
     "makeOwner": "Zum Eigentümer machen",
+    "makePresenter": "Zum Präsentator machen",
     "makeReader": "Zum Leser machen",
     "makeWriter": "Zum Bearbeiter machen",
     "manageCollaboration": "Zusammenarbeit verwalten",
+    "presenterHeader": "Präsentator-Steuerung",
+    "presenterRequests": "Präsentator-Anfragen",
+    "removeFromSession": "Aus Sitzung entfernen",
     "removeUser": "Benutzer entfernen",
+    "requestPresenter": "Präsentator anfordern",
     "roles": {
       "owner": "Eigentümer",
+      "presenter": "Präsentator",
       "reader": "Leser",
       "writer": "Bearbeiter"
     },
     "shareLinkHeader": "Kollaborationslink teilen",
     "startCollaboration": "Zusammenarbeit starten",
+    "takeBackPresenter": "Präsentator zurückholen",
     "title": "Zusammenarbeit",
     "websocketStatus": {
       "connected": "Websocket Verbunden",
@@ -81,6 +94,7 @@
     "ok": "OK",
     "other": "Andere",
     "priority": "Priorität",
+    "refresh": "Aktualisieren",
     "save": "Speichern",
     "score": "Bewertung",
     "severity": "Schweregrad",
@@ -138,6 +152,9 @@
       }
     }
   },
+  "errors": {
+    "validationError": "Validierungsfehler"
+  },
   "footer": {
     "about": "Über",
     "privacy": "Datenschutzrichtlinie",
@@ -148,24 +165,25 @@
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
     "loadingProviders": "Lade Authentifizierungsanbieter...",
+    "local": {
+      "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "emailLabel": "E-Mail-Adresse",
+      "emailRequired": "E-Mail-Adresse ist erforderlich",
+      "loginButton": "Anmelden",
+      "subtitle": "Geben Sie Ihre E-Mail-Adresse zum Testen ein",
+      "title": "Lokale Entwicklungsanmeldung"
+    },
     "loggingInWith": "Anmelden mit {{provider}}...",
     "loginWith": "Anmelden mit",
     "noProvidersConfigured": "Keine Authentifizierungsanbieter konfiguriert.",
     "oauthFailed": "OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "pleaseSignIn": "Bitte melden Sie sich an, um fortzufahren.",
     "title": "Bei TMI anmelden",
-    "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten.",
-    "local": {
-      "title": "Lokale Entwicklungsanmeldung",
-      "subtitle": "Geben Sie Ihre E-Mail-Adresse zum Testen ein",
-      "emailLabel": "E-Mail-Adresse",
-      "emailRequired": "E-Mail-Adresse ist erforderlich",
-      "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-      "loginButton": "Anmelden"
-    }
+    "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
   },
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
+    "copyUserEmail": "Benutzer-E-Mail in Zwischenablage kopieren",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
     "logoutButton": "Abmelden",

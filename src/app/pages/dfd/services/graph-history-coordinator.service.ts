@@ -11,7 +11,7 @@ export class GraphHistoryCoordinator {
   /**
    * Execute an atomic operation (stub implementation)
    */
-  executeAtomicOperation(graph: Graph, operationType: string, operation: () => any, options?: any): any {
+  executeAtomicOperation(graph: Graph, operation: () => any): any {
     // Simply execute the operation without history coordination
     return operation();
   }
@@ -19,7 +19,7 @@ export class GraphHistoryCoordinator {
   /**
    * Execute a compound operation (stub implementation)  
    */
-  executeCompoundOperation(graph: Graph, operationType: string, operation: () => any, options?: any, additionalOptions?: any): any {
+  executeCompoundOperation(graph: Graph, operation: () => any): any {
     // Simply execute the operation without history coordination
     return operation();
   }
@@ -27,7 +27,7 @@ export class GraphHistoryCoordinator {
   /**
    * Execute a visual effect (stub implementation)
    */
-  executeVisualEffect(graph: Graph, effectName: string, operation: () => void): void {
+  executeVisualEffect(graph: Graph, operation: () => void): void {
     // Simply execute the operation without history coordination
     operation();
   }
@@ -35,7 +35,7 @@ export class GraphHistoryCoordinator {
   /**
    * Get default options for operation (stub implementation)
    */
-  getDefaultOptionsForOperation(operationType: string): any {
+  getDefaultOptionsForOperation(): any {
     return {
       includeVisualEffects: false,
       includePortVisibility: false,
@@ -47,7 +47,7 @@ export class GraphHistoryCoordinator {
   /**
    * Check if attribute should be excluded (stub implementation)
    */
-  shouldExcludeAttribute(attributePath: string, options?: any): boolean {
+  shouldExcludeAttribute(): boolean {
     return false;
   }
 }

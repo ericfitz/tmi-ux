@@ -1,5 +1,15 @@
 <div class="metadata-dialog">
-  <h2 mat-dialog-title>{{ 'threatModels.metadataDialog.title' | transloco }}</h2>
+  <h2 mat-dialog-title>
+    {{ 'threatModels.metadataDialog.title' | transloco }}
+    <!-- Save state indicator -->
+    <app-save-indicator 
+      [formId]="formId"
+      [size]="16"
+      [tooltipPosition]="'above'"
+      [showDebugInfo]="false"
+      style="margin-left: 8px;">
+    </app-save-indicator>
+  </h2>
   <div *ngIf="data.objectName" class="dialog-subtitle">
     {{ data.objectName }}
   </div>
@@ -20,6 +30,7 @@
                 (blur)="updateKey(i, $event)"
                 [placeholder]="'common.metadataKey' | transloco"
                 [readonly]="data.isReadOnly"
+                [tabindex]="(i * 2) + 1"
               />
             </mat-form-field>
           </td>
@@ -38,6 +49,7 @@
                 (blur)="updateValue(i, $event)"
                 [placeholder]="'common.metadataValue' | transloco"
                 [readonly]="data.isReadOnly"
+                [tabindex]="(i * 2) + 2"
               />
             </mat-form-field>
           </td>

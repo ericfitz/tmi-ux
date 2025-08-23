@@ -22,23 +22,36 @@
     "title": "关于 TMI"
   },
   "collaboration": {
+    "approvePresenterRequest": "批准主讲人请求",
     "availableCollaborationSessions": "可用协作会话",
     "changeRole": "更改角色",
+    "clearPresenter": "清除主讲人",
     "collaboratorsHeader": "协作者",
     "copyLink": "复制链接",
+    "currentPresenter": "当前主讲人",
+    "denyPresenterRequest": "拒绝主讲人请求",
     "endCollaboration": "结束协作",
+    "joinSession": "加入会话",
+    "leaveSession": "离开会话",
     "makeOwner": "设为所有者",
+    "makePresenter": "设为主讲人",
     "makeReader": "设为阅读者",
     "makeWriter": "设为编辑者",
     "manageCollaboration": "管理协作",
+    "presenterHeader": "主讲人控制",
+    "presenterRequests": "主讲人请求",
+    "removeFromSession": "从会话中移除",
     "removeUser": "移除用户",
+    "requestPresenter": "请求主讲人",
     "roles": {
       "owner": "所有者",
+      "presenter": "主讲人",
       "reader": "阅读者",
       "writer": "编辑者"
     },
     "shareLinkHeader": "分享协作链接",
     "startCollaboration": "开始协作",
+    "takeBackPresenter": "收回主讲人",
     "title": "协作",
     "websocketStatus": {
       "connected": "WebSocket 已连接",
@@ -81,6 +94,7 @@
     "ok": "确定",
     "other": "其他",
     "priority": "优先级",
+    "refresh": "刷新",
     "save": "保存",
     "score": "评分",
     "severity": "严重程度",
@@ -138,6 +152,9 @@
       }
     }
   },
+  "errors": {
+    "validationError": "验证错误"
+  },
   "footer": {
     "about": "关于",
     "privacy": "隐私政策",
@@ -148,24 +165,25 @@
   "login": {
     "chooseMethod": "选择您的登录方式：",
     "loadingProviders": "正在加载身份验证提供程序...",
+    "local": {
+      "emailInvalid": "请输入有效的电子邮件地址",
+      "emailLabel": "电子邮件地址",
+      "emailRequired": "电子邮件地址为必填项",
+      "loginButton": "登录",
+      "subtitle": "请输入您的电子邮件地址进行测试",
+      "title": "本地开发登录"
+    },
     "loggingInWith": "正在使用{{provider}}登录...",
     "loginWith": "使用以下方式登录",
     "noProvidersConfigured": "未配置身份验证提供程序。",
     "oauthFailed": "OAuth身份验证失败。请重试。",
     "pleaseSignIn": "请登录以继续。",
     "title": "登录TMI",
-    "unexpectedError": "OAuth身份验证过程中发生意外错误。",
-    "local": {
-      "title": "本地开发登录",
-      "subtitle": "请输入您的电子邮件地址进行测试",
-      "emailLabel": "电子邮件地址",
-      "emailRequired": "电子邮件地址为必填项",
-      "emailInvalid": "请输入有效的电子邮件地址",
-      "loginButton": "登录"
-    }
+    "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
+    "copyUserEmail": "复制用户邮箱到剪贴板",
     "currentLanguage": "{{language}}",
     "languageName": "{{language}}",
     "logoutButton": "退出登录",

@@ -44,7 +44,7 @@ describe('EdgeInfo', () => {
         attrs,
         labels,
         vertices,
-        metadata,
+        { _metadata: metadata },
       );
 
       // Assert
@@ -60,7 +60,7 @@ describe('EdgeInfo', () => {
       expect(edgeInfo.vertices).toEqual(vertices);
       expect(edgeInfo.zIndex).toBe(zIndex);
       expect(edgeInfo.visible).toBe(visible);
-      expect(edgeInfo.data).toBe(metadata);
+      expect(edgeInfo.data).toEqual({ _metadata: metadata });
     });
 
     it('should create EdgeInfo with minimal parameters', () => {
@@ -176,7 +176,7 @@ describe('EdgeInfo', () => {
           { x: 150, y: 150 },
           { x: 200, y: 200 },
         ],
-        data: [{ key: 'style', value: 'solid' }],
+        data: { _metadata: [{ key: 'style', value: 'solid' }] },
       };
 
       // Act
@@ -194,7 +194,7 @@ describe('EdgeInfo', () => {
       expect(edgeInfo.visible).toBe(true);
       expect(edgeInfo.vertices).toHaveLength(2);
       expect(edgeInfo.vertices[0]).toBeInstanceOf(Point);
-      expect(edgeInfo.data).toEqual([{ key: 'style', value: 'solid' }]);
+      expect(edgeInfo.data).toEqual({ _metadata: [{ key: 'style', value: 'solid' }] });
     });
 
     it('should create simple EdgeInfo', () => {
@@ -394,7 +394,7 @@ describe('EdgeInfo', () => {
       expect(updated).not.toBe(originalEdgeInfo);
       expect(updated.target.cell).toBe(newTargetId);
       expect(updated.target.port).toBe(newTargetPortId);
-      expect(updated.sourceNodeId).toBe(originalEdgeInfo.sourceNodeId);
+      expect(updated.source.cell).toBe(originalEdgeInfo.source.cell);
       expect(originalEdgeInfo.target.cell).toBe('target'); // Original unchanged
     });
   });

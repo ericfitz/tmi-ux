@@ -48,6 +48,23 @@ import { getX6ShapeForNodeType } from './infrastructure/adapters/x6-shape-defini
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
+import { CollaborativeOperationService } from './services/collaborative-operation.service';
+import { WebSocketAdapter } from './infrastructure/adapters/websocket.adapter';
+import {
+  DiagramOperationMessage,
+  PresenterRequestMessage,
+  PresenterDeniedMessage,
+  PresenterUpdateMessage,
+  AuthorizationDeniedMessage,
+  StateCorrectionMessage,
+  HistoryOperationMessage,
+  ResyncResponseMessage,
+  CurrentPresenterMessage,
+  PresenterCursorMessage,
+  PresenterSelectionMessage,
+  CellOperation,
+  Cell as WSCell
+} from './models/websocket-message.types';
 
 // Import providers needed for standalone component
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
@@ -149,6 +166,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
   private _isInitialized = false;
+  
+  // Collaborative editing state
+  private isApplyingRemoteChange = false;
+  private _webSocketHandlersInitialized = false;
+  isReadOnlyMode = false;
 
   // Route parameters
   threatModelId: string | null = null;
@@ -189,6 +211,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     private nodeConfigurationService: NodeConfigurationService,
     private translocoService: TranslocoService,
+    private collaborativeOperationService: CollaborativeOperationService,
+    private webSocketAdapter: WebSocketAdapter,
     private collaborationService: DfdCollaborationService,
   ) {
     this.logger.info('DfdComponent constructor called');
@@ -225,8 +249,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
+    // Check for collaboration join request
+    const joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration');
+    if (joinCollaboration === 'true' && this.threatModelId && this.dfdId) {
+      this.logger.info('Auto-joining collaboration session from navigation', {
+        threatModelId: this.threatModelId,
+        dfdId: this.dfdId
+      });
+      
+      // Join existing collaboration session
+      this.collaborationService.joinCollaboration().subscribe({
+        next: (success) => {
+          this.logger.info('Collaboration session joined successfully', { success });
+        },
+        error: (error) => {
+          this.logger.error('Failed to join collaboration session', error);
+        }
+      });
+    }
+
     // Initialize event handlers
     this.facade.initializeEventHandlers(this.x6GraphAdapter);
+    
+    // Initialize permission-based UI state
+    this.initializePermissions();
 
     // Subscribe to context menu events from X6GraphAdapter
     this._subscriptions.add(
@@ -266,6 +312,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cdr.markForCheck();
         }
       }),
+    );
+
+    // Subscribe to collaboration state changes to initialize collaborative operations
+    this._subscriptions.add(
+      this.collaborationService.isCollaborating$.subscribe(isCollaborating => {
+        if (isCollaborating && this.threatModelId && this.dfdId) {
+          // Initialize collaborative operation service when collaboration starts
+          const currentUserId = this.collaborationService.getCurrentUserId();
+          if (currentUserId) {
+            this.collaborativeOperationService.initialize({
+              diagramId: this.dfdId,
+              threatModelId: this.threatModelId,
+              userId: currentUserId
+            });
+            this.logger.info('Initialized CollaborativeOperationService for active collaboration', {
+              diagramId: this.dfdId,
+              threatModelId: this.threatModelId,
+              userId: currentUserId
+            });
+          }
+          
+          // Initialize WebSocket handlers only when collaboration is active and not already initialized
+          if (!this._webSocketHandlersInitialized) {
+            this.initializeWebSocketHandlers();
+            this._webSocketHandlersInitialized = true;
+          }
+        }
+      })
     );
 
     // Subscribe to actual history modifications for auto-save
@@ -337,6 +411,145 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.autoSaveDiagram(`Threat ${action}`);
       }),
     );
+
+    // WebSocket handlers will be initialized when collaboration becomes active
+  }
+
+  /**
+   * Initialize WebSocket message handlers for collaborative editing
+   * Only called when collaboration is active
+   */
+  private initializeWebSocketHandlers(): void {
+    this.logger.info('Initializing WebSocket handlers for collaborative editing');
+    
+    // Handle incoming diagram operations from other users
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation')
+        .subscribe({
+          next: message => this.handleRemoteDiagramOperation(message),
+          error: error => this.logger.error('Error in diagram operation WebSocket handler', error)
+        })
+    );
+
+    // Handle authorization denied messages
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<AuthorizationDeniedMessage>('authorization_denied')
+        .subscribe({
+          next: message => this.handleAuthorizationDenied(message),
+          error: error => this.logger.error('Error in authorization denied WebSocket handler', error)
+        })
+    );
+
+    // Handle state correction messages
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<StateCorrectionMessage>('state_correction')
+        .subscribe({
+          next: message => this.handleStateCorrection(message),
+          error: error => this.logger.error('Error in state correction WebSocket handler', error)
+        })
+    );
+
+    // Handle history operation responses
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<HistoryOperationMessage>('history_operation')
+        .subscribe({
+          next: message => this.handleHistoryOperation(message),
+          error: error => this.logger.error('Error in history operation WebSocket handler', error)
+        })
+    );
+
+    // Handle resync responses
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<ResyncResponseMessage>('resync_response')
+        .subscribe({
+          next: message => this.handleResyncResponse(message),
+          error: error => this.logger.error('Error in resync response WebSocket handler', error)
+        })
+    );
+
+    // Handle presenter mode messages
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
+        .subscribe({
+          next: message => this.handlePresenterChange(message),
+          error: error => this.logger.error('Error in presenter change WebSocket handler', error)
+        })
+    );
+
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor')
+        .subscribe({
+          next: message => this.handlePresenterCursor(message),
+          error: error => this.logger.error('Error in presenter cursor WebSocket handler', error)
+        })
+    );
+
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection')
+        .subscribe({
+          next: message => this.handlePresenterSelection(message),
+          error: error => this.logger.error('Error in presenter selection WebSocket handler', error)
+        })
+    );
+
+    // Handle presenter requests
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
+        .subscribe({
+          next: message => this.handlePresenterRequest(message),
+          error: error => this.logger.error('Error in presenter request WebSocket handler', error)
+        })
+    );
+
+    // Handle presenter denials
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
+        .subscribe(message => this.handlePresenterDenied(message))
+    );
+
+    // Handle presenter updates
+    this._subscriptions.add(
+      this.webSocketAdapter.getTMIMessagesOfType<PresenterUpdateMessage>('presenter_update')
+        .subscribe(message => this.handlePresenterUpdate(message))
+    );
+
+    this.logger.info('WebSocket message handlers initialized');
+  }
+
+  /**
+   * Update read-only mode based on current user permissions and presenter status
+   */
+  private updateReadOnlyMode(): void {
+    if (!this.collaborationService.isCollaborating()) {
+      // Not collaborating, user has full access
+      this.isReadOnlyMode = false;
+    } else {
+      // In collaboration: read-only unless user has edit permissions or is presenter
+      const hasEditPermission = this.collaborationService.hasPermission('edit');
+      const isPresenter = this.collaborationService.isCurrentUserPresenter();
+      this.isReadOnlyMode = !hasEditPermission && !isPresenter;
+    }
+
+    // Apply read-only mode to graph if initialized
+    if (this._isInitialized) {
+      this.x6GraphAdapter.setReadOnlyMode(this.isReadOnlyMode);
+    }
+
+    this.logger.info('Read-only mode updated', { 
+      isReadOnlyMode: this.isReadOnlyMode,
+      isCollaborating: this.collaborationService.isCollaborating(),
+      hasEditPermission: this.collaborationService.hasPermission('edit'),
+      isPresenter: this.collaborationService.isCurrentUserPresenter()
+    });
+  }
+
+  /**
+   * Initialize permission-based UI state and read-only mode
+   */
+  private initializePermissions(): void {
+    // Use the comprehensive read-only mode update logic
+    this.updateReadOnlyMode();
+    this.cdr.markForCheck();
   }
 
   /**
@@ -558,6 +771,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tooltipAdapter.initialize(graph);
 
       this.logger.info('Graph initialization complete');
+
+      // Apply read-only mode if user lacks edit permissions
+      this.initializePermissions();
 
       // Load any pending diagram cells
       if (this.pendingDiagramCells) {
@@ -1326,38 +1542,445 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Auto-save diagram when changes occur
+   * Routes to WebSocket for collaborative sessions, REST for solo editing
    */
   private autoSaveDiagram(reason: string): void {
-    if (this._isInitialized && this.dfdId && this.threatModelId) {
+    if (!this._isInitialized || !this.dfdId || !this.threatModelId) {
+      return;
+    }
+
+    // Skip auto-save if applying remote changes to prevent echo loops
+    if (this.isApplyingRemoteChange) {
+      this.logger.debug('Skipping auto-save during remote change application');
+      return;
+    }
+
+    const graph = this.x6GraphAdapter.getGraph();
+    if (!graph) {
+      return;
+    }
+
+    // Both collaborative and solo modes benefit from periodic saves
+    // Collaborative mode uses WebSocket with REST fallback for resilience
+    this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
+      next: (success) => {
+        if (success) {
+          const mode = this.collaborationService.isCollaborating() ? 'collaborative' : 'solo';
+          this.logger.info(`Auto-saved diagram in ${mode} mode: ${reason}`);
+        } else {
+          this.logger.warn(`Auto-save failed: ${reason}`);
+        }
+      },
+      error: (error) => {
+        this.logger.error(`Error during auto-save (${reason})`, error);
+      }
+    });
+  }
+
+  /**
+   * Undo the last action
+   * Uses server-managed history during collaboration, local history for solo editing
+   */
+  undo(): void {
+    if (this.collaborationService.isCollaborating()) {
+      // Use server-managed history during collaboration
+      this.collaborativeOperationService.requestUndo().subscribe({
+        next: () => {
+          this.logger.debug('Undo request sent to server');
+        },
+        error: (error) => {
+          this.logger.error('Failed to send undo request', error);
+        }
+      });
+    } else {
+      // Use local X6 history for solo editing
+      this.facade.undo(this._isInitialized, this.x6GraphAdapter);
+    }
+  }
+
+  /**
+   * Redo the last undone action
+   * Uses server-managed history during collaboration, local history for solo editing
+   */
+  redo(): void {
+    if (this.collaborationService.isCollaborating()) {
+      // Use server-managed history during collaboration
+      this.collaborativeOperationService.requestRedo().subscribe({
+        next: () => {
+          this.logger.debug('Redo request sent to server');
+        },
+        error: (error) => {
+          this.logger.error('Failed to send redo request', error);
+        }
+      });
+    } else {
+      // Use local X6 history for solo editing
+      this.facade.redo(this._isInitialized, this.x6GraphAdapter);
+    }
+  }
+
+  /**
+   * Handle incoming diagram operations from other users
+   */
+  private handleRemoteDiagramOperation(message: DiagramOperationMessage): void {
+    // Skip if this is our own operation (echo prevention)
+    if (message.user_id === this.collaborationService.getCurrentUserId()) {
+      return;
+    }
+
+    this.logger.debug('Applying remote diagram operation', {
+      userId: message.user_id,
+      operationId: message.operation_id,
+      cellCount: message.operation.cells.length
+    });
+
+    this.isApplyingRemoteChange = true;
+    try {
+      this.applyRemoteOperationToGraph(message.operation);
+    } finally {
+      this.isApplyingRemoteChange = false;
+    }
+  }
+
+  /**
+   * Apply remote operation to local graph
+   */
+  private applyRemoteOperationToGraph(operation: any): void {
+    const graph = this.x6GraphAdapter.getGraph();
+    if (!graph) {
+      this.logger.error('Cannot apply remote operation: graph not initialized');
+      return;
+    }
+
+    for (const cellOp of operation.cells) {
+      switch (cellOp.operation) {
+        case 'add':
+          this.applyRemoteCellAdd(cellOp, graph);
+          break;
+        case 'update':
+          this.applyRemoteCellUpdate(cellOp, graph);
+          break;
+        case 'remove':
+          this.applyRemoteCellRemove(cellOp, graph);
+          break;
+        default:
+          this.logger.warn('Unknown remote operation type', cellOp.operation);
+      }
+    }
+  }
+
+  /**
+   * Apply remote cell addition
+   */
+  private applyRemoteCellAdd(cellOp: CellOperation, graph: any): void {
+    if (!cellOp.data) {
+      this.logger.error('Cannot add cell: no data provided');
+      return;
+    }
+
+    if (cellOp.data.shape === 'edge') {
+      // Handle edge addition
+      this.facade.createEdgeFromRemoteOperation(graph, cellOp.data, {
+        suppressHistory: true,
+        ensureVisualRendering: true,
+        updatePortVisibility: true
+      });
+    } else {
+      // Handle node addition using existing domain service
+      this.facade.createNodeFromRemoteOperation(graph, cellOp.data, {
+        suppressHistory: true,
+        ensureVisualRendering: true,
+        updatePortVisibility: true
+      });
+    }
+
+    this.logger.debug('Applied remote cell add', { cellId: cellOp.id, shape: cellOp.data.shape });
+  }
+
+  /**
+   * Apply remote cell update
+   */
+  private applyRemoteCellUpdate(cellOp: CellOperation, graph: any): void {
+    const cell = graph.getCellById(cellOp.id);
+    if (!cell) {
+      this.logger.warn('Cannot update cell: cell not found', cellOp.id);
+      return;
+    }
+
+    if (cellOp.data) {
+      // Update cell properties
+      Object.entries(cellOp.data).forEach(([key, value]) => {
+        if (key === 'x' || key === 'y') {
+          cell.setPosition({ [key]: value });
+        } else if (key === 'width' || key === 'height') {
+          cell.setSize({ [key]: value });
+        } else if (key === 'label') {
+          this.x6GraphAdapter.setCellLabel(cell, value as string);
+        } else {
+          cell.prop(key, value);
+        }
+      });
+    }
+
+    this.logger.debug('Applied remote cell update', { cellId: cellOp.id });
+  }
+
+  /**
+   * Apply remote cell removal
+   */
+  private applyRemoteCellRemove(cellOp: CellOperation, graph: any): void {
+    const cell = graph.getCellById(cellOp.id);
+    if (!cell) {
+      this.logger.debug('Cell already removed or not found', cellOp.id);
+      return;
+    }
+
+    // Use existing infrastructure service for consistent removal
+    if (cell.isNode()) {
+      this.facade.removeNodeFromRemoteOperation(graph, cellOp.id, {
+        suppressHistory: true,
+        updatePortVisibility: true
+      });
+    } else if (cell.isEdge()) {
+      this.facade.removeEdgeFromRemoteOperation(graph, cellOp.id, {
+        suppressHistory: true,
+        updatePortVisibility: true
+      });
+    }
+
+    this.logger.debug('Applied remote cell remove', { cellId: cellOp.id });
+  }
+
+  /**
+   * Handle authorization denied messages
+   */
+  private handleAuthorizationDenied(message: AuthorizationDeniedMessage): void {
+    this.logger.warn('Operation denied by server', {
+      operationId: message.original_operation_id,
+      reason: message.reason
+    });
+
+    // Show user notification
+    // TODO: Show notification to user (add notification service)
+    // const reasonText = this.getReadableAuthorizationReason(message.reason);
+    // this.notificationService.showError(`Operation denied: ${reasonText}`);
+  }
+
+  /**
+   * Handle state correction messages
+   */
+  private handleStateCorrection(message: StateCorrectionMessage): void {
+    this.logger.info('Received state correction from server', {
+      cellCount: message.cells.length
+    });
+
+    this.isApplyingRemoteChange = true;
+    try {
       const graph = this.x6GraphAdapter.getGraph();
       if (graph) {
-        this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-          next: (success) => {
-            if (success) {
-              this.logger.info(`Auto-saved diagram: ${reason}`);
-            } else {
-              this.logger.warn(`Auto-save failed: ${reason}`);
-            }
-          },
-          error: (error) => {
-            this.logger.error(`Error during auto-save (${reason})`, error);
+        // Apply corrected state for each cell
+        for (const cell of message.cells) {
+          this.applyCellCorrection(cell, graph);
+        }
+      }
+    } finally {
+      this.isApplyingRemoteChange = false;
+    }
+
+    // TODO: Show notification to user
+    // this.notificationService.showInfo('Diagram synchronized with server');
+  }
+
+  /**
+   * Handle history operation responses
+   */
+  private handleHistoryOperation(message: HistoryOperationMessage): void {
+    switch (message.message) {
+      case 'resync_required':
+        this.logger.info('History operation completed, performing resync', {
+          operationType: message.operation_type
+        });
+        void this.performRESTResync();
+        // TODO: Show notification
+        // this.notificationService.showInfo(`${message.operation_type} completed`);
+        break;
+
+      case 'no_operations_to_undo':
+        // TODO: Show notification
+        // this.notificationService.showInfo('Nothing to undo');
+        break;
+
+      case 'no_operations_to_redo':
+        // TODO: Show notification  
+        // this.notificationService.showInfo('Nothing to redo');
+        break;
+    }
+  }
+
+  /**
+   * Handle resync responses
+   */
+  private handleResyncResponse(message: ResyncResponseMessage): void {
+    if (message.method === 'rest_api') {
+      void this.performRESTResync();
+    }
+  }
+
+  /**
+   * Handle presenter mode changes
+   */
+  private handlePresenterChange(message: CurrentPresenterMessage): void {
+    // TODO: Update presenter UI indicators
+    this.logger.debug('Presenter changed', { presenter: message.current_presenter });
+  }
+
+  /**
+   * Handle presenter cursor updates
+   */
+  private handlePresenterCursor(message: PresenterCursorMessage): void {
+    if (message.user_id !== this.collaborationService.getCurrentUserId()) {
+      // TODO: Show presenter cursor on diagram
+      this.logger.debug('Presenter cursor update', message.cursor_position);
+    }
+  }
+
+  /**
+   * Handle presenter selection updates
+   */
+  private handlePresenterSelection(message: PresenterSelectionMessage): void {
+    if (message.user_id !== this.collaborationService.getCurrentUserId()) {
+      // TODO: Highlight presenter selection
+      this.logger.debug('Presenter selection update', { cells: message.selected_cells });
+    }
+  }
+
+  /**
+   * Handle presenter requests from other users
+   */
+  private handlePresenterRequest(message: PresenterRequestMessage): void {
+    if (this.collaborationService.isCurrentUserSessionManager()) {
+      // Add to pending requests
+      this.collaborationService.addPresenterRequest(message.user_id);
+      this.logger.info('Presenter request received', { userId: message.user_id });
+    }
+  }
+
+  /**
+   * Handle presenter request denials
+   */
+  private handlePresenterDenied(message: PresenterDeniedMessage): void {
+    if (message.user_id === this.collaborationService.getCurrentUserId()) {
+      // Show notification to current user
+      this.logger.info('Presenter request was denied');
+      // TODO: Show user notification
+    }
+  }
+
+  /**
+   * Handle presenter updates
+   */
+  private handlePresenterUpdate(message: PresenterUpdateMessage): void {
+    const newPresenterId = message.user_id || null;
+    this.logger.info('Presenter updated', { presenterId: newPresenterId });
+    
+    // Update collaboration service state
+    this.collaborationService.updatePresenterId(newPresenterId);
+    
+    // Update read-only mode based on presenter status
+    this.updateReadOnlyMode();
+  }
+
+  /**
+   * Perform full diagram resync using REST API
+   */
+  private async performRESTResync(): Promise<void> {
+    if (!this.threatModelId || !this.dfdId) {
+      this.logger.error('Cannot resync: missing diagram context');
+      return;
+    }
+
+    try {
+      this.logger.info('Performing REST resync');
+      
+      // Use existing REST API to get authoritative state
+      const diagram = await this.threatModelService
+        .getDiagramById(this.threatModelId, this.dfdId).toPromise();
+
+      if (diagram && diagram.cells) {
+        // Replace entire local diagram state
+        this.isApplyingRemoteChange = true;
+        try {
+          const graph = this.x6GraphAdapter.getGraph();
+          if (graph) {
+            // Clear existing graph
+            graph.clearCells();
+            
+            // Load fresh cells from server
+            this.loadDiagramCells(diagram.cells);
           }
+        } finally {
+          this.isApplyingRemoteChange = false;
+        }
+
+        this.logger.info('REST resync completed successfully');
+        // TODO: Show success notification
+      }
+    } catch (error) {
+      this.logger.error('REST resync failed', error);
+      // TODO: Show error notification
+    }
+  }
+
+  /**
+   * Apply individual cell correction
+   */
+  private applyCellCorrection(cellData: WSCell, graph: any): void {
+    const existingCell = graph.getCellById(cellData.id);
+    
+    if (existingCell) {
+      // Update existing cell with corrected data
+      Object.entries(cellData).forEach(([key, value]) => {
+        if (key === 'x' || key === 'y') {
+          existingCell.setPosition({ [key]: value });
+        } else if (key === 'width' || key === 'height') {
+          existingCell.setSize({ [key]: value });
+        } else if (key === 'label') {
+          this.x6GraphAdapter.setCellLabel(existingCell, value as string);
+        } else {
+          existingCell.prop(key, value);
+        }
+      });
+    } else {
+      // Cell doesn't exist locally, create it
+      if (cellData.shape === 'edge') {
+        this.facade.createEdgeFromRemoteOperation(graph, cellData, {
+          suppressHistory: true,
+          ensureVisualRendering: true,
+          updatePortVisibility: true
+        });
+      } else {
+        this.facade.createNodeFromRemoteOperation(graph, cellData, {
+          suppressHistory: true,
+          ensureVisualRendering: true,
+          updatePortVisibility: true
         });
       }
     }
   }
 
   /**
-   * Undo the last action using X6 history addon
+   * Get readable text for authorization denial reasons
    */
-  undo(): void {
-    this.facade.undo(this._isInitialized, this.x6GraphAdapter);
-  }
-
-  /**
-   * Redo the last undone action using X6 history addon
-   */
-  redo(): void {
-    this.facade.redo(this._isInitialized, this.x6GraphAdapter);
+  private getReadableAuthorizationReason(reason: string): string {
+    switch (reason) {
+      case 'insufficient_permissions':
+        return 'You do not have permission to edit this diagram';
+      case 'read_only_user':
+        return 'You have read-only access to this diagram';
+      case 'invalid_user':
+        return 'User validation failed';
+      default:
+        return 'Operation not permitted';
+    }
   }
 }

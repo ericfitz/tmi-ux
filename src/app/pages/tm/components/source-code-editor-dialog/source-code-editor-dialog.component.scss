@@ -44,3 +44,17 @@ mat-dialog-content {
 mat-dialog-actions {
   padding: 8px 24px 24px;
 }
+
+// Save indicator styling
+.header-save-indicator {
+  margin-left: 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+// Responsive adjustments
+@media (width <= 768px) {
+  .dialog-form {
+    max-width: 90vw;
+  }
+}

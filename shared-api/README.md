@@ -9,7 +9,7 @@ shared/
 ├── README.md                   # This file
 ├── api-specs/                  # API Specifications
 │   ├── tmi-openapi.json       # OpenAPI 3.0 REST API specification
-│   └── tmi-asyncapi.yaml      # AsyncAPI WebSocket specification
+│   └── tmi-asyncapi.yml      # AsyncAPI WebSocket specification
 ├── docs/                       # Client-focused documentation
 │   ├── CLIENT_INTEGRATION_GUIDE.md  # Complete client integration guide
 │   ├── TMI-API-v1_0.md            # REST API documentation
@@ -29,10 +29,12 @@ shared/
 ## What's Included
 
 ### API Specifications
+
 - **OpenAPI 3.0** (`api-specs/tmi-openapi.json`): Complete REST API specification with schemas, endpoints, and authentication
-- **AsyncAPI** (`api-specs/tmi-asyncapi.yaml`): WebSocket collaboration API specification
+- **AsyncAPI** (`api-specs/tmi-asyncapi.yml`): WebSocket collaboration API specification
 
 ### Documentation
+
 - **Client Integration Guide**: Step-by-step integration instructions
 - **API Documentation**: Human-readable API documentation
 - **OAuth Integration**: Authentication setup and flows
@@ -40,6 +42,7 @@ shared/
 - **Collaboration Details**: Real-time editing implementation guide
 
 ### SDK Examples
+
 - **Python SDK**: Reference implementation showing best practices for:
   - Authentication flows
   - API client patterns
@@ -64,6 +67,7 @@ git subtree pull --prefix=shared-api https://github.com/yourusername/tmi.git sha
 ### Direct File Usage
 
 1. **OpenAPI Code Generation**:
+
    ```bash
    # Generate TypeScript client
    openapi-generator-cli generate -i shared-api/api-specs/tmi-openapi.json -g typescript-fetch -o src/api-client
@@ -73,7 +77,8 @@ git subtree pull --prefix=shared-api https://github.com/yourusername/tmi.git sha
    ```
 
 2. **WebSocket Integration**:
-   - Reference `api-specs/tmi-asyncapi.yaml` for message schemas
+
+   - Reference `api-specs/tmi-asyncapi.yml` for message schemas
    - Follow patterns in `docs/CLIENT_INTEGRATION_GUIDE.md`
    - Use `sdk-examples/python-sdk/` as implementation reference
 
@@ -84,19 +89,21 @@ git subtree pull --prefix=shared-api https://github.com/yourusername/tmi.git sha
 ## Key Integration Points
 
 ### 1. REST API Client
+
 ```javascript
 // Example TypeScript integration
-import { Configuration, DefaultApi } from './generated-api-client';
+import { Configuration, DefaultApi } from "./generated-api-client";
 
 const config = new Configuration({
-  basePath: 'https://api.tmi.example.com',
-  accessToken: 'your-jwt-token'
+  basePath: "https://api.tmi.example.com",
+  accessToken: "your-jwt-token",
 });
 
 const api = new DefaultApi(config);
 ```
 
 ### 2. WebSocket Collaboration
+
 ```javascript
 // Follow the patterns in CLIENT_INTEGRATION_GUIDE.md
 const wsUrl = collaborationSession.websocket_url;
@@ -104,15 +111,17 @@ const ws = new WebSocket(wsUrl);
 ```
 
 ### 3. Authentication Flow
+
 ```javascript
 // Reference CLIENT_OAUTH_INTEGRATION.md for complete setup
-const authUrl = 'https://api.tmi.example.com/auth/oauth/authorize';
+const authUrl = "https://api.tmi.example.com/oauth2/authorize";
 // ... implement OAuth flow
 ```
 
 ## Staying Updated
 
 ### For Consumers
+
 When the TMI service updates its APIs or documentation:
 
 ```bash
@@ -124,13 +133,15 @@ npm run generate-api-client
 ```
 
 ### Version Compatibility
+
 - **OpenAPI Version**: Check `info.version` in `api-specs/tmi-openapi.json`
 - **Breaking Changes**: Monitor API version changes and update accordingly
-- **AsyncAPI Changes**: WebSocket message formats in `api-specs/tmi-asyncapi.yaml`
+- **AsyncAPI Changes**: WebSocket message formats in `api-specs/tmi-asyncapi.yml`
 
 ## Support
 
 For issues related to shared content:
+
 1. Check the main TMI repository documentation
 2. Review `CLIENT_INTEGRATION_GUIDE.md` for common patterns
 3. Reference `sdk-examples/python-sdk/` for working implementations

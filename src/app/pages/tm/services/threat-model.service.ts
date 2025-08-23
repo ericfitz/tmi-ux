@@ -18,6 +18,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, Subscription, BehaviorSubject, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
@@ -36,12 +37,21 @@ interface CollaborationSession {
   participants: Array<{
     user_id: string;
     joined_at: string;
+    permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
+  session_manager?: string;
 }
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
+
+/**
+ * Type guard to check if an error is an HttpErrorResponse
+ */
+function isHttpErrorResponse(error: unknown): error is HttpErrorResponse {
+  return error instanceof HttpErrorResponse;
+}
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Injectable({
@@ -1196,6 +1206,16 @@ export class ThreatModelService implements OnDestroy {
       return of(metadata);
     }
 
+    // If metadata is empty, skip the API call and return empty array
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for threat model ${threatModelId} - no valid metadata to save`,
+        { threatModelId, metadataCount: metadata?.length || 0 }
+      );
+      return of([]);
+    }
+
     return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
       catchError(error => {
         this.logger.error(`Error updating metadata for threat model ID: ${threatModelId}`, error);
@@ -1237,6 +1257,16 @@ export class ThreatModelService implements OnDestroy {
         }
       }
       return of(metadata);
+    }
+
+    // If metadata is empty, skip the API call and return empty array
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for diagram ${diagramId} - no valid metadata to save`,
+        { threatModelId, diagramId, metadataCount: metadata?.length || 0 }
+      );
+      return of([]);
     }
 
     return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
@@ -1282,6 +1312,16 @@ export class ThreatModelService implements OnDestroy {
       return of(metadata);
     }
 
+    // If metadata is empty, skip the API call and return empty array
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for threat ${threatId} - no valid metadata to save`,
+        { threatModelId, threatId, metadataCount: metadata?.length || 0 }
+      );
+      return of([]);
+    }
+
     return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
       catchError(error => {
         this.logger.error(`Error updating metadata for threat ID: ${threatId}`, error);
@@ -1325,6 +1365,16 @@ export class ThreatModelService implements OnDestroy {
       return of(metadata);
     }
 
+    // If metadata is empty, skip the API call and return empty array
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for document ${documentId} - no valid metadata to save`,
+        { threatModelId, documentId, metadataCount: metadata?.length || 0 }
+      );
+      return of([]);
+    }
+
     return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
       catchError(error => {
         this.logger.error(`Error updating metadata for document ID: ${documentId}`, error);
@@ -1366,6 +1416,16 @@ export class ThreatModelService implements OnDestroy {
         }
       }
       return of(metadata);
+    }
+
+    // If metadata is empty, skip the API call and return empty array
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for source ${sourceId} - no valid metadata to save`,
+        { threatModelId, sourceId, metadataCount: metadata?.length || 0 }
+      );
+      return of([]);
     }
 
     return this.apiService.post<Metadata[]>(`threat_models/${threatModelId}/sources/${sourceId}/metadata/bulk`, metadata as unknown as Record<string, unknown>).pipe(
@@ -1432,7 +1492,14 @@ export class ThreatModelService implements OnDestroy {
    * @returns Observable<CollaborationSession>
    */
   startDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<CollaborationSession> {
-    this.logger.info('Starting diagram collaboration session', { threatModelId, diagramId });
+    this.logger.info('Starting diagram collaboration session', { 
+      threatModelId, 
+      diagramId,
+      currentUser: this.authService.username,
+      userEmail: this.authService.userEmail,
+      isAuthenticated: !!this.authService.getStoredToken(),
+      useMockData: this._useMockData
+    });
 
     if (this._useMockData) {
       // For mock data, simulate a collaboration session
@@ -1443,10 +1510,12 @@ export class ThreatModelService implements OnDestroy {
         participants: [
           {
             user_id: this.authService.username || 'current-user',
-            joined_at: new Date().toISOString()
+            joined_at: new Date().toISOString(),
+            permissions: 'writer' as const
           }
         ],
-        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`
+        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
+        session_manager: this.authService.username || 'current-user'
       };
       return of(mockSession);
     }
@@ -1457,11 +1526,34 @@ export class ThreatModelService implements OnDestroy {
           sessionId: session.session_id,
           threatModelId, 
           diagramId,
-          websocketUrl: session.websocket_url
+          websocketUrl: session.websocket_url,
+          sessionManager: session.session_manager,
+          participantCount: session.participants?.length || 0,
+          participants: session.participants?.map(p => ({ 
+            id: p.user_id, 
+            permissions: p.permissions,
+            joined_at: p.joined_at 
+          }))
         });
       }),
       catchError((error: unknown) => {
-        this.logger.error('Error starting collaboration session', error);
+        if (isHttpErrorResponse(error)) {
+          this.logger.error('Error starting collaboration session - detailed server error', {
+            threatModelId,
+            diagramId,
+            error,
+            errorStatus: error.status,
+            errorMessage: error.message,
+            errorBody: error.error as unknown,
+            errorUrl: error.url
+          });
+        } else {
+          this.logger.error('Error starting collaboration session - unknown error', {
+            threatModelId,
+            diagramId,
+            error
+          });
+        }
         return throwError(() => error instanceof Error ? error : new Error(String(error)));
       })
     );
@@ -1513,6 +1605,139 @@ export class ThreatModelService implements OnDestroy {
           return of(null);
         }
         this.logger.error('Error getting collaboration session', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Join an existing collaboration session for a diagram (PUT method)
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<CollaborationSession>
+   */
+  joinDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<CollaborationSession> {
+    this.logger.info('Joining existing diagram collaboration session', { 
+      threatModelId, 
+      diagramId,
+      currentUser: this.authService.username,
+      userEmail: this.authService.userEmail,
+      isAuthenticated: !!this.authService.getStoredToken(),
+      useMockData: this._useMockData
+    });
+
+    if (this._useMockData) {
+      // For mock data, simulate joining a collaboration session
+      const mockSession = {
+        session_id: `session-${Date.now()}`,
+        threat_model_id: threatModelId,
+        diagram_id: diagramId,
+        participants: [
+          {
+            user_id: 'existing-user@example.com',
+            joined_at: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
+            permissions: 'writer' as const
+          },
+          {
+            user_id: this.authService.username || 'current-user',
+            joined_at: new Date().toISOString(),
+            permissions: 'writer' as const
+          }
+        ],
+        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
+        session_manager: 'existing-user@example.com'
+      };
+      return of(mockSession);
+    }
+
+    return this.apiService.put<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`, {}).pipe(
+      tap(session => {
+        this.logger.info('Successfully joined collaboration session', { 
+          sessionId: session.session_id,
+          threatModelId, 
+          diagramId,
+          websocketUrl: session.websocket_url,
+          sessionManager: session.session_manager,
+          participantCount: session.participants?.length || 0,
+          participants: session.participants?.map(p => ({ 
+            id: p.user_id, 
+            permissions: p.permissions,
+            joined_at: p.joined_at 
+          }))
+        });
+      }),
+      catchError((error: unknown) => {
+        if (isHttpErrorResponse(error)) {
+          this.logger.error('Error joining collaboration session - detailed server error', {
+            threatModelId,
+            diagramId,
+            error,
+            errorStatus: error.status,
+            errorMessage: error.message,
+            errorBody: error.error as unknown,
+            errorUrl: error.url
+          });
+        } else {
+          this.logger.error('Error joining collaboration session - unknown error', {
+            threatModelId,
+            diagramId,
+            error
+          });
+        }
+        return throwError(() => error instanceof Error ? error : new Error(String(error)));
+      })
+    );
+  }
+
+  /**
+   * Smart session handler: Try to create a session, if it exists then join it
+   * This implements the pattern recommended in CLIENT_INTEGRATION_GUIDE.md
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @returns Observable<CollaborationSession> with isNewSession flag
+   */
+  startOrJoinDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<{session: CollaborationSession, isNewSession: boolean}> {
+    this.logger.info('Smart session handler: trying to create or join collaboration session', { 
+      threatModelId, 
+      diagramId
+    });
+
+    if (this._useMockData) {
+      // For mock data, always simulate creating a new session
+      return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
+        map(session => ({ session, isNewSession: true }))
+      );
+    }
+
+    // Try creating first (POST)
+    return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
+      map(session => {
+        this.logger.info('Session created successfully', { sessionId: session.session_id });
+        return { session, isNewSession: true };
+      }),
+      catchError((error: unknown) => {
+        if (isHttpErrorResponse(error) && error.status === 409) {
+          // Session already exists (409 conflict), join it instead (PUT)
+          this.logger.info('Session already exists, attempting to join', { 
+            threatModelId, 
+            diagramId,
+            errorStatus: error.status 
+          });
+          
+          return this.joinDiagramCollaborationSession(threatModelId, diagramId).pipe(
+            map(session => {
+              this.logger.info('Successfully joined existing session', { sessionId: session.session_id });
+              return { session, isNewSession: false };
+            })
+          );
+        }
+        
+        // For other errors, re-throw
+        this.logger.error('Smart session handler failed with non-409 error', {
+          threatModelId,
+          diagramId,
+          error
+        });
         return throwError(() => error);
       })
     );

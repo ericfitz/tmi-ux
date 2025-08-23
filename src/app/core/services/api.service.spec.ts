@@ -9,6 +9,7 @@ import '@angular/compiler';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AuthService } from '../../auth/services/auth.service';
@@ -42,12 +43,17 @@ interface MockAuthService {
   logout: ReturnType<typeof vi.fn>;
 }
 
+interface MockMatDialog {
+  open: ReturnType<typeof vi.fn>;
+}
+
 describe('ApiService', () => {
   let service: ApiService;
   let httpClient: MockHttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
   let authService: MockAuthService;
+  let dialog: MockMatDialog;
 
   // Test data
   const mockSuccessResponse = { id: 1, name: 'Test Data' };
@@ -69,12 +75,17 @@ describe('ApiService', () => {
       logout: vi.fn(),
     };
 
+    dialog = {
+      open: vi.fn(),
+    };
+
     // Create the service directly with mocked dependencies
     service = new ApiService(
       httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       router as unknown as Router,
       authService as unknown as AuthService,
+      dialog as unknown as MatDialog,
     );
   });
 

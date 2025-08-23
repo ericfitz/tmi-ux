@@ -38,7 +38,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -49,6 +49,7 @@ import {
   DfdCollaborationService,
   CollaborationUser,
 } from '../../services/dfd-collaboration.service';
+import { DfdNotificationService } from '../../services/dfd-notification.service';
 import { WebSocketAdapter } from '../../infrastructure/adapters/websocket.adapter';
 
 /**
@@ -81,6 +82,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   // Collaboration state
   isCollaborating = false;
   collaborationUsers: CollaborationUser[] = [];
+  currentPresenterId: string | null = null;
+  pendingPresenterRequests: string[] = [];
 
   // URL copy feedback
   linkCopied = false;
@@ -93,7 +96,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private _collaborationService: DfdCollaborationService,
     private _dialog: MatDialog,
-    private _snackBar: MatSnackBar,
+    private _notificationService: DfdNotificationService,
     private _webSocketAdapter: WebSocketAdapter,
     private _translocoService: TranslocoService,
     @Inject(DOCUMENT) private _document: Document,
@@ -114,6 +117,22 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this._collaborationService.collaborationUsers$.subscribe(users => {
         this.collaborationUsers = users;
+        this._cdr.markForCheck();
+      }),
+    );
+
+    // Subscribe to presenter state changes
+    this._subscriptions.add(
+      this._collaborationService.currentPresenterId$.subscribe(presenterId => {
+        this.currentPresenterId = presenterId;
+        this._cdr.markForCheck();
+      }),
+    );
+
+    // Subscribe to pending presenter requests
+    this._subscriptions.add(
+      this._collaborationService.pendingPresenterRequests$.subscribe(requests => {
+        this.pendingPresenterRequests = requests;
         this._cdr.markForCheck();
       }),
     );
@@ -150,50 +169,64 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   toggleCollaboration(): void {
     if (this.isCollaborating) {
-      this._collaborationService
-        .endCollaboration()
-        .pipe(take(1))
-        .subscribe(success => {
-          if (success) {
-            this._logger.info('Collaboration ended successfully');
-          } else {
-            this._logger.error('Failed to end collaboration');
-          }
-        });
+      // Check if current user is session manager to determine which action to take
+      if (this._collaborationService.isCurrentUserSessionManager()) {
+        this._collaborationService
+          .endCollaboration()
+          .pipe(take(1))
+          .subscribe(success => {
+            if (success) {
+              this._logger.info('Collaboration ended successfully');
+            } else {
+              this._logger.error('Failed to end collaboration');
+            }
+          });
+      } else {
+        this._collaborationService
+          .leaveSession()
+          .pipe(take(1))
+          .subscribe(success => {
+            if (success) {
+              this._logger.info('Left collaboration session successfully');
+            } else {
+              this._logger.error('Failed to leave collaboration session');
+            }
+          });
+      }
     } else {
       this._collaborationService
-        .startCollaboration()
+        .startOrJoinCollaboration()
         .pipe(take(1))
         .subscribe(success => {
           if (success) {
-            this._logger.info('Collaboration started successfully');
+            this._logger.info('Collaboration started or joined successfully');
           } else {
-            this._logger.error('Failed to start collaboration');
+            this._logger.error('Failed to start or join collaboration');
           }
         });
     }
   }
 
   /**
-   * Copy the current URL to clipboard
+   * Copy the current URL to clipboard with collaboration join parameters
    */
   copyLinkToClipboard(): void {
     try {
-      const currentUrl = this._document.location.href;
-      navigator.clipboard.writeText(currentUrl).then(
+      const currentUrl = new URL(this._document.location.href);
+      
+      // Add the joinCollaboration query parameter like the dashboard join button
+      currentUrl.searchParams.set('joinCollaboration', 'true');
+      
+      const urlWithParams = currentUrl.toString();
+      
+      navigator.clipboard.writeText(urlWithParams).then(
         () => {
-          this._logger.info('URL copied to clipboard', { url: currentUrl });
-          this._snackBar.open('Link copied to clipboard', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-          });
+          this._logger.info('Collaboration URL copied to clipboard', { url: urlWithParams });
+          this._notificationService.showSuccess('Link copied to clipboard').subscribe();
         },
         (error: unknown) => {
           this._logger.error('Failed to copy URL to clipboard', { error });
-          this._snackBar.open('Failed to copy link', 'Close', {
-            duration: 3000,
-          });
+          this._notificationService.showError('Failed to copy link').subscribe();
         },
       );
     } catch (error) {
@@ -219,19 +252,19 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update a user's role in the collaboration session
+   * Update a user's permission in the collaboration session
    * @param userId The ID of the user to update
-   * @param role The new role to assign
+   * @param permission The new permission to assign
    */
-  updateUserRole(userId: string, role: 'owner' | 'writer' | 'reader'): void {
+  updateUserPermission(userId: string, permission: 'writer' | 'reader'): void {
     this._collaborationService
-      .updateUserRole(userId, role)
+      .updateUserPermission(userId, permission)
       .pipe(take(1))
       .subscribe(success => {
         if (success) {
-          this._logger.info('User role updated successfully', { userId, role });
+          this._logger.info('User permission updated successfully', { userId, permission });
         } else {
-          this._logger.error('Failed to update user role', { userId, role });
+          this._logger.error('Failed to update user permission', { userId, permission });
         }
       });
   }
@@ -241,16 +274,16 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * @param permission The permission to check
    * @returns boolean indicating if the user has the permission
    */
-  hasPermission(permission: 'edit' | 'invite' | 'remove' | 'changeRole'): boolean {
+  hasPermission(permission: 'edit' | 'manageSession'): boolean {
     return this._collaborationService.hasPermission(permission);
   }
 
   /**
-   * Check if the current user is the owner of the collaboration session
-   * @returns boolean indicating if the current user is the owner
+   * Check if the current user is the session manager of the collaboration session
+   * @returns boolean indicating if the current user is the session manager
    */
-  isCurrentUserOwner(): boolean {
-    return this._collaborationService.isCurrentUserOwner();
+  isCurrentUserSessionManager(): boolean {
+    return this._collaborationService.isCurrentUserSessionManager();
   }
 
   /**
@@ -260,6 +293,96 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   isCurrentUser(userId: string): boolean {
     return this._collaborationService.isCurrentUser(userId);
+  }
+
+  /**
+   * Check if current user is the presenter
+   * @returns boolean indicating if current user is presenter
+   */
+  isCurrentUserPresenter(): boolean {
+    return this._collaborationService.isCurrentUserPresenter();
+  }
+
+  /**
+   * Request presenter privileges
+   */
+  requestPresenterPrivileges(): void {
+    this._collaborationService.requestPresenterPrivileges().pipe(take(1)).subscribe({
+      next: () => {
+        this._logger.info('Presenter request sent successfully');
+        // Note: Notification is handled by the collaboration service
+      },
+      error: (error) => {
+        this._logger.error('Failed to request presenter privileges', error);
+        // Note: Error notification is handled by the collaboration service
+      }
+    });
+  }
+
+  /**
+   * Approve presenter request (session manager only)
+   * @param userId The user ID to approve
+   */
+  approvePresenterRequest(userId: string): void {
+    this._collaborationService.approvePresenterRequest(userId).pipe(take(1)).subscribe({
+      next: () => {
+        this._logger.info('Presenter request approved', { userId });
+        // Note: Notification is handled by the collaboration service
+      },
+      error: (error) => {
+        this._logger.error('Failed to approve presenter request', error);
+        // Note: Error notification is handled by the collaboration service
+      }
+    });
+  }
+
+  /**
+   * Deny presenter request (session manager only)
+   * @param userId The user ID to deny
+   */
+  denyPresenterRequest(userId: string): void {
+    this._collaborationService.denyPresenterRequest(userId).pipe(take(1)).subscribe({
+      next: () => {
+        this._logger.info('Presenter request denied', { userId });
+        // Note: Notification is handled by the collaboration service
+      },
+      error: (error) => {
+        this._logger.error('Failed to deny presenter request', error);
+        // Note: Error notification is handled by the collaboration service
+      }
+    });
+  }
+
+  /**
+   * Take back presenter privileges (session manager only)
+   */
+  takeBackPresenterPrivileges(): void {
+    this._collaborationService.takeBackPresenterPrivileges().pipe(take(1)).subscribe({
+      next: () => {
+        this._logger.info('Presenter privileges taken back');
+        // Note: Notification is handled by the collaboration service
+      },
+      error: (error) => {
+        this._logger.error('Failed to take back presenter privileges', error);
+        // Note: Error notification is handled by the collaboration service
+      }
+    });
+  }
+
+  /**
+   * Clear presenter (session manager only)
+   */
+  clearPresenter(): void {
+    this._collaborationService.setPresenter(null).pipe(take(1)).subscribe({
+      next: () => {
+        this._logger.info('Presenter cleared');
+        // Note: Notification is handled by the collaboration service
+      },
+      error: (error) => {
+        this._logger.error('Failed to clear presenter', error);
+        // Note: Error notification is handled by the collaboration service
+      }
+    });
   }
 
   /**
@@ -310,6 +433,28 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     } else {
       return 'websocket-status-error'; // Not connected - red color
     }
+  }
+
+  /**
+   * Get the name of the current presenter
+   * @returns The presenter's name or ID
+   */
+  getPresenterName(): string {
+    if (!this.currentPresenterId) {
+      return '';
+    }
+    const presenter = this.collaborationUsers.find(user => user.id === this.currentPresenterId);
+    return presenter?.name || this.currentPresenterId;
+  }
+
+  /**
+   * Get the name of a user by their ID
+   * @param userId The user ID
+   * @returns The user's name or ID
+   */
+  getRequestUserName(userId: string): string {
+    const user = this.collaborationUsers.find(u => u.id === userId);
+    return user?.name || userId;
   }
 
   /**

@@ -215,7 +215,7 @@ export class AuthService {
     // Use the retrieved token for validation to avoid multiple storage calls
     const isValid = this.isTokenValid(token);
     const shouldRefresh = this.shouldRefreshToken(token);
-    
+
     this.logger.debugComponent('Auth', 'Token validation status', {
       isValid,
       shouldRefresh,
@@ -290,7 +290,10 @@ export class AuthService {
       // Get token once and use it for validation
       const token = this.getStoredToken();
       const isAuthenticated = this.isTokenValid(token);
-      this.logger.debugComponent('Auth', `Variable 'isAuthenticated' in AuthService.checkAuthStatus initialized to: ${isAuthenticated}`);
+      this.logger.debugComponent(
+        'Auth',
+        `Variable 'isAuthenticated' in AuthService.checkAuthStatus initialized to: ${isAuthenticated}`,
+      );
       this.isAuthenticatedSubject.next(isAuthenticated);
 
       // Load user profile if authenticated
@@ -298,7 +301,11 @@ export class AuthService {
         const storedProfile = localStorage.getItem(this.profileStorageKey);
         if (storedProfile) {
           const userProfile = JSON.parse(storedProfile) as UserProfile;
-          this.logger.debugComponent('Auth', `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`, userProfile);
+          this.logger.debugComponent(
+            'Auth',
+            `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`,
+            userProfile,
+          );
           this.userProfileSubject.next(userProfile);
         }
       } else {
@@ -344,7 +351,7 @@ export class AuthService {
 
     this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
 
-    return this.http.get<ProvidersResponse>(`${environment.apiUrl}/auth/providers`).pipe(
+    return this.http.get<ProvidersResponse>(`${environment.apiUrl}/oauth2/providers`).pipe(
       map(response => {
         // Add local provider if in development or no other providers available
         const providers = [...response.providers];
@@ -359,7 +366,7 @@ export class AuthService {
             name: 'Local Development',
             icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
             auth_url: this.localProvider.buildAuthUrl(''),
-            redirect_uri: `${window.location.origin}/auth/callback`,
+            redirect_uri: `${window.location.origin}/oauth2/callback`,
             client_id: 'local-development',
           });
         }
@@ -399,7 +406,7 @@ export class AuthService {
         name: 'Local Development',
         icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
         auth_url: this.localProvider.buildAuthUrl(''),
-        redirect_uri: `${window.location.origin}/auth/callback`,
+        redirect_uri: `${window.location.origin}/oauth2/callback`,
         client_id: 'local-development',
       });
     }
@@ -468,7 +475,7 @@ export class AuthService {
       localStorage.setItem('oauth_provider', provider.id);
 
       // Use TMI's OAuth proxy endpoint with state and client callback URL
-      const clientCallbackUrl = `${window.location.origin}/auth/callback`;
+      const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
       const separator = provider.auth_url.includes('?') ? '&' : '?';
       const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}`;
 
@@ -739,7 +746,7 @@ export class AuthService {
         this.logger.error('No access token in TMI response');
         throw new Error('No access token provided');
       }
-      
+
       const tokenParts = response.access_token.split('.');
       if (tokenParts.length !== 3) {
         this.logger.error('Invalid JWT token format', {
@@ -763,7 +770,7 @@ export class AuthService {
       // Check if the created token is valid
       const now = new Date();
       const isTokenValid = token.expiresAt > now;
-      
+
       this.logger.debugComponent('Auth', 'Created JWT token object', {
         expiresAt: token.expiresAt.toISOString(),
         expiresIn: token.expiresIn,
@@ -895,7 +902,7 @@ export class AuthService {
       hasRefreshToken: !!token.refreshToken,
       refreshTokenLength: token.refreshToken?.length,
     });
-    
+
     try {
       // Parse the JWT payload to log token contents (without signature)
       const payload = token.token.split('.')[1];
@@ -913,7 +920,7 @@ export class AuthService {
     } catch (error) {
       this.logger.warn('Could not decode JWT payload for logging', error);
     }
-    
+
     localStorage.setItem(this.tokenStorageKey, JSON.stringify(token));
     this.jwtTokenSubject.next(token);
   }
@@ -939,7 +946,7 @@ export class AuthService {
       const now = new Date();
       const isExpired = token.expiresAt <= now;
       const minutesUntilExpiry = Math.floor((token.expiresAt.getTime() - now.getTime()) / 60000);
-      
+
       // Only log token details if expires soon or there's an issue
       if (isExpired || minutesUntilExpiry < 5) {
         this.logger.debugComponent('Auth', 'Retrieved stored token', {
@@ -1015,7 +1022,7 @@ export class AuthService {
         refresh_token: string;
         expires_in: number;
         token_type: string;
-      }>(`${environment.apiUrl}/auth/refresh`, {
+      }>(`${environment.apiUrl}/oauth2/refresh`, {
         refresh_token: currentToken.refreshToken,
       })
       .pipe(
@@ -1070,9 +1077,11 @@ export class AuthService {
     this.logger.info(`Logging out user: ${userEmail}`);
 
     // Determine if we should call server logout endpoint
-    const isConnectedToServer = this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED;
+    const isConnectedToServer =
+      this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED;
     const isUsingLocalAuth = this.isUsingLocalProvider;
-    const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer && !isUsingLocalAuth && !this.isTestUser;
+    const shouldCallServerLogout =
+      this.isAuthenticated && isConnectedToServer && !isUsingLocalAuth && !this.isTestUser;
 
     if (shouldCallServerLogout) {
       this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
@@ -1092,7 +1101,7 @@ export class AuthService {
       }
 
       this.http
-        .post(`${environment.apiUrl}/auth/logout`, {}, { headers })
+        .post(`${environment.apiUrl}/oauth2/revoke`, {}, { headers })
         .pipe(
           catchError((error: HttpErrorResponse) => {
             // Log the error but don't fail the logout process
@@ -1129,7 +1138,7 @@ export class AuthService {
         isTestUser: this.isTestUser,
         isAuthenticated: this.isAuthenticated,
       });
-      
+
       this.clearAuthData();
       this.logger.info('User logged out successfully (client-side only)');
       void this.router.navigate(['/']);

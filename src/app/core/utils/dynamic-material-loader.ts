@@ -6,8 +6,12 @@
 import { Injector } from '@angular/core';
 
 // Store injector reference for dynamic component creation
-let globalInjector: Injector;
+let _globalInjector: Injector;
 
 export function setInjector(injector: Injector): void {
-  globalInjector = injector;
+  _globalInjector = injector;
+}
+
+export function getInjector(): Injector {
+  return _globalInjector;
 }

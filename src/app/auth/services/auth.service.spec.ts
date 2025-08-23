@@ -126,8 +126,8 @@ describe('AuthService', () => {
         id: 'test',
         name: 'Test Provider',
         icon: 'fa-solid fa-flask',
-        auth_url: 'http://localhost:8080/auth/login/test',
-        redirect_uri: 'http://localhost:8080/auth/callback',
+        auth_url: 'http://localhost:8080/oauth2/authorize/test',
+        redirect_uri: 'http://localhost:8080/oauth2/callback',
         client_id: 'mock-client-id',
       },
     ],
@@ -206,7 +206,7 @@ describe('AuthService', () => {
       });
     }
     Object.defineProperty(global.window, 'location', {
-      value: { href: '' },
+      value: { href: '', origin: 'undefined' },
       writable: true,
       configurable: true,
     });
@@ -323,7 +323,7 @@ describe('AuthService', () => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
       expect(window.location.href).toBe(
-        'http://localhost:8080/auth/login/test?state=00000000000000000000000000000000&client_callback=undefined%2Fauth%2Fcallback',
+        'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Foauth2%2Fcallback',
       );
       expect(loggerService.info).toHaveBeenCalledWith(
         'Initiating TMI OAuth login with Test Provider',
@@ -383,13 +383,13 @@ describe('AuthService', () => {
             name: 'Local Development',
             icon: 'fa-solid fa-laptop-code',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-            redirect_uri: expect.stringContaining('/auth/callback'),
+            redirect_uri: expect.stringContaining('/oauth2/callback'),
             client_id: 'local-development',
           },
         ]);
       });
 
-      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/auth/providers`);
+      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/providers`);
     });
 
     it('should handle provider discovery errors gracefully', () => {
@@ -405,7 +405,7 @@ describe('AuthService', () => {
             name: 'Local Development',
             icon: 'fa-solid fa-laptop-code',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-            redirect_uri: expect.stringContaining('/auth/callback'),
+            redirect_uri: expect.stringContaining('/oauth2/callback'),
             client_id: 'local-development',
           },
         ]);
@@ -444,7 +444,7 @@ describe('AuthService', () => {
             name: 'Local Development',
             icon: 'fa-solid fa-laptop-code',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-            redirect_uri: expect.stringContaining('/auth/callback'),
+            redirect_uri: expect.stringContaining('/oauth2/callback'),
             client_id: 'local-development',
           },
         ]);
@@ -720,7 +720,7 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/auth/logout`,
+        `${environment.apiUrl}/oauth2/revoke`,
         {},
         {
           headers: {
@@ -822,7 +822,7 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/auth/logout`,
+        `${environment.apiUrl}/oauth2/revoke`,
         {},
         {
           headers: {
@@ -846,7 +846,7 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/auth/logout`,
+        `${environment.apiUrl}/oauth2/revoke`,
         {},
         {
           headers: {
@@ -869,7 +869,7 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/auth/logout`,
+        `${environment.apiUrl}/oauth2/revoke`,
         {},
         {
           headers: {
@@ -1064,7 +1064,7 @@ describe('AuthService', () => {
           expect(newToken.expiresAt.getTime()).toBeGreaterThan(Date.now());
         });
 
-        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/refresh`, {
           refresh_token: 'valid-refresh-token',
         });
       });
@@ -1279,7 +1279,7 @@ describe('AuthService', () => {
           expect(storeTokenSpy).toHaveBeenCalledWith(token);
         });
 
-        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/auth/refresh`, {
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/refresh`, {
           refresh_token: 'refresh-token',
         });
       });

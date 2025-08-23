@@ -22,7 +22,7 @@ import { Environment } from './environment.interface';
 export const environment: Environment = {
   production: false,
   logLevel: 'DEBUG', // Most verbose logging in development
-  debugComponents: ['DFD'], // Enable debug logging for DFD component
+  debugComponents: ['DFD', 'websocket-api'], // Enable debug logging for DFD component and WebSocket API
   apiUrl: 'http://localhost:8080', // TMI server running locally
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Development)',
