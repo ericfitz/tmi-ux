@@ -107,7 +107,7 @@
     "prettier": "^3.6.2",
     "stylelint": "^16.23.1",
     "stylelint-config-standard-scss": "^15.0.1",
-    "typescript": "^5.9.2",
+    "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vitest": "^3.2.4"
   },
@@ -138,10 +138,7 @@
       ],
       "allowedVersions": {
         "cypress": "14.3.3",
-        "jest": "30.0.2",
-        "cypress-image-snapshot>cypress": "14.3.3",
-        "@angular-devkit/build-angular>jest": "30.0.2",
-        "jest-image-snapshot>jest": "30.0.2"
+        "cypress-image-snapshot>cypress": "14.3.3"
       }
     },
     "onlyBuiltDependencies": [
