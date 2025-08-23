@@ -10,7 +10,7 @@ export interface SaveState {
   errorMessage?: string;
   hasUnsavedChanges: boolean;
   changedFields: Set<string>;
-  originalValues: Map<string, any>;
+  originalValues: Map<string, unknown>;
 }
 
 /**
@@ -52,12 +52,12 @@ export class SaveStateService {
    * @param initialValues Initial field values
    * @returns Observable of save state
    */
-  initializeSaveState(formId: string, initialValues: Record<string, any> = {}): Observable<SaveState> {
+  initializeSaveState(formId: string, initialValues: Record<string, unknown> = {}): Observable<SaveState> {
     const initialState: SaveState = {
       status: 'clean',
       hasUnsavedChanges: false,
       changedFields: new Set<string>(),
-      originalValues: new Map<string, any>(Object.entries(initialValues))
+      originalValues: new Map<string, unknown>(Object.entries(initialValues))
     };
 
     const subject = new BehaviorSubject<SaveState>(initialState);
@@ -113,7 +113,7 @@ export class SaveStateService {
    * @param newValue New field value
    * @returns true if the value actually changed, false otherwise
    */
-  markFieldChanged(formId: string, fieldName: string, newValue: any): boolean {
+  markFieldChanged(formId: string, fieldName: string, newValue: unknown): boolean {
     const subject = this._saveStates.get(formId);
     if (!subject) return false;
 
@@ -159,7 +159,7 @@ export class SaveStateService {
    * @param formId Unique identifier for the form/component
    * @param savedValues Values that were successfully saved
    */
-  updateOriginalValues(formId: string, savedValues: Record<string, any>): void {
+  updateOriginalValues(formId: string, savedValues: Record<string, unknown>): void {
     const subject = this._saveStates.get(formId);
     if (!subject) return;
 
@@ -282,7 +282,7 @@ export class SaveStateService {
    * @param b Second value
    * @returns true if values are equal, false otherwise
    */
-  private valuesEqual(a: any, b: any): boolean {
+  private valuesEqual(a: unknown, b: unknown): boolean {
     // Handle null/undefined cases
     if (a === b) return true;
     if (a == null || b == null) return a === b;
@@ -299,13 +299,13 @@ export class SaveStateService {
     }
 
     // Handle objects
-    const keysA = Object.keys(a);
-    const keysB = Object.keys(b);
+    const keysA = Object.keys(a as Record<string, unknown>);
+    const keysB = Object.keys(b as Record<string, unknown>);
     
     if (keysA.length !== keysB.length) return false;
     
     return keysA.every(key => 
-      keysB.includes(key) && this.valuesEqual(a[key], b[key])
+      keysB.includes(key) && this.valuesEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
     );
   }
 }

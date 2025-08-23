@@ -280,11 +280,11 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
     this.displayedColumns = this.data.isReadOnly ? ['key', 'value'] : ['key', 'value', 'actions'];
     
     // Store original metadata for change detection
-    this._originalMetadata = JSON.parse(JSON.stringify(this.data.metadata));
+    this._originalMetadata = JSON.parse(JSON.stringify(this.data.metadata)) as Metadata[];
     
     // Initialize save state
     this._subscriptions.add(
-      this.saveStateService.initializeSaveState(this.formId, this._originalMetadata).subscribe(state => {
+      this.saveStateService.initializeSaveState(this.formId, this._originalMetadata as unknown as Record<string, unknown>).subscribe(state => {
         this.saveState = state;
       })
     );
@@ -369,11 +369,11 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
     // In a real implementation, this would make an API call to save the metadata
     // For now, simulate the save operation
     setTimeout(() => {
-      this.saveStateService.updateOriginalValues(this.formId, this.dataSource.data);
+      this.saveStateService.updateOriginalValues(this.formId, this.dataSource.data as unknown as Record<string, unknown>);
       this.saveStateService.updateSaveStatus(this.formId, 'saved');
       
       // Update original metadata to reflect saved state
-      this._originalMetadata = JSON.parse(JSON.stringify(this.dataSource.data));
+      this._originalMetadata = JSON.parse(JSON.stringify(this.dataSource.data)) as Metadata[];
     }, 300);
   }
 

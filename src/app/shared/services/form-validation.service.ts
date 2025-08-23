@@ -51,7 +51,7 @@ export class FormValidationService {
   validateField(
     formId: string,
     fieldName: string,
-    value: any,
+    value: unknown,
     validators: ValidatorFn[],
     shouldLog: boolean = false
   ): ValidationResult {
@@ -103,7 +103,7 @@ export class FormValidationService {
    */
   validateForm(
     formId: string,
-    formData: Record<string, any>,
+    formData: Record<string, unknown>,
     validationRules: Record<string, ValidatorFn[]>,
     shouldLog: boolean = true
   ): ValidationResult {
@@ -138,7 +138,7 @@ export class FormValidationService {
    * @param requiredFields Array of required field names
    * @returns True if all required fields have values
    */
-  validateRequiredFields(formData: Record<string, any>, requiredFields: string[]): boolean {
+  validateRequiredFields(formData: Record<string, unknown>, requiredFields: string[]): boolean {
     return requiredFields.every(fieldName => {
       const value = formData[fieldName];
       return value != null && value !== '' && (typeof value !== 'string' || value.trim() !== '');
@@ -153,7 +153,7 @@ export class FormValidationService {
      * Validator for required fields
      */
     required: (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value;
+      const value = control.value as unknown;
       if (value == null || value === '' || (typeof value === 'string' && value.trim() === '')) {
         return { required: true };
       }
@@ -165,7 +165,7 @@ export class FormValidationService {
      */
     maxLength: (max: number): ValidatorFn => {
       return (control: AbstractControl): ValidationErrors | null => {
-        const value = control.value;
+        const value = control.value as unknown;
         if (value && typeof value === 'string' && value.length > max) {
           return { maxLength: { max, actual: value.length } };
         }
@@ -178,7 +178,7 @@ export class FormValidationService {
      */
     minLength: (min: number): ValidatorFn => {
       return (control: AbstractControl): ValidationErrors | null => {
-        const value = control.value;
+        const value = control.value as unknown;
         if (value && typeof value === 'string' && value.length < min) {
           return { minLength: { min, actual: value.length } };
         }
@@ -190,11 +190,11 @@ export class FormValidationService {
      * Validator for URL format
      */
     url: (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value;
+      const value = control.value as unknown;
       if (!value) return null; // Allow empty URLs
       
       try {
-        new URL(value);
+        new URL(value as string);
         return null;
       } catch {
         return { url: true };
@@ -205,11 +205,11 @@ export class FormValidationService {
      * Validator for email format
      */
     email: (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value;
+      const value = control.value as unknown;
       if (!value) return null; // Allow empty emails
       
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
+      if (!emailRegex.test(value as string)) {
         return { email: true };
       }
       return null;
@@ -219,7 +219,7 @@ export class FormValidationService {
      * Validator for numeric values
      */
     numeric: (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value;
+      const value = control.value as unknown;
       if (value && isNaN(Number(value))) {
         return { numeric: true };
       }
@@ -230,7 +230,7 @@ export class FormValidationService {
      * Validator for positive numbers
      */
     positiveNumber: (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value;
+      const value = control.value as unknown;
       if (value != null && (isNaN(Number(value)) || Number(value) <= 0)) {
         return { positiveNumber: true };
       }
@@ -406,7 +406,7 @@ export class FormValidationService {
     context: ValidationContext,
     fieldName: string,
     errorMessages: string[],
-    value: any
+    value: unknown
   ): void {
     const errorMessage = errorMessages.join(', ');
     const now = new Date();
@@ -423,7 +423,7 @@ export class FormValidationService {
       formId: context.formId,
       fieldName,
       errorMessages,
-      value: typeof value === 'string' ? value.substring(0, 100) : value, // Limit logged value length
+      value: typeof value === 'string' ? (value).substring(0, 100) : value, // Limit logged value length
     });
 
     // Update context to track this logged error

@@ -93,7 +93,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Initialize save state
     this._subscriptions.add(
-      this.saveStateService.initializeSaveState(this.formId, this._originalValues).subscribe(state => {
+      this.saveStateService.initializeSaveState(this.formId, this._originalValues as unknown as Record<string, unknown>).subscribe(state => {
         this.saveState = state;
       })
     );
@@ -123,7 +123,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     const control = this.documentForm.get(fieldName);
     if (!control) return;
 
-    const currentValue = control.value || '';
+    const currentValue = (control.value as string) || '';
     const originalValue = this._originalValues[fieldName] || '';
 
     // Only save if value actually changed
@@ -138,7 +138,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       );
       
       if (validationResult.isValid) {
-        this.performAutoSave(fieldName, currentValue);
+        this.performAutoSave(fieldName as string, currentValue);
       } else {
         this.notificationService.showValidationError(
           'Document',
@@ -162,7 +162,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       // Update original values to reflect saved state
       this._originalValues[fieldName as keyof DocumentFormValues] = newValue;
-      this.saveStateService.updateOriginalValues(this.formId, this._originalValues);
+      this.saveStateService.updateOriginalValues(this.formId, this._originalValues as unknown as Record<string, unknown>);
       this.saveStateService.updateSaveStatus(this.formId, 'saved');
     }, 300);
   }

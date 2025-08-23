@@ -206,7 +206,7 @@ describe('AuthService', () => {
       });
     }
     Object.defineProperty(global.window, 'location', {
-      value: { href: '' },
+      value: { href: '', origin: 'undefined' },
       writable: true,
       configurable: true,
     });
@@ -323,7 +323,7 @@ describe('AuthService', () => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
       expect(window.location.href).toBe(
-        'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Fauth%2Fcallback',
+        'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Foauth2%2Fcallback',
       );
       expect(loggerService.info).toHaveBeenCalledWith(
         'Initiating TMI OAuth login with Test Provider',

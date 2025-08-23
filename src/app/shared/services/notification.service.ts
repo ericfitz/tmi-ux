@@ -228,7 +228,7 @@ export class NotificationService {
    * @returns SaveErrorNotification configuration
    */
   private createSaveErrorNotification(
-    error: any, 
+    error: Error | HttpErrorResponse, 
     context: string,
     retryAction?: () => void
   ): SaveErrorNotification {
@@ -308,7 +308,7 @@ export class NotificationService {
    */
   private extractServerErrorMessage(error: HttpErrorResponse): string | null {
     try {
-      const errorBody = error.error;
+      const errorBody = error.error as unknown;
       
       // Try different common error message formats
       if (typeof errorBody === 'string') {
@@ -317,11 +317,10 @@ export class NotificationService {
       
       if (errorBody && typeof errorBody === 'object') {
         // Try common error message fields
-        return errorBody.message || 
-               errorBody.error_description || 
-               errorBody.detail || 
-               errorBody.error ||
-               null;
+        return ((errorBody as Record<string, unknown>)['message'] || 
+               (errorBody as Record<string, unknown>)['error_description'] || 
+               (errorBody as Record<string, unknown>)['detail'] || 
+               (errorBody as Record<string, unknown>)['error']) as string || null;
       }
       
       return null;

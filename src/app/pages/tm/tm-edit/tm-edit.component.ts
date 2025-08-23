@@ -482,8 +482,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
   /**
    * Handle blur events on form fields with change detection and auto-save
    */
-  onFrameworkChange(event: any): void {
-    this.onFieldBlur('threat_model_framework', event);
+  onFrameworkChange(event: { value: unknown }): void {
+    // Handle framework selection change
+    this.saveStateService.markFieldChanged(this.formId, 'threat_model_framework', event.value);
+    this.performAutoSave();
   }
 
   onFieldBlur(fieldName: string, event: Event): void {
@@ -544,7 +546,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   saveAllFields(): void {
     if (this.threatModelForm.invalid || !this.threatModel) {
       // Show validation errors for explicit save attempt
-      const formData = this.threatModelForm.getRawValue();
+      const formData = this.threatModelForm.getRawValue() as Record<string, unknown>;
       const validationRules = this.formValidationService.getThreatModelValidationRules();
       
       const validation = this.formValidationService.validateForm(
@@ -1955,7 +1957,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Build updates object with only changed fields
     const changedFields = this.saveState.changedFields;
-    const updates: Record<string, any> = {};
+    const updates: Record<string, unknown> = {};
     
     changedFields.forEach(fieldName => {
       switch (fieldName) {
@@ -1993,7 +1995,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
           if (result && this.threatModel) {
             // Update the threat model with server response
             Object.keys(updates).forEach(key => {
-              (this.threatModel as any)[key] = (result as any)[key];
+              (this.threatModel as unknown as Record<string, unknown>)[key] = (result as unknown as Record<string, unknown>)[key];
             });
             this.threatModel.modified_at = result.modified_at;
             
@@ -2009,11 +2011,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
           }
         },
         error: error => {
-          this.saveStateService.updateSaveStatus(this.formId, 'error', error.message);
+          this.saveStateService.updateSaveStatus(this.formId, 'error', (error as Error).message);
           
           // Show detailed error notification to user
           this.notificationService.showSaveError(
-            error,
+            error as Error,
             'threat model changes',
             () => this.performAutoSave() // Retry function
           );

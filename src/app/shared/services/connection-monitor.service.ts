@@ -214,7 +214,7 @@ export class ConnectionMonitorService {
         });
         
         this.logger.debugComponent('ConnectionMonitor', 'Server ping failed', {
-          error: error.message,
+          error: (error as Error).message,
           consecutiveFailures,
           retryAttempt: currentStatus.retryAttempt + 1
         });

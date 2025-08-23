@@ -530,9 +530,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     this._originalThreat = this.data.threat ? { ...this.data.threat } : null;
     
     // Initialize save state with form values
-    const initialValues = this.threatForm.getRawValue();
+    const initialValues = this.threatForm.getRawValue() as Record<string, unknown>;
     this._subscriptions.add(
-      this.saveStateService.initializeSaveState(this.formId, initialValues).subscribe(state => {
+      this.saveStateService.initializeSaveState(this.formId, initialValues).subscribe((state: SaveState) => {
         this.saveState = state;
       })
     );
@@ -703,18 +703,18 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     const currentValue = target.value;
     
     // Get original value for comparison
-    const originalValue = this._originalThreat ? (this._originalThreat as any)[fieldName] : '';
+    const originalValue = this._originalThreat ? (this._originalThreat as unknown as Record<string, unknown>)[fieldName] : '';
     
     // Only save if value actually changed
     if (currentValue !== originalValue) {
       // Validate field before saving
       const threatValidationRules = this.getThreatValidationRules();
-      const validators = threatValidationRules[fieldName] || [];
+      const validators = (threatValidationRules[fieldName]) || [];
       const validation = this.formValidationService.validateField(
         this.formId,
         fieldName,
         currentValue,
-        validators
+        validators as Parameters<typeof this.formValidationService.validateField>[3]
       );
       
       if (validation.isValid) {
@@ -732,11 +732,11 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Handle selection change events for mat-select fields
    */
-  onSelectionChange(fieldName: string, value: any): void {
+  onSelectionChange(fieldName: string, value: unknown): void {
     if (this.isViewOnly) return;
     
     // Get original value for comparison
-    const originalValue = this._originalThreat ? (this._originalThreat as any)[fieldName] : '';
+    const originalValue = this._originalThreat ? (this._originalThreat as unknown as Record<string, unknown>)[fieldName] : '';
     
     // Only save if value actually changed
     if (value !== originalValue) {
@@ -756,7 +756,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // In a real implementation, this would make an API call
     // For now, simulate the save operation
     setTimeout(() => {
-      const currentValues = this.threatForm.getRawValue();
+      const currentValues = this.threatForm.getRawValue() as Record<string, unknown>;
       this.saveStateService.updateOriginalValues(this.formId, currentValues);
       this.saveStateService.updateSaveStatus(this.formId, 'saved');
       
@@ -770,7 +770,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Get validation rules for threat fields
    */
-  private getThreatValidationRules(): any {
+  private getThreatValidationRules(): Record<string, unknown[]> {
     return {
       name: [(value: string) => value && value.trim().length > 0 ? null : { required: true }],
       description: [(value: string) => value && value.length <= 500 ? null : { maxLength: { max: 500, actual: value?.length || 0 } }],

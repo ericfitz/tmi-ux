@@ -336,11 +336,11 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
       : ['subject', 'role', 'actions'];
 
     // Store original permissions for change detection
-    this._originalPermissions = JSON.parse(JSON.stringify(this.data.permissions));
+    this._originalPermissions = JSON.parse(JSON.stringify(this.data.permissions)) as Authorization[];
 
     // Initialize save state
     this._subscriptions.add(
-      this.saveStateService.initializeSaveState(this.formId, this._originalPermissions).subscribe(state => {
+      this.saveStateService.initializeSaveState(this.formId, this._originalPermissions as unknown as Record<string, unknown>).subscribe(state => {
         this.saveState = state;
       })
     );
@@ -386,9 +386,9 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       // Update original permissions to reflect saved state
       if (this._originalPermissions[index]) {
-        (this._originalPermissions[index] as any)[field] = newValue;
+        (this._originalPermissions[index] as unknown as Record<string, unknown>)[field] = newValue;
       }
-      this.saveStateService.updateOriginalValues(this.formId, this._originalPermissions);
+      this.saveStateService.updateOriginalValues(this.formId, this._originalPermissions as unknown as Record<string, unknown>);
       this.saveStateService.updateSaveStatus(this.formId, 'saved');
     }, 300);
   }
