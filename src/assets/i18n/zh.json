@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "批准主讲人请求",
     "availableCollaborationSessions": "可用协作会话",
-    "changeRole": "更改角色",
     "clearPresenter": "清除主讲人",
     "collaboratorsHeader": "协作者",
     "copyLink": "复制链接",
@@ -33,15 +32,11 @@
     "endCollaboration": "结束协作",
     "joinSession": "加入会话",
     "leaveSession": "离开会话",
-    "makeOwner": "设为所有者",
     "makePresenter": "设为主讲人",
-    "makeReader": "设为阅读者",
-    "makeWriter": "设为编辑者",
     "manageCollaboration": "管理协作",
     "presenterHeader": "主讲人控制",
     "presenterRequests": "主讲人请求",
     "removeFromSession": "从会话中移除",
-    "removeUser": "移除用户",
     "requestPresenter": "请求主讲人",
     "roles": {
       "owner": "所有者",
@@ -73,6 +68,7 @@
     "description": "描述",
     "diagramId": "图表ID",
     "edit": "编辑",
+    "editThreat": "编辑威胁",
     "issueUrl": "问题URL",
     "lastModified": "最后修改",
     "lastModifiedDate": "最后修改：{{date}}",
@@ -85,6 +81,13 @@
     "noMetadata": "无可用元数据",
     "noThreats": "无可用威胁",
     "objectTypes": {
+      "Cell": "单元格",
+      "Diagram": "图表",
+      "Document": "文档",
+      "SourceCode": "源代码",
+      "Threat": "威胁",
+      "ThreatModel": "威胁模型",
+      "cell": "单元格",
       "diagram": "图表",
       "document": "文档",
       "sourceCode": "源代码",
@@ -107,9 +110,11 @@
     "status": "状态",
     "threats": "威胁",
     "validation": {
+      "invalidUrl": "请输入有效的 URL",
       "maxLength": "最大长度为{{max}}个字符",
       "required": "此字段为必填项"
-    }
+    },
+    "viewThreat": "查看威胁"
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",
@@ -190,8 +195,7 @@
     "serverStatus": {
       "noServerConfigured": "未配置服务器",
       "serverConnected": "服务器已连接",
-      "serverConnectionError": "服务器连接错误",
-      "webSocketConnected": "WebSocket已连接"
+      "serverConnectionError": "服务器连接错误"
     }
   },
   "privacy": {
@@ -219,15 +223,13 @@
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
-    "editThreat": "编辑威胁",
     "notAssociatedWithCell": "未关联单元格",
     "notAssociatedWithDiagram": "未关联图表",
     "threatDescription": "威胁描述",
     "threatDescriptionPlaceholder": "详细描述威胁",
     "threatId": "威胁ID",
     "threatName": "威胁名称",
-    "threatType": "威胁类型",
-    "viewThreat": "查看威胁"
+    "threatType": "威胁类型"
   },
   "threatModels": {
     "addPermission": "添加权限",
@@ -237,7 +239,6 @@
     "createNewDiagram": "创建新图表",
     "createNewDocument": "创建新文档",
     "createNewSourceCode": "创建新源代码",
-    "createNewThreat": "创建新威胁",
     "createdBy": "创建者:",
     "dashboard": "仪表板",
     "deleteConfirm": "删除威胁模型",
@@ -261,18 +262,9 @@
     "downloadTooltip": "下载到桌面",
     "editDocument": "编辑文档",
     "editSourceCode": "编辑源代码",
-    "editThreat": "编辑威胁",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
     "idLabel": "ID:",
     "metadataDialog": {
-      "objectTypes": {
-        "Cell": "单元格",
-        "Diagram": "图表",
-        "Document": "文档",
-        "SourceCode": "源代码",
-        "Threat": "威胁",
-        "ThreatModel": "威胁模型"
-      },
       "title": "管理元数据"
     },
     "metadataTooltip": "管理元数据",
@@ -330,17 +322,13 @@
       "deleteThreat": "删除威胁",
       "editDocument": "编辑文档",
       "editSourceCode": "编辑源代码存储库",
-      "editThreat": "编辑威胁",
       "loadFromDesktop": "从桌面加载",
-      "openDiagram": "打开图表",
-      "renameDiagram": "重命名图表",
-      "viewThreat": "查看威胁"
+      "renameDiagram": "重命名图表"
     },
     "validation": {
       "maxLength": "最大长度为{{max}}个字符",
       "required": "此字段为必填项"
     },
-    "viewThreat": "查看威胁",
     "yourThreatModels": "您的威胁模型"
   },
   "tos": {

@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
     "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen",
-    "changeRole": "Rolle ändern",
     "clearPresenter": "Präsentator entfernen",
     "collaboratorsHeader": "Mitarbeiter",
     "copyLink": "Link kopieren",
@@ -33,15 +32,11 @@
     "endCollaboration": "Zusammenarbeit beenden",
     "joinSession": "Sitzung beitreten",
     "leaveSession": "Sitzung verlassen",
-    "makeOwner": "Zum Eigentümer machen",
     "makePresenter": "Zum Präsentator machen",
-    "makeReader": "Zum Leser machen",
-    "makeWriter": "Zum Bearbeiter machen",
     "manageCollaboration": "Zusammenarbeit verwalten",
     "presenterHeader": "Präsentator-Steuerung",
     "presenterRequests": "Präsentator-Anfragen",
     "removeFromSession": "Aus Sitzung entfernen",
-    "removeUser": "Benutzer entfernen",
     "requestPresenter": "Präsentator anfordern",
     "roles": {
       "owner": "Eigentümer",
@@ -73,6 +68,7 @@
     "description": "Beschreibung",
     "diagramId": "Diagramm-ID",
     "edit": "Bearbeiten",
+    "editThreat": "Bedrohung bearbeiten",
     "issueUrl": "Problem-URL",
     "lastModified": "Zuletzt geändert",
     "lastModifiedDate": "Zuletzt geändert: {{date}}",
@@ -85,6 +81,13 @@
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
     "objectTypes": {
+      "Cell": "Zelle",
+      "Diagram": "Diagramm",
+      "Document": "Dokument",
+      "SourceCode": "Quellcode",
+      "Threat": "Bedrohung",
+      "ThreatModel": "Bedrohungsmodell",
+      "cell": "Zelle",
       "diagram": "Diagramm",
       "document": "Dokument",
       "sourceCode": "Quellcode",
@@ -107,9 +110,11 @@
     "status": "Status",
     "threats": "Bedrohungen",
     "validation": {
+      "invalidUrl": "Bitte geben Sie eine gültige URL ein",
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
-    }
+    },
+    "viewThreat": "Bedrohung anzeigen"
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
@@ -190,8 +195,7 @@
     "serverStatus": {
       "noServerConfigured": "Kein Server konfiguriert",
       "serverConnected": "Server verbunden",
-      "serverConnectionError": "Server-Verbindungsfehler",
-      "webSocketConnected": "WebSocket verbunden"
+      "serverConnectionError": "Server-Verbindungsfehler"
     }
   },
   "privacy": {
@@ -219,15 +223,13 @@
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
-    "editThreat": "Bedrohung bearbeiten",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
     "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
     "threatDescription": "Bedrohungsbeschreibung",
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
     "threatId": "Bedrohungs-ID",
     "threatName": "Bedrohungsname",
-    "threatType": "Bedrohungstyp",
-    "viewThreat": "Bedrohung anzeigen"
+    "threatType": "Bedrohungstyp"
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",
@@ -237,7 +239,6 @@
     "createNewDiagram": "Neues Diagramm erstellen",
     "createNewDocument": "Neues Dokument erstellen",
     "createNewSourceCode": "Neuen Quellcode erstellen",
-    "createNewThreat": "Neue Bedrohung erstellen",
     "createdBy": "Erstellt von:",
     "dashboard": "Dashboard",
     "deleteConfirm": "Bedrohungsmodell löschen",
@@ -261,18 +262,9 @@
     "downloadTooltip": "Auf Desktop herunterladen",
     "editDocument": "Dokument bearbeiten",
     "editSourceCode": "Quellcode bearbeiten",
-    "editThreat": "Bedrohung bearbeiten",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "ID:",
     "metadataDialog": {
-      "objectTypes": {
-        "Cell": "Zelle",
-        "Diagram": "Diagramm",
-        "Document": "Dokument",
-        "SourceCode": "Quellcode",
-        "Threat": "Bedrohung",
-        "ThreatModel": "Bedrohungsmodell"
-      },
       "title": "Metadaten verwalten"
     },
     "metadataTooltip": "Metadaten verwalten",
@@ -330,17 +322,13 @@
       "deleteThreat": "Bedrohung löschen",
       "editDocument": "Dokument bearbeiten",
       "editSourceCode": "Quellcode-Repository bearbeiten",
-      "editThreat": "Bedrohung bearbeiten",
       "loadFromDesktop": "Vom Desktop laden",
-      "openDiagram": "Diagramm öffnen",
-      "renameDiagram": "Diagramm umbenennen",
-      "viewThreat": "Bedrohung anzeigen"
+      "renameDiagram": "Diagramm umbenennen"
     },
     "validation": {
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
     },
-    "viewThreat": "Bedrohung anzeigen",
     "yourThreatModels": "Ihre Bedrohungsmodelle"
   },
   "tos": {

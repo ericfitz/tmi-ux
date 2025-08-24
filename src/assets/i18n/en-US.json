@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "Approve Presenter Request",
     "availableCollaborationSessions": "Available Collaboration Sessions",
-    "changeRole": "Change Role",
     "clearPresenter": "Clear Presenter",
     "collaboratorsHeader": "Collaborators",
     "copyLink": "Copy Link",
@@ -33,15 +32,11 @@
     "endCollaboration": "End Collaboration",
     "joinSession": "Join Session",
     "leaveSession": "Leave Session",
-    "makeOwner": "Make Owner",
     "makePresenter": "Make Presenter",
-    "makeReader": "Make Reader",
-    "makeWriter": "Make Writer",
     "manageCollaboration": "Manage Collaboration",
     "presenterHeader": "Presenter Controls",
     "presenterRequests": "Presenter Requests",
     "removeFromSession": "Remove from Session",
-    "removeUser": "Remove User",
     "requestPresenter": "Request Presenter",
     "roles": {
       "owner": "Owner",
@@ -73,6 +68,7 @@
     "description": "Description",
     "diagramId": "Diagram ID",
     "edit": "Edit",
+    "editThreat": "Edit Threat",
     "issueUrl": "Issue URL",
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
@@ -85,6 +81,13 @@
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "objectTypes": {
+      "Cell": "Cell",
+      "Diagram": "Diagram",
+      "Document": "Document",
+      "SourceCode": "Source Code",
+      "Threat": "Threat",
+      "ThreatModel": "Threat Model",
+      "cell": "Cell",
       "diagram": "Diagram",
       "document": "Document",
       "sourceCode": "Source Code",
@@ -107,28 +110,11 @@
     "status": "Status",
     "threats": "Threats",
     "validation": {
+      "invalidUrl": "Please enter a valid URL",
       "maxLength": "Maximum length is {{max}} characters",
-      "required": "This field is required",
-      "invalidUrl": "Please enter a valid URL"
-    }
-  },
-  "saveIndicator": {
-    "clean": "No changes",
-    "dirty": "Unsaved changes",
-    "dirtyOne": "1 field has unsaved changes",
-    "dirtyMany": "{{count}} fields have unsaved changes",
-    "saving": "Saving...",
-    "saved": "All changes saved",
-    "savedAt": "Saved {{time}}",
-    "error": "Save failed",
-    "errorWithMessage": "Save failed: {{message}}",
-    "unknown": "Save state unknown",
-    "debugChangedFields": "Changed fields: {{fields}}",
-    "timeAgo": {
-      "seconds": "{{count}} seconds ago",
-      "minutes": "{{count}} minutes ago",  
-      "hours": "{{count}} hours ago"
-    }
+      "required": "This field is required"
+    },
+    "viewThreat": "View Threat"
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
@@ -209,8 +195,7 @@
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
-      "serverConnectionError": "Server Connection Error",
-      "webSocketConnected": "Web Socket Connected"
+      "serverConnectionError": "Server Connection Error"
     }
   },
   "privacy": {
@@ -238,15 +223,13 @@
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
-    "editThreat": "Edit Threat",
     "notAssociatedWithCell": "Not Associated With a Cell",
     "notAssociatedWithDiagram": "Not Associated With a Diagram",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
     "threatId": "Threat ID",
     "threatName": "Threat Name",
-    "threatType": "Threat Type",
-    "viewThreat": "View Threat"
+    "threatType": "Threat Type"
   },
   "threatModels": {
     "addPermission": "Add Permission",
@@ -256,7 +239,6 @@
     "createNewDiagram": "Create New Diagram",
     "createNewDocument": "Create New Document",
     "createNewSourceCode": "Create New Source Code",
-    "createNewThreat": "Create New Threat",
     "createdBy": "Created By:",
     "dashboard": "Dashboard",
     "deleteConfirm": "Delete Threat Model",
@@ -280,18 +262,9 @@
     "downloadTooltip": "Download to Desktop",
     "editDocument": "Edit Document",
     "editSourceCode": "Edit Source Code",
-    "editThreat": "Edit Threat",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "metadataDialog": {
-      "objectTypes": {
-        "Cell": "Cell",
-        "Diagram": "Diagram",
-        "Document": "Document",
-        "SourceCode": "Source Code",
-        "Threat": "Threat",
-        "ThreatModel": "Threat Model"
-      },
       "title": "Manage Metadata"
     },
     "metadataTooltip": "Manage Metadata",
@@ -349,17 +322,13 @@
       "deleteThreat": "Delete Threat",
       "editDocument": "Edit Document",
       "editSourceCode": "Edit Source Code Repository",
-      "editThreat": "Edit Threat",
       "loadFromDesktop": "Load From Desktop",
-      "openDiagram": "Open Diagram",
-      "renameDiagram": "Rename Diagram",
-      "viewThreat": "View Threat"
+      "renameDiagram": "Rename Diagram"
     },
     "validation": {
       "maxLength": "Maximum length is {{max}} characters",
       "required": "This field is required"
     },
-    "viewThreat": "View Threat",
     "yourThreatModels": "Your Threat Models"
   },
   "tos": {

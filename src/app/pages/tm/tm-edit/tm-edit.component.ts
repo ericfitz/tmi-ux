@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
@@ -14,7 +14,6 @@ import { environment } from '../../../../environments/environment';
 import { MockDataService } from '../../../mocks/mock-data.service';
 
 import { MaterialModule } from '../../../shared/material/material.module';
-import { SharedModule } from '../../../shared/shared.module';
 import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
 import {
   DocumentEditorDialogComponent,
@@ -84,7 +83,7 @@ interface SourceCodeFormResult {
   standalone: true,
   imports: [
     CommonModule,
-    SharedModule,
+    FormsModule,
     MaterialModule,
     MatListModule,
     MatGridListModule,

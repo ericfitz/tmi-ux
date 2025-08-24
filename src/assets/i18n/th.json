@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
-    "changeRole": "เปลี่ยนบทบาท",
     "clearPresenter": "ล้างผู้นำเสนอ",
     "collaboratorsHeader": "ผู้ร่วมงาน",
     "copyLink": "คัดลอกลิงก์",
@@ -33,15 +32,11 @@
     "endCollaboration": "สิ้นสุดการทำงานร่วมกัน",
     "joinSession": "เข้าร่วมเซสชัน",
     "leaveSession": "ออกจากเซสชัน",
-    "makeOwner": "ทำให้เป็นเจ้าของ",
     "makePresenter": "ทำให้เป็นผู้นำเสนอ",
-    "makeReader": "ทำให้เป็นผู้อ่าน",
-    "makeWriter": "ทำให้เป็นผู้เขียน",
     "manageCollaboration": "จัดการการทำงานร่วมกัน",
     "presenterHeader": "การควบคุมผู้นำเสนอ",
     "presenterRequests": "คำขอเป็นผู้นำเสนอ",
     "removeFromSession": "ลบออกจากเซสชัน",
-    "removeUser": "ลบผู้ใช้",
     "requestPresenter": "ขอเป็นผู้นำเสนอ",
     "roles": {
       "owner": "เจ้าของ",
@@ -73,6 +68,7 @@
     "description": "คำอธิบาย",
     "diagramId": "รหัสแผนภาพ",
     "edit": "แก้ไข",
+    "editThreat": "แก้ไขภัยคุกคาม",
     "issueUrl": "URL ปัญหา",
     "lastModified": "แก้ไขล่าสุด",
     "lastModifiedDate": "แก้ไขล่าสุด: {{date}}",
@@ -85,6 +81,13 @@
     "noMetadata": "ไม่มีข้อมูลเมตา",
     "noThreats": "ไม่มีภัยคุกคาม",
     "objectTypes": {
+      "Cell": "เซลล์",
+      "Diagram": "แผนภาพ",
+      "Document": "เอกสาร",
+      "SourceCode": "ซอร์สโค้ด",
+      "Threat": "ภัยคุกคาม",
+      "ThreatModel": "แบบจำลองภัยคุกคาม",
+      "cell": "เซลล์",
       "diagram": "แผนภาพ",
       "document": "เอกสาร",
       "sourceCode": "โค้ดต้นฉบับ",
@@ -107,9 +110,11 @@
     "status": "สถานะ",
     "threats": "ภัยคุกคาม",
     "validation": {
+      "invalidUrl": "กรุณาใส่ URL ที่ถูกต้อง",
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
       "required": "ฟิลด์นี้จำเป็น"
-    }
+    },
+    "viewThreat": "ดูภัยคุกคาม"
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
@@ -190,8 +195,7 @@
     "serverStatus": {
       "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
       "serverConnected": "เซิร์ฟเวอร์เชื่อมต่อแล้ว",
-      "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์",
-      "webSocketConnected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว"
+      "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์"
     }
   },
   "privacy": {
@@ -219,15 +223,13 @@
   },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
-    "editThreat": "แก้ไขภัยคุกคาม",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
     "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ",
     "threatDescription": "คำอธิบายภัยคุกคาม",
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
     "threatId": "รหัสภัยคุกคาม",
     "threatName": "ชื่อภัยคุกคาม",
-    "threatType": "ประเภทภัยคุกคาม",
-    "viewThreat": "ดูภัยคุกคาม"
+    "threatType": "ประเภทภัยคุกคาม"
   },
   "threatModels": {
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
@@ -237,7 +239,6 @@
     "createNewDiagram": "สร้างแผนภาพใหม่",
     "createNewDocument": "สร้างเอกสารใหม่",
     "createNewSourceCode": "สร้างซอร์สโค้ดใหม่",
-    "createNewThreat": "สร้างภัยคุกคามใหม่",
     "createdBy": "สร้างโดย:",
     "dashboard": "แดชบอร์ด",
     "deleteConfirm": "ลบแบบจำลองภัยคุกคาม",
@@ -261,18 +262,9 @@
     "downloadTooltip": "ดาวน์โหลดไปยังเดสก์ทอป",
     "editDocument": "แก้ไขเอกสาร",
     "editSourceCode": "แก้ไขซอร์สโค้ด",
-    "editThreat": "แก้ไขภัยคุกคาม",
     "frameworkDisabledHint": "ไม่สามารถเปลี่ยนเฟรมเวิร์กได้เมื่อมีภัยคุกคามอยู่",
     "idLabel": "รหัส:",
     "metadataDialog": {
-      "objectTypes": {
-        "Cell": "เซลล์",
-        "Diagram": "แผนภาพ",
-        "Document": "เอกสาร",
-        "SourceCode": "ซอร์สโค้ด",
-        "Threat": "ภัยคุกคาม",
-        "ThreatModel": "แบบจำลองภัยคุกคาม"
-      },
       "title": "จัดการข้อมูลเมตา"
     },
     "metadataTooltip": "จัดการข้อมูลเมตา",
@@ -330,17 +322,13 @@
       "deleteThreat": "ลบภัยคุกคาม",
       "editDocument": "แก้ไขเอกสาร",
       "editSourceCode": "แก้ไขที่เก็บซอร์สโค้ด",
-      "editThreat": "แก้ไขภัยคุกคาม",
       "loadFromDesktop": "โหลดจากเดสก์ทอป",
-      "openDiagram": "เปิดแผนภาพ",
-      "renameDiagram": "เปลี่ยนชื่อแผนภาพ",
-      "viewThreat": "ดูภัยคุกคาม"
+      "renameDiagram": "เปลี่ยนชื่อแผนภาพ"
     },
     "validation": {
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
       "required": "ช่องนี้จำเป็น"
     },
-    "viewThreat": "ดูภัยคุกคาม",
     "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
   },
   "tos": {

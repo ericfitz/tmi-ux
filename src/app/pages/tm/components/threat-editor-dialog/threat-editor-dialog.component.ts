@@ -424,9 +424,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         };
       }
     } else if (this.data.mode === 'edit') {
-      this.dialogTitle = 'threatEditor.editThreat';
+      this.dialogTitle = 'common.editThreat';
     } else {
-      this.dialogTitle = 'threatEditor.viewThreat';
+      this.dialogTitle = 'common.viewThreat';
     }
 
     // Initialize form with empty values for text fields and default values for other fields
