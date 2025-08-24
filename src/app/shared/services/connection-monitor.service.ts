@@ -185,7 +185,7 @@ export class ConnectionMonitorService {
     
     return this.http.get(pingUrl, { 
       // Don't use auth interceptor for health checks
-      headers: { 'Skip-Auth': 'true' }
+      headers: { 'skip-auth': 'true' }
     }).pipe(
       tap(() => {
         // Server is reachable
