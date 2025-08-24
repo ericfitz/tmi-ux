@@ -47,7 +47,7 @@ console.log(providers);
 //     "id": "google",
 //     "name": "Google",
 //     "icon": "fa-brands fa-google",
-//     "auth_url": "http://localhost:8080/oauth2/authorize/google",
+//     "auth_url": "http://localhost:8080/oauth2/authorize?idp=google",
 //     "redirect_uri": "http://localhost:8080/oauth2/callback",
 //     "client_id": "675196260523-..."
 //   }
@@ -103,7 +103,7 @@ const { providers } = await response.json();
       "id": "google",
       "name": "Google",
       "icon": "fa-brands fa-google",
-      "auth_url": "http://localhost:8080/oauth2/authorize/google",
+      "auth_url": "http://localhost:8080/oauth2/authorize?idp=google",
       "redirect_uri": "http://localhost:8080/oauth2/callback",
       "client_id": "675196260523-e8ppeu62pv222jhnpebe929b2tgl2jm0.apps.googleusercontent.com"
     }
@@ -620,7 +620,7 @@ Solution: Ensure your client is redirecting to TMI's auth endpoints,
 not directly to OAuth providers.
 
 ✗ Wrong: https://accounts.google.com/o/oauth2/auth
-✓ Correct: http://localhost:8080/oauth2/authorize/google
+✓ Correct: http://localhost:8080/oauth2/authorize?idp=google
 ```
 
 **Issue: "Failed to exchange authorization code"**
@@ -657,7 +657,7 @@ Solution: Check:
 1. Test provider is enabled in development/test builds only
 2. login_hint parameter format: 3-20 characters, alphanumeric + hyphens
 3. login_hint is properly URL encoded in the request
-4. Using correct endpoint: /oauth2/authorize/test?login_hint=alice
+4. Using correct endpoint: /oauth2/authorize?idp=test&login_hint=alice
 
 Examples:
 ✓ Correct: login_hint=alice

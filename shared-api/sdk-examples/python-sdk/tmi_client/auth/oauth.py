@@ -58,9 +58,9 @@ class OAuthHandler:
         if login_hint and provider == "test":
             params["login_hint"] = login_hint
 
-        auth_url = f"{self.client.base_url}/oauth2/authorize/{provider}"
-        if params:
-            auth_url += "?" + urlencode(params)
+        # Add provider as idp query parameter
+        params["idp"] = provider
+        auth_url = f"{self.client.base_url}/oauth2/authorize?" + urlencode(params)
 
         if open_browser:
             webbrowser.open(auth_url)
@@ -93,7 +93,7 @@ class OAuthHandler:
             data["state"] = state
 
         response = requests.post(
-            f"{self.client.base_url}/oauth2/token/{provider}", json=data
+            f"{self.client.base_url}/oauth2/token?idp={provider}", json=data
         )
         response.raise_for_status()
 
@@ -179,7 +179,7 @@ class OAuthHandler:
         data = {"username": username, "password": password}
 
         response = requests.post(
-            f"{self.client.base_url}/oauth2/token/{provider}", json=data
+            f"{self.client.base_url}/oauth2/token?idp={provider}", json=data
         )
         response.raise_for_status()
 

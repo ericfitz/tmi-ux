@@ -100,7 +100,7 @@ The OAuth callback stub (`scripts/oauth-client-callback-stub.py`) is a developme
 **Also Supports: Authorization Code Flow**
 
 - Server sends authorization code: `code` and `state`
-- Client must exchange code for tokens via `/oauth2/token/` endpoint
+- Client must exchange code for tokens via `/oauth2/token` endpoint
 - Standard OAuth2 security model
 
 #### Features
@@ -153,10 +153,10 @@ curl "http://localhost:8079/?code=exit"
 make oauth-stub-start
 
 # 2. Initiate OAuth flow (TMI uses Implicit Flow)
-curl "http://localhost:8080/oauth2/authorize/test?client_callback=http://localhost:8079/"
+curl "http://localhost:8080/oauth2/authorize?idp=test&client_callback=http://localhost:8079/"
 
 # 2a. OR with login_hint for predictable test users (test provider only)
-curl "http://localhost:8080/oauth2/authorize/test?client_callback=http://localhost:8079/&login_hint=alice"
+curl "http://localhost:8080/oauth2/authorize?idp=test&client_callback=http://localhost:8079/&login_hint=alice"
 
 # 3. Fetch the captured credentials with flow detection
 curl http://localhost:8079/latest | jq '.'
@@ -174,16 +174,16 @@ The test OAuth provider supports login_hints for automation-friendly testing wit
 
 ```bash
 # Create specific test user 'alice@test.tmi'
-curl "http://localhost:8080/oauth2/authorize/test?login_hint=alice"
+curl "http://localhost:8080/oauth2/authorize?idp=test&login_hint=alice"
 
 # Create user 'qa-automation@test.tmi' for automated testing
-curl "http://localhost:8080/oauth2/authorize/test?login_hint=qa-automation"
+curl "http://localhost:8080/oauth2/authorize?idp=test&login_hint=qa-automation"
 
 # login_hint with OAuth callback stub for client testing
-curl "http://localhost:8080/oauth2/authorize/test?login_hint=alice&client_callback=http://localhost:8079/"
+curl "http://localhost:8080/oauth2/authorize?idp=test&login_hint=alice&client_callback=http://localhost:8079/"
 
 # Without login_hint (backwards compatible) - creates random 'testuser-12345678@test.tmi'
-curl "http://localhost:8080/oauth2/authorize/test"
+curl "http://localhost:8080/oauth2/authorize?idp=test"
 ```
 
 **login_hint Specifications:**
@@ -294,7 +294,7 @@ class OAuthTestingHelper {
 
   async performOAuthFlow(tmiServerUrl = "http://localhost:8080") {
     // Step 1: Initiate OAuth flow with callback stub
-    const authUrl = `${tmiServerUrl}/oauth2/authorize/test?client_callback=${this.callbackStubUrl}/`;
+    const authUrl = `${tmiServerUrl}/oauth2/authorize?idp=test&client_callback=${this.callbackStubUrl}/`;
 
     // In browser environment, redirect to auth URL
     window.location.href = authUrl;
@@ -340,7 +340,7 @@ class OAuthTestingHelper {
     redirectUri,
     serverUrl = "http://localhost:8080"
   ) {
-    const response = await fetch(`${serverUrl}/oauth2/token/test`, {
+    const response = await fetch(`${serverUrl}/oauth2/token?idp=test`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -390,7 +390,7 @@ steps:
   - id: initiate_oauth
     name: Start OAuth flow with callback stub
     http:
-      url: /oauth2/authorize/test?client_callback=http://localhost:8079/
+      url: /oauth2/authorize?idp=test&client_callback=http://localhost:8079/
       method: GET
       followRedirects: true
 
@@ -413,7 +413,7 @@ steps:
   - id: exchange_tokens
     name: Exchange real code for JWT tokens
     http:
-      url: /oauth2/token/test
+      url: /oauth2/token?idp=test
       method: POST
       json:
         code: "{{ auth_code }}"

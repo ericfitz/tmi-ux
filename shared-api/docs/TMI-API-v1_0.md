@@ -19,9 +19,9 @@ This document describes a RESTful API with WebSocket support for threat modeling
 ### Authentication
 
 - `**GET /oauth2/providers**`: Lists available OAuth providers.
-- `**GET /oauth2/authorize/{provider}**`: Redirects to OAuth provider for login.
+- `**GET /oauth2/authorize?idp={provider}**`: Redirects to OAuth provider for login.
 - `**GET /oauth2/callback**`: Handles OAuth callback from provider.
-- `**POST /oauth2/token/{provider}**`: Exchanges authorization code for JWT tokens.
+- `**POST /oauth2/token?idp={provider}**`: Exchanges authorization code for JWT tokens.
 - `**POST /oauth2/refresh**`: Refreshes access token using refresh token.
 - `**POST /oauth2/logout**`: Invalidates JWT and ends session.
 - `**GET /oauth2/me**`: Returns current authenticated user information.
@@ -332,7 +332,7 @@ This document describes a RESTful API with WebSocket support for threat modeling
 
 ## Implementation Notes
 
-- **Security**: All endpoints except `/`, `/api/server-info`, `/oauth2/providers`, `/oauth2/authorize/{provider}`, `/oauth2/callback`, `/oauth2/token/{provider}`, and static files require JWT.
+- **Security**: All endpoints except `/`, `/api/server-info`, `/oauth2/providers`, `/oauth2/authorize`, `/oauth2/callback`, `/oauth2/token`, and static files require JWT.
 - **Validation**: Server enforces role-based access, UUID uniqueness, email format, and referential integrity.
 - **Scalability**: Stateless JWTs and WebSocket sessions support horizontal scaling.
 - **Future Enhancements**:
@@ -390,7 +390,7 @@ GET /oauth2/providers
     {
       "id": "test",
       "name": "Test Provider",
-      "login_url": "/oauth2/authorize/test"
+      "login_url": "/oauth2/authorize?idp=test"
     }
   ]
 }
@@ -399,12 +399,12 @@ GET /oauth2/providers
 #### Initiate Login
 
 ```http
-GET /oauth2/authorize/{provider}?redirect_uri=https://client.example.com/callback
+GET /oauth2/authorize?idp={provider}&redirect_uri=https://client.example.com/callback
 ```
 
 **Parameters:**
 
-- `provider` (path): OAuth provider ID (e.g., "test", "google", "github")
+- `idp` (query): OAuth provider ID (e.g., "test", "google", "github")
 - `redirect_uri` (query, optional): Client callback URL for tokens
 - `state` (query, optional): CSRF protection parameter
 - **`login_hint` (query, optional)**: For test provider only - creates predictable test users
@@ -415,16 +415,16 @@ For automation-friendly testing, the test OAuth provider supports login_hints:
 
 ```http
 # Create specific test user 'alice@test.tmi'
-GET /oauth2/authorize/test?login_hint=alice
+GET /oauth2/authorize?idp=test&login_hint=alice
 
 # Create user 'qa-automation@test.tmi' for automated testing
-GET /oauth2/authorize/test?login_hint=qa-automation
+GET /oauth2/authorize?idp=test&login_hint=qa-automation
 
 # Combined with client callback
-GET /oauth2/authorize/test?login_hint=alice&client_callback=https://client.example.com/callback
+GET /oauth2/authorize?idp=test&login_hint=alice&client_callback=https://client.example.com/callback
 
 # Without login_hint - creates random 'testuser-12345678@test.tmi' (backwards compatible)
-GET /oauth2/authorize/test
+GET /oauth2/authorize?idp=test
 ```
 
 **login_hint Specifications:**
@@ -454,7 +454,7 @@ GET /oauth2/callback?code=abc123&state=xyz789
 #### Exchange Code for Token
 
 ```http
-POST /oauth2/token/test
+POST /oauth2/token?idp=test
 Content-Type: application/json
 
 {

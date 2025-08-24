@@ -55,7 +55,7 @@ stepci/
 
 #### Success Cases (`oauth-flow.yml`, `token-management.yml`, `user-operations.yml`):
 
-- **OAuth Flow**: `GET /oauth2/providers` → `GET /oauth2/authorize/{provider}` → `GET /oauth2/callback` → `POST /oauth2/token/{provider}`
+- **OAuth Flow**: `GET /oauth2/providers` → `GET /oauth2/authorize?idp={provider}` → `GET /oauth2/callback` → `POST /oauth2/token?idp={provider}`
 - **Token Management**: `POST /oauth2/refresh` with valid refresh tokens
 - **User Operations**: `GET /oauth2/me`, `POST /oauth2/logout` with valid JWT
 - **State Parameter**: OAuth state parameter validation and security
