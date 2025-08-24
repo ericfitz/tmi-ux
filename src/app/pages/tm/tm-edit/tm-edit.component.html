@@ -45,11 +45,6 @@
       <mat-card-header>
         <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
         <div class="header-actions">
-          <!-- Save state indicator -->
-          <app-save-indicator 
-            [formId]="formId"
-            class="save-indicator">
-          </app-save-indicator>
           <button
             mat-icon-button
             color="primary"
@@ -68,6 +63,23 @@
           >
             <mat-icon>lock</mat-icon>
           </button>
+          <button
+            mat-icon-button
+            color="primary"
+            type="button"
+            [disabled]="!saveState?.hasUnsavedChanges || saveState?.status === 'saving'"
+            (click)="saveAllFields()"
+            [matTooltip]="'common.save' | transloco"
+            [attr.aria-label]="'common.save' | transloco"
+            tabindex="10">
+            <mat-icon *ngIf="saveState?.status === 'saving'">hourglass_empty</mat-icon>
+            <mat-icon *ngIf="saveState?.status !== 'saving'">save</mat-icon>
+          </button>
+          <!-- Save state indicator -->
+          <app-save-indicator 
+            [formId]="formId"
+            class="save-indicator">
+          </app-save-indicator>
         </div>
       </mat-card-header>
       <mat-card-content>
@@ -114,20 +126,6 @@
         </div>
 
         <form [formGroup]="threatModelForm" class="threat-model-form">
-          <!-- Explicit Save All button -->
-          <div class="save-actions">
-            <button 
-              mat-raised-button 
-              color="primary" 
-              type="button"
-              [disabled]="!saveState?.hasUnsavedChanges || saveState?.status === 'saving'"
-              (click)="saveAllFields()"
-              tabindex="10">
-              <mat-icon *ngIf="saveState?.status === 'saving'">hourglass_empty</mat-icon>
-              <mat-icon *ngIf="saveState?.status !== 'saving'">save</mat-icon>
-              <span [transloco]="'common.save'">Save All Changes</span>
-            </button>
-          </div>
           <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'threatModels.name'">Name</mat-label>
             <input 

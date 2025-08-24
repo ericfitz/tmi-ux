@@ -14,7 +14,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of, Subscription } from 'rxjs';
 import { map, switchMap, takeUntil, catchError, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
@@ -71,6 +71,8 @@ export interface SessionAnnouncement {
 export class CollaborationSessionService implements OnDestroy {
   private readonly _sessions$ = new BehaviorSubject<CollaborationSession[]>([]);
   private readonly _destroy$ = new Subject<void>();
+  private _subscriberCount = 0;
+  private _sessionPollingSubscription: Subscription | null = null;
 
   constructor(
     private http: HttpClient,
@@ -109,6 +111,42 @@ export class CollaborationSessionService implements OnDestroy {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
+    
+    if (this._sessionPollingSubscription) {
+      this._sessionPollingSubscription.unsubscribe();
+    }
+  }
+
+  /**
+   * Subscribe to collaboration session polling
+   * This will start session polling if no other subscribers exist
+   */
+  subscribeToSessionPolling(): void {
+    this._subscriberCount++;
+    this.logger.debugComponent('CollaborationSession', `Session polling subscriber added (count: ${this._subscriberCount})`);
+    
+    if (this._subscriberCount === 1) {
+      this.logger.info('Starting collaboration session polling - first subscriber added');
+      this.startSessionPolling();
+    }
+  }
+
+  /**
+   * Unsubscribe from collaboration session polling
+   * This will stop session polling if no subscribers remain
+   */
+  unsubscribeFromSessionPolling(): void {
+    if (this._subscriberCount > 0) {
+      this._subscriberCount--;
+      this.logger.debugComponent('CollaborationSession', `Session polling subscriber removed (count: ${this._subscriberCount})`);
+      
+      if (this._subscriberCount === 0) {
+        this.logger.info('Stopping collaboration session polling - no subscribers remain');
+        this.stopSessionPolling();
+        // Clear sessions when no one is subscribing
+        this._sessions$.next([]);
+      }
+    }
   }
 
   /**
@@ -131,8 +169,20 @@ export class CollaborationSessionService implements OnDestroy {
   private initializeService(): void {
     this.logger.info('CollaborationSessionService initialized');
 
+    // Listen for WebSocket session announcements (always active for real-time updates)
+    this.setupWebSocketListeners();
+  }
+
+  /**
+   * Start polling for collaboration sessions
+   */
+  private startSessionPolling(): void {
+    if (this._sessionPollingSubscription) {
+      return; // Already polling
+    }
+
     // Set up reactive session loading based on mock data toggle and server connection
-    combineLatest([
+    this._sessionPollingSubscription = combineLatest([
       this.mockDataService.useMockData$,
       this.serverConnectionService.connectionStatus$,
     ])
@@ -148,9 +198,16 @@ export class CollaborationSessionService implements OnDestroy {
           this.logger.error('Reactive session loading failed', error);
         }
       });
+  }
 
-    // Listen for WebSocket session announcements
-    this.setupWebSocketListeners();
+  /**
+   * Stop polling for collaboration sessions
+   */
+  private stopSessionPolling(): void {
+    if (this._sessionPollingSubscription) {
+      this._sessionPollingSubscription.unsubscribe();
+      this._sessionPollingSubscription = null;
+    }
   }
 
   /**

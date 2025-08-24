@@ -82,7 +82,6 @@ export class ServerConnectionService implements OnDestroy {
   private _isMonitoring = false;
   private _baseRetryDelay = 1000;
   private _maxRetryInterval = 300000; // 5 minutes
-  private _subscriberCount = 0;
 
   constructor(
     private http: HttpClient,
@@ -127,35 +126,6 @@ export class ServerConnectionService implements OnDestroy {
     this.stopMonitoring();
   }
 
-  /**
-   * Subscribe to server connection monitoring
-   * This will start health checks if no other subscribers exist
-   */
-  subscribe(): void {
-    this._subscriberCount++;
-    this.logger.debugComponent('ServerConnection', `Subscriber added (count: ${this._subscriberCount})`);
-    
-    if (this._subscriberCount === 1 && this.isServerConfigured() && !this.isOnlyLocalProviderEnabled()) {
-      this.logger.info('Starting server connection monitoring - first subscriber added');
-      this.startHealthChecks();
-    }
-  }
-
-  /**
-   * Unsubscribe from server connection monitoring
-   * This will stop health checks if no subscribers remain
-   */
-  unsubscribe(): void {
-    if (this._subscriberCount > 0) {
-      this._subscriberCount--;
-      this.logger.debugComponent('ServerConnection', `Subscriber removed (count: ${this._subscriberCount})`);
-      
-      if (this._subscriberCount === 0) {
-        this.logger.info('Stopping server connection monitoring - no subscribers remain');
-        this.stopHealthChecks();
-      }
-    }
-  }
 
   /**
    * Start monitoring connection status (for save operations)
@@ -283,7 +253,10 @@ export class ServerConnectionService implements OnDestroy {
       return;
     }
 
-    this.logger.info(`Server configured at ${environment.apiUrl} - connection monitoring available`);
+    this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
+
+    // Start periodic health checks
+    this.startHealthChecks();
   }
 
   /**
@@ -310,23 +283,8 @@ export class ServerConnectionService implements OnDestroy {
    * Start periodic health check monitoring with exponential backoff
    */
   private startHealthChecks(): void {
-    // Only start if not already running
-    if (this._healthCheckSubscription) {
-      return;
-    }
-    
     // Perform initial health check
     this.scheduleNextHealthCheck(0); // Start immediately
-  }
-
-  /**
-   * Stop periodic health check monitoring
-   */
-  private stopHealthChecks(): void {
-    if (this._healthCheckSubscription) {
-      this._healthCheckSubscription.unsubscribe();
-      this._healthCheckSubscription = null;
-    }
   }
 
   /**

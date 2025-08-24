@@ -17,6 +17,7 @@
 
 .header-actions {
   display: flex;
+  align-items: center;
   gap: 12px;
 
   // Ensure Material Symbols Outlined icons are properly centered
@@ -25,6 +26,13 @@
     align-items: center;
     justify-content: center;
     line-height: 1;
+  }
+
+  // Center align the save indicator with the buttons
+  .save-indicator {
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
   }
 }
 

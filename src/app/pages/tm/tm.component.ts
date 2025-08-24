@@ -39,7 +39,6 @@ import { ThreatModelService } from './services/threat-model.service';
 import { ThreatModelValidatorService } from './validation/threat-model-validator.service';
 import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
 import { CollaborationSessionService, CollaborationSession } from '../../core/services/collaboration-session.service';
-import { ServerConnectionService } from '../../core/services/server-connection.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -75,7 +74,6 @@ export class TmComponent implements OnInit, OnDestroy {
     private languageService: LanguageService,
     private collaborationService: DfdCollaborationService,
     private collaborationSessionService: CollaborationSessionService,
-    private serverConnectionService: ServerConnectionService,
     private logger: LoggerService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -85,8 +83,8 @@ export class TmComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
     
-    // Subscribe to server connection monitoring since we need collaboration session data on dashboard
-    this.serverConnectionService.subscribe();
+    // Subscribe to collaboration session polling since we need session data on dashboard
+    this.collaborationSessionService.subscribeToSessionPolling();
     
     // Initialize observable streams
     this.collaborationSessions$ = this.collaborationSessionService.sessions$;
@@ -124,8 +122,8 @@ export class TmComponent implements OnInit, OnDestroy {
       this.languageSubscription.unsubscribe();
     }
     
-    // Unsubscribe from server connection monitoring when leaving dashboard
-    this.serverConnectionService.unsubscribe();
+    // Unsubscribe from collaboration session polling when leaving dashboard
+    this.collaborationSessionService.unsubscribeFromSessionPolling();
   }
 
   createThreatModel(): void {
