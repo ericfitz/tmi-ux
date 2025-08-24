@@ -179,7 +179,7 @@ export class ConnectionMonitorService {
       });
     }
 
-    const pingUrl = `${environment.apiUrl}/health`;
+    const pingUrl = `${environment.apiUrl}/`;
     
     this.logger.debugComponent('ConnectionMonitor', 'Pinging server for connectivity check', { url: pingUrl });
     
