@@ -1291,6 +1291,33 @@
             "type": "string",
             "format": "uri",
             "description": "URI to documentation about the error"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional context-specific error information",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Machine-readable error code for programmatic handling",
+                "example": "COLLABORATION_SESSION_NOT_FOUND"
+              },
+              "context": {
+                "type": "object",
+                "description": "Contextual information about the error",
+                "additionalProperties": true,
+                "example": {
+                  "diagram_id": "550e8400-e29b-41d4-a716-446655440000",
+                  "requested_operation": "end_session"
+                }
+              },
+              "suggestion": {
+                "type": "string",
+                "description": "Human-readable suggestion for resolving the error",
+                "example": "Start a collaboration session first using POST /diagrams/{id}/collaborate"
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
           }
         },
         "required": [
@@ -2424,35 +2451,60 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": ["code", "token", "id_token", "code token", "code id_token", "token id_token", "code token id_token"]
+                      "example": [
+                        "code",
+                        "token",
+                        "id_token",
+                        "code token",
+                        "code id_token",
+                        "token id_token",
+                        "code token id_token"
+                      ]
                     },
                     "subject_types_supported": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "example": ["public"]
+                      "example": [
+                        "public"
+                      ]
                     },
                     "id_token_signing_alg_values_supported": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "example": ["HS256"]
+                      "example": [
+                        "HS256"
+                      ]
                     },
                     "scopes_supported": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "example": ["openid", "email", "profile"]
+                      "example": [
+                        "openid",
+                        "email",
+                        "profile"
+                      ]
                     },
                     "claims_supported": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "example": ["sub", "email", "email_verified", "name", "given_name", "family_name", "picture", "locale"]
+                      "example": [
+                        "sub",
+                        "email",
+                        "email_verified",
+                        "name",
+                        "given_name",
+                        "family_name",
+                        "picture",
+                        "locale"
+                      ]
                     },
                     "introspection_endpoint": {
                       "type": "string",
@@ -2460,7 +2512,15 @@
                       "example": "http://localhost:8080/oauth2/introspect"
                     }
                   },
-                  "required": ["issuer", "authorization_endpoint", "token_endpoint", "jwks_uri", "response_types_supported", "subject_types_supported", "id_token_signing_alg_values_supported"]
+                  "required": [
+                    "issuer",
+                    "authorization_endpoint",
+                    "token_endpoint",
+                    "jwks_uri",
+                    "response_types_supported",
+                    "subject_types_supported",
+                    "id_token_signing_alg_values_supported"
+                  ]
                 }
               }
             }
@@ -2509,24 +2569,40 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": ["code", "token", "id_token"]
+                      "example": [
+                        "code",
+                        "token",
+                        "id_token"
+                      ]
                     },
                     "grant_types_supported": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "example": ["authorization_code", "implicit", "refresh_token"]
+                      "example": [
+                        "authorization_code",
+                        "implicit",
+                        "refresh_token"
+                      ]
                     },
                     "token_endpoint_auth_methods_supported": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "example": ["client_secret_post", "none"]
+                      "example": [
+                        "client_secret_post",
+                        "none"
+                      ]
                     }
                   },
-                  "required": ["issuer", "authorization_endpoint", "token_endpoint", "response_types_supported"]
+                  "required": [
+                    "issuer",
+                    "authorization_endpoint",
+                    "token_endpoint",
+                    "response_types_supported"
+                  ]
                 }
               }
             }
@@ -2572,11 +2648,18 @@
                             "example": "tmi-signing-key"
                           }
                         },
-                        "required": ["kty", "use", "alg", "kid"]
+                        "required": [
+                          "kty",
+                          "use",
+                          "alg",
+                          "kid"
+                        ]
                       }
                     }
                   },
-                  "required": ["keys"]
+                  "required": [
+                    "keys"
+                  ]
                 }
               }
             }
@@ -2610,7 +2693,9 @@
                     "example": "access_token"
                   }
                 },
-                "required": ["token"]
+                "required": [
+                  "token"
+                ]
               }
             }
           }
@@ -2664,7 +2749,9 @@
                       "example": "http://localhost:8080"
                     }
                   },
-                  "required": ["active"]
+                  "required": [
+                    "active"
+                  ]
                 }
               }
             }
@@ -8559,7 +8646,6 @@
             "$ref": "#/components/responses/Error"
           },
           "404": {
-            "description": "No collaboration session exists for this diagram",
             "$ref": "#/components/responses/Error"
           },
           "500": {
