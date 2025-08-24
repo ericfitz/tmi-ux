@@ -355,6 +355,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
             issue_url: this.initialIssueUrlValue,
           });
 
+          // Update save state service with initial form values as original values
+          this.saveStateService.updateOriginalValues(this.formId, {
+            name: threatModel.name,
+            description: threatModel.description || '',
+            threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
+            issue_url: this.initialIssueUrlValue,
+          });
+
           // Update framework control disabled state based on threats
           this.updateFrameworkControlState();
 
@@ -404,6 +412,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           // Store the initial issue URL value for new models
           this.initialIssueUrlValue = this.threatModel.issue_url || '';
+
+          // Update save state service with initial form values as original values
+          this.saveStateService.updateOriginalValues(this.formId, {
+            name: this.threatModel.name,
+            description: this.threatModel.description || '',
+            threat_model_framework: this.threatModel.threat_model_framework,
+            issue_url: this.threatModel.issue_url || '',
+          });
 
           // Update framework control disabled state based on threats
           this.updateFrameworkControlState();
