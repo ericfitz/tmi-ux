@@ -1,14 +1,6 @@
 <div class="metadata-dialog">
   <h2 mat-dialog-title>
     {{ 'threatModels.metadataDialog.title' | transloco }}
-    <!-- Save state indicator -->
-    <app-save-indicator 
-      [formId]="formId"
-      [size]="16"
-      [tooltipPosition]="'above'"
-      [showDebugInfo]="false"
-      style="margin-left: 8px;">
-    </app-save-indicator>
   </h2>
   <div *ngIf="data.objectName" class="dialog-subtitle">
     {{ data.objectName }}

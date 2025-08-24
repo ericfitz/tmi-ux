@@ -67,19 +67,13 @@
             mat-icon-button
             color="primary"
             type="button"
-            [disabled]="!saveState?.hasUnsavedChanges || saveState?.status === 'saving'"
+            [disabled]="threatModelForm.pristine || threatModelForm.invalid"
             (click)="saveAllFields()"
             [matTooltip]="'common.save' | transloco"
             [attr.aria-label]="'common.save' | transloco"
             tabindex="10">
-            <mat-icon *ngIf="saveState?.status === 'saving'">hourglass_empty</mat-icon>
-            <mat-icon *ngIf="saveState?.status !== 'saving'">save</mat-icon>
+            <mat-icon>save</mat-icon>
           </button>
-          <!-- Save state indicator -->
-          <app-save-indicator 
-            [formId]="formId"
-            class="save-indicator">
-          </app-save-indicator>
         </div>
       </mat-card-header>
       <mat-card-content>
@@ -182,22 +176,34 @@
               </mat-error>
             </mat-form-field>
 
-            <!-- Standardized Issue URL field -->
-            <mat-form-field appearance="outline">
-              <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
-              <input
-                matInput
-                formControlName="issue_url"
-                type="url"
-                tabindex="4"
-                placeholder="https://example.com/issue/123"
-                (blur)="onFieldBlur('issue_url', $event)"
-              />
-              <mat-hint>Enter a URL to track this threat model in an external system</mat-hint>
-              <mat-error *ngIf="threatModelForm.get('issue_url')?.hasError('url')">
-                {{ 'common.validation.invalidUrl' | transloco }}
-              </mat-error>
-            </mat-form-field>
+            <!-- Issue URL field with hyperlink icon -->
+            <div class="issue-url-container">
+              <mat-form-field appearance="outline" class="issue-url-field">
+                <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
+                <input
+                  matInput
+                  formControlName="issue_url"
+                  type="url"
+                  tabindex="4"
+                  placeholder="https://example.com/issue/123"
+                />
+                <mat-hint>Enter a URL to track this threat model in an external system</mat-hint>
+                <mat-error *ngIf="threatModelForm.get('issue_url')?.hasError('url')">
+                  {{ 'common.validation.invalidUrl' | transloco }}
+                </mat-error>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                class="issue-url-icon-button"
+                [disabled]="!isValidUrl(threatModelForm.get('issue_url')?.value)"
+                (click)="openUrlInNewTab(threatModelForm.get('issue_url')?.value)"
+                [matTooltip]="isValidUrl(threatModelForm.get('issue_url')?.value) ? threatModelForm.get('issue_url')?.value : 'Enter a valid URL to open'"
+                matTooltipPosition="above"
+              >
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+              </button>
+            </div>
           </div>
         </form>
       </mat-card-content>
@@ -281,7 +287,10 @@
         </mat-card-header>
         <mat-card-content>
           <mat-list>
-            <mat-list-item *ngFor="let document of threatModel.documents" class="document-item">
+            <mat-list-item 
+              *ngFor="let document of threatModel.documents" 
+              class="document-item clickable"
+              (click)="editDocument(document, $event)">
               <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
               <div matListItemTitle class="document-content">
                 <span
@@ -313,14 +322,6 @@
                   [matTooltip]="'threatModels.metadataTooltip' | transloco"
                 >
                   <mat-icon>list</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="editDocument(document, $event)"
-                  [matTooltip]="'threatModels.tooltips.editDocument' | transloco"
-                >
-                  <mat-icon>edit</mat-icon>
                 </button>
                 <button
                   mat-icon-button

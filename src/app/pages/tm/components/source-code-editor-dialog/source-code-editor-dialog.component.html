@@ -4,10 +4,6 @@
       ? ('threatModels.createNewSourceCode' | transloco)
       : ('threatModels.editSourceCode' | transloco)
   }}
-  <app-save-indicator
-    [formId]="formId"
-    class="header-save-indicator"
-  ></app-save-indicator>
 </h2>
 <mat-dialog-content>
   <form [formGroup]="sourceCodeForm" class="dialog-form">
@@ -17,7 +13,6 @@
         <input
           matInput
           formControlName="name"
-          (blur)="onFieldBlur('name')"
           tabindex="1"
         />
         <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('required')">
@@ -35,7 +30,6 @@
           formControlName="description"
           rows="3"
           placeholder="{{ 'threatModels.sourceCodeDescriptionPlaceholder' | transloco }}"
-          (blur)="onFieldBlur('description')"
           tabindex="2"
         ></textarea>
         <mat-error *ngIf="sourceCodeForm.get('description')?.hasError('maxlength')">
@@ -47,7 +41,6 @@
         <mat-label>{{ 'threatModels.sourceCodeType' | transloco }}</mat-label>
         <mat-select
           formControlName="type"
-          (selectionChange)="onFieldBlur('type')"
           tabindex="3"
         >
           <mat-option value="git">Git</mat-option>
@@ -66,7 +59,6 @@
           matInput
           formControlName="url"
           type="url"
-          (blur)="onFieldBlur('url')"
           tabindex="4"
         />
         <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('required')">
@@ -84,7 +76,6 @@
           <mat-label>{{ 'threatModels.sourceCodeRefType' | transloco }}</mat-label>
           <mat-select
             formControlName="refType"
-            (selectionChange)="onFieldBlur('refType')"
             tabindex="5"
           >
             <mat-option value="branch">{{ 'threatModels.branch' | transloco }}</mat-option>
@@ -98,7 +89,6 @@
           <input
             matInput
             formControlName="refValue"
-            (blur)="onFieldBlur('refValue')"
             tabindex="6"
           />
           <mat-hint>{{ 'threatModels.sourceCodeRefValueHint' | transloco }}</mat-hint>
@@ -112,7 +102,6 @@
           <input
             matInput
             formControlName="subPath"
-            (blur)="onFieldBlur('subPath')"
             tabindex="7"
           />
           <mat-hint>{{ 'threatModels.sourceCodeSubPathHint' | transloco }}</mat-hint>

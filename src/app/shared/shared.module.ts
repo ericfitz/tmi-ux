@@ -19,10 +19,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { MaterialModule } from './material/material.module';
-import { SaveIndicatorComponent } from './components/save-indicator/save-indicator.component';
 
-// Import services to ensure they are provided
-import { SaveStateService } from './services/save-state.service';
+// Import services to ensure they are provided  
 import { NotificationService } from './services/notification.service';
 import { FormValidationService } from './services/form-validation.service';
 
@@ -32,20 +30,17 @@ import { FormValidationService } from './services/form-validation.service';
     FormsModule, 
     ReactiveFormsModule, 
     RouterModule, 
-    MaterialModule,
-    SaveIndicatorComponent // Standalone component
+    MaterialModule
   ],
   exports: [
     CommonModule, 
     FormsModule, 
     ReactiveFormsModule, 
     RouterModule, 
-    MaterialModule,
-    SaveIndicatorComponent // Export for use in other modules
+    MaterialModule
   ],
   providers: [
     // Explicitly provide services (though they use providedIn: 'root')
-    SaveStateService,
     NotificationService,
     FormValidationService
   ]

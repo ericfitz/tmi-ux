@@ -1,13 +1,5 @@
 <h2 mat-dialog-title>
   {{ dialogTitle | transloco }}
-  <!-- Save state indicator -->
-  <app-save-indicator 
-    [formId]="formId"
-    [size]="16"
-    [tooltipPosition]="'above'"
-    [showDebugInfo]="false"
-    style="margin-left: 8px;">
-  </app-save-indicator>
 </h2>
 <mat-dialog-content [dir]="currentDirection">
   <!-- Force translation update -->
@@ -51,7 +43,7 @@
           matInput 
           formControlName="name" 
           tabindex="1"
-          (blur)="onFieldBlur('name', $event)" />
+ />
         <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
@@ -70,7 +62,6 @@
           rows="3"
           tabindex="2"
           placeholder="{{ 'threatEditor.threatDescriptionPlaceholder' | transloco }}"
-          (blur)="onFieldBlur('description', $event)"
         ></textarea>
         <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
           {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
@@ -85,7 +76,7 @@
         <mat-select 
           formControlName="threat_type"
           tabindex="6"
-          (selectionChange)="onSelectionChange('threat_type', $event.value)">
+>
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
@@ -104,7 +95,7 @@
         <mat-select 
           formControlName="severity"
           tabindex="3"
-          (selectionChange)="onSelectionChange('severity', $event.value)">
+>
           <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
           <mat-option value="None">{{ 'common.severityNone' | transloco }}</mat-option>
           <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
@@ -155,7 +146,7 @@
               formControlName="issue_url" 
               type="url" 
               tabindex="7"
-              (blur)="onFieldBlur('issue_url', $event)" />
+ />
           </ng-template>
         </mat-form-field>
 

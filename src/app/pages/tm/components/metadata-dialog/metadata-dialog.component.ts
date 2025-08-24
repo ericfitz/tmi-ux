@@ -9,13 +9,6 @@ import { Subscription } from 'rxjs';
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { Metadata } from '../../models/threat-model.model';
 
-// Enhanced save behavior imports
-import { SaveStateService, SaveState } from '../../../../shared/services/save-state.service';
-import { ServerConnectionService, DetailedConnectionStatus } from '../../../../core/services/server-connection.service';
-import { NotificationService } from '../../../../shared/services/notification.service';
-import { FormValidationService } from '../../../../shared/services/form-validation.service';
-import { SaveIndicatorComponent } from '../../../../shared/components/save-indicator/save-indicator.component';
-
 export interface MetadataDialogData {
   metadata: Metadata[];
   isReadOnly?: boolean;
@@ -26,7 +19,7 @@ export interface MetadataDialogData {
 @Component({
   selector: 'app-metadata-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule, TranslocoModule, SaveIndicatorComponent],
+  imports: [CommonModule, MaterialModule, TranslocoModule],
   templateUrl: './metadata-dialog.component.html',
   styles: [
     `
@@ -255,56 +248,25 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
   @ViewChild('metadataSort') metadataSort!: MatSort;
 
-  // Enhanced save behavior properties
-  formId: string;
-  saveState: SaveState | undefined;
-  connectionStatus: DetailedConnectionStatus | undefined;
   private _subscriptions: Subscription = new Subscription();
-  private _originalMetadata: Metadata[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<MetadataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: MetadataDialogData,
-    // Enhanced save behavior services
-    private saveStateService: SaveStateService,
-    private serverConnectionService: ServerConnectionService,
-    private notificationService: NotificationService,
-    private formValidationService: FormValidationService,
-  ) {
-    // Create unique form ID for this dialog instance
-    this.formId = `metadata-dialog-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-  }
+  ) {}
+
 
   ngOnInit(): void {
     this.dataSource.data = [...this.data.metadata];
     this.displayedColumns = this.data.isReadOnly ? ['key', 'value'] : ['key', 'value', 'actions'];
-    
-    // Store original metadata for change detection
-    this._originalMetadata = JSON.parse(JSON.stringify(this.data.metadata)) as Metadata[];
-    
-    // Initialize save state
-    this._subscriptions.add(
-      this.saveStateService.initializeSaveState(this.formId, this._originalMetadata as unknown as Record<string, unknown>).subscribe(state => {
-        this.saveState = state;
-      })
-    );
-    
-    // Monitor connection status
-    this._subscriptions.add(
-      this.serverConnectionService.detailedConnectionStatus$.subscribe(status => {
-        this.connectionStatus = status;
-      })
-    );
   }
 
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
-    // Connection monitoring cleanup handled by service
-    this.saveStateService.destroySaveState(this.formId);
   }
 
   /**
-   * Updates the key of a metadata item with change detection and auto-save
+   * Updates the key of a metadata item
    * @param index The index of the metadata item to update
    * @param event The blur event containing the new key value
    */
@@ -313,22 +275,13 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
     const newKey = input.value.trim();
     
     if (index >= 0 && index < this.dataSource.data.length) {
-      const originalItem = this._originalMetadata[index];
       const currentItem = this.dataSource.data[index];
-      
-      // Only update if value actually changed
-      if (originalItem && currentItem.key !== newKey) {
-        currentItem.key = newKey;
-        
-        // Mark field as changed and trigger auto-save
-        this.saveStateService.markFieldChanged(this.formId, `metadata_${index}_key`, newKey);
-        this.performAutoSave(index, 'key', newKey);
-      }
+      currentItem.key = newKey;
     }
   }
 
   /**
-   * Updates the value of a metadata item with change detection and auto-save
+   * Updates the value of a metadata item
    * @param index The index of the metadata item to update
    * @param event The blur event containing the new value
    */
@@ -337,41 +290,9 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
     const newValue = input.value.trim();
     
     if (index >= 0 && index < this.dataSource.data.length) {
-      const originalItem = this._originalMetadata[index];
       const currentItem = this.dataSource.data[index];
-      
-      // Only update if value actually changed
-      if (originalItem && currentItem.value !== newValue) {
-        currentItem.value = newValue;
-        
-        // Mark field as changed and trigger auto-save
-        this.saveStateService.markFieldChanged(this.formId, `metadata_${index}_value`, newValue);
-        this.performAutoSave(index, 'value', newValue);
-      }
+      currentItem.value = newValue;
     }
-  }
-
-  /**
-   * Performs auto-save for individual metadata field changes
-   */
-  private performAutoSave(index: number, field: 'key' | 'value', newValue: string): void {
-    // Validate the field before saving
-    if (!newValue) {
-      this.notificationService.showValidationError('Metadata', `${field} cannot be empty`);
-      return;
-    }
-    
-    this.saveStateService.updateSaveStatus(this.formId, 'saving');
-    
-    // In a real implementation, this would make an API call to save the metadata
-    // For now, simulate the save operation
-    setTimeout(() => {
-      this.saveStateService.updateOriginalValues(this.formId, this.dataSource.data as unknown as Record<string, unknown>);
-      this.saveStateService.updateSaveStatus(this.formId, 'saved');
-      
-      // Update original metadata to reflect saved state
-      this._originalMetadata = JSON.parse(JSON.stringify(this.dataSource.data)) as Metadata[];
-    }, 300);
   }
 
   /**

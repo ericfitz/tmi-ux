@@ -27,13 +27,6 @@
     justify-content: center;
     line-height: 1;
   }
-
-  // Center align the save indicator with the buttons
-  .save-indicator {
-    display: flex;
-    align-items: center;
-    margin-top: 2px;
-  }
 }
 
 .content-container {
@@ -48,19 +41,32 @@
 
 // Cards are now displayed in a single column via the content-container flex layout
 
-// Issue URL container with form field and external edit button
+// Issue URL container with form field and hyperlink icon
 .issue-url-container {
   display: flex;
-  align-items: center; // Center both items
+  align-items: flex-start; // Align to top
   gap: 8px;
 
   .issue-url-field {
     flex: 1; // Take up remaining space
   }
 
-  .external-edit-button {
+  .issue-url-icon-button {
     flex-shrink: 0;
-    margin-top: -20px; // Move up 20px for better vertical centering
+    margin-top: 8px; // Keep button position aligned with form field
+    color: #1976d2; // Blue hyperlink color like document/source code icons
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: #1565c0; // Darker blue on hover
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      color: inherit; // Keep default disabled color when disabled
+    }
   }
 }
 
@@ -116,7 +122,7 @@ mat-card-header {
 
 .form-fields-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 3fr; // Framework field 2/3, Issue URL field wider
   gap: 16px;
   margin-top: 4px;
 
@@ -293,7 +299,6 @@ mat-card-header {
   }
 }
 
-
 .document-actions {
   display: flex;
   gap: 4px;
@@ -412,7 +417,7 @@ mat-card-header {
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
-      
+
       mat-icon {
         font-size: 18px;
         width: 18px;

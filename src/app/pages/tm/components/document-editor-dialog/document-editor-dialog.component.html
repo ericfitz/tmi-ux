@@ -4,10 +4,6 @@
       ? ('threatModels.createNewDocument' | transloco)
       : ('threatModels.editDocument' | transloco)
   }}
-  <app-save-indicator
-    [formId]="formId"
-    class="header-save-indicator"
-  ></app-save-indicator>
 </h2>
 <mat-dialog-content>
   <form [formGroup]="documentForm" class="dialog-form">
@@ -17,7 +13,6 @@
         <input
           matInput
           formControlName="name"
-          (blur)="onFieldBlur('name')"
           tabindex="1"
         />
         <mat-error *ngIf="documentForm.get('name')?.hasError('required')">
@@ -34,7 +29,6 @@
           matInput
           formControlName="url"
           type="url"
-          (blur)="onFieldBlur('url')"
           tabindex="2"
         />
         <mat-error *ngIf="documentForm.get('url')?.hasError('required')">
@@ -52,7 +46,6 @@
           formControlName="description"
           rows="3"
           placeholder="{{ 'threatModels.documentDescriptionPlaceholder' | transloco }}"
-          (blur)="onFieldBlur('description')"
           tabindex="3"
         ></textarea>
         <mat-error *ngIf="documentForm.get('description')?.hasError('maxlength')">
