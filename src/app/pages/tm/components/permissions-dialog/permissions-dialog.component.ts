@@ -11,7 +11,7 @@ import { Authorization } from '../../models/threat-model.model';
 
 // Enhanced save behavior imports
 import { SaveStateService, SaveState } from '../../../../shared/services/save-state.service';
-import { ConnectionMonitorService, ConnectionStatus } from '../../../../shared/services/connection-monitor.service';
+import { ServerConnectionService, DetailedConnectionStatus } from '../../../../core/services/server-connection.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { FormValidationService } from '../../../../shared/services/form-validation.service';
 import { SaveIndicatorComponent } from '../../../../shared/components/save-indicator/save-indicator.component';
@@ -312,7 +312,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   // Enhanced save behavior properties
   formId: string;
   saveState: SaveState | undefined;
-  connectionStatus: ConnectionStatus | undefined;
+  connectionStatus: DetailedConnectionStatus | undefined;
   private _subscriptions: Subscription = new Subscription();
   private _originalPermissions: Authorization[] = [];
 
@@ -321,7 +321,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
     // Enhanced save behavior services
     private saveStateService: SaveStateService,
-    private connectionMonitorService: ConnectionMonitorService,
+    private serverConnectionService: ServerConnectionService,
     private notificationService: NotificationService,
     private formValidationService: FormValidationService,
   ) {
@@ -347,18 +347,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
     // Monitor connection status
     this._subscriptions.add(
-      this.connectionMonitorService.getConnectionStatus().subscribe(status => {
+      this.serverConnectionService.detailedConnectionStatus$.subscribe(status => {
         this.connectionStatus = status;
       })
     );
-
-    // Start connection monitoring
-    this.connectionMonitorService.startMonitoring();
   }
 
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
-    this.connectionMonitorService.stopMonitoring();
+    // Connection monitoring cleanup handled by service
     this.saveStateService.destroySaveState(this.formId);
   }
 

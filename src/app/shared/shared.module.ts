@@ -23,7 +23,6 @@ import { SaveIndicatorComponent } from './components/save-indicator/save-indicat
 
 // Import services to ensure they are provided
 import { SaveStateService } from './services/save-state.service';
-import { ConnectionMonitorService } from './services/connection-monitor.service';
 import { NotificationService } from './services/notification.service';
 import { FormValidationService } from './services/form-validation.service';
 
@@ -47,7 +46,6 @@ import { FormValidationService } from './services/form-validation.service';
   providers: [
     // Explicitly provide services (though they use providedIn: 'root')
     SaveStateService,
-    ConnectionMonitorService,
     NotificationService,
     FormValidationService
   ]

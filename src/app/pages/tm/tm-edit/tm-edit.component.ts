@@ -15,7 +15,7 @@ import { MockDataService } from '../../../mocks/mock-data.service';
 
 // Enhanced save behavior imports
 import { SaveStateService, SaveState } from '../../../shared/services/save-state.service';
-import { ConnectionMonitorService, ConnectionStatus } from '../../../shared/services/connection-monitor.service';
+import { ServerConnectionService, DetailedConnectionStatus } from '../../../core/services/server-connection.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { FormValidationService } from '../../../shared/services/form-validation.service';
 import { SaveIndicatorComponent } from '../../../shared/components/save-indicator/save-indicator.component';
@@ -116,7 +116,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
   // Enhanced save behavior properties
   saveState: SaveState | undefined;
-  connectionStatus: ConnectionStatus | undefined;
+  connectionStatus: DetailedConnectionStatus | undefined;
   formId: string = '';
 
   private _subscriptions = new Subscription();
@@ -137,7 +137,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private mockDataService: MockDataService,
     // Enhanced save behavior services
     private saveStateService: SaveStateService,
-    private connectionMonitorService: ConnectionMonitorService,
+    private serverConnectionService: ServerConnectionService,
     private notificationService: NotificationService,
     private formValidationService: FormValidationService,
   ) {
@@ -444,26 +444,26 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Monitor connection status
     this._subscriptions.add(
-      this.connectionMonitorService.getConnectionStatus().subscribe(status => {
+      this.serverConnectionService.detailedConnectionStatus$.subscribe(status => {
         this.connectionStatus = status;
         this.handleConnectionStatusChange(status);
       })
     );
 
     // Start connection monitoring
-    this.connectionMonitorService.startMonitoring();
+    this.serverConnectionService.startMonitoring();
   }
 
   /**
    * Handle connection status changes
    */
-  private handleConnectionStatusChange(status: ConnectionStatus): void {
+  private handleConnectionStatusChange(status: DetailedConnectionStatus): void {
     const previousStatus = this.connectionStatus;
     
     // Show connection error notification if needed
-    if (!status.isServerReachable && this.connectionMonitorService.shouldShowConnectionError()) {
+    if (!status.isServerReachable && this.serverConnectionService.shouldShowConnectionError()) {
       this.notificationService.showConnectionError(true, () => {
-        this.connectionMonitorService.checkServerConnectivity().subscribe();
+        this.serverConnectionService.checkServerConnectivity().subscribe();
       });
     }
 

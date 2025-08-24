@@ -68,7 +68,7 @@ Implementation of unified "on blur with auto save" pattern across TMI-UX applica
 
 ### 🔧 **Core Infrastructure Services:**
 1. **SaveStateService**: Change detection, field tracking, state management
-2. **ConnectionMonitorService**: Server connectivity monitoring with exponential backoff
+2. **ServerConnectionService**: Server connectivity monitoring with exponential backoff
 3. **NotificationService**: Toast notifications for save failures and connection issues
 4. **SaveIndicatorComponent**: Color-coded visual feedback (gray→orange→spinner→green→red)
 5. **FormValidationService**: Smart validation with spam prevention
@@ -123,10 +123,13 @@ interface SaveState {
   originalValues: Map<string, any>; // Track original values for comparison
 }
 
-interface ConnectionState {
+interface DetailedConnectionStatus {
   isOnline: boolean;
-  lastDisconnectTime?: Date;
-  hasShownOfflineToast: boolean; // Prevent spam
+  isServerReachable: boolean;
+  lastServerPing?: Date;
+  lastServerError?: Date;
+  consecutiveFailures: number;
+  retryAttempt: number;
 }
 ```
 
@@ -137,13 +140,14 @@ interface ConnectionState {
 // Localized tooltips: "No changes" | "Unsaved changes" | "Saving..." | "All changes saved" | "Save failed"
 ```
 
-#### C. Create Connection Monitoring Service
+#### C. Enhance Server Connection Service
 ```typescript
-// New: connection-monitor.service.ts
-// Monitor online/offline status
-// Detect server connectivity vs general internet connectivity
+// Enhanced: server-connection.service.ts
+// Monitor online/offline status and server connectivity
+// Detect server connectivity vs general internet connectivity  
 // Trigger auto-save retry when connection resumes
 // Manage toast display state to prevent spam
+// Support both simple status (navbar) and detailed status (auto-save)
 ```
 
 #### D. Create Form Validation Utilities
@@ -312,7 +316,7 @@ interface SaveErrorToast {
 
 ### Phase 1 (Weeks 1-2): Infrastructure
 - Create save state management service
-- Create connection monitoring service
+- Enhance server connection service
 - Create enhanced notification service
 - Create save indicator component
 - Create validation utilities with smart logging
@@ -337,7 +341,7 @@ interface SaveErrorToast {
 
 ### Phase 4 (Week 7): Polish & Testing
 - Add keyboard shortcuts
-- Fine-tune connection monitoring
+- Fine-tune server connection monitoring
 - User acceptance testing
 - Performance optimization
 - Documentation updates
@@ -387,6 +391,6 @@ interface SaveErrorToast {
 - Debounce blur events slightly to handle rapid tab navigation
 - Efficient change detection algorithms
 - Minimize DOM updates for save indicators
-- Optimize connection monitoring frequency
+- Optimize server connection monitoring frequency
 
 This updated plan addresses all requirements while creating a consistent, intuitive save experience that encourages natural user behavior through optimized tab navigation.
