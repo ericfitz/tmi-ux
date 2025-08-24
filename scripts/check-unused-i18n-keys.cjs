@@ -81,6 +81,11 @@ function isKeyUsedInSources(key, sourceFiles) {
     new RegExp(`['"\`][^'"\`]*${escapeRegExp(key.split('.').pop())}[^'"\`]*['"\`]\\s*\\|\\s*transloco`),
     // Dynamic key construction: 'prefix.part.' + variable | transloco
     new RegExp(`['"\`]${escapeRegExp(key.substring(0, key.lastIndexOf('.') + 1))}['"\`]\\s*\\+[^|]*\\|\\s*transloco`),
+    // Object property assignments: property: 'key' (then used indirectly)
+    new RegExp(`:\\s*['"\`]${escapeRegExp(key)}['"\`]`),
+    // Ternary expressions: condition ? value : 'key'
+    new RegExp(`\\?[^:]*:\\s*['"\`]${escapeRegExp(key)}['"\`]`),
+    new RegExp(`\\?\\s*['"\`]${escapeRegExp(key)}['"\`]\\s*:`),
   ];
   
   for (const filePath of sourceFiles) {
