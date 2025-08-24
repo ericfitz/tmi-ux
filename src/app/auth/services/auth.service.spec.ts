@@ -89,9 +89,16 @@ describe('AuthService', () => {
   let cryptoMock: MockCrypto;
 
   // Test data
+  const mockJwtPayload = {
+    id: '12345678-1234-1234-1234-123456789abc',
+    email: 'test@example.com',
+    name: 'Test User',
+    providers: [{ provider: 'test', is_primary: true }],
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 3600,
+  };
   const mockJwtToken: JwtToken = {
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJuYW1lIjoiVGVzdCBVc2VyIiwicGljdHVyZSI6Imh0dHA6Ly9leGFtcGxlLmNvbS9waWMuanBnIiwiaWF0IjoxNTE2MjM5MDIyfQ.signature',
+    token: 'header.' + btoa(JSON.stringify(mockJwtPayload)) + '.signature',
     expiresIn: 3600,
     expiresAt: new Date(Date.now() + 3600 * 1000),
   };
@@ -103,8 +110,10 @@ describe('AuthService', () => {
   };
 
   const mockUserProfile: UserProfile = {
+    id: '12345678-1234-1234-1234-123456789abc',
     email: 'test@example.com',
     name: 'Test User',
+    providers: [{ provider: 'test', is_primary: true }],
     picture: 'http://example.com/pic.jpg',
   };
 
@@ -215,8 +224,10 @@ describe('AuthService', () => {
     localProvider = {
       buildAuthUrl: vi.fn().mockReturnValue('http://localhost:4200/local/auth?state=mock-state'),
       exchangeCodeForUser: vi.fn().mockReturnValue({
+        id: '12345678-1234-1234-1234-123456789abc',
         email: 'test@example.com',
         name: 'Test User',
+        providers: [{ provider: 'local', is_primary: true }],
         picture: 'http://example.com/pic.jpg',
       }),
     } as unknown as LocalOAuthProviderService;
@@ -323,7 +334,7 @@ describe('AuthService', () => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
       expect(window.location.href).toBe(
-        'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Foauth2%2Fcallback',
+        'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Foauth2%2Fcallback&scope=openid%20profile%20email',
       );
       expect(loggerService.info).toHaveBeenCalledWith(
         'Initiating TMI OAuth login with Test Provider',
@@ -476,8 +487,10 @@ describe('AuthService', () => {
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile).toEqual(
           expect.objectContaining({
+            id: expect.any(String),
             email: 'test@example.com',
             name: 'Test User',
+            providers: expect.any(Array),
           }),
         );
         expect(router.navigate).toHaveBeenCalledWith(['/tm']);
@@ -503,8 +516,10 @@ describe('AuthService', () => {
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile).toEqual(
           expect.objectContaining({
+            id: expect.any(String),
             email: 'test@example.com',
             name: 'Test User',
+            providers: expect.any(Array),
           }),
         );
         expect(router.navigate).toHaveBeenCalledWith(['/tm']);
@@ -608,8 +623,10 @@ describe('AuthService', () => {
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile).toEqual(
           expect.objectContaining({
+            id: expect.any(String),
             email: 'test@example.com',
             name: 'Test User',
+            providers: expect.any(Array),
           }),
         );
         expect(router.navigate).toHaveBeenCalledWith(['/tm']);

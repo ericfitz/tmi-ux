@@ -178,9 +178,10 @@ describe('Authentication Integration', () => {
       it('should handle complete Google OAuth login flow with token refresh', () => {
         // Create a properly formatted JWT token with base64-encoded payload
         const mockPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'user@example.com',
           name: 'Test User',
-          picture: 'https://example.com/pic.jpg',
+          providers: [{ provider: 'google', is_primary: true }],
         };
         const mockJwtToken = 'header.' + btoa(JSON.stringify(mockPayload)) + '.signature';
 
@@ -222,8 +223,10 @@ describe('Authentication Integration', () => {
       it('should handle OAuth login with automatic token refresh', async () => {
         // Create JWT token for initial login
         const initialPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'refresh-user@example.com',
           name: 'Refresh User',
+          providers: [{ provider: 'google', is_primary: true }],
         };
         const initialJwtToken = 'header.' + btoa(JSON.stringify(initialPayload)) + '.signature';
 
@@ -250,8 +253,10 @@ describe('Authentication Integration', () => {
 
         // Create JWT token for refresh response
         const refreshPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'refresh-user@example.com',
           name: 'Refresh User',
+          providers: [{ provider: 'google', is_primary: true }],
         };
         const refreshJwtToken = 'header.' + btoa(JSON.stringify(refreshPayload)) + '.signature';
 
@@ -390,8 +395,10 @@ describe('Authentication Integration', () => {
         };
 
         const storedProfile = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'restored@example.com',
           name: 'Restored User',
+          providers: [{ provider: 'google', is_primary: true }],
           picture: 'https://example.com/pic.jpg',
         };
 
@@ -460,8 +467,10 @@ describe('Authentication Integration', () => {
       it('should handle GitHub OAuth flow', () => {
         // Create JWT token for GitHub
         const githubPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'github-user@example.com',
           name: 'GitHub User',
+          providers: [{ provider: 'github', is_primary: true }],
         };
         const githubJwtToken = 'header.' + btoa(JSON.stringify(githubPayload)) + '.signature';
 
@@ -495,8 +504,10 @@ describe('Authentication Integration', () => {
       it('should handle Microsoft OAuth flow', () => {
         // Create JWT token for Microsoft
         const microsoftPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'microsoft-user@example.com',
           name: 'Microsoft User',
+          providers: [{ provider: 'microsoft', is_primary: true }],
         };
         const microsoftJwtToken = 'header.' + btoa(JSON.stringify(microsoftPayload)) + '.signature';
 
@@ -548,8 +559,10 @@ describe('Authentication Integration', () => {
 
         // Create JWT token for refresh response
         const interceptorRefreshPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'interceptor-user@example.com',
           name: 'Interceptor User',
+          providers: [{ provider: 'google', is_primary: true }],
         };
         const interceptorRefreshJwtToken =
           'header.' + btoa(JSON.stringify(interceptorRefreshPayload)) + '.signature';
@@ -602,8 +615,10 @@ describe('Authentication Integration', () => {
 
       // Create JWT token for session
       const sessionPayload = {
+        id: '12345678-1234-1234-1234-123456789abc',
         email: 'session-user@example.com',
         name: 'Session User',
+        providers: [{ provider: 'google', is_primary: true }],
       };
       const sessionJwtToken = 'header.' + btoa(JSON.stringify(sessionPayload)) + '.signature';
 
@@ -645,8 +660,10 @@ describe('Authentication Integration', () => {
 
         // Create JWT token for final refresh
         const finalRefreshPayload = {
+          id: '12345678-1234-1234-1234-123456789abc',
           email: 'session-user@example.com',
           name: 'Session User',
+          providers: [{ provider: 'google', is_primary: true }],
         };
         const finalRefreshJwtToken =
           'header.' + btoa(JSON.stringify(finalRefreshPayload)) + '.signature';

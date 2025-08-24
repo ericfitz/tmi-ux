@@ -48,6 +48,7 @@ import { LocalOAuthProviderService } from './local-oauth-provider.service';
 
 interface JwtPayload {
   sub?: string;
+  id?: string;
   email?: string;
   name?: string;
   iat?: number;
@@ -55,6 +56,10 @@ interface JwtPayload {
   provider?: string;
   aud?: string;
   iss?: string;
+  providers?: Array<{
+    provider: string;
+    is_primary: boolean;
+  }>;
 }
 
 /**
@@ -474,10 +479,11 @@ export class AuthService {
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', provider.id);
 
-      // Use TMI's OAuth proxy endpoint with state and client callback URL
+      // Use TMI's OAuth proxy endpoint with state, client callback URL, and required scope
       const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
       const separator = provider.auth_url.includes('?') ? '&' : '?';
-      const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}`;
+      const scope = encodeURIComponent('openid profile email');
+      const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}&scope=${scope}`;
 
       this.logger.debugComponent('Auth', 'Initiating OAuth with client callback', {
         providerId: provider.id,
@@ -535,6 +541,24 @@ export class AuthService {
     const array = new Uint8Array(16);
     window.crypto.getRandomValues(array);
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  /**
+   * Generate a UUID for user identification
+   * @returns UUID string
+   */
+  private generateUUID(): string {
+    // Use crypto.randomUUID if available (modern browsers)
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    
+    // Fallback UUID v4 implementation for test environments
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
   /**
@@ -838,12 +862,14 @@ export class AuthService {
   private createLocalToken(userInfo: UserProfile): JwtToken {
     const header = { alg: 'HS256', typ: 'JWT' };
     const payload = {
-      sub: userInfo.email,
+      sub: userInfo.id || userInfo.email, // Use ID as subject, fallback to email for compatibility
+      id: userInfo.id || this.generateUUID(), // Generate UUID if not provided
       name: userInfo.name,
       email: userInfo.email,
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + environment.authTokenExpiryMinutes * 60,
       provider: 'local',
+      providers: userInfo.providers || [{ provider: 'local', is_primary: true }],
     };
 
     // Create a fake JWT (just for consistency, server not involved)
@@ -866,22 +892,26 @@ export class AuthService {
    * @returns User profile
    */
   private extractUserProfileFromToken(token: JwtToken): UserProfile {
-    // In a real implementation, we would decode the JWT token
-    // For now, we'll extract a mock profile
     try {
       // Get the payload part of the JWT (second part)
       const payload = token.token.split('.')[1];
       // Base64 decode and parse as JSON
-      const decodedPayload = JSON.parse(atob(payload)) as {
-        email: string;
-        name: string;
-        picture?: string;
-      };
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+
+      // Extract user ID from 'id' claim or fall back to 'sub' claim
+      const userId = decodedPayload.id || decodedPayload.sub || '';
+      
+      if (!userId || !decodedPayload.email || !decodedPayload.name) {
+        throw new Error('Required user profile fields missing from JWT token');
+      }
 
       return {
+        id: userId,
         email: decodedPayload.email,
         name: decodedPayload.name,
-        picture: decodedPayload.picture,
+        providers: decodedPayload.providers,
+        // Keep picture for backward compatibility, but it's deprecated
+        picture: undefined,
       };
     } catch (error) {
       this.logger.error('Error extracting user profile from token', error);
@@ -1168,8 +1198,10 @@ export class AuthService {
 
     // Create a mock user profile
     const userProfile: UserProfile = {
+      id: this.generateUUID(),
       email,
       name: email.split('@')[0],
+      providers: [{ provider: 'demo', is_primary: true }],
     };
 
     // Store token and profile

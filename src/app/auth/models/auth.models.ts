@@ -29,11 +29,31 @@ export interface JwtToken {
 }
 
 /**
+ * OAuth provider information for a user
+ */
+export interface UserOAuthProvider {
+  /**
+   * OAuth provider name (e.g., "google", "github", "microsoft")
+   */
+  provider: string;
+
+  /**
+   * Whether this is the primary authentication method
+   */
+  is_primary: boolean;
+}
+
+/**
  * User profile information
  */
 export interface UserProfile {
   /**
-   * User's email address (used as the primary identifier)
+   * Unique identifier for the user (UUID)
+   */
+  id: string;
+
+  /**
+   * User's email address
    */
   email: string;
 
@@ -43,7 +63,13 @@ export interface UserProfile {
   name: string;
 
   /**
+   * Linked OAuth providers for this user
+   */
+  providers?: UserOAuthProvider[];
+
+  /**
    * URL to the user's profile picture (optional)
+   * @deprecated This property is no longer provided by the OAuth2 userinfo endpoint
    */
   picture?: string;
 }

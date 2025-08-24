@@ -42,8 +42,10 @@ export class LocalOAuthProviderService {
       const name = this.generateDisplayName(email);
 
       return {
+        id: this.generateUUID(),
         email,
         name,
+        providers: [{ provider: 'local', is_primary: true }],
         picture: undefined,
       };
     } catch {
@@ -61,5 +63,23 @@ export class LocalOAuthProviderService {
       .split(/[._-]/)
       .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
       .join(' ');
+  }
+
+  /**
+   * Generate a UUID for user identification
+   * @returns UUID string
+   */
+  private generateUUID(): string {
+    // Use crypto.randomUUID if available (modern browsers)
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    
+    // Fallback UUID v4 implementation for test environments
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 }
