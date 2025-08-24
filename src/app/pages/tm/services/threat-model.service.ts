@@ -19,9 +19,9 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, Subscription, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, of, Subscription, BehaviorSubject, throwError, timer } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { catchError, switchMap, map, tap } from 'rxjs/operators';
+import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs/operators';
 
 import { ThreatModel, Document as TMDocument, Source, Metadata, Threat } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
@@ -719,6 +719,7 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService
       .patch<ThreatModel>(`threat_models/${threatModelId}`, operations)
       .pipe(
+        retryWhen(errors => this.getRetryStrategy(errors, `patch threat model ${threatModelId}`)),
         catchError(error => {
           this.logger.error(`Error patching threat model with ID: ${threatModelId}`, error, { updates });
           throw error;
@@ -1741,5 +1742,78 @@ export class ThreatModelService implements OnDestroy {
         return throwError(() => error);
       })
     );
+  }
+
+  /**
+   * Retry strategy with exponential backoff for transient failures
+   * @param errors Observable of errors
+   * @param operation Description of the operation for logging
+   * @returns Observable for retry logic
+   */
+  private getRetryStrategy<T>(errors: Observable<T>, operation: string): Observable<unknown> {
+    return errors.pipe(
+      mergeMap((error, retryAttempt) => {
+        const isRetryableError = this.isRetryableError(error);
+        const maxRetries = 3;
+        
+        if (!isRetryableError || retryAttempt >= maxRetries) {
+          // Don't retry for non-retryable errors or if max attempts reached
+          this.logger.error(`No more retries for ${operation}`, { 
+            error, 
+            retryAttempt,
+            isRetryableError,
+            maxRetries 
+          });
+          return throwError(() => error);
+        }
+
+        // Calculate exponential backoff delay: 1s, 2s, 4s
+        const delayMs = Math.pow(2, retryAttempt) * 1000;
+        
+        this.logger.warn(`Retrying ${operation} (attempt ${retryAttempt + 1}/${maxRetries}) after ${delayMs}ms delay`, {
+          error: error instanceof Error ? error.message : String(error),
+          delayMs
+        });
+
+        return timer(delayMs);
+      }),
+      take(3) // Maximum 3 retry attempts
+    );
+  }
+
+  /**
+   * Determine if an error is retryable (network issues, server errors, timeouts)
+   * @param error The error to check
+   * @returns true if error is retryable, false otherwise
+   */
+  private isRetryableError(error: unknown): boolean {
+    if (error instanceof HttpErrorResponse) {
+      // Retry for server errors (5xx), timeout errors, or network errors
+      if (error.status >= 500 && error.status < 600) {
+        return true; // Server errors
+      }
+      if (error.status === 0) {
+        return true; // Network error (no connection)
+      }
+      if (error.status === 408) {
+        return true; // Request timeout
+      }
+      // Don't retry for client errors (4xx) like validation, auth, not found, etc.
+      return false;
+    }
+    
+    if (error instanceof Error) {
+      // Retry for timeout errors from RxJS timeout operator
+      if (error.name === 'TimeoutError') {
+        return true;
+      }
+      // Retry for network-related errors
+      if (error.message.includes('timeout') || error.message.includes('network')) {
+        return true;
+      }
+    }
+
+    // Don't retry for unknown error types
+    return false;
   }
 }

@@ -11,6 +11,7 @@ export interface SaveState {
   hasUnsavedChanges: boolean;
   changedFields: Set<string>;
   originalValues: Map<string, unknown>;
+  saveStartedAt?: Date;
 }
 
 /**
@@ -34,11 +35,17 @@ export class SaveStateService {
   // Map of form/component IDs to their save states
   private _saveStates = new Map<string, BehaviorSubject<SaveState>>();
   
+  // Map of form/component IDs to their watchdog timers
+  private _watchdogTimers = new Map<string, number>();
+  
   // Global connection state
   private _connectionState = new BehaviorSubject<ConnectionState>({
     isOnline: navigator.onLine,
     hasShownOfflineToast: false
   });
+
+  // Watchdog timeout duration (60 seconds)
+  private readonly WATCHDOG_TIMEOUT = 60000;
 
   constructor() {
     // Listen for browser online/offline events
@@ -95,13 +102,23 @@ export class SaveStateService {
     if (!subject) return;
 
     const currentState = subject.value;
+    const now = new Date();
+    
     const newState: SaveState = {
       ...currentState,
       status,
       errorMessage: status === 'error' ? errorMessage : undefined,
-      lastSaved: status === 'saved' ? new Date() : currentState.lastSaved,
-      hasUnsavedChanges: status === 'dirty' || (status === 'error' && currentState.hasUnsavedChanges)
+      lastSaved: status === 'saved' ? now : currentState.lastSaved,
+      hasUnsavedChanges: status === 'dirty' || (status === 'error' && currentState.hasUnsavedChanges),
+      saveStartedAt: status === 'saving' ? now : currentState.saveStartedAt
     };
+
+    // Handle watchdog timer
+    if (status === 'saving') {
+      this.startWatchdogTimer(formId);
+    } else {
+      this.clearWatchdogTimer(formId);
+    }
 
     subject.next(newState);
   }
@@ -239,6 +256,9 @@ export class SaveStateService {
       subject.complete();
       this._saveStates.delete(formId);
     }
+    
+    // Clean up watchdog timer
+    this.clearWatchdogTimer(formId);
   }
 
   /**
@@ -274,6 +294,62 @@ export class SaveStateService {
       ...currentState,
       hasShownOfflineToast: true
     });
+  }
+
+  /**
+   * Start watchdog timer for a form
+   * @param formId Unique identifier for the form/component
+   */
+  private startWatchdogTimer(formId: string): void {
+    // Clear any existing timer
+    this.clearWatchdogTimer(formId);
+    
+    // Start new timer
+    const timerId = window.setTimeout(() => {
+      console.warn(`Save operation for form ${formId} has timed out (${this.WATCHDOG_TIMEOUT}ms)`);
+      this.handleWatchdogTimeout(formId);
+    }, this.WATCHDOG_TIMEOUT);
+    
+    this._watchdogTimers.set(formId, timerId);
+  }
+
+  /**
+   * Clear watchdog timer for a form
+   * @param formId Unique identifier for the form/component
+   */
+  private clearWatchdogTimer(formId: string): void {
+    const timerId = this._watchdogTimers.get(formId);
+    if (timerId) {
+      window.clearTimeout(timerId);
+      this._watchdogTimers.delete(formId);
+    }
+  }
+
+  /**
+   * Handle watchdog timeout - force reset save state to error
+   * @param formId Unique identifier for the form/component
+   */
+  private handleWatchdogTimeout(formId: string): void {
+    const subject = this._saveStates.get(formId);
+    if (!subject) return;
+
+    const currentState = subject.value;
+    
+    // Only intervene if still in saving state
+    if (currentState.status === 'saving') {
+      const newState: SaveState = {
+        ...currentState,
+        status: 'error',
+        errorMessage: `Save operation timed out after ${this.WATCHDOG_TIMEOUT / 1000} seconds. The server may be slow or unresponsive.`,
+        hasUnsavedChanges: true // Keep unsaved changes flag
+      };
+      
+      subject.next(newState);
+      console.error(`Watchdog timeout: Reset save state for form ${formId} to error after ${this.WATCHDOG_TIMEOUT}ms`);
+    }
+    
+    // Clean up the timer reference
+    this._watchdogTimers.delete(formId);
   }
 
   /**

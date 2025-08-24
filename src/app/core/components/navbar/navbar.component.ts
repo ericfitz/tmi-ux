@@ -23,8 +23,6 @@ import { WebSocketAdapter } from '../../../pages/dfd/infrastructure/adapters/web
 import { TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../../../environments/environment';
 
-// Import the MockDataToggleComponent
-import { MockDataToggleComponent } from '../mock-data-toggle/mock-data-toggle.component';
 import { UserPreferencesDialogComponent } from '../user-preferences-dialog/user-preferences-dialog.component';
 
 @Component({
@@ -38,7 +36,6 @@ import { UserPreferencesDialogComponent } from '../user-preferences-dialog/user-
     CoreMaterialModule,
     FeedbackMaterialModule,
     TranslocoModule,
-    MockDataToggleComponent,
   ],
 })
 export class NavbarComponent implements OnInit, OnDestroy {

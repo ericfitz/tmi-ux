@@ -28,11 +28,8 @@
       </mat-menu>
     </div>
 
-    <!-- Right side: Mock data toggle, Server status, User info and logout button -->
+    <!-- Right side: Server status, User info and logout button -->
     <div class="navbar-right">
-      <!-- Mock data toggle in development mode -->
-      <app-mock-data-toggle *ngIf="isDevelopmentMode"></app-mock-data-toggle>
-
       <!-- Server connection indicator -->
       <span
         [matTooltip]="getServerStatusTooltip()"

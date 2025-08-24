@@ -122,6 +122,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _autoSaveSubject = new Subject<void>();
   private _isLoadingInitialData = false;
+  private _saveInProgress = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -442,6 +443,27 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Check if save is in progress and handle appropriately
+    if (this.saveState?.status === 'saving' || this._saveInProgress) {
+      this.logger.warn('Component being destroyed while save in progress', {
+        formId: this.formId,
+        saveState: this.saveState,
+        hasUnsavedChanges: this.saveState?.hasUnsavedChanges,
+        saveInProgress: this._saveInProgress
+      });
+      
+      // Clear the save in progress flag
+      this._saveInProgress = false;
+      
+      // Force save state to error to prevent hanging state
+      this.saveStateService.updateSaveStatus(
+        this.formId, 
+        'error', 
+        'Save operation was interrupted by navigation'
+      );
+    }
+
+    // Clean up subscriptions and save state
     this._subscriptions.unsubscribe();
     this.saveStateService.destroySaveState(this.formId);
   }
@@ -476,11 +498,33 @@ export class TmEditComponent implements OnInit, OnDestroy {
   private handleConnectionStatusChange(status: DetailedConnectionStatus): void {
     const previousStatus = this.connectionStatus;
     
-    // Show connection error notification if needed
-    if (!status.isServerReachable && this.serverConnectionService.shouldShowConnectionError()) {
-      this.notificationService.showConnectionError(true, () => {
-        this.serverConnectionService.checkServerConnectivity().subscribe();
-      });
+    // Handle connection loss during save operations
+    if (!status.isServerReachable) {
+      // If currently saving when connection lost, mark as error
+      if (this.saveState?.status === 'saving' || this._saveInProgress) {
+        this.logger.warn('Connection lost during save operation', {
+          saveState: this.saveState?.status,
+          saveInProgress: this._saveInProgress,
+          hasUnsavedChanges: this.saveState?.hasUnsavedChanges
+        });
+        
+        // Clear the save in progress flag
+        this._saveInProgress = false;
+        
+        // Update save state to error with network-specific message
+        this.saveStateService.updateSaveStatus(
+          this.formId, 
+          'error', 
+          'Save operation failed due to network connection loss. Changes will be retried when connection is restored.'
+        );
+      }
+      
+      // Show connection error notification if needed
+      if (this.serverConnectionService.shouldShowConnectionError()) {
+        this.notificationService.showConnectionError(true, () => {
+          this.serverConnectionService.checkServerConnectivity().subscribe();
+        });
+      }
     }
 
     // Auto-retry saves when connection is restored
@@ -490,7 +534,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
       // Retry any unsaved changes
       if (this.saveState?.hasUnsavedChanges) {
         this.logger.info('Connection restored, retrying unsaved changes');
-        this.performAutoSave();
+        // Small delay to ensure connection is stable
+        setTimeout(() => {
+          this.performAutoSave();
+        }, 1000);
       }
     }
   }
@@ -1949,8 +1996,26 @@ export class TmEditComponent implements OnInit, OnDestroy {
       isNewThreatModel: this.isNewThreatModel,
       isLoadingInitialData: this._isLoadingInitialData,
       threatModelId: this.threatModel?.id,
-      hasUnsavedChanges: this.saveState?.hasUnsavedChanges
+      hasUnsavedChanges: this.saveState?.hasUnsavedChanges,
+      saveInProgress: this._saveInProgress
     });
+
+    // Check for concurrent save protection
+    if (this._saveInProgress) {
+      this.logger.debugComponent('TmEdit', 'Auto-save skipped: save already in progress');
+      return;
+    }
+
+    // Check network connectivity before attempting save
+    if (this.connectionStatus && !this.connectionStatus.isServerReachable) {
+      this.logger.debugComponent('TmEdit', 'Auto-save skipped: server not reachable');
+      this.saveStateService.updateSaveStatus(
+        this.formId, 
+        'error', 
+        'Cannot save: server is not reachable. Changes will be saved when connection is restored.'
+      );
+      return;
+    }
 
     if (!this.threatModel || this.threatModelForm.invalid || this._isLoadingInitialData) {
       this.saveStateService.updateSaveStatus(this.formId, 'error', 'Cannot save: form is invalid or still loading');
@@ -2004,10 +2069,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
       changedFields: Array.from(changedFields)
     });
 
+    // Set save in progress flag to prevent concurrent saves
+    this._saveInProgress = true;
+
     // Save to server with PATCH (only changed fields)
     this._subscriptions.add(
       this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe({
         next: result => {
+          // Clear save in progress flag
+          this._saveInProgress = false;
+          
           if (result && this.threatModel) {
             // Update the threat model with server response
             Object.keys(updates).forEach(key => {
@@ -2027,6 +2098,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
           }
         },
         error: error => {
+          // Clear save in progress flag on error
+          this._saveInProgress = false;
+          
           this.saveStateService.updateSaveStatus(this.formId, 'error', (error as Error).message);
           
           // Show detailed error notification to user

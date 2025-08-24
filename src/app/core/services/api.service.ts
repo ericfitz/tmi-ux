@@ -17,8 +17,8 @@
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { Observable, throwError, TimeoutError } from 'rxjs';
+import { catchError, retry, timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -36,6 +36,8 @@ import { ValidationErrorDialogComponent, ValidationErrorData } from '../componen
 })
 export class ApiService {
   private apiUrl = environment.apiUrl;
+  private readonly DEFAULT_TIMEOUT = 30000; // 30 seconds
+  private readonly SAVE_TIMEOUT = 45000; // 45 seconds for save operations
 
   constructor(
     private http: HttpClient,
@@ -115,20 +117,24 @@ export class ApiService {
    * Generic PATCH request with JSON Patch operations
    * @param endpoint The API endpoint (without the base URL)
    * @param operations Array of JSON Patch operations
+   * @param timeoutMs Optional timeout in milliseconds (defaults to SAVE_TIMEOUT for save operations)
    */
   patch<T>(
     endpoint: string,
     operations: Array<{ op: string; path: string; value?: unknown }>,
+    timeoutMs?: number
   ): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
+    const requestTimeout = timeoutMs || this.SAVE_TIMEOUT;
 
     // Request logging handled by JWT interceptor
 
     return this.http.patch<T>(url, operations, {
       headers: { 'Content-Type': 'application/json-patch+json' }
     }).pipe(
+      timeout(requestTimeout),
       // Response logging handled by JWT interceptor
-      catchError((error: HttpErrorResponse) => this.handleError(error, 'PATCH', endpoint)),
+      catchError((error: HttpErrorResponse | TimeoutError | Error) => this.handleError(error, 'PATCH', endpoint)),
     );
   }
 
@@ -140,40 +146,50 @@ export class ApiService {
    * Standardized error handling with logging
    */
   private handleError(
-    error: HttpErrorResponse,
+    error: HttpErrorResponse | TimeoutError | Error,
     method: string,
     endpoint: string,
   ): Observable<never> {
     let errorMessage = '';
 
-    if (error.error instanceof ErrorEvent) {
-      // Client-side error
-      errorMessage = `Client Error: ${error.error.message}`;
-      this.logger.error(errorMessage);
-    } else {
-      // Server-side error
-      errorMessage = `Server Error: ${error.status} ${error.statusText} for ${method} ${endpoint}`;
+    if (error instanceof TimeoutError) {
+      // Request timeout
+      errorMessage = `Request timeout for ${method} ${endpoint}`;
       this.logger.error(errorMessage, error);
+    } else if (error instanceof HttpErrorResponse) {
+      if (error.error instanceof ErrorEvent) {
+        // Client-side error
+        errorMessage = `Client Error: ${error.error.message}`;
+        this.logger.error(errorMessage);
+      } else {
+        // Server-side error
+        errorMessage = `Server Error: ${error.status} ${error.statusText} for ${method} ${endpoint}`;
+        this.logger.error(errorMessage, error);
 
-      // Handle specific error types
-      if (error.status === 400) {
-        // Handle validation errors
-        this.handleValidationError(error);
-      } else if (error.status === 401) {
-        this.logger.warn('API returned 401 Unauthorized. Redirecting to login.');
-        this.authService.logout(); // Clear session
-        void this.router.navigate(['/login'], {
-          queryParams: { returnUrl: this.router.url, reason: 'unauthorized_api' },
-        });
-      } else if (error.status === 403) {
-        this.logger.warn('API returned 403 Forbidden. Redirecting to unauthorized page.');
-        void this.router.navigate(['/unauthorized'], {
-          queryParams: { currentUrl: this.router.url, reason: 'forbidden_api' },
-        });
+        // Handle specific error types
+        if (error.status === 400) {
+          // Handle validation errors
+          this.handleValidationError(error);
+        } else if (error.status === 401) {
+          this.logger.warn('API returned 401 Unauthorized. Redirecting to login.');
+          this.authService.logout(); // Clear session
+          void this.router.navigate(['/login'], {
+            queryParams: { returnUrl: this.router.url, reason: 'unauthorized_api' },
+          });
+        } else if (error.status === 403) {
+          this.logger.warn('API returned 403 Forbidden. Redirecting to unauthorized page.');
+          void this.router.navigate(['/unauthorized'], {
+            queryParams: { currentUrl: this.router.url, reason: 'forbidden_api' },
+          });
+        }
+
+        // Log more details in debug mode
+        this.logger.debugComponent('Api', 'Full error response', error);
       }
-
-      // Log more details in debug mode
-      this.logger.debugComponent('Api', 'Full error response', error);
+    } else {
+      // Other errors (including generic Error instances)
+      errorMessage = `Unexpected error during ${method} ${endpoint}: ${error.message}`;
+      this.logger.error(errorMessage, error);
     }
 
     // Return an observable with a user-facing error message
