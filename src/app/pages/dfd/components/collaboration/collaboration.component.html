@@ -14,14 +14,10 @@
   <!-- Main collaboration button with badge showing number of users when active -->
   <button
     mat-icon-button
-    color="primary"
+    [color]="getCollaborationButtonColor()"
     [matBadge]="isCollaborating ? collaborationUsers.length : null"
     matBadgeColor="accent"
-    [matTooltip]="
-      isCollaborating
-        ? ('collaboration.manageCollaboration' | transloco)
-        : ('collaboration.startCollaboration' | transloco)
-    "
+    [matTooltip]="getCollaborationButtonTooltip()"
     [matMenuTriggerFor]="collaborationMenu"
   >
     <mat-icon
@@ -29,6 +25,7 @@
       fontWeight="100"
       style="font-variation-settings: 'FILL' 0"
       [class.active]="isCollaborating"
+      [class.session-available]="existingSessionAvailable && !isCollaborating"
     >
       group
     </mat-icon>
@@ -54,8 +51,11 @@
         >
           {{ isCollaborating ? 'stop' : 'play_arrow' }}
         </mat-icon>
-        <ng-container *ngIf="!isCollaborating">
+        <ng-container *ngIf="!isCollaborating && !existingSessionAvailable">
           {{ 'collaboration.startCollaboration' | transloco }}
+        </ng-container>
+        <ng-container *ngIf="!isCollaborating && existingSessionAvailable">
+          {{ 'collaboration.joinSession' | transloco }}
         </ng-container>
         <ng-container *ngIf="isCollaborating && isCurrentUserSessionManager()">
           {{ 'collaboration.endCollaboration' | transloco }}

@@ -10,6 +10,11 @@
   color: #4caf50;
 }
 
+// Style for when existing session is available (blue color)
+.session-available {
+  color: #2196f3; // Blue
+}
+
 // WebSocket connection status indicator styles (matching navbar server status)
 .websocket-status-not-configured .mat-icon {
   color: #666; // Dark grey

@@ -48,6 +48,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import {
   DfdCollaborationService,
   CollaborationUser,
+  CollaborationSession,
 } from '../../services/dfd-collaboration.service';
 import { DfdNotificationService } from '../../services/dfd-notification.service';
 import { WebSocketAdapter } from '../../infrastructure/adapters/websocket.adapter';
@@ -85,6 +86,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   currentPresenterId: string | null = null;
   pendingPresenterRequests: string[] = [];
   isCurrentUserSessionManagerFlag = false;
+  existingSessionAvailable: CollaborationSession | null = null;
 
   // URL copy feedback
   linkCopied = false;
@@ -140,6 +142,14 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this._collaborationService.pendingPresenterRequests$.subscribe(requests => {
         this.pendingPresenterRequests = requests;
+        this._cdr.markForCheck();
+      }),
+    );
+
+    // Subscribe to existing session availability
+    this._subscriptions.add(
+      this._collaborationService.existingSessionAvailable$.subscribe(session => {
+        this.existingSessionAvailable = session;
         this._cdr.markForCheck();
       }),
     );
@@ -291,6 +301,34 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   isCurrentUserSessionManager(): boolean {
     return this.isCurrentUserSessionManagerFlag;
+  }
+
+  /**
+   * Get the color for the collaboration button based on current state
+   * @returns The Material color to use for the button
+   */
+  getCollaborationButtonColor(): string {
+    if (this.isCollaborating) {
+      return 'primary'; // Active session - primary (blue)
+    }
+    if (this.existingSessionAvailable) {
+      return 'accent'; // Existing session available - accent (usually blue/teal)
+    }
+    return 'primary'; // Default state - primary
+  }
+
+  /**
+   * Get the tooltip text for the collaboration button
+   * @returns The tooltip text
+   */
+  getCollaborationButtonTooltip(): string {
+    if (this.isCollaborating) {
+      return 'Manage Collaboration';
+    }
+    if (this.existingSessionAvailable) {
+      return 'Join Existing Collaboration Session';
+    }
+    return 'Start Collaboration';
   }
 
   /**

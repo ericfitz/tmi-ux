@@ -26,7 +26,7 @@ export interface CollaborationUser {
 /**
  * Represents a collaboration session from the API
  */
-interface CollaborationSession {
+export interface CollaborationSession {
   session_id: string;
   threat_model_id: string;
   diagram_id: string;
@@ -61,6 +61,10 @@ export class DfdCollaborationService implements OnDestroy {
   // Pending presenter requests (for session owners)
   private _pendingPresenterRequests$ = new BehaviorSubject<string[]>([]);
   public pendingPresenterRequests$ = this._pendingPresenterRequests$.asObservable();
+
+  // Existing session available (found but not joined yet)
+  private _existingSessionAvailable$ = new BehaviorSubject<CollaborationSession | null>(null);
+  public existingSessionAvailable$ = this._existingSessionAvailable$.asObservable();
 
   // Current session information
   private _currentSession: CollaborationSession | null = null;
@@ -103,6 +107,67 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
+   * Check if there is an existing collaboration session for the current diagram
+   * This should be called on startup to determine UI state
+   * @returns Observable<CollaborationSession | null> the existing session or null
+   */
+  public checkForExistingSession(): Observable<CollaborationSession | null> {
+    this._logger.info('Checking for existing collaboration session');
+
+    if (!this._threatModelId || !this._diagramId) {
+      this._logger.error('Cannot check for existing session: diagram context not set');
+      return throwError(() => new Error('Diagram context not set. Call setDiagramContext() first.'));
+    }
+
+    if (this._isCollaborating$.value) {
+      this._logger.warn('Already collaborating - returning current session');
+      return new Observable<CollaborationSession | null>(observer => {
+        observer.next(this._currentSession);
+        observer.complete();
+      });
+    }
+
+    return this._threatModelService.getDiagramCollaborationSession(this._threatModelId, this._diagramId).pipe(
+      tap((session: CollaborationSession | null) => {
+        // Update the existing session state for UI components to react to
+        this._existingSessionAvailable$.next(session);
+        
+        if (session) {
+          this._logger.info('Found existing collaboration session', {
+            sessionId: session.session_id,
+            sessionManager: session.session_manager,
+            participantCount: session.participants.length
+          });
+        } else {
+          this._logger.info('No existing collaboration session found');
+        }
+      }),
+      catchError((error) => {
+        this._logger.error('Failed to check for existing collaboration session', error);
+        // Return null instead of throwing - this is not a critical error
+        this._existingSessionAvailable$.next(null);
+        return new Observable<CollaborationSession | null>(observer => {
+          observer.next(null);
+          observer.complete();
+        });
+      })
+    );
+  }
+
+  /**
+   * Check if current user would be the session manager of the existing session
+   * @returns boolean indicating if current user is the session manager of existing session
+   */
+  public isCurrentUserManagerOfExistingSession(): boolean {
+    const existingSession = this._existingSessionAvailable$.value;
+    if (!existingSession) {
+      return false;
+    }
+    const currentUserEmail = this._authService.userEmail;
+    return currentUserEmail === existingSession.session_manager;
+  }
+
+  /**
    * Join an existing collaboration session using PUT method
    * @returns Observable<boolean> indicating success or failure
    */
@@ -140,6 +205,8 @@ export class DfdCollaborationService implements OnDestroy {
 
         // Update collaboration state
         this._isCollaborating$.next(true);
+        // Clear existing session state since we're now actively collaborating
+        this._existingSessionAvailable$.next(null);
         
         // Show session joined notification
         this._notificationService.showSessionEvent('userJoined').subscribe();
@@ -215,6 +282,8 @@ export class DfdCollaborationService implements OnDestroy {
 
         // Update collaboration state
         this._isCollaborating$.next(true);
+        // Clear existing session state since we're now actively collaborating
+        this._existingSessionAvailable$.next(null);
         
         // Show appropriate notification based on whether session was created or joined
         if (result.isNewSession) {
@@ -291,6 +360,8 @@ export class DfdCollaborationService implements OnDestroy {
 
         // Update collaboration state
         this._isCollaborating$.next(true);
+        // Clear existing session state since we're now actively collaborating
+        this._existingSessionAvailable$.next(null);
         
         // Show session started notification
         this._notificationService.showSessionEvent('started').subscribe();
@@ -399,6 +470,7 @@ export class DfdCollaborationService implements OnDestroy {
         this._collaborationUsers$.next([]);
         this._currentPresenterId$.next(null);
         this._pendingPresenterRequests$.next([]);
+        this._existingSessionAvailable$.next(null);
         
         // Show session ended notification
         this._notificationService.showSessionEvent('ended').subscribe();
@@ -414,6 +486,7 @@ export class DfdCollaborationService implements OnDestroy {
         this._collaborationUsers$.next([]);
         this._currentPresenterId$.next(null);
         this._pendingPresenterRequests$.next([]);
+        this._existingSessionAvailable$.next(null);
         
         // Show session ended notification even on error
         this._notificationService.showSessionEvent('ended').subscribe();

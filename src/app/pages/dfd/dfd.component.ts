@@ -239,6 +239,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set collaboration context if we have the required parameters
     if (this.threatModelId && this.dfdId) {
       this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
+      // Check for existing collaboration session on startup
+      this.collaborationService.checkForExistingSession().pipe(take(1)).subscribe({
+        next: (existingSession) => {
+          if (existingSession) {
+            this.logger.info('Found existing collaboration session on startup', {
+              sessionId: existingSession.session_id,
+              sessionManager: existingSession.session_manager,
+              isCurrentUserManager: this.collaborationService.isCurrentUserManagerOfExistingSession()
+            });
+          }
+        },
+        error: (error) => {
+          this.logger.warn('Failed to check for existing session on startup', error);
+        }
+      });
     }
   }
 
