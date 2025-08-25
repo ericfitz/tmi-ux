@@ -1698,7 +1698,7 @@ export class ThreatModelService implements OnDestroy {
    * @returns Observable<CollaborationSession> with isNewSession flag
    */
   startOrJoinDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<{session: CollaborationSession, isNewSession: boolean}> {
-    this.logger.info('Smart session handler: trying to create or join collaboration session', { 
+    this.logger.info('Smart session handler: checking for existing session before creating', { 
       threatModelId, 
       diagramId
     });
@@ -1710,19 +1710,15 @@ export class ThreatModelService implements OnDestroy {
       );
     }
 
-    // Try creating first (POST)
-    return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
-      map(session => {
-        this.logger.info('Session created successfully', { sessionId: session.session_id });
-        return { session, isNewSession: true };
-      }),
-      catchError((error: unknown) => {
-        if (isHttpErrorResponse(error) && error.status === 409) {
-          // Session already exists (409 conflict), join it instead (PUT)
-          this.logger.info('Session already exists, attempting to join', { 
+    // First, check if a session already exists
+    return this.getDiagramCollaborationSession(threatModelId, diagramId).pipe(
+      switchMap((existingSession: CollaborationSession | null) => {
+        if (existingSession) {
+          // Session exists, join it
+          this.logger.info('Found existing session, joining it', { 
+            sessionId: existingSession.session_id,
             threatModelId, 
-            diagramId,
-            errorStatus: error.status 
+            diagramId
           });
           
           return this.joinDiagramCollaborationSession(threatModelId, diagramId).pipe(
@@ -1731,15 +1727,46 @@ export class ThreatModelService implements OnDestroy {
               return { session, isNewSession: false };
             })
           );
+        } else {
+          // No session exists, create a new one
+          this.logger.info('No existing session found, creating new session', { 
+            threatModelId, 
+            diagramId
+          });
+          
+          return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
+            map(session => {
+              this.logger.info('Session created successfully', { sessionId: session.session_id });
+              return { session, isNewSession: true };
+            }),
+            catchError((error: unknown) => {
+              // Keep the 409 fallback for race conditions where a session might be created 
+              // between our check and the POST request
+              if (isHttpErrorResponse(error) && error.status === 409) {
+                this.logger.info('Race condition detected: session created after our check, joining it', { 
+                  threatModelId, 
+                  diagramId,
+                  errorStatus: error.status 
+                });
+                
+                return this.joinDiagramCollaborationSession(threatModelId, diagramId).pipe(
+                  map(session => {
+                    this.logger.info('Successfully joined session after race condition', { sessionId: session.session_id });
+                    return { session, isNewSession: false };
+                  })
+                );
+              }
+              
+              // For other errors, re-throw
+              this.logger.error('Smart session handler failed during session creation', {
+                threatModelId,
+                diagramId,
+                error
+              });
+              return throwError(() => error);
+            })
+          );
         }
-        
-        // For other errors, re-throw
-        this.logger.error('Smart session handler failed with non-409 error', {
-          threatModelId,
-          diagramId,
-          error
-        });
-        return throwError(() => error);
       })
     );
   }

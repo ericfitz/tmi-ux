@@ -144,7 +144,8 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: error => {
-          expect(error.message).toContain('Server Error: 500 Internal Server Error');
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(500);
           expect(loggerService.error).toHaveBeenCalled();
         },
       });
@@ -164,7 +165,8 @@ describe('ApiService', () => {
       result$.subscribe({
         error: error => {
           // Verify that error handling works correctly after retry attempts
-          expect(error.message).toContain('Server Error: 500 Internal Server Error');
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(500);
           expect(loggerService.error).toHaveBeenCalled();
         },
       });
@@ -198,7 +200,8 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: error => {
-          expect(error.message).toContain('Server Error: 400 Bad Request');
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(400);
           expect(loggerService.error).toHaveBeenCalled();
         },
       });
@@ -232,7 +235,8 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: error => {
-          expect(error.message).toContain('Server Error: 404 Not Found');
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(404);
           expect(loggerService.error).toHaveBeenCalled();
         },
       });
@@ -263,7 +267,8 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: error => {
-          expect(error.message).toContain('Server Error: 403 Forbidden');
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(403);
           expect(loggerService.error).toHaveBeenCalled();
         },
       });
@@ -282,7 +287,8 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: error => {
-          expect(error.message).toContain('Client Error: Connection failed');
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.error.message).toBe('Connection failed');
           expect(loggerService.error).toHaveBeenCalledWith('Client Error: Connection failed');
         },
       });
@@ -366,7 +372,8 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: error => {
-          expect(error.message).toContain(`POST ${testEndpoint}`);
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(500);
           expect(loggerService.error).toHaveBeenCalledWith(
             `Server Error: 500 Internal Server Error for POST ${testEndpoint}`,
             serverError,

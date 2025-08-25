@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, Subscription } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, skip } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -74,6 +74,7 @@ export class DfdCollaborationService implements OnDestroy {
   // Subscription management
   private _subscriptions = new Subscription();
   private _webSocketListenersSetup = false;
+  private _intentionalDisconnection = false;
 
   constructor(
     private _logger: LoggerService,
@@ -427,6 +428,9 @@ export class DfdCollaborationService implements OnDestroy {
       });
     }
 
+    // Mark as intentional disconnection to suppress notification
+    this._intentionalDisconnection = true;
+    
     // Clean up local state and redirect
     this._cleanupSessionState();
     this._redirectToDashboard();
@@ -461,6 +465,9 @@ export class DfdCollaborationService implements OnDestroy {
           diagramId: this._currentSession?.diagram_id
         });
 
+        // Mark as intentional disconnection to suppress notification
+        this._intentionalDisconnection = true;
+        
         // Disconnect WebSocket
         this._disconnectFromWebSocket();
 
@@ -480,6 +487,8 @@ export class DfdCollaborationService implements OnDestroy {
         this._logger.error('Failed to end collaboration session', error);
         
         // Even if API call fails, clean up local state
+        // Mark as intentional disconnection to suppress notification
+        this._intentionalDisconnection = true;
         this._disconnectFromWebSocket();
         this._currentSession = null;
         this._isCollaborating$.next(false);
@@ -966,8 +975,11 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Setting up WebSocket listeners for active collaboration session');
     
     // Listen to connection state changes
+    // Skip the initial state (DISCONNECTED) that's emitted immediately upon subscription
     this._subscriptions.add(
-      this._webSocketAdapter.connectionState$.subscribe((state: WebSocketState) => {
+      this._webSocketAdapter.connectionState$.pipe(
+        skip(1) // Skip the initial BehaviorSubject value
+      ).subscribe((state: WebSocketState) => {
         this._handleWebSocketStateChange(state);
       })
     );
@@ -1036,7 +1048,11 @@ export class DfdCollaborationService implements OnDestroy {
    * Only shows notifications when there's an active collaboration session
    */
   private _handleWebSocketStateChange(state: WebSocketState): void {
-    this._logger.debug('WebSocket state changed', { state, hasActiveSession: !!this._currentSession });
+    this._logger.debug('WebSocket state changed', { 
+      state, 
+      hasActiveSession: !!this._currentSession,
+      intentionalDisconnection: this._intentionalDisconnection
+    });
 
     // Only show notifications if there's an active collaboration session
     if (!this._currentSession) {
@@ -1052,6 +1068,14 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService.showWebSocketStatus(state).subscribe();
         break;
       case WebSocketState.DISCONNECTED:
+        // Don't show disconnection notification if it was intentional (user leaving/ending session)
+        if (this._intentionalDisconnection) {
+          this._logger.debug('Intentional disconnection - suppressing notification');
+          // Reset the flag for next session
+          this._intentionalDisconnection = false;
+          return;
+        }
+        // Fall through to show notification for unexpected disconnections
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
         this._notificationService.showWebSocketStatus(state, () => this._retryWebSocketConnection()).subscribe();

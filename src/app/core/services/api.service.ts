@@ -192,8 +192,13 @@ export class ApiService {
       this.logger.error(errorMessage, error);
     }
 
-    // Return an observable with a user-facing error message
-    return throwError(() => new Error(errorMessage));
+    // Return an observable with the original error for HttpErrorResponse to preserve status codes,
+    // or a user-facing error message for other error types
+    if (error instanceof HttpErrorResponse) {
+      return throwError(() => error);
+    } else {
+      return throwError(() => new Error(errorMessage));
+    }
   }
 
   /**
