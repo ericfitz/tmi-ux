@@ -84,6 +84,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   collaborationUsers: CollaborationUser[] = [];
   currentPresenterId: string | null = null;
   pendingPresenterRequests: string[] = [];
+  isCurrentUserSessionManagerFlag = false;
 
   // URL copy feedback
   linkCopied = false;
@@ -109,6 +110,11 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this._collaborationService.isCollaborating$.subscribe(isCollaborating => {
         this.isCollaborating = isCollaborating;
+        // Don't set session manager flag here - wait for users to be populated
+        // Only clear it when collaboration ends
+        if (!isCollaborating) {
+          this.isCurrentUserSessionManagerFlag = false;
+        }
         this._cdr.markForCheck();
       }),
     );
@@ -117,6 +123,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this._collaborationService.collaborationUsers$.subscribe(users => {
         this.collaborationUsers = users;
+        this.isCurrentUserSessionManagerFlag = this._collaborationService.isCurrentUserSessionManager();
         this._cdr.markForCheck();
       }),
     );
@@ -283,7 +290,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * @returns boolean indicating if the current user is the session manager
    */
   isCurrentUserSessionManager(): boolean {
-    return this._collaborationService.isCurrentUserSessionManager();
+    return this.isCurrentUserSessionManagerFlag;
   }
 
   /**

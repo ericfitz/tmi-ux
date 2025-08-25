@@ -58,21 +58,42 @@ describe('DfdNotificationService', () => {
     );
   });
 
-  it('should show WebSocket status notifications', () => {
+  it('should suppress WebSocket success notifications', () => {
+    // Success states should not show notifications (already indicated by UI icons)
     service.showWebSocketStatus(WebSocketState.CONNECTED).subscribe();
+    service.showWebSocketStatus(WebSocketState.CONNECTING).subscribe();
+    service.showWebSocketStatus(WebSocketState.RECONNECTING).subscribe();
+
+    expect(mockSnackBar.open).not.toHaveBeenCalled();
+  });
+
+  it('should show WebSocket error notifications', () => {
+    service.showWebSocketStatus(WebSocketState.ERROR).subscribe();
 
     expect(mockSnackBar.open).toHaveBeenCalledWith(
-      'Connected to collaboration server',
-      'Dismiss',
-      expect.any(Object)
+      'Connection error. Working in offline mode.',
+      'Retry',
+      expect.objectContaining({
+        actionCallback: undefined,
+        actionLabel: 'Retry',
+        type: 'error'
+      })
     );
   });
 
-  it('should show session event notifications', () => {
+  it('should suppress session start/end notifications', () => {
+    // Session start/end should not show notifications (already indicated by collaboration icon)
     service.showSessionEvent('started').subscribe();
+    service.showSessionEvent('ended').subscribe();
+
+    expect(mockSnackBar.open).not.toHaveBeenCalled();
+  });
+
+  it('should show user join/leave notifications', () => {
+    service.showSessionEvent('userJoined', 'John Doe').subscribe();
 
     expect(mockSnackBar.open).toHaveBeenCalledWith(
-      'Collaboration session started. Other users can now join and edit.',
+      'John Doe joined the collaboration',
       'Dismiss',
       expect.any(Object)
     );

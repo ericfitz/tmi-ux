@@ -43,6 +43,7 @@ import { Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
 import { CoreMaterialModule } from '../../shared/material/core-material.module';
+import { FeedbackMaterialModule } from '../../shared/material/feedback-material.module';
 import { NodeType } from './domain/value-objects/node-info';
 import { getX6ShapeForNodeType } from './infrastructure/adapters/x6-shape-definitions';
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
@@ -89,6 +90,7 @@ import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapt
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from './services/dfd-collaboration.service';
+import { DfdNotificationService } from './services/dfd-notification.service';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
@@ -111,6 +113,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
   imports: [
     CommonModule,
     CoreMaterialModule,
+    FeedbackMaterialModule,
     MatMenuModule,
     MatTooltipModule,
     TranslocoModule,
@@ -153,6 +156,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // Collaboration Service
     DfdCollaborationService,
+
+    // Notification Service
+    DfdNotificationService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],

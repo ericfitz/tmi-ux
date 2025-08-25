@@ -562,6 +562,7 @@ export class DfdCollaborationService implements OnDestroy {
     const currentUserEmail = this._authService.userEmail || 'current-user';
     const currentUser = users.find(user => user.id === currentUserEmail);
 
+
     return currentUser?.isSessionManager || false;
   }
 
@@ -1195,6 +1196,9 @@ export class DfdCollaborationService implements OnDestroy {
               participantCount: session.participants.length 
             });
             
+            // Store the original session manager before updating session data
+            const originalSessionManager = this._currentSession?.session_manager;
+            
             // Update session data
             this._currentSession = session;
             
@@ -1208,12 +1212,18 @@ export class DfdCollaborationService implements OnDestroy {
                 });
                 throw new Error(`Server error: participant ${participant.user_id} missing permissions field`);
               }
+              
+              // Use session_manager from refresh response if available, otherwise fall back to stored session
+              const sessionManagerId = session.session_manager || originalSessionManager;
+              const isSessionManager = participant.user_id === sessionManagerId;
+              
+              
               return {
                 id: participant.user_id,
                 name: participant.user_id, // Use email address as display name
                 permission: participant.permissions, // Use permissions from API response
                 status: 'active' as const,
-                isSessionManager: participant.user_id === session.session_manager,
+                isSessionManager,
               };
             });
 

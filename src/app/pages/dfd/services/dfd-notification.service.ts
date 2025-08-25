@@ -263,43 +263,48 @@ export class DfdNotificationService implements OnDestroy {
     let presetKey: string;
     let actionCallback: (() => void) | undefined = retryCallback;
 
+    // Only show notifications for error states - success states are indicated by WebSocket icon
     switch (state) {
       case WebSocketState.CONNECTING:
-        message = 'Connecting to collaboration server...';
-        presetKey = 'websocketConnecting';
-        actionCallback = undefined; // No action during connecting
-        break;
       case WebSocketState.CONNECTED:
-        message = 'Connected to collaboration server';
-        presetKey = 'websocketConnected';
-        actionCallback = undefined;
-        break;
+      case WebSocketState.RECONNECTING:
+        // These are already indicated by the WebSocket icon state - no notification needed
+        this._logger.debug('WebSocket status suppressed - already indicated by UI', { state });
+        // Still dismiss any existing WebSocket error notifications on success
+        if (state === WebSocketState.CONNECTED) {
+          this._dismissWebSocketNotifications();
+        }
+        return new Observable<void>(observer => {
+          observer.next();
+          observer.complete();
+        });
+        
       case WebSocketState.DISCONNECTED:
+        // Show warning for disconnection (user should know data might not sync)
         message = 'Disconnected from collaboration server. Changes will be saved locally.';
         presetKey = 'websocketDisconnected';
-        break;
-      case WebSocketState.RECONNECTING:
-        message = 'Attempting to reconnect to collaboration server...';
-        presetKey = 'websocketReconnecting';
-        actionCallback = undefined; // No action during reconnecting
-        break;
+        this._dismissWebSocketNotifications();
+        return this.showPreset(presetKey, message);
+        
       case WebSocketState.ERROR:
-        message = 'Connection error. Working in offline mode.';
-        presetKey = 'websocketFailed';
-        break;
       case WebSocketState.FAILED:
-        message = 'Connection failed after multiple attempts. Working in offline mode.';
+        // Show error notifications with retry option
+        message = state === WebSocketState.FAILED 
+          ? 'Connection failed after multiple attempts. Working in offline mode.'
+          : 'Connection error. Working in offline mode.';
         presetKey = 'websocketFailed';
-        break;
+        actionCallback = retryCallback;
+        
+        this._dismissWebSocketNotifications();
+        return this.showPreset(presetKey, message, { actionCallback });
+        
       default:
-        message = 'Unknown connection status';
-        presetKey = 'info';
+        this._logger.warn('Unknown WebSocket state', { state });
+        return new Observable<void>(observer => {
+          observer.next();
+          observer.complete();
+        });
     }
-
-    // Dismiss any existing WebSocket status notifications
-    this._dismissWebSocketNotifications();
-
-    return this.showPreset(presetKey, message, { actionCallback });
   }
 
   /**
@@ -357,32 +362,40 @@ export class DfdNotificationService implements OnDestroy {
    * @param details Additional details (e.g., user name)
    */
   showSessionEvent(event: 'started' | 'ended' | 'userJoined' | 'userLeft', details?: string): Observable<void> {
-    let message: string;
-    let presetKey: string;
-
+    // Only show notifications for events that aren't already indicated by UI state
+    // Session start/end are already visible via collaboration icon state
+    // Only show user join/leave events since they provide useful information
     switch (event) {
       case 'started':
-        message = 'Collaboration session started. Other users can now join and edit.';
-        presetKey = 'sessionStarted';
-        break;
       case 'ended':
-        message = 'Collaboration session ended. Working in single-user mode.';
-        presetKey = 'sessionEnded';
-        break;
+        // These are already indicated by the collaboration icon state - no notification needed
+        this._logger.debug('Session event suppressed - already indicated by UI', { event });
+        return new Observable<void>(observer => {
+          observer.next();
+          observer.complete();
+        });
       case 'userJoined':
-        message = details ? `${details} joined the collaboration session` : 'A user joined the collaboration session';
-        presetKey = 'userJoined';
+        if (details) {
+          const message = `${details} joined the collaboration`;
+          return this.showPreset('userJoined', message);
+        }
         break;
       case 'userLeft':
-        message = details ? `${details} left the collaboration session` : 'A user left the collaboration session';
-        presetKey = 'userLeft';
+        if (details) {
+          const message = `${details} left the collaboration`;
+          return this.showPreset('userLeft', message);
+        }
         break;
       default:
-        message = 'Collaboration session event occurred';
-        presetKey = 'info';
+        this._logger.warn('Unknown session event', { event });
+        break;
     }
 
-    return this.showPreset(presetKey, message);
+    // Return empty observable for suppressed events
+    return new Observable<void>(observer => {
+      observer.next();
+      observer.complete();
+    });
   }
 
   /**
