@@ -7,14 +7,14 @@
 
 // Success notifications (green theme)
 .notification-success {
-  --mdc-snackbar-container-color: #4caf50 !important;
+  --mdc-snackbar-container-color: var(--color-success) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
   
   .mat-mdc-snack-bar-container {
-    background-color: #4caf50 !important;
+    background-color: var(--color-success) !important;
     
     .mdc-snackbar__surface {
-      background-color: #4caf50 !important;
+      background-color: var(--color-success) !important;
       color: #fff !important;
     }
     
@@ -36,14 +36,14 @@
 
 // Info notifications (blue theme)
 .notification-info {
-  --mdc-snackbar-container-color: #2196f3 !important;
+  --mdc-snackbar-container-color: var(--color-info) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
   
   .mat-mdc-snack-bar-container {
-    background-color: #2196f3 !important;
+    background-color: var(--color-info) !important;
     
     .mdc-snackbar__surface {
-      background-color: #2196f3 !important;
+      background-color: var(--color-info) !important;
       color: #fff !important;
     }
     
@@ -65,14 +65,14 @@
 
 // Warning notifications (orange theme)
 .notification-warning {
-  --mdc-snackbar-container-color: #ff9800 !important;
+  --mdc-snackbar-container-color: var(--color-warning) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
   
   .mat-mdc-snack-bar-container {
-    background-color: #ff9800 !important;
+    background-color: var(--color-warning) !important;
     
     .mdc-snackbar__surface {
-      background-color: #ff9800 !important;
+      background-color: var(--color-warning) !important;
       color: #fff !important;
     }
     
@@ -94,14 +94,14 @@
 
 // Error notifications (red theme)
 .notification-error {
-  --mdc-snackbar-container-color: #f44336 !important;
+  --mdc-snackbar-container-color: var(--color-error) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
   
   .mat-mdc-snack-bar-container {
-    background-color: #f44336 !important;
+    background-color: var(--color-error) !important;
     
     .mdc-snackbar__surface {
-      background-color: #f44336 !important;
+      background-color: var(--color-error) !important;
       color: #fff !important;
     }
     
@@ -154,19 +154,19 @@
 // Dark theme overrides (if needed)
 @media (prefers-color-scheme: dark) {
   .notification-success {
-    --mdc-snackbar-container-color: #388e3c !important;
+    --mdc-snackbar-container-color: var(--color-success-dark) !important;
   }
   
   .notification-info {
-    --mdc-snackbar-container-color: #1976d2 !important;
+    --mdc-snackbar-container-color: var(--color-primary) !important;
   }
   
   .notification-warning {
-    --mdc-snackbar-container-color: #f57c00 !important;
+    --mdc-snackbar-container-color: var(--color-warning-dark) !important;
   }
   
   .notification-error {
-    --mdc-snackbar-container-color: #d32f2f !important;
+    --mdc-snackbar-container-color: var(--color-error-dark) !important;
   }
 }
 

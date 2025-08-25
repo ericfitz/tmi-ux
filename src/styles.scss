@@ -1,5 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
+// Import color system first
+@use 'styles/colors';
+
 // Import FontAwesome
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -55,7 +58,7 @@ html[dir='rtl'] {
 
 .page-title {
   margin-bottom: 16px;
-  color: #1976d2; /* Use explicit blue color instead of function */
+  color: var(--color-primary);
   font-weight: 500;
 }
 

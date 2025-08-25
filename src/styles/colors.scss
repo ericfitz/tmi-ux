@@ -1,0 +1,216 @@
+/**
+ * Centralized Color System
+ * 
+ * This file contains all color definitions used throughout the application.
+ * Colors are organized by semantic purpose and support light/dark themes.
+ */
+
+// =============================================================================
+// SCSS VARIABLES (Legacy support & computed values)
+// =============================================================================
+
+// Primary Brand Colors
+$primary-color: #1976d2;
+$primary-color-dark: #1565c0;
+$primary-color-light: #1890ff;
+
+// Status Colors
+$success-color: #4caf50;
+$success-color-dark: #388e3c;
+$error-color: #f44336;
+$error-color-dark: #d32f2f;
+$error-color-darker: #c62828;
+$warning-color: #ff9800;
+$warning-color-dark: #f57c00;
+$info-color: #2196f3;
+
+// Text Colors
+$text-primary: #333;
+$text-secondary: #555;
+$text-tertiary: #666;
+$text-muted: #757575;
+$text-disabled: rgb(0 0 0 / 60%);
+
+// Background Colors
+$background-light: #f8f9fa;
+$background-lighter: #f5f5f5;
+$background-error: #ffebee;
+$background-white: #fff;
+
+// Border Colors
+$border-color: #ccc;
+$border-light: #e0e0e0;
+$border-material: rgb(0 0 0 / 12%);
+
+// OAuth Provider Colors
+$google-color: #4285f4;
+$google-color-hover: #3367d6;
+$github-color: #24292e;
+$github-color-hover: #1a1e22;
+$microsoft-color: #00a1f1;
+$microsoft-color-hover: #0078d4;
+$test-color: #dc3545;
+$test-color-hover: #c82333;
+$local-color: #6c757d;
+$local-color-hover: #5a6268;
+
+// DFD-Specific Colors
+$dfd-selection-color: rgb(255 0 0 / 80%);
+$dfd-hover-color: rgb(255 0 0 / 60%);
+$dfd-creation-color: rgb(0 150 255 / 90%);
+$dfd-snapline-color: #f00;
+$dfd-port-hover-color: rgb(49 208 110 / 80%);
+
+// Theme Colors (used in about/tos/privacy pages)
+$theme-cyan: #0097a7;
+$theme-teal: #00796b;
+
+// Role-based Colors (for collaboration)
+$role-owner-color: #ff9800;
+$role-writer-color: #4caf50;
+$role-reader-color: #757575;
+$role-presenter-color: #9c27b0;
+
+// =============================================================================
+// CSS CUSTOM PROPERTIES (Modern theming support)
+// =============================================================================
+
+:root {
+  // Primary Brand Colors
+  --color-primary: #{$primary-color};
+  --color-primary-dark: #{$primary-color-dark};
+  --color-primary-light: #{$primary-color-light};
+
+  // Status Colors
+  --color-success: #{$success-color};
+  --color-success-dark: #{$success-color-dark};
+  --color-error: #{$error-color};
+  --color-error-dark: #{$error-color-dark};
+  --color-error-darker: #{$error-color-darker};
+  --color-warning: #{$warning-color};
+  --color-warning-dark: #{$warning-color-dark};
+  --color-info: #{$info-color};
+
+  // Text Colors
+  --color-text-primary: #{$text-primary};
+  --color-text-secondary: #{$text-secondary};
+  --color-text-tertiary: #{$text-tertiary};
+  --color-text-muted: #{$text-muted};
+  --color-text-disabled: #{$text-disabled};
+
+  // Background Colors
+  --color-background-light: #{$background-light};
+  --color-background-lighter: #{$background-lighter};
+  --color-background-error: #{$background-error};
+  --color-background-white: #{$background-white};
+
+  // Border Colors
+  --color-border: #{$border-color};
+  --color-border-light: #{$border-light};
+  --color-border-material: #{$border-material};
+
+  // OAuth Provider Colors
+  --color-google: #{$google-color};
+  --color-google-hover: #{$google-color-hover};
+  --color-github: #{$github-color};
+  --color-github-hover: #{$github-color-hover};
+  --color-microsoft: #{$microsoft-color};
+  --color-microsoft-hover: #{$microsoft-color-hover};
+  --color-test: #{$test-color};
+  --color-test-hover: #{$test-color-hover};
+  --color-local: #{$local-color};
+  --color-local-hover: #{$local-color-hover};
+
+  // DFD-Specific Colors
+  --color-dfd-selection: #{$dfd-selection-color};
+  --color-dfd-hover: #{$dfd-hover-color};
+  --color-dfd-creation: #{$dfd-creation-color};
+  --color-dfd-snapline: #{$dfd-snapline-color};
+  --color-dfd-port-hover: #{$dfd-port-hover-color};
+
+  // Theme Colors
+  --color-theme-cyan: #{$theme-cyan};
+  --color-theme-teal: #{$theme-teal};
+
+  // Role-based Colors
+  --color-role-owner: #{$role-owner-color};
+  --color-role-writer: #{$role-writer-color};
+  --color-role-reader: #{$role-reader-color};
+  --color-role-presenter: #{$role-presenter-color};
+
+  // Server Status Colors
+  --color-server-not-configured: #{$text-tertiary};
+  --color-server-error: #{$error-color};
+  --color-server-connected: #{$success-color};
+}
+
+// =============================================================================
+// DARK THEME OVERRIDES
+// =============================================================================
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    // Adjust colors for dark theme
+    --color-success-dark: #2e7d32;
+    --color-error-dark: #c62828;
+    --color-warning-dark: #e65100;
+    --color-info: #1565c0;
+    
+    // Background adjustments for dark theme
+    --color-background-light: #2a2a2a;
+    --color-background-lighter: #1e1e1e;
+    
+    // Text adjustments for dark theme
+    --color-text-primary: #fff;
+    --color-text-secondary: #e0e0e0;
+    --color-text-tertiary: #bdbdbd;
+  }
+}
+
+// =============================================================================
+// UTILITY MIXINS
+// =============================================================================
+
+// Status color mixins for consistent application
+@mixin status-success {
+  color: var(--color-success);
+}
+
+@mixin status-error {
+  color: var(--color-error);
+}
+
+@mixin status-warning {
+  color: var(--color-warning);
+}
+
+@mixin status-info {
+  color: var(--color-info);
+}
+
+// Background color mixins
+@mixin background-success {
+  background-color: var(--color-success);
+}
+
+@mixin background-error {
+  background-color: var(--color-error);
+}
+
+@mixin background-warning {
+  background-color: var(--color-warning);
+}
+
+@mixin background-info {
+  background-color: var(--color-info);
+}
+
+// OAuth provider button mixins
+@mixin oauth-button($provider) {
+  background-color: var(--color-#{$provider});
+  color: white;
+  
+  &:hover {
+    background-color: var(--color-#{$provider}-hover);
+  }
+}

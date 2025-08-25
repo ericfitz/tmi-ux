@@ -7,25 +7,25 @@
 
 // Style for the active collaboration icon
 .active {
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 // Style for when existing session is available (blue color)
 .session-available {
-  color: #2196f3; // Blue
+  color: var(--color-info);
 }
 
 // WebSocket connection status indicator styles (matching navbar server status)
 .websocket-status-not-configured .mat-icon {
-  color: #666; // Dark grey
+  color: var(--color-server-not-configured);
 }
 
 .websocket-status-error .mat-icon {
-  color: #f44336; // Red
+  color: var(--color-server-error);
 }
 
 .websocket-status-connected .mat-icon {
-  color: #4caf50; // Green
+  color: var(--color-server-connected);
 }
 
 // Status indicators
@@ -37,15 +37,15 @@
 }
 
 .status-active {
-  background-color: #4caf50; // Green
+  background-color: var(--color-success);
 }
 
 .status-idle {
-  background-color: #ff9800; // Orange
+  background-color: var(--color-warning);
 }
 
 .status-disconnected {
-  background-color: #f44336; // Red
+  background-color: var(--color-error);
 }
 
 // Menu styling
@@ -113,7 +113,7 @@
       margin-top: 8px;
 
       .presenter-icon {
-        color: #9c27b0; // Purple
+        color: var(--color-role-presenter);
         font-size: 18px;
       }
 
@@ -161,19 +161,19 @@
             height: 18px;
             
             &.owner-icon {
-              color: #ff9800; // Orange for owner
+              color: var(--color-role-owner);
             }
             
             &.writer-icon {
-              color: #4caf50; // Green for writer
+              color: var(--color-role-writer);
             }
             
             &.reader-icon {
-              color: #757575; // Grey for reader
+              color: var(--color-role-reader);
             }
             
             &.presenter-icon {
-              color: #9c27b0; // Purple for presenter
+              color: var(--color-role-presenter);
             }
           }
         }
@@ -193,7 +193,7 @@
   }
 
   .warn-text {
-    color: #f44336;
+    color: var(--color-error);
   }
 }
 
@@ -201,13 +201,13 @@
 ::ng-deep {
   .mat-mdc-raised-button.mat-success,
   .mat-mdc-unelevated-button.mat-success {
-    --mdc-filled-button-container-color: #4caf50;
+    --mdc-filled-button-container-color: var(--color-success);
     --mdc-filled-button-label-text-color: #fff;
   }
 
   .mat-mdc-raised-button.mat-warn,
   .mat-mdc-unelevated-button.mat-warn {
-    --mdc-filled-button-container-color: #f44336;
+    --mdc-filled-button-container-color: var(--color-error);
     --mdc-filled-button-label-text-color: #fff;
   }
 }

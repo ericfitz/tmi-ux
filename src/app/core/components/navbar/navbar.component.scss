@@ -36,15 +36,15 @@
 
 // Server connection status indicator styles
 .server-status-not-configured .mat-icon {
-  color: #666; // Dark grey
+  color: var(--color-server-not-configured);
 }
 
 .server-status-error .mat-icon {
-  color: #f44336; // Red
+  color: var(--color-server-error);
 }
 
 .server-status-connected .mat-icon {
-  color: #4caf50; // Green
+  color: var(--color-server-connected);
 }
 
 // RTL adjustments

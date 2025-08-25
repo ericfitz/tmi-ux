@@ -19,7 +19,7 @@
 }
 
 h2 {
-  color: #0097a7; // Cyan 700
+  color: var(--color-theme-cyan);
   margin-top: 24px;
   margin-bottom: 12px;
   font-weight: 500;
