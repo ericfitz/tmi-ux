@@ -264,6 +264,7 @@
     "editSourceCode": "تحرير الكود المصدري",
     "frameworkDisabledHint": "لا يمكن تغيير الإطار عند وجود تهديدات",
     "idLabel": "المعرف:",
+    "issueUrlHint": "أدخل رابطًا لتتبع نموذج التهديد هذا في نظام خارجي",
     "metadataDialog": {
       "title": "إدارة البيانات الوصفية"
     },

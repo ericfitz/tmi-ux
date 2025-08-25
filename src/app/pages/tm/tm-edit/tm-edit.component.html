@@ -187,7 +187,7 @@
                   tabindex="4"
                   placeholder="https://example.com/issue/123"
                 />
-                <mat-hint>Enter a URL to track this threat model in an external system</mat-hint>
+                <mat-hint>{{ 'threatModels.issueUrlHint' | transloco }}</mat-hint>
                 <mat-error *ngIf="threatModelForm.get('issue_url')?.hasError('url')">
                   {{ 'common.validation.invalidUrl' | transloco }}
                 </mat-error>

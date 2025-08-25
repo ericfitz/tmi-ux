@@ -264,6 +264,7 @@
     "editSourceCode": "Edit Source Code",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
+    "issueUrlHint": "Enter a URL to track this threat model in an external system",
     "metadataDialog": {
       "title": "Manage Metadata"
     },

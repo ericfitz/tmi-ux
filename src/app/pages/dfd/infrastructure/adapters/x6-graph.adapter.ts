@@ -1781,7 +1781,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
         // Check if all actual changes are visual-only
         const isOnlyVisualAttributes = actualChanges.every(changePath => {
-          const isExcluded = this._historyCoordinator.shouldExcludeAttribute();
+          const isExcluded = this._historyCoordinator.shouldExcludeAttribute(changePath);
           this.logger.debugComponent('X6Graph', `Checking ${changePath}: excluded=${isExcluded}`);
           return isExcluded;
         });
@@ -1795,13 +1795,13 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Handle port changes - check if they're only visibility changes
       if (args.key === 'ports' && args.options && args.options.propertyPath) {
-        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute();
+        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute(undefined, args.options.propertyPath);
 
         if (isPortVisibilityOnly) {
-          // this.logger.debugComponent('X6Graph', 'Excluding port visibility change');
+          this.logger.debugComponent('X6Graph', 'Excluding port visibility change:', args.options.propertyPath);
           return false; // Don't add to history
         }
-        this.logger.debugComponent('X6Graph', 'Including port change - not visibility only');
+        this.logger.debugComponent('X6Graph', 'Including port change - not visibility only:', args.options.propertyPath);
       }
 
       // For other cell:change:* events, allow them unless they're specifically excluded

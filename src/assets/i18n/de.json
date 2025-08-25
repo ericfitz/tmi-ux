@@ -264,6 +264,7 @@
     "editSourceCode": "Quellcode bearbeiten",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "ID:",
+    "issueUrlHint": "Geben Sie eine URL ein, um dieses Bedrohungsmodell in einem externen System zu verfolgen",
     "metadataDialog": {
       "title": "Metadaten verwalten"
     },

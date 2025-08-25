@@ -168,14 +168,16 @@ export class DfdNodeService {
           this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
           createdNode = node; // Capture the created node for visual effects
           
-          // Apply visual effects
-          if (createdNode) {
-            this.visualEffectsService.applyCreationHighlight(createdNode, graph);
-          }
-          
           return node;
         }
       );
+
+      // Apply visual effects AFTER the batched operation (outside of history)
+      if (createdNode) {
+        this.historyCoordinator.executeVisualEffect(graph, () => {
+          this.visualEffectsService.applyCreationHighlight(createdNode, graph);
+        });
+      }
 
       this.logger.info(
         'Node created successfully directly in X6 with creation highlight (batched)',
