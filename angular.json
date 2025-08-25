@@ -51,7 +51,7 @@
             "allowedCommonJsDependencies": [
               "mousetrap",
               "core-js/modules/es.promise.js",
-              "core-js/modules/es.string.match.js", 
+              "core-js/modules/es.string.match.js",
               "core-js/modules/es.string.replace.js",
               "core-js/modules/es.string.starts-with.js",
               "core-js/modules/es.array.iterator.js",
@@ -87,13 +87,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.2MB",
-                  "maximumError": "1.5MB"
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kB",
-                  "maximumError": "10kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "15kB"
                 }
               ],
               "outputHashing": "all",

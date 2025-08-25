@@ -1075,7 +1075,9 @@ export class DfdCollaborationService implements OnDestroy {
           this._intentionalDisconnection = false;
           return;
         }
-        // Fall through to show notification for unexpected disconnections
+        // Show notification for unexpected disconnections
+        this._notificationService.showWebSocketStatus(state, () => this._retryWebSocketConnection()).subscribe();
+        break;
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
         this._notificationService.showWebSocketStatus(state, () => this._retryWebSocketConnection()).subscribe();
