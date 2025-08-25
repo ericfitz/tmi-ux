@@ -31,6 +31,7 @@ import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager'
 import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
+import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
 import { DFD_STYLING } from '../constants/styling-constants';
 
 /**
@@ -76,6 +77,7 @@ export class DfdEdgeService {
     private x6HistoryManager: X6HistoryManager,
     private visualEffectsService: VisualEffectsService,
     private edgeService: EdgeService,
+    private historyCoordinator: GraphHistoryCoordinator,
   ) {}
 
   // ========================================
@@ -248,11 +250,14 @@ export class DfdEdgeService {
       // Set the label using the utility function
       this.updateEdgeLabel(inverseEdge, inverseLabel);
 
-      // Apply proper zIndex using the same logic as normal edge creation (application layer)
-      this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
-
-      // Apply creation highlight effect for programmatically created inverse edges (application layer)
-      this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
+      // Apply visual effects (z-order and highlighting) outside of history
+      this.historyCoordinator.executeVisualEffect(graph, () => {
+        // Apply proper zIndex using the same logic as normal edge creation
+        this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
+        
+        // Apply creation highlight effect for programmatically created inverse edges
+        this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
+      });
 
       this.logger.info(
         'Inverse edge created successfully with vertex processing and label customization',

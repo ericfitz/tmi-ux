@@ -1024,17 +1024,15 @@ export class X6GraphAdapter implements IGraphAdapter {
             },
           );
 
-          // FIXED: Set edge z-order to the higher of source or target node z-orders AFTER connection is established
-          this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
-
-          // Update port visibility after connection using port manager (with history disabled)
-          this._historyManager.disable(this._graph!);
-          try {
+          // Set edge z-order and update port visibility (all excluded from history as visual effects)
+          this._historyCoordinator.executeVisualEffect(this._graph!, () => {
+            // Set edge z-order to the higher of source or target node z-orders
+            this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
+            
+            // Update port visibility after connection
             this._portStateManager.hideUnconnectedPorts(this._graph!);
             this._portStateManager.ensureConnectedPortsVisible(this._graph!, edge);
-          } finally {
-            this._historyManager.enable(this._graph!);
-          }
+          });
 
           // Simplified flow without command bus - just emit the edge added event
           this.logger.debugComponent('X6Graph', 'Emitting edge added event');
@@ -1619,16 +1617,14 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _updatePortVisibilityAfterEdgeCreation(edge: Edge): void {
     const graph = this.getGraph();
 
-    // FIXED: Set edge z-order to the higher of source or target node z-orders
-    // This ensures programmatically added edges also get correct zIndex
-    this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
-
-    // Use port manager for port visibility updates (with history disabled)
-    this._historyManager.disable(this._graph!);
-    try {
+    // Set edge z-order and update port visibility (all excluded from history as visual effects)
+    this._historyCoordinator.executeVisualEffect(this._graph!, () => {
+      // Set edge z-order to the higher of source or target node z-orders
+      this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
+      
+      // Update port visibility for the edge and its connected nodes
       this._portStateManager.ensureConnectedPortsVisible(graph, edge);
 
-      // Update port visibility for connected nodes using port manager
       const sourceNodeId = edge.getSourceCellId();
       const targetNodeId = edge.getTargetCellId();
 
@@ -1645,9 +1641,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           this._portStateManager.updateNodePortVisibility(graph, targetNode);
         }
       }
-    } finally {
-      this._historyManager.enable(this._graph!);
-    }
+    });
   }
 
   /**

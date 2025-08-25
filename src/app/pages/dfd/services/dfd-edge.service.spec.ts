@@ -13,6 +13,7 @@ import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
 import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
+import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
 import { initializeX6CellExtensions } from '../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../infrastructure/adapters/x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
@@ -26,6 +27,10 @@ interface MockX6ZOrderAdapter {
 
 interface MockX6HistoryManager {
   executeCommand?: ReturnType<typeof vi.fn>;
+}
+
+interface MockGraphHistoryCoordinator {
+  executeVisualEffect: ReturnType<typeof vi.fn>;
 }
 
 interface MockVisualEffectsService {
@@ -45,6 +50,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
   let mockX6HistoryManager: MockX6HistoryManager;
   let mockVisualEffectsService: MockVisualEffectsService;
   let mockEdgeService: MockEdgeService;
+  let mockGraphHistoryCoordinator: MockGraphHistoryCoordinator;
 
   beforeEach(() => {
     // Initialize X6 cell extensions and register DFD shapes
@@ -71,6 +77,10 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       applyCreationHighlight: vi.fn(),
     };
 
+    mockGraphHistoryCoordinator = {
+      executeVisualEffect: vi.fn((graph, operation) => operation()),
+    };
+
     mockEdgeService = {
       createEdge: vi.fn(),
       removeEdge: vi.fn(),
@@ -83,6 +93,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       mockX6HistoryManager as unknown as X6HistoryManager,
       mockVisualEffectsService as unknown as VisualEffectsService,
       mockEdgeService as unknown as EdgeService,
+      mockGraphHistoryCoordinator as unknown as GraphHistoryCoordinator,
     );
   });
 
