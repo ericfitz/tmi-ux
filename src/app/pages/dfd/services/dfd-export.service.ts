@@ -70,7 +70,10 @@ export class DfdExportService {
             }
           }
         } else {
-          this.logger.debugComponent('DfdExport', 'File System Access API not supported, using fallback download method');
+          this.logger.debugComponent(
+            'DfdExport',
+            'File System Access API not supported, using fallback download method',
+          );
         }
 
         // Fallback method for unsupported browsers or API failures

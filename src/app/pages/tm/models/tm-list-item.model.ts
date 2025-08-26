@@ -1,6 +1,6 @@
 /**
  * TMListItem interface matching the API specification for GET /threat_models
- * 
+ *
  * This represents the lightweight version of threat model data returned by the list endpoint,
  * containing essential metadata and entity counts without full nested data.
  */

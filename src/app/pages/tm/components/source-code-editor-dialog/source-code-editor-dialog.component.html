@@ -10,11 +10,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.sourceCodeName' | transloco }}</mat-label>
-        <input
-          matInput
-          formControlName="name"
-          tabindex="1"
-        />
+        <input matInput formControlName="name" tabindex="1" />
         <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('required')">
           {{ 'threatModels.validation.required' | transloco }}
         </mat-error>
@@ -39,10 +35,7 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.sourceCodeType' | transloco }}</mat-label>
-        <mat-select
-          formControlName="type"
-          tabindex="3"
-        >
+        <mat-select formControlName="type" tabindex="3">
           <mat-option value="git">Git</mat-option>
           <mat-option value="svn">SVN</mat-option>
           <mat-option value="mercurial">Mercurial</mat-option>
@@ -55,12 +48,7 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.sourceCodeUrl' | transloco }}</mat-label>
-        <input
-          matInput
-          formControlName="url"
-          type="url"
-          tabindex="4"
-        />
+        <input matInput formControlName="url" type="url" tabindex="4" />
         <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('required')">
           {{ 'threatModels.validation.required' | transloco }}
         </mat-error>
@@ -74,10 +62,7 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.sourceCodeRefType' | transloco }}</mat-label>
-          <mat-select
-            formControlName="refType"
-            tabindex="5"
-          >
+          <mat-select formControlName="refType" tabindex="5">
             <mat-option value="branch">{{ 'threatModels.branch' | transloco }}</mat-option>
             <mat-option value="tag">{{ 'threatModels.tag' | transloco }}</mat-option>
             <mat-option value="commit">{{ 'threatModels.commit' | transloco }}</mat-option>
@@ -86,11 +71,7 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.sourceCodeRefValue' | transloco }}</mat-label>
-          <input
-            matInput
-            formControlName="refValue"
-            tabindex="6"
-          />
+          <input matInput formControlName="refValue" tabindex="6" />
           <mat-hint>{{ 'threatModels.sourceCodeRefValueHint' | transloco }}</mat-hint>
           <mat-error *ngIf="sourceCodeForm.get('refValue')?.hasError('maxlength')">
             {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
@@ -99,11 +80,7 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.sourceCodeSubPath' | transloco }}</mat-label>
-          <input
-            matInput
-            formControlName="subPath"
-            tabindex="7"
-          />
+          <input matInput formControlName="subPath" tabindex="7" />
           <mat-hint>{{ 'threatModels.sourceCodeSubPathHint' | transloco }}</mat-hint>
           <mat-error *ngIf="sourceCodeForm.get('subPath')?.hasError('maxlength')">
             {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}

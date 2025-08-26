@@ -17,7 +17,7 @@ export interface SaveErrorNotification {
 }
 
 /**
- * Configuration for connection error notifications  
+ * Configuration for connection error notifications
  */
 export interface ConnectionErrorNotification {
   message: string;
@@ -31,7 +31,7 @@ export interface ConnectionErrorNotification {
  * Handles detailed server error display and prevents notification spam
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   // Track shown notifications to prevent spam
@@ -41,7 +41,7 @@ export class NotificationService {
 
   constructor(
     private snackBar: MatSnackBar,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {}
 
   /**
@@ -51,28 +51,28 @@ export class NotificationService {
    * @param retryAction Optional retry function
    */
   showSaveError(
-    error: HttpErrorResponse | Error, 
+    error: HttpErrorResponse | Error,
     context: string = 'data',
-    retryAction?: () => void
+    retryAction?: () => void,
   ): void {
     const notification = this.createSaveErrorNotification(error, context, retryAction);
-    
+
     this.logger.debugComponent('Notification', 'Showing save error notification', {
       context,
       statusCode: notification.statusCode,
-      message: notification.message
+      message: notification.message,
     });
 
     // Show snackbar with retry action if provided
     const snackBarRef = this.snackBar.open(
       `${notification.title}: ${notification.message}`,
-      notification.retryAction ? (notification.actionLabel || 'Retry') : 'Dismiss',
+      notification.retryAction ? notification.actionLabel || 'Retry' : 'Dismiss',
       {
         duration: notification.duration || 8000, // Longer duration for error messages
         panelClass: ['error-snackbar'],
         horizontalPosition: 'right',
-        verticalPosition: 'top'
-      }
+        verticalPosition: 'top',
+      },
     );
 
     // Handle retry action
@@ -90,32 +90,30 @@ export class NotificationService {
    */
   showConnectionError(isServerError: boolean = true, retryAction?: () => void): void {
     const now = new Date();
-    
+
     // Prevent spam - only show if enough time has passed since last connection error
-    if (this._lastConnectionErrorTime && 
-        (now.getTime() - this._lastConnectionErrorTime.getTime()) < this._connectionErrorCooldown) {
+    if (
+      this._lastConnectionErrorTime &&
+      now.getTime() - this._lastConnectionErrorTime.getTime() < this._connectionErrorCooldown
+    ) {
       return;
     }
 
-    const message = isServerError 
+    const message = isServerError
       ? 'Unable to connect to server. Your changes may not be saved.'
       : 'Network connection lost. Please check your internet connection.';
 
     this.logger.debugComponent('Notification', 'Showing connection error notification', {
       isServerError,
-      message
+      message,
     });
 
-    const snackBarRef = this.snackBar.open(
-      message,
-      retryAction ? 'Retry' : 'Dismiss',
-      {
-        duration: 10000, // Longer duration for connection errors
-        panelClass: ['warning-snackbar'],
-        horizontalPosition: 'right',
-        verticalPosition: 'top'
-      }
-    );
+    const snackBarRef = this.snackBar.open(message, retryAction ? 'Retry' : 'Dismiss', {
+      duration: 10000, // Longer duration for connection errors
+      panelClass: ['warning-snackbar'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
 
     // Handle retry action
     if (retryAction) {
@@ -133,16 +131,12 @@ export class NotificationService {
   showConnectionRestored(): void {
     this.logger.debugComponent('Notification', 'Showing connection restored notification');
 
-    this.snackBar.open(
-      'Connection restored. Saving pending changes...',
-      'Dismiss',
-      {
-        duration: 4000,
-        panelClass: ['success-snackbar'],
-        horizontalPosition: 'right',
-        verticalPosition: 'top'
-      }
-    );
+    this.snackBar.open('Connection restored. Saving pending changes...', 'Dismiss', {
+      duration: 4000,
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
 
     // Reset connection error cooldown
     this._lastConnectionErrorTime = undefined;
@@ -156,16 +150,12 @@ export class NotificationService {
   showSuccess(message: string, duration: number = 3000): void {
     this.logger.debugComponent('Notification', 'Showing success notification', { message });
 
-    this.snackBar.open(
-      message,
-      'Dismiss',
-      {
-        duration,
-        panelClass: ['success-snackbar'],
-        horizontalPosition: 'right',
-        verticalPosition: 'top'
-      }
-    );
+    this.snackBar.open(message, 'Dismiss', {
+      duration,
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
   }
 
   /**
@@ -176,16 +166,12 @@ export class NotificationService {
   showWarning(message: string, duration: number = 5000): void {
     this.logger.debugComponent('Notification', 'Showing warning notification', { message });
 
-    this.snackBar.open(
-      message,
-      'Dismiss',
-      {
-        duration,
-        panelClass: ['warning-snackbar'],
-        horizontalPosition: 'right',
-        verticalPosition: 'top'
-      }
-    );
+    this.snackBar.open(message, 'Dismiss', {
+      duration,
+      panelClass: ['warning-snackbar'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
   }
 
   /**
@@ -195,22 +181,18 @@ export class NotificationService {
    */
   showValidationError(fieldName: string, errorMessage: string): void {
     const message = `${fieldName}: ${errorMessage}`;
-    
+
     this.logger.debugComponent('Notification', 'Showing validation error notification', {
       fieldName,
-      errorMessage
+      errorMessage,
     });
 
-    this.snackBar.open(
-      message,
-      'Dismiss',
-      {
-        duration: 5000,
-        panelClass: ['error-snackbar'],
-        horizontalPosition: 'right',
-        verticalPosition: 'top'
-      }
-    );
+    this.snackBar.open(message, 'Dismiss', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
   }
 
   /**
@@ -228,9 +210,9 @@ export class NotificationService {
    * @returns SaveErrorNotification configuration
    */
   private createSaveErrorNotification(
-    error: Error | HttpErrorResponse, 
+    error: Error | HttpErrorResponse,
     context: string,
-    retryAction?: () => void
+    retryAction?: () => void,
   ): SaveErrorNotification {
     let title = 'Save Failed';
     let message = `Failed to save ${context}`;
@@ -238,12 +220,13 @@ export class NotificationService {
 
     if (error instanceof HttpErrorResponse) {
       statusCode = error.status;
-      
+
       // Create detailed message based on HTTP status
       switch (error.status) {
         case 400:
           title = 'Validation Error';
-          message = this.extractServerErrorMessage(error) || 'Please check your input and try again';
+          message =
+            this.extractServerErrorMessage(error) || 'Please check your input and try again';
           break;
         case 401:
           title = 'Authentication Required';
@@ -259,7 +242,8 @@ export class NotificationService {
           break;
         case 409:
           title = 'Conflict';
-          message = this.extractServerErrorMessage(error) || 'This item was modified by another user';
+          message =
+            this.extractServerErrorMessage(error) || 'This item was modified by another user';
           break;
         case 422:
           title = 'Validation Error';
@@ -267,7 +251,8 @@ export class NotificationService {
           break;
         case 500:
           title = 'Server Error';
-          message = this.extractServerErrorMessage(error) || 'The server encountered an error while saving';
+          message =
+            this.extractServerErrorMessage(error) || 'The server encountered an error while saving';
           break;
         case 502:
         case 503:
@@ -277,7 +262,8 @@ export class NotificationService {
           break;
         default:
           title = `HTTP ${error.status}`;
-          message = this.extractServerErrorMessage(error) || `Server returned error ${error.status}`;
+          message =
+            this.extractServerErrorMessage(error) || `Server returned error ${error.status}`;
       }
     } else if (error instanceof Error) {
       // Handle JavaScript errors
@@ -297,7 +283,7 @@ export class NotificationService {
       statusCode,
       retryAction,
       duration: 8000,
-      actionLabel: retryAction ? 'Retry' : undefined
+      actionLabel: retryAction ? 'Retry' : undefined,
     };
   }
 
@@ -309,24 +295,30 @@ export class NotificationService {
   private extractServerErrorMessage(error: HttpErrorResponse): string | null {
     try {
       const errorBody = error.error as unknown;
-      
+
       // Try different common error message formats
       if (typeof errorBody === 'string') {
         return errorBody;
       }
-      
+
       if (errorBody && typeof errorBody === 'object') {
         // Try common error message fields
-        return ((errorBody as Record<string, unknown>)['message'] || 
-               (errorBody as Record<string, unknown>)['error_description'] || 
-               (errorBody as Record<string, unknown>)['detail'] || 
-               (errorBody as Record<string, unknown>)['error']) as string || null;
+        return (
+          (((errorBody as Record<string, unknown>)['message'] ||
+            (errorBody as Record<string, unknown>)['error_description'] ||
+            (errorBody as Record<string, unknown>)['detail'] ||
+            (errorBody as Record<string, unknown>)['error']) as string) || null
+        );
       }
-      
+
       return null;
     } catch (e) {
       // If we can't parse the error body, return null
-      this.logger.debugComponent('Notification', 'Failed to parse error message from server response', e);
+      this.logger.debugComponent(
+        'Notification',
+        'Failed to parse error message from server response',
+        e,
+      );
       return null;
     }
   }

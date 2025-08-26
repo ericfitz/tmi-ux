@@ -1,6 +1,6 @@
 /**
  * Centralized exports for all mock services
- * 
+ *
  * This index file provides a single entry point for importing mock services,
  * making it easier to use shared mocks across test files.
  */
@@ -8,31 +8,27 @@
 // Auth service mocks
 export { MockAuthService, type User } from './mock-auth.service';
 
-// Graph service mocks  
+// Graph service mocks
 export { MockGraphService } from './mock-graph.service';
 
 // WebSocket service mocks
 export { MockWebSocketService } from './mock-websocket.service';
 
 // Logger service mocks
-export { 
-  createMockLoggerService, 
-  createTypedMockLoggerService, 
-  type MockLoggerService 
+export {
+  createMockLoggerService,
+  createTypedMockLoggerService,
+  type MockLoggerService,
 } from './mock-logger.service';
 
 // Router service mocks
-export {
-  createMockRouter,
-  createTypedMockRouter,
-  type MockRouter
-} from './mock-router.service';
+export { createMockRouter, createTypedMockRouter, type MockRouter } from './mock-router.service';
 
 // HttpClient service mocks
 export {
   createMockHttpClient,
   createTypedMockHttpClient,
-  type MockHttpClient
+  type MockHttpClient,
 } from './mock-http-client.service';
 
 /**
@@ -74,7 +70,7 @@ export function createTypedMocks(): {
     router: createTypedMockRouter(),
     httpClient: createTypedMockHttpClient(),
     auth: new MockAuthService(),
-    graph: new MockGraphService(), 
+    graph: new MockGraphService(),
     websocket: new MockWebSocketService(),
   };
 }

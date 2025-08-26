@@ -61,7 +61,7 @@ export class DfdEventHandlersService {
   // Label change observables
   private _labelChanged$ = new Subject<LabelChangeEvent>();
   private _nodeInfoChanged$ = new Subject<NodeInfoChangeEvent>();
-  
+
   // Threat change observable
   private _threatChanged$ = new Subject<ThreatChangeEvent>();
 
@@ -91,7 +91,7 @@ export class DfdEventHandlersService {
         },
         error: (error: unknown) => {
           this.logger.error('Error in selection change subscription', error);
-        }
+        },
       }),
     );
 
@@ -386,12 +386,12 @@ export class DfdEventHandlersService {
                         cellId: newThreat.cell_id,
                         shapeType: shapeType || 'none',
                       });
-                      
+
                       // Trigger auto-save for threat addition
-                      this._threatChanged$.next({ 
-                        action: 'added', 
-                        threatId: newThreat.id, 
-                        diagramId: dfdId || '' 
+                      this._threatChanged$.next({
+                        action: 'added',
+                        threatId: newThreat.id,
+                        diagramId: dfdId || '',
                       });
                     },
                     error: (error: unknown) => {

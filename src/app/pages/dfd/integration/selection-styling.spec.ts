@@ -45,7 +45,6 @@ import { DiagramEdge } from '../domain/value-objects/diagram-edge';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../constants/styling-constants';
 import { StylingVerifier, TestHelpers } from './test-helpers/styling-helpers';
 
-
 // Mock SVG methods that X6 expects
 const mockSVGElement = {
   getCTM: vi.fn(() => ({

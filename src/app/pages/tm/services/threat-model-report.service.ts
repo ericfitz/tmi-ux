@@ -16,36 +16,33 @@ interface DiagramImage {
   providedIn: 'root',
 })
 export class ThreatModelReportService {
-  constructor(
-    private logger: LoggerService,
-  ) {}
+  constructor(private logger: LoggerService) {}
 
   /**
    * Generate a PDF report for the given threat model
    */
   async generateReport(threatModel: ThreatModel): Promise<void> {
     try {
-      this.logger.info('Generating PDF report for threat model', { 
+      this.logger.info('Generating PDF report for threat model', {
         threatModelId: threatModel.id,
-        threatModelName: threatModel.name 
+        threatModelName: threatModel.name,
       });
 
       // Create new PDF document
       const doc = new jsPDF();
-      
+
       // Render diagrams as images
       const diagramImages = this.renderDiagrams(threatModel);
-      
+
       // Generate PDF content
       this.createPdfContent(doc, threatModel, diagramImages);
-      
+
       // Save the PDF file
       await this.savePdfFile(doc, threatModel.name);
-      
-      this.logger.info('PDF report generated successfully', { 
-        threatModelName: threatModel.name 
-      });
 
+      this.logger.info('PDF report generated successfully', {
+        threatModelName: threatModel.name,
+      });
     } catch (error) {
       this.logger.error('Error generating PDF report', error);
       throw error;
@@ -73,8 +70,8 @@ export class ThreatModelReportService {
       });
     }
 
-    this.logger.info('Using diagram placeholders in PDF report', { 
-      diagramCount: diagramPlaceholders.length 
+    this.logger.info('Using diagram placeholders in PDF report', {
+      diagramCount: diagramPlaceholders.length,
     });
 
     return diagramPlaceholders;
@@ -95,9 +92,9 @@ export class ThreatModelReportService {
    * Create PDF content using jsPDF
    */
   private createPdfContent(
-    doc: jsPDF, 
-    threatModel: ThreatModel, 
-    diagramImages: DiagramImage[]
+    doc: jsPDF,
+    threatModel: ThreatModel,
+    diagramImages: DiagramImage[],
   ): void {
     let yPosition = 20;
     const pageHeight = doc.internal.pageSize.height;
@@ -115,7 +112,9 @@ export class ThreatModelReportService {
     if (threatModel.description) {
       doc.setFontSize(12);
       doc.setTextColor(102, 102, 102);
-      const descriptionLines = doc.splitTextToSize(threatModel.description, contentWidth) as string | string[];
+      const descriptionLines = doc.splitTextToSize(threatModel.description, contentWidth) as
+        | string
+        | string[];
       const linesArray = Array.isArray(descriptionLines) ? descriptionLines : [descriptionLines];
       doc.text(descriptionLines, margin, yPosition);
       yPosition += linesArray.length * 5 + 10;
@@ -124,13 +123,21 @@ export class ThreatModelReportService {
     // Basic Information Section
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
-    
+
     doc.text(`Framework: ${threatModel.threat_model_framework}`, margin, yPosition);
     doc.text(`Owner: ${threatModel.owner}`, margin + contentWidth / 2, yPosition);
     yPosition += 8;
-    
-    doc.text(`Created: ${new Date(threatModel.created_at).toLocaleDateString()}`, margin, yPosition);
-    doc.text(`Last Modified: ${new Date(threatModel.modified_at).toLocaleDateString()}`, margin + contentWidth / 2, yPosition);
+
+    doc.text(
+      `Created: ${new Date(threatModel.created_at).toLocaleDateString()}`,
+      margin,
+      yPosition,
+    );
+    doc.text(
+      `Last Modified: ${new Date(threatModel.modified_at).toLocaleDateString()}`,
+      margin + contentWidth / 2,
+      yPosition,
+    );
     yPosition += 15;
 
     // Check if we need a new page
@@ -164,7 +171,11 @@ export class ThreatModelReportService {
         yPosition += 6;
         doc.text(`Diagram ID: ${diagram.diagramId}`, margin, yPosition);
         yPosition += 6;
-        doc.text('Note: Full diagram rendering will be available in a future update', margin, yPosition);
+        doc.text(
+          'Note: Full diagram rendering will be available in a future update',
+          margin,
+          yPosition,
+        );
         yPosition += 15;
       }
     }
@@ -224,17 +235,17 @@ export class ThreatModelReportService {
    * Add threats table to PDF
    */
   private addThreatsTable(
-    doc: jsPDF, 
-    threats: Threat[], 
-    x: number, 
-    y: number, 
-    width: number
+    doc: jsPDF,
+    threats: Threat[],
+    x: number,
+    y: number,
+    width: number,
   ): void {
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    
+
     let currentY = y;
-    
+
     // Table header
     doc.setFont('helvetica', 'bold');
     doc.text('Name', x, currentY);
@@ -242,10 +253,10 @@ export class ThreatModelReportService {
     doc.text('Status', x + width * 0.5, currentY);
     doc.text('Type', x + width * 0.7, currentY);
     currentY += 8;
-    
+
     // Separator line
     doc.line(x, currentY - 2, x + width, currentY - 2);
-    
+
     // Threat data
     doc.setFont('helvetica', 'normal');
     threats.forEach(threat => {
@@ -253,19 +264,21 @@ export class ThreatModelReportService {
         doc.addPage();
         currentY = 20;
       }
-      
+
       const nameLines = doc.splitTextToSize(threat.name, width * 0.28) as string | string[];
-      const descLines = doc.splitTextToSize(threat.description || '', width * 0.9) as string | string[];
+      const descLines = doc.splitTextToSize(threat.description || '', width * 0.9) as
+        | string
+        | string[];
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
       const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
-      
+
       doc.text(nameLines, x, currentY);
       doc.text(threat.severity, x + width * 0.3, currentY);
       doc.text(threat.status || 'Unknown', x + width * 0.5, currentY);
       doc.text(threat.threat_type, x + width * 0.7, currentY);
-      
+
       currentY += Math.max(nameLinesArray.length * 4, 8);
-      
+
       if (threat.description) {
         doc.setFontSize(8);
         doc.setTextColor(102, 102, 102);
@@ -281,26 +294,26 @@ export class ThreatModelReportService {
    * Add documents table to PDF
    */
   private addDocumentsTable(
-    doc: jsPDF, 
-    documents: Document[], 
-    x: number, 
-    y: number, 
-    width: number
+    doc: jsPDF,
+    documents: Document[],
+    x: number,
+    y: number,
+    width: number,
   ): void {
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    
+
     let currentY = y;
-    
+
     // Table header
     doc.setFont('helvetica', 'bold');
     doc.text('Name', x, currentY);
     doc.text('URL', x + width * 0.4, currentY);
     currentY += 8;
-    
+
     // Separator line
     doc.line(x, currentY - 2, x + width, currentY - 2);
-    
+
     // Document data
     doc.setFont('helvetica', 'normal');
     documents.forEach(document => {
@@ -308,21 +321,23 @@ export class ThreatModelReportService {
         doc.addPage();
         currentY = 20;
       }
-      
+
       const nameLines = doc.splitTextToSize(document.name, width * 0.35) as string | string[];
       const urlLines = doc.splitTextToSize(document.url, width * 0.55) as string | string[];
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
       const urlLinesArray = Array.isArray(urlLines) ? urlLines : [urlLines];
-      
+
       doc.text(nameLines, x, currentY);
       doc.text(urlLines, x + width * 0.4, currentY);
-      
+
       currentY += Math.max(nameLinesArray.length * 4, urlLinesArray.length * 4, 8);
-      
+
       if (document.description) {
         doc.setFontSize(8);
         doc.setTextColor(102, 102, 102);
-        const descLines = doc.splitTextToSize(document.description, width * 0.9) as string | string[];
+        const descLines = doc.splitTextToSize(document.description, width * 0.9) as
+          | string
+          | string[];
         const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
         doc.text(descLinesArray.slice(0, 2), x, currentY); // Limit to 2 lines
         currentY += Math.min(descLinesArray.length, 2) * 4 + 4;
@@ -336,17 +351,17 @@ export class ThreatModelReportService {
    * Add source code table to PDF
    */
   private addSourceCodeTable(
-    doc: jsPDF, 
-    sources: Source[], 
-    x: number, 
-    y: number, 
-    width: number
+    doc: jsPDF,
+    sources: Source[],
+    x: number,
+    y: number,
+    width: number,
   ): void {
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    
+
     let currentY = y;
-    
+
     // Table header
     doc.setFont('helvetica', 'bold');
     doc.text('Name', x, currentY);
@@ -354,10 +369,10 @@ export class ThreatModelReportService {
     doc.text('URL', x + width * 0.4, currentY);
     doc.text('Ref', x + width * 0.7, currentY);
     currentY += 8;
-    
+
     // Separator line
     doc.line(x, currentY - 2, x + width, currentY - 2);
-    
+
     // Source data
     doc.setFont('helvetica', 'normal');
     sources.forEach(source => {
@@ -365,20 +380,22 @@ export class ThreatModelReportService {
         doc.addPage();
         currentY = 20;
       }
-      
+
       const nameLines = doc.splitTextToSize(source.name, width * 0.22) as string | string[];
       const urlLines = doc.splitTextToSize(source.url, width * 0.25) as string | string[];
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
       const urlLinesArray = Array.isArray(urlLines) ? urlLines : [urlLines];
-      const ref = source.parameters ? `${source.parameters.refType}:${source.parameters.refValue}` : '';
-      
+      const ref = source.parameters
+        ? `${source.parameters.refType}:${source.parameters.refValue}`
+        : '';
+
       doc.text(nameLines, x, currentY);
       doc.text(source.type, x + width * 0.25, currentY);
       doc.text(urlLines, x + width * 0.4, currentY);
       doc.text(ref, x + width * 0.7, currentY);
-      
+
       currentY += Math.max(nameLinesArray.length * 4, urlLinesArray.length * 4, 8);
-      
+
       if (source.description) {
         doc.setFontSize(8);
         doc.setTextColor(102, 102, 102);
@@ -398,12 +415,12 @@ export class ThreatModelReportService {
   private getNextYPosition(doc: jsPDF, currentY: number, additionalHeight: number): number {
     const pageHeight = doc.internal.pageSize.height;
     const newY = currentY + additionalHeight;
-    
+
     if (newY > pageHeight - 50) {
       doc.addPage();
       return 20;
     }
-    
+
     return newY;
   }
 
@@ -417,9 +434,14 @@ export class ThreatModelReportService {
     // Check if File System Access API is supported
     if ('showSaveFilePicker' in window) {
       try {
-        this.logger.debugComponent('ThreatModelReport', 'Using File System Access API for file save');
-        
-        const fileHandle = await (window as unknown as { showSaveFilePicker: (options: unknown) => Promise<unknown> }).showSaveFilePicker({
+        this.logger.debugComponent(
+          'ThreatModelReport',
+          'Using File System Access API for file save',
+        );
+
+        const fileHandle = await (
+          window as unknown as { showSaveFilePicker: (options: unknown) => Promise<unknown> }
+        ).showSaveFilePicker({
           suggestedName: filename,
           types: [
             {
@@ -429,7 +451,14 @@ export class ThreatModelReportService {
           ],
         });
 
-        const writable = await (fileHandle as { createWritable: () => Promise<{ write: (data: unknown) => Promise<void>; close: () => Promise<void> }> }).createWritable();
+        const writable = await (
+          fileHandle as {
+            createWritable: () => Promise<{
+              write: (data: unknown) => Promise<void>;
+              close: () => Promise<void>;
+            }>;
+          }
+        ).createWritable();
         await writable.write(pdfBlob);
         await writable.close();
 
@@ -443,14 +472,14 @@ export class ThreatModelReportService {
           this.logger.info('PDF report save cancelled by user');
           return;
         } else {
-          this.logger.warn(
-            'File System Access API failed, falling back to download method',
-            error,
-          );
+          this.logger.warn('File System Access API failed, falling back to download method', error);
         }
       }
     } else {
-      this.logger.debugComponent('ThreatModelReport', 'File System Access API not supported, using fallback download method');
+      this.logger.debugComponent(
+        'ThreatModelReport',
+        'File System Access API not supported, using fallback download method',
+      );
     }
 
     // Fallback method for unsupported browsers or API failures
@@ -490,7 +519,7 @@ export class ThreatModelReportService {
     // Truncate if too long
     const maxLength = 200; // Leave room for .pdf extension
     const truncated = sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
-    
+
     return `${truncated}.pdf`;
   }
 }

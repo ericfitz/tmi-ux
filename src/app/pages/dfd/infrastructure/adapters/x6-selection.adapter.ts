@@ -226,21 +226,18 @@ export class X6SelectionAdapter {
     }
 
     // Use history coordinator to ensure proper atomic deletion with port visibility suppression
-    this.historyCoordinator.executeAtomicOperation(
-      graph,
-      () => {
-        selectedCells.forEach(cell => {
-          if (cell.isEdge()) {
-            // Use EdgeService for edge deletions (handles business logic and port visibility)
-            this.edgeService.removeEdge(graph, cell.id);
-          } else {
-            // Use X6CoreOperationsService for node deletions
-            // TODO: Replace with nodeService.removeNode() when DfdNodeService has removeNode method
-            this.x6CoreOps.removeCellObject(graph, cell);
-          }
-        });
-      }
-    );
+    this.historyCoordinator.executeAtomicOperation(graph, () => {
+      selectedCells.forEach(cell => {
+        if (cell.isEdge()) {
+          // Use EdgeService for edge deletions (handles business logic and port visibility)
+          this.edgeService.removeEdge(graph, cell.id);
+        } else {
+          // Use X6CoreOperationsService for node deletions
+          // TODO: Replace with nodeService.removeNode() when DfdNodeService has removeNode method
+          this.x6CoreOps.removeCellObject(graph, cell);
+        }
+      });
+    });
 
     this.logger.info('Deleted selected cells', { count: selectedCells.length });
   }
@@ -304,24 +301,21 @@ export class X6SelectionAdapter {
     const groupConfig = this.selectionService.getGroupConfiguration(boundingBox);
 
     // Use centralized history coordinator for consistent filtering and atomic batching
-    const groupNode = this.historyCoordinator.executeAtomicOperation(
-      graph,
-      () => {
-        // Create group node using X6CoreOperationsService
-        const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
+    const groupNode = this.historyCoordinator.executeAtomicOperation(graph, () => {
+      // Create group node using X6CoreOperationsService
+      const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
 
-        if (!createdGroupNode) {
-          throw new Error('Failed to create group node');
-        }
-
-        // Add nodes to group
-        selectedNodes.forEach(node => {
-          createdGroupNode.addChild(node);
-        });
-
-        return createdGroupNode;
+      if (!createdGroupNode) {
+        throw new Error('Failed to create group node');
       }
-    );
+
+      // Add nodes to group
+      selectedNodes.forEach(node => {
+        createdGroupNode.addChild(node);
+      });
+
+      return createdGroupNode;
+    });
 
     this.logger.info('Created group with nodes', {
       groupId: groupNode.id,

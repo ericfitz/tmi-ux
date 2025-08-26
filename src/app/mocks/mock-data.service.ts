@@ -69,7 +69,7 @@ export class MockDataService implements OnDestroy {
 
     // Load JSON data on initialization
     this.loadMockData();
-    
+
     // Initialize mock collaboration sessions
     this.initializeMockCollaborationSessions();
   }
@@ -357,6 +357,6 @@ export class MockDataService implements OnDestroy {
    */
   private getInitialMockState(): boolean {
     const storedValue = localStorage.getItem('useMockData');
-    return storedValue !== null ? storedValue === 'true' : true;
+    return storedValue !== null ? storedValue === 'true' : false;
   }
 }

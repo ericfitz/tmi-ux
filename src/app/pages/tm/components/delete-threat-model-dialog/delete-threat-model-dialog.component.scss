@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   color: #d32f2f;
-  
+
   .warning-icon {
     margin-right: 12px;
     font-size: 28px;
@@ -17,7 +17,7 @@
     margin: 16px 0;
     font-weight: 500;
   }
-  
+
   .warning-box {
     display: flex;
     align-items: flex-start;
@@ -26,7 +26,7 @@
     border-radius: 8px;
     padding: 16px;
     margin: 16px 0;
-    
+
     .warning-icon-small {
       color: #856404;
       margin-right: 12px;
@@ -36,13 +36,13 @@
       width: 20px;
       height: 20px;
     }
-    
+
     .warning-text {
       color: #856404;
-      
+
       p {
         margin: 0 0 8px;
-        
+
         &:last-child {
           margin-bottom: 0;
         }

@@ -1,6 +1,6 @@
 /**
  * Collaborative Operation Service
- * 
+ *
  * Handles WebSocket-based collaborative diagram operations for the DFD module.
  * Provides high-level API for sending diagram operations, managing operation IDs,
  * and coordinating with the server for real-time collaborative editing.
@@ -27,7 +27,7 @@ import {
   PresenterCursorMessage,
   PresenterSelectionMessage,
   CursorPosition,
-  CollaborativeOperationConfig
+  CollaborativeOperationConfig,
 } from '../models/websocket-message.types';
 
 /**
@@ -42,28 +42,31 @@ interface QueuedOperation {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CollaborativeOperationService {
   private _config: CollaborativeOperationConfig | null = null;
-  
+
   // Operation queue for offline/error scenarios
   private _operationQueue: QueuedOperation[] = [];
   private _isProcessingQueue = false;
 
   // Pending operations tracking for conflict resolution
-  private _pendingOperations = new Map<string, {
-    operation: DiagramOperationMessage;
-    timestamp: number;
-    resolve: (value: void) => void;
-    reject: (error: any) => void;
-  }>();
+  private _pendingOperations = new Map<
+    string,
+    {
+      operation: DiagramOperationMessage;
+      timestamp: number;
+      resolve: (value: void) => void;
+      reject: (error: any) => void;
+    }
+  >();
 
   constructor(
     private webSocketAdapter: WebSocketAdapter,
     private authService: AuthService,
     private collaborationService: DfdCollaborationService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     // Listen for connection state changes to process queued operations
     this.webSocketAdapter.connectionState$.subscribe(state => {
@@ -78,10 +81,10 @@ export class CollaborativeOperationService {
    */
   initialize(config: CollaborativeOperationConfig): void {
     this._config = config;
-    this.logger.info('CollaborativeOperationService initialized', { 
+    this.logger.info('CollaborativeOperationService initialized', {
       diagramId: config.diagramId,
       threatModelId: config.threatModelId,
-      userId: config.userId
+      userId: config.userId,
     });
   }
 
@@ -93,27 +96,61 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
     }
 
-    if (!this.collaborationService.hasPermission('edit')) {
-      this.logger.warn('User does not have permission to send edit operations');
+    // Check permissions
+    if (this.collaborationService.isCollaborating()) {
+      // In collaborative mode, check collaboration permissions
+      const hasCollabEditPermission = this.collaborationService.hasPermission('edit');
+
+      // If collaboration permissions are not yet loaded, fall back to threat model permission
+      if (!hasCollabEditPermission) {
+        const isLoadingUsers = !this.collaborationService.hasLoadedUsers();
+
+        if (isLoadingUsers && this._config.threatModelPermission === 'writer') {
+          // Assume threat model permission until collaboration permissions are loaded
+          this.logger.info(
+            'Using threat model permission as fallback while collaboration permissions load',
+            {
+              threatModelPermission: this._config.threatModelPermission,
+              isLoadingUsers,
+            },
+          );
+        } else {
+          // Log additional context to help debug permission issues
+          this.logger.warn('User does not have permission to send edit operations', {
+            isCollaborating: this.collaborationService.isCollaborating(),
+            currentUserEmail: this.authService.userEmail,
+            hasEditPermission: hasCollabEditPermission,
+            threatModelPermission: this._config.threatModelPermission,
+            isSessionManager: this.collaborationService.isCurrentUserSessionManager(),
+            isLoadingUsers,
+          });
+          return throwError(() => new Error('Insufficient permissions to edit diagram'));
+        }
+      }
+    } else if (this._config.threatModelPermission === 'reader') {
+      // Not collaborating - use threat model permission
+      this.logger.warn('User has reader permission on threat model - cannot edit', {
+        threatModelPermission: this._config.threatModelPermission,
+      });
       return throwError(() => new Error('Insufficient permissions to edit diagram'));
     }
 
     const operation: CellPatchOperation = {
       type: 'patch',
-      cells: cellOperations
+      cells: cellOperations,
     };
 
     const message: DiagramOperationMessage = {
       message_type: 'diagram_operation',
       user_id: this._config.userId,
       operation_id: uuid(),
-      operation: operation
+      operation: operation,
     };
 
     this.logger.debug('Sending diagram operation', {
       operationId: message.operation_id,
       cellCount: cellOperations.length,
-      operations: cellOperations.map(op => ({ id: op.id, operation: op.operation }))
+      operations: cellOperations.map(op => ({ id: op.id, operation: op.operation })),
     });
 
     return this._sendOperationWithRetry(message);
@@ -126,7 +163,7 @@ export class CollaborativeOperationService {
     const cellOperation: CellOperation = {
       id: cell.id,
       operation: 'add',
-      data: cell
+      data: cell,
     };
 
     return this.sendDiagramOperation([cellOperation]);
@@ -139,7 +176,7 @@ export class CollaborativeOperationService {
     const cellOperation: CellOperation = {
       id: cellId,
       operation: 'update',
-      data: updates as Cell
+      data: updates as Cell,
     };
 
     return this.sendDiagramOperation([cellOperation]);
@@ -151,7 +188,7 @@ export class CollaborativeOperationService {
   removeCell(cellId: string): Observable<void> {
     const cellOperation: CellOperation = {
       id: cellId,
-      operation: 'remove'
+      operation: 'remove',
     };
 
     return this.sendDiagramOperation([cellOperation]);
@@ -178,7 +215,7 @@ export class CollaborativeOperationService {
 
     const message: UndoRequestMessage = {
       message_type: 'undo_request',
-      user_id: this._config.userId
+      user_id: this._config.userId,
     };
 
     this.logger.debug('Requesting undo operation');
@@ -199,7 +236,7 @@ export class CollaborativeOperationService {
 
     const message: RedoRequestMessage = {
       message_type: 'redo_request',
-      user_id: this._config.userId
+      user_id: this._config.userId,
     };
 
     this.logger.debug('Requesting redo operation');
@@ -216,7 +253,7 @@ export class CollaborativeOperationService {
 
     const message: ResyncRequestMessage = {
       message_type: 'resync_request',
-      user_id: this._config.userId
+      user_id: this._config.userId,
     };
 
     this.logger.info('Requesting diagram resync');
@@ -233,7 +270,7 @@ export class CollaborativeOperationService {
 
     const message: PresenterRequestMessage = {
       message_type: 'presenter_request',
-      user_id: this._config.userId
+      user_id: this._config.userId,
     };
 
     this.logger.debug('Requesting presenter mode');
@@ -255,7 +292,7 @@ export class CollaborativeOperationService {
     const message: ChangePresenterMessage = {
       message_type: 'change_presenter',
       user_id: this._config.userId,
-      new_presenter: newPresenterUserId
+      new_presenter: newPresenterUserId,
     };
 
     this.logger.debug('Changing presenter', { newPresenter: newPresenterUserId });
@@ -278,7 +315,7 @@ export class CollaborativeOperationService {
     const message: PresenterCursorMessage = {
       message_type: 'presenter_cursor',
       user_id: this._config.userId,
-      cursor_position: position
+      cursor_position: position,
     };
 
     return this.webSocketAdapter.sendTMIMessage(message);
@@ -300,7 +337,7 @@ export class CollaborativeOperationService {
     const message: PresenterSelectionMessage = {
       message_type: 'presenter_selection',
       user_id: this._config.userId,
-      selected_cells: selectedCellIds
+      selected_cells: selectedCellIds,
     };
 
     return this.webSocketAdapter.sendTMIMessage(message);
@@ -309,7 +346,10 @@ export class CollaborativeOperationService {
   /**
    * Send operation with retry and queuing mechanisms
    */
-  private _sendOperationWithRetry(message: DiagramOperationMessage, maxRetries: number = 3): Observable<void> {
+  private _sendOperationWithRetry(
+    message: DiagramOperationMessage,
+    maxRetries: number = 3,
+  ): Observable<void> {
     return new Observable(observer => {
       // If WebSocket is not connected, queue the operation
       if (!this.webSocketAdapter.isConnected) {
@@ -324,48 +364,53 @@ export class CollaborativeOperationService {
         operation: message,
         timestamp: Date.now(),
         resolve: () => observer.next(),
-        reject: (error) => observer.error(error)
+        reject: error => observer.error(error),
       });
 
       // Send via WebSocket with retry
-      this.webSocketAdapter.sendMessageWithRetry({
-        type: 'COMMAND_EXECUTE' as any, // Map to internal message type
-        data: message as unknown as Record<string, unknown>
-      }, maxRetries).subscribe({
-        next: () => {
-          this._pendingOperations.delete(message.operation_id);
-          observer.next();
-          observer.complete();
-        },
-        error: (error) => {
-          this._pendingOperations.delete(message.operation_id);
-          
-          // If error is retryable and we haven't exceeded retries, queue for later
-          if (this._isRetryableOperationError(error) && maxRetries > 0) {
-            this.logger.warn('Operation failed, queuing for retry', { 
-              operationId: message.operation_id, 
-              error 
-            });
-            this._queueOperation(message, maxRetries - 1);
-            observer.next(); // Consider queued operation as "sent"
+      this.webSocketAdapter
+        .sendMessageWithRetry(
+          {
+            type: 'COMMAND_EXECUTE' as any, // Map to internal message type
+            data: message as unknown as Record<string, unknown>,
+          },
+          maxRetries,
+        )
+        .subscribe({
+          next: () => {
+            this._pendingOperations.delete(message.operation_id);
+            observer.next();
             observer.complete();
-          } else {
-            this.logger.error('Operation failed permanently', { 
-              operationId: message.operation_id, 
-              error 
-            });
-            observer.error(error);
-          }
-        }
-      });
+          },
+          error: error => {
+            this._pendingOperations.delete(message.operation_id);
+
+            // If error is retryable and we haven't exceeded retries, queue for later
+            if (this._isRetryableOperationError(error) && maxRetries > 0) {
+              this.logger.warn('Operation failed, queuing for retry', {
+                operationId: message.operation_id,
+                error,
+              });
+              this._queueOperation(message, maxRetries - 1);
+              observer.next(); // Consider queued operation as "sent"
+              observer.complete();
+            } else {
+              this.logger.error('Operation failed permanently', {
+                operationId: message.operation_id,
+                error,
+              });
+              observer.error(error);
+            }
+          },
+        });
 
       // Set timeout for operation acknowledgment
       setTimeout(() => {
         const pending = this._pendingOperations.get(message.operation_id);
         if (pending) {
           this._pendingOperations.delete(message.operation_id);
-          this.logger.warn('Operation timeout - no acknowledgment received', { 
-            operationId: message.operation_id 
+          this.logger.warn('Operation timeout - no acknowledgment received', {
+            operationId: message.operation_id,
           });
           observer.error(new Error('Operation timeout'));
         }
@@ -382,13 +427,13 @@ export class CollaborativeOperationService {
       operation: message,
       retryCount: 0,
       maxRetries,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this._operationQueue.push(queuedOp);
-    this.logger.info('Operation queued for retry', { 
+    this.logger.info('Operation queued for retry', {
       operationId: message.operation_id,
-      queueLength: this._operationQueue.length 
+      queueLength: this._operationQueue.length,
     });
   }
 
@@ -411,12 +456,12 @@ export class CollaborativeOperationService {
       }
 
       const queuedOp = this._operationQueue.shift()!;
-      
+
       // Check if operation is too old (older than 5 minutes)
       if (Date.now() - queuedOp.timestamp > 300000) {
-        this.logger.warn('Discarding old queued operation', { 
+        this.logger.warn('Discarding old queued operation', {
           operationId: queuedOp.id,
-          age: Date.now() - queuedOp.timestamp 
+          age: Date.now() - queuedOp.timestamp,
         });
         processNext();
         return;
@@ -428,26 +473,26 @@ export class CollaborativeOperationService {
           this.logger.info('Queued operation sent successfully', { operationId: queuedOp.id });
           processNext();
         },
-        error: (error) => {
+        error: error => {
           queuedOp.retryCount++;
-          
+
           if (queuedOp.retryCount < queuedOp.maxRetries && this._isRetryableOperationError(error)) {
             // Re-queue for another retry
             this._operationQueue.unshift(queuedOp);
-            this.logger.warn('Queued operation failed, will retry', { 
+            this.logger.warn('Queued operation failed, will retry', {
               operationId: queuedOp.id,
               retryCount: queuedOp.retryCount,
-              maxRetries: queuedOp.maxRetries
+              maxRetries: queuedOp.maxRetries,
             });
           } else {
-            this.logger.error('Queued operation failed permanently', { 
+            this.logger.error('Queued operation failed permanently', {
               operationId: queuedOp.id,
-              error 
+              error,
             });
           }
-          
+
           processNext();
-        }
+        },
       });
     };
 
@@ -458,10 +503,12 @@ export class CollaborativeOperationService {
    * Check if an operation error is retryable
    */
   private _isRetryableOperationError(error: any): boolean {
-    return !error.message?.includes('401') && 
-           !error.message?.includes('403') && 
-           !error.message?.includes('permission') &&
-           this.webSocketAdapter.connectionHealth > 0;
+    return (
+      !error.message?.includes('401') &&
+      !error.message?.includes('403') &&
+      !error.message?.includes('permission') &&
+      this.webSocketAdapter.connectionHealth > 0
+    );
   }
 
   /**
@@ -472,7 +519,7 @@ export class CollaborativeOperationService {
     this._operationQueue = [];
     this._pendingOperations.clear();
     this._isProcessingQueue = false;
-    
+
     if (queueLength > 0) {
       this.logger.info('Operation queue cleared', { discardedOperations: queueLength });
     }

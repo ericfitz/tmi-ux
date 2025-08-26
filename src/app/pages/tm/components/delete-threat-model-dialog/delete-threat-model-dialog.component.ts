@@ -16,13 +16,7 @@ export interface DeleteThreatModelDialogData {
 @Component({
   selector: 'app-delete-threat-model-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    TranslocoModule,
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './delete-threat-model-dialog.component.html',
   styleUrls: ['./delete-threat-model-dialog.component.scss'],
 })

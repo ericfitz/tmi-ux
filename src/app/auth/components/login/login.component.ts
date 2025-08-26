@@ -123,21 +123,20 @@ export class LoginComponent implements OnInit {
    */
   private sortProviders(providers: OAuthProviderInfo[]): OAuthProviderInfo[] {
     const sorted = [...providers];
-    
+
     return sorted.sort((a, b) => {
       // Local provider always goes last
       if (a.id === 'local') return 1;
       if (b.id === 'local') return -1;
-      
+
       // Test provider goes next to last (before local)
       if (a.id === 'test') return 1;
       if (b.id === 'test') return -1;
-      
+
       // All other providers are sorted alphabetically by name
       return a.name.localeCompare(b.name);
     });
   }
-
 
   /**
    * Generic login method - works with any configured provider

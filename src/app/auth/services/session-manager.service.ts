@@ -67,13 +67,13 @@ export class SessionManagerService {
             this.checkTokenExpiration();
           });
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Token expiry timer error', error);
           // Attempt to restart timer after error
           this.ngZone.run(() => {
             this.startExpiryTimer();
           });
-        }
+        },
       });
     });
   }
@@ -154,7 +154,10 @@ export class SessionManagerService {
    * @param minutesLeft Minutes left before session expires
    */
   private showExpiryWarning(minutesLeft: number): void {
-    this.logger.debugComponent('SessionManager', `Session expiry warning: ${minutesLeft} minutes left - initiating logout`);
+    this.logger.debugComponent(
+      'SessionManager',
+      `Session expiry warning: ${minutesLeft} minutes left - initiating logout`,
+    );
 
     // For transparent session management, we no longer show dialogs
     // Instead, we log out immediately when session is about to expire

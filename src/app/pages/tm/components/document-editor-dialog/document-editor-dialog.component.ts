@@ -70,7 +70,6 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this._subscriptions.unsubscribe();
   }
 
-
   /**
    * Close the dialog with the document data
    */

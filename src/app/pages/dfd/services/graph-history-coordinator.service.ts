@@ -7,7 +7,6 @@ import { Graph } from '@antv/x6';
  */
 @Injectable()
 export class GraphHistoryCoordinator {
-  
   /**
    * Execute an atomic operation by batching all changes into a single history entry
    */
@@ -32,7 +31,11 @@ export class GraphHistoryCoordinator {
    */
   executeVisualEffect(graph: Graph, operation: () => void): void {
     const historyPlugin = (graph as any).history;
-    if (historyPlugin && typeof historyPlugin.disable === 'function' && typeof historyPlugin.enable === 'function') {
+    if (
+      historyPlugin &&
+      typeof historyPlugin.disable === 'function' &&
+      typeof historyPlugin.enable === 'function'
+    ) {
       // Temporarily disable history for visual effects
       historyPlugin.disable();
       try {
@@ -76,7 +79,7 @@ export class GraphHistoryCoordinator {
       }
     }
 
-    // Check attribute path (for style/visual changes) 
+    // Check attribute path (for style/visual changes)
     if (attributePath) {
       return this._isVisualAttributePath(attributePath);
     }
@@ -89,8 +92,10 @@ export class GraphHistoryCoordinator {
    */
   private _isPortVisibilityPath(propertyPath: string): boolean {
     // Port visibility paths look like: "ports/items/0/attrs/circle/style/visibility"
-    return propertyPath.includes('ports/items/') && 
-           propertyPath.includes('/attrs/circle/style/visibility');
+    return (
+      propertyPath.includes('ports/items/') &&
+      propertyPath.includes('/attrs/circle/style/visibility')
+    );
   }
 
   /**
@@ -100,39 +105,40 @@ export class GraphHistoryCoordinator {
     const visualPaths = [
       // Selection and hover effects
       'body/filter',
-      'label/filter', 
+      'label/filter',
       'text/filter',
-      
+
       // Stroke effects for selection/hover
       'body/stroke',
       'body/strokeWidth',
       'body/strokeDasharray',
-      
+
       // Shadow and glow effects
       'body/dropShadow',
       'body/shadowOffsetX',
       'body/shadowOffsetY',
       'body/shadowBlur',
       'body/shadowColor',
-      
-      // Port highlighting  
+
+      // Port highlighting
       'circle/stroke',
       'circle/strokeWidth',
       'circle/fill',
       'circle/filter',
-      
+
       // Tool-related attributes
       'tools',
-      
+
       // Z-index changes (handled separately but included here for completeness)
-      'zIndex'
+      'zIndex',
     ];
 
     // Check if the attribute path starts with any visual path
-    return visualPaths.some(visualPath => 
-      attributePath.startsWith(visualPath) || 
-      attributePath.includes(`/${visualPath}`) ||
-      attributePath.endsWith(`/${visualPath}`)
+    return visualPaths.some(
+      visualPath =>
+        attributePath.startsWith(visualPath) ||
+        attributePath.includes(`/${visualPath}`) ||
+        attributePath.endsWith(`/${visualPath}`),
     );
   }
 }

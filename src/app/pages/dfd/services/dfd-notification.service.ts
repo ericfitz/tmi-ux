@@ -1,8 +1,17 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarConfig,
+  MatSnackBarRef,
+  SimpleSnackBar,
+} from '@angular/material/snack-bar';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { LoggerService } from '../../../core/services/logger.service';
-import { WebSocketState, WebSocketError, WebSocketErrorType } from '../infrastructure/adapters/websocket.adapter';
+import {
+  WebSocketState,
+  WebSocketError,
+  WebSocketErrorType,
+} from '../infrastructure/adapters/websocket.adapter';
 
 /**
  * Notification types for consistent styling and behavior
@@ -33,7 +42,7 @@ interface NotificationPresets {
 
 /**
  * Service for managing notifications in the DFD editor
- * Provides centralized notification management for collaboration events, 
+ * Provides centralized notification management for collaboration events,
  * WebSocket status changes, and error handling with appropriate styling and actions.
  */
 @Injectable({
@@ -176,9 +185,9 @@ export class DfdNotificationService implements OnDestroy {
    * @returns Observable that completes when notification is dismissed
    */
   showPreset(
-    presetKey: string, 
-    message: string, 
-    overrides?: Partial<NotificationConfig>
+    presetKey: string,
+    message: string,
+    overrides?: Partial<NotificationConfig>,
   ): Observable<void> {
     const preset = this._presets[presetKey];
     if (!preset) {
@@ -212,9 +221,9 @@ export class DfdNotificationService implements OnDestroy {
 
         // Show the notification
         const snackBarRef = this._snackBar.open(
-          message, 
-          config.actionLabel || 'Dismiss', 
-          snackBarConfig
+          message,
+          config.actionLabel || 'Dismiss',
+          snackBarConfig,
         );
 
         // Store reference for potential dismissal
@@ -240,11 +249,11 @@ export class DfdNotificationService implements OnDestroy {
           observer.complete();
         });
 
-        this._logger.debug('Notification shown', { 
-          message, 
-          type: config.type, 
+        this._logger.debug('Notification shown', {
+          message,
+          type: config.type,
           duration: snackBarConfig.duration,
-          notificationKey 
+          notificationKey,
         });
       } catch (error) {
         this._logger.error('Failed to show notification', { error, message, config });
@@ -278,26 +287,27 @@ export class DfdNotificationService implements OnDestroy {
           observer.next();
           observer.complete();
         });
-        
+
       case WebSocketState.DISCONNECTED:
         // Show warning for disconnection (user should know data might not sync)
         message = 'Disconnected from collaboration server. Changes will be saved locally.';
         presetKey = 'websocketDisconnected';
         this._dismissWebSocketNotifications();
         return this.showPreset(presetKey, message);
-        
+
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
         // Show error notifications with retry option
-        message = state === WebSocketState.FAILED 
-          ? 'Connection failed after multiple attempts. Working in offline mode.'
-          : 'Connection error. Working in offline mode.';
+        message =
+          state === WebSocketState.FAILED
+            ? 'Connection failed after multiple attempts. Working in offline mode.'
+            : 'Connection error. Working in offline mode.';
         presetKey = 'websocketFailed';
         actionCallback = retryCallback;
-        
+
         this._dismissWebSocketNotifications();
         return this.showPreset(presetKey, message, { actionCallback });
-        
+
       default:
         this._logger.warn('Unknown WebSocket state', { state });
         return new Observable<void>(observer => {
@@ -361,7 +371,10 @@ export class DfdNotificationService implements OnDestroy {
    * @param event The session event type
    * @param details Additional details (e.g., user name)
    */
-  showSessionEvent(event: 'started' | 'ended' | 'userJoined' | 'userLeft', details?: string): Observable<void> {
+  showSessionEvent(
+    event: 'started' | 'ended' | 'userJoined' | 'userLeft',
+    details?: string,
+  ): Observable<void> {
     // Only show notifications for events that aren't already indicated by UI state
     // Session start/end are already visible via collaboration icon state
     // Only show user join/leave events since they provide useful information
@@ -404,8 +417,8 @@ export class DfdNotificationService implements OnDestroy {
    * @param userName Optional user name for context
    */
   showPresenterEvent(
-    event: 'assigned' | 'requestSent' | 'requestApproved' | 'requestDenied' | 'cleared', 
-    userName?: string
+    event: 'assigned' | 'requestSent' | 'requestApproved' | 'requestDenied' | 'cleared',
+    userName?: string,
   ): Observable<void> {
     let message: string;
     let presetKey: string;
@@ -449,7 +462,11 @@ export class DfdNotificationService implements OnDestroy {
    * @param error The error details
    * @param retryCallback Optional retry callback
    */
-  showOperationError(operation: string, error: string, retryCallback?: () => void): Observable<void> {
+  showOperationError(
+    operation: string,
+    error: string,
+    retryCallback?: () => void,
+  ): Observable<void> {
     const message = `Failed to ${operation}: ${error}`;
     return this.showPreset('operationError', message, { actionCallback: retryCallback });
   }
@@ -502,7 +519,7 @@ export class DfdNotificationService implements OnDestroy {
    */
   dismissByPattern(keyPattern: RegExp): void {
     const keysToRemove: string[] = [];
-    
+
     for (const [key, ref] of this._activeNotifications.entries()) {
       if (keyPattern.test(key)) {
         ref.dismiss();
@@ -511,10 +528,10 @@ export class DfdNotificationService implements OnDestroy {
     }
 
     keysToRemove.forEach(key => this._activeNotifications.delete(key));
-    
-    this._logger.debug('Notifications dismissed by pattern', { 
-      pattern: keyPattern.toString(), 
-      count: keysToRemove.length 
+
+    this._logger.debug('Notifications dismissed by pattern', {
+      pattern: keyPattern.toString(),
+      count: keysToRemove.length,
     });
   }
 

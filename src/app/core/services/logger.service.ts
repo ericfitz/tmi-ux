@@ -29,7 +29,6 @@ export enum LogLevel {
   ERROR = 'ERROR',
 }
 
-
 /**
  * Map of log levels to their priority
  * Higher number means higher priority
@@ -127,9 +126,6 @@ export class LoggerService {
       console.error(this.formatMessage(LogLevel.ERROR, message), ...optionalParams);
     }
   }
-
-
-
 
   /**
    * Determine if a message at the given level should be logged

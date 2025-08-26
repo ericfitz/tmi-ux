@@ -305,7 +305,6 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
   ) {}
 
-
   ngOnInit(): void {
     this.permissionsDataSource.data = [...this.data.permissions];
     this.displayedColumns = this.data.isReadOnly

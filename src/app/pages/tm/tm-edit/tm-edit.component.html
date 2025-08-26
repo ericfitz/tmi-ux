@@ -71,7 +71,8 @@
             (click)="saveAllFields()"
             [matTooltip]="'common.save' | transloco"
             [attr.aria-label]="'common.save' | transloco"
-            tabindex="10">
+            tabindex="10"
+          >
             <mat-icon>save</mat-icon>
           </button>
         </div>
@@ -122,11 +123,12 @@
         <form [formGroup]="threatModelForm" class="threat-model-form">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'threatModels.name'">Name</mat-label>
-            <input 
-              matInput 
-              formControlName="name" 
+            <input
+              matInput
+              formControlName="name"
               tabindex="1"
-              (blur)="onFieldBlur('name', $event)" />
+              (blur)="onFieldBlur('name', $event)"
+            />
             <mat-error *ngIf="threatModelForm.get('name')?.hasError('required')">
               {{ 'common.validation.required' | transloco }}
             </mat-error>
@@ -198,7 +200,11 @@
                 class="issue-url-icon-button"
                 [disabled]="!isValidUrl(threatModelForm.get('issue_url')?.value)"
                 (click)="openUrlInNewTab(threatModelForm.get('issue_url')?.value)"
-                [matTooltip]="isValidUrl(threatModelForm.get('issue_url')?.value) ? threatModelForm.get('issue_url')?.value : 'Enter a valid URL to open'"
+                [matTooltip]="
+                  isValidUrl(threatModelForm.get('issue_url')?.value)
+                    ? threatModelForm.get('issue_url')?.value
+                    : 'Enter a valid URL to open'
+                "
                 matTooltipPosition="above"
               >
                 <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
@@ -211,202 +217,203 @@
 
     <!-- Diagrams Card -->
     <mat-card class="diagrams-card">
-        <mat-card-header>
-          <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addDiagram()"
-            [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+      <mat-card-header>
+        <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addDiagram()"
+          [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let diagram of diagrams"
+            class="diagram-item"
+            [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
           >
-            <mat-icon>add</mat-icon>
-          </button>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let diagram of diagrams"
-              class="diagram-item"
-              [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
+            <mat-icon
+              matListItemIcon
+              class="material-symbols-outlined"
+              [matTooltip]="getDiagramTooltip(diagram)"
+              matTooltipPosition="above"
             >
-              <mat-icon
-                matListItemIcon
-                class="material-symbols-outlined"
-                [matTooltip]="getDiagramTooltip(diagram)"
-                matTooltipPosition="above"
+              {{ getDiagramIcon(diagram) }}
+            </mat-icon>
+            <div matListItemTitle>{{ diagram.name }}</div>
+            <div matListItemMeta>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openDiagramMetadataDialog(diagram, $event)"
+                [matTooltip]="'threatModels.metadataTooltip' | transloco"
               >
-                {{ getDiagramIcon(diagram) }}
-              </mat-icon>
-              <div matListItemTitle>{{ diagram.name }}</div>
-              <div matListItemMeta>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openDiagramMetadataDialog(diagram, $event)"
-                  [matTooltip]="'threatModels.metadataTooltip' | transloco"
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="renameDiagram(diagram, $event)"
-                  [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteDiagram(diagram, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-list-item>
-          </mat-list>
-          <div *ngIf="!threatModel.diagrams?.length" class="no-items-message">
-            {{ 'threatModels.noDiagrams' | transloco }}
-          </div>
-        </mat-card-content>
+                <mat-icon>list</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="renameDiagram(diagram, $event)"
+                [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteDiagram(diagram, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.diagrams?.length" class="no-items-message">
+          {{ 'threatModels.noDiagrams' | transloco }}
+        </div>
+      </mat-card-content>
     </mat-card>
 
     <!-- Documents Card -->
     <mat-card class="documents-card">
-        <mat-card-header>
-          <mat-card-title [transloco]="'threatModels.documents'">Documents</mat-card-title>
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addDocument()"
-            [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
+      <mat-card-header>
+        <mat-card-title [transloco]="'threatModels.documents'">Documents</mat-card-title>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addDocument()"
+          [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let document of threatModel.documents"
+            class="document-item clickable"
+            (click)="editDocument(document, $event)"
           >
-            <mat-icon>add</mat-icon>
-          </button>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item 
-              *ngFor="let document of threatModel.documents" 
-              class="document-item clickable"
-              (click)="editDocument(document, $event)">
-              <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
-              <div matListItemTitle class="document-content">
-                <span
-                  class="document-name"
-                  [matTooltip]="document.description"
-                  matTooltipClass="document-description-tooltip"
-                  matTooltipPosition="above"
-                >
-                  {{ document.name }}
-                </span>
-                <a
-                  *ngIf="document.url && document.url.trim() !== ''"
-                  [href]="document.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="document-url-icon"
-                  (click)="$event.stopPropagation()"
-                  [matTooltip]="document.url"
-                  matTooltipPosition="above"
-                >
-                  <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                </a>
-              </div>
-              <div matListItemMeta class="document-actions">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openDocumentMetadataDialog(document, $event)"
-                  [matTooltip]="'threatModels.metadataTooltip' | transloco"
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteDocument(document, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteDocument' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-list-item>
-          </mat-list>
-          <div *ngIf="!threatModel.documents?.length" class="no-items-message">
-            {{ 'threatModels.noDocuments' | transloco }}
-          </div>
-        </mat-card-content>
+            <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
+            <div matListItemTitle class="document-content">
+              <span
+                class="document-name"
+                [matTooltip]="document.description"
+                matTooltipClass="document-description-tooltip"
+                matTooltipPosition="above"
+              >
+                {{ document.name }}
+              </span>
+              <a
+                *ngIf="document.url && document.url.trim() !== ''"
+                [href]="document.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="document-url-icon"
+                (click)="$event.stopPropagation()"
+                [matTooltip]="document.url"
+                matTooltipPosition="above"
+              >
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+              </a>
+            </div>
+            <div matListItemMeta class="document-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openDocumentMetadataDialog(document, $event)"
+                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+              >
+                <mat-icon>list</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteDocument(document, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteDocument' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.documents?.length" class="no-items-message">
+          {{ 'threatModels.noDocuments' | transloco }}
+        </div>
+      </mat-card-content>
     </mat-card>
 
     <!-- Source Code Card -->
     <mat-card class="source-code-card">
-        <mat-card-header>
-          <mat-card-title [transloco]="'threatModels.sourceCode'">Source Code</mat-card-title>
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addSourceCode()"
-            [matTooltip]="'threatModels.tooltips.addSourceCode' | transloco"
+      <mat-card-header>
+        <mat-card-title [transloco]="'threatModels.sourceCode'">Source Code</mat-card-title>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addSourceCode()"
+          [matTooltip]="'threatModels.tooltips.addSourceCode' | transloco"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let sourceCode of threatModel.sourceCode"
+            class="source-code-item"
+            (click)="editSourceCode(sourceCode, $event)"
           >
-            <mat-icon>add</mat-icon>
-          </button>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let sourceCode of threatModel.sourceCode"
-              class="source-code-item"
-              (click)="editSourceCode(sourceCode, $event)"
-            >
-              <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
-              <div matListItemTitle class="source-code-content">
-                <span
-                  class="source-code-name"
-                  [matTooltip]="sourceCode.description"
-                  matTooltipClass="source-code-description-tooltip"
-                  matTooltipPosition="above"
-                >
-                  {{ sourceCode.name }}
-                </span>
-                <a
-                  *ngIf="sourceCode.url && sourceCode.url.trim() !== ''"
-                  [href]="sourceCode.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="source-code-url-icon"
-                  (click)="$event.stopPropagation()"
-                  [matTooltip]="sourceCode.url"
-                  matTooltipPosition="above"
-                >
-                  <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                </a>
-              </div>
-              <div matListItemMeta class="source-code-actions">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openSourceCodeMetadataDialog(sourceCode, $event)"
-                  [matTooltip]="'threatModels.metadataTooltip' | transloco"
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteSourceCode(sourceCode, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteSourceCode' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-list-item>
-          </mat-list>
-          <div *ngIf="!threatModel.sourceCode?.length" class="no-items-message">
-            {{ 'threatModels.noSourceCode' | transloco }}
-          </div>
-        </mat-card-content>
+            <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
+            <div matListItemTitle class="source-code-content">
+              <span
+                class="source-code-name"
+                [matTooltip]="sourceCode.description"
+                matTooltipClass="source-code-description-tooltip"
+                matTooltipPosition="above"
+              >
+                {{ sourceCode.name }}
+              </span>
+              <a
+                *ngIf="sourceCode.url && sourceCode.url.trim() !== ''"
+                [href]="sourceCode.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="source-code-url-icon"
+                (click)="$event.stopPropagation()"
+                [matTooltip]="sourceCode.url"
+                matTooltipPosition="above"
+              >
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+              </a>
+            </div>
+            <div matListItemMeta class="source-code-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openSourceCodeMetadataDialog(sourceCode, $event)"
+                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+              >
+                <mat-icon>list</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteSourceCode(sourceCode, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteSourceCode' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.sourceCode?.length" class="no-items-message">
+          {{ 'threatModels.noSourceCode' | transloco }}
+        </div>
+      </mat-card-content>
     </mat-card>
 
     <!-- Threats Card -->
@@ -450,7 +457,9 @@
                 {{ threat.name }}
               </span>
               <a
-                *ngIf="threat.issue_url && threat.issue_url !== 'n/a' && threat.issue_url.trim() !== ''"
+                *ngIf="
+                  threat.issue_url && threat.issue_url !== 'n/a' && threat.issue_url.trim() !== ''
+                "
                 [href]="threat.issue_url"
                 target="_blank"
                 rel="noopener noreferrer"

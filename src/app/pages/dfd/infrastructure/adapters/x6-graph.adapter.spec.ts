@@ -161,7 +161,7 @@ describe.skip('X6GraphAdapter', () => {
       zOrderAdapter,
       historyManager,
       visualEffectsService,
-      coreEdgeService
+      coreEdgeService,
     );
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new GraphHistoryCoordinator();
@@ -172,9 +172,8 @@ describe.skip('X6GraphAdapter', () => {
       selectionService,
       historyCoordinator,
       x6CoreOps,
-      coreEdgeService
+      coreEdgeService,
     );
-
 
     // Create X6GraphAdapter with real dependencies
     adapter = new X6GraphAdapter(

@@ -155,11 +155,11 @@ $role-presenter-color: #9c27b0;
     --color-error-dark: #c62828;
     --color-warning-dark: #e65100;
     --color-info: #1565c0;
-    
+
     // Background adjustments for dark theme
     --color-background-light: #2a2a2a;
     --color-background-lighter: #1e1e1e;
-    
+
     // Text adjustments for dark theme
     --color-text-primary: #fff;
     --color-text-secondary: #e0e0e0;
@@ -209,7 +209,7 @@ $role-presenter-color: #9c27b0;
 @mixin oauth-button($provider) {
   background-color: var(--color-#{$provider});
   color: white;
-  
+
   &:hover {
     background-color: var(--color-#{$provider}-hover);
   }

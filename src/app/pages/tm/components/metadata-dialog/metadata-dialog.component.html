@@ -22,7 +22,7 @@
                 (blur)="updateKey(i, $event)"
                 [placeholder]="'common.metadataKey' | transloco"
                 [readonly]="data.isReadOnly"
-                [tabindex]="(i * 2) + 1"
+                [tabindex]="i * 2 + 1"
               />
             </mat-form-field>
           </td>
@@ -41,7 +41,7 @@
                 (blur)="updateValue(i, $event)"
                 [placeholder]="'common.metadataValue' | transloco"
                 [readonly]="data.isReadOnly"
-                [tabindex]="(i * 2) + 2"
+                [tabindex]="i * 2 + 2"
               />
             </mat-form-field>
           </td>

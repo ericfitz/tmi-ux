@@ -64,7 +64,7 @@ import {
   PresenterCursorMessage,
   PresenterSelectionMessage,
   CellOperation,
-  Cell as WSCell
+  Cell as WSCell,
 } from './models/websocket-message.types';
 
 // Import providers needed for standalone component
@@ -91,6 +91,7 @@ import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from './services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
+import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
@@ -172,7 +173,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
   private _isInitialized = false;
-  
+
   // Collaborative editing state
   private isApplyingRemoteChange = false;
   private _webSocketHandlersInitialized = false;
@@ -185,6 +186,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Diagram data
   diagramName: string | null = null;
   threatModelName: string | null = null;
+  threatModelPermission: 'reader' | 'writer' | null = null;
   private pendingDiagramCells: any[] | null = null;
 
   // State properties - exposed as public properties for template binding
@@ -220,6 +222,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private collaborativeOperationService: CollaborativeOperationService,
     private webSocketAdapter: WebSocketAdapter,
     private collaborationService: DfdCollaborationService,
+    private authorizationService: ThreatModelAuthorizationService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -240,29 +243,55 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.threatModelId && this.dfdId) {
       this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
       // Check for existing collaboration session on startup
-      this.collaborationService.checkForExistingSession().pipe(take(1)).subscribe({
-        next: (existingSession) => {
-          if (existingSession) {
-            this.logger.info('Found existing collaboration session on startup', {
-              sessionId: existingSession.session_id,
-              sessionManager: existingSession.session_manager,
-              isCurrentUserManager: this.collaborationService.isCurrentUserManagerOfExistingSession()
-            });
-          }
-        },
-        error: (error) => {
-          this.logger.warn('Failed to check for existing session on startup', error);
-        }
-      });
+      this.collaborationService
+        .checkForExistingSession()
+        .pipe(take(1))
+        .subscribe({
+          next: existingSession => {
+            if (existingSession) {
+              this.logger.info('Found existing collaboration session on startup', {
+                sessionId: existingSession.session_id,
+                sessionManager: existingSession.session_manager,
+                isCurrentUserManager:
+                  this.collaborationService.isCurrentUserManagerOfExistingSession(),
+              });
+            }
+          },
+          error: error => {
+            this.logger.warn('Failed to check for existing session on startup', error);
+          },
+        });
     }
   }
 
   ngOnInit(): void {
     this.logger.info('DfdComponent ngOnInit called');
 
-    // Load threat model data if we have a threatModelId
-    if (this.threatModelId) {
-      this.loadThreatModelData(this.threatModelId);
+    // Get threat model from route resolver
+    const threatModel = this.route.snapshot.data['threatModel'];
+    if (threatModel) {
+      this.threatModelName = threatModel.name;
+      // The authorization context is already set by the resolver
+      // Subscribe to authorization updates
+      this._subscriptions.add(
+        this.authorizationService.currentUserPermission$.subscribe(permission => {
+          this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
+          this.isReadOnlyMode = permission === 'reader' || permission === null;
+
+          this.logger.info('DFD Component permission updated', {
+            threatModelId: this.threatModelId,
+            permission: this.threatModelPermission,
+            isReadOnly: this.isReadOnlyMode,
+          });
+
+          // Update the collaboration service with new permissions
+          if (this.collaborationService && this.threatModelId) {
+            this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId || '');
+          }
+
+          this.cdr.markForCheck();
+        }),
+      );
     }
 
     // Load diagram data if we have a dfdId
@@ -275,23 +304,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (joinCollaboration === 'true' && this.threatModelId && this.dfdId) {
       this.logger.info('Auto-joining collaboration session from navigation', {
         threatModelId: this.threatModelId,
-        dfdId: this.dfdId
+        dfdId: this.dfdId,
       });
-      
+
       // Join existing collaboration session
       this.collaborationService.joinCollaboration().subscribe({
-        next: (success) => {
+        next: success => {
           this.logger.info('Collaboration session joined successfully', { success });
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Failed to join collaboration session', error);
-        }
+        },
       });
     }
 
     // Initialize event handlers
     this.facade.initializeEventHandlers(this.x6GraphAdapter);
-    
+
     // Initialize permission-based UI state
     this.initializePermissions();
 
@@ -345,22 +374,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.collaborativeOperationService.initialize({
               diagramId: this.dfdId,
               threatModelId: this.threatModelId,
-              userId: currentUserId
+              userId: currentUserId,
+              threatModelPermission: this.threatModelPermission || undefined,
             });
             this.logger.info('Initialized CollaborativeOperationService for active collaboration', {
               diagramId: this.dfdId,
               threatModelId: this.threatModelId,
-              userId: currentUserId
+              userId: currentUserId,
             });
           }
-          
+
           // Initialize WebSocket handlers only when collaboration is active and not already initialized
           if (!this._webSocketHandlersInitialized) {
             this.initializeWebSocketHandlers();
             this._webSocketHandlersInitialized = true;
           }
         }
-      })
+      }),
     );
 
     // Subscribe to actual history modifications for auto-save
@@ -375,7 +405,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             if (graph) {
               this.logger.info('Triggering auto-save after history modification', {
                 dfdId: this.dfdId,
-                threatModelId: this.threatModelId
+                threatModelId: this.threatModelId,
               });
               this.autoSaveDiagram('History modified');
             } else {
@@ -385,13 +415,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.logger.warn('Cannot auto-save: missing requirements', {
               isInitialized: this._isInitialized,
               dfdId: this.dfdId,
-              threatModelId: this.threatModelId
+              threatModelId: this.threatModelId,
             });
           }
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Error in history modification subscription', error);
-        }
+        },
       }),
     );
 
@@ -442,96 +472,109 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private initializeWebSocketHandlers(): void {
     this.logger.info('Initializing WebSocket handlers for collaborative editing');
-    
+
     // Handle incoming diagram operations from other users
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation')
         .subscribe({
           next: message => this.handleRemoteDiagramOperation(message),
-          error: error => this.logger.error('Error in diagram operation WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in diagram operation WebSocket handler', error),
+        }),
     );
 
     // Handle authorization denied messages
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<AuthorizationDeniedMessage>('authorization_denied')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<AuthorizationDeniedMessage>('authorization_denied')
         .subscribe({
           next: message => this.handleAuthorizationDenied(message),
-          error: error => this.logger.error('Error in authorization denied WebSocket handler', error)
-        })
+          error: error =>
+            this.logger.error('Error in authorization denied WebSocket handler', error),
+        }),
     );
 
     // Handle state correction messages
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<StateCorrectionMessage>('state_correction')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<StateCorrectionMessage>('state_correction')
         .subscribe({
           next: message => this.handleStateCorrection(message),
-          error: error => this.logger.error('Error in state correction WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in state correction WebSocket handler', error),
+        }),
     );
 
     // Handle history operation responses
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<HistoryOperationMessage>('history_operation')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<HistoryOperationMessage>('history_operation')
         .subscribe({
           next: message => this.handleHistoryOperation(message),
-          error: error => this.logger.error('Error in history operation WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in history operation WebSocket handler', error),
+        }),
     );
 
     // Handle resync responses
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<ResyncResponseMessage>('resync_response')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<ResyncResponseMessage>('resync_response')
         .subscribe({
           next: message => this.handleResyncResponse(message),
-          error: error => this.logger.error('Error in resync response WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in resync response WebSocket handler', error),
+        }),
     );
 
     // Handle presenter mode messages
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
         .subscribe({
           next: message => this.handlePresenterChange(message),
-          error: error => this.logger.error('Error in presenter change WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in presenter change WebSocket handler', error),
+        }),
     );
 
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor')
         .subscribe({
           next: message => this.handlePresenterCursor(message),
-          error: error => this.logger.error('Error in presenter cursor WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in presenter cursor WebSocket handler', error),
+        }),
     );
 
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection')
         .subscribe({
           next: message => this.handlePresenterSelection(message),
-          error: error => this.logger.error('Error in presenter selection WebSocket handler', error)
-        })
+          error: error =>
+            this.logger.error('Error in presenter selection WebSocket handler', error),
+        }),
     );
 
     // Handle presenter requests
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
+      this.webSocketAdapter
+        .getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
         .subscribe({
           next: message => this.handlePresenterRequest(message),
-          error: error => this.logger.error('Error in presenter request WebSocket handler', error)
-        })
+          error: error => this.logger.error('Error in presenter request WebSocket handler', error),
+        }),
     );
 
     // Handle presenter denials
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
-        .subscribe(message => this.handlePresenterDenied(message))
+      this.webSocketAdapter
+        .getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
+        .subscribe(message => this.handlePresenterDenied(message)),
     );
 
     // Handle presenter updates
     this._subscriptions.add(
-      this.webSocketAdapter.getTMIMessagesOfType<PresenterUpdateMessage>('presenter_update')
-        .subscribe(message => this.handlePresenterUpdate(message))
+      this.webSocketAdapter
+        .getTMIMessagesOfType<PresenterUpdateMessage>('presenter_update')
+        .subscribe(message => this.handlePresenterUpdate(message)),
     );
 
     this.logger.info('WebSocket message handlers initialized');
@@ -542,13 +585,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private updateReadOnlyMode(): void {
     if (!this.collaborationService.isCollaborating()) {
-      // Not collaborating, user has full access
-      this.isReadOnlyMode = false;
+      // Not collaborating, use threat model permission
+      this.isReadOnlyMode = this.threatModelPermission === 'reader';
     } else {
       // In collaboration: read-only unless user has edit permissions or is presenter
       const hasEditPermission = this.collaborationService.hasPermission('edit');
       const isPresenter = this.collaborationService.isCurrentUserPresenter();
       this.isReadOnlyMode = !hasEditPermission && !isPresenter;
+
+      // Verify collaboration permission matches threat model permission
+      const collaborationPermission = this.collaborationService.getCurrentUserPermission();
+      if (
+        collaborationPermission &&
+        this.threatModelPermission &&
+        collaborationPermission !== this.threatModelPermission
+      ) {
+        this.logger.error('Collaboration permission does not match threat model permission', {
+          threatModelPermission: this.threatModelPermission,
+          collaborationPermission: collaborationPermission,
+        });
+      }
     }
 
     // Apply read-only mode to graph if initialized
@@ -556,11 +612,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.x6GraphAdapter.setReadOnlyMode(this.isReadOnlyMode);
     }
 
-    this.logger.info('Read-only mode updated', { 
+    this.logger.info('Read-only mode updated', {
       isReadOnlyMode: this.isReadOnlyMode,
+      threatModelPermission: this.threatModelPermission,
       isCollaborating: this.collaborationService.isCollaborating(),
       hasEditPermission: this.collaborationService.hasPermission('edit'),
-      isPresenter: this.collaborationService.isCurrentUserPresenter()
+      isPresenter: this.collaborationService.isCurrentUserPresenter(),
     });
   }
 
@@ -568,29 +625,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Initialize permission-based UI state and read-only mode
    */
   private initializePermissions(): void {
-    // Use the comprehensive read-only mode update logic
-    this.updateReadOnlyMode();
+    // Permissions are now handled by the authorization service subscription in ngOnInit
+    // This method is kept for backward compatibility but can be removed in the future
     this.cdr.markForCheck();
-  }
-
-  /**
-   * Loads basic threat model info (name, etc.) for the given threat model ID
-   * Uses lightweight method instead of fetching entire threat model
-   */
-  private loadThreatModelData(threatModelId: string): void {
-    this._subscriptions.add(
-      this.threatModelService.getThreatModelBasicInfo(threatModelId).subscribe({
-        next: threatModelInfo => {
-          if (threatModelInfo) {
-            this.threatModelName = threatModelInfo.name;
-            this.cdr.markForCheck();
-          }
-        },
-        error: error => {
-          this.logger.error('Error loading threat model basic info', error);
-        },
-      }),
-    );
   }
 
   /**
@@ -607,11 +644,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.facade.loadDiagram(diagramId, this.threatModelId).subscribe({
         next: result => {
-          this.logger.info('Diagram data loaded', { 
-            success: result.success, 
+          this.logger.info('Diagram data loaded', {
+            success: result.success,
             hasDiagram: !!result.diagram,
             diagramName: result.diagram?.name,
-            cellCount: result.diagram?.cells?.length || 0
+            cellCount: result.diagram?.cells?.length || 0,
           });
 
           if (result.success && result.diagram) {
@@ -619,9 +656,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
             // Load the diagram cells into the graph if available
             if (result.diagram.cells && result.diagram.cells.length > 0) {
-              this.logger.info('Found diagram cells to load', { 
+              this.logger.info('Found diagram cells to load', {
                 cellCount: result.diagram.cells.length,
-                isInitialized: this._isInitialized 
+                isInitialized: this._isInitialized,
               });
 
               if (this._isInitialized) {
@@ -666,7 +703,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     // Skip saving on destroy since we already save manually in closeDiagram()
     // This prevents overwriting with empty graph after disposal
-    this.logger.info('Skipping diagram save on destroy - manual save already performed in closeDiagram()');
+    this.logger.info(
+      'Skipping diagram save on destroy - manual save already performed in closeDiagram()',
+    );
 
     // Disconnect the mutation observer
     if (this._observer) {
@@ -699,25 +738,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private getLocalizedShapeName(rawShape: string): string {
     // Map node type identifiers to localization keys
     const shapeKeyMap: { [key: string]: string } = {
-      'actor': 'editor.nodeLabels.actor',
-      'process': 'editor.nodeLabels.process', 
-      'store': 'editor.nodeLabels.store',
+      actor: 'editor.nodeLabels.actor',
+      process: 'editor.nodeLabels.process',
+      store: 'editor.nodeLabels.store',
       'security-boundary': 'editor.nodeLabels.securityBoundary',
       'text-box': 'editor.nodeLabels.textbox',
-      'textbox': 'editor.nodeLabels.textbox', // Alternative form
+      textbox: 'editor.nodeLabels.textbox', // Alternative form
       // Legacy support for display names (in case some places still use them)
       'External Entity': 'editor.nodeLabels.actor',
-      'Process': 'editor.nodeLabels.process', 
+      Process: 'editor.nodeLabels.process',
       'Data Store': 'editor.nodeLabels.store',
       'Trust Boundary': 'editor.nodeLabels.securityBoundary',
-      'Text': 'editor.nodeLabels.textbox'
+      Text: 'editor.nodeLabels.textbox',
     };
 
     const localizationKey = shapeKeyMap[rawShape];
     if (localizationKey) {
       return this.translocoService.translate(localizationKey);
     }
-    
+
     // Fallback to raw shape name if no mapping found
     return rawShape;
   }
@@ -798,8 +837,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Load any pending diagram cells
       if (this.pendingDiagramCells) {
-        this.logger.info('Loading pending diagram cells after graph initialization', { 
-          cellCount: this.pendingDiagramCells.length 
+        this.logger.info('Loading pending diagram cells after graph initialization', {
+          cellCount: this.pendingDiagramCells.length,
         });
         this.loadDiagramCells(this.pendingDiagramCells);
         this.pendingDiagramCells = null;
@@ -824,10 +863,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      this.logger.info('Loading diagram cells into graph with history disabled', { 
+      this.logger.info('Loading diagram cells into graph with history disabled', {
         cellCount: cells.length,
         dfdId: this.dfdId,
-        cells: cells.map(cell => ({ id: cell.id, shape: cell.shape }))
+        cells: cells.map(cell => ({ id: cell.id, shape: cell.shape })),
       });
 
       // CRITICAL: Disable history tracking before loading diagram cells to prevent
@@ -846,14 +885,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.dfdId || 'default-diagram',
           this.nodeConfigurationService,
         );
-        
+
         this.logger.info('Successfully loaded diagram cells into graph');
-        
+
         // Check if cells were actually added to the graph
         const graphCells = graph.getCells();
-        this.logger.info('Graph state after loading', { 
+        this.logger.info('Graph state after loading', {
           totalCellsInGraph: graphCells.length,
-          cellIds: graphCells.map(cell => cell.id)
+          cellIds: graphCells.map(cell => cell.id),
         });
       } finally {
         // CRITICAL: Re-enable history tracking after diagram is fully loaded
@@ -864,7 +903,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.info('History tracking re-enabled after diagram load completed');
         }
       }
-      
+
       this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);
@@ -1169,100 +1208,108 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const localizedShapeName = this.getLocalizedShapeName(cellShape);
     const cellLabel = this.x6GraphAdapter.getCellLabel(selectedCell);
     const cellId = selectedCell.id;
-    
+
     // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
-    const objectName = cellLabel 
+    const objectName = cellLabel
       ? `${localizedShapeName}: ${cellLabel} (${cellId})`
       : `${localizedShapeName}: (${cellId})`;
 
     // Load the threat model to get threats for this cell
     this._subscriptions.add(
       this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
-      next: threatModel => {
-        if (!threatModel) {
-          this.logger.error('Threat model not found', { id: this.threatModelId });
-          return;
-        }
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found', { id: this.threatModelId });
+            return;
+          }
 
-        // Filter threats for this specific cell and diagram
-        const cellThreats = threatModel.threats?.filter(threat => 
-          threat.cell_id === cellId && threat.diagram_id === this.dfdId
-        ) || [];
+          // Filter threats for this specific cell and diagram
+          const cellThreats =
+            threatModel.threats?.filter(
+              threat => threat.cell_id === cellId && threat.diagram_id === this.dfdId,
+            ) || [];
 
-        this.logger.info('Found threats for cell', { 
-          cellId, 
-          diagramId: this.dfdId, 
-          threatCount: cellThreats.length 
-        });
+          this.logger.info('Found threats for cell', {
+            cellId,
+            diagramId: this.dfdId,
+            threatCount: cellThreats.length,
+          });
 
-        const dialogData: ThreatsDialogData = {
-          threats: cellThreats,
-          isReadOnly: false, // Allow editing for now
-          objectType: cellShape,
-          objectName: objectName,
-          threatModelId: this.threatModelId || undefined,
-          diagramId: this.dfdId || undefined
-        };
+          const dialogData: ThreatsDialogData = {
+            threats: cellThreats,
+            isReadOnly: false, // Allow editing for now
+            objectType: cellShape,
+            objectName: objectName,
+            threatModelId: this.threatModelId || undefined,
+            diagramId: this.dfdId || undefined,
+          };
 
-        const dialogRef = this.dialog.open(ThreatsDialogComponent, {
-          data: dialogData,
-          width: '800px',
-          maxWidth: '90vw',
-          maxHeight: '80vh',
-          disableClose: false
-        });
+          const dialogRef = this.dialog.open(ThreatsDialogComponent, {
+            data: dialogData,
+            width: '800px',
+            maxWidth: '90vw',
+            maxHeight: '80vh',
+            disableClose: false,
+          });
 
-        this._subscriptions.add(
-          dialogRef.afterClosed().subscribe(result => {
-            if (result?.action === 'openThreatEditor') {
-              this.logger.info('Opening threat editor from manage threats dialog');
-              // Open the threat editor for this specific cell and reopen manage threats dialog after
-              this.openThreatEditorAndReopenManageThreats(cellId, cellShape, objectName);
-            } else if (result?.action === 'threatUpdated') {
-              this.logger.info('Threat was updated from manage threats dialog', { 
-                threatId: result.threat?.id 
-              });
-              // Handle threat update - the threat editor already saved the changes
-              // We could reload the threat model or trigger other updates if needed
-            } else if (result) {
-              this.logger.info('Manage threats dialog closed with changes');
-              // Handle any other updates to threats if needed
-            }
-          })
-        );
-      },
-      error: error => {
-        this.logger.error('Failed to load threat model for manage threats', error);
-      }
-    }));
+          this._subscriptions.add(
+            dialogRef.afterClosed().subscribe(result => {
+              if (result?.action === 'openThreatEditor') {
+                this.logger.info('Opening threat editor from manage threats dialog');
+                // Open the threat editor for this specific cell and reopen manage threats dialog after
+                this.openThreatEditorAndReopenManageThreats(cellId, cellShape, objectName);
+              } else if (result?.action === 'threatUpdated') {
+                this.logger.info('Threat was updated from manage threats dialog', {
+                  threatId: result.threat?.id,
+                });
+                // Handle threat update - the threat editor already saved the changes
+                // We could reload the threat model or trigger other updates if needed
+              } else if (result) {
+                this.logger.info('Manage threats dialog closed with changes');
+                // Handle any other updates to threats if needed
+              }
+            }),
+          );
+        },
+        error: error => {
+          this.logger.error('Failed to load threat model for manage threats', error);
+        },
+      }),
+    );
   }
 
   /**
    * Opens threat editor and then reopens manage threats dialog after threat creation
    */
-  private openThreatEditorAndReopenManageThreats(cellId: string, cellShape: string, objectName: string): void {
+  private openThreatEditorAndReopenManageThreats(
+    cellId: string,
+    cellShape: string,
+    objectName: string,
+  ): void {
     if (!this.threatModelId) {
       this.logger.warn('Cannot open threat editor: No threat model ID available');
       return;
     }
 
-    const originalThreatChangedSubscription = this.facade.threatChanged$.subscribe(threatChangeEvent => {
-      if (threatChangeEvent.action === 'added') {
-        this.logger.info('Threat was added, reopening manage threats dialog');
-        
-        // Small delay to allow the threat to be fully saved
-        setTimeout(() => {
-          this.reopenManageThreatsDialog(cellId, cellShape, objectName);
-        }, 100);
-        
-        // Unsubscribe from this specific subscription
-        originalThreatChangedSubscription.unsubscribe();
-      }
-    });
-    
+    const originalThreatChangedSubscription = this.facade.threatChanged$.subscribe(
+      threatChangeEvent => {
+        if (threatChangeEvent.action === 'added') {
+          this.logger.info('Threat was added, reopening manage threats dialog');
+
+          // Small delay to allow the threat to be fully saved
+          setTimeout(() => {
+            this.reopenManageThreatsDialog(cellId, cellShape, objectName);
+          }, 100);
+
+          // Unsubscribe from this specific subscription
+          originalThreatChangedSubscription.unsubscribe();
+        }
+      },
+    );
+
     // Store the subscription for cleanup
     this._subscriptions.add(originalThreatChangedSubscription);
-    
+
     // Open the threat editor
     this.facade.openThreatEditor(this.threatModelId, this.dfdId);
   }
@@ -1277,7 +1324,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Reload the threat model and reopen the dialog
     this._subscriptions.add(
-      this.threatModelService.getThreatModelById(this.threatModelId, true).subscribe({ // Force refresh
+      this.threatModelService.getThreatModelById(this.threatModelId, true).subscribe({
+        // Force refresh
         next: threatModel => {
           if (!threatModel) {
             this.logger.error('Threat model not found during reopen', { id: this.threatModelId });
@@ -1285,14 +1333,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Filter threats for this specific cell and diagram
-          const cellThreats = threatModel.threats?.filter(threat => 
-            threat.cell_id === cellId && threat.diagram_id === this.dfdId
-          ) || [];
+          const cellThreats =
+            threatModel.threats?.filter(
+              threat => threat.cell_id === cellId && threat.diagram_id === this.dfdId,
+            ) || [];
 
-          this.logger.info('Reopening manage threats dialog with updated data', { 
-            cellId, 
-            diagramId: this.dfdId, 
-            threatCount: cellThreats.length 
+          this.logger.info('Reopening manage threats dialog with updated data', {
+            cellId,
+            diagramId: this.dfdId,
+            threatCount: cellThreats.length,
           });
 
           const dialogData: ThreatsDialogData = {
@@ -1301,7 +1350,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             objectType: cellShape,
             objectName: objectName,
             threatModelId: this.threatModelId || undefined,
-            diagramId: this.dfdId || undefined
+            diagramId: this.dfdId || undefined,
           };
 
           const dialogRef = this.dialog.open(ThreatsDialogComponent, {
@@ -1309,7 +1358,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             width: '800px',
             maxWidth: '90vw',
             maxHeight: '80vh',
-            disableClose: false
+            disableClose: false,
           });
 
           // Handle the reopened dialog the same way as the original
@@ -1320,19 +1369,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Recursively handle opening threat editor again
                 this.openThreatEditorAndReopenManageThreats(cellId, cellShape, objectName);
               } else if (result?.action === 'threatUpdated') {
-                this.logger.info('Threat was updated from reopened manage threats dialog', { 
-                  threatId: result.threat?.id 
+                this.logger.info('Threat was updated from reopened manage threats dialog', {
+                  threatId: result.threat?.id,
                 });
               } else if (result) {
                 this.logger.info('Reopened manage threats dialog closed with changes');
               }
-            })
+            }),
           );
         },
         error: error => {
           this.logger.error('Failed to reload threat model for manage threats reopen', error);
-        }
-      })
+        },
+      }),
     );
   }
 
@@ -1367,9 +1416,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const localizedShapeName = this.getLocalizedShapeName(cellShape);
     const cellLabel = this.x6GraphAdapter.getCellLabel(cell);
     const cellId = cell.id;
-    
+
     // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
-    const objectName = cellLabel 
+    const objectName = cellLabel
       ? `${localizedShapeName}: ${cellLabel} (${cellId})`
       : `${localizedShapeName}: (${cellId})`;
 
@@ -1584,7 +1633,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Both collaborative and solo modes benefit from periodic saves
     // Collaborative mode uses WebSocket with REST fallback for resilience
     this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-      next: (success) => {
+      next: success => {
         if (success) {
           const mode = this.collaborationService.isCollaborating() ? 'collaborative' : 'solo';
           this.logger.info(`Auto-saved diagram in ${mode} mode: ${reason}`);
@@ -1592,9 +1641,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.warn(`Auto-save failed: ${reason}`);
         }
       },
-      error: (error) => {
+      error: error => {
         this.logger.error(`Error during auto-save (${reason})`, error);
-      }
+      },
     });
   }
 
@@ -1609,9 +1658,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         next: () => {
           this.logger.debug('Undo request sent to server');
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Failed to send undo request', error);
-        }
+        },
       });
     } else {
       // Use local X6 history for solo editing
@@ -1630,9 +1679,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         next: () => {
           this.logger.debug('Redo request sent to server');
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Failed to send redo request', error);
-        }
+        },
       });
     } else {
       // Use local X6 history for solo editing
@@ -1652,7 +1701,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debug('Applying remote diagram operation', {
       userId: message.user_id,
       operationId: message.operation_id,
-      cellCount: message.operation.cells.length
+      cellCount: message.operation.cells.length,
     });
 
     this.isApplyingRemoteChange = true;
@@ -1704,14 +1753,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.facade.createEdgeFromRemoteOperation(graph, cellOp.data, {
         suppressHistory: true,
         ensureVisualRendering: true,
-        updatePortVisibility: true
+        updatePortVisibility: true,
       });
     } else {
       // Handle node addition using existing domain service
       this.facade.createNodeFromRemoteOperation(graph, cellOp.data, {
         suppressHistory: true,
         ensureVisualRendering: true,
-        updatePortVisibility: true
+        updatePortVisibility: true,
       });
     }
 
@@ -1760,12 +1809,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (cell.isNode()) {
       this.facade.removeNodeFromRemoteOperation(graph, cellOp.id, {
         suppressHistory: true,
-        updatePortVisibility: true
+        updatePortVisibility: true,
       });
     } else if (cell.isEdge()) {
       this.facade.removeEdgeFromRemoteOperation(graph, cellOp.id, {
         suppressHistory: true,
-        updatePortVisibility: true
+        updatePortVisibility: true,
       });
     }
 
@@ -1778,7 +1827,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private handleAuthorizationDenied(message: AuthorizationDeniedMessage): void {
     this.logger.warn('Operation denied by server', {
       operationId: message.original_operation_id,
-      reason: message.reason
+      reason: message.reason,
     });
 
     // Show user notification
@@ -1792,7 +1841,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private handleStateCorrection(message: StateCorrectionMessage): void {
     this.logger.info('Received state correction from server', {
-      cellCount: message.cells.length
+      cellCount: message.cells.length,
     });
 
     this.isApplyingRemoteChange = true;
@@ -1819,7 +1868,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (message.message) {
       case 'resync_required':
         this.logger.info('History operation completed, performing resync', {
-          operationType: message.operation_type
+          operationType: message.operation_type,
         });
         void this.performRESTResync();
         // TODO: Show notification
@@ -1832,7 +1881,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'no_operations_to_redo':
-        // TODO: Show notification  
+        // TODO: Show notification
         // this.notificationService.showInfo('Nothing to redo');
         break;
     }
@@ -1903,10 +1952,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private handlePresenterUpdate(message: PresenterUpdateMessage): void {
     const newPresenterId = message.user_id || null;
     this.logger.info('Presenter updated', { presenterId: newPresenterId });
-    
+
     // Update collaboration service state
     this.collaborationService.updatePresenterId(newPresenterId);
-    
+
     // Update read-only mode based on presenter status
     this.updateReadOnlyMode();
   }
@@ -1922,10 +1971,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       this.logger.info('Performing REST resync');
-      
+
       // Use existing REST API to get authoritative state
       const diagram = await this.threatModelService
-        .getDiagramById(this.threatModelId, this.dfdId).toPromise();
+        .getDiagramById(this.threatModelId, this.dfdId)
+        .toPromise();
 
       if (diagram && diagram.cells) {
         // Replace entire local diagram state
@@ -1935,7 +1985,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           if (graph) {
             // Clear existing graph
             graph.clearCells();
-            
+
             // Load fresh cells from server
             this.loadDiagramCells(diagram.cells);
           }
@@ -1957,7 +2007,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private applyCellCorrection(cellData: WSCell, graph: any): void {
     const existingCell = graph.getCellById(cellData.id);
-    
+
     if (existingCell) {
       // Update existing cell with corrected data
       Object.entries(cellData).forEach(([key, value]) => {
@@ -1977,13 +2027,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.facade.createEdgeFromRemoteOperation(graph, cellData, {
           suppressHistory: true,
           ensureVisualRendering: true,
-          updatePortVisibility: true
+          updatePortVisibility: true,
         });
       } else {
         this.facade.createNodeFromRemoteOperation(graph, cellData, {
           suppressHistory: true,
           ensureVisualRendering: true,
-          updatePortVisibility: true
+          updatePortVisibility: true,
         });
       }
     }

@@ -9,7 +9,10 @@ import { take } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { Threat } from '../../models/threat-model.model';
-import { ThreatEditorDialogComponent, ThreatEditorDialogData } from '../threat-editor-dialog/threat-editor-dialog.component';
+import {
+  ThreatEditorDialogComponent,
+  ThreatEditorDialogData,
+} from '../threat-editor-dialog/threat-editor-dialog.component';
 import { ThreatModelService } from '../../services/threat-model.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
@@ -99,46 +102,52 @@ export class ThreatsDialogComponent implements OnInit {
     this.logger.info('Opening threat editor for editing', { threatId: threat.id });
 
     // Load the threat model to get the framework information
-    this.threatModelService.getThreatModelById(this.data.threatModelId).pipe(take(1)).subscribe({
-      next: threatModel => {
-        if (!threatModel) {
-          this.logger.error('Threat model not found for edit', { id: this.data.threatModelId });
-          return;
-        }
-
-        const currentFrameworkName = threatModel.threat_model_framework;
-
-        // Load frameworks to find the matching one
-        this.frameworkService.loadAllFrameworks().pipe(take(1)).subscribe({
-          next: frameworks => {
-            const framework = frameworks.find(f => f.name === currentFrameworkName);
-
-            if (!framework) {
-              this.logger.warn('Framework not found for threat model', {
-                threatModelFramework: currentFrameworkName,
-                availableFrameworks: frameworks.map(f => f.name),
-              });
-            } else {
-              this.logger.info('Using framework for threat editor', {
-                framework: framework.name,
-                frameworkThreatTypes: framework.threatTypes.map(tt => tt.name),
-              });
-            }
-
-            // Open the threat editor with framework information
-            this.openThreatEditorDialog(threat, framework);
-          },
-          error: error => {
-            this.logger.error('Failed to load frameworks for threat edit', error);
-            // Fallback: open without framework
-            this.openThreatEditorDialog(threat);
+    this.threatModelService
+      .getThreatModelById(this.data.threatModelId)
+      .pipe(take(1))
+      .subscribe({
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found for edit', { id: this.data.threatModelId });
+            return;
           }
-        });
-      },
-      error: error => {
-        this.logger.error('Failed to load threat model for edit', error);
-      }
-    });
+
+          const currentFrameworkName = threatModel.threat_model_framework;
+
+          // Load frameworks to find the matching one
+          this.frameworkService
+            .loadAllFrameworks()
+            .pipe(take(1))
+            .subscribe({
+              next: frameworks => {
+                const framework = frameworks.find(f => f.name === currentFrameworkName);
+
+                if (!framework) {
+                  this.logger.warn('Framework not found for threat model', {
+                    threatModelFramework: currentFrameworkName,
+                    availableFrameworks: frameworks.map(f => f.name),
+                  });
+                } else {
+                  this.logger.info('Using framework for threat editor', {
+                    framework: framework.name,
+                    frameworkThreatTypes: framework.threatTypes.map(tt => tt.name),
+                  });
+                }
+
+                // Open the threat editor with framework information
+                this.openThreatEditorDialog(threat, framework);
+              },
+              error: error => {
+                this.logger.error('Failed to load frameworks for threat edit', error);
+                // Fallback: open without framework
+                this.openThreatEditorDialog(threat);
+              },
+            });
+        },
+        error: error => {
+          this.logger.error('Failed to load threat model for edit', error);
+        },
+      });
   }
 
   /**
@@ -164,7 +173,7 @@ export class ThreatsDialogComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: ThreatUpdateResult | null) => {
       if (result) {
         this.logger.info('Threat editor closed with changes, updating threat');
-        
+
         // Update the threat with new data
         const updatedThreat: Threat = {
           ...threat,
@@ -182,40 +191,48 @@ export class ThreatsDialogComponent implements OnInit {
         };
 
         // Update the threat in the threat model
-        this.threatModelService.getThreatModelById(this.data.threatModelId!).pipe(take(1)).subscribe({
-          next: threatModel => {
-            if (!threatModel) {
-              this.logger.error('Threat model not found for update', { id: this.data.threatModelId });
-              return;
-            }
+        this.threatModelService
+          .getThreatModelById(this.data.threatModelId!)
+          .pipe(take(1))
+          .subscribe({
+            next: threatModel => {
+              if (!threatModel) {
+                this.logger.error('Threat model not found for update', {
+                  id: this.data.threatModelId,
+                });
+                return;
+              }
 
-            // Find and update the threat in the model
-            const threatIndex = threatModel.threats?.findIndex(t => t.id === threat.id) ?? -1;
-            if (threatIndex !== -1 && threatModel.threats) {
-              threatModel.threats[threatIndex] = updatedThreat;
-              
-              // Save the updated threat model
-              this.threatModelService.updateThreatModel(threatModel).pipe(take(1)).subscribe({
-                next: () => {
-                  this.logger.info('Threat updated successfully', { threatId: threat.id });
-                  
-                  // Update the local data source
-                  const localIndex = this.dataSource.data.findIndex(t => t.id === threat.id);
-                  if (localIndex !== -1) {
-                    this.dataSource.data[localIndex] = updatedThreat;
-                    this.dataSource.data = [...this.dataSource.data]; // Trigger change detection
-                  }
-                },
-                error: error => {
-                  this.logger.error('Failed to update threat', error);
-                }
-              });
-            }
-          },
-          error: error => {
-            this.logger.error('Failed to load threat model for update', error);
-          }
-        });
+              // Find and update the threat in the model
+              const threatIndex = threatModel.threats?.findIndex(t => t.id === threat.id) ?? -1;
+              if (threatIndex !== -1 && threatModel.threats) {
+                threatModel.threats[threatIndex] = updatedThreat;
+
+                // Save the updated threat model
+                this.threatModelService
+                  .updateThreatModel(threatModel)
+                  .pipe(take(1))
+                  .subscribe({
+                    next: () => {
+                      this.logger.info('Threat updated successfully', { threatId: threat.id });
+
+                      // Update the local data source
+                      const localIndex = this.dataSource.data.findIndex(t => t.id === threat.id);
+                      if (localIndex !== -1) {
+                        this.dataSource.data[localIndex] = updatedThreat;
+                        this.dataSource.data = [...this.dataSource.data]; // Trigger change detection
+                      }
+                    },
+                    error: error => {
+                      this.logger.error('Failed to update threat', error);
+                    },
+                  });
+              }
+            },
+            error: error => {
+              this.logger.error('Failed to load threat model for update', error);
+            },
+          });
       }
     });
   }

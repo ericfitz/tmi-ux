@@ -45,7 +45,6 @@ import { DiagramEdge } from '../domain/value-objects/diagram-edge';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../constants/styling-constants';
 import { StylingVerifier, TestHelpers } from './test-helpers/styling-helpers';
 
-
 // Setup JSDOM environment for X6
 const mockSVGElement = {
   getCTM: vi.fn(() => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 })),

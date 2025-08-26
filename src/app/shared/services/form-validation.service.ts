@@ -27,12 +27,12 @@ interface ValidationContext {
  * Provides pre-save validation and prevents excessive error logging
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FormValidationService {
   // Track validation contexts to manage logging
   private _validationContexts = new Map<string, ValidationContext>();
-  
+
   // Cooldown period for logging the same validation error (in ms)
   private _loggingCooldown = 60000; // 1 minute
 
@@ -53,11 +53,11 @@ export class FormValidationService {
     fieldName: string,
     value: unknown,
     validators: ValidatorFn[],
-    shouldLog: boolean = false
+    shouldLog: boolean = false,
   ): ValidationResult {
     const contextKey = `${formId}:${fieldName}`;
     let context = this._validationContexts.get(contextKey);
-    
+
     if (!context) {
       context = { formId, fieldName };
       this._validationContexts.set(contextKey, context);
@@ -66,7 +66,7 @@ export class FormValidationService {
     // Create a dummy form control for validation
     const control = { value, errors: null } as AbstractControl;
     let errors: ValidationErrors | null = null;
-    
+
     // Run all validators
     for (const validator of validators) {
       const validatorErrors = validator(control);
@@ -77,10 +77,10 @@ export class FormValidationService {
 
     const isValid = errors === null;
     const errorMessages = this.getErrorMessages(errors);
-    
+
     // Update validation context
     context.lastValidationTime = new Date();
-    
+
     // Smart logging logic
     if (!isValid && shouldLog) {
       this.logValidationError(context, fieldName, errorMessages, value);
@@ -89,7 +89,7 @@ export class FormValidationService {
     return {
       isValid,
       errors,
-      errorMessages
+      errorMessages,
     };
   }
 
@@ -105,7 +105,7 @@ export class FormValidationService {
     formId: string,
     formData: Record<string, unknown>,
     validationRules: Record<string, ValidatorFn[]>,
-    shouldLog: boolean = true
+    shouldLog: boolean = true,
   ): ValidationResult {
     let hasErrors = false;
     const allErrors: ValidationErrors = {};
@@ -115,7 +115,7 @@ export class FormValidationService {
     Object.entries(validationRules).forEach(([fieldName, validators]) => {
       const fieldValue = formData[fieldName];
       const fieldResult = this.validateField(formId, fieldName, fieldValue, validators, shouldLog);
-      
+
       if (!fieldResult.isValid) {
         hasErrors = true;
         if (fieldResult.errors) {
@@ -128,7 +128,7 @@ export class FormValidationService {
     return {
       isValid: !hasErrors,
       errors: hasErrors ? allErrors : null,
-      errorMessages: allErrorMessages
+      errorMessages: allErrorMessages,
     };
   }
 
@@ -192,7 +192,7 @@ export class FormValidationService {
     url: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (!value) return null; // Allow empty URLs
-      
+
       try {
         new URL(value as string);
         return null;
@@ -207,7 +207,7 @@ export class FormValidationService {
     email: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (!value) return null; // Allow empty emails
-      
+
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value as string)) {
         return { email: true };
@@ -235,7 +235,7 @@ export class FormValidationService {
         return { positiveNumber: true };
       }
       return null;
-    }
+    },
   };
 
   /**
@@ -245,17 +245,11 @@ export class FormValidationService {
     return {
       name: [
         FormValidationService.validators.required,
-        FormValidationService.validators.maxLength(100)
+        FormValidationService.validators.maxLength(100),
       ],
-      description: [
-        FormValidationService.validators.maxLength(500)
-      ],
-      threat_model_framework: [
-        FormValidationService.validators.required
-      ],
-      issue_url: [
-        FormValidationService.validators.url
-      ]
+      description: [FormValidationService.validators.maxLength(500)],
+      threat_model_framework: [FormValidationService.validators.required],
+      issue_url: [FormValidationService.validators.url],
     };
   }
 
@@ -266,23 +260,13 @@ export class FormValidationService {
     return {
       name: [
         FormValidationService.validators.required,
-        FormValidationService.validators.maxLength(100)
+        FormValidationService.validators.maxLength(100),
       ],
-      description: [
-        FormValidationService.validators.maxLength(1000)
-      ],
-      severity: [
-        FormValidationService.validators.required
-      ],
-      threat_type: [
-        FormValidationService.validators.required
-      ],
-      score: [
-        FormValidationService.validators.positiveNumber
-      ],
-      issue_url: [
-        FormValidationService.validators.url
-      ]
+      description: [FormValidationService.validators.maxLength(1000)],
+      severity: [FormValidationService.validators.required],
+      threat_type: [FormValidationService.validators.required],
+      score: [FormValidationService.validators.positiveNumber],
+      issue_url: [FormValidationService.validators.url],
     };
   }
 
@@ -293,15 +277,10 @@ export class FormValidationService {
     return {
       name: [
         FormValidationService.validators.required,
-        FormValidationService.validators.maxLength(100)
+        FormValidationService.validators.maxLength(100),
       ],
-      url: [
-        FormValidationService.validators.required,
-        FormValidationService.validators.url
-      ],
-      description: [
-        FormValidationService.validators.maxLength(500)
-      ]
+      url: [FormValidationService.validators.required, FormValidationService.validators.url],
+      description: [FormValidationService.validators.maxLength(500)],
     };
   }
 
@@ -312,18 +291,11 @@ export class FormValidationService {
     return {
       name: [
         FormValidationService.validators.required,
-        FormValidationService.validators.maxLength(100)
+        FormValidationService.validators.maxLength(100),
       ],
-      url: [
-        FormValidationService.validators.required,
-        FormValidationService.validators.url
-      ],
-      type: [
-        FormValidationService.validators.required
-      ],
-      description: [
-        FormValidationService.validators.maxLength(500)
-      ]
+      url: [FormValidationService.validators.required, FormValidationService.validators.url],
+      type: [FormValidationService.validators.required],
+      description: [FormValidationService.validators.maxLength(500)],
     };
   }
 
@@ -334,12 +306,12 @@ export class FormValidationService {
     return {
       key: [
         FormValidationService.validators.required,
-        FormValidationService.validators.maxLength(50)
+        FormValidationService.validators.maxLength(50),
       ],
       value: [
         FormValidationService.validators.required,
-        FormValidationService.validators.maxLength(500)
-      ]
+        FormValidationService.validators.maxLength(500),
+      ],
     };
   }
 
@@ -348,9 +320,10 @@ export class FormValidationService {
    * @param formId Unique form identifier
    */
   clearValidationContext(formId: string): void {
-    const keysToDelete = Array.from(this._validationContexts.keys())
-      .filter(key => key.startsWith(`${formId}:`));
-    
+    const keysToDelete = Array.from(this._validationContexts.keys()).filter(key =>
+      key.startsWith(`${formId}:`),
+    );
+
     keysToDelete.forEach(key => {
       this._validationContexts.delete(key);
     });
@@ -363,7 +336,7 @@ export class FormValidationService {
     if (!errors) return [];
 
     const messages: string[] = [];
-    
+
     Object.entries(errors).forEach(([errorType, errorValue]) => {
       switch (errorType) {
         case 'required':
@@ -371,12 +344,16 @@ export class FormValidationService {
           break;
         case 'maxLength': {
           const maxLength = errorValue as { max: number; actual: number };
-          messages.push(`Maximum length is ${maxLength.max} characters (current: ${maxLength.actual})`);
+          messages.push(
+            `Maximum length is ${maxLength.max} characters (current: ${maxLength.actual})`,
+          );
           break;
         }
         case 'minLength': {
           const minLength = errorValue as { min: number; actual: number };
-          messages.push(`Minimum length is ${minLength.min} characters (current: ${minLength.actual})`);
+          messages.push(
+            `Minimum length is ${minLength.min} characters (current: ${minLength.actual})`,
+          );
           break;
         }
         case 'url':
@@ -406,15 +383,17 @@ export class FormValidationService {
     context: ValidationContext,
     fieldName: string,
     errorMessages: string[],
-    value: unknown
+    value: unknown,
   ): void {
     const errorMessage = errorMessages.join(', ');
     const now = new Date();
 
     // Check if we should log this error (prevent spam)
-    if (context.lastLoggedError === errorMessage &&
-        context.lastValidationTime &&
-        (now.getTime() - context.lastValidationTime.getTime()) < this._loggingCooldown) {
+    if (
+      context.lastLoggedError === errorMessage &&
+      context.lastValidationTime &&
+      now.getTime() - context.lastValidationTime.getTime() < this._loggingCooldown
+    ) {
       return; // Skip logging to prevent spam
     }
 
@@ -423,7 +402,7 @@ export class FormValidationService {
       formId: context.formId,
       fieldName,
       errorMessages,
-      value: typeof value === 'string' ? (value).substring(0, 100) : value, // Limit logged value length
+      value: typeof value === 'string' ? value.substring(0, 100) : value, // Limit logged value length
     });
 
     // Update context to track this logged error

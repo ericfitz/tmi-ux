@@ -38,15 +38,17 @@ import { TMListItem } from './models/tm-list-item.model';
 import { ThreatModelService } from './services/threat-model.service';
 import { ThreatModelValidatorService } from './validation/threat-model-validator.service';
 import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
-import { CollaborationSessionService, CollaborationSession } from '../../core/services/collaboration-session.service';
+import {
+  CollaborationSessionService,
+  CollaborationSession,
+} from '../../core/services/collaboration-session.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { 
+import {
   DeleteThreatModelDialogComponent,
-  DeleteThreatModelDialogData 
+  DeleteThreatModelDialogData,
 } from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
-
 
 @Component({
   selector: 'app-tm',
@@ -58,11 +60,11 @@ import {
 })
 export class TmComponent implements OnInit, OnDestroy {
   threatModels: TMListItem[] = [];
-  
+
   // Observable streams
   collaborationSessions$!: Observable<CollaborationSession[]>;
   shouldShowCollaboration$!: Observable<boolean>;
-  
+
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
   private currentLocale: string = 'en-US';
@@ -82,14 +84,14 @@ export class TmComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
-    
+
     // Subscribe to collaboration session polling since we need session data on dashboard
     this.collaborationSessionService.subscribeToSessionPolling();
-    
+
     // Initialize observable streams
     this.collaborationSessions$ = this.collaborationSessionService.sessions$;
     this.shouldShowCollaboration$ = this.collaborationSessionService.shouldShowCollaboration$;
-    
+
     // Force refresh on dashboard load to ensure we have the latest data
     this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
       // Ensure models is always an array
@@ -121,7 +123,7 @@ export class TmComponent implements OnInit, OnDestroy {
     if (this.languageSubscription) {
       this.languageSubscription.unsubscribe();
     }
-    
+
     // Unsubscribe from collaboration session polling when leaving dashboard
     this.collaborationSessionService.unsubscribeFromSessionPolling();
   }
@@ -151,7 +153,7 @@ export class TmComponent implements OnInit, OnDestroy {
     }
 
     const dateObj = new Date(date);
-    
+
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) {
       this.logger.warn('Invalid date provided to formatDate', { date });
@@ -205,13 +207,13 @@ export class TmComponent implements OnInit, OnDestroy {
     // Show confirmation dialog
     const dialogData: DeleteThreatModelDialogData = {
       id: threatModel.id,
-      name: threatModel.name
+      name: threatModel.name,
     };
 
     const dialogRef = this.dialog.open(DeleteThreatModelDialogComponent, {
       width: '500px',
       data: dialogData,
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(confirmed => {
@@ -221,29 +223,27 @@ export class TmComponent implements OnInit, OnDestroy {
           next: success => {
             if (success) {
               // No need to manually refresh - the reactive subscription will update automatically
-              this.logger.debugComponent('TM', 'Threat model deleted successfully', { id, name: threatModel.name });
-              
+              this.logger.debugComponent('TM', 'Threat model deleted successfully', {
+                id,
+                name: threatModel.name,
+              });
+
               // Show success message
-              this.snackBar.open(
-                `Threat model "${threatModel.name}" has been deleted.`,
-                'Close',
-                { duration: 3000 }
-              );
+              this.snackBar.open(`Threat model "${threatModel.name}" has been deleted.`, 'Close', {
+                duration: 3000,
+              });
             }
           },
           error: error => {
             this.logger.error('Error deleting threat model', error);
-            this.snackBar.open(
-              'Failed to delete threat model. Please try again.',
-              'Close',
-              { duration: 5000 }
-            );
-          }
+            this.snackBar.open('Failed to delete threat model. Please try again.', 'Close', {
+              duration: 5000,
+            });
+          },
         });
       }
     });
   }
-
 
   /**
    * Refresh the collaboration sessions list
@@ -259,24 +259,26 @@ export class TmComponent implements OnInit, OnDestroy {
    */
   openCollaborationSession(diagramId: string): void {
     this.logger.info('Opening collaboration session', { diagramId });
-    
-    // Find the session data to get the threat model ID
-    this.collaborationSessions$.pipe(
-      take(1),
-      map(sessions => sessions.find(session => session.diagramId === diagramId))
-    ).subscribe(session => {
-      if (!session) {
-        this.logger.error('Collaboration session not found', { diagramId });
-        return;
-      }
 
-      // Navigate to DFD page with collaboration context using correct nested route
-      void this.router.navigate(['/tm', session.threatModelId, 'dfd', diagramId], {
-        queryParams: {
-          joinCollaboration: 'true'
+    // Find the session data to get the threat model ID
+    this.collaborationSessions$
+      .pipe(
+        take(1),
+        map(sessions => sessions.find(session => session.diagramId === diagramId)),
+      )
+      .subscribe(session => {
+        if (!session) {
+          this.logger.error('Collaboration session not found', { diagramId });
+          return;
         }
+
+        // Navigate to DFD page with collaboration context using correct nested route
+        void this.router.navigate(['/tm', session.threatModelId, 'dfd', diagramId], {
+          queryParams: {
+            joinCollaboration: 'true',
+          },
+        });
       });
-    });
   }
 
   /**

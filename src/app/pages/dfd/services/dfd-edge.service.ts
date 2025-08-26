@@ -254,7 +254,7 @@ export class DfdEdgeService {
       this.historyCoordinator.executeVisualEffect(graph, () => {
         // Apply proper zIndex using the same logic as normal edge creation
         this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
-        
+
         // Apply creation highlight effect for programmatically created inverse edges
         this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
       });
@@ -843,11 +843,11 @@ export class DfdEdgeService {
   createEdgeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
     // Convert WebSocket cell data to EdgeInfo format
     const edgeInfo = this.convertWebSocketCellToEdgeInfo(cellData);
-    
+
     // Create edge using infrastructure EdgeService
     this.edgeService.createEdge(graph, edgeInfo, {
       ensureVisualRendering: options?.ensureVisualRendering ?? true,
-      updatePortVisibility: options?.updatePortVisibility ?? true
+      updatePortVisibility: options?.updatePortVisibility ?? true,
     });
   }
 
@@ -872,7 +872,7 @@ export class DfdEdgeService {
       target: cellData.target,
       vertices: cellData.vertices || [],
       labels: cellData.labels || [],
-      data: cellData.data || {}
+      data: cellData.data || {},
     };
   }
 }

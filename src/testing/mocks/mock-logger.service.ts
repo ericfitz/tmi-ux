@@ -1,6 +1,6 @@
 /**
  * Mock logger service for testing
- * 
+ *
  * This provides a standardized mock of the LoggerService that can be reused
  * across all test files, eliminating duplication and ensuring consistency.
  */
@@ -10,7 +10,7 @@ import type { LoggerService } from '../../app/core/services/logger.service';
 
 /**
  * Creates a mock LoggerService with all required methods
- * 
+ *
  * @returns A mock LoggerService with vitest mock functions
  */
 export function createMockLoggerService(): LoggerService {
@@ -39,7 +39,7 @@ export interface MockLoggerService {
 
 /**
  * Creates a typed mock LoggerService that allows easy access to mock functions
- * 
+ *
  * @returns A typed mock LoggerService
  */
 export function createTypedMockLoggerService(): MockLoggerService {

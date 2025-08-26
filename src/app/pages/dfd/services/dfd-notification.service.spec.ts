@@ -18,21 +18,21 @@ describe('DfdNotificationService', () => {
     // Create mocks
     mockSnackBar = {
       open: vi.fn(),
-      dismiss: vi.fn()
+      dismiss: vi.fn(),
     };
-    
+
     mockLogger = {
       info: vi.fn(),
       debug: vi.fn(),
       warn: vi.fn(),
-      error: vi.fn()
+      error: vi.fn(),
     };
 
     // Setup default snackbar behavior
     const mockSnackBarRef = {
       onAction: vi.fn(() => of(null)),
       afterDismissed: vi.fn(() => of(null)),
-      dismiss: vi.fn()
+      dismiss: vi.fn(),
     };
     mockSnackBar.open.mockReturnValue(mockSnackBarRef);
 
@@ -53,8 +53,8 @@ describe('DfdNotificationService', () => {
       message,
       'Dismiss',
       expect.objectContaining({
-        duration: 3000
-      })
+        duration: 3000,
+      }),
     );
   });
 
@@ -76,8 +76,8 @@ describe('DfdNotificationService', () => {
       expect.objectContaining({
         actionCallback: undefined,
         actionLabel: 'Retry',
-        type: 'error'
-      })
+        type: 'error',
+      }),
     );
   });
 
@@ -95,7 +95,7 @@ describe('DfdNotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'John Doe joined the collaboration',
       'Dismiss',
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -105,7 +105,7 @@ describe('DfdNotificationService', () => {
     expect(mockSnackBar.open).toHaveBeenCalledWith(
       'You are now the presenter',
       'Dismiss',
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 

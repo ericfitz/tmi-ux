@@ -20,29 +20,17 @@ import { RouterModule } from '@angular/router';
 
 import { MaterialModule } from './material/material.module';
 
-// Import services to ensure they are provided  
+// Import services to ensure they are provided
 import { NotificationService } from './services/notification.service';
 import { FormValidationService } from './services/form-validation.service';
 
 @NgModule({
-  imports: [
-    CommonModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    RouterModule, 
-    MaterialModule
-  ],
-  exports: [
-    CommonModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    RouterModule, 
-    MaterialModule
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MaterialModule],
+  exports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MaterialModule],
   providers: [
     // Explicitly provide services (though they use providedIn: 'root')
     NotificationService,
-    FormValidationService
-  ]
+    FormValidationService,
+  ],
 })
 export class SharedModule {}

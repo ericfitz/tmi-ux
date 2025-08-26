@@ -245,7 +245,6 @@ describe('LoggerService', () => {
     });
   });
 
-
   describe('Performance Considerations', () => {
     it('should not format messages when log level prevents logging', () => {
       service.setLogLevel(LogLevel.ERROR);
@@ -266,7 +265,6 @@ describe('LoggerService', () => {
 
       toISOStringSpy.mockRestore();
     });
-
   });
 
   describe('Edge Cases', () => {

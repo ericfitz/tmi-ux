@@ -92,7 +92,7 @@
     display: flex;
     justify-content: center;
     padding: 8px 0;
-    
+
     button {
       display: flex;
       align-items: center;
@@ -159,19 +159,19 @@
             font-size: 18px;
             width: 18px;
             height: 18px;
-            
+
             &.owner-icon {
               color: var(--color-role-owner);
             }
-            
+
             &.writer-icon {
               color: var(--color-role-writer);
             }
-            
+
             &.reader-icon {
               color: var(--color-role-reader);
             }
-            
+
             &.presenter-icon {
               color: var(--color-role-presenter);
             }
@@ -182,7 +182,7 @@
       .user-actions {
         display: flex;
         align-items: center;
-        
+
         button {
           display: flex;
           align-items: center;
@@ -216,7 +216,6 @@
 ::ng-deep .mat-mdc-menu-panel.collaboration-menu {
   max-width: 350px !important;
 }
-
 
 // Presenter requests styling
 .presenter-requests-list {

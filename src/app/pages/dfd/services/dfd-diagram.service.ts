@@ -56,7 +56,10 @@ export class DfdDiagramService {
    * Returns observable with load result
    */
   loadDiagram(diagramId: string, threatModelId?: string): Observable<DiagramLoadResult> {
-    this.logger.info('Loading diagram data using dedicated diagram endpoint', { diagramId, threatModelId });
+    this.logger.info('Loading diagram data using dedicated diagram endpoint', {
+      diagramId,
+      threatModelId,
+    });
 
     if (!threatModelId) {
       this.logger.error('Threat model ID is required to load diagram data');
@@ -142,7 +145,7 @@ export class DfdDiagramService {
     this.logger.info('Loading diagram cells in batch with history suppression', {
       cellCount: cells.length,
       diagramId,
-      cellTypes: cells.map(cell => ({ id: cell.id, shape: cell.shape }))
+      cellTypes: cells.map(cell => ({ id: cell.id, shape: cell.shape })),
     });
 
     try {
@@ -173,101 +176,98 @@ export class DfdDiagramService {
 
       this.logger.info('Starting atomic operation for diagram loading', {
         nodeCount: nodes.length,
-        edgeCount: edges.length
+        edgeCount: edges.length,
       });
 
       // Use history coordinator for atomic batch loading with history suppression
-      this.historyCoordinator.executeAtomicOperation(
-        graph,
-        () => {
-          this.logger.info('Inside atomic operation - clearing existing cells');
-          // Clear existing graph first
-          graph.clearCells();
+      this.historyCoordinator.executeAtomicOperation(graph, () => {
+        this.logger.info('Inside atomic operation - clearing existing cells');
+        // Clear existing graph first
+        graph.clearCells();
 
-          this.logger.info('Adding nodes to graph', { nodeCount: nodes.length });
-          // Add nodes first, then edges (to ensure proper dependencies)
-          nodes.forEach((nodeConfig, index) => {
-            try {
-              this.logger.info(`Adding node ${index + 1}/${nodes.length}`, { 
-                nodeId: nodeConfig.id, 
-                shape: nodeConfig.shape 
-              });
-              
-              // Convert X6 config to NodeInfo domain object
-              const nodeInfo = this.convertX6ConfigToNodeInfo(nodeConfig);
-              
-              // Use infrastructure service instead of direct X6 call
-              const node = this.nodeService.createNodeFromInfo(graph, nodeInfo, {
-                ensureVisualRendering: true,
-                updatePortVisibility: false, // Will be handled in batch after all nodes/edges
-                suppressHistory: true, // Already in atomic operation
-              });
-              
-              // Apply zIndex after adding to ensure proper ordering
-              if (nodeConfig.zIndex !== undefined) {
-                node.setZIndex(nodeConfig.zIndex);
-              }
-              
-              this.logger.info(`Successfully added node ${nodeInfo.id}`);
-            } catch (error) {
-              this.logger.error('Error adding node during batch load', {
-                nodeId: nodeConfig.id,
-                nodeIndex: index,
-                error,
-              });
+        this.logger.info('Adding nodes to graph', { nodeCount: nodes.length });
+        // Add nodes first, then edges (to ensure proper dependencies)
+        nodes.forEach((nodeConfig, index) => {
+          try {
+            this.logger.info(`Adding node ${index + 1}/${nodes.length}`, {
+              nodeId: nodeConfig.id,
+              shape: nodeConfig.shape,
+            });
+
+            // Convert X6 config to NodeInfo domain object
+            const nodeInfo = this.convertX6ConfigToNodeInfo(nodeConfig);
+
+            // Use infrastructure service instead of direct X6 call
+            const node = this.nodeService.createNodeFromInfo(graph, nodeInfo, {
+              ensureVisualRendering: true,
+              updatePortVisibility: false, // Will be handled in batch after all nodes/edges
+              suppressHistory: true, // Already in atomic operation
+            });
+
+            // Apply zIndex after adding to ensure proper ordering
+            if (nodeConfig.zIndex !== undefined) {
+              node.setZIndex(nodeConfig.zIndex);
             }
-          });
 
-          this.logger.info('Adding edges to graph', { edgeCount: edges.length });
-          edges.forEach((edgeConfig, index) => {
-            try {
-              this.logger.info(`Adding edge ${index + 1}/${edges.length}`, { 
-                edgeId: edgeConfig.id,
-                source: edgeConfig.source?.cell,
-                target: edgeConfig.target?.cell
-              });
-              
-              // Convert X6 config to EdgeInfo domain object
-              const edgeInfo = this.convertX6ConfigToEdgeInfo(edgeConfig);
-              
-              // Use infrastructure service instead of direct X6 call
-              const edge = this.edgeService.createEdge(graph, edgeInfo, {
-                ensureVisualRendering: true,
-                updatePortVisibility: false, // Will be handled in batch after all nodes/edges
-              });
-              
-              // Apply zIndex after adding to ensure proper ordering
-              if (edgeConfig.zIndex !== undefined) {
-                edge.setZIndex(edgeConfig.zIndex);
-              }
-              
-              this.logger.info(`Successfully added edge ${edgeInfo.id}`);
-            } catch (error) {
-              this.logger.error('Error adding edge during batch load', {
-                edgeId: edgeConfig.id,
-                edgeIndex: index,
-                sourceCell: edgeConfig.source?.cell,
-                targetCell: edgeConfig.target?.cell,
-                error,
-              });
+            this.logger.info(`Successfully added node ${nodeInfo.id}`);
+          } catch (error) {
+            this.logger.error('Error adding node during batch load', {
+              nodeId: nodeConfig.id,
+              nodeIndex: index,
+              error,
+            });
+          }
+        });
+
+        this.logger.info('Adding edges to graph', { edgeCount: edges.length });
+        edges.forEach((edgeConfig, index) => {
+          try {
+            this.logger.info(`Adding edge ${index + 1}/${edges.length}`, {
+              edgeId: edgeConfig.id,
+              source: edgeConfig.source?.cell,
+              target: edgeConfig.target?.cell,
+            });
+
+            // Convert X6 config to EdgeInfo domain object
+            const edgeInfo = this.convertX6ConfigToEdgeInfo(edgeConfig);
+
+            // Use infrastructure service instead of direct X6 call
+            const edge = this.edgeService.createEdge(graph, edgeInfo, {
+              ensureVisualRendering: true,
+              updatePortVisibility: false, // Will be handled in batch after all nodes/edges
+            });
+
+            // Apply zIndex after adding to ensure proper ordering
+            if (edgeConfig.zIndex !== undefined) {
+              edge.setZIndex(edgeConfig.zIndex);
             }
-          });
 
-          this.logger.debugComponent('DfdDiagram', 'Batch loaded cells into graph', {
-            totalCells: convertedCells.length,
-            nodes: nodes.length,
-            edges: edges.length,
-          });
+            this.logger.info(`Successfully added edge ${edgeInfo.id}`);
+          } catch (error) {
+            this.logger.error('Error adding edge during batch load', {
+              edgeId: edgeConfig.id,
+              edgeIndex: index,
+              sourceCell: edgeConfig.source?.cell,
+              targetCell: edgeConfig.target?.cell,
+              error,
+            });
+          }
+        });
 
-          return convertedCells;
-        }
-      );
+        this.logger.debugComponent('DfdDiagram', 'Batch loaded cells into graph', {
+          totalCells: convertedCells.length,
+          nodes: nodes.length,
+          edges: edges.length,
+        });
+
+        return convertedCells;
+      });
 
       this.logger.info('Atomic operation completed - checking graph state');
       const graphCellsAfterLoad = graph.getCells();
-      this.logger.info('Graph state after atomic operation', { 
+      this.logger.info('Graph state after atomic operation', {
         totalCellsInGraph: graphCellsAfterLoad.length,
-        cellIds: graphCellsAfterLoad.map(cell => cell.id)
+        cellIds: graphCellsAfterLoad.map(cell => cell.id),
       });
 
       // Update port visibility after loading (as separate visual effect)
@@ -281,7 +281,7 @@ export class DfdDiagramService {
       graph.centerContent();
 
       this.logger.info('Successfully loaded diagram cells in batch - final graph state', {
-        finalCellCount: graph.getCells().length
+        finalCellCount: graph.getCells().length,
       });
     } catch (error) {
       this.logger.error('Error in batch loading diagram cells', error);
@@ -505,7 +505,7 @@ export class DfdDiagramService {
   private convertX6ConfigToEdgeInfo(edgeConfig: any): EdgeInfo {
     // Extract labels array directly if present, otherwise create from single label
     let labels: any[] = [];
-    
+
     if (edgeConfig.labels && Array.isArray(edgeConfig.labels)) {
       // Use existing labels array directly for X6 compatibility
       labels = edgeConfig.labels;
@@ -558,7 +558,7 @@ export class DfdDiagramService {
     // Check if in collaborative mode
     if (this.collaborationService.isCollaborating()) {
       this.logger.debug('Collaborative mode: attempting WebSocket save with REST fallback');
-      
+
       // In collaborative mode, try WebSocket first, but fall back to REST if WebSocket fails
       // For bulk save operations (like auto-save), we need to convert the entire graph state
       return this._saveViaWebSocketWithFallback(graph, diagramId, threatModelId);
@@ -571,19 +571,23 @@ export class DfdDiagramService {
   /**
    * Attempt save via WebSocket, falling back to REST if WebSocket fails
    */
-  private _saveViaWebSocketWithFallback(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
+  private _saveViaWebSocketWithFallback(
+    graph: Graph,
+    diagramId: string,
+    threatModelId: string,
+  ): Observable<boolean> {
     // Convert current graph state to cell operations (full state sync)
     const cells = this.convertGraphToCellsFormat(graph);
     const operations: CellOperation[] = cells.map(cell => ({
       id: cell.id,
       operation: 'update', // For bulk save, treat all as updates
-      data: cell
+      data: cell,
     }));
 
-    this.logger.debug('Attempting WebSocket bulk save', { 
+    this.logger.debug('Attempting WebSocket bulk save', {
       cellCount: cells.length,
       diagramId,
-      threatModelId 
+      threatModelId,
     });
 
     // Try WebSocket operation with timeout
@@ -593,22 +597,24 @@ export class DfdDiagramService {
         this.logger.info('WebSocket bulk save successful');
         return true;
       }),
-      catchError((error) => {
+      catchError(error => {
         this.logger.warn('WebSocket bulk save failed, falling back to REST', {
           error: error.message,
-          cellCount: cells.length
+          cellCount: cells.length,
         });
 
         // Check if error is authentication-related (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
-          this.logger.debug('User lacks edit permissions - operation blocked as expected', { error: error.message });
+          this.logger.debug('User lacks edit permissions - operation blocked as expected', {
+            error: error.message,
+          });
           return throwError(() => error);
         }
 
         // Attempt REST fallback
         this.logger.info('Executing REST fallback for bulk save operation');
         return this.saveViaREST(graph, diagramId, threatModelId).pipe(
-          map((success) => {
+          map(success => {
             if (success) {
               this.logger.info('REST fallback successful - diagram saved via REST API');
             } else {
@@ -616,15 +622,15 @@ export class DfdDiagramService {
             }
             return success;
           }),
-          catchError((restError) => {
+          catchError(restError => {
             this.logger.error('Both WebSocket and REST bulk save operations failed', {
               webSocketError: error.message,
-              restError: restError.message
+              restError: restError.message,
             });
             return of(false); // Return false instead of throwing to match REST behavior
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -645,7 +651,7 @@ export class DfdDiagramService {
           diagramId,
           threatModelId,
           cellCount: cells.length,
-          diagramName: updatedDiagram.name
+          diagramName: updatedDiagram.name,
         });
         return true;
       }),
@@ -653,7 +659,7 @@ export class DfdDiagramService {
         this.logger.error('Error saving diagram changes using REST PATCH', error, {
           diagramId,
           threatModelId,
-          cellCount: cells.length
+          cellCount: cells.length,
         });
         return of(false);
       }),
@@ -664,23 +670,28 @@ export class DfdDiagramService {
    * Send incremental cell operations via WebSocket for collaborative editing
    * Falls back to REST save if WebSocket fails
    */
-  sendCollaborativeOperation(operations: CellOperation[], graph?: Graph, diagramId?: string, threatModelId?: string): Observable<void> {
+  sendCollaborativeOperation(
+    operations: CellOperation[],
+    graph?: Graph,
+    diagramId?: string,
+    threatModelId?: string,
+  ): Observable<void> {
     if (!this.collaborationService.isCollaborating()) {
       return throwError(() => new Error('Not in collaborative mode'));
     }
 
-    this.logger.debug('Sending collaborative operation', { 
+    this.logger.debug('Sending collaborative operation', {
       operationCount: operations.length,
-      operations: operations.map(op => ({ id: op.id, operation: op.operation }))
+      operations: operations.map(op => ({ id: op.id, operation: op.operation })),
     });
 
     // Try WebSocket operation first with timeout
     return this.collaborativeOperationService.sendDiagramOperation(operations).pipe(
       timeout(15000), // 15 second timeout for WebSocket operations
-      catchError((error) => {
+      catchError(error => {
         this.logger.warn('WebSocket operation failed, attempting REST fallback', {
           error: error.message,
-          operationCount: operations.length
+          operationCount: operations.length,
         });
 
         // Check if we have the necessary parameters for REST fallback
@@ -688,14 +699,21 @@ export class DfdDiagramService {
           this.logger.error('REST fallback not possible - missing required parameters', {
             hasGraph: !!graph,
             hasDiagramId: !!diagramId,
-            hasThreatModelId: !!threatModelId
+            hasThreatModelId: !!threatModelId,
           });
-          return throwError(() => new Error(`WebSocket operation failed and REST fallback not available: ${error.message}`));
+          return throwError(
+            () =>
+              new Error(
+                `WebSocket operation failed and REST fallback not available: ${error.message}`,
+              ),
+          );
         }
 
         // Check if error is recoverable (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
-          this.logger.debug('User lacks edit permissions - operation blocked as expected', { error: error.message });
+          this.logger.debug('User lacks edit permissions - operation blocked as expected', {
+            error: error.message,
+          });
           return throwError(() => error);
         }
 
@@ -706,15 +724,20 @@ export class DfdDiagramService {
             this.logger.info('REST fallback successful - operation completed via REST API');
             // Return void to match WebSocket operation signature
           }),
-          catchError((restError) => {
+          catchError(restError => {
             this.logger.error('Both WebSocket and REST operations failed', {
               webSocketError: error.message,
-              restError: restError.message
+              restError: restError.message,
             });
-            return throwError(() => new Error(`WebSocket failed: ${error.message}. REST fallback also failed: ${restError.message}`));
-          })
+            return throwError(
+              () =>
+                new Error(
+                  `WebSocket failed: ${error.message}. REST fallback also failed: ${restError.message}`,
+                ),
+            );
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -722,10 +745,12 @@ export class DfdDiagramService {
    * Check if error is authentication-related and shouldn't trigger fallback
    */
   private _isAuthenticationError(error: any): boolean {
-    return error.message?.includes('401') || 
-           error.message?.includes('403') || 
-           error.message?.includes('permission') ||
-           error.message?.includes('Unauthorized');
+    return (
+      error.message?.includes('401') ||
+      error.message?.includes('403') ||
+      error.message?.includes('permission') ||
+      error.message?.includes('Unauthorized')
+    );
   }
 
   /**
@@ -841,5 +866,4 @@ export class DfdDiagramService {
     // Default empty hybrid format
     return { _metadata: [] };
   }
-
 }

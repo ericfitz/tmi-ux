@@ -47,7 +47,6 @@ import { DiagramEdge } from '../domain/value-objects/diagram-edge';
 import { DFD_STYLING, NodeType } from '../constants/styling-constants';
 import { StylingVerifier, TestHelpers } from './test-helpers/styling-helpers';
 
-
 // Mock event handlers service to avoid Angular Material dependencies
 class MockDfdEventHandlersService {
   selectedCells$ = { subscribe: vi.fn() };

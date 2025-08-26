@@ -16,7 +16,6 @@ import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 
-
 /**
  * Interface for threat form values
  */
@@ -510,7 +509,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   private initializeEnhancedSaveBehavior(): void {
     // Store original threat for change detection
     this._originalThreat = this.data.threat ? { ...this.data.threat } : null;
-    
   }
 
   /**
@@ -572,7 +570,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'common.save',
         'common.close',
       ];
-
 
       // Diagnostic check for form field classes
       setTimeout(() => {
@@ -651,20 +648,26 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.directionSubscription.unsubscribe();
       this.directionSubscription = null;
     }
-    
+
     // Clean up subscriptions
     this._subscriptions.unsubscribe();
   }
-
 
   /**
    * Get validation rules for threat fields
    */
   private getThreatValidationRules(): Record<string, unknown[]> {
     return {
-      name: [(value: string) => value && value.trim().length > 0 ? null : { required: true }],
-      description: [(value: string) => value && value.length <= 500 ? null : { maxLength: { max: 500, actual: value?.length || 0 } }],
-      threat_type: [(value: string) => value && value.trim().length > 0 ? null : { required: true }]
+      name: [(value: string) => (value && value.trim().length > 0 ? null : { required: true })],
+      description: [
+        (value: string) =>
+          value && value.length <= 500
+            ? null
+            : { maxLength: { max: 500, actual: value?.length || 0 } },
+      ],
+      threat_type: [
+        (value: string) => (value && value.trim().length > 0 ? null : { required: true }),
+      ],
     };
   }
 

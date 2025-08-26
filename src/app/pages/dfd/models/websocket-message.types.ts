@@ -137,7 +137,7 @@ export interface UpdateEvent {
   operation: CellPatchOperation;
 }
 
-export type TMIWebSocketMessage = 
+export type TMIWebSocketMessage =
   | DiagramOperationMessage
   | PresenterRequestMessage
   | PresenterDeniedMessage
@@ -157,7 +157,7 @@ export type TMIWebSocketMessage =
   | LeaveEvent
   | UpdateEvent;
 
-export type TMIMessageType = 
+export type TMIMessageType =
   | 'diagram_operation'
   | 'presenter_request'
   | 'presenter_denied'
@@ -194,6 +194,7 @@ export interface CollaborativeOperationConfig {
   diagramId: string;
   threatModelId: string;
   userId: string;
+  threatModelPermission?: 'reader' | 'writer';
   enableThrottling?: boolean;
   cursorThrottleMs?: number;
   selectionDebounceMs?: number;

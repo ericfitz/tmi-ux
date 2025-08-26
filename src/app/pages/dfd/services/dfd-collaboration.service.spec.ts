@@ -106,7 +106,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
+      participants: [
+        { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
+      ],
       websocket_url: fullUrl,
       session_manager: 'test@example.com',
     };
@@ -115,7 +117,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
 
     service.startCollaboration().subscribe();
 
-    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(`${fullUrl}?token=mock-jwt-token-12345`);
+    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(
+      `${fullUrl}?token=mock-jwt-token-12345`,
+    );
   });
 
   it('should handle full WebSocket URLs (wss://)', () => {
@@ -124,7 +128,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
+      participants: [
+        { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
+      ],
       websocket_url: fullUrl,
       session_manager: 'test@example.com',
     };
@@ -133,7 +139,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
 
     service.startCollaboration().subscribe();
 
-    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(`${fullUrl}?token=mock-jwt-token-12345`);
+    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(
+      `${fullUrl}?token=mock-jwt-token-12345`,
+    );
   });
 
   it('should convert relative URLs to absolute URLs using API server', () => {
@@ -142,7 +150,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
+      participants: [
+        { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
+      ],
       websocket_url: relativeUrl,
       session_manager: 'test@example.com',
     };
@@ -152,7 +162,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
     service.startCollaboration().subscribe();
 
     // Should convert http://localhost:8080 -> ws://localhost:8080 + relative path + token
-    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith('ws://localhost:8080/threat_models/123/diagrams/456/ws?token=mock-jwt-token-12345');
+    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(
+      'ws://localhost:8080/threat_models/123/diagrams/456/ws?token=mock-jwt-token-12345',
+    );
   });
 
   it('should handle relative URLs without leading slash', () => {
@@ -161,7 +173,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
+      participants: [
+        { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
+      ],
       websocket_url: relativeUrl,
       session_manager: 'test@example.com',
     };
@@ -171,7 +185,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
     service.startCollaboration().subscribe();
 
     // Should add leading slash and convert to absolute URL + token
-    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith('ws://localhost:8080/threat_models/123/diagrams/456/ws?token=mock-jwt-token-12345');
+    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(
+      'ws://localhost:8080/threat_models/123/diagrams/456/ws?token=mock-jwt-token-12345',
+    );
   });
 
   it('should handle missing JWT token gracefully', () => {
@@ -183,7 +199,9 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       session_id: 'session-123',
       threat_model_id: 'test-tm-id',
       diagram_id: 'test-diagram-id',
-      participants: [{ user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' }],
+      participants: [
+        { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
+      ],
       websocket_url: relativeUrl,
       session_manager: 'test@example.com',
     };
@@ -193,8 +211,11 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
     service.startCollaboration().subscribe();
 
     // Should still attempt connection but without token, and log warning
-    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith('ws://localhost:8080/threat_models/123/diagrams/456/ws');
-    expect(mockLoggerService.warn).toHaveBeenCalledWith('No JWT token available for WebSocket authentication');
+    expect(mockWebSocketAdapter.connect).toHaveBeenCalledWith(
+      'ws://localhost:8080/threat_models/123/diagrams/456/ws',
+    );
+    expect(mockLoggerService.warn).toHaveBeenCalledWith(
+      'No JWT token available for WebSocket authentication',
+    );
   });
-
 });

@@ -68,10 +68,10 @@ The testing infrastructure provides standardized mocks for common Angular servic
 Example of using shared mocks:
 
 ```typescript
-import { 
-  createTypedMockLoggerService, 
+import {
+  createTypedMockLoggerService,
   createTypedMockRouter,
-  createTypedMockHttpClient
+  createTypedMockHttpClient,
 } from '../../../testing/mocks';
 
 let logger: MockLoggerService;

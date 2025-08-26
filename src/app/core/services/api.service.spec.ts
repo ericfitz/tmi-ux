@@ -15,13 +15,13 @@ import { LoggerService } from './logger.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { throwError } from 'rxjs';
-import { 
-  createTypedMockLoggerService, 
+import {
+  createTypedMockLoggerService,
   createTypedMockRouter,
   createTypedMockHttpClient,
   type MockLoggerService,
   type MockRouter,
-  type MockHttpClient
+  type MockHttpClient,
 } from '../../../testing/mocks';
 
 // Mock the environment module
@@ -354,7 +354,11 @@ describe('ApiService', () => {
 
       result$.subscribe({
         error: () => {
-          expect(loggerService.debugComponent).toHaveBeenCalledWith('Api', 'Full error response', serverError);
+          expect(loggerService.debugComponent).toHaveBeenCalledWith(
+            'Api',
+            'Full error response',
+            serverError,
+          );
         },
       });
     });

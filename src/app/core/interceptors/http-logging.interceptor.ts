@@ -17,7 +17,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import {
+  HttpInterceptor,
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpErrorResponse,
+  HttpResponse,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -42,7 +49,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
         // Log and categorize errors
         this.logAndCategorizeError(error, request);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -64,7 +71,9 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     this.logger.debugComponent('api', `${request.method} request details:`, {
       url: request.url,
       headers: this.redactSecrets(headers, true),
-      body: request.body ? this.redactSecrets(request.body as Record<string, unknown>, false) : undefined,
+      body: request.body
+        ? this.redactSecrets(request.body as Record<string, unknown>, false)
+        : undefined,
       params: this.extractUrlParams(request.url),
     });
   }
@@ -158,7 +167,10 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
    * @param isHeaderContext Whether this is being called for headers (affects Authorization handling)
    * @returns Object with sensitive values redacted
    */
-  private redactSecrets(obj: Record<string, unknown>, isHeaderContext = false): Record<string, unknown> {
+  private redactSecrets(
+    obj: Record<string, unknown>,
+    isHeaderContext = false,
+  ): Record<string, unknown> {
     const redacted = { ...obj };
     const sensitiveKeys = [
       'bearer',

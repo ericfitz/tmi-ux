@@ -39,11 +39,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.threatName' | transloco }}</mat-label>
-        <input 
-          matInput 
-          formControlName="name" 
-          tabindex="1"
- />
+        <input matInput formControlName="name" tabindex="1" />
         <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
@@ -73,10 +69,7 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'threatEditor.threatType' | transloco }}</mat-label>
-        <mat-select 
-          formControlName="threat_type"
-          tabindex="6"
->
+        <mat-select formControlName="threat_type" tabindex="6">
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
@@ -92,10 +85,7 @@
       <!-- Severity field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
-        <mat-select 
-          formControlName="severity"
-          tabindex="3"
->
+        <mat-select formControlName="severity" tabindex="3">
           <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
           <mat-option value="None">{{ 'common.severityNone' | transloco }}</mat-option>
           <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
@@ -141,12 +131,7 @@
           </ng-container>
 
           <ng-template #inputMode>
-            <input 
-              matInput 
-              formControlName="issue_url" 
-              type="url" 
-              tabindex="7"
- />
+            <input matInput formControlName="issue_url" type="url" tabindex="7" />
           </ng-template>
         </mat-form-field>
 

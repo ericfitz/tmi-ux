@@ -552,11 +552,11 @@ export class AuthService {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    
+
     // Fallback UUID v4 implementation for test environments
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
@@ -900,7 +900,7 @@ export class AuthService {
 
       // Extract user ID from 'id' claim or fall back to 'sub' claim
       const userId = decodedPayload.id || decodedPayload.sub || '';
-      
+
       if (!userId || !decodedPayload.email || !decodedPayload.name) {
         throw new Error('Required user profile fields missing from JWT token');
       }

@@ -105,12 +105,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     );
 
     // Subscribe to WebSocket connection status changes to trigger tooltip updates
-    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(
-      () => {
-        // This subscription triggers change detection when WebSocket state changes
-        // The tooltip will be updated automatically through Angular's change detection
-      },
-    );
+    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(() => {
+      // This subscription triggers change detection when WebSocket state changes
+      // The tooltip will be updated automatically through Angular's change detection
+    });
   }
 
   ngOnDestroy(): void {
@@ -179,7 +177,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (!this.isDevelopmentMode) {
       return; // Do nothing in production
     }
-    
+
     event.preventDefault(); // Prevent default browser context menu
     this.userProfileMenuTrigger.openMenu(); // Open the context menu
   }
@@ -190,12 +188,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   copyUserEmailToClipboard(): void {
     try {
       const userEmail = this.authService.userEmail || '';
-      
+
       if (!userEmail) {
         this.logger.warn('No user email available to copy');
         return;
       }
-      
+
       // Copy email as plain string to clipboard
       void navigator.clipboard.writeText(userEmail);
       this.logger.info('User email copied to clipboard', { email: userEmail });
@@ -211,7 +209,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // Get user profile from localStorage
     const storedProfile = localStorage.getItem('user_profile');
     let userProfile: Record<string, unknown> = {};
-    
+
     if (storedProfile) {
       try {
         userProfile = JSON.parse(storedProfile) as Record<string, unknown>;
@@ -226,21 +224,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
       isAuthenticated: this.isAuthenticated,
       username: this.username,
       userEmail: this.userEmail,
-      
+
       // Stored profile data
       storedProfile: userProfile,
-      
+
       // Current session info
       currentLanguage: this.currentLanguage,
       isDevelopmentMode: this.isDevelopmentMode,
-      
+
       // Timestamp
       exportedAt: new Date().toISOString(),
-      
+
       // Environment info
       environment: {
-        production: environment.production
-      }
+        production: environment.production,
+      },
     };
   }
 
@@ -282,7 +280,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   getServerStatusTooltip(): string {
     const baseKey = this.getServerStatusTooltipKey();
     const baseText = this.translocoService.translate(baseKey);
-    
+
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
         return baseText;

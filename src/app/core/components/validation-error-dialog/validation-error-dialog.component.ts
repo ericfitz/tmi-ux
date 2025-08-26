@@ -12,12 +12,7 @@ export interface ValidationErrorData {
 @Component({
   selector: 'app-validation-error-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    TranslocoModule,
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, TranslocoModule],
   templateUrl: './validation-error-dialog.component.html',
   styleUrls: ['./validation-error-dialog.component.scss'],
 })

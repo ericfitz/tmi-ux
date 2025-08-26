@@ -80,7 +80,6 @@ export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
     this._subscriptions.unsubscribe();
   }
 
-
   /**
    * Close the dialog with the source code data
    */

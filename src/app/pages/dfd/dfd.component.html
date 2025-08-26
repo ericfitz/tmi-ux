@@ -245,12 +245,21 @@
         <mat-icon>vertical_align_bottom</mat-icon>
         <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
       </button>
-      <button mat-menu-item (click)="addInverseConnection()" *ngIf="isRightClickedCellEdge()" [disabled]="isReadOnlyMode">
+      <button
+        mat-menu-item
+        (click)="addInverseConnection()"
+        *ngIf="isRightClickedCellEdge()"
+        [disabled]="isReadOnlyMode"
+      >
         <mat-icon>swap_horiz</mat-icon>
         <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
       </button>
       <mat-divider></mat-divider>
-      <button mat-menu-item (click)="deleteSelected()" [disabled]="!hasSelectedCells || isReadOnlyMode">
+      <button
+        mat-menu-item
+        (click)="deleteSelected()"
+        [disabled]="!hasSelectedCells || isReadOnlyMode"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"

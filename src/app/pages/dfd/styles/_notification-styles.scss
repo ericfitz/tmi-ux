@@ -9,23 +9,23 @@
 .notification-success {
   --mdc-snackbar-container-color: var(--color-success) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
-  
+
   .mat-mdc-snack-bar-container {
     background-color: var(--color-success) !important;
-    
+
     .mdc-snackbar__surface {
       background-color: var(--color-success) !important;
       color: #fff !important;
     }
-    
+
     .mdc-snackbar__label {
       color: #fff !important;
     }
-    
+
     .mat-mdc-snack-bar-action {
       .mat-mdc-button {
         color: #fff !important;
-        
+
         &:hover {
           background-color: rgb(255 255 255 / 10%) !important;
         }
@@ -38,23 +38,23 @@
 .notification-info {
   --mdc-snackbar-container-color: var(--color-info) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
-  
+
   .mat-mdc-snack-bar-container {
     background-color: var(--color-info) !important;
-    
+
     .mdc-snackbar__surface {
       background-color: var(--color-info) !important;
       color: #fff !important;
     }
-    
+
     .mdc-snackbar__label {
       color: #fff !important;
     }
-    
+
     .mat-mdc-snack-bar-action {
       .mat-mdc-button {
         color: #fff !important;
-        
+
         &:hover {
           background-color: rgb(255 255 255 / 10%) !important;
         }
@@ -67,23 +67,23 @@
 .notification-warning {
   --mdc-snackbar-container-color: var(--color-warning) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
-  
+
   .mat-mdc-snack-bar-container {
     background-color: var(--color-warning) !important;
-    
+
     .mdc-snackbar__surface {
       background-color: var(--color-warning) !important;
       color: #fff !important;
     }
-    
+
     .mdc-snackbar__label {
       color: #fff !important;
     }
-    
+
     .mat-mdc-snack-bar-action {
       .mat-mdc-button {
         color: #fff !important;
-        
+
         &:hover {
           background-color: rgb(255 255 255 / 10%) !important;
         }
@@ -96,23 +96,23 @@
 .notification-error {
   --mdc-snackbar-container-color: var(--color-error) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
-  
+
   .mat-mdc-snack-bar-container {
     background-color: var(--color-error) !important;
-    
+
     .mdc-snackbar__surface {
       background-color: var(--color-error) !important;
       color: #fff !important;
     }
-    
+
     .mdc-snackbar__label {
       color: #fff !important;
     }
-    
+
     .mat-mdc-snack-bar-action {
       .mat-mdc-button {
         color: #fff !important;
-        
+
         &:hover {
           background-color: rgb(255 255 255 / 10%) !important;
         }
@@ -156,15 +156,15 @@
   .notification-success {
     --mdc-snackbar-container-color: var(--color-success-dark) !important;
   }
-  
+
   .notification-info {
     --mdc-snackbar-container-color: var(--color-primary) !important;
   }
-  
+
   .notification-warning {
     --mdc-snackbar-container-color: var(--color-warning-dark) !important;
   }
-  
+
   .notification-error {
     --mdc-snackbar-container-color: var(--color-error-dark) !important;
   }
@@ -179,7 +179,7 @@
     .mat-mdc-snack-bar-container {
       margin: 8px !important;
       max-width: calc(100vw - 16px) !important;
-      
+
       .mdc-snackbar__surface {
         border-radius: 8px !important;
       }

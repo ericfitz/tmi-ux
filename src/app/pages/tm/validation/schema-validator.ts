@@ -5,7 +5,13 @@
 
 import { ValidationError, ValidationContext, FieldValidationRule } from './types';
 import { BaseValidator, ValidationUtils } from './base-validator';
-import { ThreatModel, Threat, Metadata, Authorization, Document } from '../models/threat-model.model';
+import {
+  ThreatModel,
+  Threat,
+  Metadata,
+  Authorization,
+  Document,
+} from '../models/threat-model.model';
 import { Diagram } from '../models/diagram.model';
 
 /**
@@ -131,7 +137,10 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate authorization array
    */
-  private validateAuthorizationArray(authorization: Authorization[] | undefined, context: ValidationContext): void {
+  private validateAuthorizationArray(
+    authorization: Authorization[] | undefined,
+    context: ValidationContext,
+  ): void {
     if (!authorization) return;
 
     if (!Array.isArray(authorization)) {
@@ -172,7 +181,10 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate metadata array
    */
-  private validateMetadataArray(metadata: Metadata[] | undefined, context: ValidationContext): void {
+  private validateMetadataArray(
+    metadata: Metadata[] | undefined,
+    context: ValidationContext,
+  ): void {
     if (!metadata) return;
 
     if (!Array.isArray(metadata)) {
@@ -214,7 +226,10 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate documents array
    */
-  private validateDocumentArray(documents: Document[] | undefined, context: ValidationContext): void {
+  private validateDocumentArray(
+    documents: Document[] | undefined,
+    context: ValidationContext,
+  ): void {
     if (!documents) return;
 
     if (!Array.isArray(documents)) {

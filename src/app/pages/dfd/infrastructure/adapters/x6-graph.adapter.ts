@@ -501,41 +501,38 @@ export class X6GraphAdapter implements IGraphAdapter {
     const nodeShape = this._nodeConfigurationService.getNodeShape(nodeType);
 
     // Use centralized history coordinator for consistent filtering and atomic batching
-    const x6Node = this._historyCoordinator.executeAtomicOperation(
-      graph,
-      () => {
-        const createdNode = this._x6CoreOps.addNode(graph, {
-          id: node.id,
-          x: node.position.x,
-          y: node.position.y,
-          width: node.width || 120,
-          height: node.height || 60,
-          label: node.label || '', // Use proper DiagramNode label getter
-          shape: nodeShape,
-          attrs: {
-            ...(nodeAttrs as any),
-            text: {
-              ...((nodeAttrs['text'] as Record<string, unknown>) || {}),
-              text: node.label || '', // Use proper DiagramNode label getter
-            },
+    const x6Node = this._historyCoordinator.executeAtomicOperation(graph, () => {
+      const createdNode = this._x6CoreOps.addNode(graph, {
+        id: node.id,
+        x: node.position.x,
+        y: node.position.y,
+        width: node.width || 120,
+        height: node.height || 60,
+        label: node.label || '', // Use proper DiagramNode label getter
+        shape: nodeShape,
+        attrs: {
+          ...(nodeAttrs as any),
+          text: {
+            ...((nodeAttrs['text'] as Record<string, unknown>) || {}),
+            text: node.label || '', // Use proper DiagramNode label getter
           },
-          ports: nodePorts as any,
-          zIndex: 1, // Temporary z-index, will be set properly below
-        });
+        },
+        ports: nodePorts as any,
+        zIndex: 1, // Temporary z-index, will be set properly below
+      });
 
-        if (!createdNode) {
-          throw new Error(`Failed to create node with ID: ${node.id}`);
-        }
-
-        // Validate that the X6 node was created with the correct shape
-        this._edgeService.validateX6NodeShape(createdNode);
-
-        // Apply proper z-index using ZOrderService after node creation
-        this._zOrderAdapter.applyNodeCreationZIndex(graph, createdNode);
-
-        return createdNode;
+      if (!createdNode) {
+        throw new Error(`Failed to create node with ID: ${node.id}`);
       }
-    );
+
+      // Validate that the X6 node was created with the correct shape
+      this._edgeService.validateX6NodeShape(createdNode);
+
+      // Apply proper z-index using ZOrderService after node creation
+      this._zOrderAdapter.applyNodeCreationZIndex(graph, createdNode);
+
+      return createdNode;
+    });
 
     return x6Node;
   }
@@ -573,45 +570,42 @@ export class X6GraphAdapter implements IGraphAdapter {
     const edgeData = diagramEdge.data;
 
     // Use centralized history coordinator for consistent filtering and atomic batching
-    const x6Edge = this._historyCoordinator.executeAtomicOperation(
-      graph,
-      () => {
-        const edgeParams = {
-          id: edgeData.id,
-          source: edgeData.source,
-          target: edgeData.target,
-          shape: edgeData.shape,
-          markup: this._getEdgeMarkup(),
-          attrs: edgeData.attrs,
-          labels: edgeData.labels,
-          vertices: edgeData.vertices,
-          zIndex: edgeData.zIndex,
-          visible: edgeData.visible,
-        };
+    const x6Edge = this._historyCoordinator.executeAtomicOperation(graph, () => {
+      const edgeParams = {
+        id: edgeData.id,
+        source: edgeData.source,
+        target: edgeData.target,
+        shape: edgeData.shape,
+        markup: this._getEdgeMarkup(),
+        attrs: edgeData.attrs,
+        labels: edgeData.labels,
+        vertices: edgeData.vertices,
+        zIndex: edgeData.zIndex,
+        visible: edgeData.visible,
+      };
 
-        const createdEdge = this._x6CoreOps.addEdge(graph, edgeParams);
+      const createdEdge = this._x6CoreOps.addEdge(graph, edgeParams);
 
-        if (!createdEdge) {
-          throw new Error(`Failed to create edge with ID: ${edgeData.id}`);
-        }
-
-        // Set metadata using X6 cell extensions
-        if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
-          const metadata = (edgeData.data as { _metadata?: { key: string; value: unknown }[] })
-            ._metadata;
-          if (Array.isArray(metadata)) {
-            metadata.forEach((entry: { key: string; value: unknown }) => {
-              (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
-            });
-          }
-        }
-
-        // Update port visibility after edge creation
-        this._updatePortVisibilityAfterEdgeCreation(createdEdge);
-
-        return createdEdge;
+      if (!createdEdge) {
+        throw new Error(`Failed to create edge with ID: ${edgeData.id}`);
       }
-    );
+
+      // Set metadata using X6 cell extensions
+      if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
+        const metadata = (edgeData.data as { _metadata?: { key: string; value: unknown }[] })
+          ._metadata;
+        if (Array.isArray(metadata)) {
+          metadata.forEach((entry: { key: string; value: unknown }) => {
+            (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
+          });
+        }
+      }
+
+      // Update port visibility after edge creation
+      this._updatePortVisibilityAfterEdgeCreation(createdEdge);
+
+      return createdEdge;
+    });
 
     return x6Edge;
   }
@@ -1028,7 +1022,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           this._historyCoordinator.executeVisualEffect(this._graph!, () => {
             // Set edge z-order to the higher of source or target node z-orders
             this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
-            
+
             // Update port visibility after connection
             this._portStateManager.hideUnconnectedPorts(this._graph!);
             this._portStateManager.ensureConnectedPortsVisible(this._graph!, edge);
@@ -1379,12 +1373,9 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Use history coordinator for atomic deletion with port visibility suppression
     if (this._graph) {
-      this._historyCoordinator.executeAtomicOperation(
-        this._graph,
-        () => {
-          this._x6CoreOps.removeCellObject(this._graph!, cell);
-        }
-      );
+      this._historyCoordinator.executeAtomicOperation(this._graph, () => {
+        this._x6CoreOps.removeCellObject(this._graph!, cell);
+      });
 
       this.logger.info(`[DFD] ${cellType} removed via atomic operation`, {
         cellId: cell.id,
@@ -1621,7 +1612,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._historyCoordinator.executeVisualEffect(this._graph!, () => {
       // Set edge z-order to the higher of source or target node z-orders
       this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
-      
+
       // Update port visibility for the edge and its connected nodes
       this._portStateManager.ensureConnectedPortsVisible(graph, edge);
 
@@ -1789,13 +1780,24 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Handle port changes - check if they're only visibility changes
       if (args.key === 'ports' && args.options && args.options.propertyPath) {
-        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute(undefined, args.options.propertyPath);
+        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute(
+          undefined,
+          args.options.propertyPath,
+        );
 
         if (isPortVisibilityOnly) {
-          this.logger.debugComponent('X6Graph', 'Excluding port visibility change:', args.options.propertyPath);
+          this.logger.debugComponent(
+            'X6Graph',
+            'Excluding port visibility change:',
+            args.options.propertyPath,
+          );
           return false; // Don't add to history
         }
-        this.logger.debugComponent('X6Graph', 'Including port change - not visibility only:', args.options.propertyPath);
+        this.logger.debugComponent(
+          'X6Graph',
+          'Including port change - not visibility only:',
+          args.options.propertyPath,
+        );
       }
 
       // For other cell:change:* events, allow them unless they're specifically excluded
@@ -1869,10 +1871,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (readOnly) {
       // Disable selection via the selection adapter
       this._selectionAdapter.disableSelection(graph);
-      
+
       // Disable keyboard handling
       this._keyboardHandler.cleanup();
-      
+
       // Make all cells non-interactive
       graph.getCells().forEach(cell => {
         cell.prop('movable', false);
@@ -1885,10 +1887,10 @@ export class X6GraphAdapter implements IGraphAdapter {
     } else {
       // Re-enable selection via the selection adapter
       this._selectionAdapter.enableSelection(graph);
-      
+
       // Re-enable keyboard handling
       this._keyboardHandler.setupKeyboardHandling(graph);
-      
+
       // Make cells interactive again
       graph.getCells().forEach(cell => {
         cell.prop('movable', true);

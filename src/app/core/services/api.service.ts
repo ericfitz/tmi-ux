@@ -25,7 +25,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
-import { ValidationErrorDialogComponent, ValidationErrorData } from '../components/validation-error-dialog/validation-error-dialog.component';
+import {
+  ValidationErrorDialogComponent,
+  ValidationErrorData,
+} from '../components/validation-error-dialog/validation-error-dialog.component';
 
 /**
  * Service for making API requests
@@ -122,25 +125,25 @@ export class ApiService {
   patch<T>(
     endpoint: string,
     operations: Array<{ op: string; path: string; value?: unknown }>,
-    timeoutMs?: number
+    timeoutMs?: number,
   ): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
     const requestTimeout = timeoutMs || this.SAVE_TIMEOUT;
 
     // Request logging handled by JWT interceptor
 
-    return this.http.patch<T>(url, operations, {
-      headers: { 'Content-Type': 'application/json-patch+json' }
-    }).pipe(
-      timeout(requestTimeout),
-      // Response logging handled by JWT interceptor
-      catchError((error: HttpErrorResponse | TimeoutError | Error) => this.handleError(error, 'PATCH', endpoint)),
-    );
+    return this.http
+      .patch<T>(url, operations, {
+        headers: { 'Content-Type': 'application/json-patch+json' },
+      })
+      .pipe(
+        timeout(requestTimeout),
+        // Response logging handled by JWT interceptor
+        catchError((error: HttpErrorResponse | TimeoutError | Error) =>
+          this.handleError(error, 'PATCH', endpoint),
+        ),
+      );
   }
-
-
-
-
 
   /**
    * Standardized error handling with logging

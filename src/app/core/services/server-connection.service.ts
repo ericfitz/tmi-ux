@@ -126,16 +126,18 @@ export class ServerConnectionService implements OnDestroy {
     this.stopMonitoring();
   }
 
-
   /**
    * Start monitoring connection status (for save operations)
    */
   startMonitoring(): void {
     if (this._isMonitoring) return;
-    
+
     this._isMonitoring = true;
-    this.logger.debugComponent('ServerConnection', 'Starting connection monitoring for save operations');
-    
+    this.logger.debugComponent(
+      'ServerConnection',
+      'Starting connection monitoring for save operations',
+    );
+
     if (!this.isServerConfigured() || this.isOnlyLocalProviderEnabled()) {
       this.logger.info('Server monitoring disabled - not configured or local-only mode');
       return;
@@ -159,7 +161,7 @@ export class ServerConnectionService implements OnDestroy {
       tap(() => {
         // Schedule next ping after successful manual check
         this.scheduleNextHealthCheck(this.HEALTH_CHECK_INTERVAL);
-      })
+      }),
     );
   }
 
@@ -170,10 +172,11 @@ export class ServerConnectionService implements OnDestroy {
    */
   shouldShowConnectionError(): boolean {
     const status = this._detailedConnectionStatus$.value;
-    
+
     // Only show on first failure or after connection was restored and failed again
-    return !status.isServerReachable && 
-           (status.consecutiveFailures === 1 || status.retryAttempt === 1);
+    return (
+      !status.isServerReachable && (status.consecutiveFailures === 1 || status.retryAttempt === 1)
+    );
   }
 
   /**
@@ -182,11 +185,13 @@ export class ServerConnectionService implements OnDestroy {
    */
   wasConnectionRecentlyRestored(): boolean {
     const status = this._detailedConnectionStatus$.value;
-    
-    return status.isServerReachable && 
-           status.lastServerPing !== undefined &&
-           status.lastServerError !== undefined &&
-           status.lastServerPing > status.lastServerError;
+
+    return (
+      status.isServerReachable &&
+      status.lastServerPing !== undefined &&
+      status.lastServerError !== undefined &&
+      status.lastServerPing > status.lastServerError
+    );
   }
 
   /**
@@ -197,7 +202,7 @@ export class ServerConnectionService implements OnDestroy {
     window.addEventListener('online', () => {
       this.handleBrowserOnlineChange(true);
     });
-    
+
     window.addEventListener('offline', () => {
       this.handleBrowserOnlineChange(false);
     });
@@ -209,17 +214,20 @@ export class ServerConnectionService implements OnDestroy {
    */
   private handleBrowserOnlineChange(isOnline: boolean): void {
     const currentStatus = this._detailedConnectionStatus$.value;
-    
-    this.logger.debugComponent('ServerConnection', `Browser connection changed: ${isOnline ? 'online' : 'offline'}`);
-    
+
+    this.logger.debugComponent(
+      'ServerConnection',
+      `Browser connection changed: ${isOnline ? 'online' : 'offline'}`,
+    );
+
     if (isOnline) {
       // Browser came back online - immediately check server
       this.updateDetailedConnectionStatus({
         ...currentStatus,
         isOnline: true,
-        retryAttempt: 0 // Reset retry attempts
+        retryAttempt: 0, // Reset retry attempts
       });
-      
+
       // Start monitoring and ping server immediately if monitoring is active
       if (this._isMonitoring) {
         this.performDetailedHealthCheck().subscribe();
@@ -230,7 +238,7 @@ export class ServerConnectionService implements OnDestroy {
         ...currentStatus,
         isOnline: false,
         isServerReachable: false,
-        lastServerError: new Date()
+        lastServerError: new Date(),
       });
     }
   }
@@ -328,7 +336,7 @@ export class ServerConnectionService implements OnDestroy {
         if (response.status?.code === 'OK') {
           this.logger.debugComponent('ServerConnection', 'Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
-          
+
           // Update detailed status as well
           const currentDetailed = this._detailedConnectionStatus$.value;
           this.updateDetailedConnectionStatus({
@@ -337,15 +345,15 @@ export class ServerConnectionService implements OnDestroy {
             lastServerPing: new Date(),
             consecutiveFailures: 0,
             retryAttempt: 0,
-            status: ServerConnectionStatus.CONNECTED
+            status: ServerConnectionStatus.CONNECTED,
           });
-          
+
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();
         } else {
           this.logger.warn(`Server status check returned non-OK status: ${response.status?.code}`);
           this._connectionStatus$.next(ServerConnectionStatus.ERROR);
-          
+
           // Update detailed status
           const currentDetailed = this._detailedConnectionStatus$.value;
           this.updateDetailedConnectionStatus({
@@ -354,9 +362,9 @@ export class ServerConnectionService implements OnDestroy {
             lastServerError: new Date(),
             consecutiveFailures: currentDetailed.consecutiveFailures + 1,
             retryAttempt: currentDetailed.retryAttempt + 1,
-            status: ServerConnectionStatus.ERROR
+            status: ServerConnectionStatus.ERROR,
           });
-          
+
           // Increase backoff delay for next retry
           this._currentBackoffDelay = this.getNextBackoffDelay();
         }
@@ -364,7 +372,7 @@ export class ServerConnectionService implements OnDestroy {
       catchError((error: HttpErrorResponse) => {
         this.logger.warn(`Server status check failed: ${error.status} ${error.statusText}`);
         this._connectionStatus$.next(ServerConnectionStatus.ERROR);
-        
+
         // Update detailed status
         const currentDetailed = this._detailedConnectionStatus$.value;
         this.updateDetailedConnectionStatus({
@@ -373,9 +381,9 @@ export class ServerConnectionService implements OnDestroy {
           lastServerError: new Date(),
           consecutiveFailures: currentDetailed.consecutiveFailures + 1,
           retryAttempt: currentDetailed.retryAttempt + 1,
-          status: ServerConnectionStatus.ERROR
+          status: ServerConnectionStatus.ERROR,
         });
-        
+
         // Increase backoff delay for next retry
         this._currentBackoffDelay = this.getNextBackoffDelay();
         // Return empty observable that completes immediately to continue the stream
@@ -397,68 +405,72 @@ export class ServerConnectionService implements OnDestroy {
     }
 
     const pingUrl = `${environment.apiUrl}/`;
-    
-    this.logger.debugComponent('ServerConnection', 'Pinging server for connectivity check', { url: pingUrl });
-    
-    return this.http.get(pingUrl, { 
-      // Don't use auth interceptor for health checks
-      headers: { 'skip-auth': 'true' }
-    }).pipe(
-      tap(() => {
-        // Server is reachable
-        const currentStatus = this._detailedConnectionStatus$.value;
-        this.updateDetailedConnectionStatus({
-          ...currentStatus,
-          isServerReachable: true,
-          lastServerPing: new Date(),
-          consecutiveFailures: 0,
-          retryAttempt: 0,
-          status: ServerConnectionStatus.CONNECTED
-        });
-        
-        // Also update simple status
-        this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
-        this.resetBackoffDelay();
-        
-        this.logger.debugComponent('ServerConnection', 'Server ping successful');
-      }),
-      catchError((error: HttpErrorResponse) => {
-        // Server is not reachable
-        const currentStatus = this._detailedConnectionStatus$.value;
-        const consecutiveFailures = currentStatus.consecutiveFailures + 1;
-        
-        this.updateDetailedConnectionStatus({
-          ...currentStatus,
-          isServerReachable: false,
-          lastServerError: new Date(),
-          consecutiveFailures,
-          retryAttempt: currentStatus.retryAttempt + 1,
-          status: ServerConnectionStatus.ERROR
-        });
-        
-        // Also update simple status
-        this._connectionStatus$.next(ServerConnectionStatus.ERROR);
-        this._currentBackoffDelay = this.getNextBackoffDelay();
-        
-        this.logger.debugComponent('ServerConnection', 'Server ping failed', {
-          error: (error as Error).message,
-          consecutiveFailures,
-          retryAttempt: currentStatus.retryAttempt + 1
-        });
-        
-        // Return current status instead of throwing error
-        return new Observable(subscriber => {
-          subscriber.next(this._detailedConnectionStatus$.value);
-          subscriber.complete();
-        });
-      }),
-      switchMap(() => {
-        return new Observable<DetailedConnectionStatus>(subscriber => {
-          subscriber.next(this._detailedConnectionStatus$.value);
-          subscriber.complete();
-        });
+
+    this.logger.debugComponent('ServerConnection', 'Pinging server for connectivity check', {
+      url: pingUrl,
+    });
+
+    return this.http
+      .get(pingUrl, {
+        // Don't use auth interceptor for health checks
+        headers: { 'skip-auth': 'true' },
       })
-    );
+      .pipe(
+        tap(() => {
+          // Server is reachable
+          const currentStatus = this._detailedConnectionStatus$.value;
+          this.updateDetailedConnectionStatus({
+            ...currentStatus,
+            isServerReachable: true,
+            lastServerPing: new Date(),
+            consecutiveFailures: 0,
+            retryAttempt: 0,
+            status: ServerConnectionStatus.CONNECTED,
+          });
+
+          // Also update simple status
+          this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
+          this.resetBackoffDelay();
+
+          this.logger.debugComponent('ServerConnection', 'Server ping successful');
+        }),
+        catchError((error: HttpErrorResponse) => {
+          // Server is not reachable
+          const currentStatus = this._detailedConnectionStatus$.value;
+          const consecutiveFailures = currentStatus.consecutiveFailures + 1;
+
+          this.updateDetailedConnectionStatus({
+            ...currentStatus,
+            isServerReachable: false,
+            lastServerError: new Date(),
+            consecutiveFailures,
+            retryAttempt: currentStatus.retryAttempt + 1,
+            status: ServerConnectionStatus.ERROR,
+          });
+
+          // Also update simple status
+          this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+          this._currentBackoffDelay = this.getNextBackoffDelay();
+
+          this.logger.debugComponent('ServerConnection', 'Server ping failed', {
+            error: (error as Error).message,
+            consecutiveFailures,
+            retryAttempt: currentStatus.retryAttempt + 1,
+          });
+
+          // Return current status instead of throwing error
+          return new Observable(subscriber => {
+            subscriber.next(this._detailedConnectionStatus$.value);
+            subscriber.complete();
+          });
+        }),
+        switchMap(() => {
+          return new Observable<DetailedConnectionStatus>(subscriber => {
+            subscriber.next(this._detailedConnectionStatus$.value);
+            subscriber.complete();
+          });
+        }),
+      );
   }
 
   /**
@@ -520,23 +532,23 @@ export class ServerConnectionService implements OnDestroy {
   private updateDetailedConnectionStatus(newStatus: DetailedConnectionStatus): void {
     const previousStatus = this._detailedConnectionStatus$.value;
     this._detailedConnectionStatus$.next(newStatus);
-    
+
     // Log significant state changes
     if (previousStatus.isServerReachable !== newStatus.isServerReachable) {
-      const message = newStatus.isServerReachable 
+      const message = newStatus.isServerReachable
         ? 'Server connection restored'
         : 'Server connection lost';
-        
+
       this.logger.info(message, {
         previousStatus: {
           isOnline: previousStatus.isOnline,
-          isServerReachable: previousStatus.isServerReachable
+          isServerReachable: previousStatus.isServerReachable,
         },
         newStatus: {
           isOnline: newStatus.isOnline,
-          isServerReachable: newStatus.isServerReachable
+          isServerReachable: newStatus.isServerReachable,
         },
-        consecutiveFailures: newStatus.consecutiveFailures
+        consecutiveFailures: newStatus.consecutiveFailures,
       });
     }
   }

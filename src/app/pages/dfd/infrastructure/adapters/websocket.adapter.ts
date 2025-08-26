@@ -24,10 +24,7 @@ import { Observable, Subject, BehaviorSubject, throwError } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { 
-  TMIWebSocketMessage, 
-  TMIMessageType 
-} from '../../models/websocket-message.types';
+import { TMIWebSocketMessage, TMIMessageType } from '../../models/websocket-message.types';
 
 /**
  * WebSocket connection states
@@ -224,16 +221,16 @@ export class WebSocketAdapter {
         this._url = url;
         this._connectionState$.next(WebSocketState.CONNECTING);
 
-        this.logger.info('Connecting WebSocket', { 
+        this.logger.info('Connecting WebSocket', {
           url: url.replace(/\?.*$/, ''), // Don't log query params (including token)
-          hasToken: url.includes('?token=')
+          hasToken: url.includes('?token='),
         });
 
         // Log WebSocket connection request with component debug logging
         this.logger.debugComponent('websocket-api', 'WebSocket connection request:', {
           url: url.replace(/\?.*$/, ''), // Redact query params for security
           protocol: 'WebSocket',
-          hasAuthToken: url.includes('?token=')
+          hasAuthToken: url.includes('?token='),
         });
 
         this._socket = new WebSocket(url);
@@ -244,35 +241,36 @@ export class WebSocketAdapter {
           this._connectionState$.next(WebSocketState.CONNECTED);
           this._reconnectAttempts = 0;
           this._startHeartbeat();
-          
+
           // Log successful WebSocket connection with component debug logging
           this.logger.debugComponent('websocket-api', 'WebSocket connection established:', {
             url: url.replace(/\?.*$/, ''),
             readyState: this._socket?.readyState,
-            protocol: this._socket?.protocol || 'none'
+            protocol: this._socket?.protocol || 'none',
           });
-          
+
           observer.next();
           observer.complete();
         };
 
         const errorHandler = (event: any): void => {
           this._connectionState$.next(WebSocketState.ERROR);
-          const errorMessage = event.message || event.error?.message || 'WebSocket connection failed';
-          
+          const errorMessage =
+            event.message || event.error?.message || 'WebSocket connection failed';
+
           // Classify the error for appropriate recovery strategy
           const wsError = this._classifyConnectionError(event, errorMessage);
           this._lastError = wsError;
           this._updateConnectionHealth(-30); // Decrease health on connection error
-          
+
           this.logger.error('WebSocket connection error', {
             url: url,
             error: errorMessage,
             errorType: wsError.type,
             isRecoverable: wsError.isRecoverable,
-            readyState: this._socket?.readyState
+            readyState: this._socket?.readyState,
           });
-          
+
           this._errors$.next(wsError);
           observer.error(new Error(`WebSocket connection failed: ${errorMessage}`));
         };
@@ -297,9 +295,9 @@ export class WebSocketAdapter {
       this.logger.debugComponent('websocket-api', 'WebSocket disconnection requested:', {
         url: this._url?.replace(/\?.*$/, ''),
         readyState: this._socket.readyState,
-        connectionHealth: this._connectionHealth
+        connectionHealth: this._connectionHealth,
       });
-      
+
       this._socket.close(1000, 'Client disconnect');
       this._socket = null;
     }
@@ -331,7 +329,7 @@ export class WebSocketAdapter {
           sessionId: fullMessage.sessionId,
           userId: fullMessage.userId,
           requiresAck: fullMessage.requiresAck,
-          body: this._redactSensitiveData(fullMessage.data)
+          body: this._redactSensitiveData(fullMessage.data),
         });
 
         this._socket!.send(JSON.stringify(fullMessage));
@@ -443,20 +441,28 @@ export class WebSocketAdapter {
           messageHandler = (event: MessageEvent) => {
             try {
               const rawData = event.data;
-              
+
               // Parse JSON
               let parsedMessage: any;
               try {
                 parsedMessage = JSON.parse(rawData);
               } catch (jsonError) {
-                this._handleMalformedMessage('Invalid JSON format in TMI message', jsonError, rawData);
+                this._handleMalformedMessage(
+                  'Invalid JSON format in TMI message',
+                  jsonError,
+                  rawData,
+                );
                 return;
               }
 
               // Validate TMI message structure
               const validationResult = this._validateTMIMessage(parsedMessage);
               if (!validationResult.isValid) {
-                this._handleMalformedMessage(`TMI message validation failed: ${validationResult.error}`, null, rawData);
+                this._handleMalformedMessage(
+                  `TMI message validation failed: ${validationResult.error}`,
+                  null,
+                  rawData,
+                );
                 return;
               }
 
@@ -469,13 +475,17 @@ export class WebSocketAdapter {
                   userId: (message as any).user_id,
                   operationId: (message as any).operation_id,
                   hasOperation: !!(message as any).operation,
-                  body: this._redactSensitiveData(message as any)
+                  body: this._redactSensitiveData(message as any),
                 });
-                
+
                 observer.next(message);
               }
             } catch (error) {
-              this._handleMalformedMessage('Unexpected error processing TMI message', error, event.data);
+              this._handleMalformedMessage(
+                'Unexpected error processing TMI message',
+                error,
+                event.data,
+              );
             }
           };
 
@@ -488,7 +498,7 @@ export class WebSocketAdapter {
         if (this._socket && messageHandler) {
           this._socket.removeEventListener('message', messageHandler);
         }
-        
+
         // Clean up connection subscription
         if (connectionSubscription) {
           connectionSubscription.unsubscribe();
@@ -507,9 +517,9 @@ export class WebSocketAdapter {
           throw new Error('WebSocket is not connected');
         }
 
-        this.logger.debug('Sending TMI message', { 
+        this.logger.debug('Sending TMI message', {
           type: (message as any).message_type || (message as any).event,
-          userId: (message as any).user_id
+          userId: (message as any).user_id,
         });
 
         // Log WebSocket message send with component debug logging
@@ -518,7 +528,7 @@ export class WebSocketAdapter {
           userId: (message as any).user_id,
           operationId: (message as any).operation_id,
           hasOperation: !!(message as any).operation,
-          body: this._redactSensitiveData(message)
+          body: this._redactSensitiveData(message),
         });
 
         this._socket!.send(JSON.stringify(message));
@@ -557,7 +567,7 @@ export class WebSocketAdapter {
     this._socket.addEventListener('message', event => {
       try {
         const rawData = event.data as string;
-        
+
         // Parse JSON
         let parsedMessage: any;
         try {
@@ -570,7 +580,11 @@ export class WebSocketAdapter {
         // Validate message structure
         const validationResult = this._validateWebSocketMessage(parsedMessage);
         if (!validationResult.isValid) {
-          this._handleMalformedMessage(`Message validation failed: ${validationResult.error}`, null, rawData);
+          this._handleMalformedMessage(
+            `Message validation failed: ${validationResult.error}`,
+            null,
+            rawData,
+          );
           return;
         }
 
@@ -601,7 +615,7 @@ export class WebSocketAdapter {
           userId: message.userId,
           timestamp: message.timestamp,
           requiresAck: message.requiresAck,
-          body: this._redactSensitiveData(message.data)
+          body: this._redactSensitiveData(message.data),
         });
 
         this._messages$.next(message);
@@ -616,10 +630,10 @@ export class WebSocketAdapter {
       this._stopHeartbeat();
       this._updateConnectionHealth(-20); // Health decrease on disconnect
 
-      this.logger.info('WebSocket connection closed', { 
-        code: event.code, 
+      this.logger.info('WebSocket connection closed', {
+        code: event.code,
         reason: event.reason,
-        wasClean: event.wasClean 
+        wasClean: event.wasClean,
       });
 
       // Attempt reconnection if not a clean close and connection is recoverable
@@ -640,10 +654,10 @@ export class WebSocketAdapter {
       }
     });
 
-    this._socket.addEventListener('error', (event) => {
+    this._socket.addEventListener('error', event => {
       this._connectionState$.next(WebSocketState.ERROR);
       this._updateConnectionHealth(-25); // Larger health decrease for errors
-      
+
       const wsError: WebSocketError = {
         type: WebSocketErrorType.NETWORK_ERROR,
         message: 'WebSocket error occurred',
@@ -660,9 +674,11 @@ export class WebSocketAdapter {
    * Check if reconnection should be attempted
    */
   private _shouldAttemptReconnection(): boolean {
-    return this._reconnectAttempts < this._maxReconnectAttempts && 
-           this._connectionHealth > 0 && 
-           (!this._lastError || this._lastError.retryable);
+    return (
+      this._reconnectAttempts < this._maxReconnectAttempts &&
+      this._connectionHealth > 0 &&
+      (!this._lastError || this._lastError.retryable)
+    );
   }
 
   /**
@@ -675,7 +691,7 @@ export class WebSocketAdapter {
         attempts: this._reconnectAttempts,
         maxAttempts: this._maxReconnectAttempts,
         health: this._connectionHealth,
-        lastErrorRetryable: this._lastError?.retryable
+        lastErrorRetryable: this._lastError?.retryable,
       });
       return;
     }
@@ -689,7 +705,7 @@ export class WebSocketAdapter {
       maxAttempts: this._maxReconnectAttempts,
       delay,
       health: this._connectionHealth,
-      url: this._url.replace(/\?.*$/, '') // Don't log query params
+      url: this._url.replace(/\?.*$/, ''), // Don't log query params
     });
 
     setTimeout(() => {
@@ -699,8 +715,11 @@ export class WebSocketAdapter {
             this.logger.info('WebSocket reconnection successful');
             this._updateConnectionHealth(30); // Health boost on successful reconnection
           },
-          error: (error) => {
-            this.logger.warn('WebSocket reconnection failed', { error, attempt: this._reconnectAttempts });
+          error: error => {
+            this.logger.warn('WebSocket reconnection failed', {
+              error,
+              attempt: this._reconnectAttempts,
+            });
             this._updateConnectionHealth(-10); // Health decrease on failed reconnection
             this._attemptReconnection();
           },
@@ -726,16 +745,16 @@ export class WebSocketAdapter {
             this._updateConnectionHealth(2);
             this._missedHeartbeats = 0;
           },
-          error: (error) => {
+          error: error => {
             // Heartbeat failed - track missed heartbeats
             this._missedHeartbeats++;
             this._updateConnectionHealth(-10);
-            
-            this.logger.warn('Heartbeat failed', { 
+
+            this.logger.warn('Heartbeat failed', {
               missedCount: this._missedHeartbeats,
               maxMissed: this._maxMissedHeartbeats,
               health: this._connectionHealth,
-              error 
+              error,
             });
 
             // If too many heartbeats missed, force reconnection
@@ -834,7 +853,6 @@ export class WebSocketAdapter {
     this._pendingAcks.clear();
   }
 
-
   /**
    * Generate unique message ID
    */
@@ -847,7 +865,11 @@ export class WebSocketAdapter {
    */
   private _classifyConnectionError(event: any, errorMessage: string): WebSocketError {
     // Check for authentication errors
-    if (errorMessage.includes('401') || errorMessage.includes('403') || errorMessage.includes('Unauthorized')) {
+    if (
+      errorMessage.includes('401') ||
+      errorMessage.includes('403') ||
+      errorMessage.includes('Unauthorized')
+    ) {
       return {
         type: WebSocketErrorType.AUTHENTICATION_FAILED,
         message: 'Authentication failed - invalid or expired token',
@@ -858,7 +880,11 @@ export class WebSocketAdapter {
     }
 
     // Check for network connectivity errors
-    if (errorMessage.includes('network') || errorMessage.includes('ENOTFOUND') || errorMessage.includes('timeout')) {
+    if (
+      errorMessage.includes('network') ||
+      errorMessage.includes('ENOTFOUND') ||
+      errorMessage.includes('timeout')
+    ) {
       return {
         type: WebSocketErrorType.NETWORK_ERROR,
         message: 'Network connectivity issue',
@@ -883,15 +909,15 @@ export class WebSocketAdapter {
    */
   private _updateConnectionHealth(delta: number): void {
     this._connectionHealth = Math.max(0, Math.min(100, this._connectionHealth + delta));
-    
+
     if (this._connectionHealth === 0) {
       this._connectionState$.next(WebSocketState.FAILED);
     }
-    
-    this.logger.debug('Connection health updated', { 
-      health: this._connectionHealth, 
+
+    this.logger.debug('Connection health updated', {
+      health: this._connectionHealth,
       delta,
-      state: this.connectionState 
+      state: this.connectionState,
     });
   }
 
@@ -899,8 +925,8 @@ export class WebSocketAdapter {
    * Send message with retry mechanism
    */
   sendMessageWithRetry(
-    message: Omit<WebSocketMessage, 'id' | 'timestamp'>, 
-    maxRetries: number = 3
+    message: Omit<WebSocketMessage, 'id' | 'timestamp'>,
+    maxRetries: number = 3,
   ): Observable<void> {
     return new Observable(observer => {
       const attemptSend = (attempt: number) => {
@@ -909,15 +935,21 @@ export class WebSocketAdapter {
             observer.next();
             observer.complete();
           },
-          error: (error) => {
+          error: error => {
             if (attempt < maxRetries && this._isRetryableError(error)) {
-              this.logger.warn(`Message send failed, retrying (${attempt + 1}/${maxRetries})`, { error, message });
+              this.logger.warn(`Message send failed, retrying (${attempt + 1}/${maxRetries})`, {
+                error,
+                message,
+              });
               setTimeout(() => attemptSend(attempt + 1), 1000 * Math.pow(2, attempt));
             } else {
-              this.logger.error(`Message send failed after ${attempt + 1} attempts`, { error, message });
+              this.logger.error(`Message send failed after ${attempt + 1} attempts`, {
+                error,
+                message,
+              });
               observer.error(error);
             }
-          }
+          },
         });
       };
 
@@ -929,9 +961,11 @@ export class WebSocketAdapter {
    * Check if an error is retryable
    */
   private _isRetryableError(error: any): boolean {
-    return !error.message?.includes('401') && 
-           !error.message?.includes('403') && 
-           this._connectionHealth > 0;
+    return (
+      !error.message?.includes('401') &&
+      !error.message?.includes('403') &&
+      this._connectionHealth > 0
+    );
   }
 
   /**
@@ -939,16 +973,16 @@ export class WebSocketAdapter {
    */
   forceReconnect(): Observable<void> {
     this.logger.info('Forcing WebSocket reconnection');
-    
+
     // Reset health and error state
     this._connectionHealth = 100;
     this._missedHeartbeats = 0;
     this._lastError = null;
     this._reconnectAttempts = 0;
-    
+
     // Disconnect and reconnect
     this.disconnect();
-    
+
     if (this._url) {
       return this.connect(this._url);
     } else {
@@ -1040,7 +1074,7 @@ export class WebSocketAdapter {
       if (!message.operation || typeof message.operation !== 'object') {
         return { isValid: false, error: 'diagram_operation message must have operation object' };
       }
-      
+
       if (typeof message.operation.type !== 'string') {
         return { isValid: false, error: 'operation must have type string' };
       }
@@ -1050,12 +1084,18 @@ export class WebSocketAdapter {
       }
     }
 
-    if (messageType === 'presenter_cursor' && (!message.cursor_position || typeof message.cursor_position !== 'object')) {
+    if (
+      messageType === 'presenter_cursor' &&
+      (!message.cursor_position || typeof message.cursor_position !== 'object')
+    ) {
       return { isValid: false, error: 'presenter_cursor message must have cursor_position object' };
     }
 
     if (messageType === 'presenter_selection' && !Array.isArray(message.selected_cells)) {
-      return { isValid: false, error: 'presenter_selection message must have selected_cells array' };
+      return {
+        isValid: false,
+        error: 'presenter_selection message must have selected_cells array',
+      };
     }
 
     return { isValid: true };
@@ -1065,9 +1105,10 @@ export class WebSocketAdapter {
    * Handle malformed messages with proper error reporting
    */
   private _handleMalformedMessage(reason: string, originalError: any, rawData: any): void {
-    const truncatedData = typeof rawData === 'string' && rawData.length > 200 
-      ? rawData.substring(0, 200) + '...[truncated]'
-      : rawData;
+    const truncatedData =
+      typeof rawData === 'string' && rawData.length > 200
+        ? rawData.substring(0, 200) + '...[truncated]'
+        : rawData;
 
     const wsError: WebSocketError = {
       type: WebSocketErrorType.PARSE_ERROR,
@@ -1079,14 +1120,14 @@ export class WebSocketAdapter {
 
     this._lastError = wsError;
     this._updateConnectionHealth(-5); // Small health decrease for malformed message
-    
+
     this.logger.error('Received malformed WebSocket message', {
       reason,
       rawData: truncatedData,
       originalError,
-      connectionHealth: this._connectionHealth
+      connectionHealth: this._connectionHealth,
     });
-    
+
     this._errors$.next(wsError);
   }
 
@@ -1112,12 +1153,12 @@ export class WebSocketAdapter {
       'api_key',
       'apikey',
       'authorization',
-      'auth'
+      'auth',
     ];
 
     for (const [key, value] of Object.entries(redacted)) {
       const lowerKey = key.toLowerCase();
-      
+
       // Check if the key contains sensitive information
       if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
         if (typeof value === 'string' && value.length > 0) {

@@ -31,7 +31,6 @@ export class MyComponent {
 
     // You can also include additional data
     logger.error('Failed to load user data', error);
-
   }
 }
 ```
@@ -87,6 +86,5 @@ import { LogLevel, LoggerService } from '../../core/services/logger.service';
 // ...
 logger.setLogLevel(LogLevel.DEBUG); // Temporarily enable verbose logging
 ```
-
 
 For complex objects, the logger will format the output with proper indentation and truncate it if it's too long to display.

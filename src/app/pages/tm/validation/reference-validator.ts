@@ -69,7 +69,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
           // Collect cell IDs for this diagram
           if (Array.isArray(diagram.cells)) {
             const cellIds = new Set<string>();
-            diagram.cells.forEach((cell) => {
+            diagram.cells.forEach(cell => {
               if (cell?.id) {
                 cellIds.add(cell.id);
               }
@@ -82,7 +82,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Collect document IDs
     if (Array.isArray(threatModel.documents)) {
-      threatModel.documents.forEach((document) => {
+      threatModel.documents.forEach(document => {
         if (document?.id) {
           referenceMap.documentIds.add(document.id);
         }
@@ -100,7 +100,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
 
     // Collect user IDs from authorization
     if (Array.isArray(threatModel.authorization)) {
-      threatModel.authorization.forEach((auth) => {
+      threatModel.authorization.forEach(auth => {
         if (auth?.subject) {
           referenceMap.userIds.add(auth.subject);
         }
@@ -361,7 +361,9 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
     );
 
     if (orphanedThreats.length > 0) {
-      const threatNames = orphanedThreats.map((t: Threat) => t?.name || t?.id || 'unknown').join(', ');
+      const threatNames = orphanedThreats
+        .map((t: Threat) => t?.name || t?.id || 'unknown')
+        .join(', ');
       this.addError(
         ValidationUtils.createError(
           'ORPHANED_THREATS',

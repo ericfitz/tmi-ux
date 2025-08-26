@@ -15,13 +15,23 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of, Subscription } from 'rxjs';
-import { map, switchMap, takeUntil, catchError, distinctUntilChanged, shareReplay } from 'rxjs/operators';
+import {
+  map,
+  switchMap,
+  takeUntil,
+  catchError,
+  distinctUntilChanged,
+  shareReplay,
+} from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { MockDataService } from '../../mocks/mock-data.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
-import { WebSocketAdapter, MessageType } from '../../pages/dfd/infrastructure/adapters/websocket.adapter';
+import {
+  WebSocketAdapter,
+  MessageType,
+} from '../../pages/dfd/infrastructure/adapters/websocket.adapter';
 
 /**
  * Interface for collaboration session data
@@ -111,7 +121,7 @@ export class CollaborationSessionService implements OnDestroy {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
-    
+
     if (this._sessionPollingSubscription) {
       this._sessionPollingSubscription.unsubscribe();
     }
@@ -123,8 +133,11 @@ export class CollaborationSessionService implements OnDestroy {
    */
   subscribeToSessionPolling(): void {
     this._subscriberCount++;
-    this.logger.debugComponent('CollaborationSession', `Session polling subscriber added (count: ${this._subscriberCount})`);
-    
+    this.logger.debugComponent(
+      'CollaborationSession',
+      `Session polling subscriber added (count: ${this._subscriberCount})`,
+    );
+
     if (this._subscriberCount === 1) {
       this.logger.info('Starting collaboration session polling - first subscriber added');
       this.startSessionPolling();
@@ -138,8 +151,11 @@ export class CollaborationSessionService implements OnDestroy {
   unsubscribeFromSessionPolling(): void {
     if (this._subscriberCount > 0) {
       this._subscriberCount--;
-      this.logger.debugComponent('CollaborationSession', `Session polling subscriber removed (count: ${this._subscriberCount})`);
-      
+      this.logger.debugComponent(
+        'CollaborationSession',
+        `Session polling subscriber removed (count: ${this._subscriberCount})`,
+      );
+
       if (this._subscriberCount === 0) {
         this.logger.info('Stopping collaboration session polling - no subscribers remain');
         this.stopSessionPolling();
@@ -157,9 +173,9 @@ export class CollaborationSessionService implements OnDestroy {
       next: () => {
         this.logger.debugComponent('CollaborationSession', 'Manual sessions refresh completed');
       },
-      error: (error) => {
+      error: error => {
         this.logger.error('Failed to refresh collaboration sessions', error);
-      }
+      },
     });
   }
 
@@ -194,9 +210,9 @@ export class CollaborationSessionService implements OnDestroy {
         next: () => {
           this.logger.debugComponent('CollaborationSession', 'Reactive session loading completed');
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Reactive session loading failed', error);
-        }
+        },
       });
   }
 
@@ -231,7 +247,7 @@ export class CollaborationSessionService implements OnDestroy {
   private loadMockSessions(): Observable<CollaborationSession[]> {
     const mockSessions = this.mockDataService.getMockCollaborationSessions();
     this.logger.info('Loading mock collaboration sessions', { count: mockSessions.length });
-    
+
     this._sessions$.next(mockSessions);
     return of(mockSessions);
   }
@@ -248,17 +264,16 @@ export class CollaborationSessionService implements OnDestroy {
         this.logger.info('Loaded sessions from HTTP API', { count: sessions.length });
         this._sessions$.next(sessions);
         return sessions;
-      })
+      }),
     );
   }
-
 
   /**
    * Request sessions via HTTP API
    */
   private requestSessionsViaHttp(): Observable<CollaborationSession[]> {
     const url = `${environment.apiUrl}/collaboration/sessions`;
-    
+
     return this.http.get<ServerCollaborationSession[]>(url).pipe(
       map(response => {
         // Transform server response to match our CollaborationSession interface
@@ -275,20 +290,28 @@ export class CollaborationSessionService implements OnDestroy {
    * Transform server session data to CollaborationSession format
    */
   private transformServerSession(serverSession: ServerCollaborationSession): CollaborationSession {
-    this.logger.debugComponent('CollaborationSession', 'Transforming server session', serverSession);
-    
+    this.logger.debugComponent(
+      'CollaborationSession',
+      'Transforming server session',
+      serverSession,
+    );
+
     const session: CollaborationSession = {
       id: serverSession.session_id,
       threatModelId: serverSession.threat_model_id,
-      threatModelName: serverSession.threat_model_name || `TM ${serverSession.threat_model_id.slice(0, 8)}`,
+      threatModelName:
+        serverSession.threat_model_name || `TM ${serverSession.threat_model_id.slice(0, 8)}`,
       diagramId: serverSession.diagram_id,
       diagramName: serverSession.diagram_name || `Diagram ${serverSession.diagram_id.slice(0, 8)}`,
       hostUser: serverSession.participants[0]?.user_id || 'Unknown User',
-      sessionManager: serverSession.session_manager || serverSession.participants[0]?.user_id || 'Unknown User',
-      startedAt: new Date(serverSession.started_at || serverSession.participants[0]?.joined_at || Date.now()),
+      sessionManager:
+        serverSession.session_manager || serverSession.participants[0]?.user_id || 'Unknown User',
+      startedAt: new Date(
+        serverSession.started_at || serverSession.participants[0]?.joined_at || Date.now(),
+      ),
       activeUsers: serverSession.participants.length,
     };
-    
+
     this.logger.debugComponent('CollaborationSession', 'Transformed session', session);
     return session;
   }
@@ -312,18 +335,20 @@ export class CollaborationSessionService implements OnDestroy {
       .subscribe(announcement => {
         this.handleSessionEnded(announcement.session);
       });
-
   }
 
   /**
    * Handle session started announcement
    */
   private handleSessionStarted(session: CollaborationSession): void {
-    this.logger.info('Session started', { sessionId: session.id, diagramName: session.diagramName });
-    
+    this.logger.info('Session started', {
+      sessionId: session.id,
+      diagramName: session.diagramName,
+    });
+
     const currentSessions = this._sessions$.value;
     const existingIndex = currentSessions.findIndex(s => s.id === session.id);
-    
+
     if (existingIndex === -1) {
       // Add new session
       this._sessions$.next([...currentSessions, session]);
@@ -340,7 +365,7 @@ export class CollaborationSessionService implements OnDestroy {
    */
   private handleSessionEnded(session: CollaborationSession): void {
     this.logger.info('Session ended', { sessionId: session.id, diagramName: session.diagramName });
-    
+
     const currentSessions = this._sessions$.value;
     const updatedSessions = currentSessions.filter(s => s.id !== session.id);
     this._sessions$.next(updatedSessions);

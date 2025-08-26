@@ -157,20 +157,17 @@ export class DfdNodeService {
       // Use centralized history coordinator for consistent filtering and batching
       let createdNode: any;
 
-      this.historyCoordinator.executeCompoundOperation(
-        graph,
-        () => {
-          const node = this.x6CoreOps.addNode(graph, nodeConfig);
-          if (!node) {
-            throw new Error(`Failed to create node with ID: ${nodeId}`);
-          }
-          // Apply proper z-index using ZOrderService after node creation
-          this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
-          createdNode = node; // Capture the created node for visual effects
-          
-          return node;
+      this.historyCoordinator.executeCompoundOperation(graph, () => {
+        const node = this.x6CoreOps.addNode(graph, nodeConfig);
+        if (!node) {
+          throw new Error(`Failed to create node with ID: ${nodeId}`);
         }
-      );
+        // Apply proper z-index using ZOrderService after node creation
+        this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+        createdNode = node; // Capture the created node for visual effects
+
+        return node;
+      });
 
       // Apply visual effects AFTER the batched operation (outside of history)
       if (createdNode) {
@@ -387,12 +384,12 @@ export class DfdNodeService {
   createNodeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
     // Convert WebSocket cell data to NodeInfo format
     const nodeInfo = this.convertWebSocketCellToNodeInfo(cellData);
-    
+
     // Create node using existing infrastructure
     const node = this.createNodeFromInfo(graph, nodeInfo, {
       suppressHistory: options?.suppressHistory ?? true,
       ensureVisualRendering: options?.ensureVisualRendering ?? true,
-      updatePortVisibility: options?.updatePortVisibility ?? true
+      updatePortVisibility: options?.updatePortVisibility ?? true,
     });
 
     // Apply visual effects for remote operations (different color to distinguish)
@@ -411,7 +408,7 @@ export class DfdNodeService {
       // Use existing core operations service
       this.x6CoreOps.removeNode(graph, cellId, {
         suppressErrors: options?.suppressErrors ?? false,
-        logOperation: options?.logOperation ?? true
+        logOperation: options?.logOperation ?? true,
       });
     }
   }
@@ -428,7 +425,7 @@ export class DfdNodeService {
       width: cellData.width,
       height: cellData.height,
       label: cellData.label || '',
-      data: cellData.data || {}
+      data: cellData.data || {},
     };
   }
 }

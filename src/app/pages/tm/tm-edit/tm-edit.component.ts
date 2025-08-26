@@ -1,10 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
@@ -105,6 +112,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
   initialIssueUrlValue = '';
   frameworks: FrameworkModel[] = [];
 
+  // Permission properties
+  canEdit = false;
+  canManagePermissions = false;
+
   // Enhanced save behavior properties
   // Simplified form tracking
   private _subscriptions = new Subscription();
@@ -124,6 +135,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private transloco: TranslocoService,
     private frameworkService: FrameworkService,
     private mockDataService: MockDataService,
+    private authorizationService: ThreatModelAuthorizationService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -165,7 +177,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-
   /**
    * Check if we should show the hyperlink view for issue URL
    */
@@ -205,14 +216,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Set up simplified auto-save subscription
     this._subscriptions.add(
-      this._autoSaveSubject
-        .pipe(
-          debounceTime(300),
-        )
-        .subscribe(() => {
-          this.logger.debugComponent('TmEdit', 'Auto-save triggered, calling performAutoSave');
-          this.performAutoSave();
-        })
+      this._autoSaveSubject.pipe(debounceTime(300)).subscribe(() => {
+        this.logger.debugComponent('TmEdit', 'Auto-save triggered, calling performAutoSave');
+        this.performAutoSave();
+      }),
     );
 
     // Set up simplified form-level change monitoring
@@ -258,112 +265,79 @@ export class TmEditComponent implements OnInit, OnDestroy {
       }),
     );
 
+    // Get threat model from route resolver
+    const threatModel = this.route.snapshot.data['threatModel'] as ThreatModel;
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
+
+    if (!threatModel || !id) {
+      this.logger.error('Threat model not found in route data', { id });
       void this.router.navigate(['/tm']);
       return;
     }
-    
+
+    // Set up the threat model data
+    this.threatModel = threatModel;
+    this.isNewThreatModel = false; // Resolved threat models are not new
+
+    // Subscribe to authorization changes
     this._subscriptions.add(
-      this.threatModelService.getThreatModelById(id).subscribe(threatModel => {
-        if (threatModel) {
-          this.threatModel = threatModel;
-          // Store the initial issue URL value
-          this.initialIssueUrlValue = threatModel.issue_url || '';
-
-          this.threatModelForm.patchValue({
-            name: threatModel.name,
-            description: threatModel.description || '',
-            threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
-            issue_url: this.initialIssueUrlValue,
-          });
-
-          // Update save state service with initial form values as original values
-          // Store original form values for change comparison
-          this._originalFormValues = {
-            name: threatModel.name,
-            description: threatModel.description || '',
-            threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
-            issue_url: this.initialIssueUrlValue,
-          };
-
-          // Update framework control disabled state based on threats
-          this.updateFrameworkControlState();
-
-          // Load diagrams separately
-          this.loadDiagrams(id);
-          
-          // Load documents separately  
-          this.loadDocuments(id);
-          
-          // Load source code separately
-          this.loadSourceCode(id);
-          
-          // Re-enable auto-save after initial population is complete
-          setTimeout(() => {
-            this._isLoadingInitialData = false;
-          }, 100);
-        } else {
-          // Handle case where threat model is not found
-          this.isNewThreatModel = true;
-          this.threatModel = {
-            id,
-            name: 'New Threat Model',
-            description: '',
-            created_at: new Date().toISOString(),
-            modified_at: new Date().toISOString(),
-            owner: 'user@example.com',
-            created_by: 'user@example.com',
-            threat_model_framework: 'STRIDE',
-            authorization: [
-              {
-                subject: 'user@example.com',
-                role: 'owner',
-              },
-            ],
-            metadata: [],
-            documents: [],
-            sourceCode: [],
-            diagrams: [],
-            threats: [],
-          };
-          this.threatModelForm.patchValue({
-            name: this.threatModel.name,
-            description: this.threatModel.description || '',
-            threat_model_framework: this.threatModel.threat_model_framework,
-            issue_url: this.threatModel.issue_url || '',
-          });
-
-          // Store the initial issue URL value for new models
-          this.initialIssueUrlValue = this.threatModel.issue_url || '';
-
-          // Update save state service with initial form values as original values
-          // Store original form values for change comparison
-          this._originalFormValues = {
-            name: this.threatModel.name,
-            description: this.threatModel.description || '',
-            threat_model_framework: this.threatModel.threat_model_framework,
-            issue_url: this.threatModel.issue_url || '',
-          };
-
-          // Update framework control disabled state based on threats
-          this.updateFrameworkControlState();
-          
-          // For new models, trigger an immediate auto-save to ensure the framework is persisted
-          if (this.isNewThreatModel) {
-            // Save immediately to ensure framework is set on server
-            setTimeout(() => {
-              this.autoSaveThreatModel();
-            }, 50);
-          }
-          
-          // Re-enable auto-save after initial population is complete for new models
-          setTimeout(() => {
-            this._isLoadingInitialData = false;
-          }, 100);
-        }
+      this.authorizationService.canEdit$.subscribe(canEdit => {
+        this.canEdit = canEdit;
+        this.updateFormEditability();
       }),
     );
+
+    this._subscriptions.add(
+      this.authorizationService.canManagePermissions$.subscribe(canManage => {
+        this.canManagePermissions = canManage;
+      }),
+    );
+
+    // Store the initial issue URL value
+    this.initialIssueUrlValue = threatModel.issue_url || '';
+
+    this.threatModelForm.patchValue({
+      name: threatModel.name,
+      description: threatModel.description || '',
+      threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
+      issue_url: this.initialIssueUrlValue,
+    });
+
+    // Store original form values for change comparison
+    this._originalFormValues = {
+      name: threatModel.name,
+      description: threatModel.description || '',
+      threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
+      issue_url: this.initialIssueUrlValue,
+    };
+
+    // Update framework control disabled state based on threats
+    this.updateFrameworkControlState();
+
+    // Load diagrams separately
+    this.loadDiagrams(id);
+
+    // Load documents separately
+    this.loadDocuments(id);
+
+    // Load source code separately
+    this.loadSourceCode(id);
+
+    // Re-enable auto-save after initial population is complete
+    setTimeout(() => {
+      this._isLoadingInitialData = false;
+    }, 100);
+  }
+
+  /**
+   * Update form editability based on permissions
+   */
+  private updateFormEditability(): void {
+    if (this.canEdit) {
+      this.threatModelForm.enable();
+    } else {
+      this.threatModelForm.disable();
+    }
   }
 
   ngOnDestroy(): void {
@@ -382,13 +356,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
           debounceTime(1000), // Debounce for 1 second
           filter(() => !this._isLoadingInitialData), // Skip during initial loading
           filter(() => this.threatModelForm.valid), // Only save valid forms
-          distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)) // Prevent duplicate saves
+          distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)), // Prevent duplicate saves
         )
         .subscribe((formValue: ThreatModelFormValues) => {
           if (this.threatModel && this.hasFormChanged(formValue)) {
             this.autoSaveThreatModel();
           }
-        })
+        }),
     );
   }
 
@@ -397,7 +371,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   private hasFormChanged(formValue: ThreatModelFormValues): boolean {
     if (!this._originalFormValues) return false;
-    
+
     return (
       formValue.name !== this._originalFormValues.name ||
       formValue.description !== this._originalFormValues.description ||
@@ -417,21 +391,25 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Handle framework selection change (for framework-specific logic)
    */
   onFrameworkChange(event: { value: unknown }): void {
-    if (!this._isLoadingInitialData && this.threatModel && event.value !== this.threatModel.threat_model_framework) {
+    if (
+      !this._isLoadingInitialData &&
+      this.threatModel &&
+      event.value !== this.threatModel.threat_model_framework
+    ) {
       // Handle framework change logic (threat type updates, etc.)
       const newFramework = event.value as string;
-      const isInitialFrameworkSet = 
-        !this.threatModel.threat_model_framework && 
-        newFramework === 'STRIDE' && 
+      const isInitialFrameworkSet =
+        !this.threatModel.threat_model_framework &&
+        newFramework === 'STRIDE' &&
         (!this.threatModel.threats || this.threatModel.threats.length === 0);
-      
+
       if (!isInitialFrameworkSet) {
         this.handleFrameworkChange(this.threatModel.threat_model_framework, newFramework);
       }
-      
+
       // Update the model framework field
       this.threatModel.threat_model_framework = newFramework;
-      
+
       // Trigger auto-save for framework changes (form valueChanges will handle the debouncing)
       if (!isInitialFrameworkSet) {
         this._autoSaveSubject.next();
@@ -486,7 +464,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       name: formValues.name,
       description: formValues.description,
       threat_model_framework: formValues.threat_model_framework,
-      issue_url: formValues.issue_url
+      issue_url: formValues.issue_url,
     };
 
     this._subscriptions.add(
@@ -565,7 +543,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe(result => {
         if (result && this.threatModel) {
-
           // Type the result to avoid unsafe assignments
           interface ThreatFormResult {
             name: string;
@@ -600,18 +577,20 @@ export class TmEditComponent implements OnInit, OnDestroy {
             };
 
             this._subscriptions.add(
-              this.threatModelService.createThreat(this.threatModel.id, newThreatData).subscribe(newThreat => {
-                // Add the new threat to local state (check for duplicates first)
-                if (!this.threatModel?.threats) {
-                  this.threatModel!.threats = [];
-                }
-                if (!this.threatModel!.threats.find(t => t.id === newThreat.id)) {
-                  this.threatModel!.threats.push(newThreat);
-                }
-                
-                // Update framework control state since we added a threat
-                this.updateFrameworkControlState();
-              }),
+              this.threatModelService
+                .createThreat(this.threatModel.id, newThreatData)
+                .subscribe(newThreat => {
+                  // Add the new threat to local state (check for duplicates first)
+                  if (!this.threatModel?.threats) {
+                    this.threatModel!.threats = [];
+                  }
+                  if (!this.threatModel!.threats.find(t => t.id === newThreat.id)) {
+                    this.threatModel!.threats.push(newThreat);
+                  }
+
+                  // Update framework control state since we added a threat
+                  this.updateFrameworkControlState();
+                }),
             );
           } else if (mode === 'edit' && threat) {
             // Update an existing threat via API
@@ -630,13 +609,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
             };
 
             this._subscriptions.add(
-              this.threatModelService.updateThreat(this.threatModel.id, threat.id, updatedThreatData).subscribe(updatedThreat => {
-                // Update the threat in local state
-                const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
-                if (index !== -1 && this.threatModel?.threats) {
-                  this.threatModel.threats[index] = updatedThreat;
-                }
-              }),
+              this.threatModelService
+                .updateThreat(this.threatModel.id, threat.id, updatedThreatData)
+                .subscribe(updatedThreat => {
+                  // Update the threat in local state
+                  const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
+                  if (index !== -1 && this.threatModel?.threats) {
+                    this.threatModel.threats[index] = updatedThreat;
+                  }
+                }),
             );
           }
         }
@@ -671,7 +652,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             const index = this.threatModel!.threats!.findIndex(t => t.id === threat.id);
             if (index !== -1) {
               this.threatModel!.threats!.splice(index, 1);
-              
+
               // Update framework control state since we removed a threat
               this.updateFrameworkControlState();
             }
@@ -686,6 +667,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * If the user confirms, adds the new diagram to the threat model
    */
   addDiagram(): void {
+    if (!this.canEdit) {
+      this.logger.warn('Cannot add diagram - insufficient permissions');
+      return;
+    }
     const dialogRef = this.dialog.open(CreateDiagramDialogComponent, {
       width: '400px',
     });
@@ -711,12 +696,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
                   if (!this.threatModel?.diagrams) {
                     this.threatModel!.diagrams = [];
                   }
-                  
+
                   // The API returns diagram objects, but threat model stores IDs or objects
-                  if (this.threatModel && this.threatModel.diagrams && 
-                      Array.isArray(this.threatModel.diagrams) && 
-                      this.threatModel.diagrams.length > 0 && 
-                      typeof this.threatModel.diagrams[0] === 'string') {
+                  if (
+                    this.threatModel &&
+                    this.threatModel.diagrams &&
+                    Array.isArray(this.threatModel.diagrams) &&
+                    this.threatModel.diagrams.length > 0 &&
+                    typeof this.threatModel.diagrams[0] === 'string'
+                  ) {
                     (this.threatModel.diagrams as unknown as string[]).push(newDiagram.id);
                   } else if (this.threatModel && this.threatModel.diagrams) {
                     (this.threatModel.diagrams as unknown as Diagram[]).push(newDiagram);
@@ -729,7 +717,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
                 },
                 error: error => {
                   this.logger.error('Failed to create diagram', error);
-                }
+                },
               }),
             );
           }
@@ -766,7 +754,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
           const updatedDiagram: Diagram = {
             ...diagram,
             name: newName,
-            modified_at: new Date().toISOString()
+            modified_at: new Date().toISOString(),
           };
 
           // Update the diagram in the local array
@@ -790,34 +778,36 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
           // Update the diagram using the direct diagram API
           this._subscriptions.add(
-            this.threatModelService.updateDiagram(this.threatModel.id, diagram.id, {
-              name: newName
-            }).subscribe({
-              next: result => {
-                if (result) {
-                  // Update all references to the diagram with server response
-                  const index = this.diagrams.findIndex(d => d.id === result.id);
-                  if (index !== -1) {
-                    this.diagrams[index] = result;
-                    this.diagrams = [...this.diagrams];
-                  }
-                  
-                  // Update the diagram in the threat model's diagrams array
-                  if (this.threatModel?.diagrams) {
-                    const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === result.id);
-                    if (tmIndex !== -1) {
-                      this.threatModel.diagrams[tmIndex] = result;
+            this.threatModelService
+              .updateDiagram(this.threatModel.id, diagram.id, {
+                name: newName,
+              })
+              .subscribe({
+                next: result => {
+                  if (result) {
+                    // Update all references to the diagram with server response
+                    const index = this.diagrams.findIndex(d => d.id === result.id);
+                    if (index !== -1) {
+                      this.diagrams[index] = result;
+                      this.diagrams = [...this.diagrams];
                     }
+
+                    // Update the diagram in the threat model's diagrams array
+                    if (this.threatModel?.diagrams) {
+                      const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === result.id);
+                      if (tmIndex !== -1) {
+                        this.threatModel.diagrams[tmIndex] = result;
+                      }
+                    }
+
+                    // Update the map with server response data
+                    DIAGRAMS_BY_ID.set(result.id, result);
                   }
-                  
-                  // Update the map with server response data
-                  DIAGRAMS_BY_ID.set(result.id, result);
-                }
-              },
-              error: error => {
-                this.logger.error('Failed to update diagram', error);
-              }
-            }),
+                },
+                error: error => {
+                  this.logger.error('Failed to update diagram', error);
+                },
+              }),
           );
         }
       }),
@@ -833,7 +823,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Prevent event propagation to avoid navigating to the diagram
     event.stopPropagation();
 
-    if (!this.threatModel || !this.threatModel.diagrams) {
+    if (!this.threatModel || !this.threatModel.diagrams || !this.canEdit) {
+      if (!this.canEdit) {
+        this.logger.warn('Cannot delete diagram - insufficient permissions');
+      }
       return;
     }
 
@@ -845,26 +838,28 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (confirmDelete) {
       // Delete the diagram via API
       this._subscriptions.add(
-        this.threatModelService.deleteDiagram(this.threatModel.id, diagram.id).subscribe(success => {
-          if (success && this.threatModel && this.threatModel.diagrams) {
-            // Remove the diagram from local state
-            const index = this.threatModel.diagrams.findIndex((d: string | Diagram) => 
-              (typeof d === 'string' ? d : d.id) === diagram.id
-            );
-            if (index !== -1) {
-              this.threatModel.diagrams.splice(index, 1);
-            }
+        this.threatModelService
+          .deleteDiagram(this.threatModel.id, diagram.id)
+          .subscribe(success => {
+            if (success && this.threatModel && this.threatModel.diagrams) {
+              // Remove the diagram from local state
+              const index = this.threatModel.diagrams.findIndex(
+                (d: string | Diagram) => (typeof d === 'string' ? d : d.id) === diagram.id,
+              );
+              if (index !== -1) {
+                this.threatModel.diagrams.splice(index, 1);
+              }
 
-            // Remove the diagram from the local array
-            const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-            if (diagramIndex !== -1) {
-              this.diagrams.splice(diagramIndex, 1);
-            }
+              // Remove the diagram from the local array
+              const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
+              if (diagramIndex !== -1) {
+                this.diagrams.splice(diagramIndex, 1);
+              }
 
-            // Remove from DIAGRAMS_BY_ID map
-            DIAGRAMS_BY_ID.delete(diagram.id);
-          }
-        }),
+              // Remove from DIAGRAMS_BY_ID map
+              DIAGRAMS_BY_ID.delete(diagram.id);
+            }
+          }),
       );
     }
   }
@@ -874,6 +869,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * If the user confirms, adds the new document to the threat model
    */
   addDocument(): void {
+    if (!this.canEdit) {
+      this.logger.warn('Cannot add document - insufficient permissions');
+      return;
+    }
     const dialogData: DocumentEditorDialogData = {
       mode: 'create',
     };
@@ -894,15 +893,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
           };
 
           this._subscriptions.add(
-            this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe(newDocument => {
-              // Add the new document to local state (check for duplicates first)
-              if (!this.threatModel?.documents) {
-                this.threatModel!.documents = [];
-              }
-              if (!this.threatModel!.documents.find(d => d.id === newDocument.id)) {
-                this.threatModel!.documents.push(newDocument);
-              }
-            }),
+            this.threatModelService
+              .createDocument(this.threatModel.id, newDocumentData)
+              .subscribe(newDocument => {
+                // Add the new document to local state (check for duplicates first)
+                if (!this.threatModel?.documents) {
+                  this.threatModel!.documents = [];
+                }
+                if (!this.threatModel!.documents.find(d => d.id === newDocument.id)) {
+                  this.threatModel!.documents.push(newDocument);
+                }
+              }),
           );
         }
       }),
@@ -944,15 +945,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
           };
 
           this._subscriptions.add(
-            this.threatModelService.updateDocument(this.threatModel.id, document.id, updatedDocumentData).subscribe(updatedDocument => {
-              // Update the document in local state
-              if (this.threatModel && this.threatModel.documents) {
-                const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-                if (index !== -1) {
-                  this.threatModel.documents[index] = updatedDocument;
+            this.threatModelService
+              .updateDocument(this.threatModel.id, document.id, updatedDocumentData)
+              .subscribe(updatedDocument => {
+                // Update the document in local state
+                if (this.threatModel && this.threatModel.documents) {
+                  const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+                  if (index !== -1) {
+                    this.threatModel.documents[index] = updatedDocument;
+                  }
                 }
-              }
-            }),
+              }),
           );
         }
       }),
@@ -982,15 +985,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (confirmDelete) {
       // Delete the document via API
       this._subscriptions.add(
-        this.threatModelService.deleteDocument(this.threatModel.id, document.id).subscribe(success => {
-          if (success && this.threatModel && this.threatModel.documents) {
-            // Remove the document from local state
-            const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-            if (index !== -1) {
-              this.threatModel.documents.splice(index, 1);
+        this.threatModelService
+          .deleteDocument(this.threatModel.id, document.id)
+          .subscribe(success => {
+            if (success && this.threatModel && this.threatModel.documents) {
+              // Remove the document from local state
+              const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+              if (index !== -1) {
+                this.threatModel.documents.splice(index, 1);
+              }
             }
-          }
-        }),
+          }),
       );
     }
   }
@@ -1035,15 +1040,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
           };
 
           this._subscriptions.add(
-            this.threatModelService.createSource(this.threatModel.id, newSourceData).subscribe(newSource => {
-              // Add the new source to local state (check for duplicates first)
-              if (!this.threatModel?.sourceCode) {
-                this.threatModel!.sourceCode = [];
-              }
-              if (!this.threatModel!.sourceCode.find(s => s.id === newSource.id)) {
-                this.threatModel!.sourceCode.push(newSource);
-              }
-            }),
+            this.threatModelService
+              .createSource(this.threatModel.id, newSourceData)
+              .subscribe(newSource => {
+                // Add the new source to local state (check for duplicates first)
+                if (!this.threatModel?.sourceCode) {
+                  this.threatModel!.sourceCode = [];
+                }
+                if (!this.threatModel!.sourceCode.find(s => s.id === newSource.id)) {
+                  this.threatModel!.sourceCode.push(newSource);
+                }
+              }),
           );
         }
       }),
@@ -1087,15 +1094,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
           };
 
           this._subscriptions.add(
-            this.threatModelService.updateSource(this.threatModel.id, sourceCode.id, updatedSourceData).subscribe(updatedSource => {
-              // Update the source in local state
-              if (this.threatModel && this.threatModel.sourceCode) {
-                const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
-                if (index !== -1) {
-                  this.threatModel.sourceCode[index] = updatedSource;
+            this.threatModelService
+              .updateSource(this.threatModel.id, sourceCode.id, updatedSourceData)
+              .subscribe(updatedSource => {
+                // Update the source in local state
+                if (this.threatModel && this.threatModel.sourceCode) {
+                  const index = this.threatModel.sourceCode.findIndex(
+                    sc => sc.id === sourceCode.id,
+                  );
+                  if (index !== -1) {
+                    this.threatModel.sourceCode[index] = updatedSource;
+                  }
                 }
-              }
-            }),
+              }),
           );
         }
       }),
@@ -1125,15 +1136,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (confirmDelete) {
       // Delete the source code via API
       this._subscriptions.add(
-        this.threatModelService.deleteSource(this.threatModel.id, sourceCode.id).subscribe(success => {
-          if (success && this.threatModel && this.threatModel.sourceCode) {
-            // Remove the source from local state
-            const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
-            if (index !== -1) {
-              this.threatModel.sourceCode.splice(index, 1);
+        this.threatModelService
+          .deleteSource(this.threatModel.id, sourceCode.id)
+          .subscribe(success => {
+            if (success && this.threatModel && this.threatModel.sourceCode) {
+              // Remove the source from local state
+              const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+              if (index !== -1) {
+                this.threatModel.sourceCode.splice(index, 1);
+              }
             }
-          }
-        }),
+          }),
       );
     }
   }
@@ -1183,18 +1196,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.updateSourceMetadata(this.threatModel.id, sourceCode.id, result).subscribe(updatedMetadata => {
-              if (updatedMetadata && this.threatModel && this.threatModel.sourceCode) {
-                const sourceCodeIndex = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
-                if (sourceCodeIndex !== -1) {
-                  this.threatModel.sourceCode[sourceCodeIndex].metadata = updatedMetadata;
+            this.threatModelService
+              .updateSourceMetadata(this.threatModel.id, sourceCode.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata && this.threatModel && this.threatModel.sourceCode) {
+                  const sourceCodeIndex = this.threatModel.sourceCode.findIndex(
+                    sc => sc.id === sourceCode.id,
+                  );
+                  if (sourceCodeIndex !== -1) {
+                    this.threatModel.sourceCode[sourceCodeIndex].metadata = updatedMetadata;
+                  }
+                  this.logger.info('Updated source code metadata via API', {
+                    sourceCodeId: sourceCode.id,
+                    metadata: updatedMetadata,
+                  });
                 }
-                this.logger.info('Updated source code metadata via API', {
-                  sourceCodeId: sourceCode.id,
-                  metadata: updatedMetadata,
-                });
-              }
-            }),
+              }),
           );
         }
       }),
@@ -1227,18 +1244,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.updateDocumentMetadata(this.threatModel.id, document.id, result).subscribe(updatedMetadata => {
-              if (updatedMetadata && this.threatModel && this.threatModel.documents) {
-                const documentIndex = this.threatModel.documents.findIndex(d => d.id === document.id);
-                if (documentIndex !== -1) {
-                  this.threatModel.documents[documentIndex].metadata = updatedMetadata;
+            this.threatModelService
+              .updateDocumentMetadata(this.threatModel.id, document.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata && this.threatModel && this.threatModel.documents) {
+                  const documentIndex = this.threatModel.documents.findIndex(
+                    d => d.id === document.id,
+                  );
+                  if (documentIndex !== -1) {
+                    this.threatModel.documents[documentIndex].metadata = updatedMetadata;
+                  }
+                  this.logger.info('Updated document metadata via API', {
+                    documentId: document.id,
+                    metadata: updatedMetadata,
+                  });
                 }
-                this.logger.info('Updated document metadata via API', {
-                  documentId: document.id,
-                  metadata: updatedMetadata,
-                });
-              }
-            }),
+              }),
           );
         }
       }),
@@ -1253,7 +1274,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens the permissions dialog to manage threat model permissions
    */
   openPermissionsDialog(): void {
-    if (!this.threatModel) {
+    if (!this.threatModel || !this.canManagePermissions) {
+      if (!this.canManagePermissions) {
+        this.logger.warn('Cannot manage permissions - owner access required');
+      }
       return;
     }
 
@@ -1280,18 +1304,20 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Create a clean threat model object with only basic fields (no entities)
           // Use PATCH to update only the authorization field
           const updates = {
-            authorization: this.threatModel.authorization
+            authorization: this.threatModel.authorization,
           };
 
           // Update the threat model with PATCH (only authorization field)
           this._subscriptions.add(
-            this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe(updatedModel => {
-              if (updatedModel && this.threatModel) {
-                // Update only the authorization and modified_at fields from the result
-                this.threatModel.authorization = updatedModel.authorization;
-                this.threatModel.modified_at = updatedModel.modified_at;
-              }
-            }),
+            this.threatModelService
+              .patchThreatModel(this.threatModel.id, updates)
+              .subscribe(updatedModel => {
+                if (updatedModel && this.threatModel) {
+                  // Update only the authorization and modified_at fields from the result
+                  this.threatModel.authorization = updatedModel.authorization;
+                  this.threatModel.modified_at = updatedModel.modified_at;
+                }
+              }),
           );
         }
       }),
@@ -1325,12 +1351,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.updateThreatModelMetadata(this.threatModel.id, result).subscribe(updatedMetadata => {
-              if (updatedMetadata && this.threatModel) {
-                this.threatModel.metadata = updatedMetadata;
-                this.threatModel.modified_at = new Date().toISOString();
-              }
-            }),
+            this.threatModelService
+              .updateThreatModelMetadata(this.threatModel.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata && this.threatModel) {
+                  this.threatModel.metadata = updatedMetadata;
+                  this.threatModel.modified_at = new Date().toISOString();
+                }
+              }),
           );
         }
       }),
@@ -1363,19 +1391,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.updateDiagramMetadata(this.threatModel.id, diagram.id, result).subscribe(updatedMetadata => {
-              if (updatedMetadata) {
-                const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-                if (diagramIndex !== -1) {
-                  this.diagrams[diagramIndex].metadata = updatedMetadata;
-                  this.diagrams[diagramIndex].modified_at = new Date().toISOString();
+            this.threatModelService
+              .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata) {
+                  const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
+                  if (diagramIndex !== -1) {
+                    this.diagrams[diagramIndex].metadata = updatedMetadata;
+                    this.diagrams[diagramIndex].modified_at = new Date().toISOString();
+                  }
+                  this.logger.info('Updated diagram metadata via API', {
+                    diagramId: diagram.id,
+                    metadata: updatedMetadata,
+                  });
                 }
-                this.logger.info('Updated diagram metadata via API', {
-                  diagramId: diagram.id,
-                  metadata: updatedMetadata,
-                });
-              }
-            }),
+              }),
           );
         }
       }),
@@ -1408,20 +1438,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.updateThreatMetadata(this.threatModel.id, threat.id, result).subscribe(updatedMetadata => {
-              if (updatedMetadata && this.threatModel) {
-                const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
-                if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
-                  this.threatModel.threats[threatIndex].metadata = updatedMetadata;
-                  this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
+            this.threatModelService
+              .updateThreatMetadata(this.threatModel.id, threat.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata && this.threatModel) {
+                  const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
+                  if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
+                    this.threatModel.threats[threatIndex].metadata = updatedMetadata;
+                    this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
+                  }
+                  this.logger.info('Updated threat metadata via API', {
+                    threatId: threat.id,
+                    threatName: threat.name,
+                    metadata: updatedMetadata,
+                  });
                 }
-                this.logger.info('Updated threat metadata via API', {
-                  threatId: threat.id,
-                  threatName: threat.name,
-                  metadata: updatedMetadata,
-                });
-              }
-            }),
+              }),
           );
         }
       }),
@@ -1446,13 +1478,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     try {
-      this.logger.info('Generating PDF report', { 
+      this.logger.info('Generating PDF report', {
         threatModelId: this.threatModel.id,
-        threatModelName: this.threatModel.name 
+        threatModelName: this.threatModel.name,
       });
 
       await this.threatModelReportService.generateReport(this.threatModel);
-      
+
       this.logger.info('PDF report generation completed successfully');
     } catch (error) {
       this.logger.error('Failed to generate PDF report', error);
@@ -1836,14 +1868,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
       formValid: this.threatModelForm.valid,
       isNewThreatModel: this.isNewThreatModel,
       isLoadingInitialData: this._isLoadingInitialData,
-      threatModelId: this.threatModel?.id
+      threatModelId: this.threatModel?.id,
+      canEdit: this.canEdit,
     });
 
-    if (!this.threatModel || this.threatModelForm.invalid || this._isLoadingInitialData) {
+    if (
+      !this.threatModel ||
+      this.threatModelForm.invalid ||
+      this._isLoadingInitialData ||
+      !this.canEdit
+    ) {
       this.logger.debugComponent('TmEdit', 'Auto-save skipped due to conditions', {
         threatModelExists: !!this.threatModel,
         formValid: this.threatModelForm.valid,
-        isLoadingInitialData: this._isLoadingInitialData
+        isLoadingInitialData: this._isLoadingInitialData,
+        canEdit: this.canEdit,
       });
       return;
     }
@@ -1857,7 +1896,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Create updates object with only changed form fields
     const updates: Partial<ThreatModelFormValues> = {};
-    
+
     if (formValues.name !== this._originalFormValues!.name) {
       updates.name = formValues.name;
     }
@@ -1873,7 +1912,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this.logger.debugComponent('TmEdit', 'Calling threatModelService.patchThreatModel', {
       threatModelId: this.threatModel.id,
-      updates
+      updates,
     });
 
     // Save to server with PATCH (only changed fields)
@@ -1883,16 +1922,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
           if (result && this.threatModel) {
             // Update the threat model with server response
             Object.keys(updates).forEach(key => {
-              (this.threatModel as unknown as Record<string, unknown>)[key] = (result as unknown as Record<string, unknown>)[key];
+              (this.threatModel as unknown as Record<string, unknown>)[key] = (
+                result as unknown as Record<string, unknown>
+              )[key];
             });
             this.threatModel.modified_at = result.modified_at;
-            
+
             // Update original form values after successful save
             this.updateOriginalFormValues(formValues);
-            
+
             // Reset form dirty state so save button dims/disables
             this.threatModelForm.markAsPristine();
-            
+
             this.logger.debugComponent('TmEdit', 'Auto-saved threat model changes', {
               threatModelId: this.threatModel.id,
               savedFields: Object.keys(updates),
@@ -1903,10 +1944,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
         error: error => {
           this.logger.error('Auto-save failed for threat model', error, {
             threatModelId: this.threatModel?.id,
-            attemptedUpdates: updates
+            attemptedUpdates: updates,
           });
-        }
-      })
+        },
+      }),
     );
   }
 
@@ -1917,17 +1958,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(diagrams => {
         this.diagrams = diagrams;
-        
+
         // Update DIAGRAMS_BY_ID map with real diagram data
         this.diagrams.forEach(diagram => {
           DIAGRAMS_BY_ID.set(diagram.id, diagram);
         });
-        
+
         // Update threat model diagrams property for consistency
         if (this.threatModel) {
           this.threatModel.diagrams = diagrams;
         }
-      })
+      }),
     );
   }
 
@@ -1940,7 +1981,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         if (this.threatModel) {
           this.threatModel.documents = documents;
         }
-      })
+      }),
     );
   }
 
@@ -1953,7 +1994,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         if (this.threatModel) {
           this.threatModel.sourceCode = sourceCode;
         }
-      })
+      }),
     );
   }
 }

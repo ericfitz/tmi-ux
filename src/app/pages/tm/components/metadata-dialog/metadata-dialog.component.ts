@@ -255,7 +255,6 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: MetadataDialogData,
   ) {}
 
-
   ngOnInit(): void {
     this.dataSource.data = [...this.data.metadata];
     this.displayedColumns = this.data.isReadOnly ? ['key', 'value'] : ['key', 'value', 'actions'];
@@ -273,7 +272,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   updateKey(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const newKey = input.value.trim();
-    
+
     if (index >= 0 && index < this.dataSource.data.length) {
       const currentItem = this.dataSource.data[index];
       currentItem.key = newKey;
@@ -288,7 +287,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   updateValue(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const newValue = input.value.trim();
-    
+
     if (index >= 0 && index < this.dataSource.data.length) {
       const currentItem = this.dataSource.data[index];
       currentItem.value = newValue;
@@ -300,9 +299,8 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * @returns Valid metadata entries (both key and value must be non-empty)
    */
   private getValidMetadata(): Metadata[] {
-    return this.dataSource.data.filter(item => 
-      item.key && item.key.trim() !== '' && 
-      item.value && item.value.trim() !== ''
+    return this.dataSource.data.filter(
+      item => item.key && item.key.trim() !== '' && item.value && item.value.trim() !== '',
     );
   }
 

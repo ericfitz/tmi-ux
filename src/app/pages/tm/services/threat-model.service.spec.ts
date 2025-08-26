@@ -16,6 +16,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ThreatModelAuthorizationService } from './threat-model-authorization.service';
 import { BehaviorSubject, of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockLoggerService } from '../../../../testing/mocks';
@@ -34,6 +35,7 @@ describe('ThreatModelService', () => {
   let loggerService: LoggerService;
   let apiService: ApiService;
   let authService: AuthService;
+  let authorizationService: ThreatModelAuthorizationService;
   let testThreatModel1: any;
   let testThreatModel2: any;
   let testThreatModel3: any;
@@ -90,8 +92,24 @@ describe('ThreatModelService', () => {
       userProfile: { email: 'test.user@example.com', name: 'Test User' },
     } as unknown as AuthService;
 
+    // Create a mock for ThreatModelAuthorizationService
+    authorizationService = {
+      setAuthorization: vi.fn(),
+      updateAuthorization: vi.fn(),
+      clearAuthorization: vi.fn(),
+      getCurrentUserPermission: vi.fn().mockReturnValue('owner'),
+      canEdit: vi.fn().mockReturnValue(true),
+      canManagePermissions: vi.fn().mockReturnValue(true),
+    } as unknown as ThreatModelAuthorizationService;
+
     // Create the service directly with mocked dependencies
-    service = new ThreatModelService(apiService, loggerService, mockDataService, authService);
+    service = new ThreatModelService(
+      apiService,
+      loggerService,
+      mockDataService,
+      authService,
+      authorizationService,
+    );
   });
 
   it('should be created', () => {
@@ -181,7 +199,9 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockDiagrams));
 
       service.getDiagramsForThreatModel(testThreatModel1.id).subscribe(diagrams => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/diagrams`,
+        );
         expect(diagrams).toEqual(mockDiagrams);
       });
     }));
@@ -191,13 +211,17 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockDocuments));
 
       service.getDocumentsForThreatModel(testThreatModel1.id).subscribe(documents => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/documents`,
+        );
         expect(documents).toEqual(mockDocuments);
       });
     }));
 
     it('should make API calls for source code when mock data is disabled', waitForAsync(() => {
-      const mockSourceCode = [{ id: 'src1', name: 'Test Source', url: 'http://github.com/example' }];
+      const mockSourceCode = [
+        { id: 'src1', name: 'Test Source', url: 'http://github.com/example' },
+      ];
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockSourceCode));
 
       service.getSourceCodeForThreatModel(testThreatModel1.id).subscribe(sourceCode => {
@@ -218,7 +242,9 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
 
       service.getThreatModelMetadata(testThreatModel1.id).subscribe(metadata => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/metadata`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/metadata`,
+        );
         expect(metadata).toEqual(mockMetadata);
       });
     }));
@@ -228,7 +254,10 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
       service.updateThreatModelMetadata(testThreatModel1.id, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/metadata/bulk`, metadata);
+        expect(apiService.post).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/metadata/bulk`,
+          metadata,
+        );
         expect(result).toEqual(metadata);
       });
     }));
@@ -239,7 +268,9 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
 
       service.getDiagramMetadata(testThreatModel1.id, diagramId).subscribe(metadata => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata`,
+        );
         expect(metadata).toEqual(mockMetadata);
       });
     }));
@@ -250,7 +281,10 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
       service.updateDiagramMetadata(testThreatModel1.id, diagramId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata/bulk`, metadata);
+        expect(apiService.post).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata/bulk`,
+          metadata,
+        );
         expect(result).toEqual(metadata);
       });
     }));
@@ -261,7 +295,9 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
 
       service.getThreatMetadata(testThreatModel1.id, threatId).subscribe(metadata => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}/metadata`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/threats/${threatId}/metadata`,
+        );
         expect(metadata).toEqual(mockMetadata);
       });
     }));
@@ -272,7 +308,10 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
       service.updateThreatMetadata(testThreatModel1.id, threatId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}/metadata/bulk`, metadata);
+        expect(apiService.post).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/threats/${threatId}/metadata/bulk`,
+          metadata,
+        );
         expect(result).toEqual(metadata);
       });
     }));
@@ -283,7 +322,9 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
 
       service.getDocumentMetadata(testThreatModel1.id, documentId).subscribe(metadata => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}/metadata`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/documents/${documentId}/metadata`,
+        );
         expect(metadata).toEqual(mockMetadata);
       });
     }));
@@ -293,10 +334,15 @@ describe('ThreatModelService', () => {
       const documentId = 'test-doc-id';
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
-      service.updateDocumentMetadata(testThreatModel1.id, documentId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}/metadata/bulk`, metadata);
-        expect(result).toEqual(metadata);
-      });
+      service
+        .updateDocumentMetadata(testThreatModel1.id, documentId, metadata)
+        .subscribe(result => {
+          expect(apiService.post).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/documents/${documentId}/metadata/bulk`,
+            metadata,
+          );
+          expect(result).toEqual(metadata);
+        });
     }));
 
     it('should get source metadata via API', waitForAsync(() => {
@@ -305,7 +351,9 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
 
       service.getSourceMetadata(testThreatModel1.id, sourceId).subscribe(metadata => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata`);
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata`,
+        );
         expect(metadata).toEqual(mockMetadata);
       });
     }));
@@ -316,7 +364,10 @@ describe('ThreatModelService', () => {
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
       service.updateSourceMetadata(testThreatModel1.id, sourceId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata/bulk`, metadata);
+        expect(apiService.post).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata/bulk`,
+          metadata,
+        );
         expect(result).toEqual(metadata);
       });
     }));
@@ -330,12 +381,24 @@ describe('ThreatModelService', () => {
 
     describe('Threat API Methods', () => {
       it('should create a threat via API', waitForAsync(() => {
-        const threatData = { name: 'Test Threat', description: 'A test threat', severity: 'High' as const, threat_type: 'Information Disclosure' };
-        const expectedThreat = { ...threatData, id: 'new-threat-id', threat_model_id: testThreatModel1.id };
+        const threatData = {
+          name: 'Test Threat',
+          description: 'A test threat',
+          severity: 'High' as const,
+          threat_type: 'Information Disclosure',
+        };
+        const expectedThreat = {
+          ...threatData,
+          id: 'new-threat-id',
+          threat_model_id: testThreatModel1.id,
+        };
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedThreat));
 
         service.createThreat(testThreatModel1.id, threatData).subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats`, threatData);
+          expect(apiService.post).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/threats`,
+            threatData,
+          );
           expect(result).toEqual(expectedThreat);
         });
       }));
@@ -347,7 +410,10 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'put').mockReturnValue(of(expectedThreat));
 
         service.updateThreat(testThreatModel1.id, threatId, threatData).subscribe(result => {
-          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}`, threatData);
+          expect(apiService.put).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/threats/${threatId}`,
+            threatData,
+          );
           expect(result).toEqual(expectedThreat);
         });
       }));
@@ -357,7 +423,9 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
 
         service.deleteThreat(testThreatModel1.id, threatId).subscribe(result => {
-          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/threats/${threatId}`);
+          expect(apiService.delete).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/threats/${threatId}`,
+          );
           expect(result).toBe(true);
         });
       }));
@@ -365,12 +433,19 @@ describe('ThreatModelService', () => {
 
     describe('Document API Methods', () => {
       it('should create a document via API', waitForAsync(() => {
-        const documentData = { name: 'Test Doc', url: 'http://example.com', description: 'A test document' };
+        const documentData = {
+          name: 'Test Doc',
+          url: 'http://example.com',
+          description: 'A test document',
+        };
         const expectedDocument = { ...documentData, id: 'new-doc-id' };
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDocument));
 
         service.createDocument(testThreatModel1.id, documentData).subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents`, documentData);
+          expect(apiService.post).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/documents`,
+            documentData,
+          );
           expect(result).toEqual(expectedDocument);
         });
       }));
@@ -382,7 +457,10 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'put').mockReturnValue(of(expectedDocument));
 
         service.updateDocument(testThreatModel1.id, documentId, documentData).subscribe(result => {
-          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}`, documentData);
+          expect(apiService.put).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/documents/${documentId}`,
+            documentData,
+          );
           expect(result).toEqual(expectedDocument);
         });
       }));
@@ -392,7 +470,9 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
 
         service.deleteDocument(testThreatModel1.id, documentId).subscribe(result => {
-          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/documents/${documentId}`);
+          expect(apiService.delete).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/documents/${documentId}`,
+          );
           expect(result).toBe(true);
         });
       }));
@@ -400,12 +480,19 @@ describe('ThreatModelService', () => {
 
     describe('Source API Methods', () => {
       it('should create a source via API', waitForAsync(() => {
-        const sourceData = { name: 'Test Source', url: 'http://github.com/test', type: 'git' as const };
+        const sourceData = {
+          name: 'Test Source',
+          url: 'http://github.com/test',
+          type: 'git' as const,
+        };
         const expectedSource = { ...sourceData, id: 'new-source-id' };
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedSource));
 
         service.createSource(testThreatModel1.id, sourceData).subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources`, sourceData);
+          expect(apiService.post).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/sources`,
+            sourceData,
+          );
           expect(result).toEqual(expectedSource);
         });
       }));
@@ -417,7 +504,10 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'put').mockReturnValue(of(expectedSource));
 
         service.updateSource(testThreatModel1.id, sourceId, sourceData).subscribe(result => {
-          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}`, sourceData);
+          expect(apiService.put).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/sources/${sourceId}`,
+            sourceData,
+          );
           expect(result).toEqual(expectedSource);
         });
       }));
@@ -427,7 +517,9 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
 
         service.deleteSource(testThreatModel1.id, sourceId).subscribe(result => {
-          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources/${sourceId}`);
+          expect(apiService.delete).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/sources/${sourceId}`,
+          );
           expect(result).toBe(true);
         });
       }));
@@ -440,7 +532,10 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDiagram));
 
         service.createDiagram(testThreatModel1.id, diagramData).subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams`, diagramData);
+          expect(apiService.post).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/diagrams`,
+            diagramData,
+          );
           expect(result).toEqual(expectedDiagram);
         });
       }));
@@ -452,7 +547,10 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'put').mockReturnValue(of(expectedDiagram));
 
         service.updateDiagram(testThreatModel1.id, diagramId, diagramData).subscribe(result => {
-          expect(apiService.put).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}`, diagramData);
+          expect(apiService.put).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/diagrams/${diagramId}`,
+            diagramData,
+          );
           expect(result).toEqual(expectedDiagram);
         });
       }));
@@ -462,7 +560,9 @@ describe('ThreatModelService', () => {
         vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
 
         service.deleteDiagram(testThreatModel1.id, diagramId).subscribe(result => {
-          expect(apiService.delete).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/diagrams/${diagramId}`);
+          expect(apiService.delete).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/diagrams/${diagramId}`,
+          );
           expect(result).toBe(true);
         });
       }));

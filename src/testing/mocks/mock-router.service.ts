@@ -1,6 +1,6 @@
 /**
  * Mock Router service for testing
- * 
+ *
  * This provides a standardized mock of Angular's Router that can be reused
  * across all test files, eliminating duplication and ensuring consistency.
  */
@@ -10,7 +10,7 @@ import type { Router } from '@angular/router';
 
 /**
  * Creates a mock Router with commonly used methods
- * 
+ *
  * @param initialUrl - The initial URL for the router (default: '/current-route')
  * @returns A mock Router with vitest mock functions
  */
@@ -51,7 +51,7 @@ export interface MockRouter {
 
 /**
  * Creates a typed mock Router that allows easy access to mock functions
- * 
+ *
  * @param initialUrl - The initial URL for the router (default: '/current-route')
  * @returns A typed mock Router
  */

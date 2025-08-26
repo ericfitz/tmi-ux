@@ -38,7 +38,7 @@ describe('HttpLoggingInterceptor', () => {
     it('should log API requests with component debug logging', () => {
       const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
       const mockResponse = new HttpResponse({ status: 200, body: { success: true } });
-      
+
       httpHandler.handle.mockReturnValue(of(mockResponse));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe();
@@ -49,18 +49,18 @@ describe('HttpLoggingInterceptor', () => {
         expect.objectContaining({
           url: 'http://localhost:8080/api/test',
           headers: expect.any(Object),
-        })
+        }),
       );
     });
 
     it('should log API responses with component debug logging', () => {
       const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
-      const mockResponse = new HttpResponse({ 
-        status: 200, 
+      const mockResponse = new HttpResponse({
+        status: 200,
         body: { success: true },
-        statusText: 'OK'
+        statusText: 'OK',
       });
-      
+
       httpHandler.handle.mockReturnValue(of(mockResponse));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe();
@@ -71,7 +71,7 @@ describe('HttpLoggingInterceptor', () => {
         expect.objectContaining({
           status: 200,
           statusText: 'OK',
-        })
+        }),
       );
     });
   });
@@ -84,16 +84,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: 'Unauthorized',
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
             'Auth error: 401 Unauthorized for GET http://localhost:8080/api/test',
-            mockError
+            mockError,
           );
-        }
+        },
       });
     });
 
@@ -104,16 +104,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: 'Forbidden',
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
             'Auth error: 403 Forbidden for GET http://localhost:8080/api/test',
-            mockError
+            mockError,
           );
-        }
+        },
       });
     });
 
@@ -124,16 +124,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: 'Bad Request',
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
             'Validation error: 400 Bad Request for POST http://localhost:8080/api/test',
-            mockError
+            mockError,
           );
-        }
+        },
       });
     });
 
@@ -144,16 +144,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: 'Unprocessable Entity',
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
             'Validation error: 422 Unprocessable Entity for POST http://localhost:8080/api/test',
-            mockError
+            mockError,
           );
-        }
+        },
       });
     });
 
@@ -164,16 +164,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: 'Not Found',
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
             'Not found error: 404 Not Found for GET http://localhost:8080/api/test',
-            mockError
+            mockError,
           );
-        }
+        },
       });
     });
 
@@ -184,16 +184,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: 'Internal Server Error',
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
             'Server error: 500 Internal Server Error for GET http://localhost:8080/api/test',
-            mockError
+            mockError,
           );
-        }
+        },
       });
     });
 
@@ -204,16 +204,16 @@ describe('HttpLoggingInterceptor', () => {
         statusText: "I'm a teapot",
         url: 'http://localhost:8080/api/test',
       });
-      
+
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'API error: 418 I\'m a teapot for GET http://localhost:8080/api/test',
-            mockError
+            "API error: 418 I'm a teapot for GET http://localhost:8080/api/test",
+            mockError,
           );
-        }
+        },
       });
     });
   });
@@ -221,13 +221,15 @@ describe('HttpLoggingInterceptor', () => {
   describe('Secret Redaction', () => {
     it('should redact sensitive information from headers', () => {
       const headers = new HttpHeaders({
-        'Authorization': 'Bearer abc123def456ghi789jkl012',
+        Authorization: 'Bearer abc123def456ghi789jkl012',
         'X-API-Key': 'secret123',
         'Content-Type': 'application/json',
       });
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test', null, { headers });
+      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test', null, {
+        headers,
+      });
       const mockResponse = new HttpResponse({ status: 200 });
-      
+
       httpHandler.handle.mockReturnValue(of(mockResponse));
 
       interceptor.intercept(mockRequest, httpHandler).subscribe();
@@ -237,10 +239,10 @@ describe('HttpLoggingInterceptor', () => {
         'GET request details:',
         expect.objectContaining({
           headers: expect.objectContaining({
-            'Authorization': 'Bearer abc1************l012',
+            Authorization: 'Bearer abc1************l012',
             'Content-Type': 'application/json',
-          })
-        })
+          }),
+        }),
       );
     });
   });

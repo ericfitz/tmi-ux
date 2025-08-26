@@ -1,6 +1,6 @@
 /**
  * Mock HttpClient service for testing
- * 
+ *
  * This provides a standardized mock of Angular's HttpClient that can be reused
  * across all test files, eliminating duplication and ensuring consistency.
  */
@@ -16,7 +16,7 @@ const DEFAULT_SUCCESS_RESPONSE = { id: 1, name: 'Test Data' };
 
 /**
  * Creates a mock HttpClient with commonly used methods
- * 
+ *
  * @param defaultResponse - The default response for successful requests
  * @returns A mock HttpClient with vitest mock functions
  */
@@ -50,10 +50,12 @@ export interface MockHttpClient {
 
 /**
  * Creates a typed mock HttpClient that allows easy access to mock functions
- * 
+ *
  * @param defaultResponse - The default response for successful requests
  * @returns A typed mock HttpClient
  */
-export function createTypedMockHttpClient(defaultResponse: any = DEFAULT_SUCCESS_RESPONSE): MockHttpClient {
+export function createTypedMockHttpClient(
+  defaultResponse: any = DEFAULT_SUCCESS_RESPONSE,
+): MockHttpClient {
   return createMockHttpClient(defaultResponse) as unknown as MockHttpClient;
 }
