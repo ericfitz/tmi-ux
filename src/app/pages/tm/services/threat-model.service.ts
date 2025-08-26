@@ -1600,6 +1600,15 @@ export class ThreatModelService implements OnDestroy {
     }
 
     return this.apiService.get<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`).pipe(
+      map((response: CollaborationSession) => {
+        // Validate that the response is a valid collaboration session
+        // An empty object {} should be treated as no session
+        if (!response || !response.session_id) {
+          this.logger.debug('Invalid collaboration session response - treating as no session', response);
+          return null;
+        }
+        return response;
+      }),
       catchError((error: { status: number }) => {
         if (error.status === 404) {
           // No active session
