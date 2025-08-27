@@ -107,6 +107,8 @@ export class GraphHistoryCoordinator {
       'body/filter',
       'label/filter',
       'text/filter',
+      'line/filter',  // Edge line filter effects
+      'wrap/filter',  // Edge wrap filter effects
 
       // Stroke effects for selection/hover
       'body/stroke',

@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, Subscription } from 'rxjs';
-import { map, catchError, tap, skip } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, Subscription, timer, of } from 'rxjs';
+import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -227,12 +227,6 @@ export class DfdCollaborationService implements OnDestroy {
           // Clear existing session state since we're now actively collaborating
           this._existingSessionAvailable$.next(null);
 
-          // Show session joined notification
-          this._notificationService.showSessionEvent('userJoined').subscribe();
-
-          // Start periodic refresh of participant list
-          this._startPeriodicRefresh();
-
           // Convert API participants to CollaborationUser format with correct permissions
           const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
             if (!participant.permissions) {
@@ -255,6 +249,15 @@ export class DfdCollaborationService implements OnDestroy {
           });
 
           this._collaborationUsers$.next(collaborationUsers);
+        }),
+        // Ensure current user appears in participant list before considering join successful
+        switchMap(() => this._ensureUserInParticipantList()),
+        tap(() => {
+          // Show session joined notification only after user is verified in list
+          this._notificationService.showSessionEvent('userJoined').subscribe();
+
+          // Start periodic refresh of participant list
+          this._startPeriodicRefresh();
         }),
         map(() => true),
         catchError(error => {
@@ -313,16 +316,6 @@ export class DfdCollaborationService implements OnDestroy {
           // Clear existing session state since we're now actively collaborating
           this._existingSessionAvailable$.next(null);
 
-          // Show appropriate notification based on whether session was created or joined
-          if (result.isNewSession) {
-            this._notificationService.showSessionEvent('started').subscribe();
-          } else {
-            this._notificationService.showSessionEvent('userJoined').subscribe();
-          }
-
-          // Start periodic refresh of participant list
-          this._startPeriodicRefresh();
-
           // Convert API participants to CollaborationUser format
           const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
             if (!participant.permissions) {
@@ -345,6 +338,26 @@ export class DfdCollaborationService implements OnDestroy {
           });
 
           this._collaborationUsers$.next(collaborationUsers);
+
+          // Store whether this was a new session for later
+          return { isNewSession: result.isNewSession };
+        }),
+        // Ensure current user appears in participant list before considering operation successful
+        switchMap((result) => 
+          this._ensureUserInParticipantList().pipe(
+            map(() => result) // Pass through the isNewSession flag
+          )
+        ),
+        tap((result) => {
+          // Show appropriate notification based on whether session was created or joined
+          if (result.isNewSession) {
+            this._notificationService.showSessionEvent('started').subscribe();
+          } else {
+            this._notificationService.showSessionEvent('userJoined').subscribe();
+          }
+
+          // Start periodic refresh of participant list
+          this._startPeriodicRefresh();
         }),
         map(() => true),
         catchError(error => {
@@ -400,12 +413,6 @@ export class DfdCollaborationService implements OnDestroy {
           // Clear existing session state since we're now actively collaborating
           this._existingSessionAvailable$.next(null);
 
-          // Show session started notification
-          this._notificationService.showSessionEvent('started').subscribe();
-
-          // Start periodic refresh of participant list
-          this._startPeriodicRefresh();
-
           // Convert API participants to CollaborationUser format, using email addresses consistently
           const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
             if (!participant.permissions) {
@@ -430,6 +437,15 @@ export class DfdCollaborationService implements OnDestroy {
           // Server guarantees the creating user will be included in the participants list
 
           this._collaborationUsers$.next(collaborationUsers);
+        }),
+        // Ensure current user appears in participant list before considering creation successful
+        switchMap(() => this._ensureUserInParticipantList()),
+        tap(() => {
+          // Show session started notification only after user is verified in list
+          this._notificationService.showSessionEvent('started').subscribe();
+
+          // Start periodic refresh of participant list
+          this._startPeriodicRefresh();
         }),
         map(() => true),
         catchError(error => {
@@ -1546,6 +1562,90 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Started periodic session refresh', {
       initialDelay: this._refreshBackoffMs,
     });
+  }
+
+  /**
+   * Ensure current user appears in participant list with retry logic
+   * Retries with exponential backoff until user appears or max attempts reached
+   */
+  private _ensureUserInParticipantList(): Observable<void> {
+    const currentUserId = this.getCurrentUserId();
+    if (!currentUserId) {
+      return throwError(() => new Error('Current user not authenticated'));
+    }
+
+    let retryCount = 0;
+    const maxRetries = 10; // Max 10 attempts
+    let backoffMs = 1000; // Start at 1 second
+
+    const checkUserPresence = (): Observable<void> => {
+      return this._refreshSessionStatus('Verifying user in participant list').pipe(
+        switchMap(() => {
+          // Check if current user is in the participant list
+          const users = this._collaborationUsers$.value;
+          const userInList = users.some(user => user.id === currentUserId);
+
+          if (userInList) {
+            this._logger.info('Current user found in participant list', {
+              userId: currentUserId,
+              retryCount,
+            });
+            return of(undefined);
+          }
+
+          // User not found, check if we should retry
+          if (retryCount >= maxRetries) {
+            this._logger.error('Max retries reached - user not in participant list', {
+              userId: currentUserId,
+              retryCount,
+              maxRetries,
+            });
+            return throwError(() => new Error('Failed to verify user in participant list after max retries'));
+          }
+
+          // Retry with exponential backoff
+          retryCount++;
+          const nextBackoff = Math.min(backoffMs * 2, 30000); // Cap at 30 seconds
+          
+          this._logger.warn('Current user not yet in participant list, retrying', {
+            userId: currentUserId,
+            retryCount,
+            nextBackoffMs: backoffMs,
+          });
+
+          return timer(backoffMs).pipe(
+            tap(() => {
+              backoffMs = nextBackoff; // Update backoff for next retry
+            }),
+            switchMap(() => checkUserPresence()),
+          );
+        }),
+        catchError(error => {
+          this._logger.error('Error verifying user in participant list', {
+            error,
+            userId: currentUserId,
+            retryCount,
+          });
+          
+          // On error, still retry if under max attempts
+          if (retryCount < maxRetries) {
+            retryCount++;
+            const nextBackoff = Math.min(backoffMs * 2, 30000);
+            
+            return timer(backoffMs).pipe(
+              tap(() => {
+                backoffMs = nextBackoff;
+              }),
+              switchMap(() => checkUserPresence()),
+            );
+          }
+          
+          return throwError(() => error);
+        }),
+      );
+    };
+
+    return checkUserPresence();
   }
 
   /**
