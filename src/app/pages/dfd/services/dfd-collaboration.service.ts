@@ -665,6 +665,107 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
+   * Add a participant to the collaboration session
+   * @param userId The user ID (email)
+   * @param permission The user's permission level
+   */
+  public addParticipant(userId: string, permission: 'reader' | 'writer' = 'reader'): void {
+    const currentUsers = this._collaborationUsers$.value;
+    const userExists = currentUsers.some(user => user.id === userId);
+
+    if (!userExists) {
+      const newUser: CollaborationUser = {
+        id: userId,
+        name: userId, // Use email as name
+        permission,
+        status: 'active',
+        isPresenter: false,
+        isSessionManager: userId === this._currentSession?.session_manager,
+        lastActivity: new Date(),
+      };
+
+      const updatedUsers = [...currentUsers, newUser];
+      this._collaborationUsers$.next(updatedUsers);
+      this._logger.info('Added participant to collaboration session', {
+        userId,
+        permission,
+        isSessionManager: newUser.isSessionManager,
+      });
+    }
+  }
+
+  /**
+   * Remove a participant from the collaboration session
+   * @param userId The user ID to remove
+   */
+  public removeParticipant(userId: string): void {
+    const currentUsers = this._collaborationUsers$.value;
+    this._logger.info('removeParticipant called', {
+      userId,
+      currentParticipantCount: currentUsers.length,
+      currentParticipants: currentUsers.map(u => ({ id: u.id, name: u.name })),
+    });
+    
+    const updatedUsers = currentUsers.filter(user => user.id !== userId);
+
+    if (updatedUsers.length !== currentUsers.length) {
+      this._collaborationUsers$.next(updatedUsers);
+      this._logger.info('Removed participant from collaboration session', { 
+        userId,
+        previousCount: currentUsers.length,
+        newCount: updatedUsers.length,
+        remainingParticipants: updatedUsers.map(u => ({ id: u.id, name: u.name })),
+      });
+    } else {
+      this._logger.warn('Attempted to remove participant not in list', { userId });
+    }
+  }
+
+  /**
+   * Update all participants from a bulk update message
+   * This replaces the entire participant list with the new data
+   * @param participants Array of participant information
+   * @param sessionManager Optional session manager ID
+   * @param currentPresenter Optional current presenter ID
+   */
+  public updateAllParticipants(
+    participants: Array<{
+      user_id: string;
+      permissions: 'reader' | 'writer';
+      is_presenter: boolean;
+      is_session_manager: boolean;
+      joined_at?: string;
+    }>,
+    sessionManager?: string,
+    currentPresenter?: string | null,
+  ): void {
+    // Build the new participant list
+    const updatedUsers: CollaborationUser[] = participants.map(participant => ({
+      id: participant.user_id,
+      name: participant.user_id, // Use email as name
+      permission: participant.permissions,
+      status: 'active' as const,
+      isPresenter: participant.is_presenter,
+      isSessionManager: participant.is_session_manager,
+      lastActivity: new Date(participant.joined_at || Date.now()),
+    }));
+
+    // Update the participant list
+    this._collaborationUsers$.next(updatedUsers);
+
+    // Update presenter state if provided
+    if (currentPresenter !== undefined) {
+      this._currentPresenterId$.next(currentPresenter);
+    }
+
+    this._logger.info('Bulk participant update applied', {
+      participantCount: participants.length,
+      sessionManager,
+      currentPresenter,
+    });
+  }
+
+  /**
    * Get the current user's permission in the collaboration session
    * @returns The current user's permission, or null if not in a session
    */
@@ -1137,19 +1238,8 @@ export class DfdCollaborationService implements OnDestroy {
       }),
     );
 
-    // Listen to TMI join events (legacy format from CLIENT_INTEGRATION_GUIDE.md)
-    this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('join').subscribe(message => {
-        this._handleTMIUserJoined(message as { event: string; user_id: string; timestamp: string });
-      }),
-    );
-
-    // Listen to TMI leave events (legacy format from CLIENT_INTEGRATION_GUIDE.md)
-    this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('leave').subscribe(message => {
-        this._handleTMIUserLeft(message as { event: string; user_id: string; timestamp: string });
-      }),
-    );
+    // NOTE: TMI join/leave events are now handled by TMIMessageHandlerService
+    // to avoid duplicate handling and conflicts with local state updates
 
     // Listen to TMI presenter change events
     this._subscriptions.add(

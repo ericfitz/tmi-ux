@@ -91,6 +91,7 @@ import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from './services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
+import { TMIMessageHandlerService } from './services/tmi-message-handler.service';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
   MetadataDialogComponent,
@@ -223,6 +224,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private webSocketAdapter: WebSocketAdapter,
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
+    private tmiMessageHandler: TMIMessageHandlerService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -472,6 +474,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private initializeWebSocketHandlers(): void {
     this.logger.info('Initializing WebSocket handlers for collaborative editing');
+
+    // Initialize all TMI message handlers
+    this.tmiMessageHandler.initialize();
 
     // Handle incoming diagram operations from other users
     this._subscriptions.add(

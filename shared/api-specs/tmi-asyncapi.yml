@@ -102,6 +102,8 @@ channels:
         $ref: '#/components/messages/UndoRequestMessage'
       redoRequestMessage:
         $ref: '#/components/messages/RedoRequestMessage'
+      participantsUpdateMessage:
+        $ref: '#/components/messages/ParticipantsUpdateMessage'
 
 operations:
   sendDiagramOperation:
@@ -156,6 +158,7 @@ operations:
       - $ref: '#/components/messages/StateCorrectionMessage'
       - $ref: '#/components/messages/ResyncResponseMessage'
       - $ref: '#/components/messages/HistoryOperationMessage'
+      - $ref: '#/components/messages/ParticipantsUpdateMessage'
 
 components:
   parameters:
@@ -609,6 +612,41 @@ components:
             user_id: sessionmanager@example.com
             timestamp: '2024-01-15T14:30:00Z'
             message: "Session manager disconnected"
+
+    ParticipantsUpdateMessage:
+      name: ParticipantsUpdateMessage
+      title: Participants Update Message
+      summary: Complete list of session participants with roles
+      description: |
+        Sent to all participants whenever the participant list changes. Provides
+        a complete snapshot of all current participants, their permissions, and
+        roles (session manager, presenter). This eliminates the need for clients
+        to poll the REST API for participant information.
+      payload:
+        $ref: '#/components/schemas/ParticipantsUpdatePayload'
+      examples:
+        - name: ParticipantsListUpdate
+          summary: Example of participants update after user joined
+          payload:
+            message_type: participants_update
+            participants:
+              - user_id: alice@example.com
+                permissions: writer
+                joined_at: '2024-01-15T10:30:00Z'
+                is_session_manager: true
+                is_presenter: false
+              - user_id: bob@example.com
+                permissions: reader
+                joined_at: '2024-01-15T10:35:00Z'
+                is_session_manager: false
+                is_presenter: true
+              - user_id: charlie@example.com
+                permissions: writer
+                joined_at: '2024-01-15T10:40:00Z'
+                is_session_manager: false
+                is_presenter: false
+            session_manager: alice@example.com
+            current_presenter: bob@example.com
 
   schemas:
     ClientMessagePayload:
@@ -1110,6 +1148,57 @@ components:
       required:
         - message_type
         - user_id
+      additionalProperties: false
+
+    ParticipantsUpdatePayload:
+      type: object
+      description: Complete participant list with roles and permissions
+      properties:
+        message_type:
+          const: participants_update
+        participants:
+          type: array
+          description: List of all current participants
+          items:
+            type: object
+            properties:
+              user_id:
+                type: string
+                description: User identifier (typically email)
+                example: alice@example.com
+              permissions:
+                type: string
+                enum: [reader, writer]
+                description: User's permissions for the diagram
+              joined_at:
+                type: string
+                format: date-time
+                description: When the user joined the session
+              is_session_manager:
+                type: boolean
+                description: Whether this user is the session manager
+              is_presenter:
+                type: boolean
+                description: Whether this user is the current presenter
+            required:
+              - user_id
+              - permissions
+              - joined_at
+              - is_session_manager
+              - is_presenter
+        session_manager:
+          type: string
+          description: User ID of the session manager
+          example: alice@example.com
+        current_presenter:
+          type: string
+          description: User ID of the current presenter (may be empty)
+          example: bob@example.com
+      required:
+        - message_type
+        - participants
+        - session_manager
+        - current_presenter
       additionalProperties: false
 
   securitySchemes:

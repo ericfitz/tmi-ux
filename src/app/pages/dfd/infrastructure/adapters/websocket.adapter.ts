@@ -468,16 +468,29 @@ export class WebSocketAdapter {
 
               const message = parsedMessage as T;
               const messageTypeToCheck = (message as any).message_type || (message as any).event;
+              
+              // Always log ALL TMI messages for debugging
+              this.logger.debugComponent('wsmsg', 'TMI WebSocket message received', {
+                messageType: messageTypeToCheck,
+                userId: (message as any).user_id,
+                timestamp: (message as any).timestamp,
+                operationId: (message as any).operation_id,
+                sequenceNumber: (message as any).sequence_number,
+                targetUser: (message as any).target_user,
+                currentPresenter: (message as any).current_presenter,
+                sessionManager: (message as any).session_manager,
+                participantCount: (message as any).participants?.length,
+                hasOperation: !!(message as any).operation,
+                operationType: (message as any).operation?.type,
+                cellCount: (message as any).operation?.cells?.length,
+                reason: (message as any).reason,
+                method: (message as any).method,
+                operationType2: (message as any).operation_type,
+                message: (message as any).message,
+                fullBody: this._redactSensitiveData(message as any),
+              });
+              
               if (messageTypeToCheck === messageType) {
-                // Log incoming TMI message with component debug logging
-                this.logger.debugComponent('websocket-api', 'TMI WebSocket message received:', {
-                  messageType: messageTypeToCheck,
-                  userId: (message as any).user_id,
-                  operationId: (message as any).operation_id,
-                  hasOperation: !!(message as any).operation,
-                  body: this._redactSensitiveData(message as any),
-                });
-
                 observer.next(message);
               }
             } catch (error) {
@@ -577,7 +590,26 @@ export class WebSocketAdapter {
           return;
         }
 
-        // Validate message structure
+        // Check if this is a TMI message (has message_type or event field)
+        const isTMIMessage = parsedMessage.message_type || parsedMessage.event;
+        
+        if (isTMIMessage) {
+          // Log TMI message for debugging
+          this.logger.debugComponent('wsmsg', 'TMI message detected in general handler', {
+            messageType: parsedMessage.message_type || parsedMessage.event,
+            userId: parsedMessage.user_id,
+            timestamp: parsedMessage.timestamp,
+            participantCount: parsedMessage.participants?.length,
+            currentPresenter: parsedMessage.current_presenter,
+            fullBody: this._redactSensitiveData(parsedMessage),
+          });
+          
+          // Skip internal validation for TMI messages - they have different structure
+          // TMI messages will be handled by getTMIMessagesOfType observers
+          return;
+        }
+
+        // Validate internal WebSocket message structure
         const validationResult = this._validateWebSocketMessage(parsedMessage);
         if (!validationResult.isValid) {
           this._handleMalformedMessage(

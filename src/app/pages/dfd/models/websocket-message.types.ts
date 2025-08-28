@@ -118,6 +118,21 @@ export interface HistoryOperationMessage {
   message: 'resync_required' | 'no_operations_to_undo' | 'no_operations_to_redo';
 }
 
+export interface ParticipantInfo {
+  user_id: string;
+  permissions: 'reader' | 'writer';
+  joined_at: string;
+  is_session_manager: boolean;
+  is_presenter: boolean;
+}
+
+export interface ParticipantsUpdateMessage {
+  message_type: 'participants_update';
+  participants: ParticipantInfo[];
+  session_manager?: string;
+  current_presenter?: string;
+}
+
 export interface JoinEvent {
   event: 'join';
   user_id: string;
@@ -153,6 +168,7 @@ export type TMIWebSocketMessage =
   | UndoRequestMessage
   | RedoRequestMessage
   | HistoryOperationMessage
+  | ParticipantsUpdateMessage
   | JoinEvent
   | LeaveEvent
   | UpdateEvent;
@@ -175,7 +191,9 @@ export type TMIMessageType =
   | 'history_operation'
   | 'join'
   | 'leave'
-  | 'update';
+  | 'update'
+  | 'session_ended'
+  | 'participants_update';
 
 /**
  * Options for applying remote operations to local graph
