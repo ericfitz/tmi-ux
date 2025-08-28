@@ -40,6 +40,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
       error: vi.fn(),
       warn: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
     };
 
     mockAuthService = {

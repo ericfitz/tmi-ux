@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, Subscription, timer, of } from 'rxjs';
-import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, Subscription } from 'rxjs';
+import { map, catchError, tap, skip } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -80,11 +80,7 @@ export class DfdCollaborationService implements OnDestroy {
   private _webSocketListenersSetup = false;
   private _intentionalDisconnection = false;
 
-  // Periodic refresh state
-  private _refreshTimer: any = null;
-  private _refreshBackoffMs = 1000; // Start at 1 second
-  private readonly _minRefreshMs = 1000; // Minimum 1 second
-  private readonly _maxRefreshMs = 30000; // Maximum 30 seconds
+  // Periodic refresh removed - participants now managed through WebSocket messages only
 
   constructor(
     private _logger: LoggerService,
@@ -250,14 +246,12 @@ export class DfdCollaborationService implements OnDestroy {
 
           this._collaborationUsers$.next(collaborationUsers);
         }),
-        // Ensure current user appears in participant list before considering join successful
-        switchMap(() => this._ensureUserInParticipantList()),
+        // Participants will be updated through WebSocket messages only
         tap(() => {
           // Show session joined notification only after user is verified in list
           this._notificationService.showSessionEvent('userJoined').subscribe();
-
-          // Start periodic refresh of participant list
-          this._startPeriodicRefresh();
+          
+          // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
         catchError(error => {
@@ -342,12 +336,8 @@ export class DfdCollaborationService implements OnDestroy {
           // Store whether this was a new session for later
           return { isNewSession: result.isNewSession };
         }),
-        // Ensure current user appears in participant list before considering operation successful
-        switchMap((result) => 
-          this._ensureUserInParticipantList().pipe(
-            map(() => result) // Pass through the isNewSession flag
-          )
-        ),
+        // No longer ensuring user in participant list via REST API
+        // Participants will be managed through WebSocket messages only
         tap((result) => {
           // Show appropriate notification based on whether session was created or joined
           if (result.isNewSession) {
@@ -356,8 +346,7 @@ export class DfdCollaborationService implements OnDestroy {
             this._notificationService.showSessionEvent('userJoined').subscribe();
           }
 
-          // Start periodic refresh of participant list
-          this._startPeriodicRefresh();
+          // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
         catchError(error => {
@@ -438,14 +427,13 @@ export class DfdCollaborationService implements OnDestroy {
 
           this._collaborationUsers$.next(collaborationUsers);
         }),
-        // Ensure current user appears in participant list before considering creation successful
-        switchMap(() => this._ensureUserInParticipantList()),
+        // No longer ensuring user in participant list via REST API
+        // Participants will be managed through WebSocket messages only
         tap(() => {
           // Show session started notification only after user is verified in list
           this._notificationService.showSessionEvent('started').subscribe();
 
-          // Start periodic refresh of participant list
-          this._startPeriodicRefresh();
+          // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
         catchError(error => {
@@ -512,6 +500,29 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('No active collaboration session'));
     }
 
+    // Send leave message before ending the session
+    const currentUserId = this.getCurrentUserId();
+    if (currentUserId && this._webSocketAdapter.isConnected) {
+      this._logger.info('Sending leave message before ending session', { userId: currentUserId });
+      this._webSocketAdapter
+        .sendTMIMessage({
+          event: 'leave',
+          user_id: currentUserId,
+          timestamp: new Date().toISOString(),
+        } as any)
+        .subscribe({
+          next: () => {
+            this._logger.debugComponent('wsmsg', 'Leave message sent successfully', {
+              userId: currentUserId,
+            });
+          },
+          error: (error) => {
+            this._logger.error('Failed to send leave message', error);
+            // Continue with session end even if leave message fails
+          },
+        });
+    }
+
     // Make API call to end collaboration session
     return this._threatModelService
       .endDiagramCollaborationSession(
@@ -529,8 +540,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Mark as intentional disconnection to suppress notification
           this._intentionalDisconnection = true;
 
-          // Stop periodic refresh
-          this._stopPeriodicRefresh();
+          // No periodic refresh to stop - using WebSocket messages only
 
           // Disconnect WebSocket
           this._disconnectFromWebSocket();
@@ -554,8 +564,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Mark as intentional disconnection to suppress notification
           this._intentionalDisconnection = true;
 
-          // Stop periodic refresh
-          this._stopPeriodicRefresh();
+          // No periodic refresh to stop - using WebSocket messages only
 
           this._disconnectFromWebSocket();
           this._currentSession = null;
@@ -1096,8 +1105,28 @@ export class DfdCollaborationService implements OnDestroy {
     this._webSocketAdapter.connect(fullWebSocketUrl).subscribe({
       next: () => {
         this._logger.info('WebSocket connection established successfully');
-        // Don't refresh immediately after connection - the join/start operations already loaded participants
-        // Only refresh when we receive WebSocket events about participant changes
+        
+        // Send join message to notify server we've connected
+        const currentUserId = this.getCurrentUserId();
+        if (currentUserId) {
+          this._logger.info('Sending join message to TMI server', { userId: currentUserId });
+          this._webSocketAdapter
+            .sendTMIMessage({
+              event: 'join',
+              user_id: currentUserId,
+              timestamp: new Date().toISOString(),
+            } as any)
+            .subscribe({
+              next: () => {
+                this._logger.debugComponent('wsmsg', 'Join message sent successfully', {
+                  userId: currentUserId,
+                });
+              },
+              error: (error) => {
+                this._logger.error('Failed to send join message', error);
+              },
+            });
+        }
       },
       error: error => {
         this._logger.error('Failed to connect to WebSocket', error);
@@ -1276,9 +1305,32 @@ export class DfdCollaborationService implements OnDestroy {
       case WebSocketState.CONNECTING:
         this._notificationService.showWebSocketStatus(state).subscribe();
         break;
-      case WebSocketState.CONNECTED:
+      case WebSocketState.CONNECTED: {
         this._notificationService.showWebSocketStatus(state).subscribe();
+        
+        // Send join message when reconnected (in case this is after a reconnection)
+        const currentUserId = this.getCurrentUserId();
+        if (currentUserId) {
+          this._logger.info('Sending join message after WebSocket (re)connection', { userId: currentUserId });
+          this._webSocketAdapter
+            .sendTMIMessage({
+              event: 'join',
+              user_id: currentUserId,
+              timestamp: new Date().toISOString(),
+            } as any)
+            .subscribe({
+              next: () => {
+                this._logger.debugComponent('wsmsg', 'Join message sent after reconnection', {
+                  userId: currentUserId,
+                });
+              },
+              error: (error) => {
+                this._logger.error('Failed to send join message after reconnection', error);
+              },
+            });
+        }
         break;
+      }
       case WebSocketState.DISCONNECTED:
         // Don't show disconnection notification if it was intentional (user leaving/ending session)
         if (this._intentionalDisconnection) {
@@ -1418,62 +1470,8 @@ export class DfdCollaborationService implements OnDestroy {
     }
   }
 
-  /**
-   * Handle TMI user joined event (legacy format from CLIENT_INTEGRATION_GUIDE.md)
-   * Calls REST API to get updated session status and refresh participants list
-   */
-  private _handleTMIUserJoined(message: {
-    event: string;
-    user_id: string;
-    timestamp: string;
-  }): void {
-    this._logger.debug('TMI user joined event received', message);
+  // TMI join/leave handlers removed - now handled by TMIMessageHandlerService
 
-    if (!message || !message.user_id) {
-      this._logger.warn('Invalid TMI user joined message received', message);
-      return;
-    }
-
-    // Show immediate notification
-    const displayName = this._getUserDisplayName(message.user_id);
-    this._notificationService.showSessionEvent('userJoined', displayName).subscribe();
-
-    // Refresh participant list from REST API to get accurate session state
-    this._refreshSessionStatus('User joined session').subscribe({
-      error: error => this._logger.error('Failed to refresh after user joined', error),
-    });
-  }
-
-  /**
-   * Handle TMI user left event (legacy format from CLIENT_INTEGRATION_GUIDE.md)
-   * Calls REST API to get updated session status and refresh participants list
-   */
-  private _handleTMIUserLeft(message: { event: string; user_id: string; timestamp: string }): void {
-    this._logger.debug('TMI user left event received', message);
-
-    if (!message || !message.user_id) {
-      this._logger.warn('Invalid TMI user left message received', message);
-      return;
-    }
-
-    // Show immediate notification
-    const displayName = this._getUserDisplayName(message.user_id);
-    this._notificationService.showSessionEvent('userLeft', displayName).subscribe();
-
-    // Check if the current user left (shouldn't happen but handle gracefully)
-    const currentUserId = this.getCurrentUserId();
-    if (message.user_id === currentUserId && !this.isCurrentUserSessionManager()) {
-      this._logger.warn('Current user received leave event, cleaning up session');
-      this._cleanupSessionState();
-      this._redirectToDashboard();
-      return;
-    }
-
-    // Refresh participant list from REST API to get accurate session state
-    this._refreshSessionStatus('User left session').subscribe({
-      error: error => this._logger.error('Failed to refresh after user left', error),
-    });
-  }
 
   /**
    * Handle TMI presenter changed event
@@ -1504,97 +1502,10 @@ export class DfdCollaborationService implements OnDestroy {
       this._notificationService.showPresenterEvent('assigned', displayName).subscribe();
     }
 
-    // Refresh participant list from REST API to get accurate session state including presenter info
-    this._refreshSessionStatus('Presenter changed').subscribe({
-      error: error => this._logger.error('Failed to refresh after presenter changed', error),
-    });
+    // Presenter info will be updated through participants_update WebSocket message
   }
 
-  /**
-   * Refresh session status by calling REST API and updating participant list
-   * This follows the CLIENT_INTEGRATION_GUIDE.md recommendation to call REST API on participant changes
-   */
-  private _refreshSessionStatus(reason: string): Observable<void> {
-    if (!this._currentSession || !this._threatModelId || !this._diagramId) {
-      this._logger.warn('Cannot refresh session status - no active session', { reason });
-      return throwError(() => new Error('No active session'));
-    }
-
-    this._logger.info('Refreshing session status from REST API', { reason });
-
-    return this._threatModelService
-      .getDiagramCollaborationSession(this._threatModelId, this._diagramId)
-      .pipe(
-        tap((session: CollaborationSession | null) => {
-          if (session) {
-            this._logger.info('Session status refreshed successfully', {
-              reason,
-              participantCount: session.participants.length,
-            });
-
-            // Store the original session manager before updating session data
-            const originalSessionManager = this._currentSession?.session_manager;
-
-            // Update session data
-            this._currentSession = session;
-
-            // Convert API participants to CollaborationUser format
-            const collaborationUsers: CollaborationUser[] = session.participants.map(
-              participant => {
-                if (!participant.permissions) {
-                  this._logger.error('Server error: participant missing permissions field', {
-                    sessionId: session.session_id,
-                    participantId: participant.user_id,
-                    participant,
-                  });
-                  throw new Error(
-                    `Server error: participant ${participant.user_id} missing permissions field`,
-                  );
-                }
-
-                // Use session_manager from refresh response if available, otherwise fall back to stored session
-                const sessionManagerId = session.session_manager || originalSessionManager;
-                const isSessionManager = participant.user_id === sessionManagerId;
-
-                return {
-                  id: participant.user_id,
-                  name: participant.user_id, // Use email address as display name
-                  permission: participant.permissions, // Use permissions from API response
-                  status: 'active' as const,
-                  isSessionManager,
-                };
-              },
-            );
-
-            // Update the participants list
-            this._logger.info('Updating collaboration users from refresh', {
-              users: collaborationUsers.map(u => ({
-                id: u.id,
-                name: u.name,
-                isSessionManager: u.isSessionManager,
-              })),
-              count: collaborationUsers.length,
-              source: '_refreshSessionStatus',
-              reason,
-            });
-            this._collaborationUsers$.next(collaborationUsers);
-          } else {
-            this._logger.warn('No active session found during refresh - session may have ended', {
-              reason,
-            });
-            // Session no longer exists, clean up
-            this._cleanupSessionState();
-            this._redirectToDashboard();
-          }
-        }),
-        map(() => void 0), // Convert to void
-        catchError(error => {
-          this._logger.error('Failed to refresh session status', { reason, error });
-          // Don't clean up session on error, as this might be a temporary network issue
-          return throwError(() => error);
-        }),
-      );
-  }
+  // REST API refresh methods removed - participants now managed through WebSocket messages only
 
   /**
    * Get user display name from user ID (email)
@@ -1611,8 +1522,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Clean up session state without API calls
    */
   private _cleanupSessionState(): void {
-    // Stop periodic refresh
-    this._stopPeriodicRefresh();
+    // No periodic refresh to stop - using WebSocket messages only
 
     this._disconnectFromWebSocket();
     this._currentSession = null;
@@ -1637,169 +1547,12 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Start periodic refresh of session status with exponential backoff
-   */
-  private _startPeriodicRefresh(): void {
-    // Stop any existing refresh timer
-    this._stopPeriodicRefresh();
-
-    // Reset backoff to minimum
-    this._refreshBackoffMs = this._minRefreshMs;
-
-    // Schedule first refresh after 1 second
-    this._scheduleNextRefresh();
-
-    this._logger.info('Started periodic session refresh', {
-      initialDelay: this._refreshBackoffMs,
-    });
-  }
-
-  /**
-   * Ensure current user appears in participant list with retry logic
-   * Retries with exponential backoff until user appears or max attempts reached
-   */
-  private _ensureUserInParticipantList(): Observable<void> {
-    const currentUserId = this.getCurrentUserId();
-    if (!currentUserId) {
-      return throwError(() => new Error('Current user not authenticated'));
-    }
-
-    let retryCount = 0;
-    const maxRetries = 10; // Max 10 attempts
-    let backoffMs = 1000; // Start at 1 second
-
-    const checkUserPresence = (): Observable<void> => {
-      return this._refreshSessionStatus('Verifying user in participant list').pipe(
-        switchMap(() => {
-          // Check if current user is in the participant list
-          const users = this._collaborationUsers$.value;
-          const userInList = users.some(user => user.id === currentUserId);
-
-          if (userInList) {
-            this._logger.info('Current user found in participant list', {
-              userId: currentUserId,
-              retryCount,
-            });
-            return of(undefined);
-          }
-
-          // User not found, check if we should retry
-          if (retryCount >= maxRetries) {
-            this._logger.error('Max retries reached - user not in participant list', {
-              userId: currentUserId,
-              retryCount,
-              maxRetries,
-            });
-            return throwError(() => new Error('Failed to verify user in participant list after max retries'));
-          }
-
-          // Retry with exponential backoff
-          retryCount++;
-          const nextBackoff = Math.min(backoffMs * 2, 30000); // Cap at 30 seconds
-          
-          this._logger.warn('Current user not yet in participant list, retrying', {
-            userId: currentUserId,
-            retryCount,
-            nextBackoffMs: backoffMs,
-          });
-
-          return timer(backoffMs).pipe(
-            tap(() => {
-              backoffMs = nextBackoff; // Update backoff for next retry
-            }),
-            switchMap(() => checkUserPresence()),
-          );
-        }),
-        catchError(error => {
-          this._logger.error('Error verifying user in participant list', {
-            error,
-            userId: currentUserId,
-            retryCount,
-          });
-          
-          // On error, still retry if under max attempts
-          if (retryCount < maxRetries) {
-            retryCount++;
-            const nextBackoff = Math.min(backoffMs * 2, 30000);
-            
-            return timer(backoffMs).pipe(
-              tap(() => {
-                backoffMs = nextBackoff;
-              }),
-              switchMap(() => checkUserPresence()),
-            );
-          }
-          
-          return throwError(() => error);
-        }),
-      );
-    };
-
-    return checkUserPresence();
-  }
-
-  /**
-   * Stop periodic refresh of session status
-   */
-  private _stopPeriodicRefresh(): void {
-    if (this._refreshTimer) {
-      clearTimeout(this._refreshTimer);
-      this._refreshTimer = null;
-      this._logger.debug('Stopped periodic session refresh');
-    }
-  }
-
-  /**
-   * Schedule the next refresh with exponential backoff
-   */
-  private _scheduleNextRefresh(): void {
-    // Stop any existing timer
-    if (this._refreshTimer) {
-      clearTimeout(this._refreshTimer);
-    }
-
-    // Schedule the refresh
-    this._refreshTimer = setTimeout(() => {
-      this._refreshSessionStatus('Periodic refresh').subscribe({
-        next: () => {
-          this._logger.debug('Session refresh completed', {
-            backoffMs: this._refreshBackoffMs,
-          });
-
-          // Double the backoff for next time (exponential backoff)
-          this._refreshBackoffMs = Math.min(this._refreshBackoffMs * 2, this._maxRefreshMs);
-
-          // Schedule next refresh if still collaborating
-          if (this._isCollaborating$.value) {
-            this._scheduleNextRefresh();
-          }
-        },
-        error: (error: any) => {
-          this._logger.error('Session refresh failed', {
-            error,
-            backoffMs: this._refreshBackoffMs,
-          });
-
-          // On error, still continue with exponential backoff
-          this._refreshBackoffMs = Math.min(this._refreshBackoffMs * 2, this._maxRefreshMs);
-
-          // Schedule next refresh if still collaborating
-          if (this._isCollaborating$.value) {
-            this._scheduleNextRefresh();
-          }
-        },
-      });
-    }, this._refreshBackoffMs);
-  }
-
-  /**
    * Clean up resources and subscriptions
    */
   ngOnDestroy(): void {
     this._logger.info('DfdCollaborationService destroying');
 
-    // Stop periodic refresh
-    this._stopPeriodicRefresh();
+    // No periodic refresh to stop - using WebSocket messages only
 
     this._subscriptions.unsubscribe();
 

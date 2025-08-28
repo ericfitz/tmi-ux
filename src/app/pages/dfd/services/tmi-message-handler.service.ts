@@ -35,8 +35,12 @@ export class TMIMessageHandlerService implements OnDestroy {
     }
 
     this._logger.info('Initializing TMI message handlers');
+    this._logger.debugComponent('wsmsg', 'Starting TMI handler initialization', {
+      timestamp: new Date().toISOString(),
+    });
 
     // Session management messages
+    this._logger.debugComponent('wsmsg', 'Setting up join event handler', {});
     this._subscriptions.add(
       this._webSocketAdapter.getTMIMessagesOfType('join').subscribe(message => {
         this._handleJoinEvent(message);
@@ -159,6 +163,10 @@ export class TMIMessageHandlerService implements OnDestroy {
 
     this._isInitialized = true;
     this._logger.info('TMI message handlers initialized successfully');
+    this._logger.debugComponent('wsmsg', 'TMI handler initialization complete', {
+      timestamp: new Date().toISOString(),
+      handlersCount: 17,
+    });
   }
 
   /**
