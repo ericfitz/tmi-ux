@@ -977,7 +977,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Confirm deletion
     const confirmMessage = this.transloco.translate('common.confirmDelete', {
-      item: this.transloco.translate('threatModels.documents').toLowerCase(),
+      item: this.transloco.translate('common.objectTypes.documents').toLowerCase(),
       name: document.name,
     });
     const confirmDelete = window.confirm(confirmMessage);
@@ -1128,7 +1128,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Confirm deletion
     const confirmMessage = this.transloco.translate('common.confirmDelete', {
-      item: this.transloco.translate('threatModels.sourceCode').toLowerCase(),
+      item: this.transloco.translate('common.objectTypes.sourceCode').toLowerCase(),
       name: sourceCode.name,
     });
     const confirmDelete = window.confirm(confirmMessage);

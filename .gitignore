@@ -56,3 +56,5 @@ src/environments/environment.dev.ts
 unused/*
 unused
 
+# temporary files
+localization_dedup_plan.*

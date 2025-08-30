@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to AI coding assistants like Claude Code, Cline, Roo Code, and others, when working with code in this repository.
+This file provides guidance to AI Agents when working with code in this repository.
 
 ## API and Backend
 
@@ -30,6 +30,7 @@ This file provides guidance to AI coding assistants like Claude Code, Cline, Roo
 - Format code: `pnpm run format`
 - Check formatting: `pnpm run format:check`
 - Check all (lint+format): `pnpm run check`
+- Check i18n localization: `pnpm run check-i18n` to examine the en-US localization file and report any keys missing from other language files
 
 ## Architecture Overview
 
@@ -56,6 +57,7 @@ This file provides guidance to AI coding assistants like Claude Code, Cline, Roo
 The DFD module uses a sophisticated layered architecture based on Domain-Driven Design principles:
 
 #### Domain Layer
+
 - **Value Objects**: Core domain entities and business logic
   - `NodeInfo`, `EdgeInfo`: Domain value objects for diagram entities
   - `DiagramInfo`: Aggregate root for diagram state
@@ -65,6 +67,7 @@ The DFD module uses a sophisticated layered architecture based on Domain-Driven 
   - Immutable value objects with rich behavior
 
 #### Infrastructure Layer
+
 - **X6 Core Operations**: Low-level X6 graph abstraction
   - `X6CoreOperationsService`: Centralized X6 API wrapper for atomic operations
   - Direct X6 calls isolated to this service only
@@ -79,6 +82,7 @@ The DFD module uses a sophisticated layered architecture based on Domain-Driven 
   - Query services for X6 graph introspection
 
 #### Application Layer
+
 - **Domain Services**: Business operation coordination
   - `EdgeService`: Edge business logic, validation, and port visibility management
   - `DfdNodeService`: Node business logic and lifecycle management
@@ -86,18 +90,20 @@ The DFD module uses a sophisticated layered architecture based on Domain-Driven 
 - **Facade Services**: Application coordination and workflow orchestration
   - `DfdFacadeService`: Main application service
   - `DfdDiagramService`: Diagram-level operations and persistence
-- **Service Delegation Pattern**: 
+- **Service Delegation Pattern**:
   - Infrastructure adapters delegate business operations to domain services
   - Domain services delegate low-level operations to X6CoreOperationsService
   - Clear separation between UI operations (adapters) and business operations (services)
 
 #### Components Layer
+
 - **UI Components**: User interface and interaction handling
   - Real-time collaboration with WebSocket integration
   - Cell property dialogs and user presence indicators
   - Component-level state management and user event handling
 
 #### Architectural Principles
+
 - **Dependency Direction**: Infrastructure → Application → Domain (no reverse dependencies)
 - **Service Delegation**: Adapters use domain services for business logic, X6CoreOperationsService for infrastructure
 - **Separation of Concerns**: UI operations vs business operations clearly distinguished
@@ -183,3 +189,4 @@ The DFD module uses a sophisticated layered architecture based on Domain-Driven 
 - If the file was a test file, run the test using the proper vitest CLI syntax and fix any test errors.
 - Never disable or skip tests or suppress test errors. If you encounter a test error, fix the test or the code that is causing the error, or ask the user for guidance
 - Always stop and prompt the user before running the application. The user usually already has an instance of the application running on http://localhost:4200
+- In TypeScript files where you don't know the type, prefer using "unknown" instead of "any"

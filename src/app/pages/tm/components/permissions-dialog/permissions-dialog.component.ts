@@ -30,7 +30,7 @@ export interface PermissionsDialogData {
           <!-- Owner Display -->
           <div class="info-section">
             <div class="info-field">
-              <span class="info-label">{{ 'threatModels.owner' | transloco }}:</span>
+              <span class="info-label">{{ 'common.roles.owner' | transloco }}:</span>
               <span class="info-value">{{ data.owner }}</span>
             </div>
           </div>
@@ -74,18 +74,18 @@ export interface PermissionsDialogData {
                       (selectionChange)="updatePermissionRole(i, $event)"
                     >
                       <mat-option value="owner">{{
-                        'collaboration.roles.owner' | transloco
+                        'common.roles.owner' | transloco
                       }}</mat-option>
                       <mat-option value="writer">{{
-                        'collaboration.roles.writer' | transloco
+                        'common.roles.writer' | transloco
                       }}</mat-option>
                       <mat-option value="reader">{{
-                        'collaboration.roles.reader' | transloco
+                        'common.roles.reader' | transloco
                       }}</mat-option>
                     </mat-select>
                   </mat-form-field>
                   <span *ngIf="data.isReadOnly">{{
-                    'collaboration.roles.' + auth.role | transloco
+                    'common.roles.' + auth.role | transloco
                   }}</span>
                 </td>
               </ng-container>

@@ -3,11 +3,11 @@
 </h2>
 <mat-dialog-content [dir]="currentDirection">
   <!-- Force translation update -->
-  <div style="display: none">{{ 'threatEditor.threatName' | transloco }}</div>
+  <div style="display: none">{{ 'common.threatName' | transloco }}</div>
   <!-- Threat ID and timestamps section -->
   <div class="info-section-vertical" *ngIf="data.threat" [dir]="currentDirection">
     <div class="info-field">
-      <span class="info-label">{{ 'threatEditor.threatId' | transloco }}:</span>
+      <span class="info-label">{{ 'common.threatId' | transloco }}:</span>
       <span class="info-value">{{ data.threat.id }}</span>
       <button
         mat-icon-button
@@ -38,7 +38,7 @@
   <form [formGroup]="threatForm" class="dialog-form" [dir]="currentDirection">
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'threatEditor.threatName' | transloco }}</mat-label>
+        <mat-label>{{ 'common.threatName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
         <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
@@ -51,13 +51,13 @@
 
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'threatEditor.threatDescription' | transloco }}</mat-label>
+        <mat-label>{{ 'common.threatDescription' | transloco }}</mat-label>
         <textarea
           matInput
           formControlName="description"
           rows="3"
           tabindex="2"
-          placeholder="{{ 'threatEditor.threatDescriptionPlaceholder' | transloco }}"
+          placeholder="{{ 'common.threatDescriptionPlaceholder' | transloco }}"
         ></textarea>
         <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
           {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
@@ -68,7 +68,7 @@
     <!-- Threat Type field - on its own row -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'threatEditor.threatType' | transloco }}</mat-label>
+        <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
         <mat-select formControlName="threat_type" tabindex="6">
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}

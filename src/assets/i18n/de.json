@@ -38,12 +38,6 @@
     "presenterRequests": "Präsentator-Anfragen",
     "removeFromSession": "Aus Sitzung entfernen",
     "requestPresenter": "Präsentator anfordern",
-    "roles": {
-      "owner": "Eigentümer",
-      "presenter": "Präsentator",
-      "reader": "Leser",
-      "writer": "Bearbeiter"
-    },
     "shareLinkHeader": "Kollaborationslink teilen",
     "startCollaboration": "Zusammenarbeit starten",
     "takeBackPresenter": "Präsentator zurückholen",
@@ -55,8 +49,10 @@
     }
   },
   "common": {
+    "about": "Über",
     "actions": "Aktionen",
     "addMetadata": "Metadaten hinzufügen",
+    "addThreat": "Bedrohung hinzufügen",
     "cancel": "Abbrechen",
     "cellId": "Zellen-ID",
     "close": "Schließen",
@@ -65,11 +61,13 @@
     "create": "Erstellen",
     "created": "Erstellt",
     "delete": "Löschen",
+    "deleteConfirm": "Bedrohungsmodell löschen",
     "description": "Beschreibung",
     "diagramId": "Diagramm-ID",
     "edit": "Bearbeiten",
     "editThreat": "Bedrohung bearbeiten",
     "issueUrl": "Problem-URL",
+    "language": "{{language}}",
     "lastModified": "Zuletzt geändert",
     "lastModifiedDate": "Zuletzt geändert: {{date}}",
     "manageMetadata": "Metadaten verwalten",
@@ -81,23 +79,28 @@
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
     "objectTypes": {
-      "Cell": "Zelle",
-      "Diagram": "Diagramm",
-      "Document": "Dokument",
-      "SourceCode": "Quellcode",
-      "Threat": "Bedrohung",
-      "ThreatModel": "Bedrohungsmodell",
       "cell": "Zelle",
       "diagram": "Diagramm",
       "document": "Dokument",
+      "documents": "Dokumente",
+      "report": "Bericht",
       "sourceCode": "Quellcode",
       "threat": "Bedrohung",
-      "threatModel": "Bedrohungsmodell"
+      "threatModel": "Bedrohungsmodell",
+      "threats": "Bedrohungen"
     },
     "ok": "OK",
     "other": "Andere",
+    "permissions": "Berechtigungen",
     "priority": "Priorität",
     "refresh": "Aktualisieren",
+    "roles": {
+      "owner": "Eigentümer",
+      "presenter": "Präsentator",
+      "reader": "Leser",
+      "sessionManager": "Sitzungsverwalter",
+      "writer": "Bearbeiter"
+    },
     "save": "Speichern",
     "score": "Bewertung",
     "severity": "Schweregrad",
@@ -108,7 +111,11 @@
     "severityNone": "Keine",
     "severityUnknown": "Unbekannt",
     "status": "Status",
-    "threats": "Bedrohungen",
+    "threatDescription": "Bedrohungsbeschreibung",
+    "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
+    "threatId": "Bedrohungs-ID",
+    "threatName": "Bedrohungsname",
+    "threatType": "Bedrohungstyp",
     "validation": {
       "invalidUrl": "Bitte geben Sie eine gültige URL ein",
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
@@ -147,10 +154,8 @@
         "addSecurityBoundary": "Sicherheitsgrenze hinzufügen",
         "addStore": "Speicher hinzufügen",
         "addTextbox": "Textfeld hinzufügen",
-        "addThreat": "Bedrohung hinzufügen",
         "deleteSelected": "Ausgewählte löschen",
         "export": "Exportieren...",
-        "manageThreats": "Bedrohungen verwalten",
         "redo": "Wiederholen",
         "share": "Teilen",
         "undo": "Rückgängig"
@@ -161,7 +166,6 @@
     "validationError": "Validierungsfehler"
   },
   "footer": {
-    "about": "Über",
     "privacy": "Datenschutzrichtlinie",
     "tos": "Nutzungsbedingungen"
   },
@@ -189,8 +193,6 @@
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "copyUserEmail": "Benutzer-E-Mail in Zwischenablage kopieren",
-    "currentLanguage": "{{language}}",
-    "languageName": "{{language}}",
     "logoutButton": "Abmelden",
     "serverStatus": {
       "noServerConfigured": "Kein Server konfiguriert",
@@ -204,7 +206,6 @@
     "complianceContent": "Der Betreiber wird Informationen nur dann offenlegen, wenn er gesetzlich dazu verpflichtet ist, z.B. als Reaktion auf eine gültige behördliche Anordnung oder Vorladung. In solchen Fällen wird der Betreiber die geltenden gesetzlichen Verpflichtungen einhalten.",
     "complianceTitle": "Gesetzliche Konformität",
     "contactContent": {
-      "aboutLink": "Über",
       "part1": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der ",
       "part2": "-Seite an den Betreiber dieser Website."
     },
@@ -212,7 +213,6 @@
     "dataContent": "Der Betreiber sammelt, speichert oder verarbeitet keine personenbezogenen Daten von Benutzern. Der Betreiber verfolgt nicht Ihre Aktivitäten, speichert Ihre Informationen nicht und teilt keine Daten über Sie mit Dritten für irgendeinen Zweck.",
     "dataTitle": "Keine Datenerfassung oder -speicherung",
     "intro1": {
-      "aboutLink": "Über",
       "part1": "Diese Website ist eine Instanz einer Open-Source-Webanwendung (\"TMI\"), die vom auf der ",
       "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
     },
@@ -224,12 +224,7 @@
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
-    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
-    "threatDescription": "Bedrohungsbeschreibung",
-    "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
-    "threatId": "Bedrohungs-ID",
-    "threatName": "Bedrohungsname",
-    "threatType": "Bedrohungstyp"
+    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft"
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",
@@ -241,9 +236,7 @@
     "createNewSourceCode": "Neuen Quellcode erstellen",
     "createdBy": "Erstellt von:",
     "dashboard": "Dashboard",
-    "deleteConfirm": "Bedrohungsmodell löschen",
     "deleteConfirmationMessage": "Sind Sie sicher, dass Sie das Bedrohungsmodell \"{{name}}\" löschen möchten?",
-    "deleteConfirmationTitle": "Bedrohungsmodell löschen",
     "deleteWarningDownload": "Erwägen Sie, zuerst eine lokale Kopie herunterzuladen, um Ihre Arbeit zu bewahren.",
     "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",
     "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
@@ -252,23 +245,15 @@
     "diagramType": "Diagrammtyp",
     "diagrams": "Diagramme",
     "diagramsCount": "Diagramme",
-    "documentDescription": "Beschreibung",
     "documentDescriptionPlaceholder": "Beschreiben Sie den Zweck oder Inhalt des Dokuments",
     "documentName": "Dokumentname",
     "documentUrl": "Dokument-URL",
-    "documents": "Dokumente",
-    "documentsCount": "Dokumente",
     "downloadButton": "Auf Desktop herunterladen",
-    "downloadTooltip": "Auf Desktop herunterladen",
     "editDocument": "Dokument bearbeiten",
     "editSourceCode": "Quellcode bearbeiten",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "ID:",
     "issueUrlHint": "Geben Sie eine URL ein, um dieses Bedrohungsmodell in einem externen System zu verfolgen",
-    "metadataDialog": {
-      "title": "Metadaten verwalten"
-    },
-    "metadataTooltip": "Metadaten verwalten",
     "name": "Name",
     "newThreatModel": "Neues Bedrohungsmodell",
     "noDiagrams": "Noch keine Diagramme hinzugefügt",
@@ -277,20 +262,13 @@
     "noPermissions": "Keine Berechtigungen definiert",
     "noSourceCode": "Noch keine Quellcode-Repositories hinzugefügt",
     "noThreats": "Noch keine Bedrohungen definiert",
-    "owner": "Besitzer",
     "pageTitle": "Bedrohungsmodelle",
-    "permissions": "Berechtigungen",
-    "permissionsButton": "Berechtigungen",
     "permissionsRole": "Rolle",
     "permissionsTooltip": "Berechtigungen verwalten",
     "permissionsUser": "Benutzer",
     "rename": "Umbenennen",
     "renameDiagram": "Diagramm umbenennen",
-    "reportButton": "Bericht",
-    "reportTooltip": "Bericht",
     "setAsOwner": "Als Besitzer festlegen",
-    "sourceCode": "Quellcode",
-    "sourceCodeDescription": "Beschreibung",
     "sourceCodeDescriptionPlaceholder": "Beschreiben Sie das Quellcode-Repository oder seinen Zweck",
     "sourceCodeName": "Quellcode-Name",
     "sourceCodeParameters": "Repository-Parameter",
@@ -303,28 +281,18 @@
     "sourceCodeUrl": "Repository-URL",
     "sourcesCount": "Quellen",
     "tag": "Tag",
-    "threatDescription": "Bedrohungsbeschreibung",
-    "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
-    "threatId": "Bedrohungs-ID",
     "threatModelFramework": "Bedrohungsmodell-Framework",
     "threatModelPrefix": "Bedrohungsmodell:",
-    "threatName": "Bedrohungsname",
-    "threatType": "Bedrohungstyp",
-    "threats": "Bedrohungen",
-    "threatsCount": "Bedrohungen",
     "tooltips": {
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",
       "addSourceCode": "Quellcode-Repository hinzufügen",
-      "addThreat": "Bedrohung hinzufügen",
       "deleteDiagram": "Diagramm löschen",
       "deleteDocument": "Dokument löschen",
       "deleteSourceCode": "Quellcode-Repository löschen",
       "deleteThreat": "Bedrohung löschen",
-      "editDocument": "Dokument bearbeiten",
       "editSourceCode": "Quellcode-Repository bearbeiten",
-      "loadFromDesktop": "Vom Desktop laden",
-      "renameDiagram": "Diagramm umbenennen"
+      "loadFromDesktop": "Vom Desktop laden"
     },
     "validation": {
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
@@ -334,12 +302,10 @@
   },
   "tos": {
     "contactInfo": {
-      "aboutLink": "Über",
       "part1": "Wenn Sie Fragen zu diesen Bedingungen haben, können Sie sich gerne über die Kontaktinformationen auf der ",
       "part2": "-Seite an den Betreiber dieser Website wenden."
     },
     "intro": {
-      "aboutLink": "Über",
       "part1": "Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der ",
       "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
     },
@@ -363,7 +329,6 @@
     },
     "section5": {
       "content": {
-        "aboutLink": "Über",
         "part1": "Diese Website verwendet die TMI-Software, und ihr Quellcode ist über den auf der ",
         "part2": "-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Der Betreiber dieser Website ist möglicherweise nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden."
       },

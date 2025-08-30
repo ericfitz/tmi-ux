@@ -11,7 +11,7 @@
       <button mat-button [matMenuTriggerFor]="languageMenu" class="language-selector">
         <mat-icon>language</mat-icon>
         <span
-          [transloco]="'navbar.currentLanguage'"
+          [transloco]="'common.language'"
           [translocoParams]="{ language: currentLanguage.localName }"
           >{{ currentLanguage.localName }}</span
         >
@@ -20,7 +20,7 @@
       <mat-menu #languageMenu="matMenu">
         <button mat-menu-item *ngFor="let lang of languages" (click)="switchLanguage(lang)">
           <span
-            [transloco]="'navbar.languageName'"
+            [transloco]="'common.language'"
             [translocoParams]="{ language: lang.localName }"
             >{{ lang.localName }}</span
           >

@@ -38,12 +38,6 @@
     "presenterRequests": "Presenter Requests",
     "removeFromSession": "Remove from Session",
     "requestPresenter": "Request Presenter",
-    "roles": {
-      "owner": "Owner",
-      "presenter": "Presenter",
-      "reader": "Reader",
-      "writer": "Writer"
-    },
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
@@ -55,8 +49,10 @@
     }
   },
   "common": {
+    "about": "About",
     "actions": "Actions",
     "addMetadata": "Add Metadata",
+    "addThreat": "Add Threat",
     "cancel": "Cancel",
     "cellId": "Cell ID",
     "close": "Close",
@@ -65,11 +61,13 @@
     "create": "Create",
     "created": "Created",
     "delete": "Delete",
+    "deleteConfirm": "Delete Threat Model",
     "description": "Description",
     "diagramId": "Diagram ID",
     "edit": "Edit",
     "editThreat": "Edit Threat",
     "issueUrl": "Issue URL",
+    "language": "{{language}}",
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
     "manageMetadata": "Manage Metadata",
@@ -81,23 +79,28 @@
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "objectTypes": {
-      "Cell": "Cell",
-      "Diagram": "Diagram",
-      "Document": "Document",
-      "SourceCode": "Source Code",
-      "Threat": "Threat",
-      "ThreatModel": "Threat Model",
       "cell": "Cell",
       "diagram": "Diagram",
       "document": "Document",
+      "documents": "Documents",
+      "report": "Report",
       "sourceCode": "Source Code",
       "threat": "Threat",
-      "threatModel": "Threat Model"
+      "threatModel": "Threat Model",
+      "threats": "Threats"
     },
     "ok": "OK",
     "other": "Other",
+    "permissions": "Permissions",
     "priority": "Priority",
     "refresh": "Refresh",
+    "roles": {
+      "owner": "Owner",
+      "presenter": "Presenter",
+      "reader": "Reader",
+      "sessionManager": "Session Manager",
+      "writer": "Writer"
+    },
     "save": "Save",
     "score": "Score",
     "severity": "Severity",
@@ -108,7 +111,11 @@
     "severityNone": "None",
     "severityUnknown": "Unknown",
     "status": "Status",
-    "threats": "Threats",
+    "threatDescription": "Threat Description",
+    "threatDescriptionPlaceholder": "Describe the Threat in Detail",
+    "threatId": "Threat ID",
+    "threatName": "Threat Name",
+    "threatType": "Threat Type",
     "validation": {
       "invalidUrl": "Please enter a valid URL",
       "maxLength": "Maximum length is {{max}} characters",
@@ -147,10 +154,8 @@
         "addSecurityBoundary": "Add Security Boundary",
         "addStore": "Add Store",
         "addTextbox": "Add Text Box",
-        "addThreat": "Add Threat",
         "deleteSelected": "Delete Selected",
         "export": "Export...",
-        "manageThreats": "Manage Threats",
         "redo": "Redo",
         "share": "Share",
         "undo": "Undo"
@@ -161,7 +166,6 @@
     "validationError": "Validation Error"
   },
   "footer": {
-    "about": "About",
     "privacy": "Privacy Policy",
     "tos": "Terms of Service"
   },
@@ -189,8 +193,6 @@
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy User Email to Clipboard",
-    "currentLanguage": "{{language}}",
-    "languageName": "{{language}}",
     "logoutButton": "Logout",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
@@ -204,7 +206,6 @@
     "complianceContent": "The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
     "complianceTitle": "Legal Compliance",
     "contactContent": {
-      "aboutLink": "About",
       "part1": "If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the ",
       "part2": " page."
     },
@@ -212,7 +213,6 @@
     "dataContent": "The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.",
     "dataTitle": "No Data Collection or Storage",
     "intro1": {
-      "aboutLink": "About",
       "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
@@ -224,12 +224,7 @@
   "threatEditor": {
     "createNewThreat": "Create New Threat",
     "notAssociatedWithCell": "Not Associated With a Cell",
-    "notAssociatedWithDiagram": "Not Associated With a Diagram",
-    "threatDescription": "Threat Description",
-    "threatDescriptionPlaceholder": "Describe the Threat in Detail",
-    "threatId": "Threat ID",
-    "threatName": "Threat Name",
-    "threatType": "Threat Type"
+    "notAssociatedWithDiagram": "Not Associated With a Diagram"
   },
   "threatModels": {
     "addPermission": "Add Permission",
@@ -241,9 +236,7 @@
     "createNewSourceCode": "Create New Source Code",
     "createdBy": "Created By:",
     "dashboard": "Dashboard",
-    "deleteConfirm": "Delete Threat Model",
     "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
-    "deleteConfirmationTitle": "Delete Threat Model",
     "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
     "descriptionPlaceholder": "Describe the Purpose and Scope of This Threat Model",
@@ -252,23 +245,15 @@
     "diagramType": "Diagram Type",
     "diagrams": "Diagrams",
     "diagramsCount": "diagrams",
-    "documentDescription": "Description",
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
     "documentName": "Document Name",
     "documentUrl": "Document URL",
-    "documents": "Documents",
-    "documentsCount": "Documents",
     "downloadButton": "Download to Desktop",
-    "downloadTooltip": "Download to Desktop",
     "editDocument": "Edit Document",
     "editSourceCode": "Edit Source Code",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "issueUrlHint": "Enter a URL to track this threat model in an external system",
-    "metadataDialog": {
-      "title": "Manage Metadata"
-    },
-    "metadataTooltip": "Manage Metadata",
     "name": "Name",
     "newThreatModel": "New Threat Model",
     "noDiagrams": "No Diagrams Added Yet",
@@ -277,20 +262,13 @@
     "noPermissions": "No Permissions Defined",
     "noSourceCode": "No Source Code Repositories Added Yet",
     "noThreats": "No Threats Defined Yet",
-    "owner": "Owner",
     "pageTitle": "Threat Models",
-    "permissions": "Permissions",
-    "permissionsButton": "Permissions",
     "permissionsRole": "Role",
     "permissionsTooltip": "Manage Permissions",
     "permissionsUser": "User",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
-    "reportButton": "Report",
-    "reportTooltip": "Report",
     "setAsOwner": "Set as Owner",
-    "sourceCode": "Source Code",
-    "sourceCodeDescription": "Description",
     "sourceCodeDescriptionPlaceholder": "Describe the source code repository or its purpose",
     "sourceCodeName": "Source Code Name",
     "sourceCodeParameters": "Repository Parameters",
@@ -303,28 +281,18 @@
     "sourceCodeUrl": "Repository URL",
     "sourcesCount": "Sources",
     "tag": "Tag",
-    "threatDescription": "Threat Description",
-    "threatDescriptionPlaceholder": "Describe the Threat in Detail",
-    "threatId": "Threat ID",
     "threatModelFramework": "Threat Model Framework",
     "threatModelPrefix": "Threat Model:",
-    "threatName": "Threat Name",
-    "threatType": "Threat Type",
-    "threats": "Threats",
-    "threatsCount": "Threats",
     "tooltips": {
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",
       "addSourceCode": "Add Source Code Repository",
-      "addThreat": "Add Threat",
       "deleteDiagram": "Delete Diagram",
       "deleteDocument": "Delete Document",
       "deleteSourceCode": "Delete Source Code Repository",
       "deleteThreat": "Delete Threat",
-      "editDocument": "Edit Document",
       "editSourceCode": "Edit Source Code Repository",
-      "loadFromDesktop": "Load From Desktop",
-      "renameDiagram": "Rename Diagram"
+      "loadFromDesktop": "Load From Desktop"
     },
     "validation": {
       "maxLength": "Maximum length is {{max}} characters",
@@ -334,12 +302,10 @@
   },
   "tos": {
     "contactInfo": {
-      "aboutLink": "About",
       "part1": "If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the ",
       "part2": " page."
     },
     "intro": {
-      "aboutLink": "About",
       "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
@@ -363,7 +329,6 @@
     },
     "section5": {
       "content": {
-        "aboutLink": "About",
         "part1": "This website runs the TMI open source software. Its source code is available at the link provided on the ",
         "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
       },

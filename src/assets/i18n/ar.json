@@ -38,12 +38,6 @@
     "presenterRequests": "طلبات التقديم",
     "removeFromSession": "إزالة من الجلسة",
     "requestPresenter": "طلب المقدم",
-    "roles": {
-      "owner": "مالك",
-      "presenter": "مقدم",
-      "reader": "قارئ",
-      "writer": "كاتب"
-    },
     "shareLinkHeader": "مشاركة رابط التعاون",
     "startCollaboration": "بدء التعاون",
     "takeBackPresenter": "استرداد المقدم",
@@ -55,8 +49,10 @@
     }
   },
   "common": {
+    "about": "حول",
     "actions": "الإجراءات",
     "addMetadata": "إضافة بيانات وصفية",
+    "addThreat": "إضافة تهديد",
     "cancel": "إلغاء",
     "cellId": "معرف الخلية",
     "close": "إغلاق",
@@ -65,11 +61,13 @@
     "create": "إنشاء",
     "created": "تم الإنشاء",
     "delete": "حذف",
+    "deleteConfirm": "حذف نموذج التهديد",
     "description": "الوصف",
     "diagramId": "معرف المخطط",
     "edit": "تحرير",
     "editThreat": "تحرير التهديد",
     "issueUrl": "رابط المشكلة",
+    "language": "{{language}}",
     "lastModified": "آخر تعديل",
     "lastModifiedDate": "آخر تعديل: {{date}}",
     "manageMetadata": "إدارة البيانات الوصفية",
@@ -81,23 +79,28 @@
     "noMetadata": "لا توجد بيانات وصفية متاحة",
     "noThreats": "لا توجد تهديدات متاحة",
     "objectTypes": {
-      "Cell": "خلية",
-      "Diagram": "مخطط",
-      "Document": "وثيقة",
-      "SourceCode": "كود المصدر",
-      "Threat": "تهديد",
-      "ThreatModel": "نموذج التهديد",
       "cell": "خلية",
       "diagram": "مخطط",
       "document": "وثيقة",
+      "documents": "وثائق",
+      "report": "تقرير",
       "sourceCode": "كود المصدر",
       "threat": "تهديد",
-      "threatModel": "نموذج التهديد"
+      "threatModel": "نموذج التهديد",
+      "threats": "التهديدات"
     },
     "ok": "موافق",
     "other": "أخرى",
+    "permissions": "الأذونات",
     "priority": "الأولوية",
     "refresh": "تحديث",
+    "roles": {
+      "owner": "مالك",
+      "presenter": "مقدم",
+      "reader": "قارئ",
+      "sessionManager": "مدير الجلسة",
+      "writer": "كاتب"
+    },
     "save": "حفظ",
     "score": "النتيجة",
     "severity": "الخطورة",
@@ -108,7 +111,11 @@
     "severityNone": "لا شيء",
     "severityUnknown": "غير معروف",
     "status": "الحالة",
-    "threats": "التهديدات",
+    "threatDescription": "وصف التهديد",
+    "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
+    "threatId": "معرف التهديد",
+    "threatName": "اسم التهديد",
+    "threatType": "نوع التهديد",
     "validation": {
       "invalidUrl": "يرجى إدخال رابط صحيح",
       "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
@@ -147,10 +154,8 @@
         "addSecurityBoundary": "إضافة حدود أمنية",
         "addStore": "إضافة مخزن",
         "addTextbox": "إضافة مربع نص",
-        "addThreat": "إضافة تهديد",
         "deleteSelected": "حذف المحدد",
         "export": "تصدير...",
-        "manageThreats": "إدارة التهديدات",
         "redo": "إعادة",
         "share": "مشاركة",
         "undo": "تراجع"
@@ -161,7 +166,6 @@
     "validationError": "خطأ في التحقق"
   },
   "footer": {
-    "about": "حول",
     "privacy": "سياسة الخصوصية",
     "tos": "شروط الخدمة"
   },
@@ -189,8 +193,6 @@
   "navbar": {
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
-    "currentLanguage": "{{language}}",
-    "languageName": "{{language}}",
     "logoutButton": "تسجيل الخروج",
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",
@@ -204,7 +206,6 @@
     "complianceContent": "لن يكشف المشغل عن المعلومات إلا إذا كان مطلوبًا منه القيام بذلك بموجب القانون، مثل الاستجابة لأمر حكومي صالح أو استدعاء. في مثل هذه الحالات، سيمتثل المشغل للالتزامات القانونية المعمول بها.",
     "complianceTitle": "الامتثال القانوني",
     "contactContent": {
-      "aboutLink": "حول",
       "part1": "إذا كانت لديك أي أسئلة حول سياسة الخصوصية هذه، فلا تتردد في الاتصال بمشغل هذا الموقع عبر معلومات الاتصال الموجودة على صفحة ",
       "part2": "."
     },
@@ -212,7 +213,6 @@
     "dataContent": "لا يقوم المشغل بجمع أو تخزين أو معالجة أي بيانات شخصية من المستخدمين. لا يتتبع المشغل أنشطتك، ولا يخزن معلوماتك، ولا يشارك أي بيانات عنك مع أطراف ثالثة لأي غرض كان.",
     "dataTitle": "لا جمع للبيانات أو تخزينها",
     "intro1": {
-      "aboutLink": "حول",
       "part1": "هذا الموقع هو نسخة من تطبيق ويب مفتوح المصدر (\"تي إم آي\") الذي يتم توفيره بواسطة المشغل المدرج في صفحة ",
       "part2": " هذا الموقع (\"المشغل\")."
     },
@@ -224,12 +224,7 @@
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
     "notAssociatedWithCell": "غير مرتبط بخلية",
-    "notAssociatedWithDiagram": "غير مرتبط بمخطط",
-    "threatDescription": "وصف التهديد",
-    "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
-    "threatId": "معرف التهديد",
-    "threatName": "اسم التهديد",
-    "threatType": "نوع التهديد"
+    "notAssociatedWithDiagram": "غير مرتبط بمخطط"
   },
   "threatModels": {
     "addPermission": "إضافة إذن",
@@ -241,9 +236,7 @@
     "createNewSourceCode": "إنشاء كود مصدري جديد",
     "createdBy": "تم إنشاؤه بواسطة:",
     "dashboard": "لوحة المعلومات",
-    "deleteConfirm": "حذف نموذج التهديد",
     "deleteConfirmationMessage": "هل أنت متأكد من أنك تريد حذف نموذج التهديد \"{{name}}\"؟",
-    "deleteConfirmationTitle": "حذف نموذج التهديد",
     "deleteWarningDownload": "فكر في تحميل نسخة محلية أولاً للحفاظ على عملك.",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
     "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
@@ -252,23 +245,15 @@
     "diagramType": "نوع المخطط",
     "diagrams": "المخططات",
     "diagramsCount": "مخططات",
-    "documentDescription": "الوصف",
     "documentDescriptionPlaceholder": "اوصف الغرض أو محتوى الوثيقة",
     "documentName": "اسم الوثيقة",
     "documentUrl": "رابط الوثيقة",
-    "documents": "الوثائق",
-    "documentsCount": "وثائق",
     "downloadButton": "تنزيل إلى سطح المكتب",
-    "downloadTooltip": "تنزيل إلى سطح المكتب",
     "editDocument": "تحرير الوثيقة",
     "editSourceCode": "تحرير الكود المصدري",
     "frameworkDisabledHint": "لا يمكن تغيير الإطار عند وجود تهديدات",
     "idLabel": "المعرف:",
     "issueUrlHint": "أدخل رابطًا لتتبع نموذج التهديد هذا في نظام خارجي",
-    "metadataDialog": {
-      "title": "إدارة البيانات الوصفية"
-    },
-    "metadataTooltip": "إدارة البيانات الوصفية",
     "name": "الاسم",
     "newThreatModel": "نموذج تهديد جديد",
     "noDiagrams": "لم تتم إضافة أي مخططات بعد",
@@ -277,20 +262,13 @@
     "noPermissions": "لم يتم تحديد أي أذونات",
     "noSourceCode": "لم يتم إضافة أي مستودعات كود مصدري بعد",
     "noThreats": "لم يتم تحديد أي تهديدات بعد",
-    "owner": "مالك",
     "pageTitle": "نماذج التهديدات",
-    "permissions": "الأذونات",
-    "permissionsButton": "الأذونات",
     "permissionsRole": "الدور",
     "permissionsTooltip": "إدارة الأذونات",
     "permissionsUser": "المستخدم",
     "rename": "إعادة تسمية",
     "renameDiagram": "إعادة تسمية المخطط",
-    "reportButton": "تقرير",
-    "reportTooltip": "تقرير",
     "setAsOwner": "تعيين كمالك",
-    "sourceCode": "الكود المصدري",
-    "sourceCodeDescription": "الوصف",
     "sourceCodeDescriptionPlaceholder": "وصف مستودع الكود المصدري أو الغرض منه",
     "sourceCodeName": "اسم الكود المصدري",
     "sourceCodeParameters": "معاملات المستودع",
@@ -303,28 +281,18 @@
     "sourceCodeUrl": "رابط المستودع",
     "sourcesCount": "مصادر",
     "tag": "علامة",
-    "threatDescription": "وصف التهديد",
-    "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
-    "threatId": "معرف التهديد",
     "threatModelFramework": "إطار نموذج التهديد",
     "threatModelPrefix": "نموذج التهديد:",
-    "threatName": "اسم التهديد",
-    "threatType": "نوع التهديد",
-    "threats": "التهديدات",
-    "threatsCount": "تهديدات",
     "tooltips": {
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",
       "addSourceCode": "إضافة مستودع كود مصدري",
-      "addThreat": "إضافة تهديد",
       "deleteDiagram": "حذف المخطط",
       "deleteDocument": "حذف الوثيقة",
       "deleteSourceCode": "حذف مستودع الكود المصدري",
       "deleteThreat": "حذف التهديد",
-      "editDocument": "تحرير الوثيقة",
       "editSourceCode": "تحرير مستودع الكود المصدري",
-      "loadFromDesktop": "تحميل من سطح المكتب",
-      "renameDiagram": "إعادة تسمية المخطط"
+      "loadFromDesktop": "تحميل من سطح المكتب"
     },
     "validation": {
       "maxLength": "الطول الأقصى هو {{max}} حرف",
@@ -334,12 +302,10 @@
   },
   "tos": {
     "contactInfo": {
-      "aboutLink": "حول",
       "part1": "إذا كانت لديك أي أسئلة حول هذه الشروط، فلا تتردد في الاتصال بمشغل هذا الموقع عبر معلومات الاتصال الموجودة على صفحة ",
       "part2": "."
     },
     "intro": {
-      "aboutLink": "حول",
       "part1": "مرحبًا بك في نسختنا من تي إم آي. تحكم شروط الاستخدام هذه (\"الشروط\") وصولك إلى واستخدامك لهذا الموقع الإلكتروني، وهو نسخة من تطبيق ويب مفتوح المصدر متاح من قبل المشغل المدرج في صفحة ",
       "part2": " هذا الموقع (\"المشغل\")."
     },
@@ -363,7 +329,6 @@
     },
     "section5": {
       "content": {
-        "aboutLink": "حول",
         "part1": "يستخدم هذا الموقع برنامج تي إم آي، ويتوفر رمزه المصدري في الرابط المتوفر في صفحة ",
         "part2": " هذا الموقع. يخضع استخدامك للبرنامج لشروط ترخيصه مفتوح المصدر. نحن لسنا مسؤولين عن البرنامج نفسه، ولكن فقط عن تشغيل هذه النسخة. قد لا يكون مشغل هذا الموقع مرتبطًا بمشروع تي إم آي أو مبتكريه."
       },

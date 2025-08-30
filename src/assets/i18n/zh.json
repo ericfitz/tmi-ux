@@ -38,12 +38,6 @@
     "presenterRequests": "主讲人请求",
     "removeFromSession": "从会话中移除",
     "requestPresenter": "请求主讲人",
-    "roles": {
-      "owner": "所有者",
-      "presenter": "主讲人",
-      "reader": "阅读者",
-      "writer": "编辑者"
-    },
     "shareLinkHeader": "分享协作链接",
     "startCollaboration": "开始协作",
     "takeBackPresenter": "收回主讲人",
@@ -55,8 +49,10 @@
     }
   },
   "common": {
+    "about": "关于",
     "actions": "操作",
     "addMetadata": "添加元数据",
+    "addThreat": "添加威胁",
     "cancel": "取消",
     "cellId": "单元格ID",
     "close": "关闭",
@@ -65,11 +61,13 @@
     "create": "创建",
     "created": "已创建",
     "delete": "删除",
+    "deleteConfirm": "删除威胁模型",
     "description": "描述",
     "diagramId": "图表ID",
     "edit": "编辑",
     "editThreat": "编辑威胁",
     "issueUrl": "问题URL",
+    "language": "{{language}}",
     "lastModified": "最后修改",
     "lastModifiedDate": "最后修改：{{date}}",
     "manageMetadata": "管理元数据",
@@ -81,23 +79,28 @@
     "noMetadata": "无可用元数据",
     "noThreats": "无可用威胁",
     "objectTypes": {
-      "Cell": "单元格",
-      "Diagram": "图表",
-      "Document": "文档",
-      "SourceCode": "源代码",
-      "Threat": "威胁",
-      "ThreatModel": "威胁模型",
       "cell": "单元格",
       "diagram": "图表",
       "document": "文档",
+      "documents": "文档",
+      "report": "报告",
       "sourceCode": "源代码",
       "threat": "威胁",
-      "threatModel": "威胁模型"
+      "threatModel": "威胁模型",
+      "threats": "威胁"
     },
     "ok": "确定",
     "other": "其他",
+    "permissions": "权限",
     "priority": "优先级",
     "refresh": "刷新",
+    "roles": {
+      "owner": "所有者",
+      "presenter": "主讲人",
+      "reader": "阅读者",
+      "sessionManager": "会话管理员",
+      "writer": "编辑者"
+    },
     "save": "保存",
     "score": "评分",
     "severity": "严重程度",
@@ -108,7 +111,11 @@
     "severityNone": "无",
     "severityUnknown": "未知",
     "status": "状态",
-    "threats": "威胁",
+    "threatDescription": "威胁描述",
+    "threatDescriptionPlaceholder": "详细描述威胁",
+    "threatId": "威胁ID",
+    "threatName": "威胁名称",
+    "threatType": "威胁类型",
     "validation": {
       "invalidUrl": "请输入有效的 URL",
       "maxLength": "最大长度为{{max}}个字符",
@@ -147,10 +154,8 @@
         "addSecurityBoundary": "添加安全边界",
         "addStore": "添加存储",
         "addTextbox": "添加文本框",
-        "addThreat": "添加威胁",
         "deleteSelected": "删除所选",
         "export": "导出...",
-        "manageThreats": "管理威胁",
         "redo": "重做",
         "share": "分享",
         "undo": "撤销"
@@ -161,7 +166,6 @@
     "validationError": "验证错误"
   },
   "footer": {
-    "about": "关于",
     "privacy": "隐私政策",
     "tos": "服务条款"
   },
@@ -189,8 +193,6 @@
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
     "copyUserEmail": "复制用户邮箱到剪贴板",
-    "currentLanguage": "{{language}}",
-    "languageName": "{{language}}",
     "logoutButton": "退出登录",
     "serverStatus": {
       "noServerConfigured": "未配置服务器",
@@ -204,7 +206,6 @@
     "complianceContent": "运营商只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
     "complianceTitle": "法律合规",
     "contactContent": {
-      "aboutLink": "关于",
       "part1": "如果您对本隐私政策有任何疑问，请随时通过",
       "part2": "页面上的联系信息与本网站的运营商联系。"
     },
@@ -212,7 +213,6 @@
     "dataContent": "运营商不收集、存储或处理用户的任何个人数据。运营商不会跟踪您的活动，存储您的信息，或出于任何目的与第三方共享有关您的任何数据。",
     "dataTitle": "无数据收集或存储",
     "intro1": {
-      "aboutLink": "关于",
       "part1": "本网站是由本网站",
       "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序(\"TMI\")的一个实例。"
     },
@@ -224,12 +224,7 @@
   "threatEditor": {
     "createNewThreat": "创建新威胁",
     "notAssociatedWithCell": "未关联单元格",
-    "notAssociatedWithDiagram": "未关联图表",
-    "threatDescription": "威胁描述",
-    "threatDescriptionPlaceholder": "详细描述威胁",
-    "threatId": "威胁ID",
-    "threatName": "威胁名称",
-    "threatType": "威胁类型"
+    "notAssociatedWithDiagram": "未关联图表"
   },
   "threatModels": {
     "addPermission": "添加权限",
@@ -241,9 +236,7 @@
     "createNewSourceCode": "创建新源代码",
     "createdBy": "创建者:",
     "dashboard": "仪表板",
-    "deleteConfirm": "删除威胁模型",
     "deleteConfirmationMessage": "您确定要删除威胁模型\"{{name}}\"吗？",
-    "deleteConfirmationTitle": "删除威胁模型",
     "deleteWarningDownload": "考虑先下载本地副本以保存您的工作。",
     "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
@@ -252,23 +245,15 @@
     "diagramType": "图表类型",
     "diagrams": "图表",
     "diagramsCount": "图表",
-    "documentDescription": "描述",
     "documentDescriptionPlaceholder": "描述文档的目的或内容",
     "documentName": "文档名称",
     "documentUrl": "文档链接",
-    "documents": "文档",
-    "documentsCount": "文档",
     "downloadButton": "下载到桌面",
-    "downloadTooltip": "下载到桌面",
     "editDocument": "编辑文档",
     "editSourceCode": "编辑源代码",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
     "idLabel": "ID:",
     "issueUrlHint": "输入URL以在外部系统中跟踪此威胁模型",
-    "metadataDialog": {
-      "title": "管理元数据"
-    },
-    "metadataTooltip": "管理元数据",
     "name": "名称",
     "newThreatModel": "新威胁模型",
     "noDiagrams": "尚未添加图表",
@@ -277,20 +262,13 @@
     "noPermissions": "未定义权限",
     "noSourceCode": "尚未添加源代码存储库",
     "noThreats": "尚未定义威胁",
-    "owner": "所有者",
     "pageTitle": "威胁模型",
-    "permissions": "权限",
-    "permissionsButton": "权限",
     "permissionsRole": "角色",
     "permissionsTooltip": "管理权限",
     "permissionsUser": "用户",
     "rename": "重命名",
     "renameDiagram": "重命名图表",
-    "reportButton": "报告",
-    "reportTooltip": "报告",
     "setAsOwner": "设为所有者",
-    "sourceCode": "源代码",
-    "sourceCodeDescription": "描述",
     "sourceCodeDescriptionPlaceholder": "描述源代码存储库或其用途",
     "sourceCodeName": "源代码名称",
     "sourceCodeParameters": "存储库参数",
@@ -303,28 +281,18 @@
     "sourceCodeUrl": "存储库URL",
     "sourcesCount": "源代码",
     "tag": "标签",
-    "threatDescription": "威胁描述",
-    "threatDescriptionPlaceholder": "详细描述威胁",
-    "threatId": "威胁ID",
     "threatModelFramework": "威胁模型框架",
     "threatModelPrefix": "威胁模型:",
-    "threatName": "威胁名称",
-    "threatType": "威胁类型",
-    "threats": "威胁",
-    "threatsCount": "威胁",
     "tooltips": {
       "addDiagram": "添加图表",
       "addDocument": "添加文档",
       "addSourceCode": "添加源代码存储库",
-      "addThreat": "添加威胁",
       "deleteDiagram": "删除图表",
       "deleteDocument": "删除文档",
       "deleteSourceCode": "删除源代码存储库",
       "deleteThreat": "删除威胁",
-      "editDocument": "编辑文档",
       "editSourceCode": "编辑源代码存储库",
-      "loadFromDesktop": "从桌面加载",
-      "renameDiagram": "重命名图表"
+      "loadFromDesktop": "从桌面加载"
     },
     "validation": {
       "maxLength": "最大长度为{{max}}个字符",
@@ -334,12 +302,10 @@
   },
   "tos": {
     "contactInfo": {
-      "aboutLink": "关于",
       "part1": "如果您对这些条款有任何疑问，请随时通过",
       "part2": "页面上的联系信息与本网站的运营商联系。"
     },
     "intro": {
-      "aboutLink": "关于",
       "part1": "欢迎使用我们的TMI实例。这些使用条款(\"条款\")规范您对本网站的访问和使用，本网站是由本网站",
       "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序的一个实例。"
     },
@@ -363,7 +329,6 @@
     },
     "section5": {
       "content": {
-        "aboutLink": "关于",
         "part1": "本网站运行TMI软件，其源代码可在本网站",
         "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。本网站的运营商可能与TMI项目或其创建者无关。"
       },

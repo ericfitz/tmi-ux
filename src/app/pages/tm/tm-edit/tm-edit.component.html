@@ -12,7 +12,7 @@
         mat-button
         color="primary"
         (click)="downloadToDesktop()"
-        [matTooltip]="'threatModels.downloadTooltip' | transloco"
+        [matTooltip]="'threatModels.downloadButton' | transloco"
         [attr.aria-label]="'threatModels.downloadButton' | transloco"
       >
         <mat-icon>file_download</mat-icon>
@@ -22,8 +22,8 @@
         mat-button
         color="primary"
         (click)="openReport()"
-        [matTooltip]="'threatModels.reportTooltip' | transloco"
-        [attr.aria-label]="'threatModels.reportButton' | transloco"
+        [matTooltip]="'common.objectTypes.report' | transloco"
+        [attr.aria-label]="'common.objectTypes.report' | transloco"
       >
         <mat-icon
           fontSet="material-symbols-outlined"
@@ -31,7 +31,7 @@
           style="font-variation-settings: 'FILL' 0"
           >assignment</mat-icon
         >
-        <span [transloco]="'threatModels.reportButton'">Report</span>
+        <span [transloco]="'common.objectTypes.report'">Report</span>
       </button>
       <button mat-button color="warn" (click)="cancel()">
         <mat-icon>close</mat-icon>
@@ -49,7 +49,7 @@
             mat-icon-button
             color="primary"
             (click)="openMetadataDialog()"
-            [matTooltip]="'threatModels.metadataTooltip' | transloco"
+            [matTooltip]="'common.manageMetadata' | transloco"
             [attr.aria-label]="'common.manageMetadata' | transloco"
           >
             <mat-icon>list</mat-icon>
@@ -59,7 +59,7 @@
             color="primary"
             (click)="openPermissionsDialog()"
             [matTooltip]="'threatModels.permissionsTooltip' | transloco"
-            [attr.aria-label]="'threatModels.permissionsButton' | transloco"
+            [attr.aria-label]="'common.permissions' | transloco"
           >
             <mat-icon>lock</mat-icon>
           </button>
@@ -249,7 +249,7 @@
                 mat-icon-button
                 color="primary"
                 (click)="openDiagramMetadataDialog(diagram, $event)"
-                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                [matTooltip]="'common.manageMetadata' | transloco"
               >
                 <mat-icon>list</mat-icon>
               </button>
@@ -257,7 +257,7 @@
                 mat-icon-button
                 color="primary"
                 (click)="renameDiagram(diagram, $event)"
-                [matTooltip]="'threatModels.tooltips.renameDiagram' | transloco"
+                [matTooltip]="'threatModels.renameDiagram' | transloco"
               >
                 <mat-icon>edit</mat-icon>
               </button>
@@ -281,7 +281,7 @@
     <!-- Documents Card -->
     <mat-card class="documents-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'threatModels.documents'">Documents</mat-card-title>
+        <mat-card-title [transloco]="'common.objectTypes.documents'">Documents</mat-card-title>
         <button
           mat-icon-button
           color="primary"
@@ -326,7 +326,7 @@
                 mat-icon-button
                 color="primary"
                 (click)="openDocumentMetadataDialog(document, $event)"
-                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                [matTooltip]="'common.manageMetadata' | transloco"
               >
                 <mat-icon>list</mat-icon>
               </button>
@@ -350,7 +350,7 @@
     <!-- Source Code Card -->
     <mat-card class="source-code-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'threatModels.sourceCode'">Source Code</mat-card-title>
+        <mat-card-title [transloco]="'common.objectTypes.sourceCode'">Source Code</mat-card-title>
         <button
           mat-icon-button
           color="primary"
@@ -395,7 +395,7 @@
                 mat-icon-button
                 color="primary"
                 (click)="openSourceCodeMetadataDialog(sourceCode, $event)"
-                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                [matTooltip]="'common.manageMetadata' | transloco"
               >
                 <mat-icon>list</mat-icon>
               </button>
@@ -424,7 +424,7 @@
           mat-icon-button
           color="primary"
           (click)="openThreatEditor()"
-          [matTooltip]="'threatModels.tooltips.addThreat' | transloco"
+          [matTooltip]="'common.addThreat' | transloco"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -476,7 +476,7 @@
                 mat-icon-button
                 color="primary"
                 (click)="openThreatMetadataDialog(threat, $event)"
-                [matTooltip]="'threatModels.metadataTooltip' | transloco"
+                [matTooltip]="'common.manageMetadata' | transloco"
               >
                 <mat-icon>list</mat-icon>
               </button>
