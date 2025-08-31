@@ -57,10 +57,10 @@
         <ng-container *ngIf="!isCollaborating && existingSessionAvailable">
           {{ 'collaboration.joinSession' | transloco }}
         </ng-container>
-        <ng-container *ngIf="isCollaborating && isCurrentUserSessionManager()">
+        <ng-container *ngIf="isCollaborating && isCurrentUserHost()">
           {{ 'collaboration.endCollaboration' | transloco }}
         </ng-container>
-        <ng-container *ngIf="isCollaborating && !isCurrentUserSessionManager()">
+        <ng-container *ngIf="isCollaborating && !isCurrentUserHost()">
           {{ 'collaboration.leaveSession' | transloco }}
         </ng-container>
       </button>
@@ -93,12 +93,12 @@
               fontWeight="100"
               style="font-variation-settings: 'FILL' 0"
               [matTooltip]="
-                user.isSessionManager
-                  ? ('common.sessionRoles.sessionManager' | transloco)
+                user.isHost
+                  ? ('common.sessionRoles.host' | transloco)
                   : ('common.sessionRoles.participant' | transloco)
               "
             >
-              {{ user.isSessionManager ? 'admin_panel_settings' : 'person' }}
+              {{ user.isHost ? 'admin_panel_settings' : 'person' }}
             </mat-icon>
           </div>
 
@@ -119,15 +119,15 @@
           </div>
 
           <!-- Column 3: Username -->
-          <div class="username-column" [matTooltip]="user.name">
+          <div class="username-column" [matTooltip]="user.id">
             {{ user.name }}
           </div>
 
           <!-- Column 4: Presenter Control -->
           <div class="presenter-column">
-            <!-- Session Manager as Presenter -->
+            <!-- Host as Presenter -->
             <mat-icon
-              *ngIf="user.isSessionManager && user.isPresenter"
+              *ngIf="user.isHost && user.isPresenter"
               fontSet="material-symbols-outlined"
               fontWeight="100"
               style="font-variation-settings: 'FILL' 0"
@@ -137,9 +137,9 @@
               podium
             </mat-icon>
 
-            <!-- Session Manager not Presenter -->
+            <!-- Host not Presenter -->
             <mat-icon
-              *ngIf="user.isSessionManager && !user.isPresenter"
+              *ngIf="user.isHost && !user.isPresenter"
               fontSet="material-symbols-outlined"
               fontWeight="100"
               style="font-variation-settings: 'FILL' 0"
@@ -150,7 +150,7 @@
 
             <!-- Participant as Presenter - Can take back presenter -->
             <button
-              *ngIf="!user.isSessionManager && user.isPresenter && isCurrentUserSessionManager()"
+              *ngIf="!user.isHost && user.isPresenter && isCurrentUserHost()"
               mat-icon-button
               (click)="takeBackPresenterPrivileges()"
               [matTooltip]="'collaboration.takeBackPresenter' | transloco"
@@ -168,7 +168,7 @@
             </button>
 
             <!-- Participant not Presenter - Show state-based button -->
-            <ng-container *ngIf="!user.isSessionManager && !user.isPresenter">
+            <ng-container *ngIf="!user.isHost && !user.isPresenter">
               <!-- Hand Down State -->
               <button
                 *ngIf="
@@ -209,7 +209,7 @@
           <!-- Column 5: Remove User -->
           <div class="remove-column">
             <button
-              *ngIf="!user.isSessionManager && isCurrentUserSessionManager()"
+              *ngIf="!user.isHost && isCurrentUserHost()"
               mat-icon-button
               color="warn"
               (click)="removeUser(user.id)"

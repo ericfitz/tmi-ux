@@ -244,10 +244,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
     // Check if the current user left (shouldn't happen but handle gracefully)
     const currentUserId = this._collaborationService.getCurrentUserId();
-    if (
-      message.user_id === currentUserId &&
-      !this._collaborationService.isCurrentUserSessionManager()
-    ) {
+    if (message.user_id === currentUserId && !this._collaborationService.isCurrentUserHost()) {
       this._logger.warn('Current user received leave event, session may have ended');
       // The collaboration service will handle cleanup and redirect
     }
@@ -300,8 +297,8 @@ export class TMIMessageHandlerService implements OnDestroy {
       userId: message.user_id,
     });
 
-    // Only session managers should handle presenter requests
-    if (this._collaborationService.isCurrentUserSessionManager()) {
+    // Only hosts should handle presenter requests
+    if (this._collaborationService.isCurrentUserHost()) {
       // Add to pending requests list
       this._collaborationService.addPresenterRequest(message.user_id);
 
@@ -334,11 +331,11 @@ export class TMIMessageHandlerService implements OnDestroy {
       newPresenter: message.new_presenter,
     });
 
-    // This message is sent by the session manager when they change the presenter
+    // This message is sent by the host when they change the presenter
     // The server will follow up with a current_presenter message to all clients
     // For now, just log that we received it
-    this._logger.info('Session manager is changing presenter', {
-      sessionManager: message.user_id,
+    this._logger.info('host is changing presenter', {
+      host: message.user_id,
       newPresenter: message.new_presenter,
     });
   }
@@ -456,20 +453,20 @@ export class TMIMessageHandlerService implements OnDestroy {
   private _handleParticipantsUpdate(message: any): void {
     this._logger.info('TMI: Participants update received', {
       participantCount: message.participants?.length,
-      sessionManager: message.session_manager,
+      host: message.host,
       currentPresenter: message.current_presenter,
       participants: message.participants?.map((p: any) => ({
         userId: p.user_id,
         permissions: p.permissions,
         isPresenter: p.is_presenter,
-        isSessionManager: p.is_session_manager,
+        isHost: p.is_host,
       })),
     });
 
     // Log with component debugging
     this._logger.debugComponent('wsmsg', 'Processing participants update', {
       participantCount: message.participants?.length,
-      sessionManager: message.session_manager,
+      host: message.host,
       currentPresenter: message.current_presenter,
       fullMessage: message,
     });
@@ -483,7 +480,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // Use the bulk update method from collaboration service
     this._collaborationService.updateAllParticipants(
       message.participants,
-      message.session_manager,
+      message.host,
       message.current_presenter,
     );
   }

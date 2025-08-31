@@ -101,8 +101,7 @@
     "score": "评分",
     "sessionRoles": {
       "participant": "参与者",
-      "presenter": "主讲人",
-      "sessionManager": "会话管理员"
+      "presenter": "主讲人"
     },
     "severity": "严重程度",
     "severityCritical": "严重",

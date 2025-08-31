@@ -131,7 +131,7 @@
 
     .user-item {
       display: grid;
-      grid-template-columns: 40px 40px 1fr 50px 40px;
+      grid-template-columns: 30px 30px 1fr 50px 40px;
       align-items: center;
       gap: 8px;
       padding: 8px 0;
@@ -152,7 +152,7 @@
           color: rgb(0 0 0 / 60%);
 
           &[fonticon='admin_panel_settings'] {
-            color: var(--color-role-owner, #ff9800); // Orange for session manager
+            color: var(--color-role-owner, #ff9800); // Orange for host
           }
         }
       }
@@ -194,7 +194,7 @@
 
         .presenter-icon {
           font-size: 20px;
-          color: var(--color-role-presenter);
+          color: rgb(0 0 0 / 60%);
 
           &.inactive {
             color: rgb(0 0 0 / 26%);

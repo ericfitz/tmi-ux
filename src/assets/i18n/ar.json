@@ -101,8 +101,7 @@
     "score": "النتيجة",
     "sessionRoles": {
       "participant": "مشارك",
-      "presenter": "مقدم",
-      "sessionManager": "مدير الجلسة"
+      "presenter": "مقدم"
     },
     "severity": "الخطورة",
     "severityCritical": "حرج",

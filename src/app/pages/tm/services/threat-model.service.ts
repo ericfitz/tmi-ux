@@ -46,7 +46,7 @@ interface CollaborationSession {
     permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
-  session_manager?: string;
+  host?: string;
 }
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -1709,7 +1709,7 @@ export class ThreatModelService implements OnDestroy {
           },
         ],
         websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
-        session_manager: this.authService.username || 'current-user',
+        host: this.authService.username || 'current-user',
       };
       return of(mockSession);
     }
@@ -1726,7 +1726,7 @@ export class ThreatModelService implements OnDestroy {
             threatModelId,
             diagramId,
             websocketUrl: session.websocket_url,
-            sessionManager: session.session_manager,
+            host: session.host,
             participantCount: session.participants?.length || 0,
             participants: session.participants?.map(p => ({
               id: p.user_id,
@@ -1863,7 +1863,7 @@ export class ThreatModelService implements OnDestroy {
           },
         ],
         websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
-        session_manager: 'existing-user@example.com',
+        host: 'existing-user@example.com',
       };
       return of(mockSession);
     }
@@ -1880,7 +1880,7 @@ export class ThreatModelService implements OnDestroy {
             threatModelId,
             diagramId,
             websocketUrl: session.websocket_url,
-            sessionManager: session.session_manager,
+            host: session.host,
             participantCount: session.participants?.length || 0,
             participants: session.participants?.map(p => ({
               id: p.user_id,

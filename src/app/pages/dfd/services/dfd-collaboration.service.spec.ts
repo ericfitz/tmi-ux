@@ -111,7 +111,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
         { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
       ],
       websocket_url: fullUrl,
-      session_manager: 'test@example.com',
+      host: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -133,7 +133,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
         { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
       ],
       websocket_url: fullUrl,
-      session_manager: 'test@example.com',
+      host: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -155,7 +155,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
         { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
       ],
       websocket_url: relativeUrl,
-      session_manager: 'test@example.com',
+      host: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -178,7 +178,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
         { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
       ],
       websocket_url: relativeUrl,
-      session_manager: 'test@example.com',
+      host: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));
@@ -204,7 +204,7 @@ describe('DfdCollaborationService WebSocket URL handling', () => {
         { user_id: 'test@example.com', joined_at: '2023-01-01T00:00:00Z', permissions: 'writer' },
       ],
       websocket_url: relativeUrl,
-      session_manager: 'test@example.com',
+      host: 'test@example.com',
     };
 
     mockThreatModelService.startDiagramCollaborationSession.mockReturnValue(of(mockSession));

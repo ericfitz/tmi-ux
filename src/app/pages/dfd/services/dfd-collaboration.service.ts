@@ -23,7 +23,7 @@ export interface CollaborationUser {
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
   isPresenter?: boolean;
-  isSessionManager?: boolean; // True for the person who created the session
+  isHost?: boolean; // True for the person who created the session
   lastActivity?: Date;
   // Presenter request state for UI
   presenterRequestState?: 'hand_down' | 'hand_raised' | 'presenter';
@@ -42,7 +42,7 @@ export interface CollaborationSession {
     permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
-  session_manager?: string;
+  host?: string;
 }
 
 /**
@@ -148,7 +148,7 @@ export class DfdCollaborationService implements OnDestroy {
           if (session) {
             this._logger.info('Found existing collaboration session', {
               sessionId: session.session_id,
-              sessionManager: session.session_manager,
+              host: session.host,
               participantCount: session.participants.length,
             });
           } else {
@@ -168,8 +168,8 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Check if current user would be the session manager of the existing session
-   * @returns boolean indicating if current user is the session manager of existing session
+   * Check if current user would be the host of the existing session
+   * @returns boolean indicating if current user is the host of existing session
    */
   public isCurrentUserManagerOfExistingSession(): boolean {
     const existingSession = this._existingSessionAvailable$.value;
@@ -177,7 +177,7 @@ export class DfdCollaborationService implements OnDestroy {
       return false;
     }
     const currentUserEmail = this._authService.userEmail;
-    return currentUserEmail === existingSession.session_manager;
+    return currentUserEmail === existingSession.host;
   }
 
   /**
@@ -239,10 +239,10 @@ export class DfdCollaborationService implements OnDestroy {
             }
             return {
               id: participant.user_id,
-              name: participant.user_id, // Use email address as display name
+              name: this._getUserDisplayName(participant.user_id),
               permission: participant.permissions, // Use permissions from API response - required field
               status: 'active' as const,
-              isSessionManager: participant.user_id === session.session_manager, // Use session_manager field from API
+              isHost: participant.user_id === session.host, // Use host field from API
               presenterRequestState: 'hand_down' as const,
             };
           });
@@ -327,10 +327,10 @@ export class DfdCollaborationService implements OnDestroy {
             }
             return {
               id: participant.user_id,
-              name: participant.user_id, // Use email address as display name
+              name: this._getUserDisplayName(participant.user_id),
               permission: participant.permissions, // Use permissions from API response
               status: 'active' as const,
-              isSessionManager: participant.user_id === session.session_manager,
+              isHost: participant.user_id === session.host,
               presenterRequestState: 'hand_down' as const,
             };
           });
@@ -361,7 +361,7 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Start a new collaboration session (session manager only) - DEPRECATED
+   * Start a new collaboration session (host only) - DEPRECATED
    * Use startOrJoinCollaboration() instead for better UX
    * @returns Observable<boolean> indicating success or failure
    */
@@ -420,10 +420,10 @@ export class DfdCollaborationService implements OnDestroy {
             }
             return {
               id: participant.user_id,
-              name: participant.user_id, // Use email address as display name
+              name: this._getUserDisplayName(participant.user_id),
               permission: participant.permissions, // Use permissions from API response - required field
               status: 'active' as const,
-              isSessionManager: participant.user_id === session.session_manager, // Use session_manager field from API
+              isHost: participant.user_id === session.host, // Use host field from API
               presenterRequestState: 'hand_down' as const,
             };
           });
@@ -460,8 +460,8 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('No active collaboration session'));
     }
 
-    if (this.isCurrentUserSessionManager()) {
-      this._logger.info('Session manager leaving - this will end the session for all users');
+    if (this.isCurrentUserHost()) {
+      this._logger.info('host leaving - this will end the session for all users');
       return this.endCollaboration();
     }
 
@@ -610,7 +610,7 @@ export class DfdCollaborationService implements OnDestroy {
           name: email.split('@')[0], // Use the part before @ as the name
           permission,
           status: 'disconnected', // Start as disconnected until they accept
-          isSessionManager: false, // Invited users are never session managers
+          isHost: false, // Invited users are never hosts
         };
 
         // Add the new user to the list
@@ -645,7 +645,7 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Update a user's permission in the collaboration session (session manager only)
+   * Update a user's permission in the collaboration session (host only)
    * @param userId The ID of the user to update
    * @param permission The new permission to assign
    * @returns Observable<boolean> indicating success or failure
@@ -656,8 +656,8 @@ export class DfdCollaborationService implements OnDestroy {
   ): Observable<boolean> {
     this._logger.info('Updating user permission in collaboration session', { userId, permission });
 
-    if (!this.isCurrentUserSessionManager()) {
-      return throwError(() => new Error('Only session manager can update user permissions'));
+    if (!this.isCurrentUserHost()) {
+      return throwError(() => new Error('Only host can update user permissions'));
     }
 
     // In a real implementation, this would notify the server to update the user's permission
@@ -690,11 +690,11 @@ export class DfdCollaborationService implements OnDestroy {
     if (!userExists) {
       const newUser: CollaborationUser = {
         id: userId,
-        name: userId, // Use email as name
+        name: this._getUserDisplayName(userId),
         permission,
         status: 'active',
         isPresenter: false,
-        isSessionManager: userId === this._currentSession?.session_manager,
+        isHost: userId === this._currentSession?.host,
         lastActivity: new Date(),
         presenterRequestState: 'hand_down',
       };
@@ -704,7 +704,7 @@ export class DfdCollaborationService implements OnDestroy {
       this._logger.info('Added participant to collaboration session', {
         userId,
         permission,
-        isSessionManager: newUser.isSessionManager,
+        isHost: newUser.isHost,
       });
     }
   }
@@ -740,7 +740,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Update all participants from a bulk update message
    * This replaces the entire participant list with the new data
    * @param participants Array of participant information
-   * @param sessionManager Optional session manager ID
+   * @param host Optional host ID
    * @param currentPresenter Optional current presenter ID
    */
   public updateAllParticipants(
@@ -748,20 +748,20 @@ export class DfdCollaborationService implements OnDestroy {
       user_id: string;
       permissions: 'reader' | 'writer';
       is_presenter: boolean;
-      is_session_manager: boolean;
+      is_host: boolean;
       joined_at?: string;
     }>,
-    sessionManager?: string,
+    host?: string,
     currentPresenter?: string | null,
   ): void {
     // Build the new participant list
     const updatedUsers: CollaborationUser[] = participants.map(participant => ({
       id: participant.user_id,
-      name: participant.user_id, // Use email as name
+      name: this._getUserDisplayName(participant.user_id),
       permission: participant.permissions,
       status: 'active' as const,
       isPresenter: participant.is_presenter,
-      isSessionManager: participant.is_session_manager,
+      isHost: participant.is_host,
       lastActivity: new Date(participant.joined_at || Date.now()),
       presenterRequestState: participant.is_presenter ? 'presenter' : ('hand_down' as const),
     }));
@@ -776,7 +776,7 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._logger.info('Bulk participant update applied', {
       participantCount: participants.length,
-      sessionManager,
+      host,
       currentPresenter,
     });
   }
@@ -839,17 +839,17 @@ export class DfdCollaborationService implements OnDestroy {
       case 'edit':
         return userPermission === 'writer'; // Only writers can edit
       case 'manageSession':
-        return this.isCurrentUserSessionManager(); // Only session manager can manage session
+        return this.isCurrentUserHost(); // Only host can manage session
       default:
         return false;
     }
   }
 
   /**
-   * Check if the current user is the session manager (created the session)
-   * @returns boolean indicating if the current user is the session manager
+   * Check if the current user is the host (created the session)
+   * @returns boolean indicating if the current user is the host
    */
-  public isCurrentUserSessionManager(): boolean {
+  public isCurrentUserHost(): boolean {
     if (!this._isCollaborating$.value) {
       return false;
     }
@@ -858,7 +858,7 @@ export class DfdCollaborationService implements OnDestroy {
     const currentUserEmail = this._authService.userEmail || 'current-user';
     const currentUser = users.find(user => user.id === currentUserEmail);
 
-    return currentUser?.isSessionManager || false;
+    return currentUser?.isHost || false;
   }
 
   /**
@@ -914,8 +914,8 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('Current user not identified'));
     }
 
-    if (this.isCurrentUserSessionManager()) {
-      // Session managers can become presenter immediately
+    if (this.isCurrentUserHost()) {
+      // hosts can become presenter immediately
       return this.setPresenter(currentUserId);
     }
 
@@ -954,8 +954,8 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public approvePresenterRequest(userId: string): Observable<boolean> {
-    if (!this.isCurrentUserSessionManager()) {
-      return throwError(() => new Error('Only session manager can approve presenter requests'));
+    if (!this.isCurrentUserHost()) {
+      return throwError(() => new Error('Only host can approve presenter requests'));
     }
 
     this._logger.info('Approving presenter request', { userId });
@@ -973,8 +973,8 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public denyPresenterRequest(userId: string): Observable<boolean> {
-    if (!this.isCurrentUserSessionManager()) {
-      return throwError(() => new Error('Only session manager can deny presenter requests'));
+    if (!this.isCurrentUserHost()) {
+      return throwError(() => new Error('Only host can deny presenter requests'));
     }
 
     this._logger.info('Denying presenter request', { userId });
@@ -1012,8 +1012,8 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public setPresenter(userId: string | null): Observable<boolean> {
-    if (!this.isCurrentUserSessionManager()) {
-      return throwError(() => new Error('Only session manager can set presenter'));
+    if (!this.isCurrentUserHost()) {
+      return throwError(() => new Error('Only host can set presenter'));
     }
 
     this._logger.info('Setting presenter', { userId });
@@ -1417,11 +1417,11 @@ export class DfdCollaborationService implements OnDestroy {
       // Update collaboration users list with real-time data
       const updatedUsers: CollaborationUser[] = message.data.users.map((user: any) => ({
         id: user.id,
-        name: user.name,
+        name: this._getUserDisplayName(user.id),
         permission: user.permission || 'reader',
         status: user.status || 'active',
         isPresenter: user.isPresenter || false,
-        isSessionManager: user.isSessionManager || false,
+        isHost: user.isHost || false,
         lastActivity: new Date(user.lastActivity || Date.now()),
       }));
 
@@ -1441,11 +1441,11 @@ export class DfdCollaborationService implements OnDestroy {
     if (message.data && message.data.user) {
       const newUser: CollaborationUser = {
         id: message.data.user.id,
-        name: message.data.user.name,
+        name: this._getUserDisplayName(message.data.user.id),
         permission: message.data.user.permission || 'reader',
         status: message.data.user.status || 'active',
         isPresenter: message.data.user.isPresenter || false,
-        isSessionManager: message.data.user.isSessionManager || false,
+        isHost: message.data.user.isHost || false,
         lastActivity: new Date(),
       };
 
@@ -1483,7 +1483,7 @@ export class DfdCollaborationService implements OnDestroy {
         this._logger.info('User left collaboration session', { userId });
 
         // If the current user was removed, redirect to dashboard
-        if (userId === currentUserId && !this.isCurrentUserSessionManager()) {
+        if (userId === currentUserId && !this.isCurrentUserHost()) {
           this._logger.info('Current user was removed from session, redirecting to dashboard');
           this._cleanupSessionState();
           this._redirectToDashboard();
@@ -1498,9 +1498,9 @@ export class DfdCollaborationService implements OnDestroy {
   private _handleSessionEnded(message: any): void {
     this._logger.debug('Session ended via WebSocket', message);
 
-    // If current user is not the session manager and session was ended, redirect to dashboard
-    if (!this.isCurrentUserSessionManager() && this._currentSession) {
-      this._logger.info('Session ended by session manager, redirecting other users to dashboard');
+    // If current user is not the host and session was ended, redirect to dashboard
+    if (!this.isCurrentUserHost() && this._currentSession) {
+      this._logger.info('Session ended by host, redirecting other users to dashboard');
       this._cleanupSessionState();
       this._redirectToDashboard();
     }
@@ -1549,7 +1549,16 @@ export class DfdCollaborationService implements OnDestroy {
     if (!userId || typeof userId !== 'string') {
       return 'Unknown User';
     }
-    // Convert email to display name or use user directory
+
+    // If this is the current user, use their actual display name from the auth service
+    if (userId === this._authService.userEmail) {
+      const userProfile = this._authService.userProfile;
+      if (userProfile?.name) {
+        return userProfile.name;
+      }
+    }
+
+    // For other users, extract username from email
     return userId.split('@')[0] || userId;
   }
 

@@ -121,7 +121,7 @@ export class CollaborativeOperationService {
             currentUserEmail: this.authService.userEmail,
             hasEditPermission: hasCollabEditPermission,
             threatModelPermission: this._config.threatModelPermission,
-            isSessionManager: this.collaborationService.isCurrentUserSessionManager(),
+            isHost: this.collaborationService.isCurrentUserHost(),
             isLoadingUsers,
           });
           return throwError(() => new Error('Insufficient permissions to edit diagram'));
@@ -285,8 +285,8 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
     }
 
-    if (!this.collaborationService.isCurrentUserSessionManager()) {
-      return throwError(() => new Error('Only session manager can change presenter'));
+    if (!this.collaborationService.isCurrentUserHost()) {
+      return throwError(() => new Error('Only host can change presenter'));
     }
 
     const message: ChangePresenterMessage = {

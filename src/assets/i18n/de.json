@@ -101,8 +101,7 @@
     "score": "Bewertung",
     "sessionRoles": {
       "participant": "Teilnehmer",
-      "presenter": "Präsentator",
-      "sessionManager": "Sitzungsverwalter"
+      "presenter": "Präsentator"
     },
     "severity": "Schweregrad",
     "severityCritical": "Kritisch",

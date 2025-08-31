@@ -102,7 +102,7 @@
     "sessionRoles": {
       "participant": "Participant",
       "presenter": "Presenter",
-      "sessionManager": "Session Manager"
+      "host": "Host"
     },
     "severity": "Severity",
     "severityCritical": "Critical",

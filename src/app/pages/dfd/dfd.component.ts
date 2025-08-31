@@ -253,7 +253,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             if (existingSession) {
               this.logger.info('Found existing collaboration session on startup', {
                 sessionId: existingSession.session_id,
-                sessionManager: existingSession.session_manager,
+                host: existingSession.host,
                 isCurrentUserManager:
                   this.collaborationService.isCurrentUserManagerOfExistingSession(),
               });
@@ -1933,7 +1933,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle presenter requests from other users
    */
   private handlePresenterRequest(message: PresenterRequestMessage): void {
-    if (this.collaborationService.isCurrentUserSessionManager()) {
+    if (this.collaborationService.isCurrentUserHost()) {
       // Add to pending requests
       this.collaborationService.addPresenterRequest(message.user_id);
       this.logger.info('Presenter request received', { userId: message.user_id });

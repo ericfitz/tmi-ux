@@ -122,14 +122,14 @@ export interface ParticipantInfo {
   user_id: string;
   permissions: 'reader' | 'writer';
   joined_at: string;
-  is_session_manager: boolean;
+  is_host: boolean;
   is_presenter: boolean;
 }
 
 export interface ParticipantsUpdateMessage {
   message_type: 'participants_update';
   participants: ParticipantInfo[];
-  session_manager?: string;
+  host?: string;
   current_presenter?: string;
 }
 

@@ -85,7 +85,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   collaborationUsers: CollaborationUser[] = [];
   currentPresenterId: string | null = null;
   pendingPresenterRequests: string[] = [];
-  isCurrentUserSessionManagerFlag = false;
+  isCurrentUserHostFlag = false;
   existingSessionAvailable: CollaborationSession | null = null;
 
   // URL copy feedback
@@ -112,10 +112,10 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this._collaborationService.isCollaborating$.subscribe(isCollaborating => {
         this.isCollaborating = isCollaborating;
-        // Don't set session manager flag here - wait for users to be populated
+        // Don't set host flag here - wait for users to be populated
         // Only clear it when collaboration ends
         if (!isCollaborating) {
-          this.isCurrentUserSessionManagerFlag = false;
+          this.isCurrentUserHostFlag = false;
         }
         this._cdr.markForCheck();
       }),
@@ -125,8 +125,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this._collaborationService.collaborationUsers$.subscribe(users => {
         this.collaborationUsers = users;
-        this.isCurrentUserSessionManagerFlag =
-          this._collaborationService.isCurrentUserSessionManager();
+        this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
         this._cdr.markForCheck();
       }),
     );
@@ -193,8 +192,8 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   toggleCollaboration(): void {
     if (this.isCollaborating) {
-      // Check if current user is session manager to determine which action to take
-      if (this._collaborationService.isCurrentUserSessionManager()) {
+      // Check if current user is host to determine which action to take
+      if (this._collaborationService.isCurrentUserHost()) {
         this._collaborationService
           .endCollaboration()
           .pipe(take(1))
@@ -303,11 +302,11 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if the current user is the session manager of the collaboration session
-   * @returns boolean indicating if the current user is the session manager
+   * Check if the current user is the host of the collaboration session
+   * @returns boolean indicating if the current user is the host
    */
-  isCurrentUserSessionManager(): boolean {
-    return this.isCurrentUserSessionManagerFlag;
+  isCurrentUserHost(): boolean {
+    return this.isCurrentUserHostFlag;
   }
 
   /**
@@ -375,7 +374,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Approve presenter request (session manager only)
+   * Approve presenter request (host only)
    * @param userId The user ID to approve
    */
   approvePresenterRequest(userId: string): void {
@@ -395,7 +394,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Deny presenter request (session manager only)
+   * Deny presenter request (host only)
    * @param userId The user ID to deny
    */
   denyPresenterRequest(userId: string): void {
@@ -415,7 +414,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Take back presenter privileges (session manager only)
+   * Take back presenter privileges (host only)
    */
   takeBackPresenterPrivileges(): void {
     this._collaborationService
@@ -434,7 +433,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Clear presenter (session manager only)
+   * Clear presenter (host only)
    */
   clearPresenter(): void {
     this._collaborationService

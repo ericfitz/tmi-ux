@@ -101,8 +101,7 @@
     "score": "คะแนน",
     "sessionRoles": {
       "participant": "ผู้เข้าร่วม",
-      "presenter": "ผู้นำเสนอ",
-      "sessionManager": "ผู้จัดการเซสชัน"
+      "presenter": "ผู้นำเสนอ"
     },
     "severity": "ความรุนแรง",
     "severityCritical": "วิกฤต",

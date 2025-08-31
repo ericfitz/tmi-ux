@@ -369,7 +369,7 @@ components:
       title: Presenter Request Denied Message
       summary: Notification that presenter request was denied
       description: |
-        Message sent by server to requester when presenter request is denied by the session manager.
+        Message sent by server to requester when presenter request is denied by the host.
         Only sent to the requesting user.
       payload:
         $ref: '#/components/schemas/PresenterDeniedPayload'
@@ -378,7 +378,7 @@ components:
           summary: Example of presenter request denial
           payload:
             message_type: presenter_denied
-            user_id: sessionmanager@example.com
+            user_id: host@example.com
             target_user: bob@example.com
 
     ChangePresenterMessage:
@@ -386,16 +386,16 @@ components:
       title: Change Presenter Message
       summary: Owner changes the active presenter
       description: |
-        Message sent by session manager to change the active presenter. Only accepted
-        from the session manager.
+        Message sent by host to change the active presenter. Only accepted
+        from the host.
       payload:
         $ref: '#/components/schemas/ChangePresenterPayload'
       examples:
         - name: ChangePresenter
-          summary: Example of session manager changing presenter
+          summary: Example of host changing presenter
           payload:
             message_type: change_presenter
-            user_id: sessionmanager@example.com
+            user_id: host@example.com
             new_presenter: alice@example.com
 
     CurrentPresenterMessage:
@@ -589,7 +589,7 @@ components:
       summary: Notification when collaboration session is terminated
       description: |
         Sent to all participants when the collaboration session is ended,
-        typically when the session manager/owner disconnects. Clients should
+        typically when the host/owner disconnects. Clients should
         gracefully handle session termination and clean up local state.
       payload:
         allOf:
@@ -601,17 +601,17 @@ components:
               message:
                 type: string
                 description: Reason for session termination
-                example: "Session manager disconnected"
+                example: 'host disconnected'
             required:
               - message
       examples:
-        - name: SessionManagerLeft
-          summary: Example of session ending due to manager departure
+        - name: HostLeft
+          summary: Example of session ending due to host departure
           payload:
             event: session_ended
-            user_id: sessionmanager@example.com
+            user_id: host@example.com
             timestamp: '2024-01-15T14:30:00Z'
-            message: "Session manager disconnected"
+            message: 'host disconnected'
 
     ParticipantsUpdateMessage:
       name: ParticipantsUpdateMessage
@@ -620,7 +620,7 @@ components:
       description: |
         Sent to all participants whenever the participant list changes. Provides
         a complete snapshot of all current participants, their permissions, and
-        roles (session manager, presenter). This eliminates the need for clients
+        roles (host, presenter). This eliminates the need for clients
         to poll the REST API for participant information.
       payload:
         $ref: '#/components/schemas/ParticipantsUpdatePayload'
@@ -633,19 +633,19 @@ components:
               - user_id: alice@example.com
                 permissions: writer
                 joined_at: '2024-01-15T10:30:00Z'
-                is_session_manager: true
+                is_host: true
                 is_presenter: false
               - user_id: bob@example.com
                 permissions: reader
                 joined_at: '2024-01-15T10:35:00Z'
-                is_session_manager: false
+                is_host: false
                 is_presenter: true
               - user_id: charlie@example.com
                 permissions: writer
                 joined_at: '2024-01-15T10:40:00Z'
-                is_session_manager: false
+                is_host: false
                 is_presenter: false
-            session_manager: alice@example.com
+            host: alice@example.com
             current_presenter: bob@example.com
 
   schemas:
@@ -905,8 +905,8 @@ components:
           const: presenter_denied
         user_id:
           type: string
-          description: Session manager who denied the request
-          example: sessionmanager@example.com
+          description: host who denied the request
+          example: host@example.com
         target_user:
           type: string
           description: User whose request was denied
@@ -925,8 +925,8 @@ components:
           const: change_presenter
         user_id:
           type: string
-          description: Session manager
-          example: sessionmanager@example.com
+          description: host
+          example: host@example.com
         new_presenter:
           type: string
           description: User to become the new presenter
@@ -1174,9 +1174,9 @@ components:
                 type: string
                 format: date-time
                 description: When the user joined the session
-              is_session_manager:
+              is_host:
                 type: boolean
-                description: Whether this user is the session manager
+                description: Whether this user is the host
               is_presenter:
                 type: boolean
                 description: Whether this user is the current presenter
@@ -1184,11 +1184,11 @@ components:
               - user_id
               - permissions
               - joined_at
-              - is_session_manager
+              - is_host
               - is_presenter
-        session_manager:
+        host:
           type: string
-          description: User ID of the session manager
+          description: User ID of the host
           example: alice@example.com
         current_presenter:
           type: string
@@ -1197,7 +1197,7 @@ components:
       required:
         - message_type
         - participants
-        - session_manager
+        - host
         - current_presenter
       additionalProperties: false
 

@@ -513,7 +513,7 @@ export class WebSocketAdapter {
               sequenceNumber: (message as any).sequence_number,
               targetUser: (message as any).target_user,
               currentPresenter: (message as any).current_presenter,
-              sessionManager: (message as any).session_manager,
+              host: (message as any).host,
               participantCount: (message as any).participants?.length,
               hasOperation: !!(message as any).operation,
               operationType: (message as any).operation?.type,
