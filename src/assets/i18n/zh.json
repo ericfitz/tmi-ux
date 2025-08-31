@@ -100,6 +100,7 @@
     "save": "保存",
     "score": "评分",
     "sessionRoles": {
+      "host": "主持人",
       "participant": "参与者",
       "presenter": "主讲人"
     },

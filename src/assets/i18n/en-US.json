@@ -100,9 +100,9 @@
     "save": "Save",
     "score": "Score",
     "sessionRoles": {
+      "host": "Host",
       "participant": "Participant",
-      "presenter": "Presenter",
-      "host": "Host"
+      "presenter": "Presenter"
     },
     "severity": "Severity",
     "severityCritical": "Critical",

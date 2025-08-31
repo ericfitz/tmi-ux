@@ -100,6 +100,7 @@
     "save": "حفظ",
     "score": "النتيجة",
     "sessionRoles": {
+      "host": "مضيف",
       "participant": "مشارك",
       "presenter": "مقدم"
     },
