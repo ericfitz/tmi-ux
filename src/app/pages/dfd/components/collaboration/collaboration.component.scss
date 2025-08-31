@@ -152,7 +152,7 @@
           color: rgb(0 0 0 / 60%);
 
           &[fonticon='admin_panel_settings'] {
-            color: var(--color-role-owner, #ff9800); // Orange for host
+            color: var(--color-role-host); // Gold for host
           }
         }
       }
@@ -194,7 +194,7 @@
 
         .presenter-icon {
           font-size: 20px;
-          color: rgb(0 0 0 / 60%);
+          color: var(--color-role-presenter);
 
           &.inactive {
             color: rgb(0 0 0 / 26%);

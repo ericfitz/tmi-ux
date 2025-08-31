@@ -67,9 +67,10 @@ $theme-teal: #00796b;
 
 // Role-based Colors (for collaboration)
 $role-owner-color: #ff9800;
-$role-writer-color: #4caf50;
-$role-reader-color: #757575;
-$role-presenter-color: #9c27b0;
+$role-writer-color: #00ff087f;
+$role-reader-color: #ff0000b5;
+$role-presenter-color: #1500ffde;
+$role-host-color: #ffc107; // Gold color for session host
 
 // =============================================================================
 // CSS CUSTOM PROPERTIES (Modern theming support)
@@ -137,6 +138,7 @@ $role-presenter-color: #9c27b0;
   --color-role-writer: #{$role-writer-color};
   --color-role-reader: #{$role-reader-color};
   --color-role-presenter: #{$role-presenter-color};
+  --color-role-host: #{$role-host-color};
 
   // Server Status Colors
   --color-server-not-configured: #{$text-tertiary};
