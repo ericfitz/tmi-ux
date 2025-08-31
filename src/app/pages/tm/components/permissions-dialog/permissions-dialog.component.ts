@@ -22,7 +22,7 @@ export interface PermissionsDialogData {
   template: `
     <div class="permissions-dialog">
       <h2 mat-dialog-title>
-        {{ 'threatModels.permissions' | transloco }}
+        {{ 'common.permissions' | transloco }}
       </h2>
 
       <mat-dialog-content>
