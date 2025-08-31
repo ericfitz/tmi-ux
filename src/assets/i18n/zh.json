@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "批准主讲人请求",
     "availableCollaborationSessions": "可用协作会话",
-    "clearPresenter": "清除主讲人",
     "collaboratorsHeader": "协作者",
     "copyLink": "复制链接",
     "currentPresenter": "当前主讲人",
@@ -34,8 +33,7 @@
     "leaveSession": "离开会话",
     "makePresenter": "设为主讲人",
     "manageCollaboration": "管理协作",
-    "presenterHeader": "主讲人控制",
-    "presenterRequests": "主讲人请求",
+    "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
     "requestPresenter": "请求主讲人",
     "shareLinkHeader": "分享协作链接",
@@ -96,13 +94,16 @@
     "refresh": "刷新",
     "roles": {
       "owner": "所有者",
-      "presenter": "主讲人",
       "reader": "阅读者",
-      "sessionManager": "会话管理员",
       "writer": "编辑者"
     },
     "save": "保存",
     "score": "评分",
+    "sessionRoles": {
+      "participant": "参与者",
+      "presenter": "主讲人",
+      "sessionManager": "会话管理员"
+    },
     "severity": "严重程度",
     "severityCritical": "严重",
     "severityHigh": "高",

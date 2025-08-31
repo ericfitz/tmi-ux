@@ -124,7 +124,7 @@ export class WebSocketAdapter {
   private readonly _reconnectDelay = 1000;
   private _heartbeatInterval: number | null = null;
   private readonly _destroy$ = new Subject<void>();
-  
+
   // Shared subjects for TMI messages to avoid duplicate handlers
   private readonly _tmiMessages$ = new Subject<TMIWebSocketMessage>();
   private _tmiMessageHandlerSetup = false;
@@ -436,7 +436,7 @@ export class WebSocketAdapter {
   getTMIMessagesOfType<T extends TMIWebSocketMessage>(messageType: TMIMessageType): Observable<T> {
     // Set up the single TMI message handler if not already set up
     this._setupTMIMessageHandler();
-    
+
     // Filter messages by type
     return this._tmiMessages$.pipe(
       filter(message => {
@@ -459,93 +459,94 @@ export class WebSocketAdapter {
     this._tmiMessageHandlerSetup = true;
 
     // Listen for connection state changes
-    this.connectionState$
-      .pipe(takeUntil(this._destroy$))
-      .subscribe(state => {
-        if (state === WebSocketState.CONNECTED && this._socket) {
-          // Set up message handler
-          const messageHandler = (event: MessageEvent) => {
+    this.connectionState$.pipe(takeUntil(this._destroy$)).subscribe(state => {
+      if (state === WebSocketState.CONNECTED && this._socket) {
+        // Set up message handler
+        const messageHandler = (event: MessageEvent) => {
+          try {
+            const rawData = event.data;
+
+            // Parse JSON
+            let parsedMessage: any;
             try {
-              const rawData = event.data;
-
-              // Parse JSON
-              let parsedMessage: any;
-              try {
-                parsedMessage = JSON.parse(rawData);
-              } catch (jsonError) {
-                // Only process if it looks like it might be a TMI message
-                if (typeof rawData === 'string' && (rawData.includes('message_type') || rawData.includes('event'))) {
-                  this._handleMalformedMessage(
-                    'Invalid JSON format in TMI message',
-                    jsonError,
-                    rawData,
-                  );
-                }
-                return;
-              }
-
-              // Check if this is a TMI message
-              if (!parsedMessage.message_type && !parsedMessage.event) {
-                return; // Not a TMI message
-              }
-
-              // Validate TMI message structure
-              const validationResult = this._validateTMIMessage(parsedMessage);
-              if (!validationResult.isValid) {
+              parsedMessage = JSON.parse(rawData);
+            } catch (jsonError) {
+              // Only process if it looks like it might be a TMI message
+              if (
+                typeof rawData === 'string' &&
+                (rawData.includes('message_type') || rawData.includes('event'))
+              ) {
                 this._handleMalformedMessage(
-                  `TMI message validation failed: ${validationResult.error}`,
-                  null,
+                  'Invalid JSON format in TMI message',
+                  jsonError,
                   rawData,
                 );
-                return;
               }
+              return;
+            }
 
-              const message = parsedMessage as TMIWebSocketMessage;
-              const messageTypeToCheck = (message as any).message_type || (message as any).event;
-              
-              // Log ALL TMI messages for debugging
-              this.logger.debugComponent('wsmsg', 'TMI WebSocket message received', {
-                messageType: messageTypeToCheck,
-                userId: (message as any).user_id,
-                timestamp: (message as any).timestamp,
-                operationId: (message as any).operation_id,
-                sequenceNumber: (message as any).sequence_number,
-                targetUser: (message as any).target_user,
-                currentPresenter: (message as any).current_presenter,
-                sessionManager: (message as any).session_manager,
-                participantCount: (message as any).participants?.length,
-                hasOperation: !!(message as any).operation,
-                operationType: (message as any).operation?.type,
-                cellCount: (message as any).operation?.cells?.length,
-                reason: (message as any).reason,
-                method: (message as any).method,
-                operationType2: (message as any).operation_type,
-                message: (message as any).message,
-                fullBody: this._redactSensitiveData(message as any),
-              });
-              
-              // Emit the message
-              this._tmiMessages$.next(message);
-            } catch (error) {
+            // Check if this is a TMI message
+            if (!parsedMessage.message_type && !parsedMessage.event) {
+              return; // Not a TMI message
+            }
+
+            // Validate TMI message structure
+            const validationResult = this._validateTMIMessage(parsedMessage);
+            if (!validationResult.isValid) {
               this._handleMalformedMessage(
-                'Unexpected error processing TMI message',
-                error,
-                event.data,
+                `TMI message validation failed: ${validationResult.error}`,
+                null,
+                rawData,
               );
+              return;
             }
-          };
 
-          this._socket.addEventListener('message', messageHandler);
+            const message = parsedMessage as TMIWebSocketMessage;
+            const messageTypeToCheck = (message as any).message_type || (message as any).event;
 
-          // Clean up handler when disconnected
-          const closeHandler = (): void => {
-            if (this._socket) {
-              this._socket.removeEventListener('message', messageHandler);
-            }
-          };
-          this._socket.addEventListener('close', closeHandler, { once: true });
-        }
-      });
+            // Log ALL TMI messages for debugging
+            this.logger.debugComponent('wsmsg', 'TMI WebSocket message received', {
+              messageType: messageTypeToCheck,
+              userId: (message as any).user_id,
+              timestamp: (message as any).timestamp,
+              operationId: (message as any).operation_id,
+              sequenceNumber: (message as any).sequence_number,
+              targetUser: (message as any).target_user,
+              currentPresenter: (message as any).current_presenter,
+              sessionManager: (message as any).session_manager,
+              participantCount: (message as any).participants?.length,
+              hasOperation: !!(message as any).operation,
+              operationType: (message as any).operation?.type,
+              cellCount: (message as any).operation?.cells?.length,
+              reason: (message as any).reason,
+              method: (message as any).method,
+              operationType2: (message as any).operation_type,
+              message: (message as any).message,
+              fullBody: this._redactSensitiveData(message as any),
+            });
+
+            // Emit the message
+            this._tmiMessages$.next(message);
+          } catch (error) {
+            this._handleMalformedMessage(
+              'Unexpected error processing TMI message',
+              error,
+              event.data,
+            );
+          }
+        };
+
+        this._socket.addEventListener('message', messageHandler);
+
+        // Clean up handler when disconnected
+        const closeHandler = (): void => {
+          if (this._socket) {
+            this._socket.removeEventListener('message', messageHandler);
+          }
+        };
+        this._socket.addEventListener('close', closeHandler, { once: true });
+      }
+    });
   }
 
   /**
@@ -620,7 +621,7 @@ export class WebSocketAdapter {
 
         // Check if this is a TMI message (has message_type or event field)
         const isTMIMessage = parsedMessage.message_type || parsedMessage.event;
-        
+
         if (isTMIMessage) {
           // Skip internal validation for TMI messages - they have different structure
           // TMI messages will be handled by getTMIMessagesOfType observers
@@ -668,7 +669,7 @@ export class WebSocketAdapter {
           requiresAck: message.requiresAck,
           body: this._redactSensitiveData(message.data),
         });
-        
+
         // Also log with wsmsg component for consistency
         this.logger.debugComponent('wsmsg', 'Internal WebSocket message received', {
           messageId: message.id,

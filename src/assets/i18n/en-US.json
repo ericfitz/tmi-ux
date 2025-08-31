@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "Approve Presenter Request",
     "availableCollaborationSessions": "Available Collaboration Sessions",
-    "clearPresenter": "Clear Presenter",
     "collaboratorsHeader": "Collaborators",
     "copyLink": "Copy Link",
     "currentPresenter": "Current Presenter",
@@ -34,8 +33,7 @@
     "leaveSession": "Leave Session",
     "makePresenter": "Make Presenter",
     "manageCollaboration": "Manage Collaboration",
-    "presenterHeader": "Presenter Controls",
-    "presenterRequests": "Presenter Requests",
+    "presenterModeRequested": "Presenter Mode Requested",
     "removeFromSession": "Remove from Session",
     "requestPresenter": "Request Presenter",
     "shareLinkHeader": "Share Collaboration Link",
@@ -96,13 +94,16 @@
     "refresh": "Refresh",
     "roles": {
       "owner": "Owner",
-      "presenter": "Presenter",
       "reader": "Reader",
-      "sessionManager": "Session Manager",
       "writer": "Writer"
     },
     "save": "Save",
     "score": "Score",
+    "sessionRoles": {
+      "participant": "Participant",
+      "presenter": "Presenter",
+      "sessionManager": "Session Manager"
+    },
     "severity": "Severity",
     "severityCritical": "Critical",
     "severityHigh": "High",

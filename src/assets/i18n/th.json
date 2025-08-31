@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
-    "clearPresenter": "ล้างผู้นำเสนอ",
     "collaboratorsHeader": "ผู้ร่วมงาน",
     "copyLink": "คัดลอกลิงก์",
     "currentPresenter": "ผู้นำเสนอปัจจุบัน",
@@ -34,8 +33,7 @@
     "leaveSession": "ออกจากเซสชัน",
     "makePresenter": "ทำให้เป็นผู้นำเสนอ",
     "manageCollaboration": "จัดการการทำงานร่วมกัน",
-    "presenterHeader": "การควบคุมผู้นำเสนอ",
-    "presenterRequests": "คำขอเป็นผู้นำเสนอ",
+    "presenterModeRequested": "ขอสิทธิ์การนำเสนอแล้ว",
     "removeFromSession": "ลบออกจากเซสชัน",
     "requestPresenter": "ขอเป็นผู้นำเสนอ",
     "shareLinkHeader": "แชร์ลิงก์การทำงานร่วมกัน",
@@ -96,13 +94,16 @@
     "refresh": "รีเฟรช",
     "roles": {
       "owner": "เจ้าของ",
-      "presenter": "ผู้นำเสนอ",
       "reader": "ผู้อ่าน",
-      "sessionManager": "ผู้จัดการเซสชัน",
       "writer": "ผู้เขียน"
     },
     "save": "บันทึก",
     "score": "คะแนน",
+    "sessionRoles": {
+      "participant": "ผู้เข้าร่วม",
+      "presenter": "ผู้นำเสนอ",
+      "sessionManager": "ผู้จัดการเซสชัน"
+    },
     "severity": "ความรุนแรง",
     "severityCritical": "วิกฤต",
     "severityHigh": "สูง",

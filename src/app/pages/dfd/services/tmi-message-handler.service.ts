@@ -7,7 +7,7 @@ import { DfdNotificationService } from './dfd-notification.service';
 
 /**
  * Service responsible for handling all TMI WebSocket messages
- * 
+ *
  * This service sets up listeners for all TMI message types defined in the AsyncAPI
  * specification and provides centralized handling for each message type.
  */
@@ -244,7 +244,10 @@ export class TMIMessageHandlerService implements OnDestroy {
 
     // Check if the current user left (shouldn't happen but handle gracefully)
     const currentUserId = this._collaborationService.getCurrentUserId();
-    if (message.user_id === currentUserId && !this._collaborationService.isCurrentUserSessionManager()) {
+    if (
+      message.user_id === currentUserId &&
+      !this._collaborationService.isCurrentUserSessionManager()
+    ) {
       this._logger.warn('Current user received leave event, session may have ended');
       // The collaboration service will handle cleanup and redirect
     }
@@ -296,9 +299,16 @@ export class TMIMessageHandlerService implements OnDestroy {
     this._logger.debug('TMI: Presenter request', {
       userId: message.user_id,
     });
-    // TODO: Implement presenter request handling
-    // - Show request to session manager
-    // - Update UI for pending request
+
+    // Only session managers should handle presenter requests
+    if (this._collaborationService.isCurrentUserSessionManager()) {
+      // Add to pending requests list
+      this._collaborationService.addPresenterRequest(message.user_id);
+
+      // Show notification about the request
+      const displayName = this._getUserDisplayName(message.user_id);
+      this._notificationService.showPresenterEvent('requested', displayName).subscribe();
+    }
   }
 
   private _handlePresenterDenied(message: any): void {
@@ -306,9 +316,16 @@ export class TMIMessageHandlerService implements OnDestroy {
       userId: message.user_id,
       targetUser: message.target_user,
     });
-    // TODO: Implement presenter denied handling
-    // - Show denial notification
-    // - Update UI state
+
+    // Update the user's presenter request state back to hand_down
+    const currentUserId = this._collaborationService.getCurrentUserId();
+    if (message.target_user === currentUserId && currentUserId) {
+      // Update local state to hand_down since request was denied
+      this._collaborationService.updateUserPresenterRequestState(currentUserId, 'hand_down');
+
+      // Show denial notification
+      this._notificationService.showPresenterEvent('requestDenied').subscribe();
+    }
   }
 
   private _handleChangePresenter(message: any): void {
@@ -316,10 +333,14 @@ export class TMIMessageHandlerService implements OnDestroy {
       userId: message.user_id,
       newPresenter: message.new_presenter,
     });
-    // TODO: Implement change presenter handling
-    // - Update presenter state
-    // - Show notification
-    // - Update UI controls
+
+    // This message is sent by the session manager when they change the presenter
+    // The server will follow up with a current_presenter message to all clients
+    // For now, just log that we received it
+    this._logger.info('Session manager is changing presenter', {
+      sessionManager: message.user_id,
+      newPresenter: message.new_presenter,
+    });
   }
 
   private _handleCurrentPresenter(message: any): void {
@@ -437,8 +458,8 @@ export class TMIMessageHandlerService implements OnDestroy {
       participantCount: message.participants?.length,
       sessionManager: message.session_manager,
       currentPresenter: message.current_presenter,
-      participants: message.participants?.map((p: any) => ({ 
-        userId: p.user_id, 
+      participants: message.participants?.map((p: any) => ({
+        userId: p.user_id,
         permissions: p.permissions,
         isPresenter: p.is_presenter,
         isSessionManager: p.is_session_manager,
@@ -478,12 +499,12 @@ export class TMIMessageHandlerService implements OnDestroy {
     if (!userId) {
       return 'Unknown User';
     }
-    
+
     // If it's an email, use the part before @ as the display name
     if (userId.includes('@')) {
       return userId.split('@')[0];
     }
-    
+
     return userId;
   }
 }

@@ -25,6 +25,8 @@ export interface CollaborationUser {
   isPresenter?: boolean;
   isSessionManager?: boolean; // True for the person who created the session
   lastActivity?: Date;
+  // Presenter request state for UI
+  presenterRequestState?: 'hand_down' | 'hand_raised' | 'presenter';
 }
 
 /**
@@ -241,6 +243,7 @@ export class DfdCollaborationService implements OnDestroy {
               permission: participant.permissions, // Use permissions from API response - required field
               status: 'active' as const,
               isSessionManager: participant.user_id === session.session_manager, // Use session_manager field from API
+              presenterRequestState: 'hand_down' as const,
             };
           });
 
@@ -250,7 +253,7 @@ export class DfdCollaborationService implements OnDestroy {
         tap(() => {
           // Show session joined notification only after user is verified in list
           this._notificationService.showSessionEvent('userJoined').subscribe();
-          
+
           // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
@@ -328,6 +331,7 @@ export class DfdCollaborationService implements OnDestroy {
               permission: participant.permissions, // Use permissions from API response
               status: 'active' as const,
               isSessionManager: participant.user_id === session.session_manager,
+              presenterRequestState: 'hand_down' as const,
             };
           });
 
@@ -338,7 +342,7 @@ export class DfdCollaborationService implements OnDestroy {
         }),
         // No longer ensuring user in participant list via REST API
         // Participants will be managed through WebSocket messages only
-        tap((result) => {
+        tap(result => {
           // Show appropriate notification based on whether session was created or joined
           if (result.isNewSession) {
             this._notificationService.showSessionEvent('started').subscribe();
@@ -420,6 +424,7 @@ export class DfdCollaborationService implements OnDestroy {
               permission: participant.permissions, // Use permissions from API response - required field
               status: 'active' as const,
               isSessionManager: participant.user_id === session.session_manager, // Use session_manager field from API
+              presenterRequestState: 'hand_down' as const,
             };
           });
 
@@ -516,7 +521,7 @@ export class DfdCollaborationService implements OnDestroy {
               userId: currentUserId,
             });
           },
-          error: (error) => {
+          error: error => {
             this._logger.error('Failed to send leave message', error);
             // Continue with session end even if leave message fails
           },
@@ -691,6 +696,7 @@ export class DfdCollaborationService implements OnDestroy {
         isPresenter: false,
         isSessionManager: userId === this._currentSession?.session_manager,
         lastActivity: new Date(),
+        presenterRequestState: 'hand_down',
       };
 
       const updatedUsers = [...currentUsers, newUser];
@@ -714,12 +720,12 @@ export class DfdCollaborationService implements OnDestroy {
       currentParticipantCount: currentUsers.length,
       currentParticipants: currentUsers.map(u => ({ id: u.id, name: u.name })),
     });
-    
+
     const updatedUsers = currentUsers.filter(user => user.id !== userId);
 
     if (updatedUsers.length !== currentUsers.length) {
       this._collaborationUsers$.next(updatedUsers);
-      this._logger.info('Removed participant from collaboration session', { 
+      this._logger.info('Removed participant from collaboration session', {
         userId,
         previousCount: currentUsers.length,
         newCount: updatedUsers.length,
@@ -757,6 +763,7 @@ export class DfdCollaborationService implements OnDestroy {
       isPresenter: participant.is_presenter,
       isSessionManager: participant.is_session_manager,
       lastActivity: new Date(participant.joined_at || Date.now()),
+      presenterRequestState: participant.is_presenter ? 'presenter' : ('hand_down' as const),
     }));
 
     // Update the participant list
@@ -914,6 +921,9 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._logger.info('Requesting presenter privileges', { userId: currentUserId });
 
+    // Update local state to hand_raised
+    this.updateUserPresenterRequestState(currentUserId, 'hand_raised');
+
     // Send presenter request via WebSocket
     return this._webSocketAdapter
       .sendTMIMessage({
@@ -928,6 +938,8 @@ export class DfdCollaborationService implements OnDestroy {
         }),
         catchError(error => {
           this._logger.error('Failed to send presenter request', error);
+          // Revert state on error
+          this.updateUserPresenterRequestState(currentUserId, 'hand_down');
           this._notificationService
             .showOperationError('send presenter request', error.message || 'Unknown error')
             .subscribe();
@@ -1087,7 +1099,29 @@ export class DfdCollaborationService implements OnDestroy {
     const updatedUsers = users.map(user => ({
       ...user,
       isPresenter: user.id === presenterId,
+      // Update presenter request state based on new presenter
+      presenterRequestState:
+        user.id === presenterId ? ('presenter' as const) : ('hand_down' as const),
     }));
+    this._collaborationUsers$.next(updatedUsers);
+  }
+
+  /**
+   * Update a user's presenter request state
+   * @param userId The user ID to update
+   * @param state The new presenter request state
+   */
+  public updateUserPresenterRequestState(
+    userId: string,
+    state: 'hand_down' | 'hand_raised' | 'presenter',
+  ): void {
+    const users = this._collaborationUsers$.value;
+    const updatedUsers = users.map(user => {
+      if (user.id === userId) {
+        return { ...user, presenterRequestState: state };
+      }
+      return user;
+    });
     this._collaborationUsers$.next(updatedUsers);
   }
 
@@ -1105,7 +1139,7 @@ export class DfdCollaborationService implements OnDestroy {
     this._webSocketAdapter.connect(fullWebSocketUrl).subscribe({
       next: () => {
         this._logger.info('WebSocket connection established successfully');
-        
+
         // Send join message to notify server we've connected
         const currentUserId = this.getCurrentUserId();
         if (currentUserId) {
@@ -1122,7 +1156,7 @@ export class DfdCollaborationService implements OnDestroy {
                   userId: currentUserId,
                 });
               },
-              error: (error) => {
+              error: error => {
                 this._logger.error('Failed to send join message', error);
               },
             });
@@ -1307,11 +1341,13 @@ export class DfdCollaborationService implements OnDestroy {
         break;
       case WebSocketState.CONNECTED: {
         this._notificationService.showWebSocketStatus(state).subscribe();
-        
+
         // Send join message when reconnected (in case this is after a reconnection)
         const currentUserId = this.getCurrentUserId();
         if (currentUserId) {
-          this._logger.info('Sending join message after WebSocket (re)connection', { userId: currentUserId });
+          this._logger.info('Sending join message after WebSocket (re)connection', {
+            userId: currentUserId,
+          });
           this._webSocketAdapter
             .sendTMIMessage({
               event: 'join',
@@ -1324,7 +1360,7 @@ export class DfdCollaborationService implements OnDestroy {
                   userId: currentUserId,
                 });
               },
-              error: (error) => {
+              error: error => {
                 this._logger.error('Failed to send join message after reconnection', error);
               },
             });
@@ -1471,7 +1507,6 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   // TMI join/leave handlers removed - now handled by TMIMessageHandlerService
-
 
   /**
    * Handle TMI presenter changed event

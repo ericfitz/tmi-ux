@@ -73,9 +73,7 @@ export interface PermissionsDialogData {
                       [value]="auth.role"
                       (selectionChange)="updatePermissionRole(i, $event)"
                     >
-                      <mat-option value="owner">{{
-                        'common.roles.owner' | transloco
-                      }}</mat-option>
+                      <mat-option value="owner">{{ 'common.roles.owner' | transloco }}</mat-option>
                       <mat-option value="writer">{{
                         'common.roles.writer' | transloco
                       }}</mat-option>
@@ -84,9 +82,7 @@ export interface PermissionsDialogData {
                       }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <span *ngIf="data.isReadOnly">{{
-                    'common.roles.' + auth.role | transloco
-                  }}</span>
+                  <span *ngIf="data.isReadOnly">{{ 'common.roles.' + auth.role | transloco }}</span>
                 </td>
               </ng-container>
 

@@ -24,7 +24,6 @@
   "collaboration": {
     "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
     "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen",
-    "clearPresenter": "Präsentator entfernen",
     "collaboratorsHeader": "Mitarbeiter",
     "copyLink": "Link kopieren",
     "currentPresenter": "Aktueller Präsentator",
@@ -34,8 +33,7 @@
     "leaveSession": "Sitzung verlassen",
     "makePresenter": "Zum Präsentator machen",
     "manageCollaboration": "Zusammenarbeit verwalten",
-    "presenterHeader": "Präsentator-Steuerung",
-    "presenterRequests": "Präsentator-Anfragen",
+    "presenterModeRequested": "Präsentationsmodus angefordert",
     "removeFromSession": "Aus Sitzung entfernen",
     "requestPresenter": "Präsentator anfordern",
     "shareLinkHeader": "Kollaborationslink teilen",
@@ -96,13 +94,16 @@
     "refresh": "Aktualisieren",
     "roles": {
       "owner": "Eigentümer",
-      "presenter": "Präsentator",
       "reader": "Leser",
-      "sessionManager": "Sitzungsverwalter",
       "writer": "Bearbeiter"
     },
     "save": "Speichern",
     "score": "Bewertung",
+    "sessionRoles": {
+      "participant": "Teilnehmer",
+      "presenter": "Präsentator",
+      "sessionManager": "Sitzungsverwalter"
+    },
     "severity": "Schweregrad",
     "severityCritical": "Kritisch",
     "severityHigh": "Hoch",

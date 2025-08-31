@@ -126,13 +126,14 @@
   }
 
   .users-list {
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
 
     .user-item {
-      display: flex;
+      display: grid;
+      grid-template-columns: 40px 40px 1fr 50px 40px;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
       padding: 8px 0;
       border-bottom: 1px solid rgb(0 0 0 / 6%);
 
@@ -140,53 +141,115 @@
         border-bottom: none;
       }
 
-      .user-info {
+      // Column 1: User Type
+      .user-type-column {
         display: flex;
+        justify-content: center;
         align-items: center;
 
-        .user-name {
-          font-weight: 500;
-          margin-right: 8px;
-          flex-grow: 1;
-        }
+        mat-icon {
+          font-size: 20px;
+          color: rgb(0 0 0 / 60%);
 
-        .user-permissions {
-          display: flex;
-          align-items: center;
-          margin-left: 8px;
-
-          .permission-icon {
-            font-size: 18px;
-            width: 18px;
-            height: 18px;
-
-            &.owner-icon {
-              color: var(--color-role-owner);
-            }
-
-            &.writer-icon {
-              color: var(--color-role-writer);
-            }
-
-            &.reader-icon {
-              color: var(--color-role-reader);
-            }
-
-            &.presenter-icon {
-              color: var(--color-role-presenter);
-            }
+          &[fonticon='admin_panel_settings'] {
+            color: var(--color-role-owner, #ff9800); // Orange for session manager
           }
         }
       }
 
-      .user-actions {
+      // Column 2: Permissions
+      .permissions-column {
         display: flex;
+        justify-content: center;
+        align-items: center;
+
+        mat-icon {
+          font-size: 18px;
+
+          &[fonticon='edit'] {
+            color: var(--color-role-writer);
+          }
+
+          &[fonticon='edit_off'] {
+            color: var(--color-role-reader);
+          }
+        }
+      }
+
+      // Column 3: Username
+      .username-column {
+        font-weight: 500;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      // Column 4: Presenter Control
+      .presenter-column {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        .presenter-icon {
+          font-size: 20px;
+          color: var(--color-role-presenter);
+
+          &.inactive {
+            color: rgb(0 0 0 / 26%);
+          }
+
+          &.hand-raised {
+            color: var(--color-success);
+          }
+
+          &.with-overlay {
+            position: relative;
+          }
+        }
+
+        .presenter-button {
+          width: 40px;
+          height: 40px;
+          padding: 0;
+          position: relative;
+
+          .overlay-icon {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 14px;
+            background: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+
+        .presenter-placeholder {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      // Column 5: Remove User
+      .remove-column {
+        display: flex;
+        justify-content: center;
         align-items: center;
 
         button {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          width: 36px;
+          height: 36px;
+          padding: 0;
+
+          mat-icon {
+            font-size: 20px;
+          }
         }
       }
     }

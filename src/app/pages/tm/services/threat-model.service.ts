@@ -1809,10 +1809,7 @@ export class ThreatModelService implements OnDestroy {
           // Validate that the response is a valid collaboration session
           // An empty object {} should be treated as no session
           if (!response || !response.session_id) {
-            this.logger.debug(
-              'No active collaboration session exists',
-              response,
-            );
+            this.logger.debug('No active collaboration session exists', response);
             return null;
           }
           return response;

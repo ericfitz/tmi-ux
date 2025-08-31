@@ -417,7 +417,13 @@ export class DfdNotificationService implements OnDestroy {
    * @param userName Optional user name for context
    */
   showPresenterEvent(
-    event: 'assigned' | 'requestSent' | 'requestApproved' | 'requestDenied' | 'cleared',
+    event:
+      | 'assigned'
+      | 'requestSent'
+      | 'requestApproved'
+      | 'requestDenied'
+      | 'cleared'
+      | 'requested',
     userName?: string,
   ): Observable<void> {
     let message: string;
@@ -446,6 +452,14 @@ export class DfdNotificationService implements OnDestroy {
         break;
       case 'cleared':
         message = 'Presenter mode has been cleared';
+        presetKey = 'info';
+        break;
+      case 'requested':
+        if (userName) {
+          message = `${userName} is requesting presenter privileges`;
+        } else {
+          message = 'Presenter privileges requested';
+        }
         presetKey = 'info';
         break;
       default:
