@@ -5,6 +5,16 @@
   align-items: center;
 }
 
+.logo-button {
+  padding: 0;
+  
+  .tmi-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+}
+
 .navbar-left,
 .navbar-right {
   display: flex;
