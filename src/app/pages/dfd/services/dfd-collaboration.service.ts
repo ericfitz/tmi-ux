@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, Subscription, of } from 'rxjs';
 import { map, catchError, tap, skip } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -259,6 +259,55 @@ export class DfdCollaborationService implements OnDestroy {
         map(() => true),
         catchError(error => {
           this._logger.error('Failed to join collaboration session via PUT', error);
+          
+          // Check if this is a 403 error - reader trying to join
+          if (error?.status === 403) {
+            // Check if a session already exists that we can connect to directly
+            const existingSession = this._existingSessionAvailable$.value;
+            if (existingSession) {
+              this._logger.info('Reader received 403 on PUT, but session exists - connecting directly to WebSocket', {
+                sessionId: existingSession.session_id,
+                websocketUrl: existingSession.websocket_url,
+              });
+              
+              // Store the session
+              this._currentSession = existingSession;
+
+              // Set up WebSocket listeners before connecting
+              this._setupWebSocketListeners();
+
+              // Connect to WebSocket
+              this._connectToWebSocket(existingSession.websocket_url);
+
+              // Update collaboration state
+              this._isCollaborating$.next(true);
+              // Clear existing session state since we're now actively collaborating
+              this._existingSessionAvailable$.next(null);
+
+              // Convert API participants to CollaborationUser format
+              const collaborationUsers: CollaborationUser[] = existingSession.participants.map(participant => ({
+                id: participant.user_id,
+                name: this._getUserDisplayName(participant.user_id),
+                permission: participant.permissions || 'reader',
+                status: 'active' as const,
+                isHost: participant.user_id === existingSession.host,
+                presenterRequestState: 'hand_down' as const,
+              }));
+
+              this._collaborationUsers$.next(collaborationUsers);
+              
+              // Show session joined notification
+              this._notificationService.showSessionEvent('userJoined').subscribe();
+              
+              return of(true);
+            } else {
+              // No existing session - reader cannot create one
+              this._logger.warn('Reader cannot create collaboration session - no existing session found');
+              this._notificationService.showError('You need writer permissions to start a collaboration session').subscribe();
+              return of(false);
+            }
+          }
+          
           return throwError(() => error);
         }),
       );

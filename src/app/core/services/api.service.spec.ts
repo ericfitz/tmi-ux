@@ -355,7 +355,7 @@ describe('ApiService', () => {
       result$.subscribe({
         error: () => {
           expect(loggerService.debugComponent).toHaveBeenCalledWith(
-            'Api',
+            'api',
             'Full error response',
             serverError,
           );

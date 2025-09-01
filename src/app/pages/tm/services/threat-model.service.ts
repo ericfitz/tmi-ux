@@ -18,7 +18,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Observable, of, Subscription, BehaviorSubject, throwError, timer } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs/operators';
@@ -51,6 +51,7 @@ interface CollaborationSession {
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
+import { SKIP_ERROR_HANDLING } from '../../../core/tokens/http-context.tokens';
 
 /**
  * Type guard to check if an error is an HttpErrorResponse
@@ -1868,10 +1869,14 @@ export class ThreatModelService implements OnDestroy {
       return of(mockSession);
     }
 
+    // Create HttpContext to skip automatic error handling for 403 errors
+    const context = new HttpContext().set(SKIP_ERROR_HANDLING, true);
+    
     return this.apiService
       .put<CollaborationSession>(
         `threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
         {},
+        context,
       )
       .pipe(
         tap(session => {

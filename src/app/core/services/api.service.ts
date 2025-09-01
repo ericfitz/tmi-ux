@@ -15,7 +15,7 @@
  * - Handles timeout and network connectivity issues gracefully
  */
 
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, retry, timeout } from 'rxjs/operators';
@@ -25,6 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../auth/services/auth.service';
+import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import {
   ValidationErrorDialogComponent,
   ValidationErrorData,
@@ -89,15 +90,16 @@ export class ApiService {
    * Generic PUT request
    * @param endpoint The API endpoint (without the base URL)
    * @param body The request body
+   * @param context Optional HttpContext for advanced request configuration
    */
-  put<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
+  put<T>(endpoint: string, body: Record<string, unknown>, context?: HttpContext): Observable<T> {
     const url = `${this.apiUrl}/${endpoint}`;
 
     // Request logging handled by JWT interceptor
 
-    return this.http.put<T>(url, body).pipe(
+    return this.http.put<T>(url, body, context ? { context } : {}).pipe(
       // Response logging handled by JWT interceptor
-      catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint)),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'PUT', endpoint, context)),
     );
   }
 
@@ -152,8 +154,12 @@ export class ApiService {
     error: HttpErrorResponse | TimeoutError | Error,
     method: string,
     endpoint: string,
+    context?: HttpContext,
   ): Observable<never> {
     let errorMessage = '';
+
+    // Check if error handling should be skipped
+    const skipErrorHandling = context?.get(SKIP_ERROR_HANDLING) ?? false;
 
     if (error instanceof TimeoutError) {
       // Request timeout
@@ -169,21 +175,23 @@ export class ApiService {
         errorMessage = `Server Error: ${error.status} ${error.statusText} for ${method} ${endpoint}`;
         this.logger.error(errorMessage, error);
 
-        // Handle specific error types
-        if (error.status === 400) {
-          // Handle validation errors
-          this.handleValidationError(error);
-        } else if (error.status === 401) {
-          this.logger.warn('API returned 401 Unauthorized. Redirecting to login.');
-          this.authService.logout(); // Clear session
-          void this.router.navigate(['/login'], {
-            queryParams: { returnUrl: this.router.url, reason: 'unauthorized_api' },
-          });
-        } else if (error.status === 403) {
-          this.logger.warn('API returned 403 Forbidden. Redirecting to unauthorized page.');
-          void this.router.navigate(['/unauthorized'], {
-            queryParams: { currentUrl: this.router.url, reason: 'forbidden_api' },
-          });
+        // Only handle specific error types if not skipped
+        if (!skipErrorHandling) {
+          if (error.status === 400) {
+            // Handle validation errors
+            this.handleValidationError(error);
+          } else if (error.status === 401) {
+            this.logger.warn('API returned 401 Unauthorized. Redirecting to login.');
+            this.authService.logout(); // Clear session
+            void this.router.navigate(['/login'], {
+              queryParams: { returnUrl: this.router.url, reason: 'unauthorized_api' },
+            });
+          } else if (error.status === 403) {
+            this.logger.warn('API returned 403 Forbidden. Redirecting to unauthorized page.');
+            void this.router.navigate(['/unauthorized'], {
+              queryParams: { currentUrl: this.router.url, reason: 'forbidden_api' },
+            });
+          }
         }
 
         // Log more details in debug mode
