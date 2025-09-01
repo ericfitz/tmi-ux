@@ -387,17 +387,8 @@ describe('AuthService', () => {
       const result$ = service.getAvailableProviders();
 
       result$.subscribe(providers => {
-        expect(providers).toEqual([
-          ...mockProvidersResponse.providers,
-          {
-            id: 'local',
-            name: 'Local Development',
-            icon: 'fa-solid fa-laptop-code',
-            auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-            redirect_uri: expect.stringContaining('/oauth2/callback'),
-            client_id: 'local-development',
-          },
-        ]);
+        // When server is connected, should only return server providers (no local)
+        expect(providers).toEqual(mockProvidersResponse.providers);
       });
 
       expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/providers`);
@@ -441,10 +432,9 @@ describe('AuthService', () => {
       expect(httpClient.get).toHaveBeenCalledTimes(1);
     });
 
-    it('should skip server requests in local-only mode', () => {
-      // Temporarily mock environment to simulate local-only mode
-      const originalAuthMode = vi.mocked(environment).authMode;
-      vi.mocked(environment).authMode = 'local-only';
+    it('should return only local provider when server is not connected', () => {
+      // Mock server as not connected
+      vi.mocked(serverConnectionService).currentStatus = ServerConnectionStatus.ERROR;
 
       const result$ = service.getAvailableProviders();
 
@@ -461,11 +451,8 @@ describe('AuthService', () => {
         ]);
       });
 
-      // Should not make any HTTP requests
+      // Should not make any HTTP requests when server is not connected
       expect(httpClient.get).not.toHaveBeenCalled();
-
-      // Restore original environment
-      vi.mocked(environment).authMode = originalAuthMode;
     });
   }); /* End of OAuth Login describe block */
 
@@ -493,7 +480,6 @@ describe('AuthService', () => {
             providers: expect.any(Array),
           }),
         );
-        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
         expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
@@ -522,7 +508,6 @@ describe('AuthService', () => {
             providers: expect.any(Array),
           }),
         );
-        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
         expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
@@ -629,7 +614,6 @@ describe('AuthService', () => {
             providers: expect.any(Array),
           }),
         );
-        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
         expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
@@ -1049,6 +1033,26 @@ describe('AuthService', () => {
         'Auth',
         'Skipping server logout for test user',
       );
+    });
+    
+    it('should clear provider cache on logout', () => {
+      // Set up initial state with cached providers
+      service['cachedProviders'] = mockProvidersResponse.providers;
+      service['providersCacheTime'] = Date.now();
+      
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+      
+      // Call logout
+      service.logout();
+      
+      // Verify provider cache is cleared
+      expect(service['cachedProviders']).toBeNull();
+      expect(service['providersCacheTime']).toBe(0);
+      
+      // Verify auth data is also cleared
+      expect(service.isAuthenticated).toBe(false);
+      expect(service.userProfile).toBeNull();
     });
   }); /* End of Enhanced Logout Functionality describe block */
 

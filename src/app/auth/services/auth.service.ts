@@ -347,71 +347,58 @@ export class AuthService {
       return of(this.cachedProviders);
     }
 
-    // Check if we're in local-only mode (no server required)
-    if (this.isOnlyLocalProviderEnabled()) {
-      this.logger.debugComponent('Auth', 'Local-only mode detected, using local provider only');
-      return this.getFallbackProviders();
-    }
-
-    // Check server connection status for server-required modes
+    // Check server connection status
     const serverStatus = this.serverConnectionService.currentStatus;
-    if (serverStatus !== ServerConnectionStatus.CONNECTED) {
-      this.logger.debugComponent('Auth', 'Server not connected, using local provider only', {
+    const isServerConfigured = this.isServerConfigured();
+    
+    if (!isServerConfigured || serverStatus !== ServerConnectionStatus.CONNECTED) {
+      this.logger.debugComponent('Auth', 'Server not available, using local provider only', {
+        isServerConfigured,
         serverStatus,
       });
-      return this.getFallbackProviders();
+      return this.getLocalProviderOnly();
     }
 
     this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
 
     return this.http.get<ProvidersResponse>(`${environment.apiUrl}/oauth2/providers`).pipe(
       map(response => {
-        // Add local provider if in development or no other providers available
+        // When server is connected, only return server providers (no local provider)
         const providers = [...response.providers];
-        const shouldShowLocal =
-          environment.oauth?.local?.enabled !== false &&
-          (!environment.production || // Development environment
-            providers.length === 0); // Production but no other providers
-
-        if (shouldShowLocal) {
-          providers.push({
-            id: 'local',
-            name: 'Local Development',
-            icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
-            auth_url: this.localProvider.buildAuthUrl(''),
-            redirect_uri: `${window.location.origin}/oauth2/callback`,
-            client_id: 'local-development',
-          });
-        }
 
         // Cache the results
         this.cachedProviders = providers;
         this.providersCacheTime = now;
 
-        this.logger.debugComponent('Auth', `Fetched ${providers.length} OAuth providers`, {
+        this.logger.debugComponent('Auth', `Fetched ${providers.length} OAuth providers from server`, {
           providers: providers.map(p => ({ id: p.id, name: p.name })),
         });
         return providers;
       }),
       catchError(error => {
         this.logger.error('Failed to fetch OAuth providers', error);
-        return this.getFallbackProviders();
+        return this.getLocalProviderOnly();
       }),
     );
   }
 
+
   /**
-   * Check if only the local provider is enabled
-   * When in local-only mode, we don't need server connectivity
+   * Check if server is configured based on environment
    */
-  private isOnlyLocalProviderEnabled(): boolean {
-    return environment.authMode === 'local-only';
+  private isServerConfigured(): boolean {
+    // Consider server not configured if apiUrl is empty, localhost with default port, or example URL
+    const apiUrl = environment.apiUrl;
+    if (!apiUrl || apiUrl.includes('api.example.com') || apiUrl === 'http://localhost:8080/api') {
+      return false;
+    }
+    return true;
   }
 
   /**
-   * Get fallback providers (local provider only) when server is unavailable
+   * Get local provider only when server is unavailable
    */
-  private getFallbackProviders(): Observable<OAuthProviderInfo[]> {
+  private getLocalProviderOnly(): Observable<OAuthProviderInfo[]> {
     const fallbackProviders: OAuthProviderInfo[] = [];
     if (environment.oauth?.local?.enabled !== false) {
       fallbackProviders.push({
@@ -428,7 +415,7 @@ export class AuthService {
     this.cachedProviders = fallbackProviders;
     this.providersCacheTime = Date.now();
 
-    this.logger.debugComponent('Auth', `Using fallback providers: ${fallbackProviders.length}`, {
+    this.logger.debugComponent('Auth', 'Using local provider only (server unavailable)', {
       providers: fallbackProviders.map(p => ({ id: p.id, name: p.name })),
     });
 
@@ -455,8 +442,10 @@ export class AuthService {
         }
 
         if (selectedProviderId === 'local') {
+          this.logger.info('Initiating local provider login');
           this.initiateLocalLogin();
         } else {
+          this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`);
           this.initiateTMIOAuthLogin(provider);
         }
       },
@@ -519,10 +508,19 @@ export class AuthService {
   private initiateLocalLogin(): void {
     try {
       this.logger.info('Initiating local provider login');
+      this.logger.debugComponent('Auth', 'AuthService.initiateLocalLogin called');
 
       const state = this.generateRandomState();
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', 'local');
+      
+      // Store debug info that will survive page reload
+      localStorage.setItem('local_auth_debug', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        state: state,
+        provider: 'local',
+        action: 'initiating_local_login'
+      }));
 
       this.logger.debugComponent('Auth', 'Initiating local OAuth', {
         providerId: 'local',
@@ -530,6 +528,7 @@ export class AuthService {
       });
 
       const authUrl = this.localProvider.buildAuthUrl(state);
+      this.logger.debugComponent('Auth', 'Local auth URL', authUrl);
       window.location.href = authUrl;
     } catch (error) {
       this.handleAuthError({
@@ -604,6 +603,15 @@ export class AuthService {
 
       // For local provider, enforce strict state validation
       if (providerId === 'local') {
+        this.logger.info('Local provider state validation', {
+          receivedState,
+          storedState,
+          providerId,
+          statesMatch: storedState === receivedState,
+          hasStoredState: !!storedState,
+          hasReceivedState: !!receivedState
+        });
+        
         if (!storedState || storedState !== receivedState) {
           this.logger.error(
             `Local provider state mismatch: received "${receivedState}", stored "${storedState}"`,
@@ -714,7 +722,11 @@ export class AuthService {
    * Handle local OAuth callback
    */
   private handleLocalCallback(response: OAuthResponse): Observable<boolean> {
+    this.logger.info('handleLocalCallback called', { code: response.code });
+    
     const userInfo = this.localProvider.exchangeCodeForUser(response.code!);
+    this.logger.info('exchangeCodeForUser result', userInfo);
+    
     if (!userInfo) {
       this.handleAuthError({
         code: 'local_auth_error',
@@ -724,17 +736,31 @@ export class AuthService {
       return of(false);
     }
 
-    // Create a local JWT-like token
-    const token = this.createLocalToken(userInfo);
-    this.storeToken(token);
-    this.storeUserProfile(userInfo);
+    try {
+      // Create a local JWT-like token
+      const token = this.createLocalToken(userInfo);
+      this.logger.info('Local token created', { 
+        tokenLength: token.token.length,
+        expiresAt: token.expiresAt.toISOString()
+      });
+      
+      this.storeToken(token);
+      this.storeUserProfile(userInfo);
 
-    this.isAuthenticatedSubject.next(true);
-    this.userProfileSubject.next(userInfo);
+      this.isAuthenticatedSubject.next(true);
+      this.userProfileSubject.next(userInfo);
 
-    this.logger.info(`Local user ${userInfo.email} successfully logged in`);
-    void this.router.navigate(['/tm']);
-    return of(true);
+      this.logger.info(`Local user ${userInfo.email} successfully logged in`);
+      return of(true);
+    } catch (error) {
+      this.logger.error('Error in handleLocalCallback', error);
+      this.handleAuthError({
+        code: 'local_auth_error',
+        message: error instanceof Error ? error.message : 'Failed to create local token',
+        retryable: true,
+      });
+      return of(false);
+    }
   }
 
   /**
@@ -845,6 +871,69 @@ export class AuthService {
       message: errorDescription || userMessage,
       retryable: error !== 'access_denied',
     });
+  }
+
+  /**
+   * Create a local JWT token with custom expiry time for development
+   * @param userInfo User profile information
+   * @param expiryMinutes Token expiry time in minutes (default: environment setting)
+   * @returns true if successful, false otherwise
+   */
+  createLocalTokenWithExpiry(userInfo: UserProfile, expiryMinutes?: number): boolean {
+    try {
+      // Ensure required fields are present
+      if (!userInfo.id) {
+        throw new Error('User ID is required for JWT token creation');
+      }
+      if (!userInfo.email) {
+        throw new Error('User email is required for JWT token creation');
+      }
+      
+      const header = { alg: 'HS256', typ: 'JWT' };
+      const effectiveExpiryMinutes = expiryMinutes || environment.authTokenExpiryMinutes;
+      const payload = {
+        sub: userInfo.id,
+        id: userInfo.id,
+        name: userInfo.name || 'Local User',
+        email: userInfo.email,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + effectiveExpiryMinutes * 60,
+        provider: 'local',
+        providers: userInfo.providers || [{ provider: 'local', is_primary: true }],
+      };
+
+      // Create a fake JWT (just for consistency, server not involved)
+      const fakeJwt =
+        btoa(JSON.stringify(header)) + '.' + btoa(JSON.stringify(payload)) + '.' + 'local-signature';
+
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + effectiveExpiryMinutes);
+
+      const token: JwtToken = {
+        token: fakeJwt,
+        expiresAt,
+        expiresIn: effectiveExpiryMinutes * 60,
+      };
+
+      // Store token and user profile
+      this.storeToken(token);
+      this.storeUserProfile(userInfo);
+      
+      // Update authentication state
+      this.isAuthenticatedSubject.next(true);
+      this.userProfileSubject.next(userInfo);
+      
+      this.logger.info(`Local user ${userInfo.email} successfully logged in with ${effectiveExpiryMinutes} minute token`);
+      return true;
+    } catch (error) {
+      this.logger.error('Failed to create local token', error);
+      this.handleAuthError({
+        code: 'local_token_error',
+        message: error instanceof Error ? error.message : 'Failed to create local token',
+        retryable: false,
+      });
+      return false;
+    }
   }
 
   /**
@@ -1098,6 +1187,11 @@ export class AuthService {
     this.isAuthenticatedSubject.next(false);
     this.userProfileSubject.next(null);
     this.jwtTokenSubject.next(null);
+    
+    // Clear cached providers to force re-evaluation on next login
+    this.cachedProviders = null;
+    this.providersCacheTime = 0;
+    this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');
   }
 
   /**

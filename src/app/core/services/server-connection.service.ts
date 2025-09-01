@@ -138,8 +138,8 @@ export class ServerConnectionService implements OnDestroy {
       'Starting connection monitoring for save operations',
     );
 
-    if (!this.isServerConfigured() || this.isOnlyLocalProviderEnabled()) {
-      this.logger.info('Server monitoring disabled - not configured or local-only mode');
+    if (!this.isServerConfigured()) {
+      this.logger.info('Server monitoring disabled - not configured');
       return;
     }
   }
@@ -254,12 +254,6 @@ export class ServerConnectionService implements OnDestroy {
       return;
     }
 
-    // Check if only local provider is enabled (no server required)
-    if (this.isOnlyLocalProviderEnabled()) {
-      this.logger.info('Only local provider enabled - server monitoring disabled');
-      this._connectionStatus$.next(ServerConnectionStatus.NOT_CONFIGURED);
-      return;
-    }
 
     this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
 
@@ -279,13 +273,6 @@ export class ServerConnectionService implements OnDestroy {
     return true;
   }
 
-  /**
-   * Check if only the local provider is enabled
-   * When in local-only mode, we don't need server connectivity
-   */
-  private isOnlyLocalProviderEnabled(): boolean {
-    return environment.authMode === 'local-only';
-  }
 
   /**
    * Start periodic health check monitoring with exponential backoff
@@ -477,7 +464,7 @@ export class ServerConnectionService implements OnDestroy {
    * Manually trigger a connection check
    */
   public checkConnection(): void {
-    if (this.isServerConfigured() && !this.isOnlyLocalProviderEnabled()) {
+    if (this.isServerConfigured()) {
       this.performHealthCheck().subscribe({
         next: () => {
           this.logger.debugComponent(

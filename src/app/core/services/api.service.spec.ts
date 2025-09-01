@@ -217,6 +217,7 @@ describe('ApiService', () => {
         expect(httpClient.put).toHaveBeenCalledWith(
           `${environment.apiUrl}/${testEndpoint}`,
           testBody,
+          {},
         );
         // Logging is now handled by JWT interceptor
       });
@@ -355,7 +356,7 @@ describe('ApiService', () => {
       result$.subscribe({
         error: () => {
           expect(loggerService.debugComponent).toHaveBeenCalledWith(
-            'api',
+            'Api',
             'Full error response',
             serverError,
           );

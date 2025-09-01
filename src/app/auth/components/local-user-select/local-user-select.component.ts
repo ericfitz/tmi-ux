@@ -6,8 +6,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TranslocoModule } from '@jsverse/transloco';
-import { LocalOAuthProviderService } from '../../services/local-oauth-provider.service';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { AuthService } from '../../services/auth.service';
+import { UserProfile } from '../../models/auth.models';
+import { LoggerService } from '../../../core/services/logger.service';
 
 @Component({
   selector: 'app-local-user-select',
@@ -34,7 +36,7 @@ import { LocalOAuthProviderService } from '../../services/local-oauth-provider.s
           </div>
         </mat-card-header>
         <mat-card-content>
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" (submit)="onFormSubmit($event)" class="login-form">
             <mat-form-field appearance="outline" class="email-field">
               <mat-label>{{ 'login.local.emailLabel' | transloco }}</mat-label>
               <input
@@ -57,6 +59,7 @@ import { LocalOAuthProviderService } from '../../services/local-oauth-provider.s
               type="submit"
               [disabled]="loginForm.invalid"
               class="login-button"
+              (click)="onButtonClick($event)"
             >
               {{ 'login.local.loginButton' | transloco }}
             </button>
@@ -117,28 +120,84 @@ export class LocalUserSelectComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private localProvider: LocalOAuthProviderService,
     private router: Router,
     private fb: FormBuilder,
+    private authService: AuthService,
+    private transloco: TranslocoService,
+    private logger: LoggerService,
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['local@test.tmi', [Validators.required, Validators.email]],
     });
   }
 
   ngOnInit(): void {
+    this.logger.debugComponent('LocalUserSelect', 'LocalUserSelectComponent initialized');
+    this.logger.debugComponent('LocalUserSelect', 'Current URL', window.location.href);
+    this.logger.debugComponent('LocalUserSelect', 'Initial form value', this.loginForm.value);
+    this.logger.debugComponent('LocalUserSelect', 'Initial form valid', this.loginForm.valid);
+    
+    // Check for debug info from previous page
+    const debugInfo = localStorage.getItem('local_auth_debug');
+    if (debugInfo) {
+      this.logger.debugComponent('LocalUserSelect', 'Local auth debug info', JSON.parse(debugInfo));
+      localStorage.removeItem('local_auth_debug');
+    }
+    
+    // Check stored OAuth state
+    this.logger.debugComponent('LocalUserSelect', 'Stored OAuth state', localStorage.getItem('oauth_state'));
+    this.logger.debugComponent('LocalUserSelect', 'Stored OAuth provider', localStorage.getItem('oauth_provider'));
+    
     this.route.queryParams.subscribe(params => {
       this.state = (params['state'] as string) || '';
+      this.logger.debugComponent('LocalUserSelect', 'State from query params', this.state);
+      this.logger.debugComponent('LocalUserSelect', 'All query params', params);
     });
   }
 
+  onButtonClick(event: Event): void {
+    this.logger.debugComponent('LocalUserSelect', 'Button clicked!', event);
+    // Don't prevent default - let form submission happen naturally
+  }
+
+  onFormSubmit(event: Event): void {
+    this.logger.debugComponent('LocalUserSelect', 'Form submit event!', event);
+    // Form submit event handler
+  }
+
   onSubmit(): void {
+    this.logger.debugComponent('LocalUserSelect', 'LocalUserSelectComponent.onSubmit called');
     if (this.loginForm.valid) {
       const email = this.loginForm.get('email')?.value as string;
-      const code = this.localProvider.generateAuthCodeForEmail(email);
-      void this.router.navigate(['/oauth2/callback'], {
-        queryParams: { code, state: this.state },
-      });
+      this.logger.debugComponent('LocalUserSelect', 'Form is valid, email', email);
+      
+      // For local development, bypass OAuth flow entirely
+      const userName = this.transloco.translate('login.local.userName') || 'Local User';
+      const userProfile: UserProfile = {
+        id: '0',
+        email: email,
+        name: userName,
+        providers: [{ provider: 'local', is_primary: true }],
+        picture: undefined,
+      };
+      this.logger.debugComponent('LocalUserSelect', 'Creating local token for user', userProfile);
+      
+      // Create a 7-day token directly
+      const sevenDaysInMinutes = 7 * 24 * 60;
+      const success = this.authService.createLocalTokenWithExpiry(userProfile, sevenDaysInMinutes);
+      this.logger.debugComponent('LocalUserSelect', 'Token creation result', success);
+      
+      if (success) {
+        this.logger.debugComponent('LocalUserSelect', 'Navigating to /tm');
+        void this.router.navigate(['/tm']);
+      } else {
+        this.logger.debugComponent('LocalUserSelect', 'Token creation failed, navigating back to login');
+        void this.router.navigate(['/login'], {
+          queryParams: { error: 'local_auth_failed' }
+        });
+      }
+    } else {
+      this.logger.debugComponent('LocalUserSelect', 'Form is invalid');
     }
   }
 }

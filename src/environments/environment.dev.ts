@@ -16,7 +16,6 @@ export const environment: Environment = {
   serverInterface: 'localhost',
   enableTLS: false,
   defaultAuthProvider: 'local',
-  authMode: 'hybrid',
   oauth: {
     local: {
       enabled: true,

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { UserProfile } from '../models/auth.models';
+import { LoggerService } from '../../core/services/logger.service';
 
 /**
  * Local OAuth provider service for development authentication
@@ -10,7 +11,10 @@ import { UserProfile } from '../models/auth.models';
   providedIn: 'root',
 })
 export class LocalOAuthProviderService {
-  constructor(private transloco: TranslocoService) {}
+  constructor(
+    private transloco: TranslocoService,
+    private logger: LoggerService
+  ) {}
   /**
    * Build authorization URL for local provider
    * Points to local user selection component
@@ -28,7 +32,12 @@ export class LocalOAuthProviderService {
    * Generate mock authorization code for local user by email
    */
   generateAuthCodeForEmail(email: string): string {
-    return btoa(`local:${email}:${Date.now()}`);
+    const code = btoa(`local:${email}`);
+    this.logger.info('LocalOAuthProviderService.generateAuthCodeForEmail:', {
+      email,
+      code
+    });
+    return code;
   }
 
   /**
@@ -42,8 +51,16 @@ export class LocalOAuthProviderService {
 
       // Use hard-coded values for local OAuth provider
       const id = '0';
-      const name = this.transloco.translate('login.local.userName');
+      // Ensure we always have a name, fallback to "Local User" if translation fails
+      const name = this.transloco.translate('login.local.userName') || 'Local User';
       const userEmail = email || 'local@test.tmi';
+
+      this.logger.info('LocalOAuthProviderService.exchangeCodeForUser:', {
+        id,
+        name,
+        email: userEmail,
+        translationResult: this.transloco.translate('login.local.userName'),
+      });
 
       return {
         id,

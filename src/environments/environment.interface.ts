@@ -138,11 +138,4 @@ export interface Environment {
    */
   defaultAuthProvider?: string;
 
-  /**
-   * Authentication mode configuration
-   * - 'server': Always try to connect to server for OAuth providers
-   * - 'local-only': Skip server connection, use only local provider
-   * - 'hybrid': Try server first, fallback to local if server unavailable (default)
-   */
-  authMode?: 'server' | 'local-only' | 'hybrid';
 }

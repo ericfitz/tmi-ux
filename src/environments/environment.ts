@@ -27,7 +27,6 @@ export const environment: Environment = {
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Development)',
   operatorContact: 'contact@example.com',
-  authMode: 'hybrid',
   oauth: {
     local: {
       enabled: true,

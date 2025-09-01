@@ -57,6 +57,8 @@ export class LoginComponent implements OnInit {
     this.loadProviders();
 
     this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
+      this.logger.info('LoginComponent received query params', params);
+      
       this.returnUrl = params.returnUrl || '/tm';
       const code = params.code;
       const state = params.state;
@@ -77,6 +79,7 @@ export class LoginComponent implements OnInit {
       }
       // Handle old-style callback with code (for local provider)
       else if (code && state) {
+        this.logger.info('Detected local OAuth callback', { code, state });
         this.handleOAuthCallback({ code, state });
       }
       // Handle OAuth errors
@@ -166,7 +169,10 @@ export class LoginComponent implements OnInit {
         this.isLoading = false;
         if (success) {
           this.logger.info('OAuth callback successful, navigating to return URL');
-          void this.router.navigateByUrl(this.returnUrl || '/tm');
+          // Add a small delay to ensure authentication state is fully propagated
+          setTimeout(() => {
+            void this.router.navigateByUrl(this.returnUrl || '/tm');
+          }, 100);
         } else {
           this.handleLoginError({
             code: 'oauth_failed',
