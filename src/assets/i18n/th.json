@@ -24,7 +24,7 @@
   "collaboration": {
     "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
-    "collaboratorsHeader": "ผู้ร่วมงาน",
+    "collaboratorsHeader": "ผู้เข้าร่วม",
     "copyLink": "คัดลอกลิงก์",
     "currentPresenter": "ผู้นำเสนอปัจจุบัน",
     "denyPresenterRequest": "ปฏิเสธคำขอเป็นผู้นำเสนอ",
