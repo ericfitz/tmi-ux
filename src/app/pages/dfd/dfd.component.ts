@@ -371,18 +371,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.collaborationService.isCollaborating$.subscribe(isCollaborating => {
         if (isCollaborating && this.threatModelId && this.dfdId) {
           // Initialize collaborative operation service when collaboration starts
-          const currentUserId = this.collaborationService.getCurrentUserId();
-          if (currentUserId) {
+          const currentUserEmail = this.collaborationService.getCurrentUserEmail();
+          if (currentUserEmail) {
             this.collaborativeOperationService.initialize({
               diagramId: this.dfdId,
               threatModelId: this.threatModelId,
-              userId: currentUserId,
+              userId: currentUserEmail,
               threatModelPermission: this.threatModelPermission || undefined,
             });
             this.logger.info('Initialized CollaborativeOperationService for active collaboration', {
               diagramId: this.dfdId,
               threatModelId: this.threatModelId,
-              userId: currentUserId,
+              userId: currentUserEmail,
             });
           }
 
@@ -1699,7 +1699,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private handleRemoteDiagramOperation(message: DiagramOperationMessage): void {
     // Skip if this is our own operation (echo prevention)
-    if (message.user_id === this.collaborationService.getCurrentUserId()) {
+    if (message.user_id === this.collaborationService.getCurrentUserEmail()) {
       return;
     }
 
@@ -1913,7 +1913,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle presenter cursor updates
    */
   private handlePresenterCursor(message: PresenterCursorMessage): void {
-    if (message.user_id !== this.collaborationService.getCurrentUserId()) {
+    if (message.user_id !== this.collaborationService.getCurrentUserEmail()) {
       // TODO: Show presenter cursor on diagram
       this.logger.debug('Presenter cursor update', message.cursor_position);
     }
@@ -1923,7 +1923,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle presenter selection updates
    */
   private handlePresenterSelection(message: PresenterSelectionMessage): void {
-    if (message.user_id !== this.collaborationService.getCurrentUserId()) {
+    if (message.user_id !== this.collaborationService.getCurrentUserEmail()) {
       // TODO: Highlight presenter selection
       this.logger.debug('Presenter selection update', { cells: message.selected_cells });
     }
@@ -1944,7 +1944,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle presenter request denials
    */
   private handlePresenterDenied(message: PresenterDeniedMessage): void {
-    if (message.user_id === this.collaborationService.getCurrentUserId()) {
+    if (message.user_id === this.collaborationService.getCurrentUserEmail()) {
       // Show notification to current user
       this.logger.info('Presenter request was denied');
       // TODO: Show user notification
@@ -1955,11 +1955,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle presenter updates
    */
   private handlePresenterUpdate(message: PresenterUpdateMessage): void {
-    const newPresenterId = message.user_id || null;
-    this.logger.info('Presenter updated', { presenterId: newPresenterId });
+    const newPresenterEmail = message.user_id || null;
+    this.logger.info('Presenter updated', { presenterEmail: newPresenterEmail });
 
     // Update collaboration service state
-    this.collaborationService.updatePresenterId(newPresenterId);
+    this.collaborationService.updatePresenterEmail(newPresenterEmail);
 
     // Update read-only mode based on presenter status
     this.updateReadOnlyMode();

@@ -19,6 +19,8 @@
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
     [matMenuTriggerFor]="collaborationMenu"
+    (menuOpened)="onMenuOpened()"
+    (menuClosed)="onMenuClosed()"
   >
     <mat-icon
       fontSet="material-symbols-outlined"
@@ -172,7 +174,7 @@
               <!-- Hand Down State -->
               <button
                 *ngIf="
-                  isCurrentUser(user.id) &&
+                  isCurrentUser(user.email) &&
                   (!user.presenterRequestState || user.presenterRequestState === 'hand_down')
                 "
                 mat-icon-button
@@ -191,7 +193,7 @@
 
               <!-- Hand Raised State -->
               <mat-icon
-                *ngIf="isCurrentUser(user.id) && user.presenterRequestState === 'hand_raised'"
+                *ngIf="isCurrentUser(user.email) && user.presenterRequestState === 'hand_raised'"
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
@@ -202,7 +204,7 @@
               </mat-icon>
 
               <!-- Other users - no button -->
-              <div *ngIf="!isCurrentUser(user.id)" class="presenter-placeholder"></div>
+              <div *ngIf="!isCurrentUser(user.email)" class="presenter-placeholder"></div>
             </ng-container>
           </div>
 
@@ -212,7 +214,7 @@
               *ngIf="!user.isHost && isCurrentUserHost()"
               mat-icon-button
               color="warn"
-              (click)="removeUser(user.id)"
+              (click)="removeUser(user.email)"
               [matTooltip]="'collaboration.removeFromSession' | transloco"
             >
               <mat-icon

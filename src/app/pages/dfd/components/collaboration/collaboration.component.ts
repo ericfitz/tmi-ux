@@ -83,7 +83,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   // Collaboration state
   isCollaborating = false;
   collaborationUsers: CollaborationUser[] = [];
-  currentPresenterId: string | null = null;
+  currentPresenterEmail: string | null = null;
   pendingPresenterRequests: string[] = [];
   isCurrentUserHostFlag = false;
   existingSessionAvailable: CollaborationSession | null = null;
@@ -93,6 +93,12 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
   // Subscription management
   private _subscriptions = new Subscription();
+  
+  // Track if menu is open for better change detection
+  private _menuOpen = false;
+  
+  // Periodic refresh timer
+  private _refreshInterval: any = null;
 
   constructor(
     private _logger: LoggerService,
@@ -111,35 +117,53 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     // Subscribe to collaboration status changes
     this._subscriptions.add(
       this._collaborationService.isCollaborating$.subscribe(isCollaborating => {
+        this._logger.info('[CollaborationComponent] Collaboration status changed', {
+          previous: this.isCollaborating,
+          new: isCollaborating,
+          timestamp: new Date().toISOString(),
+        });
+        
         this.isCollaborating = isCollaborating;
         // Don't set host flag here - wait for users to be populated
         // Only clear it when collaboration ends
         if (!isCollaborating) {
           this.isCurrentUserHostFlag = false;
         }
-        this._cdr.markForCheck();
+        
+        // Force immediate change detection
+        this._cdr.detectChanges();
       }),
     );
 
     // Subscribe to collaboration users changes
     this._subscriptions.add(
       this._collaborationService.collaborationUsers$.subscribe(users => {
-        this.collaborationUsers = users;
+        this._logger.info('[CollaborationComponent] Users subscription fired', {
+          previousUserCount: this.collaborationUsers.length,
+          newUserCount: users.length,
+          timestamp: new Date().toISOString(),
+        });
+        
+        // Update local state
+        this.collaborationUsers = [...users]; // Create new array reference
         this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
-        this._logger.debug('Collaboration users updated in component', {
-          userCount: users.length,
-          users: users,
+        
+        this._logger.info('[CollaborationComponent] Component state updated', {
+          userCount: this.collaborationUsers.length,
+          users: this.collaborationUsers,
           isCollaborating: this.isCollaborating,
           isCurrentUserHost: this.isCurrentUserHostFlag,
         });
-        this._cdr.markForCheck();
+        
+        // Force immediate change detection
+        this._cdr.detectChanges();
       }),
     );
 
     // Subscribe to presenter state changes
     this._subscriptions.add(
-      this._collaborationService.currentPresenterId$.subscribe(presenterId => {
-        this.currentPresenterId = presenterId;
+      this._collaborationService.currentPresenterEmail$.subscribe(presenterEmail => {
+        this.currentPresenterEmail = presenterEmail;
         this._cdr.markForCheck();
       }),
     );
@@ -166,11 +190,23 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         // This subscription triggers change detection when WebSocket state changes
         // The tooltip will be updated automatically through Angular's change detection
         this._cdr.markForCheck();
+        
+        // Set up or clear periodic refresh based on WebSocket connection state
+        this._setupPeriodicRefresh();
       }),
     );
+    
+    // Initial setup of periodic refresh
+    this._setupPeriodicRefresh();
   }
 
   ngOnDestroy(): void {
+    // Clear any running refresh interval
+    if (this._refreshInterval) {
+      clearInterval(this._refreshInterval);
+      this._refreshInterval = null;
+    }
+    
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
@@ -190,6 +226,40 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
             this._logger.error('Failed to end collaboration during component destruction', error);
           },
         });
+    }
+  }
+
+  /**
+   * Set up or clear periodic refresh based on WebSocket connection state
+   */
+  private _setupPeriodicRefresh(): void {
+    // Clear existing interval if any
+    if (this._refreshInterval) {
+      clearInterval(this._refreshInterval);
+      this._refreshInterval = null;
+    }
+    
+    // Set up new interval if WebSocket is connected
+    if (this._webSocketAdapter.isConnected) {
+      this._logger.info('[CollaborationComponent] Setting up periodic refresh', {
+        interval: '5 seconds',
+        isConnected: true,
+      });
+      
+      this._refreshInterval = setInterval(() => {
+        this._logger.debug('[CollaborationComponent] Periodic refresh tick', {
+          timestamp: new Date().toISOString(),
+          userCount: this.collaborationUsers.length,
+          isMenuOpen: this._menuOpen,
+        });
+        
+        // Force change detection
+        this._cdr.detectChanges();
+      }, 5000); // Refresh every 5 seconds
+    } else {
+      this._logger.info('[CollaborationComponent] WebSocket not connected, no periodic refresh', {
+        isConnected: false,
+      });
     }
   }
 
@@ -265,35 +335,35 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
   /**
    * Remove a user from the collaboration session
-   * @param userId The ID of the user to remove
+   * @param userEmail The email of the user to remove
    */
-  removeUser(userId: string): void {
+  removeUser(userEmail: string): void {
     this._collaborationService
-      .removeUser(userId)
+      .removeUser(userEmail)
       .pipe(take(1))
       .subscribe(success => {
         if (success) {
-          this._logger.info('User removed successfully', { userId });
+          this._logger.info('User removed successfully', { userEmail });
         } else {
-          this._logger.error('Failed to remove user', { userId });
+          this._logger.error('Failed to remove user', { userEmail });
         }
       });
   }
 
   /**
    * Update a user's permission in the collaboration session
-   * @param userId The ID of the user to update
+   * @param userEmail The email of the user to update
    * @param permission The new permission to assign
    */
-  updateUserPermission(userId: string, permission: 'writer' | 'reader'): void {
+  updateUserPermission(userEmail: string, permission: 'writer' | 'reader'): void {
     this._collaborationService
-      .updateUserPermission(userId, permission)
+      .updateUserPermission(userEmail, permission)
       .pipe(take(1))
       .subscribe(success => {
         if (success) {
-          this._logger.info('User permission updated successfully', { userId, permission });
+          this._logger.info('User permission updated successfully', { userEmail, permission });
         } else {
-          this._logger.error('Failed to update user permission', { userId, permission });
+          this._logger.error('Failed to update user permission', { userEmail, permission });
         }
       });
   }
@@ -345,11 +415,11 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
   /**
    * Check if a specific user is the current user
-   * @param userId The user ID to check
+   * @param userEmail The user email to check
    * @returns boolean indicating if this is the current user
    */
-  isCurrentUser(userId: string): boolean {
-    return this._collaborationService.isCurrentUser(userId);
+  isCurrentUser(userEmail: string): boolean {
+    return this._collaborationService.isCurrentUser(userEmail);
   }
 
   /**
@@ -381,15 +451,15 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
   /**
    * Approve presenter request (host only)
-   * @param userId The user ID to approve
+   * @param userEmail The user email to approve
    */
-  approvePresenterRequest(userId: string): void {
+  approvePresenterRequest(userEmail: string): void {
     this._collaborationService
-      .approvePresenterRequest(userId)
+      .approvePresenterRequest(userEmail)
       .pipe(take(1))
       .subscribe({
         next: () => {
-          this._logger.info('Presenter request approved', { userId });
+          this._logger.info('Presenter request approved', { userEmail });
           // Note: Notification is handled by the collaboration service
         },
         error: error => {
@@ -401,15 +471,15 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
   /**
    * Deny presenter request (host only)
-   * @param userId The user ID to deny
+   * @param userEmail The user email to deny
    */
-  denyPresenterRequest(userId: string): void {
+  denyPresenterRequest(userEmail: string): void {
     this._collaborationService
-      .denyPresenterRequest(userId)
+      .denyPresenterRequest(userEmail)
       .pipe(take(1))
       .subscribe({
         next: () => {
-          this._logger.info('Presenter request denied', { userId });
+          this._logger.info('Presenter request denied', { userEmail });
           // Note: Notification is handled by the collaboration service
         },
         error: error => {
@@ -512,21 +582,21 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * @returns The presenter's name or ID
    */
   getPresenterName(): string {
-    if (!this.currentPresenterId) {
+    if (!this.currentPresenterEmail) {
       return '';
     }
-    const presenter = this.collaborationUsers.find(user => user.id === this.currentPresenterId);
-    return presenter?.name || this.currentPresenterId;
+    const presenter = this.collaborationUsers.find(user => user.email === this.currentPresenterEmail);
+    return presenter?.name || this.currentPresenterEmail;
   }
 
   /**
-   * Get the name of a user by their ID
-   * @param userId The user ID
-   * @returns The user's name or ID
+   * Get the name of a user by their email
+   * @param userEmail The user email
+   * @returns The user's name or email
    */
-  getRequestUserName(userId: string): string {
-    const user = this.collaborationUsers.find(u => u.id === userId);
-    return user?.name || userId;
+  getRequestUserName(userEmail: string): string {
+    const user = this.collaborationUsers.find(u => u.email === userEmail);
+    return user?.name || userEmail;
   }
 
   /**
@@ -556,5 +626,32 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     const wsUrl = this._collaborationService.currentWebSocketUrl || 'WebSocket URL: (unavailable)';
 
     return `${statusText}\n${wsUrl}`;
+  }
+  
+  /**
+   * Handle menu opened event
+   */
+  onMenuOpened(): void {
+    this._logger.info('[CollaborationComponent] Menu opened', {
+      timestamp: new Date().toISOString(),
+      userCount: this.collaborationUsers.length,
+      isCollaborating: this.isCollaborating,
+    });
+    
+    this._menuOpen = true;
+    
+    // Force immediate change detection when menu opens
+    this._cdr.detectChanges();
+  }
+  
+  /**
+   * Handle menu closed event
+   */
+  onMenuClosed(): void {
+    this._logger.info('[CollaborationComponent] Menu closed', {
+      timestamp: new Date().toISOString(),
+    });
+    
+    this._menuOpen = false;
   }
 }

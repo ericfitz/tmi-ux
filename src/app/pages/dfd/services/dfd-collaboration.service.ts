@@ -17,9 +17,8 @@ import { environment } from '../../../../environments/environment';
  * Represents a user in a collaboration session
  */
 export interface CollaborationUser {
-  id: string; // User ID (email)
   name: string; // Display name to show in UI
-  email: string; // Email address for tooltips
+  email: string; // Email address - primary identifier
   permission: 'writer' | 'reader'; // Based on threat model permissions
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
@@ -69,7 +68,7 @@ export interface CollaborationSession {
 export interface CollaborationState {
   isActive: boolean;
   users: CollaborationUser[];
-  currentPresenterId: string | null;
+  currentPresenterEmail: string | null;
   pendingPresenterRequests: string[];
   sessionInfo: CollaborationSession | null;
   existingSessionAvailable: CollaborationSession | null;
@@ -86,7 +85,7 @@ export class DfdCollaborationService implements OnDestroy {
   private _collaborationState$ = new BehaviorSubject<CollaborationState>({
     isActive: false,
     users: [],
-    currentPresenterId: null,
+    currentPresenterEmail: null,
     pendingPresenterRequests: [],
     sessionInfo: null,
     existingSessionAvailable: null,
@@ -100,8 +99,8 @@ export class DfdCollaborationService implements OnDestroy {
   public collaborationUsers$ = this.collaborationState$.pipe(
     map(state => state.users),
   );
-  public currentPresenterId$ = this.collaborationState$.pipe(
-    map(state => state.currentPresenterId),
+  public currentPresenterEmail$ = this.collaborationState$.pipe(
+    map(state => state.currentPresenterEmail),
   );
   public pendingPresenterRequests$ = this.collaborationState$.pipe(
     map(state => state.pendingPresenterRequests),
@@ -141,12 +140,23 @@ export class DfdCollaborationService implements OnDestroy {
   private _updateState(updates: Partial<CollaborationState>): void {
     const currentState = this._collaborationState$.value;
     const newState = { ...currentState, ...updates };
+    
+    this._logger.info('[DfdCollaborationService] Updating collaboration state', {
+      timestamp: new Date().toISOString(),
+      updates: Object.keys(updates),
+      previousUserCount: currentState.users.length,
+      newUserCount: newState.users.length,
+      isActive: newState.isActive,
+      usersChanged: updates.users !== undefined,
+    });
+    
     this._collaborationState$.next(newState);
     
-    this._logger.debug('Collaboration state updated', {
+    this._logger.debug('[DfdCollaborationService] State update complete', {
       isActive: newState.isActive,
       userCount: newState.users.length,
       hasSession: !!newState.sessionInfo,
+      users: newState.users,
     });
   }
 
@@ -230,8 +240,8 @@ export class DfdCollaborationService implements OnDestroy {
     if (!existingSession) {
       return false;
     }
-    const currentUserId = this._authService.userId;
-    return currentUserId === existingSession.host;
+    const currentUserEmail = this.getCurrentUserEmail();
+    return currentUserEmail === existingSession.host;
   }
 
   /**
@@ -269,11 +279,10 @@ export class DfdCollaborationService implements OnDestroy {
           this._currentSession = session;
 
           // Initialize with current user immediately to ensure UI shows at least one participant
-          const currentUserId = this.getCurrentUserId();
+          const currentUserEmail = this.getCurrentUserEmail();
           const initialUser: CollaborationUser = {
-            id: currentUserId || 'unknown',
-            name: this._getUserDisplayName(currentUserId || 'unknown'),
-            email: currentUserId || 'unknown',
+            name: this._authService.userProfile?.name || '',
+            email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
             isHost: false, // Will be updated by WebSocket message
@@ -321,11 +330,10 @@ export class DfdCollaborationService implements OnDestroy {
               this._currentSession = existingSession;
 
               // Initialize with current user immediately to ensure UI shows at least one participant
-              const currentUserId = this.getCurrentUserId();
+              const currentUserEmail = this.getCurrentUserEmail();
               const initialUser: CollaborationUser = {
-                id: currentUserId || 'unknown',
-                name: this._getUserDisplayName(currentUserId || 'unknown'),
-                email: currentUserId || 'unknown',
+                name: this._authService.userProfile?.name || '',
+                email: currentUserEmail || '',
                 permission: 'reader', // Reader permission for this fallback case
                 status: 'active',
                 isHost: false,
@@ -404,11 +412,10 @@ export class DfdCollaborationService implements OnDestroy {
           this._currentSession = session;
 
           // Initialize with current user immediately to ensure UI shows at least one participant
-          const currentUserId = this.getCurrentUserId();
+          const currentUserEmail = this.getCurrentUserEmail();
           const initialUser: CollaborationUser = {
-            id: currentUserId || 'unknown',
-            name: this._getUserDisplayName(currentUserId || 'unknown'),
-            email: currentUserId || 'unknown',
+            name: this._authService.userProfile?.name || '',
+            email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
             isHost: false, // Will be updated by WebSocket message
@@ -490,11 +497,10 @@ export class DfdCollaborationService implements OnDestroy {
           this._currentSession = session;
 
           // Initialize with current user immediately to ensure UI shows at least one participant
-          const currentUserId = this.getCurrentUserId();
+          const currentUserEmail = this.getCurrentUserEmail();
           const initialUser: CollaborationUser = {
-            id: currentUserId || 'unknown',
-            name: this._getUserDisplayName(currentUserId || 'unknown'),
-            email: currentUserId || 'unknown',
+            name: this._authService.userProfile?.name || '',
+            email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
             isHost: false, // Will be updated by WebSocket message
@@ -551,12 +557,12 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // Send leave message via WebSocket
-    const currentUserId = this.getCurrentUserId();
-    if (currentUserId) {
+    const currentUserEmail = this.getCurrentUserEmail();
+    if (currentUserEmail) {
       this._webSocketAdapter
         .sendTMIMessage({
           event: 'leave',
-          user_id: currentUserId,
+          user_id: currentUserEmail,
           timestamp: new Date().toISOString(),
         })
         .subscribe({
@@ -591,19 +597,19 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // Send leave message before ending the session
-    const currentUserId = this.getCurrentUserId();
-    if (currentUserId && this._webSocketAdapter.isConnected) {
-      this._logger.info('Sending leave message before ending session', { userId: currentUserId });
+    const currentUserEmail = this.getCurrentUserEmail();
+    if (currentUserEmail && this._webSocketAdapter.isConnected) {
+      this._logger.info('Sending leave message before ending session', { userEmail: currentUserEmail });
       this._webSocketAdapter
         .sendTMIMessage({
           event: 'leave',
-          user_id: currentUserId,
+          user_id: currentUserEmail,
           timestamp: new Date().toISOString(),
         } as any)
         .subscribe({
           next: () => {
             this._logger.debugComponent('wsmsg', 'Leave message sent successfully', {
-              userId: currentUserId,
+              userEmail: currentUserEmail,
             });
           },
           error: error => {
@@ -640,7 +646,7 @@ export class DfdCollaborationService implements OnDestroy {
           this._updateState({
             isActive: false,
             users: [],
-            currentPresenterId: null,
+            currentPresenterEmail: null,
             pendingPresenterRequests: [],
             sessionInfo: null,
             existingSessionAvailable: null,
@@ -664,7 +670,7 @@ export class DfdCollaborationService implements OnDestroy {
           this._updateState({
             isActive: false,
             users: [],
-            currentPresenterId: null,
+            currentPresenterEmail: null,
             pendingPresenterRequests: [],
             sessionInfo: null,
             existingSessionAvailable: null,
@@ -703,11 +709,11 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Remove a user from the collaboration session
-   * @param userId The ID of the user to remove
+   * @param userEmail The email of the user to remove
    * @returns Observable<boolean> indicating success or failure
    */
-  public removeUser(userId: string): Observable<boolean> {
-    this._logger.info('Removing user from collaboration session', { userId });
+  public removeUser(userEmail: string): Observable<boolean> {
+    this._logger.info('Removing user from collaboration session', { userEmail });
 
     // In a real implementation, this would notify the server to remove the user
     // The server would then update the participants list via WebSocket
@@ -723,15 +729,15 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Update a user's permission in the collaboration session (host only)
-   * @param userId The ID of the user to update
+   * @param userEmail The email of the user to update
    * @param permission The new permission to assign
    * @returns Observable<boolean> indicating success or failure
    */
   public updateUserPermission(
-    userId: string,
+    userEmail: string,
     permission: 'writer' | 'reader',
   ): Observable<boolean> {
-    this._logger.info('Updating user permission in collaboration session', { userId, permission });
+    this._logger.info('Updating user permission in collaboration session', { userEmail, permission });
 
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can update user permissions'));
@@ -751,13 +757,13 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Add a participant to the collaboration session
-   * @param userId The user ID (email)
+   * @param userEmail The user email
    * @param permission The user's permission level
    * @deprecated This method should not be used - participants are managed via WebSocket messages only
    */
-  public addParticipant(userId: string, permission: 'reader' | 'writer' = 'reader'): void {
+  public addParticipant(userEmail: string, permission: 'reader' | 'writer' = 'reader'): void {
     this._logger.warn('addParticipant called but participants should only be updated via WebSocket messages', {
-      userId,
+      userEmail,
       permission,
     });
     // Do not modify local state - wait for server update
@@ -765,12 +771,12 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Remove a participant from the collaboration session
-   * @param userId The user ID to remove
+   * @param userEmail The user email to remove
    * @deprecated This method should not be used - participants are managed via WebSocket messages only
    */
-  public removeParticipant(userId: string): void {
+  public removeParticipant(userEmail: string): void {
     this._logger.warn('removeParticipant called but participants should only be updated via WebSocket messages', {
-      userId,
+      userEmail,
     });
     // Do not modify local state - wait for server update
   }
@@ -795,34 +801,52 @@ export class DfdCollaborationService implements OnDestroy {
     host?: string,
     currentPresenter?: string | null,
   ): void {
+    // Log current user info for debugging
+    const currentUserEmail = this.getCurrentUserEmail();
+    
     this._logger.info('updateAllParticipants called', {
       participantCount: participants.length,
       participants: participants,
       host,
       currentPresenter,
       isCollaborating: this._collaborationState$.value.isActive,
+      currentUserEmail,
     });
 
     // Build the new participant list
-    const updatedUsers: CollaborationUser[] = participants.map(participant => ({
-      id: participant.user.user_id,
-      name: participant.user.displayName,
-      email: participant.user.email,
-      permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
-      status: 'active' as const,
-      isPresenter: participant.user.user_id === currentPresenter,
-      isHost: participant.user.user_id === host,
-      lastActivity: new Date(participant.last_activity),
-      presenterRequestState: participant.user.user_id === currentPresenter ? 'presenter' : ('hand_down' as const),
-    }));
+    const updatedUsers: CollaborationUser[] = participants.map(participant => {
+      const isHost = participant.user.email === host;
+      const isPresenter = participant.user.email === currentPresenter;
+      
+      this._logger.debug('Participant comparison', {
+        participantEmail: participant.user.email,
+        host,
+        currentPresenter,
+        isHost,
+        isPresenter,
+      });
+      
+      return {
+        name: participant.user.displayName,
+        email: participant.user.email,
+        permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
+        status: 'active' as const,
+        isPresenter,
+        isHost,
+        lastActivity: new Date(participant.last_activity),
+        presenterRequestState: isPresenter ? 'presenter' : ('hand_down' as const),
+      };
+    });
 
     // Update the participant list and presenter state atomically
     const stateUpdate: Partial<CollaborationState> = {
       users: updatedUsers,
+      // Ensure collaboration is marked as active when we have participants
+      isActive: true,
     };
     
     if (currentPresenter !== undefined) {
-      stateUpdate.currentPresenterId = currentPresenter;
+      stateUpdate.currentPresenterEmail = currentPresenter;
     }
     
     this._updateState(stateUpdate);
@@ -839,7 +863,6 @@ export class DfdCollaborationService implements OnDestroy {
       host,
       currentPresenter,
       updatedUsers: updatedUsers.map(u => ({
-        id: u.id,
         name: u.name,
         email: u.email,
         permission: u.permission,
@@ -859,13 +882,13 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     const users = this._collaborationState$.value.users;
-    const currentUserId = this._authService.userId || '';
-    const currentUser = users.find(user => user.id === currentUserId);
+    const currentUserEmail = this.getCurrentUserEmail();
+    const currentUser = users.find(user => user.email === currentUserEmail);
 
     this._logger.debug('Getting current user permission', {
-      currentUserId,
-      users: users.map(u => ({ id: u.id, permission: u.permission })),
-      currentUser: currentUser ? { id: currentUser.id, permission: currentUser.permission } : null,
+      currentUserEmail,
+      users: users.map(u => ({ email: u.email, permission: u.permission })),
+      currentUser: currentUser ? { email: currentUser.email, permission: currentUser.permission } : null,
       isCollaborating: this._collaborationState$.value.isActive,
     });
 
@@ -918,33 +941,36 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if the current user is the host
    */
   public isCurrentUserHost(): boolean {
-    if (!this._collaborationState$.value.isActive) {
+    // Check the users list directly without requiring isActive
+    // This allows the host status to be determined even during session initialization
+    const users = this._collaborationState$.value.users;
+    const currentUserEmail = this.getCurrentUserEmail();
+    
+    if (!currentUserEmail) {
       return false;
     }
-
-    const users = this._collaborationState$.value.users;
-    const currentUserId = this._authService.userId || '';
-    const currentUser = users.find(user => user.id === currentUserId);
-
+    
+    const currentUser = users.find(user => user.email === currentUserEmail);
     return currentUser?.isHost || false;
   }
 
   /**
    * Check if a specific user is the current user
-   * @param userId The user ID to check
+   * @param userEmail The user email to check
    * @returns boolean indicating if this is the current user
    */
-  public isCurrentUser(userId: string): boolean {
-    const currentUserId = this._authService.userId;
-    return !!currentUserId && userId === currentUserId;
+  public isCurrentUser(userEmail: string): boolean {
+    const currentUserEmail = this.getCurrentUserEmail();
+    return !!currentUserEmail && userEmail === currentUserEmail;
   }
 
+
   /**
-   * Get the current user's ID
-   * @returns The current user's ID or null if not authenticated
+   * Get the current user's email
+   * @returns The current user's email or null if not authenticated
    */
-  public getCurrentUserId(): string | null {
-    return this._authService.userId || null;
+  public getCurrentUserEmail(): string | null {
+    return this._authService.userEmail || null;
   }
 
   /**
@@ -952,8 +978,11 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if current user is presenter
    */
   public isCurrentUserPresenter(): boolean {
-    const currentUserId = this.getCurrentUserId();
-    return currentUserId === this._collaborationState$.value.currentPresenterId;
+    const users = this._collaborationState$.value.users;
+    const currentUserEmail = this.getCurrentUserEmail();
+    const currentUser = users.find(user => user.email === currentUserEmail);
+    
+    return currentUser?.isPresenter || false;
   }
 
   /**
@@ -965,11 +994,11 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Get the current presenter's user ID
-   * @returns The presenter's user ID or null if no presenter
+   * Get the current presenter's email
+   * @returns The presenter's email or null if no presenter
    */
-  public getCurrentPresenterId(): string | null {
-    return this._collaborationState$.value.currentPresenterId;
+  public getCurrentPresenterEmail(): string | null {
+    return this._collaborationState$.value.currentPresenterEmail;
   }
 
   /**
@@ -977,26 +1006,26 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating if request was sent successfully
    */
   public requestPresenterPrivileges(): Observable<boolean> {
-    const currentUserId = this.getCurrentUserId();
-    if (!currentUserId) {
+    const currentUserEmail = this.getCurrentUserEmail();
+    if (!currentUserEmail) {
       return throwError(() => new Error('Current user not identified'));
     }
 
     if (this.isCurrentUserHost()) {
       // hosts can become presenter immediately
-      return this.setPresenter(currentUserId);
+      return this.setPresenter(currentUserEmail);
     }
 
-    this._logger.info('Requesting presenter privileges', { userId: currentUserId });
+    this._logger.info('Requesting presenter privileges', { userEmail: currentUserEmail });
 
     // Update local state to hand_raised
-    this.updateUserPresenterRequestState(currentUserId, 'hand_raised');
+    this.updateUserPresenterRequestState(currentUserEmail, 'hand_raised');
 
     // Send presenter request via WebSocket
     return this._webSocketAdapter
       .sendTMIMessage({
         message_type: 'presenter_request',
-        user_id: currentUserId,
+        user_id: currentUserEmail,
       })
       .pipe(
         map(() => {
@@ -1007,7 +1036,7 @@ export class DfdCollaborationService implements OnDestroy {
         catchError(error => {
           this._logger.error('Failed to send presenter request', error);
           // Revert state on error
-          this.updateUserPresenterRequestState(currentUserId, 'hand_down');
+          this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
           this._notificationService
             .showOperationError('send presenter request', error.message || 'Unknown error')
             .subscribe();
@@ -1018,49 +1047,49 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Approve a presenter request (owner only)
-   * @param userId The user ID to approve as presenter
+   * @param userEmail The user email to approve as presenter
    * @returns Observable<boolean> indicating success
    */
-  public approvePresenterRequest(userId: string): Observable<boolean> {
+  public approvePresenterRequest(userEmail: string): Observable<boolean> {
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can approve presenter requests'));
     }
 
-    this._logger.info('Approving presenter request', { userId });
+    this._logger.info('Approving presenter request', { userEmail });
 
     // Remove from pending requests
     const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
     this._updateState({ 
-      pendingPresenterRequests: pendingRequests.filter(id => id !== userId) 
+      pendingPresenterRequests: pendingRequests.filter(email => email !== userEmail) 
     });
 
-    return this.setPresenter(userId);
+    return this.setPresenter(userEmail);
   }
 
   /**
    * Deny a presenter request (owner only)
-   * @param userId The user ID to deny presenter privileges
+   * @param userEmail The user email to deny presenter privileges
    * @returns Observable<boolean> indicating success
    */
-  public denyPresenterRequest(userId: string): Observable<boolean> {
+  public denyPresenterRequest(userEmail: string): Observable<boolean> {
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can deny presenter requests'));
     }
 
-    this._logger.info('Denying presenter request', { userId });
+    this._logger.info('Denying presenter request', { userEmail });
 
     // Remove from pending requests
     const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
     this._updateState({ 
-      pendingPresenterRequests: pendingRequests.filter(id => id !== userId) 
+      pendingPresenterRequests: pendingRequests.filter(email => email !== userEmail) 
     });
 
     // Send denial via WebSocket
     return this._webSocketAdapter
       .sendTMIMessage({
         message_type: 'presenter_denied',
-        user_id: this.getCurrentUserId() || '',
-        target_user: userId,
+        user_id: this.getCurrentUserEmail() || '',
+        target_user: userEmail,
       })
       .pipe(
         map(() => {
@@ -1080,36 +1109,36 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Set presenter (owner only)
-   * @param userId The user ID to set as presenter, or null to clear presenter
+   * @param userEmail The user email to set as presenter, or null to clear presenter
    * @returns Observable<boolean> indicating success
    */
-  public setPresenter(userId: string | null): Observable<boolean> {
+  public setPresenter(userEmail: string | null): Observable<boolean> {
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can set presenter'));
     }
 
-    this._logger.info('Setting presenter', { userId });
+    this._logger.info('Setting presenter', { userEmail });
 
     // Update local state
-    this._updateState({ currentPresenterId: userId });
-    this._updateUsersPresenterStatus(userId);
+    this._updateState({ currentPresenterEmail: userEmail });
+    this._updateUsersPresenterStatus(userEmail);
 
     // Send presenter update via WebSocket
     return this._webSocketAdapter
       .sendTMIMessage({
         message_type: 'presenter_update',
-        user_id: userId || undefined,
+        user_id: userEmail || undefined,
       })
       .pipe(
         map(() => {
           // Show presenter assigned notification
-          const currentUserId = this.getCurrentUserId();
-          if (userId === currentUserId) {
+          const currentUserEmail = this.getCurrentUserEmail();
+          if (userEmail === currentUserEmail) {
             this._notificationService.showPresenterEvent('assigned').subscribe();
-          } else if (userId) {
-            const user = this._collaborationState$.value.users.find(u => u.id === userId);
+          } else if (userEmail) {
+            const user = this._collaborationState$.value.users.find(u => u.email === userEmail);
             this._notificationService
-              .showPresenterEvent('assigned', user?.name || userId)
+              .showPresenterEvent('assigned', user?.name || userEmail)
               .subscribe();
           } else {
             this._notificationService.showPresenterEvent('cleared').subscribe();
@@ -1119,7 +1148,7 @@ export class DfdCollaborationService implements OnDestroy {
         catchError(error => {
           this._logger.error('Failed to send presenter update', error);
           // Revert local state on error
-          this._updateState({ currentPresenterId: null });
+          this._updateState({ currentPresenterEmail: null });
           this._updateUsersPresenterStatus(null);
           this._notificationService
             .showOperationError('update presenter', error.message || 'Unknown error')
@@ -1134,64 +1163,64 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns Observable<boolean> indicating success
    */
   public takeBackPresenterPrivileges(): Observable<boolean> {
-    const currentUserId = this.getCurrentUserId();
-    if (!currentUserId) {
+    const currentUserEmail = this.getCurrentUserEmail();
+    if (!currentUserEmail) {
       return throwError(() => new Error('Current user not identified'));
     }
 
-    return this.setPresenter(currentUserId);
+    return this.setPresenter(currentUserEmail);
   }
 
   /**
    * Add a presenter request to pending list
-   * @param userId The user ID requesting presenter privileges
+   * @param userEmail The user email requesting presenter privileges
    */
-  public addPresenterRequest(userId: string): void {
+  public addPresenterRequest(userEmail: string): void {
     const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
-    if (!pendingRequests.includes(userId)) {
+    if (!pendingRequests.includes(userEmail)) {
       this._updateState({ 
-        pendingPresenterRequests: [...pendingRequests, userId] 
+        pendingPresenterRequests: [...pendingRequests, userEmail] 
       });
     }
   }
 
   /**
-   * Update the current presenter ID (for external updates)
-   * @param presenterId The user ID of the current presenter
+   * Update the current presenter email (for external updates)
+   * @param presenterEmail The email of the current presenter
    */
-  public updatePresenterId(presenterId: string | null): void {
-    this._updateState({ currentPresenterId: presenterId });
-    this._updateUsersPresenterStatus(presenterId);
+  public updatePresenterEmail(presenterEmail: string | null): void {
+    this._updateState({ currentPresenterEmail: presenterEmail });
+    this._updateUsersPresenterStatus(presenterEmail);
   }
 
   /**
    * Update users' presenter status based on current presenter
-   * @param presenterId The user ID of the current presenter
+   * @param presenterEmail The email of the current presenter
    */
-  public _updateUsersPresenterStatus(presenterId: string | null): void {
+  private _updateUsersPresenterStatus(presenterEmail: string | null): void {
     const users = this._collaborationState$.value.users;
     const updatedUsers = users.map(user => ({
       ...user,
-      isPresenter: user.id === presenterId,
+      isPresenter: user.email === presenterEmail,
       // Update presenter request state based on new presenter
       presenterRequestState:
-        user.id === presenterId ? ('presenter' as const) : ('hand_down' as const),
+        user.email === presenterEmail ? ('presenter' as const) : ('hand_down' as const),
     }));
     this._updateState({ users: updatedUsers });
   }
 
   /**
    * Update a user's presenter request state
-   * @param userId The user ID to update
+   * @param userEmail The user email to update
    * @param state The new presenter request state
    */
   public updateUserPresenterRequestState(
-    userId: string,
+    userEmail: string,
     state: 'hand_down' | 'hand_raised' | 'presenter',
   ): void {
     const users = this._collaborationState$.value.users;
     const updatedUsers = users.map(user => {
-      if (user.id === userId) {
+      if (user.email === userEmail) {
         return { ...user, presenterRequestState: state };
       }
       return user;
@@ -1215,19 +1244,19 @@ export class DfdCollaborationService implements OnDestroy {
         this._logger.info('WebSocket connection established successfully');
 
         // Send join message to notify server we've connected
-        const currentUserId = this.getCurrentUserId();
-        if (currentUserId) {
-          this._logger.info('Sending join message to TMI server', { userId: currentUserId });
+        const currentUserEmail = this.getCurrentUserEmail();
+        if (currentUserEmail) {
+          this._logger.info('Sending join message to TMI server', { userEmail: currentUserEmail });
           this._webSocketAdapter
             .sendTMIMessage({
               event: 'join',
-              user_id: currentUserId,
+              user_id: currentUserEmail,
               timestamp: new Date().toISOString(),
             } as any)
             .subscribe({
               next: () => {
                 this._logger.debugComponent('wsmsg', 'Join message sent successfully', {
-                  userId: currentUserId,
+                  userEmail: currentUserEmail,
                 });
               },
               error: error => {
@@ -1398,21 +1427,21 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService.showWebSocketStatus(state).subscribe();
 
         // Send join message when reconnected (in case this is after a reconnection)
-        const currentUserId = this.getCurrentUserId();
-        if (currentUserId) {
+        const currentUserEmail = this.getCurrentUserEmail();
+        if (currentUserEmail) {
           this._logger.info('Sending join message after WebSocket (re)connection', {
-            userId: currentUserId,
+            userEmail: currentUserEmail,
           });
           this._webSocketAdapter
             .sendTMIMessage({
               event: 'join',
-              user_id: currentUserId,
+              user_id: currentUserEmail,
               timestamp: new Date().toISOString(),
             } as any)
             .subscribe({
               next: () => {
                 this._logger.debugComponent('wsmsg', 'Join message sent after reconnection', {
-                  userId: currentUserId,
+                  userEmail: currentUserEmail,
                 });
               },
               error: error => {
@@ -1498,16 +1527,20 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // Update local presenter state
-    this._updateState({ currentPresenterId: message.current_presenter });
+    this._updateState({ currentPresenterEmail: message.current_presenter });
     this._updateUsersPresenterStatus(message.current_presenter);
 
     // Show notification about presenter change
-    const displayName = this._getUserDisplayName(message.current_presenter);
-    const currentUserId = this.getCurrentUserId();
+    const currentUserEmail = this.getCurrentUserEmail();
 
-    if (message.current_presenter === currentUserId) {
+    if (message.current_presenter === currentUserEmail) {
       this._notificationService.showPresenterEvent('assigned').subscribe();
     } else {
+      // Find the user in the participants list to get their display name
+      const presenterUser = this._collaborationState$.value.users.find(
+        user => user.email === message.current_presenter
+      );
+      const displayName = presenterUser?.name || message.current_presenter;
       this._notificationService.showPresenterEvent('assigned', displayName).subscribe();
     }
 
@@ -1516,30 +1549,6 @@ export class DfdCollaborationService implements OnDestroy {
 
   // REST API refresh methods removed - participants now managed through WebSocket messages only
 
-  /**
-   * Get user display name from user ID
-   */
-  private _getUserDisplayName(userId: string): string {
-    if (!userId || typeof userId !== 'string') {
-      return 'Unknown User';
-    }
-
-    // If this is the current user, use their actual display name from the auth service
-    if (userId === this._authService.userId) {
-      const userProfile = this._authService.userProfile;
-      if (userProfile?.name) {
-        return userProfile.name;
-      }
-    }
-
-    // For other users, try to extract a display name
-    // If userId looks like an email, use the part before @
-    // Otherwise, use the userId as-is
-    if (userId.includes('@')) {
-      return userId.split('@')[0] || userId;
-    }
-    return userId;
-  }
 
   /**
    * Clean up session state without API calls
@@ -1552,7 +1561,7 @@ export class DfdCollaborationService implements OnDestroy {
     this._updateState({
       isActive: false,
       users: [],
-      currentPresenterId: null,
+      currentPresenterEmail: null,
       pendingPresenterRequests: [],
       sessionInfo: null,
     });

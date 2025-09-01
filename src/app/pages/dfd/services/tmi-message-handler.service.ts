@@ -200,10 +200,9 @@ export class TMIMessageHandlerService implements OnDestroy {
       return;
     }
 
-    // Add the user to the participant list
-    // Permission will be determined from the session data when we refresh
-    this._logger.info('Adding participant to list', { userId: message.user_id });
-    this._collaborationService.addParticipant(message.user_id);
+    // Note: Participants are updated via participants_update message
+    // This deprecated method just logs a warning
+    this._logger.info('Join event received', { userId: message.user_id });
 
     // Show notification
     const displayName = this._getUserDisplayName(message.user_id);
@@ -238,13 +237,13 @@ export class TMIMessageHandlerService implements OnDestroy {
     const displayName = this._getUserDisplayName(message.user_id);
     this._notificationService.showSessionEvent('userLeft', displayName).subscribe();
 
-    // Remove the user from the participant list
-    this._logger.info('Removing participant from list', { userId: message.user_id });
-    this._collaborationService.removeParticipant(message.user_id);
+    // Note: Participants are updated via participants_update message
+    // This deprecated method just logs a warning
+    this._logger.info('Leave event received', { userId: message.user_id });
 
     // Check if the current user left (shouldn't happen but handle gracefully)
-    const currentUserId = this._collaborationService.getCurrentUserId();
-    if (message.user_id === currentUserId && !this._collaborationService.isCurrentUserHost()) {
+    const currentUserEmail = this._collaborationService.getCurrentUserEmail();
+    if (message.user_id === currentUserEmail && !this._collaborationService.isCurrentUserHost()) {
       this._logger.warn('Current user received leave event, session may have ended');
       // The collaboration service will handle cleanup and redirect
     }
@@ -315,10 +314,10 @@ export class TMIMessageHandlerService implements OnDestroy {
     });
 
     // Update the user's presenter request state back to hand_down
-    const currentUserId = this._collaborationService.getCurrentUserId();
-    if (message.target_user === currentUserId && currentUserId) {
+    const currentUserEmail = this._collaborationService.getCurrentUserEmail();
+    if (message.target_user === currentUserEmail && currentUserEmail) {
       // Update local state to hand_down since request was denied
-      this._collaborationService.updateUserPresenterRequestState(currentUserId, 'hand_down');
+      this._collaborationService.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
 
       // Show denial notification
       this._notificationService.showPresenterEvent('requestDenied').subscribe();
