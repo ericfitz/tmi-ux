@@ -141,23 +141,51 @@ export class DfdCollaborationService implements OnDestroy {
     const currentState = this._collaborationState$.value;
     const newState = { ...currentState, ...updates };
     
+    // Enhanced logging for debugging WebSocket flow
     this._logger.info('[DfdCollaborationService] Updating collaboration state', {
       timestamp: new Date().toISOString(),
       updates: Object.keys(updates),
-      previousUserCount: currentState.users.length,
-      newUserCount: newState.users.length,
-      isActive: newState.isActive,
+      previousState: {
+        isActive: currentState.isActive,
+        userCount: currentState.users.length,
+        presenter: currentState.currentPresenterEmail,
+      },
+      newState: {
+        isActive: newState.isActive,
+        userCount: newState.users.length,
+        presenter: newState.currentPresenterEmail,
+      },
       usersChanged: updates.users !== undefined,
+      callStack: new Error().stack?.split('\n').slice(2, 5), // Log call stack for tracing
     });
+    
+    // Log before emitting to track timing
+    this._logger.debug('[DfdCollaborationService] About to emit state update via BehaviorSubject');
     
     this._collaborationState$.next(newState);
     
-    this._logger.debug('[DfdCollaborationService] State update complete', {
+    this._logger.debug('[DfdCollaborationService] State update complete - emitted to subscribers', {
       isActive: newState.isActive,
       userCount: newState.users.length,
       hasSession: !!newState.sessionInfo,
       users: newState.users,
     });
+  }
+
+  /**
+   * Get the current collaboration state synchronously
+   * This is useful for debugging and state verification
+   * @returns The current collaboration state
+   */
+  public getCurrentState(): CollaborationState {
+    const currentState = this._collaborationState$.value;
+    this._logger.debug('[DfdCollaborationService] getCurrentState called', {
+      isActive: currentState.isActive,
+      userCount: currentState.users.length,
+      hasSession: !!currentState.sessionInfo,
+      timestamp: new Date().toISOString(),
+    });
+    return currentState;
   }
 
   /**

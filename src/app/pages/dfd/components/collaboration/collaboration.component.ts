@@ -114,73 +114,48 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._logger.info('DfdCollaborationComponent initialized');
 
-    // Subscribe to collaboration status changes
+    // Subscribe to the unified collaboration state
+    // This single subscription replaces multiple individual subscriptions
     this._subscriptions.add(
-      this._collaborationService.isCollaborating$.subscribe(isCollaborating => {
-        this._logger.info('[CollaborationComponent] Collaboration status changed', {
-          previous: this.isCollaborating,
-          new: isCollaborating,
+      this._collaborationService.collaborationState$.subscribe(state => {
+        this._logger.info('[CollaborationComponent] State subscription fired', {
           timestamp: new Date().toISOString(),
-        });
-        
-        this.isCollaborating = isCollaborating;
-        // Don't set host flag here - wait for users to be populated
-        // Only clear it when collaboration ends
-        if (!isCollaborating) {
-          this.isCurrentUserHostFlag = false;
-        }
-        
-        // Force immediate change detection
-        this._cdr.detectChanges();
-      }),
-    );
-
-    // Subscribe to collaboration users changes
-    this._subscriptions.add(
-      this._collaborationService.collaborationUsers$.subscribe(users => {
-        this._logger.info('[CollaborationComponent] Users subscription fired', {
+          isActive: state.isActive,
+          userCount: state.users.length,
           previousUserCount: this.collaborationUsers.length,
-          newUserCount: users.length,
-          timestamp: new Date().toISOString(),
+          hasSession: !!state.sessionInfo,
         });
         
-        // Update local state
-        this.collaborationUsers = [...users]; // Create new array reference
+        // Update all component properties from the unified state
+        const previousIsCollaborating = this.isCollaborating;
+        this.isCollaborating = state.isActive;
+        this.collaborationUsers = [...state.users]; // Create new array reference
+        this.currentPresenterEmail = state.currentPresenterEmail;
+        this.pendingPresenterRequests = [...state.pendingPresenterRequests];
+        this.existingSessionAvailable = state.existingSessionAvailable;
+        
+        // Update host flag
         this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
         
+        // Log significant state changes
+        if (previousIsCollaborating !== state.isActive) {
+          this._logger.info('[CollaborationComponent] Collaboration status changed', {
+            previous: previousIsCollaborating,
+            new: state.isActive,
+          });
+        }
+        
         this._logger.info('[CollaborationComponent] Component state updated', {
+          isCollaborating: this.isCollaborating,
           userCount: this.collaborationUsers.length,
           users: this.collaborationUsers,
-          isCollaborating: this.isCollaborating,
           isCurrentUserHost: this.isCurrentUserHostFlag,
+          presenter: this.currentPresenterEmail,
+          pendingRequests: this.pendingPresenterRequests.length,
         });
         
         // Force immediate change detection
         this._cdr.detectChanges();
-      }),
-    );
-
-    // Subscribe to presenter state changes
-    this._subscriptions.add(
-      this._collaborationService.currentPresenterEmail$.subscribe(presenterEmail => {
-        this.currentPresenterEmail = presenterEmail;
-        this._cdr.markForCheck();
-      }),
-    );
-
-    // Subscribe to pending presenter requests
-    this._subscriptions.add(
-      this._collaborationService.pendingPresenterRequests$.subscribe(requests => {
-        this.pendingPresenterRequests = requests;
-        this._cdr.markForCheck();
-      }),
-    );
-
-    // Subscribe to existing session availability
-    this._subscriptions.add(
-      this._collaborationService.existingSessionAvailable$.subscribe(session => {
-        this.existingSessionAvailable = session;
-        this._cdr.markForCheck();
       }),
     );
 
@@ -198,6 +173,36 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     
     // Initial setup of periodic refresh
     this._setupPeriodicRefresh();
+    
+    // Perform initial state sync to ensure we have the latest state
+    this._syncWithServiceState();
+  }
+
+  /**
+   * Sync component state with service state
+   * This ensures we have the latest state even if subscriptions are delayed
+   */
+  private _syncWithServiceState(): void {
+    this._logger.info('[CollaborationComponent] Performing initial state sync');
+    
+    const currentState = this._collaborationService.getCurrentState();
+    
+    // Update all component properties from the current state
+    this.isCollaborating = currentState.isActive;
+    this.collaborationUsers = [...currentState.users];
+    this.currentPresenterEmail = currentState.currentPresenterEmail;
+    this.pendingPresenterRequests = [...currentState.pendingPresenterRequests];
+    this.existingSessionAvailable = currentState.existingSessionAvailable;
+    this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
+    
+    this._logger.info('[CollaborationComponent] Initial state sync complete', {
+      isCollaborating: this.isCollaborating,
+      userCount: this.collaborationUsers.length,
+      isCurrentUserHost: this.isCurrentUserHostFlag,
+    });
+    
+    // Force change detection
+    this._cdr.detectChanges();
   }
 
   ngOnDestroy(): void {
@@ -253,12 +258,66 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
           isMenuOpen: this._menuOpen,
         });
         
+        // Verify state synchronization
+        this._verifyStateSync();
+        
         // Force change detection
         this._cdr.detectChanges();
       }, 5000); // Refresh every 5 seconds
     } else {
       this._logger.info('[CollaborationComponent] WebSocket not connected, no periodic refresh', {
         isConnected: false,
+      });
+    }
+  }
+
+  /**
+   * Verify that component state is synchronized with service state
+   * Logs any discrepancies for debugging
+   */
+  private _verifyStateSync(): void {
+    const serviceState = this._collaborationService.getCurrentState();
+    
+    // Check for state mismatches
+    const mismatches: string[] = [];
+    
+    if (this.isCollaborating !== serviceState.isActive) {
+      mismatches.push(`isCollaborating: component=${this.isCollaborating}, service=${serviceState.isActive}`);
+    }
+    
+    if (this.collaborationUsers.length !== serviceState.users.length) {
+      mismatches.push(`userCount: component=${this.collaborationUsers.length}, service=${serviceState.users.length}`);
+    }
+    
+    if (this.currentPresenterEmail !== serviceState.currentPresenterEmail) {
+      mismatches.push(`presenter: component=${this.currentPresenterEmail}, service=${serviceState.currentPresenterEmail}`);
+    }
+    
+    if (mismatches.length > 0) {
+      this._logger.warn('[CollaborationComponent] State mismatch detected!', {
+        mismatches,
+        componentState: {
+          isCollaborating: this.isCollaborating,
+          userCount: this.collaborationUsers.length,
+          users: this.collaborationUsers,
+          presenter: this.currentPresenterEmail,
+          isHost: this.isCurrentUserHostFlag,
+        },
+        serviceState: {
+          isActive: serviceState.isActive,
+          userCount: serviceState.users.length,
+          users: serviceState.users,
+          presenter: serviceState.currentPresenterEmail,
+        },
+      });
+      
+      // If mismatch detected, perform recovery sync
+      this._logger.warn('[CollaborationComponent] Performing recovery sync due to state mismatch');
+      this._syncWithServiceState();
+    } else {
+      this._logger.debug('[CollaborationComponent] State verified - in sync', {
+        userCount: this.collaborationUsers.length,
+        isActive: this.isCollaborating,
       });
     }
   }
