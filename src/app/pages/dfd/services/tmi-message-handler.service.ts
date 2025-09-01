@@ -451,23 +451,29 @@ export class TMIMessageHandlerService implements OnDestroy {
   // Participants update handler
 
   private _handleParticipantsUpdate(message: any): void {
-    this._logger.info('TMI: Participants update received', {
-      participantCount: message.participants?.length,
-      host: message.host,
-      currentPresenter: message.current_presenter,
-      participants: message.participants?.map((p: any) => ({
-        userId: p.user_id,
+    this._logger.info('TMI: Participants update received - START', {
+      hasMessage: !!message,
+      hasParticipants: !!message?.participants,
+      participantCount: message?.participants?.length,
+      host: message?.host,
+      currentPresenter: message?.current_presenter,
+    });
+
+    this._logger.info('TMI: Participants details', {
+      participants: message?.participants?.map((p: any) => ({
+        userId: p.user?.user_id,
+        displayName: p.user?.displayName,
+        email: p.user?.email,
         permissions: p.permissions,
-        isPresenter: p.is_presenter,
-        isHost: p.is_host,
+        lastActivity: p.last_activity,
       })),
     });
 
     // Log with component debugging
     this._logger.debugComponent('wsmsg', 'Processing participants update', {
-      participantCount: message.participants?.length,
-      host: message.host,
-      currentPresenter: message.current_presenter,
+      participantCount: message?.participants?.length,
+      host: message?.host,
+      currentPresenter: message?.current_presenter,
       fullMessage: message,
     });
 
@@ -477,12 +483,29 @@ export class TMIMessageHandlerService implements OnDestroy {
       return;
     }
 
-    // Use the bulk update method from collaboration service
-    this._collaborationService.updateAllParticipants(
-      message.participants,
-      message.host,
-      message.current_presenter,
-    );
+    // Log the first participant to see all fields
+    if (message.participants.length > 0) {
+      this._logger.debug('First participant full data:', message.participants[0]);
+    }
+
+    try {
+      this._logger.info('Calling updateAllParticipants with data', {
+        participants: message.participants,
+        host: message.host,
+        current_presenter: message.current_presenter,
+      });
+
+      // Use the bulk update method from collaboration service
+      this._collaborationService.updateAllParticipants(
+        message.participants,
+        message.host,
+        message.current_presenter,
+      );
+      
+      this._logger.info('updateAllParticipants call completed');
+    } catch (error) {
+      this._logger.error('Error in updateAllParticipants', error);
+    }
   }
 
   // Helper methods

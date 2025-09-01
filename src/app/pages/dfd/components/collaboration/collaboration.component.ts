@@ -126,6 +126,12 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       this._collaborationService.collaborationUsers$.subscribe(users => {
         this.collaborationUsers = users;
         this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
+        this._logger.debug('Collaboration users updated in component', {
+          userCount: users.length,
+          users: users,
+          isCollaborating: this.isCollaborating,
+          isCurrentUserHost: this.isCurrentUserHostFlag,
+        });
         this._cdr.markForCheck();
       }),
     );

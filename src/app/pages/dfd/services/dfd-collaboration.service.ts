@@ -17,8 +17,9 @@ import { environment } from '../../../../environments/environment';
  * Represents a user in a collaboration session
  */
 export interface CollaborationUser {
-  id: string;
-  name: string;
+  id: string; // User ID (email)
+  name: string; // Display name to show in UI
+  email: string; // Email address for tooltips
   permission: 'writer' | 'reader'; // Based on threat model permissions
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
@@ -30,19 +31,48 @@ export interface CollaborationUser {
 }
 
 /**
+ * User information from the API
+ */
+export interface ApiUser {
+  user_id: string;
+  email: string;
+  displayName: string;
+}
+
+/**
+ * Participant from the API
+ */
+export interface ApiParticipant {
+  user: ApiUser;
+  last_activity: string;
+  permissions: 'reader' | 'writer' | 'owner';
+}
+
+/**
  * Represents a collaboration session from the API
  */
 export interface CollaborationSession {
   session_id: string;
   threat_model_id: string;
+  threat_model_name: string;
   diagram_id: string;
-  participants: Array<{
-    user_id: string;
-    joined_at: string;
-    permissions?: 'reader' | 'writer';
-  }>;
+  diagram_name: string;
+  participants: ApiParticipant[];
   websocket_url: string;
-  host?: string;
+  host: string;
+  presenter?: string;
+}
+
+/**
+ * Unified collaboration state that combines all collaboration-related data
+ */
+export interface CollaborationState {
+  isActive: boolean;
+  users: CollaborationUser[];
+  currentPresenterId: string | null;
+  pendingPresenterRequests: string[];
+  sessionInfo: CollaborationSession | null;
+  existingSessionAvailable: CollaborationSession | null;
 }
 
 /**
@@ -52,25 +82,33 @@ export interface CollaborationSession {
   providedIn: 'root',
 })
 export class DfdCollaborationService implements OnDestroy {
-  // Observable for collaboration status
-  private _isCollaborating$ = new BehaviorSubject<boolean>(false);
-  public isCollaborating$ = this._isCollaborating$.asObservable();
+  // Unified collaboration state
+  private _collaborationState$ = new BehaviorSubject<CollaborationState>({
+    isActive: false,
+    users: [],
+    currentPresenterId: null,
+    pendingPresenterRequests: [],
+    sessionInfo: null,
+    existingSessionAvailable: null,
+  });
+  public collaborationState$ = this._collaborationState$.asObservable();
 
-  // Observable for users in the collaboration session
-  private _collaborationUsers$ = new BehaviorSubject<CollaborationUser[]>([]);
-  public collaborationUsers$ = this._collaborationUsers$.asObservable();
-
-  // Presenter state tracking
-  private _currentPresenterId$ = new BehaviorSubject<string | null>(null);
-  public currentPresenterId$ = this._currentPresenterId$.asObservable();
-
-  // Pending presenter requests (for session owners)
-  private _pendingPresenterRequests$ = new BehaviorSubject<string[]>([]);
-  public pendingPresenterRequests$ = this._pendingPresenterRequests$.asObservable();
-
-  // Existing session available (found but not joined yet)
-  private _existingSessionAvailable$ = new BehaviorSubject<CollaborationSession | null>(null);
-  public existingSessionAvailable$ = this._existingSessionAvailable$.asObservable();
+  // Derived observables for backward compatibility
+  public isCollaborating$ = this.collaborationState$.pipe(
+    map(state => state.isActive),
+  );
+  public collaborationUsers$ = this.collaborationState$.pipe(
+    map(state => state.users),
+  );
+  public currentPresenterId$ = this.collaborationState$.pipe(
+    map(state => state.currentPresenterId),
+  );
+  public pendingPresenterRequests$ = this.collaborationState$.pipe(
+    map(state => state.pendingPresenterRequests),
+  );
+  public existingSessionAvailable$ = this.collaborationState$.pipe(
+    map(state => state.existingSessionAvailable),
+  );
 
   // Current session information
   private _currentSession: CollaborationSession | null = null;
@@ -94,6 +132,22 @@ export class DfdCollaborationService implements OnDestroy {
   ) {
     this._logger.info('DfdCollaborationService initialized');
     // WebSocket listeners will be set up when collaboration is actually started
+  }
+
+  /**
+   * Helper method to update collaboration state atomically
+   * @param updates Partial state updates to apply
+   */
+  private _updateState(updates: Partial<CollaborationState>): void {
+    const currentState = this._collaborationState$.value;
+    const newState = { ...currentState, ...updates };
+    this._collaborationState$.next(newState);
+    
+    this._logger.debug('Collaboration state updated', {
+      isActive: newState.isActive,
+      userCount: newState.users.length,
+      hasSession: !!newState.sessionInfo,
+    });
   }
 
   /**
@@ -130,7 +184,7 @@ export class DfdCollaborationService implements OnDestroy {
       );
     }
 
-    if (this._isCollaborating$.value) {
+    if (this._collaborationState$.value.isActive) {
       this._logger.warn('Already collaborating - returning current session');
       return new Observable<CollaborationSession | null>(observer => {
         observer.next(this._currentSession);
@@ -143,7 +197,7 @@ export class DfdCollaborationService implements OnDestroy {
       .pipe(
         tap((session: CollaborationSession | null) => {
           // Update the existing session state for UI components to react to
-          this._existingSessionAvailable$.next(session);
+          this._updateState({ existingSessionAvailable: session });
 
           if (session) {
             this._logger.info('Found existing collaboration session', {
@@ -158,7 +212,7 @@ export class DfdCollaborationService implements OnDestroy {
         catchError(error => {
           this._logger.error('Failed to check for existing collaboration session', error);
           // Return null instead of throwing - this is not a critical error
-          this._existingSessionAvailable$.next(null);
+          this._updateState({ existingSessionAvailable: null });
           return new Observable<CollaborationSession | null>(observer => {
             observer.next(null);
             observer.complete();
@@ -172,7 +226,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if current user is the host of existing session
    */
   public isCurrentUserManagerOfExistingSession(): boolean {
-    const existingSession = this._existingSessionAvailable$.value;
+    const existingSession = this._collaborationState$.value.existingSessionAvailable;
     if (!existingSession) {
       return false;
     }
@@ -194,7 +248,7 @@ export class DfdCollaborationService implements OnDestroy {
       );
     }
 
-    if (this._isCollaborating$.value) {
+    if (this._collaborationState$.value.isActive) {
       this._logger.warn('Collaboration session already active');
       return throwError(() => new Error('Collaboration session is already active'));
     }
@@ -214,40 +268,33 @@ export class DfdCollaborationService implements OnDestroy {
           // Store the session
           this._currentSession = session;
 
+          // Initialize with current user immediately to ensure UI shows at least one participant
+          const currentUserId = this.getCurrentUserId();
+          const initialUser: CollaborationUser = {
+            id: currentUserId || 'unknown',
+            name: this._getUserDisplayName(currentUserId || 'unknown'),
+            email: currentUserId || 'unknown',
+            permission: 'writer',
+            status: 'active',
+            isHost: false, // Will be updated by WebSocket message
+            isPresenter: false,
+            lastActivity: new Date(),
+            presenterRequestState: 'hand_down',
+          };
+
+          // Update collaboration state atomically
+          this._updateState({
+            isActive: true,
+            users: [initialUser],
+            sessionInfo: session,
+            existingSessionAvailable: null,
+          });
+
           // Set up WebSocket listeners before connecting
           this._setupWebSocketListeners();
 
-          // Connect to WebSocket
+          // Connect to WebSocket immediately - no delay needed with unified state
           this._connectToWebSocket(session.websocket_url);
-
-          // Update collaboration state
-          this._isCollaborating$.next(true);
-          // Clear existing session state since we're now actively collaborating
-          this._existingSessionAvailable$.next(null);
-
-          // Convert API participants to CollaborationUser format with correct permissions
-          const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
-            if (!participant.permissions) {
-              this._logger.error('Server error: participant missing permissions field', {
-                sessionId: session.session_id,
-                participantId: participant.user_id,
-                participant,
-              });
-              throw new Error(
-                `Server error: participant ${participant.user_id} missing permissions field`,
-              );
-            }
-            return {
-              id: participant.user_id,
-              name: this._getUserDisplayName(participant.user_id),
-              permission: participant.permissions, // Use permissions from API response - required field
-              status: 'active' as const,
-              isHost: participant.user_id === session.host, // Use host field from API
-              presenterRequestState: 'hand_down' as const,
-            };
-          });
-
-          this._collaborationUsers$.next(collaborationUsers);
         }),
         // Participants will be updated through WebSocket messages only
         tap(() => {
@@ -263,7 +310,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Check if this is a 403 error - reader trying to join
           if (error?.status === 403) {
             // Check if a session already exists that we can connect to directly
-            const existingSession = this._existingSessionAvailable$.value;
+            const existingSession = this._collaborationState$.value.existingSessionAvailable;
             if (existingSession) {
               this._logger.info('Reader received 403 on PUT, but session exists - connecting directly to WebSocket', {
                 sessionId: existingSession.session_id,
@@ -273,28 +320,33 @@ export class DfdCollaborationService implements OnDestroy {
               // Store the session
               this._currentSession = existingSession;
 
+              // Initialize with current user immediately to ensure UI shows at least one participant
+              const currentUserId = this.getCurrentUserId();
+              const initialUser: CollaborationUser = {
+                id: currentUserId || 'unknown',
+                name: this._getUserDisplayName(currentUserId || 'unknown'),
+                email: currentUserId || 'unknown',
+                permission: 'reader', // Reader permission for this fallback case
+                status: 'active',
+                isHost: false,
+                isPresenter: false,
+                lastActivity: new Date(),
+                presenterRequestState: 'hand_down',
+              };
+
+              // Update collaboration state atomically
+              this._updateState({
+                isActive: true,
+                users: [initialUser],
+                sessionInfo: existingSession,
+                existingSessionAvailable: null,
+              });
+
               // Set up WebSocket listeners before connecting
               this._setupWebSocketListeners();
 
-              // Connect to WebSocket
+              // Connect to WebSocket immediately - no delay needed with unified state
               this._connectToWebSocket(existingSession.websocket_url);
-
-              // Update collaboration state
-              this._isCollaborating$.next(true);
-              // Clear existing session state since we're now actively collaborating
-              this._existingSessionAvailable$.next(null);
-
-              // Convert API participants to CollaborationUser format
-              const collaborationUsers: CollaborationUser[] = existingSession.participants.map(participant => ({
-                id: participant.user_id,
-                name: this._getUserDisplayName(participant.user_id),
-                permission: participant.permissions || 'reader',
-                status: 'active' as const,
-                isHost: participant.user_id === existingSession.host,
-                presenterRequestState: 'hand_down' as const,
-              }));
-
-              this._collaborationUsers$.next(collaborationUsers);
               
               // Show session joined notification
               this._notificationService.showSessionEvent('userJoined').subscribe();
@@ -328,7 +380,7 @@ export class DfdCollaborationService implements OnDestroy {
       );
     }
 
-    if (this._isCollaborating$.value) {
+    if (this._collaborationState$.value.isActive) {
       this._logger.warn('Collaboration session already active');
       return throwError(() => new Error('Collaboration session is already active'));
     }
@@ -351,40 +403,33 @@ export class DfdCollaborationService implements OnDestroy {
           // Store the session
           this._currentSession = session;
 
+          // Initialize with current user immediately to ensure UI shows at least one participant
+          const currentUserId = this.getCurrentUserId();
+          const initialUser: CollaborationUser = {
+            id: currentUserId || 'unknown',
+            name: this._getUserDisplayName(currentUserId || 'unknown'),
+            email: currentUserId || 'unknown',
+            permission: 'writer',
+            status: 'active',
+            isHost: false, // Will be updated by WebSocket message
+            isPresenter: false,
+            lastActivity: new Date(),
+            presenterRequestState: 'hand_down',
+          };
+
+          // Update collaboration state atomically
+          this._updateState({
+            isActive: true,
+            users: [initialUser],
+            sessionInfo: session,
+            existingSessionAvailable: null,
+          });
+
           // Set up WebSocket listeners before connecting
           this._setupWebSocketListeners();
 
-          // Connect to WebSocket
+          // Connect to WebSocket immediately - no delay needed with unified state
           this._connectToWebSocket(session.websocket_url);
-
-          // Update collaboration state
-          this._isCollaborating$.next(true);
-          // Clear existing session state since we're now actively collaborating
-          this._existingSessionAvailable$.next(null);
-
-          // Convert API participants to CollaborationUser format
-          const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
-            if (!participant.permissions) {
-              this._logger.error('Server error: participant missing permissions field', {
-                sessionId: session.session_id,
-                participantId: participant.user_id,
-                participant,
-              });
-              throw new Error(
-                `Server error: participant ${participant.user_id} missing permissions field`,
-              );
-            }
-            return {
-              id: participant.user_id,
-              name: this._getUserDisplayName(participant.user_id),
-              permission: participant.permissions, // Use permissions from API response
-              status: 'active' as const,
-              isHost: participant.user_id === session.host,
-              presenterRequestState: 'hand_down' as const,
-            };
-          });
-
-          this._collaborationUsers$.next(collaborationUsers);
 
           // Store whether this was a new session for later
           return { isNewSession: result.isNewSession };
@@ -424,7 +469,7 @@ export class DfdCollaborationService implements OnDestroy {
       );
     }
 
-    if (this._isCollaborating$.value) {
+    if (this._collaborationState$.value.isActive) {
       this._logger.warn('Collaboration session already active');
       return throwError(() => new Error('Collaboration session is already active'));
     }
@@ -444,42 +489,33 @@ export class DfdCollaborationService implements OnDestroy {
           // Store the session
           this._currentSession = session;
 
+          // Initialize with current user immediately to ensure UI shows at least one participant
+          const currentUserId = this.getCurrentUserId();
+          const initialUser: CollaborationUser = {
+            id: currentUserId || 'unknown',
+            name: this._getUserDisplayName(currentUserId || 'unknown'),
+            email: currentUserId || 'unknown',
+            permission: 'writer',
+            status: 'active',
+            isHost: false, // Will be updated by WebSocket message
+            isPresenter: false,
+            lastActivity: new Date(),
+            presenterRequestState: 'hand_down',
+          };
+
+          // Update collaboration state atomically
+          this._updateState({
+            isActive: true,
+            users: [initialUser],
+            sessionInfo: session,
+            existingSessionAvailable: null,
+          });
+
           // Set up WebSocket listeners before connecting
           this._setupWebSocketListeners();
 
-          // Connect to WebSocket
+          // Connect to WebSocket immediately - no delay needed with unified state
           this._connectToWebSocket(session.websocket_url);
-
-          // Update collaboration state
-          this._isCollaborating$.next(true);
-          // Clear existing session state since we're now actively collaborating
-          this._existingSessionAvailable$.next(null);
-
-          // Convert API participants to CollaborationUser format, using email addresses consistently
-          const collaborationUsers: CollaborationUser[] = session.participants.map(participant => {
-            if (!participant.permissions) {
-              this._logger.error('Server error: participant missing permissions field', {
-                sessionId: session.session_id,
-                participantId: participant.user_id,
-                participant,
-              });
-              throw new Error(
-                `Server error: participant ${participant.user_id} missing permissions field`,
-              );
-            }
-            return {
-              id: participant.user_id,
-              name: this._getUserDisplayName(participant.user_id),
-              permission: participant.permissions, // Use permissions from API response - required field
-              status: 'active' as const,
-              isHost: participant.user_id === session.host, // Use host field from API
-              presenterRequestState: 'hand_down' as const,
-            };
-          });
-
-          // Server guarantees the creating user will be included in the participants list
-
-          this._collaborationUsers$.next(collaborationUsers);
         }),
         // No longer ensuring user in participant list via REST API
         // Participants will be managed through WebSocket messages only
@@ -601,11 +637,14 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Clear session state
           this._currentSession = null;
-          this._isCollaborating$.next(false);
-          this._collaborationUsers$.next([]);
-          this._currentPresenterId$.next(null);
-          this._pendingPresenterRequests$.next([]);
-          this._existingSessionAvailable$.next(null);
+          this._updateState({
+            isActive: false,
+            users: [],
+            currentPresenterId: null,
+            pendingPresenterRequests: [],
+            sessionInfo: null,
+            existingSessionAvailable: null,
+          });
 
           // Show session ended notification
           this._notificationService.showSessionEvent('ended').subscribe();
@@ -622,11 +661,14 @@ export class DfdCollaborationService implements OnDestroy {
 
           this._disconnectFromWebSocket();
           this._currentSession = null;
-          this._isCollaborating$.next(false);
-          this._collaborationUsers$.next([]);
-          this._currentPresenterId$.next(null);
-          this._pendingPresenterRequests$.next([]);
-          this._existingSessionAvailable$.next(null);
+          this._updateState({
+            isActive: false,
+            users: [],
+            currentPresenterId: null,
+            pendingPresenterRequests: [],
+            sessionInfo: null,
+            existingSessionAvailable: null,
+          });
 
           // Show session ended notification even on error
           this._notificationService.showSessionEvent('ended').subscribe();
@@ -646,25 +688,13 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Inviting user to collaboration session', { email, permission });
 
     // In a real implementation, this would send an invitation to the server
-    // which would then notify the user via email or in-app notification
-
-    // For now, we'll simulate adding a new user to the session
+    // The server would then update the participants list via WebSocket
+    // We should NOT modify the local state here
+    
     return new Observable<boolean>(observer => {
+      // Simulate API call to invite user
       setTimeout(() => {
-        const users = this._collaborationUsers$.value;
-
-        // Create a new user with a random ID
-        const newUser: CollaborationUser = {
-          id: `user-${Math.floor(Math.random() * 1000)}`,
-          name: email.split('@')[0], // Use the part before @ as the name
-          permission,
-          status: 'disconnected', // Start as disconnected until they accept
-          isHost: false, // Invited users are never hosts
-        };
-
-        // Add the new user to the list
-        this._collaborationUsers$.next([...users, newUser]);
-
+        // Just return success - the participants list will be updated via WebSocket
         observer.next(true);
         observer.complete();
       }, 500);
@@ -680,14 +710,12 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Removing user from collaboration session', { userId });
 
     // In a real implementation, this would notify the server to remove the user
+    // The server would then update the participants list via WebSocket
+    // We should NOT modify the local state here
 
-    // For now, we'll just remove the user from our local list
     return new Observable<boolean>(observer => {
-      const users = this._collaborationUsers$.value;
-      const updatedUsers = users.filter(user => user.id !== userId);
-
-      this._collaborationUsers$.next(updatedUsers);
-
+      // Simulate API call to remove user
+      // Just return success - the participants list will be updated via WebSocket
       observer.next(true);
       observer.complete();
     });
@@ -710,18 +738,12 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // In a real implementation, this would notify the server to update the user's permission
-    // For now, we'll just update the user in our local list
+    // The server would then update the participants list via WebSocket
+    // We should NOT modify the local state here
+    
     return new Observable<boolean>(observer => {
-      const users = this._collaborationUsers$.value;
-      const updatedUsers = users.map(user => {
-        if (user.id === userId) {
-          return { ...user, permission };
-        }
-        return user;
-      });
-
-      this._collaborationUsers$.next(updatedUsers);
-
+      // Simulate API call to update permission
+      // Just return success - the participants list will be updated via WebSocket
       observer.next(true);
       observer.complete();
     });
@@ -731,58 +753,26 @@ export class DfdCollaborationService implements OnDestroy {
    * Add a participant to the collaboration session
    * @param userId The user ID (email)
    * @param permission The user's permission level
+   * @deprecated This method should not be used - participants are managed via WebSocket messages only
    */
   public addParticipant(userId: string, permission: 'reader' | 'writer' = 'reader'): void {
-    const currentUsers = this._collaborationUsers$.value;
-    const userExists = currentUsers.some(user => user.id === userId);
-
-    if (!userExists) {
-      const newUser: CollaborationUser = {
-        id: userId,
-        name: this._getUserDisplayName(userId),
-        permission,
-        status: 'active',
-        isPresenter: false,
-        isHost: userId === this._currentSession?.host,
-        lastActivity: new Date(),
-        presenterRequestState: 'hand_down',
-      };
-
-      const updatedUsers = [...currentUsers, newUser];
-      this._collaborationUsers$.next(updatedUsers);
-      this._logger.info('Added participant to collaboration session', {
-        userId,
-        permission,
-        isHost: newUser.isHost,
-      });
-    }
+    this._logger.warn('addParticipant called but participants should only be updated via WebSocket messages', {
+      userId,
+      permission,
+    });
+    // Do not modify local state - wait for server update
   }
 
   /**
    * Remove a participant from the collaboration session
    * @param userId The user ID to remove
+   * @deprecated This method should not be used - participants are managed via WebSocket messages only
    */
   public removeParticipant(userId: string): void {
-    const currentUsers = this._collaborationUsers$.value;
-    this._logger.info('removeParticipant called', {
+    this._logger.warn('removeParticipant called but participants should only be updated via WebSocket messages', {
       userId,
-      currentParticipantCount: currentUsers.length,
-      currentParticipants: currentUsers.map(u => ({ id: u.id, name: u.name })),
     });
-
-    const updatedUsers = currentUsers.filter(user => user.id !== userId);
-
-    if (updatedUsers.length !== currentUsers.length) {
-      this._collaborationUsers$.next(updatedUsers);
-      this._logger.info('Removed participant from collaboration session', {
-        userId,
-        previousCount: currentUsers.length,
-        newCount: updatedUsers.length,
-        remainingParticipants: updatedUsers.map(u => ({ id: u.id, name: u.name })),
-      });
-    } else {
-      this._logger.warn('Attempted to remove participant not in list', { userId });
-    }
+    // Do not modify local state - wait for server update
   }
 
   /**
@@ -794,39 +784,68 @@ export class DfdCollaborationService implements OnDestroy {
    */
   public updateAllParticipants(
     participants: Array<{
-      user_id: string;
-      permissions: 'reader' | 'writer';
-      is_presenter: boolean;
-      is_host: boolean;
-      joined_at?: string;
+      user: {
+        user_id: string;
+        displayName: string;
+        email: string;
+      };
+      permissions: 'reader' | 'writer' | 'owner';
+      last_activity: string;
     }>,
     host?: string,
     currentPresenter?: string | null,
   ): void {
+    this._logger.info('updateAllParticipants called', {
+      participantCount: participants.length,
+      participants: participants,
+      host,
+      currentPresenter,
+      isCollaborating: this._collaborationState$.value.isActive,
+    });
+
     // Build the new participant list
     const updatedUsers: CollaborationUser[] = participants.map(participant => ({
-      id: participant.user_id,
-      name: this._getUserDisplayName(participant.user_id),
-      permission: participant.permissions,
+      id: participant.user.user_id,
+      name: participant.user.displayName,
+      email: participant.user.email,
+      permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
       status: 'active' as const,
-      isPresenter: participant.is_presenter,
-      isHost: participant.is_host,
-      lastActivity: new Date(participant.joined_at || Date.now()),
-      presenterRequestState: participant.is_presenter ? 'presenter' : ('hand_down' as const),
+      isPresenter: participant.user.user_id === currentPresenter,
+      isHost: participant.user.user_id === host,
+      lastActivity: new Date(participant.last_activity),
+      presenterRequestState: participant.user.user_id === currentPresenter ? 'presenter' : ('hand_down' as const),
     }));
 
-    // Update the participant list
-    this._collaborationUsers$.next(updatedUsers);
-
-    // Update presenter state if provided
+    // Update the participant list and presenter state atomically
+    const stateUpdate: Partial<CollaborationState> = {
+      users: updatedUsers,
+    };
+    
     if (currentPresenter !== undefined) {
-      this._currentPresenterId$.next(currentPresenter);
+      stateUpdate.currentPresenterId = currentPresenter;
     }
+    
+    this._updateState(stateUpdate);
+    
+    this._logger.debug('DfdCollaborationService: Updated collaboration state', {
+      userCount: updatedUsers.length,
+      users: updatedUsers,
+      isActive: this._collaborationState$.value.isActive,
+      currentPresenter,
+    });
 
     this._logger.info('Bulk participant update applied', {
       participantCount: participants.length,
       host,
       currentPresenter,
+      updatedUsers: updatedUsers.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        permission: u.permission,
+        isHost: u.isHost,
+        isPresenter: u.isPresenter
+      }))
     });
   }
 
@@ -835,11 +854,11 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns The current user's permission, or null if not in a session
    */
   public getCurrentUserPermission(): 'writer' | 'reader' | null {
-    if (!this._isCollaborating$.value) {
+    if (!this._collaborationState$.value.isActive) {
       return null;
     }
 
-    const users = this._collaborationUsers$.value;
+    const users = this._collaborationState$.value.users;
     const currentUserId = this._authService.userId || '';
     const currentUser = users.find(user => user.id === currentUserId);
 
@@ -847,7 +866,7 @@ export class DfdCollaborationService implements OnDestroy {
       currentUserId,
       users: users.map(u => ({ id: u.id, permission: u.permission })),
       currentUser: currentUser ? { id: currentUser.id, permission: currentUser.permission } : null,
-      isCollaborating: this._isCollaborating$.value,
+      isCollaborating: this._collaborationState$.value.isActive,
     });
 
     return currentUser ? currentUser.permission : null;
@@ -858,7 +877,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if user list has been populated
    */
   public hasLoadedUsers(): boolean {
-    return this._collaborationUsers$.value.length > 0;
+    return this._collaborationState$.value.users.length > 0;
   }
 
   /**
@@ -871,13 +890,13 @@ export class DfdCollaborationService implements OnDestroy {
 
     if (!userPermission) {
       // If we're collaborating but don't have permission info yet, check if we're still loading
-      if (this._isCollaborating$.value && this._collaborationUsers$.value.length === 0) {
+      if (this._collaborationState$.value.isActive && this._collaborationState$.value.users.length === 0) {
         this._logger.warn(
           'Permission check attempted before user list loaded - will use threat model permission as fallback',
           {
             permission,
-            isCollaborating: this._isCollaborating$.value,
-            userCount: this._collaborationUsers$.value.length,
+            isCollaborating: this._collaborationState$.value.isActive,
+            userCount: this._collaborationState$.value.users.length,
           },
         );
       }
@@ -899,11 +918,11 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if the current user is the host
    */
   public isCurrentUserHost(): boolean {
-    if (!this._isCollaborating$.value) {
+    if (!this._collaborationState$.value.isActive) {
       return false;
     }
 
-    const users = this._collaborationUsers$.value;
+    const users = this._collaborationState$.value.users;
     const currentUserId = this._authService.userId || '';
     const currentUser = users.find(user => user.id === currentUserId);
 
@@ -934,7 +953,7 @@ export class DfdCollaborationService implements OnDestroy {
    */
   public isCurrentUserPresenter(): boolean {
     const currentUserId = this.getCurrentUserId();
-    return currentUserId === this._currentPresenterId$.value;
+    return currentUserId === this._collaborationState$.value.currentPresenterId;
   }
 
   /**
@@ -942,7 +961,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if currently collaborating
    */
   public isCollaborating(): boolean {
-    return this._isCollaborating$.value;
+    return this._collaborationState$.value.isActive;
   }
 
   /**
@@ -950,7 +969,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns The presenter's user ID or null if no presenter
    */
   public getCurrentPresenterId(): string | null {
-    return this._currentPresenterId$.value;
+    return this._collaborationState$.value.currentPresenterId;
   }
 
   /**
@@ -1010,8 +1029,10 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Approving presenter request', { userId });
 
     // Remove from pending requests
-    const pendingRequests = this._pendingPresenterRequests$.value;
-    this._pendingPresenterRequests$.next(pendingRequests.filter(id => id !== userId));
+    const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
+    this._updateState({ 
+      pendingPresenterRequests: pendingRequests.filter(id => id !== userId) 
+    });
 
     return this.setPresenter(userId);
   }
@@ -1029,8 +1050,10 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Denying presenter request', { userId });
 
     // Remove from pending requests
-    const pendingRequests = this._pendingPresenterRequests$.value;
-    this._pendingPresenterRequests$.next(pendingRequests.filter(id => id !== userId));
+    const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
+    this._updateState({ 
+      pendingPresenterRequests: pendingRequests.filter(id => id !== userId) 
+    });
 
     // Send denial via WebSocket
     return this._webSocketAdapter
@@ -1068,7 +1091,7 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('Setting presenter', { userId });
 
     // Update local state
-    this._currentPresenterId$.next(userId);
+    this._updateState({ currentPresenterId: userId });
     this._updateUsersPresenterStatus(userId);
 
     // Send presenter update via WebSocket
@@ -1084,7 +1107,7 @@ export class DfdCollaborationService implements OnDestroy {
           if (userId === currentUserId) {
             this._notificationService.showPresenterEvent('assigned').subscribe();
           } else if (userId) {
-            const user = this._collaborationUsers$.value.find(u => u.id === userId);
+            const user = this._collaborationState$.value.users.find(u => u.id === userId);
             this._notificationService
               .showPresenterEvent('assigned', user?.name || userId)
               .subscribe();
@@ -1096,7 +1119,7 @@ export class DfdCollaborationService implements OnDestroy {
         catchError(error => {
           this._logger.error('Failed to send presenter update', error);
           // Revert local state on error
-          this._currentPresenterId$.next(null);
+          this._updateState({ currentPresenterId: null });
           this._updateUsersPresenterStatus(null);
           this._notificationService
             .showOperationError('update presenter', error.message || 'Unknown error')
@@ -1124,9 +1147,11 @@ export class DfdCollaborationService implements OnDestroy {
    * @param userId The user ID requesting presenter privileges
    */
   public addPresenterRequest(userId: string): void {
-    const pendingRequests = this._pendingPresenterRequests$.value;
+    const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
     if (!pendingRequests.includes(userId)) {
-      this._pendingPresenterRequests$.next([...pendingRequests, userId]);
+      this._updateState({ 
+        pendingPresenterRequests: [...pendingRequests, userId] 
+      });
     }
   }
 
@@ -1135,7 +1160,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param presenterId The user ID of the current presenter
    */
   public updatePresenterId(presenterId: string | null): void {
-    this._currentPresenterId$.next(presenterId);
+    this._updateState({ currentPresenterId: presenterId });
     this._updateUsersPresenterStatus(presenterId);
   }
 
@@ -1144,7 +1169,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param presenterId The user ID of the current presenter
    */
   public _updateUsersPresenterStatus(presenterId: string | null): void {
-    const users = this._collaborationUsers$.value;
+    const users = this._collaborationState$.value.users;
     const updatedUsers = users.map(user => ({
       ...user,
       isPresenter: user.id === presenterId,
@@ -1152,7 +1177,7 @@ export class DfdCollaborationService implements OnDestroy {
       presenterRequestState:
         user.id === presenterId ? ('presenter' as const) : ('hand_down' as const),
     }));
-    this._collaborationUsers$.next(updatedUsers);
+    this._updateState({ users: updatedUsers });
   }
 
   /**
@@ -1164,14 +1189,14 @@ export class DfdCollaborationService implements OnDestroy {
     userId: string,
     state: 'hand_down' | 'hand_raised' | 'presenter',
   ): void {
-    const users = this._collaborationUsers$.value;
+    const users = this._collaborationState$.value.users;
     const updatedUsers = users.map(user => {
       if (user.id === userId) {
         return { ...user, presenterRequestState: state };
       }
       return user;
     });
-    this._collaborationUsers$.next(updatedUsers);
+    this._updateState({ users: updatedUsers });
   }
 
   /**
@@ -1320,28 +1345,9 @@ export class DfdCollaborationService implements OnDestroy {
       }),
     );
 
-    // Listen to user presence updates
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getMessagesOfType(MessageType.USER_PRESENCE_UPDATE)
-        .subscribe(message => {
-          this._handleUserPresenceUpdate(message);
-        }),
-    );
-
-    // Listen to session joined events
-    this._subscriptions.add(
-      this._webSocketAdapter.getMessagesOfType(MessageType.SESSION_JOINED).subscribe(message => {
-        this._handleUserJoinedSession(message);
-      }),
-    );
-
-    // Listen to session left events
-    this._subscriptions.add(
-      this._webSocketAdapter.getMessagesOfType(MessageType.SESSION_LEFT).subscribe(message => {
-        this._handleUserLeftSession(message);
-      }),
-    );
+    // Note: We no longer listen to individual user events here
+    // All participant updates come through the TMI participants_update message
+    // which is handled by TMIMessageHandlerService
 
     // Listen to session ended events
     this._subscriptions.add(
@@ -1456,90 +1462,9 @@ export class DfdCollaborationService implements OnDestroy {
     }
   }
 
-  /**
-   * Handle user presence update messages from WebSocket
-   */
-  private _handleUserPresenceUpdate(message: any): void {
-    this._logger.debug('Received user presence update', message);
-
-    if (message.data && message.data.users) {
-      // Update collaboration users list with real-time data
-      const updatedUsers: CollaborationUser[] = message.data.users.map((user: any) => ({
-        id: user.id,
-        name: this._getUserDisplayName(user.id),
-        permission: user.permission || 'reader',
-        status: user.status || 'active',
-        isPresenter: user.isPresenter || false,
-        isHost: user.isHost || false,
-        lastActivity: new Date(user.lastActivity || Date.now()),
-      }));
-
-      this._collaborationUsers$.next(updatedUsers);
-      this._logger.info('Updated collaboration users from WebSocket', {
-        userCount: updatedUsers.length,
-      });
-    }
-  }
-
-  /**
-   * Handle user joined session messages from WebSocket
-   */
-  private _handleUserJoinedSession(message: any): void {
-    this._logger.debug('User joined session', message);
-
-    if (message.data && message.data.user) {
-      const newUser: CollaborationUser = {
-        id: message.data.user.id,
-        name: this._getUserDisplayName(message.data.user.id),
-        permission: message.data.user.permission || 'reader',
-        status: message.data.user.status || 'active',
-        isPresenter: message.data.user.isPresenter || false,
-        isHost: message.data.user.isHost || false,
-        lastActivity: new Date(),
-      };
-
-      // Add user to current list
-      const currentUsers = this._collaborationUsers$.value;
-      const userExists = currentUsers.some(user => user.id === newUser.id);
-
-      if (!userExists) {
-        const updatedUsers = [...currentUsers, newUser];
-        this._collaborationUsers$.next(updatedUsers);
-        this._logger.info('User joined collaboration session', {
-          userId: newUser.id,
-          userName: newUser.name,
-        });
-      }
-    }
-  }
-
-  /**
-   * Handle user left session messages from WebSocket
-   */
-  private _handleUserLeftSession(message: any): void {
-    this._logger.debug('User left session', message);
-
-    if (message.data && message.data.userId) {
-      const userId = message.data.userId;
-      const currentUserId = this.getCurrentUserId();
-
-      // Remove user from current list
-      const currentUsers = this._collaborationUsers$.value;
-      const updatedUsers = currentUsers.filter(user => user.id !== userId);
-
-      if (updatedUsers.length !== currentUsers.length) {
-        this._collaborationUsers$.next(updatedUsers);
-        this._logger.info('User left collaboration session', { userId });
-
-        // If the current user was removed, redirect to dashboard
-        if (userId === currentUserId && !this.isCurrentUserHost()) {
-          this._logger.info('Current user was removed from session, redirecting to dashboard');
-          this._cleanupSessionState();
-          this._redirectToDashboard();
-        }
-      }
-    }
-  }
+  // Duplicate participant update handlers removed
+  // All participant updates now come through updateAllParticipants()
+  // which is called by TMIMessageHandlerService when it receives participants_update messages
 
   /**
    * Handle session ended messages from WebSocket
@@ -1573,7 +1498,7 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // Update local presenter state
-    this._currentPresenterId$.next(message.current_presenter);
+    this._updateState({ currentPresenterId: message.current_presenter });
     this._updateUsersPresenterStatus(message.current_presenter);
 
     // Show notification about presenter change
@@ -1624,10 +1549,13 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._disconnectFromWebSocket();
     this._currentSession = null;
-    this._isCollaborating$.next(false);
-    this._collaborationUsers$.next([]);
-    this._currentPresenterId$.next(null);
-    this._pendingPresenterRequests$.next([]);
+    this._updateState({
+      isActive: false,
+      users: [],
+      currentPresenterId: null,
+      pendingPresenterRequests: [],
+      sessionInfo: null,
+    });
   }
 
   /**
@@ -1655,7 +1583,7 @@ export class DfdCollaborationService implements OnDestroy {
     this._subscriptions.unsubscribe();
 
     // End collaboration if active
-    if (this._isCollaborating$.value) {
+    if (this._collaborationState$.value.isActive) {
       this.endCollaboration().subscribe({
         error: error => this._logger.error('Error ending collaboration on destroy', error),
       });

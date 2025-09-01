@@ -15,7 +15,7 @@
   <button
     mat-icon-button
     [color]="getCollaborationButtonColor()"
-    [matBadge]="isCollaborating ? collaborationUsers.length : null"
+    [matBadge]="collaborationUsers.length || null"
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
     [matMenuTriggerFor]="collaborationMenu"
@@ -79,8 +79,8 @@
       </div>
     </div>
 
-    <!-- Users list (only visible when collaborating) -->
-    <div *ngIf="isCollaborating && collaborationUsers.length > 0" class="users-section">
+    <!-- Users list (visible when there are participants) -->
+    <div *ngIf="collaborationUsers.length > 0" class="users-section">
       <div class="users-header">
         <h4>{{ 'collaboration.collaboratorsHeader' | transloco }}</h4>
       </div>
@@ -119,7 +119,7 @@
           </div>
 
           <!-- Column 3: Username -->
-          <div class="username-column" [matTooltip]="user.id">
+          <div class="username-column" [matTooltip]="user.email">
             {{ user.name }}
           </div>
 
@@ -185,7 +185,7 @@
                   fontWeight="100"
                   style="font-variation-settings: 'FILL' 0"
                 >
-                  back_hand
+                  person_raised_hand
                 </mat-icon>
               </button>
 
@@ -198,7 +198,7 @@
                 [matTooltip]="'collaboration.presenterModeRequested' | transloco"
                 class="presenter-icon hand-raised"
               >
-                back_hand
+                person_raised_hand
               </mat-icon>
 
               <!-- Other users - no button -->

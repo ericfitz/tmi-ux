@@ -34,19 +34,36 @@ import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram, Cell } from '../models/diagram.model';
 
 /**
+ * User information from the API
+ */
+interface ApiUser {
+  user_id: string;
+  email: string;
+  displayName: string;
+}
+
+/**
+ * Participant from the API
+ */
+interface ApiParticipant {
+  user: ApiUser;
+  last_activity: string;
+  permissions: 'reader' | 'writer' | 'owner';
+}
+
+/**
  * Collaboration session interface matching the API specification
  */
 interface CollaborationSession {
   session_id: string;
   threat_model_id: string;
+  threat_model_name: string;
   diagram_id: string;
-  participants: Array<{
-    user_id: string;
-    joined_at: string;
-    permissions?: 'reader' | 'writer';
-  }>;
+  diagram_name: string;
+  participants: ApiParticipant[];
   websocket_url: string;
-  host?: string;
+  host: string;
+  presenter?: string;
 }
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -1698,14 +1715,20 @@ export class ThreatModelService implements OnDestroy {
 
     if (this._useMockData) {
       // For mock data, simulate a collaboration session
-      const mockSession = {
+      const mockSession: CollaborationSession = {
         session_id: `session-${Date.now()}`,
         threat_model_id: threatModelId,
+        threat_model_name: 'Mock Threat Model',
         diagram_id: diagramId,
+        diagram_name: 'Mock Diagram',
         participants: [
           {
-            user_id: this.authService.username || 'current-user',
-            joined_at: new Date().toISOString(),
+            user: {
+              user_id: this.authService.username || 'current-user',
+              email: this.authService.userEmail || 'current@example.com',
+              displayName: this.authService.username || 'Current User',
+            },
+            last_activity: new Date().toISOString(),
             permissions: 'writer' as const,
           },
         ],
@@ -1730,9 +1753,11 @@ export class ThreatModelService implements OnDestroy {
             host: session.host,
             participantCount: session.participants?.length || 0,
             participants: session.participants?.map(p => ({
-              id: p.user_id,
+              id: p.user.user_id,
+              email: p.user.email,
+              displayName: p.user.displayName,
               permissions: p.permissions,
-              joined_at: p.joined_at,
+              last_activity: p.last_activity,
             })),
           });
         }),
@@ -1847,19 +1872,29 @@ export class ThreatModelService implements OnDestroy {
 
     if (this._useMockData) {
       // For mock data, simulate joining a collaboration session
-      const mockSession = {
+      const mockSession: CollaborationSession = {
         session_id: `session-${Date.now()}`,
         threat_model_id: threatModelId,
+        threat_model_name: 'Mock Threat Model',
         diagram_id: diagramId,
+        diagram_name: 'Mock Diagram',
         participants: [
           {
-            user_id: 'existing-user@example.com',
-            joined_at: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
+            user: {
+              user_id: 'existing-user@example.com',
+              email: 'existing-user@example.com',
+              displayName: 'Existing User',
+            },
+            last_activity: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
             permissions: 'writer' as const,
           },
           {
-            user_id: this.authService.username || 'current-user',
-            joined_at: new Date().toISOString(),
+            user: {
+              user_id: this.authService.username || 'current-user',
+              email: this.authService.userEmail || 'current@example.com',
+              displayName: this.authService.username || 'Current User',
+            },
+            last_activity: new Date().toISOString(),
             permissions: 'writer' as const,
           },
         ],
@@ -1888,9 +1923,11 @@ export class ThreatModelService implements OnDestroy {
             host: session.host,
             participantCount: session.participants?.length || 0,
             participants: session.participants?.map(p => ({
-              id: p.user_id,
+              id: p.user.user_id,
+              email: p.user.email,
+              displayName: p.user.displayName,
               permissions: p.permissions,
-              joined_at: p.joined_at,
+              last_activity: p.last_activity,
             })),
           });
         }),

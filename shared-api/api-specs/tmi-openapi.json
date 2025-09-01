@@ -1380,6 +1380,12 @@
                         "maxLength": 256,
                         "readOnly": true
                     },
+                    "presenter": {
+                        "type": "string",
+                        "description": "Username or identifier of the presenter (may be email address or other format)",
+                        "maxLength": 256,
+                        "readOnly": true
+                    },
                     "threat_model_id": {
                         "type": "string",
                         "format": "uuid",
@@ -1405,30 +1411,7 @@
                     "participants": {
                         "type": "array",
                         "items": {
-                            "type": "object",
-                            "description": "A participant in the session",
-                            "properties": {
-                                "user_id": {
-                                    "type": "string",
-                                    "description": "Username or identifier of the participant (may be email address or other format)",
-                                    "maxLength": 256
-                                },
-                                "joined_at": {
-                                    "type": "string",
-                                    "format": "date-time",
-                                    "description": "Join timestamp",
-                                    "maxLength": 36
-                                },
-                                "permissions": {
-                                    "type": "string",
-                                    "enum": [
-                                        "reader",
-                                        "writer"
-                                    ],
-                                    "description": "User's permissions for the current diagram in the current session (reader|writer)",
-                                    "maxLength": 6
-                                }
-                            }
+                            "$ref": "#/components/schemas/Participant"
                         },
                         "description": "List of active participants"
                     },
@@ -2317,6 +2300,60 @@
                     }
                 ],
                 "description": "Input schema for creating/updating Threat"
+            },
+            "User": {
+                "type": "object",
+                "description": "Represents a user in the system",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the user",
+                        "maxLength": 256
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "User's email address",
+                        "maxLength": 256
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "User's display name",
+                        "maxLength": 256
+                    }
+                },
+                "required": [
+                    "user_id",
+                    "email",
+                    "displayName"
+                ]
+            },
+            "Participant": {
+                "type": "object",
+                "description": "A participant in a collaboration session",
+                "properties": {
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "last_activity": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last activity timestamp",
+                        "maxLength": 36
+                    },
+                    "permissions": {
+                        "type": "string",
+                        "enum": [
+                            "reader",
+                            "writer"
+                        ],
+                        "description": "Access permissions in the collaboration session"
+                    }
+                },
+                "required": [
+                    "user",
+                    "last_activity",
+                    "permissions"
+                ]
             }
         },
         "responses": {
