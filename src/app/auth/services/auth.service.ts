@@ -48,7 +48,6 @@ import { LocalOAuthProviderService } from './local-oauth-provider.service';
 
 interface JwtPayload {
   sub?: string;
-  id?: string;
   email?: string;
   name?: string;
   iat?: number;
@@ -87,7 +86,6 @@ export class AuthService {
   // OAuth configuration
   private readonly tokenStorageKey = 'auth_token';
   private readonly profileStorageKey = 'user_profile';
-  private readonly providersStorageKey = 'oauth_providers';
   private readonly providersCacheExpiry = 5 * 60 * 1000; // 5 minutes
 
   // Cached provider information
@@ -893,7 +891,6 @@ export class AuthService {
       const effectiveExpiryMinutes = expiryMinutes || environment.authTokenExpiryMinutes;
       const payload = {
         sub: userInfo.id,
-        id: userInfo.id,
         name: userInfo.name || 'Local User',
         email: userInfo.email,
         iat: Math.floor(Date.now() / 1000),
@@ -953,8 +950,7 @@ export class AuthService {
 
     const header = { alg: 'HS256', typ: 'JWT' };
     const payload = {
-      sub: userInfo.id, // User ID as subject, no fallback
-      id: userInfo.id, // User ID, no generation
+      sub: userInfo.id, // User ID as subject
       name: userInfo.name,
       email: userInfo.email,
       iat: Math.floor(Date.now() / 1000),
@@ -989,8 +985,8 @@ export class AuthService {
       // Base64 decode and parse as JSON
       const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
 
-      // Extract user ID from 'id' claim (no fallback)
-      const userId = decodedPayload.id;
+      // Extract user ID from 'sub' claim (standard JWT)
+      const userId = decodedPayload.sub;
 
       if (!userId || !decodedPayload.email || !decodedPayload.name) {
         throw new Error('Required user profile fields missing from JWT token');

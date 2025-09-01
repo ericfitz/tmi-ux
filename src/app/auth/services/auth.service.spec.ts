@@ -90,7 +90,7 @@ describe('AuthService', () => {
 
   // Test data
   const mockJwtPayload = {
-    id: '12345678-1234-1234-1234-123456789abc',
+    sub: '12345678-1234-1234-1234-123456789abc',
     email: 'test@example.com',
     name: 'Test User',
     providers: [{ provider: 'test', is_primary: true }],
