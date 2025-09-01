@@ -280,15 +280,16 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
+          const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
-            isHost: false, // Will be updated by WebSocket message
-            isPresenter: false,
+            isHost: currentUserEmail === session.host, // Check if current user is the host from session data
+            isPresenter: isCurrentUserPresenter, // Check if current user is the presenter from session data
             lastActivity: new Date(),
-            presenterRequestState: 'hand_down',
+            presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
           };
 
           // Update collaboration state atomically
@@ -297,6 +298,7 @@ export class DfdCollaborationService implements OnDestroy {
             users: [initialUser],
             sessionInfo: session,
             existingSessionAvailable: null,
+            currentPresenterEmail: session.presenter || null,
           });
 
           // Set up WebSocket listeners before connecting
@@ -348,6 +350,7 @@ export class DfdCollaborationService implements OnDestroy {
                 users: [initialUser],
                 sessionInfo: existingSession,
                 existingSessionAvailable: null,
+                currentPresenterEmail: existingSession.presenter || null,
               });
 
               // Set up WebSocket listeners before connecting
@@ -413,15 +416,16 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
+          const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
-            isHost: false, // Will be updated by WebSocket message
-            isPresenter: false,
+            isHost: currentUserEmail === session.host, // Check if current user is the host from session data
+            isPresenter: isCurrentUserPresenter, // Check if current user is the presenter from session data
             lastActivity: new Date(),
-            presenterRequestState: 'hand_down',
+            presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
           };
 
           // Update collaboration state atomically
@@ -430,6 +434,7 @@ export class DfdCollaborationService implements OnDestroy {
             users: [initialUser],
             sessionInfo: session,
             existingSessionAvailable: null,
+            currentPresenterEmail: session.presenter || null,
           });
 
           // Set up WebSocket listeners before connecting
@@ -498,15 +503,16 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
+          const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
-            isHost: false, // Will be updated by WebSocket message
-            isPresenter: false,
+            isHost: currentUserEmail === session.host, // Check if current user is the host from session data
+            isPresenter: isCurrentUserPresenter, // Check if current user is the presenter from session data
             lastActivity: new Date(),
-            presenterRequestState: 'hand_down',
+            presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
           };
 
           // Update collaboration state atomically
@@ -515,6 +521,7 @@ export class DfdCollaborationService implements OnDestroy {
             users: [initialUser],
             sessionInfo: session,
             existingSessionAvailable: null,
+            currentPresenterEmail: session.presenter || null,
           });
 
           // Set up WebSocket listeners before connecting
