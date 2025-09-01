@@ -632,19 +632,19 @@ components:
             participants:
               - user:
                   user_id: auth0|507f1f77bcf86cd799439011
-                  displayName: Alice Johnson
+                  name: Alice Johnson
                   email: alice@example.com
                 permissions: writer
                 last_activity: '2024-01-15T10:30:00Z'
               - user:
                   user_id: auth0|507f191e810c19729de860ea
-                  displayName: Bob Smith
+                  name: Bob Smith
                   email: bob@example.com
                 permissions: reader
                 last_activity: '2024-01-15T10:35:00Z'
               - user:
                   user_id: auth0|507f1f77bcf86cd799439012
-                  displayName: Charlie Brown
+                  name: Charlie Brown
                   email: charlie@example.com
                 permissions: writer
                 last_activity: '2024-01-15T10:40:00Z'
@@ -1173,7 +1173,7 @@ components:
                     type: string
                     description: User identifier from JWT 'sub' claim (immutable)
                     example: auth0|507f1f77bcf86cd799439011
-                  displayName:
+                  name:
                     type: string
                     description: User display name from JWT 'name' claim
                     example: Alice Johnson
@@ -1183,7 +1183,7 @@ components:
                     example: alice@example.com
                 required:
                   - user_id
-                  - displayName
+                  - name
                   - email
               permissions:
                 type: string
