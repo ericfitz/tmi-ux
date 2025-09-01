@@ -181,7 +181,8 @@
       "emailRequired": "电子邮件地址为必填项",
       "loginButton": "登录",
       "subtitle": "请输入您的电子邮件地址进行测试",
-      "title": "本地开发登录"
+      "title": "本地开发登录",
+      "userName": "本地用户"
     },
     "loggingInWith": "正在使用{{provider}}登录...",
     "loginWith": "使用以下方式登录",

@@ -181,7 +181,8 @@
       "emailRequired": "E-Mail-Adresse ist erforderlich",
       "loginButton": "Anmelden",
       "subtitle": "Geben Sie Ihre E-Mail-Adresse zum Testen ein",
-      "title": "Lokale Entwicklungsanmeldung"
+      "title": "Lokale Entwicklungsanmeldung",
+      "userName": "Lokaler Benutzer"
     },
     "loggingInWith": "Anmelden mit {{provider}}...",
     "loginWith": "Anmelden mit",

@@ -176,8 +176,8 @@ export class DfdCollaborationService implements OnDestroy {
     if (!existingSession) {
       return false;
     }
-    const currentUserEmail = this._authService.userEmail;
-    return currentUserEmail === existingSession.host;
+    const currentUserId = this._authService.userId;
+    return currentUserId === existingSession.host;
   }
 
   /**
@@ -840,11 +840,11 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     const users = this._collaborationUsers$.value;
-    const currentUserEmail = this._authService.userEmail || 'current-user';
-    const currentUser = users.find(user => user.id === currentUserEmail);
+    const currentUserId = this._authService.userId || '';
+    const currentUser = users.find(user => user.id === currentUserId);
 
     this._logger.debug('Getting current user permission', {
-      currentUserEmail,
+      currentUserId,
       users: users.map(u => ({ id: u.id, permission: u.permission })),
       currentUser: currentUser ? { id: currentUser.id, permission: currentUser.permission } : null,
       isCollaborating: this._isCollaborating$.value,
@@ -904,8 +904,8 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     const users = this._collaborationUsers$.value;
-    const currentUserEmail = this._authService.userEmail || 'current-user';
-    const currentUser = users.find(user => user.id === currentUserEmail);
+    const currentUserId = this._authService.userId || '';
+    const currentUser = users.find(user => user.id === currentUserId);
 
     return currentUser?.isHost || false;
   }
@@ -916,16 +916,16 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns boolean indicating if this is the current user
    */
   public isCurrentUser(userId: string): boolean {
-    const currentUserEmail = this._authService.userEmail || 'current-user';
-    return userId === currentUserEmail;
+    const currentUserId = this._authService.userId;
+    return !!currentUserId && userId === currentUserId;
   }
 
   /**
-   * Get the current user's ID (email)
-   * @returns The current user's email or null if not authenticated
+   * Get the current user's ID
+   * @returns The current user's ID or null if not authenticated
    */
   public getCurrentUserId(): string | null {
-    return this._authService.userEmail;
+    return this._authService.userId || null;
   }
 
   /**
@@ -1592,7 +1592,7 @@ export class DfdCollaborationService implements OnDestroy {
   // REST API refresh methods removed - participants now managed through WebSocket messages only
 
   /**
-   * Get user display name from user ID (email)
+   * Get user display name from user ID
    */
   private _getUserDisplayName(userId: string): string {
     if (!userId || typeof userId !== 'string') {
@@ -1600,15 +1600,20 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // If this is the current user, use their actual display name from the auth service
-    if (userId === this._authService.userEmail) {
+    if (userId === this._authService.userId) {
       const userProfile = this._authService.userProfile;
       if (userProfile?.name) {
         return userProfile.name;
       }
     }
 
-    // For other users, extract username from email
-    return userId.split('@')[0] || userId;
+    // For other users, try to extract a display name
+    // If userId looks like an email, use the part before @
+    // Otherwise, use the userId as-is
+    if (userId.includes('@')) {
+      return userId.split('@')[0] || userId;
+    }
+    return userId;
   }
 
   /**

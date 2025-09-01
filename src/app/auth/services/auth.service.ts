@@ -143,6 +143,14 @@ export class AuthService {
   }
 
   /**
+   * Get current user ID
+   * @returns The current user ID or empty string if not authenticated
+   */
+  get userId(): string {
+    return this.userProfile?.id || '';
+  }
+
+  /**
    * Check if the current user is a test user
    * Test users are identified by their email patterns (user1@example.com, user2@example.com, etc.)
    * @returns True if the current user is a test user
@@ -543,23 +551,6 @@ export class AuthService {
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
-  /**
-   * Generate a UUID for user identification
-   * @returns UUID string
-   */
-  private generateUUID(): string {
-    // Use crypto.randomUUID if available (modern browsers)
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-
-    // Fallback UUID v4 implementation for test environments
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  }
 
   /**
    * Check if a string appears to be Base64 encoded
@@ -860,10 +851,21 @@ export class AuthService {
    * Create a local JWT-like token for development use
    */
   private createLocalToken(userInfo: UserProfile): JwtToken {
+    // Ensure required fields are present
+    if (!userInfo.id) {
+      throw new Error('User ID is required for JWT token creation');
+    }
+    if (!userInfo.email) {
+      throw new Error('User email is required for JWT token creation');
+    }
+    if (!userInfo.name) {
+      throw new Error('User name is required for JWT token creation');
+    }
+
     const header = { alg: 'HS256', typ: 'JWT' };
     const payload = {
-      sub: userInfo.id || userInfo.email, // Use ID as subject, fallback to email for compatibility
-      id: userInfo.id || this.generateUUID(), // Generate UUID if not provided
+      sub: userInfo.id, // User ID as subject, no fallback
+      id: userInfo.id, // User ID, no generation
       name: userInfo.name,
       email: userInfo.email,
       iat: Math.floor(Date.now() / 1000),
@@ -898,8 +900,8 @@ export class AuthService {
       // Base64 decode and parse as JSON
       const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
 
-      // Extract user ID from 'id' claim or fall back to 'sub' claim
-      const userId = decodedPayload.id || decodedPayload.sub || '';
+      // Extract user ID from 'id' claim (no fallback)
+      const userId = decodedPayload.id;
 
       if (!userId || !decodedPayload.email || !decodedPayload.name) {
         throw new Error('Required user profile fields missing from JWT token');
@@ -1196,9 +1198,9 @@ export class AuthService {
       expiresAt,
     };
 
-    // Create a mock user profile
+    // Create a mock user profile with hard-coded demo ID
     const userProfile: UserProfile = {
-      id: this.generateUUID(),
+      id: 'demo-user-1',
       email,
       name: email.split('@')[0],
       providers: [{ provider: 'demo', is_primary: true }],

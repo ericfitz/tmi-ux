@@ -181,7 +181,8 @@
       "emailRequired": "Email address is required",
       "loginButton": "Login",
       "subtitle": "Enter your email address for testing",
-      "title": "Local Development Login"
+      "title": "Local Development Login",
+      "userName": "Local User"
     },
     "loggingInWith": "Logging in with {{provider}}...",
     "loginWith": "Login with",

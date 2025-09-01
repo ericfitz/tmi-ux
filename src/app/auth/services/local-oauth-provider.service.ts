@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { UserProfile } from '../models/auth.models';
 
 /**
@@ -9,6 +10,7 @@ import { UserProfile } from '../models/auth.models';
   providedIn: 'root',
 })
 export class LocalOAuthProviderService {
+  constructor(private transloco: TranslocoService) {}
   /**
    * Build authorization URL for local provider
    * Points to local user selection component
@@ -38,12 +40,14 @@ export class LocalOAuthProviderService {
       const [provider, email] = decoded.split(':');
       if (provider !== 'local') return null;
 
-      // Generate a display name from the email
-      const name = this.generateDisplayName(email);
+      // Use hard-coded values for local OAuth provider
+      const id = '0';
+      const name = this.transloco.translate('login.local.userName');
+      const userEmail = email || 'local@test.tmi';
 
       return {
-        id: this.generateUUID(),
-        email,
+        id,
+        email: userEmail,
         name,
         providers: [{ provider: 'local', is_primary: true }],
         picture: undefined,
@@ -53,33 +57,4 @@ export class LocalOAuthProviderService {
     }
   }
 
-  /**
-   * Generate a display name from an email address
-   */
-  private generateDisplayName(email: string): string {
-    // Extract the part before @ and capitalize first letter of each word
-    const username = email.split('@')[0];
-    return username
-      .split(/[._-]/)
-      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-      .join(' ');
-  }
-
-  /**
-   * Generate a UUID for user identification
-   * @returns UUID string
-   */
-  private generateUUID(): string {
-    // Use crypto.randomUUID if available (modern browsers)
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-
-    // Fallback UUID v4 implementation for test environments
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  }
 }
