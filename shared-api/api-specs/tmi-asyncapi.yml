@@ -630,23 +630,29 @@ components:
           payload:
             message_type: participants_update
             participants:
-              - user_id: alice@example.com
+              - user_id: auth0|507f1f77bcf86cd799439011
+                user_name: Alice Johnson
+                user_email: alice@example.com
                 permissions: writer
                 joined_at: '2024-01-15T10:30:00Z'
                 is_host: true
                 is_presenter: false
-              - user_id: bob@example.com
+              - user_id: auth0|507f191e810c19729de860ea
+                user_name: Bob Smith
+                user_email: bob@example.com
                 permissions: reader
                 joined_at: '2024-01-15T10:35:00Z'
                 is_host: false
                 is_presenter: true
-              - user_id: charlie@example.com
+              - user_id: auth0|507f1f77bcf86cd799439012
+                user_name: Charlie Brown
+                user_email: charlie@example.com
                 permissions: writer
                 joined_at: '2024-01-15T10:40:00Z'
                 is_host: false
                 is_presenter: false
-            host: alice@example.com
-            current_presenter: bob@example.com
+            host: auth0|507f1f77bcf86cd799439011
+            current_presenter: auth0|507f191e810c19729de860ea
 
   schemas:
     ClientMessagePayload:
@@ -1164,7 +1170,15 @@ components:
             properties:
               user_id:
                 type: string
-                description: User identifier (typically email)
+                description: User identifier from JWT 'sub' claim (immutable)
+                example: auth0|507f1f77bcf86cd799439011
+              user_name:
+                type: string
+                description: User display name from JWT 'name' claim
+                example: Alice Johnson
+              user_email:
+                type: string
+                description: User email address from JWT 'email' claim
                 example: alice@example.com
               permissions:
                 type: string
@@ -1182,6 +1196,8 @@ components:
                 description: Whether this user is the current presenter
             required:
               - user_id
+              - user_name
+              - user_email
               - permissions
               - joined_at
               - is_host

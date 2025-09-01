@@ -18,13 +18,13 @@ This document describes a RESTful API with WebSocket support for threat modeling
 
 ### Authentication
 
-- `**GET /auth/providers**`: Lists available OAuth providers.
-- `**GET /auth/login/{provider}**`: Redirects to OAuth provider for login.
-- `**GET /auth/callback**`: Handles OAuth callback from provider.
-- `**POST /auth/token/{provider}**`: Exchanges authorization code for JWT tokens.
-- `**POST /auth/refresh**`: Refreshes access token using refresh token.
-- `**POST /auth/logout**`: Invalidates JWT and ends session.
-- `**GET /auth/me**`: Returns current authenticated user information.
+- `**GET /oauth2/providers**`: Lists available OAuth providers.
+- `**GET /oauth2/authorize?idp={provider}**`: Redirects to OAuth provider for login.
+- `**GET /oauth2/callback**`: Handles OAuth callback from provider.
+- `**POST /oauth2/token?idp={provider}**`: Exchanges authorization code for JWT tokens.
+- `**POST /oauth2/refresh**`: Refreshes access token using refresh token.
+- `**POST /oauth2/logout**`: Invalidates JWT and ends session.
+- `**GET /oauth2/me**`: Returns current authenticated user information.
 
 ### Threat Model Management
 
@@ -120,7 +120,6 @@ This document describes a RESTful API with WebSocket support for threat modeling
 - `**PUT /threat_models/{threat_model_id}/sources/{source_id}/metadata/{key}**`: Sets a metadata key-value pair.
 - `**DELETE /threat_models/{threat_model_id}/sources/{source_id}/metadata/{key}**`: Deletes a metadata entry.
 
-
 ### Bulk and Batch Operations
 
 #### Threat Bulk Operations
@@ -137,7 +136,6 @@ This document describes a RESTful API with WebSocket support for threat modeling
 
 - `**POST /threat_models/{threat_model_id}/documents/bulk**`: Creates multiple documents in a single request.
 - `**POST /threat_models/{threat_model_id}/sources/bulk**`: Creates multiple source references in a single request.
-
 
 #### Metadata Bulk Operations
 
@@ -334,7 +332,7 @@ This document describes a RESTful API with WebSocket support for threat modeling
 
 ## Implementation Notes
 
-- **Security**: All endpoints except `/`, `/api/server-info`, `/auth/providers`, `/auth/login/{provider}`, `/auth/callback`, `/auth/token/{provider}`, and static files require JWT.
+- **Security**: All endpoints except `/`, `/api/server-info`, `/oauth2/providers`, `/oauth2/authorize`, `/oauth2/callback`, `/oauth2/token`, and static files require JWT.
 - **Validation**: Server enforces role-based access, UUID uniqueness, email format, and referential integrity.
 - **Scalability**: Stateless JWTs and WebSocket sessions support horizontal scaling.
 - **Future Enhancements**:
@@ -367,7 +365,7 @@ GET /
   },
   "api": {
     "version": "1.0",
-    "specification": "https://github.com/ericfitz/tmi/blob/main/tmi-openapi.json"
+    "specification": "https://github.com/ericfitz/tmi/blob/main/shared/api-specs/tmi-openapi.json"
   },
   "operator": {
     "name": "Example Organization",
@@ -381,7 +379,7 @@ GET /
 #### List OAuth Providers
 
 ```http
-GET /auth/providers
+GET /oauth2/providers
 ```
 
 **Response** (200):
@@ -392,7 +390,7 @@ GET /auth/providers
     {
       "id": "test",
       "name": "Test Provider",
-      "login_url": "/auth/login/test"
+      "login_url": "/oauth2/authorize?idp=test"
     }
   ]
 }
@@ -401,15 +399,54 @@ GET /auth/providers
 #### Initiate Login
 
 ```http
-GET /auth/login/test?redirect_uri=https://client.example.com/callback
+GET /oauth2/authorize?idp={provider}&redirect_uri=https://client.example.com/callback
 ```
+
+**Parameters:**
+
+- `idp` (query): OAuth provider ID (e.g., "test", "google", "github")
+- `redirect_uri` (query, optional): Client callback URL for tokens
+- `state` (query, optional): CSRF protection parameter
+- **`login_hint` (query, optional)**: For test provider only - creates predictable test users
+
+**Test Provider login_hints (Development/Testing Only):**
+
+For automation-friendly testing, the test OAuth provider supports login_hints:
+
+```http
+# Create specific test user 'alice@test.tmi'
+GET /oauth2/authorize?idp=test&login_hint=alice
+
+# Create user 'qa-automation@test.tmi' for automated testing
+GET /oauth2/authorize?idp=test&login_hint=qa-automation
+
+# Combined with client callback
+GET /oauth2/authorize?idp=test&login_hint=alice&client_callback=https://client.example.com/callback
+
+# Without login_hint - creates random 'testuser-12345678@test.tmi' (backwards compatible)
+GET /oauth2/authorize?idp=test
+```
+
+**login_hint Specifications:**
+
+- **Format**: 3-20 characters, alphanumeric + hyphens, case-insensitive
+- **Pattern**: `^[a-zA-Z0-9-]{3,20}$`
+- **Scope**: Test provider only (not available in production builds)
+- **Generated Email**: `{hint}@test.tmi` (e.g., `alice@test.tmi`)
+- **Generated Name**: `{Hint} (Test User)` (e.g., `Alice (Test User)`)
+
+**Use Cases:**
+
+- Automated testing with predictable user identities
+- StepCI integration tests with named users
+- Multi-user collaboration testing scenarios
 
 **Response**: 302 Redirect, `Location: https://oauth-provider.com/auth?...`
 
 #### OAuth Callback
 
 ```http
-GET /auth/callback?code=abc123&state=xyz789
+GET /oauth2/callback?code=abc123&state=xyz789
 ```
 
 **Response**: 302 Redirect to client with tokens
@@ -417,7 +454,7 @@ GET /auth/callback?code=abc123&state=xyz789
 #### Exchange Code for Token
 
 ```http
-POST /auth/token/test
+POST /oauth2/token?idp=test
 Content-Type: application/json
 
 {
@@ -440,7 +477,7 @@ Content-Type: application/json
 #### Refresh Token
 
 ```http
-POST /auth/refresh
+POST /oauth2/refresh
 Content-Type: application/json
 
 {
@@ -461,7 +498,7 @@ Content-Type: application/json
 #### Get Current User
 
 ```http
-GET /auth/me
+GET /oauth2/me
 Authorization: Bearer <JWT>
 ```
 
@@ -478,7 +515,7 @@ Authorization: Bearer <JWT>
 #### Logout
 
 ```http
-POST /auth/logout
+POST /oauth2/logout
 Authorization: Bearer <JWT>
 ```
 
@@ -819,13 +856,18 @@ Authorization: Bearer <JWT>
   "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
   "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
   "participants": [
-    { "user_id": "user@example.com", "joined_at": "2025-04-06T12:02:00Z", "permissions": "writer" }
+    {
+      "user_id": "user@example.com",
+      "joined_at": "2025-04-06T12:02:00Z",
+      "permissions": "writer"
+    }
   ],
   "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
 }
 ```
 
 **Important Notes:**
+
 - The `participants` array shows users authorized to join the session, not users currently connected to the WebSocket
 - Connection and activity status is handled within the WebSocket session itself
 - A 200 response indicates successful retrieval regardless of participants or session state
@@ -840,7 +882,7 @@ Authorization: Bearer <JWT>
 ```
 
 **Response** (201 - Success):
-*The 201 status indicates successful creation - clients must NOT evaluate the payload to determine success.*
+_The 201 status indicates successful creation - clients must NOT evaluate the payload to determine success._
 
 ```json
 {
@@ -848,7 +890,11 @@ Authorization: Bearer <JWT>
   "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
   "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
   "participants": [
-    { "user_id": "user@example.com", "joined_at": "2025-04-06T12:02:00Z", "permissions": "writer" }
+    {
+      "user_id": "user@example.com",
+      "joined_at": "2025-04-06T12:02:00Z",
+      "permissions": "writer"
+    }
   ],
   "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
 }
@@ -873,7 +919,7 @@ Authorization: Bearer <JWT>
 ```
 
 **Response** (200 - Success):
-*The 200 status indicates successful join - clients must NOT evaluate the payload to determine success.*
+_The 200 status indicates successful join - clients must NOT evaluate the payload to determine success._
 
 ```json
 {
@@ -881,8 +927,16 @@ Authorization: Bearer <JWT>
   "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
   "diagram_id": "123e4567-e89b-12d3-a456-426614174000",
   "participants": [
-    { "user_id": "creator@example.com", "joined_at": "2025-04-06T12:00:00Z", "permissions": "writer" },
-    { "user_id": "user@example.com", "joined_at": "2025-04-06T12:02:00Z", "permissions": "writer" }
+    {
+      "user_id": "creator@example.com",
+      "joined_at": "2025-04-06T12:00:00Z",
+      "permissions": "writer"
+    },
+    {
+      "user_id": "user@example.com",
+      "joined_at": "2025-04-06T12:02:00Z",
+      "permissions": "writer"
+    }
   ],
   "websocket_url": "wss://api.example.com/threat_models/550e8400-e29b-41d4-a716-446655440000/diagrams/123e4567-e89b-12d3-a456-426614174000/ws"
 }
@@ -1068,10 +1122,10 @@ Content-Type: application/json
 {
   "name": "User Authentication Module",
   "description": "Core authentication logic implementation",
-  "url": "https://github.com/example/app/blob/main/src/auth/user.go",
+  "url": "https://github.com/example/app/blob/main/src/oauth2/user.go",
   "repository": "example/app",
   "branch": "main",
-  "file_path": "src/auth/user.go",
+  "file_path": "src/oauth2/user.go",
   "line_number": 45
 }
 ```
@@ -1084,10 +1138,10 @@ Content-Type: application/json
   "threat_model_id": "550e8400-e29b-41d4-a716-446655440000",
   "name": "User Authentication Module",
   "description": "Core authentication logic implementation",
-  "url": "https://github.com/example/app/blob/main/src/auth/user.go",
+  "url": "https://github.com/example/app/blob/main/src/oauth2/user.go",
   "repository": "example/app",
   "branch": "main",
-  "file_path": "src/auth/user.go",
+  "file_path": "src/oauth2/user.go",
   "line_number": 45,
   "created_at": "2025-08-02T12:00:00Z",
   "modified_at": "2025-08-02T12:00:00Z",
@@ -1277,7 +1331,7 @@ Content-Type: application/json
   {
     "name": "Authentication Module",
     "description": "User authentication logic",
-    "url": "https://github.com/example/app/blob/main/auth/user.go",
+    "url": "https://github.com/example/app/blob/main/oauth2/user.go",
     "repository": "example/app",
     "branch": "main",
     "file_path": "auth/user.go"
