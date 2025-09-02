@@ -24,7 +24,8 @@
       "Bash(python3:*)",
       "Bash(uv:*)",
       "Bash(done)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(awk:*)"
     ]
   },
   "enableAllProjectMcpServers": false

@@ -12,6 +12,7 @@ import {
 } from './websocket.adapter';
 import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
 import { environment } from '../../../environments/environment';
+import { JoinEvent, LeaveEvent } from '../types/websocket-message.types';
 
 /**
  * Represents a user in a collaboration session
@@ -247,7 +248,7 @@ export class DfdCollaborationService implements OnDestroy {
             this._logger.info('No existing collaboration session found');
           }
         }),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to check for existing collaboration session', error);
           // Return null instead of throwing - this is not a critical error
           this._updateState({ existingSessionAvailable: null });
@@ -343,7 +344,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to join collaboration session via PUT', error);
 
           // Check if this is a 403 error - reader trying to join
@@ -494,7 +495,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Smart collaboration starter failed', error);
           return throwError(() => error);
         }),
@@ -574,7 +575,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Participants will be updated through WebSocket messages only
         }),
         map(() => true),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to start collaboration session', error);
           return throwError(() => error);
         }),
@@ -644,12 +645,13 @@ export class DfdCollaborationService implements OnDestroy {
       this._logger.info('Sending leave message before ending session', {
         userEmail: currentUserEmail,
       });
-      this._webSocketAdapter
-        .sendTMIMessage({
+      const leaveEvent: LeaveEvent = {
           event: 'leave',
           user_id: currentUserEmail,
           timestamp: new Date().toISOString(),
-        } as any)
+        };
+        this._webSocketAdapter
+        .sendTMIMessage(leaveEvent)
         .subscribe({
           next: () => {
             this._logger.debugComponent('wsmsg', 'Leave message sent successfully', {
@@ -700,7 +702,7 @@ export class DfdCollaborationService implements OnDestroy {
           this._notificationService.showSessionEvent('ended').subscribe();
         }),
         map(() => true),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to end collaboration session', error);
 
           // Even if API call fails, clean up local state
@@ -1090,12 +1092,13 @@ export class DfdCollaborationService implements OnDestroy {
           this._notificationService.showPresenterEvent('requestSent').subscribe();
           return true;
         }),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to send presenter request', error);
           // Revert state on error
           this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           this._notificationService
-            .showOperationError('send presenter request', error.message || 'Unknown error')
+            .showOperationError('send presenter request', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1154,10 +1157,11 @@ export class DfdCollaborationService implements OnDestroy {
           this._notificationService.showPresenterEvent('requestDenied').subscribe();
           return true;
         }),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to send presenter denial', error);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           this._notificationService
-            .showOperationError('deny presenter request', error.message || 'Unknown error')
+            .showOperationError('deny presenter request', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1202,13 +1206,14 @@ export class DfdCollaborationService implements OnDestroy {
           }
           return true;
         }),
-        catchError(error => {
+        catchError((error: unknown) => {
           this._logger.error('Failed to send presenter update', error);
           // Revert local state on error
           this._updateState({ currentPresenterEmail: null });
           this._updateUsersPresenterStatus(null);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           this._notificationService
-            .showOperationError('update presenter', error.message || 'Unknown error')
+            .showOperationError('update presenter', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1304,12 +1309,13 @@ export class DfdCollaborationService implements OnDestroy {
         const currentUserEmail = this.getCurrentUserEmail();
         if (currentUserEmail) {
           this._logger.info('Sending join message to TMI server', { userEmail: currentUserEmail });
-          this._webSocketAdapter
-            .sendTMIMessage({
+          const joinEvent: JoinEvent = {
               event: 'join',
               user_id: currentUserEmail,
               timestamp: new Date().toISOString(),
-            } as any)
+            };
+          this._webSocketAdapter
+            .sendTMIMessage(joinEvent)
             .subscribe({
               next: () => {
                 this._logger.debugComponent('wsmsg', 'Join message sent successfully', {
@@ -1489,12 +1495,13 @@ export class DfdCollaborationService implements OnDestroy {
           this._logger.info('Sending join message after WebSocket (re)connection', {
             userEmail: currentUserEmail,
           });
-          this._webSocketAdapter
-            .sendTMIMessage({
+          const joinEvent: JoinEvent = {
               event: 'join',
               user_id: currentUserEmail,
               timestamp: new Date().toISOString(),
-            } as any)
+            };
+          this._webSocketAdapter
+            .sendTMIMessage(joinEvent)
             .subscribe({
               next: () => {
                 this._logger.debugComponent('wsmsg', 'Join message sent after reconnection', {

@@ -257,10 +257,15 @@ export class WebSocketAdapter {
           observer.complete();
         };
 
-        const errorHandler = (event: any): void => {
+        const errorHandler = (event: Event | ErrorEvent | { message?: string; error?: { message?: string } }): void => {
           this._connectionState$.next(WebSocketState.ERROR);
-          const errorMessage =
-            event.message || event.error?.message || 'WebSocket connection failed';
+          let errorMessage = 'WebSocket connection failed';
+          
+          if ('message' in event && typeof event.message === 'string') {
+            errorMessage = event.message;
+          } else if ('error' in event && event.error && typeof event.error === 'object' && 'message' in event.error) {
+            errorMessage = event.error.message as string;
+          }
 
           // Classify the error for appropriate recovery strategy
           const wsError = this._classifyConnectionError(event, errorMessage);
@@ -467,9 +472,9 @@ export class WebSocketAdapter {
             const rawData = event.data;
 
             // Parse JSON
-            let parsedMessage: any;
+            let parsedMessage: unknown;
             try {
-              parsedMessage = JSON.parse(rawData);
+              parsedMessage = JSON.parse(rawData as string);
             } catch (jsonError) {
               // Only process if it looks like it might be a TMI message
               if (
@@ -486,7 +491,12 @@ export class WebSocketAdapter {
             }
 
             // Check if this is a TMI message
-            if (!parsedMessage.message_type && !parsedMessage.event) {
+            if (typeof parsedMessage !== 'object' || parsedMessage === null) {
+              return; // Not a valid message object
+            }
+            
+            const msgObj = parsedMessage as Record<string, unknown>;
+            if (!msgObj.message_type && !msgObj.event) {
               return; // Not a TMI message
             }
 
@@ -611,7 +621,7 @@ export class WebSocketAdapter {
         const rawData = event.data as string;
 
         // Parse JSON
-        let parsedMessage: any;
+        let parsedMessage: unknown;
         try {
           parsedMessage = JSON.parse(rawData);
         } catch (jsonError) {
@@ -620,7 +630,8 @@ export class WebSocketAdapter {
         }
 
         // Check if this is a TMI message (has message_type or event field)
-        const isTMIMessage = parsedMessage.message_type || parsedMessage.event;
+        const isTMIMessage = typeof parsedMessage === 'object' && parsedMessage !== null && 
+          ('message_type' in parsedMessage || 'event' in parsedMessage);
 
         if (isTMIMessage) {
           // Skip internal validation for TMI messages - they have different structure
@@ -1198,12 +1209,12 @@ export class WebSocketAdapter {
    * @param data Message data that may contain sensitive information
    * @returns Object with sensitive values redacted
    */
-  private _redactSensitiveData(data: any): any {
+  private _redactSensitiveData(data: unknown): unknown {
     if (!data || typeof data !== 'object') {
       return data;
     }
 
-    const redacted = { ...data };
+    const redacted = { ...(data as Record<string, unknown>) };
     const sensitiveKeys = [
       'bearer',
       'token',
@@ -1218,7 +1229,7 @@ export class WebSocketAdapter {
       'auth',
     ];
 
-    for (const [key, value] of Object.entries(redacted)) {
+    for (const [key, value] of Object.entries(redacted as Record<string, unknown>)) {
       const lowerKey = key.toLowerCase();
 
       // Check if the key contains sensitive information

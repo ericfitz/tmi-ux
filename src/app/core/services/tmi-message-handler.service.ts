@@ -4,6 +4,21 @@ import { LoggerService } from './logger.service';
 import { WebSocketAdapter } from './websocket.adapter';
 import { DfdCollaborationService } from './dfd-collaboration.service';
 import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
+import {
+  JoinEvent,
+  LeaveEvent,
+  PresenterRequestMessage,
+  PresenterDeniedMessage,
+} from '../types/websocket-message.types';
+import { ApiParticipant } from './dfd-collaboration.service';
+
+// Define the correct structure for ParticipantsUpdateMessage
+interface ParticipantsUpdateMessage {
+  message_type: 'participants_update';
+  participants: ApiParticipant[];
+  host?: string;
+  current_presenter?: string | null;
+}
 
 /**
  * Service responsible for handling all TMI WebSocket messages
@@ -179,7 +194,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Session management handlers
 
-  private _handleJoinEvent(message: any): void {
+  private _handleJoinEvent(message: JoinEvent): void {
     this._logger.info('TMI: User joined event received', {
       userId: message.user_id,
       timestamp: message.timestamp,
@@ -212,7 +227,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // it will provide the full participant list with accurate permissions
   }
 
-  private _handleLeaveEvent(message: any): void {
+  private _handleLeaveEvent(message: LeaveEvent): void {
     this._logger.info('TMI: User left event received', {
       userId: message.user_id,
       timestamp: message.timestamp,
@@ -291,7 +306,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Presenter mode handlers
 
-  private _handlePresenterRequest(message: any): void {
+  private _handlePresenterRequest(message: PresenterRequestMessage): void {
     this._logger.debug('TMI: Presenter request', {
       userId: message.user_id,
     });
@@ -307,7 +322,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     }
   }
 
-  private _handlePresenterDenied(message: any): void {
+  private _handlePresenterDenied(message: PresenterDeniedMessage): void {
     this._logger.debug('TMI: Presenter request denied', {
       userId: message.user_id,
       targetUser: message.target_user,
@@ -449,7 +464,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Participants update handler
 
-  private _handleParticipantsUpdate(message: any): void {
+  private _handleParticipantsUpdate(message: ParticipantsUpdateMessage): void {
     this._logger.info('TMI: Participants update received - START', {
       hasMessage: !!message,
       hasParticipants: !!message?.participants,
@@ -459,7 +474,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     });
 
     this._logger.info('TMI: Participants details', {
-      participants: message?.participants?.map((p: any) => ({
+      participants: message?.participants?.map((p: ApiParticipant) => ({
         userId: p.user?.user_id,
         displayName: p.user?.displayName,
         email: p.user?.email,
