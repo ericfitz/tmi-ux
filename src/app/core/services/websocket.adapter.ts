@@ -23,8 +23,8 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, throwError } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
-import { LoggerService } from '../../../../core/services/logger.service';
-import { TMIWebSocketMessage, TMIMessageType } from '../../models/websocket-message.types';
+import { LoggerService } from './logger.service';
+import { TMIWebSocketMessage, TMIMessageType } from '../types/websocket-message.types';
 
 /**
  * WebSocket connection states

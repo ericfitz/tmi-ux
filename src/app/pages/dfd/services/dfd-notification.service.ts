@@ -11,7 +11,7 @@ import {
   WebSocketState,
   WebSocketError,
   WebSocketErrorType,
-} from '../infrastructure/adapters/websocket.adapter';
+} from '../../../core/services/websocket.adapter';
 
 /**
  * Notification types for consistent styling and behavior

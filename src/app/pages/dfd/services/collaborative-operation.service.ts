@@ -12,8 +12,8 @@ import { v4 as uuid } from 'uuid';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { WebSocketAdapter, WebSocketState } from '../infrastructure/adapters/websocket.adapter';
-import { DfdCollaborationService } from './dfd-collaboration.service';
+import { WebSocketAdapter, WebSocketState } from '../../../core/services/websocket.adapter';
+import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
 import {
   DiagramOperationMessage,
   CellOperation,
@@ -22,13 +22,11 @@ import {
   UndoRequestMessage,
   RedoRequestMessage,
   ResyncRequestMessage,
-  PresenterRequestMessage,
-  ChangePresenterMessage,
   PresenterCursorMessage,
   PresenterSelectionMessage,
   CursorPosition,
   CollaborativeOperationConfig,
-} from '../models/websocket-message.types';
+} from '../../../core/types/websocket-message.types';
 
 /**
  * Queued operation for retry/fallback handling
@@ -260,44 +258,6 @@ export class CollaborativeOperationService {
     return this.webSocketAdapter.sendTMIMessage(message);
   }
 
-  /**
-   * Request presenter mode
-   */
-  requestPresenterMode(): Observable<void> {
-    if (!this._config) {
-      return throwError(() => new Error('CollaborativeOperationService not initialized'));
-    }
-
-    const message: PresenterRequestMessage = {
-      message_type: 'presenter_request',
-      user_id: this._config.userId,
-    };
-
-    this.logger.debug('Requesting presenter mode');
-    return this.webSocketAdapter.sendTMIMessage(message);
-  }
-
-  /**
-   * Change presenter (owner only)
-   */
-  changePresenter(newPresenterUserId: string): Observable<void> {
-    if (!this._config) {
-      return throwError(() => new Error('CollaborativeOperationService not initialized'));
-    }
-
-    if (!this.collaborationService.isCurrentUserHost()) {
-      return throwError(() => new Error('Only host can change presenter'));
-    }
-
-    const message: ChangePresenterMessage = {
-      message_type: 'change_presenter',
-      user_id: this._config.userId,
-      new_presenter: newPresenterUserId,
-    };
-
-    this.logger.debug('Changing presenter', { newPresenter: newPresenterUserId });
-    return this.webSocketAdapter.sendTMIMessage(message);
-  }
 
   /**
    * Send presenter cursor position (presenter only)

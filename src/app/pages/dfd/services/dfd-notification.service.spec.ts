@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { DfdNotificationService } from './dfd-notification.service';
-import { WebSocketState } from '../infrastructure/adapters/websocket.adapter';
+import { WebSocketState } from '../../../core/services/websocket.adapter';
 
 describe('DfdNotificationService', () => {
   let service: DfdNotificationService;

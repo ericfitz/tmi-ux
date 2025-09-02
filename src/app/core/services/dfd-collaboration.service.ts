@@ -1,17 +1,17 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, Subscription, of } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, Subscription, of, Subject } from 'rxjs';
 import { map, catchError, tap, skip } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { LoggerService } from '../../../core/services/logger.service';
-import { AuthService } from '../../../auth/services/auth.service';
-import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { LoggerService } from './logger.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import {
   WebSocketAdapter,
   WebSocketState,
   MessageType,
-} from '../infrastructure/adapters/websocket.adapter';
-import { DfdNotificationService } from './dfd-notification.service';
-import { environment } from '../../../../environments/environment';
+} from './websocket.adapter';
+import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
+import { environment } from '../../../environments/environment';
 
 /**
  * Represents a user in a collaboration session
@@ -114,6 +114,10 @@ export class DfdCollaborationService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _webSocketListenersSetup = false;
   private _intentionalDisconnection = false;
+
+  // Session end event - emits when collaboration ends (intentional or disconnection)
+  private _sessionEndedSubject = new Subject<{ reason: 'user_ended' | 'disconnected' | 'error' }>();
+  public sessionEnded$ = this._sessionEndedSubject.asObservable();
 
   // Periodic refresh removed - participants now managed through WebSocket messages only
 
@@ -1508,6 +1512,8 @@ export class DfdCollaborationService implements OnDestroy {
         // Don't show disconnection notification if it was intentional (user leaving/ending session)
         if (this._intentionalDisconnection) {
           this._logger.debug('Intentional disconnection - suppressing notification');
+          // Emit session ended event
+          this._sessionEndedSubject.next({ reason: 'user_ended' });
           // Reset the flag for next session
           this._intentionalDisconnection = false;
           return;
@@ -1516,12 +1522,18 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService
           .showWebSocketStatus(state, () => this._retryWebSocketConnection())
           .subscribe();
+        // Emit session ended event for unexpected disconnection
+        this._sessionEndedSubject.next({ reason: 'disconnected' });
         break;
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
         this._notificationService
           .showWebSocketStatus(state, () => this._retryWebSocketConnection())
           .subscribe();
+        // Emit session ended event for errors
+        if (this._collaborationState$.value.isActive) {
+          this._sessionEndedSubject.next({ reason: 'error' });
+        }
         break;
       case WebSocketState.RECONNECTING:
         this._notificationService.showWebSocketStatus(state).subscribe();
@@ -1649,5 +1661,8 @@ export class DfdCollaborationService implements OnDestroy {
         error: error => this._logger.error('Error ending collaboration on destroy', error),
       });
     }
+
+    // Complete the session ended subject
+    this._sessionEndedSubject.complete();
   }
 }

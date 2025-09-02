@@ -31,7 +31,7 @@ import { ServerConnectionService, ServerConnectionStatus } from './server-connec
 import {
   WebSocketAdapter,
   MessageType,
-} from '../../pages/dfd/infrastructure/adapters/websocket.adapter';
+} from './websocket.adapter';
 
 /**
  * Interface for collaboration session data

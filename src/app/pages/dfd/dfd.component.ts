@@ -50,22 +50,12 @@ import { NodeConfigurationService } from './infrastructure/services/node-configu
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { CollaborativeOperationService } from './services/collaborative-operation.service';
-import { WebSocketAdapter } from './infrastructure/adapters/websocket.adapter';
+import { DfdWebSocketService } from './services/dfd-websocket.service';
+import { DfdStateService } from './services/dfd-state.service';
 import {
-  DiagramOperationMessage,
-  PresenterRequestMessage,
-  PresenterDeniedMessage,
-  PresenterUpdateMessage,
-  AuthorizationDeniedMessage,
-  StateCorrectionMessage,
-  HistoryOperationMessage,
-  ResyncResponseMessage,
-  CurrentPresenterMessage,
-  PresenterCursorMessage,
-  PresenterSelectionMessage,
   CellOperation,
   Cell as WSCell,
-} from './models/websocket-message.types';
+} from '../../core/types/websocket-message.types';
 
 // Import providers needed for standalone component
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
@@ -89,9 +79,9 @@ import { GraphHistoryCoordinator } from './services/graph-history-coordinator.se
 import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DfdCollaborationService } from './services/dfd-collaboration.service';
+import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
-import { TMIMessageHandlerService } from './services/tmi-message-handler.service';
+import { TMIMessageHandlerService } from '../../core/services/tmi-message-handler.service';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
   MetadataDialogComponent,
@@ -146,6 +136,8 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdExportService,
     DfdDiagramService,
     DfdTooltipService,
+    DfdWebSocketService,
+    DfdStateService,
 
     // Facade service
     DfdFacadeService,
@@ -221,10 +213,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private nodeConfigurationService: NodeConfigurationService,
     private translocoService: TranslocoService,
     private collaborativeOperationService: CollaborativeOperationService,
-    private webSocketAdapter: WebSocketAdapter,
+    private dfdWebSocketService: DfdWebSocketService,
+    private dfdStateService: DfdStateService,
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
     private tmiMessageHandler: TMIMessageHandlerService,
+    private notificationService: DfdNotificationService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -477,109 +471,115 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Initialize all TMI message handlers
     this.tmiMessageHandler.initialize();
+    
+    // Initialize WebSocket and state services
+    this.dfdWebSocketService.initialize();
+    this.dfdStateService.initialize();
 
-    // Handle incoming diagram operations from other users
+    // Subscribe to state service events for operations that need to be applied to the graph
     this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation')
-        .subscribe({
-          next: message => this.handleRemoteDiagramOperation(message),
-          error: error => this.logger.error('Error in diagram operation WebSocket handler', error),
-        }),
-    );
-
-    // Handle authorization denied messages
-    this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<AuthorizationDeniedMessage>('authorization_denied')
-        .subscribe({
-          next: message => this.handleAuthorizationDenied(message),
-          error: error =>
-            this.logger.error('Error in authorization denied WebSocket handler', error),
-        }),
-    );
-
-    // Handle state correction messages
-    this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<StateCorrectionMessage>('state_correction')
-        .subscribe({
-          next: message => this.handleStateCorrection(message),
-          error: error => this.logger.error('Error in state correction WebSocket handler', error),
-        }),
-    );
-
-    // Handle history operation responses
-    this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<HistoryOperationMessage>('history_operation')
-        .subscribe({
-          next: message => this.handleHistoryOperation(message),
-          error: error => this.logger.error('Error in history operation WebSocket handler', error),
-        }),
-    );
-
-    // Handle resync responses
-    this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<ResyncResponseMessage>('resync_response')
-        .subscribe({
-          next: message => this.handleResyncResponse(message),
-          error: error => this.logger.error('Error in resync response WebSocket handler', error),
-        }),
-    );
-
-    // Handle presenter mode messages
-    this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
-        .subscribe({
-          next: message => this.handlePresenterChange(message),
-          error: error => this.logger.error('Error in presenter change WebSocket handler', error),
-        }),
+      this.dfdStateService.applyOperationEvents$.subscribe({
+        next: event => this.applyRemoteOperation(event.operation, event.userId, event.operationId),
+        error: error => this.logger.error('Error handling apply operation event', error),
+      })
     );
 
     this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor')
-        .subscribe({
-          next: message => this.handlePresenterCursor(message),
-          error: error => this.logger.error('Error in presenter cursor WebSocket handler', error),
-        }),
+      this.dfdStateService.applyCorrectionEvents$.subscribe({
+        next: cells => this.applyCorrectedState(cells),
+        error: error => this.logger.error('Error handling apply correction event', error),
+      })
     );
 
     this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection')
-        .subscribe({
-          next: message => this.handlePresenterSelection(message),
-          error: error =>
-            this.logger.error('Error in presenter selection WebSocket handler', error),
-        }),
+      this.dfdStateService.requestResyncEvents$.subscribe({
+        next: event => {
+          if (event.method === 'rest_api') {
+            void this.performRESTResync();
+          }
+        },
+        error: error => this.logger.error('Error handling resync request event', error),
+      })
     );
 
-    // Handle presenter requests
+    // Subscribe to WebSocket domain events for UI updates
     this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
-        .subscribe({
-          next: message => this.handlePresenterRequest(message),
-          error: error => this.logger.error('Error in presenter request WebSocket handler', error),
-        }),
+      this.dfdWebSocketService.authorizationDenied$.subscribe({
+        next: event => this.showAuthorizationDeniedNotification(event.reason),
+        error: error => this.logger.error('Error handling authorization denied', error),
+      })
     );
 
-    // Handle presenter denials
     this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
-        .subscribe(message => this.handlePresenterDenied(message)),
+      this.dfdWebSocketService.historyOperations$.subscribe({
+        next: event => this.handleHistoryOperationEvent(event),
+        error: error => this.logger.error('Error handling history operation', error),
+      })
     );
 
-    // Handle presenter updates
+    // Subscribe to presenter events for UI updates
     this._subscriptions.add(
-      this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterUpdateMessage>('presenter_update')
-        .subscribe(message => this.handlePresenterUpdate(message)),
+      this.dfdWebSocketService.presenterChanges$.subscribe({
+        next: event => this.handlePresenterChange(event.presenterEmail),
+        error: error => this.logger.error('Error handling presenter change', error),
+      })
+    );
+
+    // Subscribe to session end events to force resync
+    this._subscriptions.add(
+      this.collaborationService.sessionEnded$.subscribe({
+        next: event => {
+          this.logger.info('Collaboration session ended, forcing resync', { reason: event.reason });
+          // Force a resync to ensure local state matches server
+          void this.performRESTResync();
+        },
+        error: error => this.logger.error('Error handling session end event', error),
+      })
+    );
+
+    this._subscriptions.add(
+      this.dfdWebSocketService.presenterCursors$.subscribe({
+        next: event => this.showPresenterCursor(event.userId, event.position),
+        error: error => this.logger.error('Error handling presenter cursor', error),
+      })
+    );
+
+    this._subscriptions.add(
+      this.dfdWebSocketService.presenterSelections$.subscribe({
+        next: event => this.showPresenterSelection(event.userId, event.selectedCells),
+        error: error => this.logger.error('Error handling presenter selection', error),
+      })
+    );
+
+    this._subscriptions.add(
+      this.dfdWebSocketService.presenterRequests$.subscribe({
+        next: event => this.handlePresenterRequestEvent(event.userId),
+        error: error => this.logger.error('Error handling presenter request', error),
+      })
+    );
+
+    this._subscriptions.add(
+      this.dfdWebSocketService.presenterDenials$.subscribe({
+        next: event => this.handlePresenterDenialEvent(event.userId, event.targetUser),
+        error: error => this.logger.error('Error handling presenter denial', error),
+      })
+    );
+
+    this._subscriptions.add(
+      this.dfdWebSocketService.presenterUpdates$.subscribe({
+        next: event => this.handlePresenterUpdateEvent(event.presenterEmail),
+        error: error => this.logger.error('Error handling presenter update', error),
+      })
+    );
+
+    // Subscribe to state changes for UI updates
+    this._subscriptions.add(
+      this.dfdStateService.isApplyingRemoteChange$.subscribe({
+        next: isApplying => {
+          this.isApplyingRemoteChange = isApplying;
+        },
+        error: error => this.logger.error('Error handling remote change state', error),
+      })
     );
 
     this.logger.info('WebSocket message handlers initialized');
@@ -1694,28 +1694,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Handle incoming diagram operations from other users
-   */
-  private handleRemoteDiagramOperation(message: DiagramOperationMessage): void {
-    // Skip if this is our own operation (echo prevention)
-    if (message.user_id === this.collaborationService.getCurrentUserEmail()) {
-      return;
-    }
-
-    this.logger.debug('Applying remote diagram operation', {
-      userId: message.user_id,
-      operationId: message.operation_id,
-      cellCount: message.operation.cells.length,
-    });
-
-    this.isApplyingRemoteChange = true;
-    try {
-      this.applyRemoteOperationToGraph(message.operation);
-    } finally {
-      this.isApplyingRemoteChange = false;
-    }
-  }
 
   /**
    * Apply remote operation to local graph
@@ -1826,147 +1804,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debug('Applied remote cell remove', { cellId: cellOp.id });
   }
 
-  /**
-   * Handle authorization denied messages
-   */
-  private handleAuthorizationDenied(message: AuthorizationDeniedMessage): void {
-    this.logger.warn('Operation denied by server', {
-      operationId: message.original_operation_id,
-      reason: message.reason,
-    });
 
-    // Show user notification
-    // TODO: Show notification to user (add notification service)
-    // const reasonText = this.getReadableAuthorizationReason(message.reason);
-    // this.notificationService.showError(`Operation denied: ${reasonText}`);
-  }
 
-  /**
-   * Handle state correction messages
-   */
-  private handleStateCorrection(message: StateCorrectionMessage): void {
-    this.logger.info('Received state correction from server', {
-      cellCount: message.cells.length,
-    });
 
-    this.isApplyingRemoteChange = true;
-    try {
-      const graph = this.x6GraphAdapter.getGraph();
-      if (graph) {
-        // Apply corrected state for each cell
-        for (const cell of message.cells) {
-          this.applyCellCorrection(cell, graph);
-        }
-      }
-    } finally {
-      this.isApplyingRemoteChange = false;
-    }
 
-    // TODO: Show notification to user
-    // this.notificationService.showInfo('Diagram synchronized with server');
-  }
 
-  /**
-   * Handle history operation responses
-   */
-  private handleHistoryOperation(message: HistoryOperationMessage): void {
-    switch (message.message) {
-      case 'resync_required':
-        this.logger.info('History operation completed, performing resync', {
-          operationType: message.operation_type,
-        });
-        void this.performRESTResync();
-        // TODO: Show notification
-        // this.notificationService.showInfo(`${message.operation_type} completed`);
-        break;
 
-      case 'no_operations_to_undo':
-        // TODO: Show notification
-        // this.notificationService.showInfo('Nothing to undo');
-        break;
 
-      case 'no_operations_to_redo':
-        // TODO: Show notification
-        // this.notificationService.showInfo('Nothing to redo');
-        break;
-    }
-  }
 
-  /**
-   * Handle resync responses
-   */
-  private handleResyncResponse(message: ResyncResponseMessage): void {
-    if (message.method === 'rest_api') {
-      void this.performRESTResync();
-    }
-  }
 
-  /**
-   * Handle presenter mode changes
-   */
-  private handlePresenterChange(message: CurrentPresenterMessage): void {
-    // TODO: Update presenter UI indicators
-    this.logger.debug('Presenter changed', { presenter: message.current_presenter });
-  }
-
-  /**
-   * Handle presenter cursor updates
-   */
-  private handlePresenterCursor(message: PresenterCursorMessage): void {
-    if (message.user_id !== this.collaborationService.getCurrentUserEmail()) {
-      // TODO: Show presenter cursor on diagram
-      this.logger.debug('Presenter cursor update', message.cursor_position);
-    }
-  }
-
-  /**
-   * Handle presenter selection updates
-   */
-  private handlePresenterSelection(message: PresenterSelectionMessage): void {
-    if (message.user_id !== this.collaborationService.getCurrentUserEmail()) {
-      // TODO: Highlight presenter selection
-      this.logger.debug('Presenter selection update', { cells: message.selected_cells });
-    }
-  }
-
-  /**
-   * Handle presenter requests from other users
-   */
-  private handlePresenterRequest(message: PresenterRequestMessage): void {
-    if (this.collaborationService.isCurrentUserHost()) {
-      // Add to pending requests
-      this.collaborationService.addPresenterRequest(message.user_id);
-      this.logger.info('Presenter request received', { userId: message.user_id });
-    }
-  }
-
-  /**
-   * Handle presenter request denials
-   */
-  private handlePresenterDenied(message: PresenterDeniedMessage): void {
-    if (message.user_id === this.collaborationService.getCurrentUserEmail()) {
-      // Show notification to current user
-      this.logger.info('Presenter request was denied');
-      // TODO: Show user notification
-    }
-  }
-
-  /**
-   * Handle presenter updates
-   */
-  private handlePresenterUpdate(message: PresenterUpdateMessage): void {
-    const newPresenterEmail = message.user_id || null;
-    this.logger.info('Presenter updated', { presenterEmail: newPresenterEmail });
-
-    // Update collaboration service state
-    this.collaborationService.updatePresenterEmail(newPresenterEmail);
-
-    // Update read-only mode based on presenter status
-    this.updateReadOnlyMode();
-  }
 
   /**
    * Perform full diagram resync using REST API
+   * 
+   * This is critical when:
+   * - User disconnects from collaborative session (intentional or network issue)
+   * - Server requests resync due to state conflicts
+   * - History operations complete (undo/redo)
+   * 
+   * Forces ThreatModelService to refresh its cache and ensures local diagram
+   * state matches the server's authoritative state.
    */
   private async performRESTResync(): Promise<void> {
     if (!this.threatModelId || !this.dfdId) {
@@ -1977,10 +1834,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.logger.info('Performing REST resync');
 
-      // Use existing REST API to get authoritative state
-      const diagram = await this.threatModelService
-        .getDiagramById(this.threatModelId, this.dfdId)
+      // Force refresh from REST API to get authoritative state
+      // This will bypass any stale cache in ThreatModelService
+      const threatModel = await this.threatModelService
+        .getThreatModelById(this.threatModelId, true) // forceRefresh = true
         .toPromise();
+      
+      if (!threatModel) {
+        this.logger.error('Threat model not found during resync');
+        return;
+      }
+
+      const diagram = threatModel.diagrams?.find(d => d.id === this.dfdId);
 
       if (diagram && diagram.cells) {
         // Replace entire local diagram state
@@ -1998,12 +1863,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isApplyingRemoteChange = false;
         }
 
+        // Notify state service that resync is complete
+        this.dfdStateService.resyncComplete();
+        
         this.logger.info('REST resync completed successfully');
-        // TODO: Show success notification
+        this.notificationService.showSuccess('Diagram synchronized with server').subscribe();
       }
     } catch (error) {
       this.logger.error('REST resync failed', error);
-      // TODO: Show error notification
+      this.notificationService.showError('Failed to synchronize diagram with server').subscribe();
     }
   }
 
@@ -2058,5 +1926,157 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       default:
         return 'Operation not permitted';
     }
+  }
+
+  // New event-based handler methods for refactored WebSocket architecture
+
+  /**
+   * Apply a remote operation to the graph
+   */
+  private applyRemoteOperation(operation: CellOperation, userId: string, operationId: string): void {
+    // Skip if this is our own operation (echo prevention)
+    if (userId === this.collaborationService.getCurrentUserEmail()) {
+      this.logger.debug('Skipping own operation', { operationId });
+      return;
+    }
+
+    this.logger.info('Applying remote operation', { 
+      userId, 
+      operationId, 
+      cellId: operation.id,
+      operationType: operation.operation 
+    });
+    
+    const graph = this.x6GraphAdapter.getGraph();
+    if (!graph) {
+      this.logger.error('Cannot apply remote operation: graph not initialized');
+      return;
+    }
+
+    this.dfdStateService.setApplyingRemoteChange(true);
+    try {
+      switch (operation.operation) {
+        case 'add':
+          this.applyRemoteCellAdd(operation, graph);
+          break;
+        case 'update':
+          this.applyRemoteCellUpdate(operation, graph);
+          break;
+        case 'remove':
+          this.applyRemoteCellRemove(operation, graph);
+          break;
+        default:
+          this.logger.warn('Unknown remote operation type', operation.operation);
+      }
+    } finally {
+      this.dfdStateService.setApplyingRemoteChange(false);
+    }
+  }
+
+  /**
+   * Apply corrected state from server
+   */
+  private applyCorrectedState(cells: WSCell[]): void {
+    this.logger.info('Applying corrected state', { cellCount: cells.length });
+    
+    this.dfdStateService.setApplyingRemoteChange(true);
+    try {
+      const graph = this.x6GraphAdapter.getGraph();
+      if (graph) {
+        // Apply corrected state for each cell
+        for (const cell of cells) {
+          this.applyCellCorrection(cell, graph);
+        }
+      }
+    } finally {
+      this.dfdStateService.setApplyingRemoteChange(false);
+    }
+    
+    // Mark resync as complete
+    this.dfdStateService.resyncComplete();
+  }
+
+  /**
+   * Show authorization denied notification
+   */
+  private showAuthorizationDeniedNotification(reason: string): void {
+    const reasonText = this.getReadableAuthorizationReason(reason);
+    // TODO: Show notification to user
+    this.logger.warn(`Operation denied: ${reasonText}`);
+  }
+
+  /**
+   * Handle history operation event
+   */
+  private handleHistoryOperationEvent(event: any): void {
+    switch (event.message) {
+      case 'no_operations_to_undo':
+        // TODO: Show notification
+        this.logger.info('Nothing to undo');
+        break;
+      case 'no_operations_to_redo':
+        // TODO: Show notification
+        this.logger.info('Nothing to redo');
+        break;
+    }
+  }
+
+  /**
+   * Handle presenter change
+   */
+  private handlePresenterChange(presenterEmail: string | null): void {
+    this.logger.info('Presenter changed', { presenterEmail });
+    this.collaborationService.updatePresenterEmail(presenterEmail);
+    this.updateReadOnlyMode();
+  }
+
+  /**
+   * Show presenter cursor
+   */
+  private showPresenterCursor(userId: string, position: { x: number; y: number }): void {
+    if (userId !== this.collaborationService.getCurrentUserEmail()) {
+      // TODO: Show presenter cursor on diagram
+      this.logger.debug('Presenter cursor update', { userId, position });
+    }
+  }
+
+  /**
+   * Show presenter selection
+   */
+  private showPresenterSelection(userId: string, selectedCells: string[]): void {
+    if (userId !== this.collaborationService.getCurrentUserEmail()) {
+      // TODO: Highlight presenter selection
+      this.logger.debug('Presenter selection update', { userId, cells: selectedCells });
+    }
+  }
+
+  /**
+   * Handle presenter request event
+   */
+  private handlePresenterRequestEvent(userId: string): void {
+    if (this.collaborationService.isCurrentUserHost()) {
+      this.collaborationService.addPresenterRequest(userId);
+      this.logger.info('Presenter request received', { userId });
+    }
+  }
+
+  /**
+   * Handle presenter denial event
+   */
+  private handlePresenterDenialEvent(userId: string, targetUser: string): void {
+    if (targetUser === this.collaborationService.getCurrentUserEmail()) {
+      // Show notification to current user
+      this.logger.info('Presenter request was denied');
+      // TODO: Show user notification
+    }
+  }
+
+  /**
+   * Handle presenter update event
+   */
+  private handlePresenterUpdateEvent(presenterEmail: string | null): void {
+    this.logger.info('Presenter updated', { presenterEmail });
+    this.collaborationService.updatePresenterEmail(presenterEmail);
+    this.updateReadOnlyMode();
   }
 }

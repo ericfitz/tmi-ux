@@ -19,7 +19,7 @@ import {
   ServerConnectionService,
   ServerConnectionStatus,
 } from '../../services/server-connection.service';
-import { WebSocketAdapter } from '../../../pages/dfd/infrastructure/adapters/websocket.adapter';
+import { WebSocketAdapter } from '../../services/websocket.adapter';
 import { TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../../../environments/environment';
 

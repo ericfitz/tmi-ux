@@ -37,7 +37,7 @@ import { ThreatModel } from './models/threat-model.model';
 import { TMListItem } from './models/tm-list-item.model';
 import { ThreatModelService } from './services/threat-model.service';
 import { ThreatModelValidatorService } from './validation/threat-model-validator.service';
-import { DfdCollaborationService } from '../dfd/services/dfd-collaboration.service';
+import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import {
   CollaborationSessionService,
   CollaborationSession,

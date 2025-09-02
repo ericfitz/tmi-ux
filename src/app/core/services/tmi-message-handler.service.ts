@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { LoggerService } from '../../../core/services/logger.service';
-import { WebSocketAdapter } from '../infrastructure/adapters/websocket.adapter';
+import { LoggerService } from './logger.service';
+import { WebSocketAdapter } from './websocket.adapter';
 import { DfdCollaborationService } from './dfd-collaboration.service';
-import { DfdNotificationService } from './dfd-notification.service';
+import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
 
 /**
  * Service responsible for handling all TMI WebSocket messages

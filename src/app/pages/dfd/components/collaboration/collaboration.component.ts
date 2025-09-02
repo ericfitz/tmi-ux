@@ -49,9 +49,9 @@ import {
   DfdCollaborationService,
   CollaborationUser,
   CollaborationSession,
-} from '../../services/dfd-collaboration.service';
+} from '../../../../core/services/dfd-collaboration.service';
 import { DfdNotificationService } from '../../services/dfd-notification.service';
-import { WebSocketAdapter } from '../../infrastructure/adapters/websocket.adapter';
+import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 
 /**
  * Component for managing collaboration in the DFD editor

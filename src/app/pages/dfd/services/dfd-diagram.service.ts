@@ -11,9 +11,9 @@ import { DfdNodeService } from '../infrastructure/services/node.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
 import { NodeInfo, NodeType } from '../domain/value-objects/node-info';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
-import { DfdCollaborationService } from './dfd-collaboration.service';
+import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
 import { CollaborativeOperationService } from './collaborative-operation.service';
-import { CellOperation } from '../models/websocket-message.types';
+import { CellOperation } from '../../../core/types/websocket-message.types';
 
 /**
  * Interface for diagram data
