@@ -134,19 +134,19 @@ export interface ParticipantsUpdateMessage {
 }
 
 export interface JoinEvent {
-  event: 'join';
+  message_type: 'join';
   user_id: string;
   timestamp: string;
 }
 
 export interface LeaveEvent {
-  event: 'leave';
+  message_type: 'leave';
   user_id: string;
   timestamp: string;
 }
 
 export interface UpdateEvent {
-  event: 'update';
+  message_type: 'update';
   user_id: string;
   timestamp: string;
   operation: CellPatchOperation;

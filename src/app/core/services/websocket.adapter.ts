@@ -56,7 +56,7 @@ export enum WebSocketErrorType {
 export interface WebSocketError {
   type: WebSocketErrorType;
   message: string;
-  originalError?: any;
+  originalError?: unknown;
   isRecoverable: boolean;
   retryable: boolean;
 }
@@ -264,7 +264,8 @@ export class WebSocketAdapter {
           if ('message' in event && typeof event.message === 'string') {
             errorMessage = event.message;
           } else if ('error' in event && event.error && typeof event.error === 'object' && 'message' in event.error) {
-            errorMessage = event.error.message as string;
+            const errorObj = event.error as { message: unknown };
+            errorMessage = typeof errorObj.message === 'string' ? errorObj.message : 'WebSocket connection failed';
           }
 
           // Classify the error for appropriate recovery strategy
@@ -445,8 +446,9 @@ export class WebSocketAdapter {
     // Filter messages by type
     return this._tmiMessages$.pipe(
       filter(message => {
-        const messageTypeToCheck = (message as any).message_type || (message as any).event;
-        return messageTypeToCheck === messageType;
+        // Type guard to safely access message_type
+        const messageWithType = message as { message_type?: string };
+        return messageWithType.message_type === messageType;
       }),
       map(message => message as T),
       takeUntil(this._destroy$),
@@ -467,9 +469,9 @@ export class WebSocketAdapter {
     this.connectionState$.pipe(takeUntil(this._destroy$)).subscribe(state => {
       if (state === WebSocketState.CONNECTED && this._socket) {
         // Set up message handler
-        const messageHandler = (event: MessageEvent) => {
+        const messageHandler = (event: MessageEvent): void => {
           try {
-            const rawData = event.data;
+            const rawData: unknown = event.data;
 
             // Parse JSON
             let parsedMessage: unknown;
@@ -512,27 +514,49 @@ export class WebSocketAdapter {
             }
 
             const message = parsedMessage as TMIWebSocketMessage;
-            const messageTypeToCheck = (message as any).message_type || (message as any).event;
+            
+            // Type assertion for accessing various message properties
+            const messageData = message as {
+              message_type?: string;
+              user_id?: string;
+              timestamp?: string;
+              operation_id?: string;
+              sequence_number?: number;
+              target_user?: string;
+              current_presenter?: string;
+              host?: string;
+              participants?: unknown[];
+              operation?: {
+                type?: string;
+                cells?: unknown[];
+              };
+              reason?: string;
+              method?: string;
+              operation_type?: string;
+              message?: string;
+            };
+            
+            const messageTypeToCheck = messageData.message_type;
 
             // Log ALL TMI messages for debugging
             this.logger.debugComponent('wsmsg', 'TMI WebSocket message received', {
               messageType: messageTypeToCheck,
-              userId: (message as any).user_id,
-              timestamp: (message as any).timestamp,
-              operationId: (message as any).operation_id,
-              sequenceNumber: (message as any).sequence_number,
-              targetUser: (message as any).target_user,
-              currentPresenter: (message as any).current_presenter,
-              host: (message as any).host,
-              participantCount: (message as any).participants?.length,
-              hasOperation: !!(message as any).operation,
-              operationType: (message as any).operation?.type,
-              cellCount: (message as any).operation?.cells?.length,
-              reason: (message as any).reason,
-              method: (message as any).method,
-              operationType2: (message as any).operation_type,
-              message: (message as any).message,
-              fullBody: this._redactSensitiveData(message as any),
+              userId: messageData.user_id,
+              timestamp: messageData.timestamp,
+              operationId: messageData.operation_id,
+              sequenceNumber: messageData.sequence_number,
+              targetUser: messageData.target_user,
+              currentPresenter: messageData.current_presenter,
+              host: messageData.host,
+              participantCount: messageData.participants?.length,
+              hasOperation: !!messageData.operation,
+              operationType: messageData.operation?.type,
+              cellCount: messageData.operation?.cells?.length,
+              reason: messageData.reason,
+              method: messageData.method,
+              operationType2: messageData.operation_type,
+              message: messageData.message,
+              fullBody: this._redactSensitiveData(messageData),
             });
 
             // Emit the message
@@ -569,17 +593,25 @@ export class WebSocketAdapter {
           throw new Error('WebSocket is not connected');
         }
 
+        // Type assertion for accessing message properties
+        const messageData = message as {
+          message_type?: string;
+          user_id?: string;
+          operation_id?: string;
+          operation?: unknown;
+        };
+
         this.logger.debug('Sending TMI message', {
-          type: (message as any).message_type || (message as any).event,
-          userId: (message as any).user_id,
+          type: messageData.message_type,
+          userId: messageData.user_id,
         });
 
         // Log WebSocket message send with component debug logging
         this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
-          messageType: (message as any).message_type || (message as any).event,
-          userId: (message as any).user_id,
-          operationId: (message as any).operation_id,
-          hasOperation: !!(message as any).operation,
+          messageType: messageData.message_type,
+          userId: messageData.user_id,
+          operationId: messageData.operation_id,
+          hasOperation: !!messageData.operation,
           body: this._redactSensitiveData(message),
         });
 
@@ -788,7 +820,7 @@ export class WebSocketAdapter {
             this.logger.info('WebSocket reconnection successful');
             this._updateConnectionHealth(30); // Health boost on successful reconnection
           },
-          error: error => {
+          error: (error: unknown) => {
             this.logger.warn('WebSocket reconnection failed', {
               error,
               attempt: this._reconnectAttempts,
@@ -818,7 +850,7 @@ export class WebSocketAdapter {
             this._updateConnectionHealth(2);
             this._missedHeartbeats = 0;
           },
-          error: error => {
+          error: (error: unknown) => {
             // Heartbeat failed - track missed heartbeats
             this._missedHeartbeats++;
             this._updateConnectionHealth(-10);
@@ -936,7 +968,7 @@ export class WebSocketAdapter {
   /**
    * Classify connection errors for appropriate recovery strategy
    */
-  private _classifyConnectionError(event: any, errorMessage: string): WebSocketError {
+  private _classifyConnectionError(event: unknown, errorMessage: string): WebSocketError {
     // Check for authentication errors
     if (
       errorMessage.includes('401') ||
@@ -1002,13 +1034,13 @@ export class WebSocketAdapter {
     maxRetries: number = 3,
   ): Observable<void> {
     return new Observable(observer => {
-      const attemptSend = (attempt: number) => {
+      const attemptSend = (attempt: number): void => {
         this.sendMessage(message).subscribe({
           next: () => {
             observer.next();
             observer.complete();
           },
-          error: error => {
+          error: (error: unknown) => {
             if (attempt < maxRetries && this._isRetryableError(error)) {
               this.logger.warn(`Message send failed, retrying (${attempt + 1}/${maxRetries})`, {
                 error,
@@ -1033,10 +1065,11 @@ export class WebSocketAdapter {
   /**
    * Check if an error is retryable
    */
-  private _isRetryableError(error: any): boolean {
+  private _isRetryableError(error: unknown): boolean {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return (
-      !error.message?.includes('401') &&
-      !error.message?.includes('403') &&
+      !errorMessage.includes('401') &&
+      !errorMessage.includes('403') &&
       this._connectionHealth > 0
     );
   }
@@ -1066,51 +1099,65 @@ export class WebSocketAdapter {
   /**
    * Validate WebSocket message structure
    */
-  private _validateWebSocketMessage(message: any): { isValid: boolean; error?: string } {
+  private _validateWebSocketMessage(message: unknown): { isValid: boolean; error?: string } {
     // Check if message is an object
     if (!message || typeof message !== 'object') {
       return { isValid: false, error: 'Message must be an object' };
     }
 
+    // Type guard to ensure message has expected properties
+    const msg = message as { id?: unknown; type?: unknown; timestamp?: unknown; data?: unknown };
+    
     // Check required fields for general WebSocket messages
-    if (typeof message.id !== 'string' || !message.id.trim()) {
+    if (typeof msg.id !== 'string' || !msg.id.trim()) {
       return { isValid: false, error: 'Message must have a valid id string' };
     }
 
-    if (typeof message.type !== 'string' || !message.type.trim()) {
+    if (typeof msg.type !== 'string' || !msg.type.trim()) {
       return { isValid: false, error: 'Message must have a valid type string' };
     }
 
-    if (typeof message.timestamp !== 'number' || message.timestamp <= 0) {
+    if (typeof msg.timestamp !== 'number' || msg.timestamp <= 0) {
       return { isValid: false, error: 'Message must have a valid timestamp number' };
     }
 
-    if (!message.data || typeof message.data !== 'object') {
+    if (!msg.data || typeof msg.data !== 'object') {
       return { isValid: false, error: 'Message must have a data object' };
     }
 
+    // Now we can safely cast to the expected type structure
+    const typedMessage = msg as {
+      id: string;
+      type: MessageType;
+      timestamp: number;
+      data: Record<string, unknown>;
+      requiresAck?: boolean;
+      sessionId?: string;
+      userId?: string;
+    };
+
     // Validate that message type is a known MessageType
     const validTypes = Object.values(MessageType);
-    if (!validTypes.includes(message.type as MessageType)) {
-      return { isValid: false, error: `Unknown message type: ${message.type}` };
+    if (!validTypes.includes(typedMessage.type)) {
+      return { isValid: false, error: `Unknown message type: ${typedMessage.type}` };
     }
 
     // Additional validation for specific message types
-    if (message.type === MessageType.ACKNOWLEDGMENT) {
-      if (typeof message.data.messageId !== 'string') {
+    if (typedMessage.type === MessageType.ACKNOWLEDGMENT) {
+      if (typeof typedMessage.data['messageId'] !== 'string') {
         return { isValid: false, error: 'Acknowledgment message must have messageId in data' };
       }
     }
 
-    if (message.requiresAck !== undefined && typeof message.requiresAck !== 'boolean') {
+    if (typedMessage.requiresAck !== undefined && typeof typedMessage.requiresAck !== 'boolean') {
       return { isValid: false, error: 'requiresAck must be a boolean if provided' };
     }
 
-    if (message.sessionId !== undefined && typeof message.sessionId !== 'string') {
+    if (typedMessage.sessionId !== undefined && typeof typedMessage.sessionId !== 'string') {
       return { isValid: false, error: 'sessionId must be a string if provided' };
     }
 
-    if (message.userId !== undefined && typeof message.userId !== 'string') {
+    if (typedMessage.userId !== undefined && typeof typedMessage.userId !== 'string') {
       return { isValid: false, error: 'userId must be a string if provided' };
     }
 
@@ -1120,55 +1167,71 @@ export class WebSocketAdapter {
   /**
    * Validate TMI collaborative message structure
    */
-  private _validateTMIMessage(message: any): { isValid: boolean; error?: string } {
+  private _validateTMIMessage(message: unknown): { isValid: boolean; error?: string } {
     // Check if message is an object
     if (!message || typeof message !== 'object') {
       return { isValid: false, error: 'TMI message must be an object' };
     }
 
+    // Type guard to safely access properties
+    const msg = message as {
+      message_type?: unknown;
+      event?: unknown;
+      user_id?: unknown;
+      operation_id?: unknown;
+      operation?: unknown;
+      cursor_position?: unknown;
+      selected_cells?: unknown;
+    };
+
     // Check for message_type or event field
-    const messageType = message.message_type || message.event;
+    const messageType = msg.message_type || msg.event;
     if (typeof messageType !== 'string' || !messageType.trim()) {
       return { isValid: false, error: 'TMI message must have message_type or event string' };
     }
 
     // Validate user_id if present
-    if (message.user_id !== undefined && typeof message.user_id !== 'string') {
+    if (msg.user_id !== undefined && typeof msg.user_id !== 'string') {
       return { isValid: false, error: 'user_id must be a string if provided' };
     }
 
     // Validate operation_id if present
-    if (message.operation_id !== undefined && typeof message.operation_id !== 'string') {
+    if (msg.operation_id !== undefined && typeof msg.operation_id !== 'string') {
       return { isValid: false, error: 'operation_id must be a string if provided' };
     }
 
     // Type-specific validation
     if (messageType === 'diagram_operation') {
-      if (!message.operation || typeof message.operation !== 'object') {
+      if (!msg.operation || typeof msg.operation !== 'object') {
         return { isValid: false, error: 'diagram_operation message must have operation object' };
       }
 
-      if (typeof message.operation.type !== 'string') {
+      const operation = msg.operation as { type?: unknown; cells?: unknown };
+      
+      if (typeof operation.type !== 'string') {
         return { isValid: false, error: 'operation must have type string' };
       }
 
-      if (!Array.isArray(message.operation.cells)) {
+      if (!Array.isArray(operation.cells)) {
         return { isValid: false, error: 'operation must have cells array' };
       }
     }
 
     if (
       messageType === 'presenter_cursor' &&
-      (!message.cursor_position || typeof message.cursor_position !== 'object')
+      (!msg.cursor_position || typeof msg.cursor_position !== 'object')
     ) {
       return { isValid: false, error: 'presenter_cursor message must have cursor_position object' };
     }
 
-    if (messageType === 'presenter_selection' && !Array.isArray(message.selected_cells)) {
-      return {
-        isValid: false,
-        error: 'presenter_selection message must have selected_cells array',
-      };
+    if (messageType === 'presenter_selection') {
+      const selectionMsg = msg as { selected_cells?: unknown };
+      if (!Array.isArray(selectionMsg.selected_cells)) {
+        return {
+          isValid: false,
+          error: 'presenter_selection message must have selected_cells array',
+        };
+      }
     }
 
     return { isValid: true };
@@ -1177,7 +1240,7 @@ export class WebSocketAdapter {
   /**
    * Handle malformed messages with proper error reporting
    */
-  private _handleMalformedMessage(reason: string, originalError: any, rawData: any): void {
+  private _handleMalformedMessage(reason: string, originalError: unknown, rawData: unknown): void {
     const truncatedData =
       typeof rawData === 'string' && rawData.length > 200
         ? rawData.substring(0, 200) + '...[truncated]'

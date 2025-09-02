@@ -7,8 +7,21 @@ import { DfdNotificationService } from '../../pages/dfd/services/dfd-notificatio
 import {
   JoinEvent,
   LeaveEvent,
+  UpdateEvent,
+  DiagramOperationMessage,
   PresenterRequestMessage,
   PresenterDeniedMessage,
+  ChangePresenterMessage,
+  CurrentPresenterMessage,
+  PresenterCursorMessage,
+  PresenterSelectionMessage,
+  AuthorizationDeniedMessage,
+  StateCorrectionMessage,
+  ResyncRequestMessage,
+  ResyncResponseMessage,
+  HistoryOperationMessage,
+  UndoRequestMessage,
+  RedoRequestMessage,
 } from '../types/websocket-message.types';
 import { ApiParticipant } from './dfd-collaboration.service';
 
@@ -19,6 +32,15 @@ interface ParticipantsUpdateMessage {
   host?: string;
   current_presenter?: string | null;
 }
+
+// Define custom message types not in websocket-message.types.ts
+interface SessionEndedMessage {
+  message_type: 'session_ended';
+  user_id: string;
+  message: string;
+  timestamp: string;
+}
+
 
 /**
  * Service responsible for handling all TMI WebSocket messages
@@ -205,7 +227,6 @@ export class TMIMessageHandlerService implements OnDestroy {
     this._logger.debugComponent('wsmsg', 'Processing join event', {
       userId: message.user_id,
       timestamp: message.timestamp,
-      event: message.event,
       messageType: message.message_type,
     });
 
@@ -238,7 +259,6 @@ export class TMIMessageHandlerService implements OnDestroy {
     this._logger.debugComponent('wsmsg', 'Processing leave event', {
       userId: message.user_id,
       timestamp: message.timestamp,
-      event: message.event,
       messageType: message.message_type,
     });
 
@@ -264,7 +284,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     }
   }
 
-  private _handleSessionEndedEvent(message: any): void {
+  private _handleSessionEndedEvent(message: SessionEndedMessage): void {
     this._logger.debug('TMI: Session ended', {
       userId: message.user_id,
       message: message.message,
@@ -278,7 +298,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Diagram operation handlers
 
-  private _handleUpdateEvent(message: any): void {
+  private _handleUpdateEvent(message: UpdateEvent): void {
     this._logger.debug('TMI: Diagram update', {
       userId: message.user_id,
       operation: message.operation,
@@ -290,7 +310,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Handle conflicts if any
   }
 
-  private _handleDiagramOperation(message: any): void {
+  private _handleDiagramOperation(message: DiagramOperationMessage): void {
     this._logger.debug('TMI: Diagram operation', {
       userId: message.user_id,
       operationId: message.operation_id,
@@ -339,7 +359,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     }
   }
 
-  private _handleChangePresenter(message: any): void {
+  private _handleChangePresenter(message: ChangePresenterMessage): void {
     this._logger.debug('TMI: Change presenter', {
       userId: message.user_id,
       newPresenter: message.new_presenter,
@@ -354,7 +374,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     });
   }
 
-  private _handleCurrentPresenter(message: any): void {
+  private _handleCurrentPresenter(message: CurrentPresenterMessage): void {
     this._logger.debug('TMI: Current presenter', {
       currentPresenter: message.current_presenter,
     });
@@ -364,7 +384,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Enable/disable controls based on presenter status
   }
 
-  private _handlePresenterCursor(message: any): void {
+  private _handlePresenterCursor(message: PresenterCursorMessage): void {
     this._logger.debug('TMI: Presenter cursor', {
       userId: message.user_id,
       position: message.cursor_position,
@@ -374,7 +394,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Smooth cursor movement
   }
 
-  private _handlePresenterSelection(message: any): void {
+  private _handlePresenterSelection(message: PresenterSelectionMessage): void {
     this._logger.debug('TMI: Presenter selection', {
       userId: message.user_id,
       selectedCells: message.selected_cells,
@@ -386,7 +406,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Authorization and state handlers
 
-  private _handleAuthorizationDenied(message: any): void {
+  private _handleAuthorizationDenied(message: AuthorizationDeniedMessage): void {
     this._logger.debug('TMI: Authorization denied', {
       operationId: message.original_operation_id,
       reason: message.reason,
@@ -397,7 +417,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Log for debugging
   }
 
-  private _handleStateCorrection(message: any): void {
+  private _handleStateCorrection(message: StateCorrectionMessage): void {
     this._logger.debug('TMI: State correction', {
       cellCount: message.cells?.length,
     });
@@ -409,7 +429,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Synchronization handlers
 
-  private _handleResyncRequest(message: any): void {
+  private _handleResyncRequest(message: ResyncRequestMessage): void {
     this._logger.debug('TMI: Resync request', {
       userId: message.user_id,
     });
@@ -418,7 +438,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Log for debugging
   }
 
-  private _handleResyncResponse(message: any): void {
+  private _handleResyncResponse(message: ResyncResponseMessage): void {
     this._logger.debug('TMI: Resync response', {
       userId: message.user_id,
       targetUser: message.target_user,
@@ -433,7 +453,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // History operation handlers
 
-  private _handleHistoryOperation(message: any): void {
+  private _handleHistoryOperation(message: HistoryOperationMessage): void {
     this._logger.debug('TMI: History operation', {
       operationType: message.operation_type,
       message: message.message,
@@ -444,7 +464,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Show notification
   }
 
-  private _handleUndoRequest(message: any): void {
+  private _handleUndoRequest(message: UndoRequestMessage): void {
     this._logger.debug('TMI: Undo request', {
       userId: message.user_id,
     });
@@ -453,7 +473,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     // - Wait for response
   }
 
-  private _handleRedoRequest(message: any): void {
+  private _handleRedoRequest(message: RedoRequestMessage): void {
     this._logger.debug('TMI: Redo request', {
       userId: message.user_id,
     });

@@ -9,6 +9,7 @@ import {
   WebSocketAdapter,
   WebSocketState,
   MessageType,
+  WebSocketErrorType,
 } from './websocket.adapter';
 import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
 import { environment } from '../../../environments/environment';
@@ -1310,7 +1311,7 @@ export class DfdCollaborationService implements OnDestroy {
         if (currentUserEmail) {
           this._logger.info('Sending join message to TMI server', { userEmail: currentUserEmail });
           const joinEvent: JoinEvent = {
-              event: 'join',
+              message_type: 'join',
               user_id: currentUserEmail,
               timestamp: new Date().toISOString(),
             };
@@ -1322,19 +1323,24 @@ export class DfdCollaborationService implements OnDestroy {
                   userEmail: currentUserEmail,
                 });
               },
-              error: error => {
+              error: (error: unknown) => {
                 this._logger.error('Failed to send join message', error);
               },
             });
         }
       },
-      error: error => {
+      error: (error: unknown) => {
         this._logger.error('Failed to connect to WebSocket', error);
+        
+        // Type guard for error object
+        const errorMessage = error instanceof Error ? error.message : 'Failed to connect to collaboration server';
+        const errorObj = error as { type?: string; message?: string } | undefined;
+        
         this._notificationService
           .showWebSocketError(
             {
-              type: error.type || 'connection_failed',
-              message: error.message || 'Failed to connect to collaboration server',
+              type: (errorObj?.type as WebSocketErrorType) || 'connection_failed',
+              message: errorMessage,
               originalError: error,
               isRecoverable: true,
               retryable: true,
@@ -1496,7 +1502,7 @@ export class DfdCollaborationService implements OnDestroy {
             userEmail: currentUserEmail,
           });
           const joinEvent: JoinEvent = {
-              event: 'join',
+              message_type: 'join',
               user_id: currentUserEmail,
               timestamp: new Date().toISOString(),
             };
@@ -1570,7 +1576,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Handle session ended messages from WebSocket
    */
-  private _handleSessionEnded(message: any): void {
+  private _handleSessionEnded(message: { message_type?: string; user_id?: string; message?: string }): void {
     this._logger.debug('Session ended via WebSocket', message);
 
     // If current user is not the host and session was ended, redirect to dashboard
