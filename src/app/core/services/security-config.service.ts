@@ -178,9 +178,7 @@ ${Object.entries(headers)
     // In a real implementation, we would check response headers here
     // For now, we'll provide guidance
     if (!this._isSecureContext$.value) {
-      warnings.push(
-        'Running in insecure context - HSTS and other security features may not work',
-      );
+      warnings.push('Running in insecure context - HSTS and other security features may not work');
     }
 
     return { missing, warnings };
@@ -223,7 +221,7 @@ ${Object.entries(headers)
     const apiUrl = new URL(environment.apiUrl);
     const apiOrigin = apiUrl.origin;
     const apiProtocol = apiUrl.protocol;
-    
+
     // Build connect-src directive with API URL
     const connectSources = [
       "'self'",
@@ -273,7 +271,7 @@ ${Object.entries(headers)
     const cspMeta = this.document.createElement('meta');
     cspMeta.httpEquiv = 'Content-Security-Policy';
     cspMeta.content = cspContent;
-    
+
     // Insert after charset meta tag to ensure it's early in the document
     const charsetMeta = this.document.querySelector('meta[charset]');
     if (charsetMeta && charsetMeta.parentNode) {
@@ -286,7 +284,8 @@ ${Object.entries(headers)
     this.logger.debug('Dynamic CSP injected (note: frame-ancestors ignored in meta tags)', {
       apiOrigin,
       cspContent,
-      limitationsNote: 'For clickjacking protection, configure X-Frame-Options header at server level',
+      limitationsNote:
+        'For clickjacking protection, configure X-Frame-Options header at server level',
     });
   }
 }

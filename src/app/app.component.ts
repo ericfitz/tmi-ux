@@ -55,7 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.logger.info('Application initialized');
     this.logger.debugComponent('App', 'Environment configuration', environment);
-    
+
     // Debug current route
     this.logger.debugComponent('App', 'Current URL', window.location.href);
     this.logger.debugComponent('App', 'Current pathname', window.location.pathname);

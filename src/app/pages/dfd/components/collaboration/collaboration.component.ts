@@ -93,10 +93,10 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
   // Subscription management
   private _subscriptions = new Subscription();
-  
+
   // Track if menu is open for better change detection
   private _menuOpen = false;
-  
+
   // Periodic refresh timer
   private _refreshInterval: any = null;
 
@@ -125,7 +125,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
           previousUserCount: this.collaborationUsers.length,
           hasSession: !!state.sessionInfo,
         });
-        
+
         // Update all component properties from the unified state
         const previousIsCollaborating = this.isCollaborating;
         this.isCollaborating = state.isActive;
@@ -133,10 +133,10 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         this.currentPresenterEmail = state.currentPresenterEmail;
         this.pendingPresenterRequests = [...state.pendingPresenterRequests];
         this.existingSessionAvailable = state.existingSessionAvailable;
-        
+
         // Update host flag
         this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
-        
+
         // Log significant state changes
         if (previousIsCollaborating !== state.isActive) {
           this._logger.info('[CollaborationComponent] Collaboration status changed', {
@@ -144,7 +144,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
             new: state.isActive,
           });
         }
-        
+
         this._logger.info('[CollaborationComponent] Component state updated', {
           isCollaborating: this.isCollaborating,
           userCount: this.collaborationUsers.length,
@@ -153,7 +153,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
           presenter: this.currentPresenterEmail,
           pendingRequests: this.pendingPresenterRequests.length,
         });
-        
+
         // Force immediate change detection
         this._cdr.detectChanges();
       }),
@@ -165,15 +165,15 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         // This subscription triggers change detection when WebSocket state changes
         // The tooltip will be updated automatically through Angular's change detection
         this._cdr.markForCheck();
-        
+
         // Set up or clear periodic refresh based on WebSocket connection state
         this._setupPeriodicRefresh();
       }),
     );
-    
+
     // Initial setup of periodic refresh
     this._setupPeriodicRefresh();
-    
+
     // Perform initial state sync to ensure we have the latest state
     this._syncWithServiceState();
   }
@@ -184,9 +184,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   private _syncWithServiceState(): void {
     this._logger.info('[CollaborationComponent] Performing initial state sync');
-    
+
     const currentState = this._collaborationService.getCurrentState();
-    
+
     // Update all component properties from the current state
     this.isCollaborating = currentState.isActive;
     this.collaborationUsers = [...currentState.users];
@@ -194,13 +194,13 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this.pendingPresenterRequests = [...currentState.pendingPresenterRequests];
     this.existingSessionAvailable = currentState.existingSessionAvailable;
     this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
-    
+
     this._logger.info('[CollaborationComponent] Initial state sync complete', {
       isCollaborating: this.isCollaborating,
       userCount: this.collaborationUsers.length,
       isCurrentUserHost: this.isCurrentUserHostFlag,
     });
-    
+
     // Force change detection
     this._cdr.detectChanges();
   }
@@ -211,7 +211,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       clearInterval(this._refreshInterval);
       this._refreshInterval = null;
     }
-    
+
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
@@ -243,24 +243,24 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       clearInterval(this._refreshInterval);
       this._refreshInterval = null;
     }
-    
+
     // Set up new interval if WebSocket is connected
     if (this._webSocketAdapter.isConnected) {
       this._logger.info('[CollaborationComponent] Setting up periodic refresh', {
         interval: '5 seconds',
         isConnected: true,
       });
-      
+
       this._refreshInterval = setInterval(() => {
         this._logger.debug('[CollaborationComponent] Periodic refresh tick', {
           timestamp: new Date().toISOString(),
           userCount: this.collaborationUsers.length,
           isMenuOpen: this._menuOpen,
         });
-        
+
         // Verify state synchronization
         this._verifyStateSync();
-        
+
         // Force change detection
         this._cdr.detectChanges();
       }, 5000); // Refresh every 5 seconds
@@ -277,22 +277,28 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   private _verifyStateSync(): void {
     const serviceState = this._collaborationService.getCurrentState();
-    
+
     // Check for state mismatches
     const mismatches: string[] = [];
-    
+
     if (this.isCollaborating !== serviceState.isActive) {
-      mismatches.push(`isCollaborating: component=${this.isCollaborating}, service=${serviceState.isActive}`);
+      mismatches.push(
+        `isCollaborating: component=${this.isCollaborating}, service=${serviceState.isActive}`,
+      );
     }
-    
+
     if (this.collaborationUsers.length !== serviceState.users.length) {
-      mismatches.push(`userCount: component=${this.collaborationUsers.length}, service=${serviceState.users.length}`);
+      mismatches.push(
+        `userCount: component=${this.collaborationUsers.length}, service=${serviceState.users.length}`,
+      );
     }
-    
+
     if (this.currentPresenterEmail !== serviceState.currentPresenterEmail) {
-      mismatches.push(`presenter: component=${this.currentPresenterEmail}, service=${serviceState.currentPresenterEmail}`);
+      mismatches.push(
+        `presenter: component=${this.currentPresenterEmail}, service=${serviceState.currentPresenterEmail}`,
+      );
     }
-    
+
     if (mismatches.length > 0) {
       this._logger.warn('[CollaborationComponent] State mismatch detected!', {
         mismatches,
@@ -310,7 +316,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
           presenter: serviceState.currentPresenterEmail,
         },
       });
-      
+
       // If mismatch detected, perform recovery sync
       this._logger.warn('[CollaborationComponent] Performing recovery sync due to state mismatch');
       this._syncWithServiceState();
@@ -644,7 +650,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     if (!this.currentPresenterEmail) {
       return '';
     }
-    const presenter = this.collaborationUsers.find(user => user.email === this.currentPresenterEmail);
+    const presenter = this.collaborationUsers.find(
+      user => user.email === this.currentPresenterEmail,
+    );
     return presenter?.name || this.currentPresenterEmail;
   }
 
@@ -686,7 +694,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
     return `${statusText}\n${wsUrl}`;
   }
-  
+
   /**
    * Handle menu opened event
    */
@@ -696,13 +704,13 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       userCount: this.collaborationUsers.length,
       isCollaborating: this.isCollaborating,
     });
-    
+
     this._menuOpen = true;
-    
+
     // Force immediate change detection when menu opens
     this._cdr.detectChanges();
   }
-  
+
   /**
    * Handle menu closed event
    */
@@ -710,7 +718,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     this._logger.info('[CollaborationComponent] Menu closed', {
       timestamp: new Date().toISOString(),
     });
-    
+
     this._menuOpen = false;
   }
 }

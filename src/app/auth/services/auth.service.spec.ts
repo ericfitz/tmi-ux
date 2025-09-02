@@ -1034,22 +1034,22 @@ describe('AuthService', () => {
         'Skipping server logout for test user',
       );
     });
-    
+
     it('should clear provider cache on logout', () => {
       // Set up initial state with cached providers
       service['cachedProviders'] = mockProvidersResponse.providers;
       service['providersCacheTime'] = Date.now();
-      
+
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
-      
+
       // Call logout
       service.logout();
-      
+
       // Verify provider cache is cleared
       expect(service['cachedProviders']).toBeNull();
       expect(service['providersCacheTime']).toBe(0);
-      
+
       // Verify auth data is also cleared
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();

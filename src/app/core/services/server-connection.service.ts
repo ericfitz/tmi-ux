@@ -254,7 +254,6 @@ export class ServerConnectionService implements OnDestroy {
       return;
     }
 
-
     this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
 
     // Start periodic health checks
@@ -272,7 +271,6 @@ export class ServerConnectionService implements OnDestroy {
     }
     return true;
   }
-
 
   /**
    * Start periodic health check monitoring with exponential backoff

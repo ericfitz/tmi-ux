@@ -348,7 +348,7 @@ export class AuthService {
     // Check server connection status
     const serverStatus = this.serverConnectionService.currentStatus;
     const isServerConfigured = this.isServerConfigured();
-    
+
     if (!isServerConfigured || serverStatus !== ServerConnectionStatus.CONNECTED) {
       this.logger.debugComponent('Auth', 'Server not available, using local provider only', {
         isServerConfigured,
@@ -368,9 +368,13 @@ export class AuthService {
         this.cachedProviders = providers;
         this.providersCacheTime = now;
 
-        this.logger.debugComponent('Auth', `Fetched ${providers.length} OAuth providers from server`, {
-          providers: providers.map(p => ({ id: p.id, name: p.name })),
-        });
+        this.logger.debugComponent(
+          'Auth',
+          `Fetched ${providers.length} OAuth providers from server`,
+          {
+            providers: providers.map(p => ({ id: p.id, name: p.name })),
+          },
+        );
         return providers;
       }),
       catchError(error => {
@@ -379,7 +383,6 @@ export class AuthService {
       }),
     );
   }
-
 
   /**
    * Check if server is configured based on environment
@@ -511,14 +514,17 @@ export class AuthService {
       const state = this.generateRandomState();
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', 'local');
-      
+
       // Store debug info that will survive page reload
-      localStorage.setItem('local_auth_debug', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        state: state,
-        provider: 'local',
-        action: 'initiating_local_login'
-      }));
+      localStorage.setItem(
+        'local_auth_debug',
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          state: state,
+          provider: 'local',
+          action: 'initiating_local_login',
+        }),
+      );
 
       this.logger.debugComponent('Auth', 'Initiating local OAuth', {
         providerId: 'local',
@@ -547,7 +553,6 @@ export class AuthService {
     window.crypto.getRandomValues(array);
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
   }
-
 
   /**
    * Check if a string appears to be Base64 encoded
@@ -607,9 +612,9 @@ export class AuthService {
           providerId,
           statesMatch: storedState === receivedState,
           hasStoredState: !!storedState,
-          hasReceivedState: !!receivedState
+          hasReceivedState: !!receivedState,
         });
-        
+
         if (!storedState || storedState !== receivedState) {
           this.logger.error(
             `Local provider state mismatch: received "${receivedState}", stored "${storedState}"`,
@@ -721,10 +726,10 @@ export class AuthService {
    */
   private handleLocalCallback(response: OAuthResponse): Observable<boolean> {
     this.logger.info('handleLocalCallback called', { code: response.code });
-    
+
     const userInfo = this.localProvider.exchangeCodeForUser(response.code!);
     this.logger.info('exchangeCodeForUser result', userInfo);
-    
+
     if (!userInfo) {
       this.handleAuthError({
         code: 'local_auth_error',
@@ -737,11 +742,11 @@ export class AuthService {
     try {
       // Create a local JWT-like token
       const token = this.createLocalToken(userInfo);
-      this.logger.info('Local token created', { 
+      this.logger.info('Local token created', {
         tokenLength: token.token.length,
-        expiresAt: token.expiresAt.toISOString()
+        expiresAt: token.expiresAt.toISOString(),
       });
-      
+
       this.storeToken(token);
       this.storeUserProfile(userInfo);
 
@@ -886,7 +891,7 @@ export class AuthService {
       if (!userInfo.email) {
         throw new Error('User email is required for JWT token creation');
       }
-      
+
       const header = { alg: 'HS256', typ: 'JWT' };
       const effectiveExpiryMinutes = expiryMinutes || environment.authTokenExpiryMinutes;
       const payload = {
@@ -901,7 +906,11 @@ export class AuthService {
 
       // Create a fake JWT (just for consistency, server not involved)
       const fakeJwt =
-        btoa(JSON.stringify(header)) + '.' + btoa(JSON.stringify(payload)) + '.' + 'local-signature';
+        btoa(JSON.stringify(header)) +
+        '.' +
+        btoa(JSON.stringify(payload)) +
+        '.' +
+        'local-signature';
 
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + effectiveExpiryMinutes);
@@ -915,12 +924,14 @@ export class AuthService {
       // Store token and user profile
       this.storeToken(token);
       this.storeUserProfile(userInfo);
-      
+
       // Update authentication state
       this.isAuthenticatedSubject.next(true);
       this.userProfileSubject.next(userInfo);
-      
-      this.logger.info(`Local user ${userInfo.email} successfully logged in with ${effectiveExpiryMinutes} minute token`);
+
+      this.logger.info(
+        `Local user ${userInfo.email} successfully logged in with ${effectiveExpiryMinutes} minute token`,
+      );
       return true;
     } catch (error) {
       this.logger.error('Failed to create local token', error);
@@ -1183,7 +1194,7 @@ export class AuthService {
     this.isAuthenticatedSubject.next(false);
     this.userProfileSubject.next(null);
     this.jwtTokenSubject.next(null);
-    
+
     // Clear cached providers to force re-evaluation on next login
     this.cachedProviders = null;
     this.providersCacheTime = 0;

@@ -13,7 +13,7 @@ import { LoggerService } from '../../core/services/logger.service';
 export class LocalOAuthProviderService {
   constructor(
     private transloco: TranslocoService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {}
   /**
    * Build authorization URL for local provider
@@ -35,7 +35,7 @@ export class LocalOAuthProviderService {
     const code = btoa(`local:${email}`);
     this.logger.info('LocalOAuthProviderService.generateAuthCodeForEmail:', {
       email,
-      code
+      code,
     });
     return code;
   }
@@ -73,5 +73,4 @@ export class LocalOAuthProviderService {
       return null;
     }
   }
-
 }

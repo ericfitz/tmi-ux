@@ -36,7 +36,12 @@ import { LoggerService } from '../../../core/services/logger.service';
           </div>
         </mat-card-header>
         <mat-card-content>
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" (submit)="onFormSubmit($event)" class="login-form">
+          <form
+            [formGroup]="loginForm"
+            (ngSubmit)="onSubmit()"
+            (submit)="onFormSubmit($event)"
+            class="login-form"
+          >
             <mat-form-field appearance="outline" class="email-field">
               <mat-label>{{ 'login.local.emailLabel' | transloco }}</mat-label>
               <input
@@ -136,18 +141,26 @@ export class LocalUserSelectComponent implements OnInit {
     this.logger.debugComponent('LocalUserSelect', 'Current URL', window.location.href);
     this.logger.debugComponent('LocalUserSelect', 'Initial form value', this.loginForm.value);
     this.logger.debugComponent('LocalUserSelect', 'Initial form valid', this.loginForm.valid);
-    
+
     // Check for debug info from previous page
     const debugInfo = localStorage.getItem('local_auth_debug');
     if (debugInfo) {
       this.logger.debugComponent('LocalUserSelect', 'Local auth debug info', JSON.parse(debugInfo));
       localStorage.removeItem('local_auth_debug');
     }
-    
+
     // Check stored OAuth state
-    this.logger.debugComponent('LocalUserSelect', 'Stored OAuth state', localStorage.getItem('oauth_state'));
-    this.logger.debugComponent('LocalUserSelect', 'Stored OAuth provider', localStorage.getItem('oauth_provider'));
-    
+    this.logger.debugComponent(
+      'LocalUserSelect',
+      'Stored OAuth state',
+      localStorage.getItem('oauth_state'),
+    );
+    this.logger.debugComponent(
+      'LocalUserSelect',
+      'Stored OAuth provider',
+      localStorage.getItem('oauth_provider'),
+    );
+
     this.route.queryParams.subscribe(params => {
       this.state = (params['state'] as string) || '';
       this.logger.debugComponent('LocalUserSelect', 'State from query params', this.state);
@@ -170,7 +183,7 @@ export class LocalUserSelectComponent implements OnInit {
     if (this.loginForm.valid) {
       const email = this.loginForm.get('email')?.value as string;
       this.logger.debugComponent('LocalUserSelect', 'Form is valid, email', email);
-      
+
       // For local development, bypass OAuth flow entirely
       const userName = this.transloco.translate('login.local.userName') || 'Local User';
       const userProfile: UserProfile = {
@@ -181,19 +194,22 @@ export class LocalUserSelectComponent implements OnInit {
         picture: undefined,
       };
       this.logger.debugComponent('LocalUserSelect', 'Creating local token for user', userProfile);
-      
+
       // Create a 7-day token directly
       const sevenDaysInMinutes = 7 * 24 * 60;
       const success = this.authService.createLocalTokenWithExpiry(userProfile, sevenDaysInMinutes);
       this.logger.debugComponent('LocalUserSelect', 'Token creation result', success);
-      
+
       if (success) {
         this.logger.debugComponent('LocalUserSelect', 'Navigating to /tm');
         void this.router.navigate(['/tm']);
       } else {
-        this.logger.debugComponent('LocalUserSelect', 'Token creation failed, navigating back to login');
+        this.logger.debugComponent(
+          'LocalUserSelect',
+          'Token creation failed, navigating back to login',
+        );
         void this.router.navigate(['/login'], {
-          queryParams: { error: 'local_auth_failed' }
+          queryParams: { error: 'local_auth_failed' },
         });
       }
     } else {

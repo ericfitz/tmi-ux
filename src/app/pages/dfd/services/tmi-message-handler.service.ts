@@ -500,7 +500,7 @@ export class TMIMessageHandlerService implements OnDestroy {
         message.host,
         message.current_presenter,
       );
-      
+
       this._logger.info('updateAllParticipants call completed');
     } catch (error) {
       this._logger.error('Error in updateAllParticipants', error);

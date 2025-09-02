@@ -1906,7 +1906,7 @@ export class ThreatModelService implements OnDestroy {
 
     // Create HttpContext to skip automatic error handling for 403 errors
     const context = new HttpContext().set(SKIP_ERROR_HANDLING, true);
-    
+
     return this.apiService
       .put<CollaborationSession>(
         `threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,

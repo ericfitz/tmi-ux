@@ -16,7 +16,7 @@ export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   return next(req).pipe(
-    tap((event) => {
+    tap(event => {
       if (event instanceof HttpResponse) {
         // Check for security headers in the response
         const headers = event.headers;
@@ -25,7 +25,7 @@ export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
         const recommendations = recommendationsObservable.value as SecurityHeaders;
 
         // Check for recommended security headers
-        Object.keys(recommendations).forEach((headerName) => {
+        Object.keys(recommendations).forEach(headerName => {
           if (!headers.has(headerName)) {
             missingHeaders.push(headerName);
           }

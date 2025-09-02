@@ -146,7 +146,9 @@ describe('SecurityHeadersInterceptor', () => {
       expect(loggerSpy.warn).toHaveBeenCalledWith(
         'Security header warnings',
         expect.objectContaining({
-          warnings: expect.arrayContaining(['Server header may be disclosing too much information']),
+          warnings: expect.arrayContaining([
+            'Server header may be disclosing too much information',
+          ]),
         }),
       );
     }

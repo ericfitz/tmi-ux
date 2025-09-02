@@ -61,15 +61,15 @@ describe('SecurityConfigService', () => {
   });
 
   it('should detect security context', async () => {
-    const isSecure = await new Promise<boolean>((resolve) => {
-      service.isSecureContext$.subscribe((value) => resolve(value));
+    const isSecure = await new Promise<boolean>(resolve => {
+      service.isSecureContext$.subscribe(value => resolve(value));
     });
     expect(typeof isSecure).toBe('boolean');
   });
 
   it('should generate recommended headers', async () => {
-    const headers = await new Promise((resolve) => {
-      service.recommendedHeaders$.subscribe((value) => resolve(value));
+    const headers = await new Promise(resolve => {
+      service.recommendedHeaders$.subscribe(value => resolve(value));
     });
     expect(headers).toBeDefined();
     expect(headers['X-Frame-Options']).toBe('DENY');
@@ -132,12 +132,12 @@ describe('SecurityConfigService', () => {
   it('should inject dynamic CSP with API URL', () => {
     // Verify CSP meta tag was created
     expect(documentMock.createElement).toHaveBeenCalledWith('meta');
-    
+
     // Get the created meta element
     const createElementCalls = (documentMock.createElement as any).mock.calls;
     const metaCall = createElementCalls.find((call: any[]) => call[0] === 'meta');
     expect(metaCall).toBeDefined();
-    
+
     // Verify CSP content includes API URL
     const metaElement = (documentMock.createElement as any).mock.results[0].value;
     expect(metaElement.httpEquiv).toBe('Content-Security-Policy');
@@ -146,5 +146,4 @@ describe('SecurityConfigService', () => {
     expect(metaElement.content).toContain('wss:');
     expect(metaElement.content).toContain('ws:');
   });
-
 });

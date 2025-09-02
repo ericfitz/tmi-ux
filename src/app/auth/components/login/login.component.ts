@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
 
     this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
       this.logger.info('LoginComponent received query params', params);
-      
+
       this.returnUrl = params.returnUrl || '/tm';
       const code = params.code;
       const state = params.state;
