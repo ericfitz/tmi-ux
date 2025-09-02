@@ -138,4 +138,60 @@ export interface Environment {
    */
   defaultAuthProvider?: string;
 
+  /**
+   * Security configuration for HTTP headers and policies
+   * These settings help configure security headers at the application level
+   */
+  securityConfig?: {
+    /**
+     * Whether to enable HSTS (HTTP Strict Transport Security)
+     * Should only be enabled when TLS is available
+     * Default: true
+     */
+    enableHSTS?: boolean;
+
+    /**
+     * HSTS max-age in seconds
+     * Default: 31536000 (1 year)
+     */
+    hstsMaxAge?: number;
+
+    /**
+     * Whether to include subdomains in HSTS policy
+     * Default: true
+     */
+    hstsIncludeSubDomains?: boolean;
+
+    /**
+     * Whether to enable HSTS preload
+     * Only enable after careful consideration
+     * Default: false
+     */
+    hstsPreload?: boolean;
+
+    /**
+     * CSP report URI for violation reporting
+     * If set, CSP violations will be reported to this endpoint
+     * Default: undefined
+     */
+    cspReportUri?: string;
+
+    /**
+     * X-Frame-Options header value
+     * Default: 'DENY'
+     */
+    frameOptions?: 'DENY' | 'SAMEORIGIN';
+
+    /**
+     * Referrer-Policy header value
+     * Default: 'strict-origin-when-cross-origin'
+     */
+    referrerPolicy?: string;
+
+    /**
+     * Permissions-Policy header value
+     * Default: 'camera=(), microphone=(), geolocation=()'
+     */
+    permissionsPolicy?: string;
+  };
 }

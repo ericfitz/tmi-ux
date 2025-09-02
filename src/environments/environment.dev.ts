@@ -22,4 +22,14 @@ export const environment: Environment = {
       icon: 'fa-solid fa-laptop-code',
     },
   },
+  securityConfig: {
+    enableHSTS: false, // Disabled in development (no TLS)
+    hstsMaxAge: 300, // 5 minutes for testing
+    hstsIncludeSubDomains: false,
+    hstsPreload: false,
+    frameOptions: 'DENY',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    permissionsPolicy: 'camera=(), microphone=(), geolocation=()',
+    // CSP violations logged to console in development
+  },
 };

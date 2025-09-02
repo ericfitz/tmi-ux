@@ -25,6 +25,7 @@ import {
   provideZoneChangeDetection,
   LOCALE_ID,
   importProvidersFrom,
+  APP_INITIALIZER,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
@@ -33,6 +34,7 @@ import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
 import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interceptor';
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
+import { SecurityConfigService } from './core/services/security-config.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -45,6 +47,13 @@ function getBasicLocale(): string {
 
   // Default to English
   return 'en-US';
+}
+
+// Security initialization function
+function initializeSecurityMonitoring(securityConfig: SecurityConfigService): () => void {
+  return () => {
+    securityConfig.monitorSecurityViolations();
+  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -68,6 +77,13 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
+      multi: true,
+    },
+    // Initialize security monitoring
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeSecurityMonitoring,
+      deps: [SecurityConfigService],
       multi: true,
     },
   ],

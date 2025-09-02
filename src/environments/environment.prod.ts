@@ -28,4 +28,15 @@ export const environment: Environment = {
   operatorName: 'TMI Operator',
   operatorContact: 'contact@example.com',
   oauth: {},
+  securityConfig: {
+    enableHSTS: true,
+    hstsMaxAge: 31536000, // 1 year
+    hstsIncludeSubDomains: true,
+    hstsPreload: false, // Enable only after careful consideration
+    frameOptions: 'DENY',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    permissionsPolicy: 'camera=(), microphone=(), geolocation=()',
+    // Uncomment and set this to enable CSP violation reporting
+    // cspReportUri: 'https://api.example.com/csp-report',
+  },
 };

@@ -16,4 +16,13 @@ export const environment: Environment = {
       enabled: false, // Disable local provider in staging
     },
   },
+  securityConfig: {
+    enableHSTS: true,
+    hstsMaxAge: 86400, // 1 day for staging
+    hstsIncludeSubDomains: true,
+    hstsPreload: false,
+    frameOptions: 'DENY',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    permissionsPolicy: 'camera=(), microphone=(), geolocation=()',
+  },
 };
