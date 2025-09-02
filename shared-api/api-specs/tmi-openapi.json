@@ -2456,6 +2456,7 @@
                 "summary": "OpenID Connect Discovery Configuration",
                 "description": "Returns OpenID Connect provider configuration metadata as per RFC 8414",
                 "operationId": "getOpenIDConfiguration",
+                "security": [],
                 "responses": {
                     "200": {
                         "description": "OpenID Connect configuration metadata",
@@ -2585,6 +2586,7 @@
                 "summary": "OAuth 2.0 Authorization Server Metadata",
                 "description": "Returns OAuth 2.0 authorization server metadata as per RFC 8414",
                 "operationId": "getOAuthAuthorizationServerMetadata",
+                "security": [],
                 "responses": {
                     "200": {
                         "description": "OAuth 2.0 authorization server metadata",
@@ -2673,6 +2675,7 @@
                 "summary": "JSON Web Key Set",
                 "description": "Returns the JSON Web Key Set (JWKS) for JWT signature verification",
                 "operationId": "getJWKS",
+                "security": [],
                 "responses": {
                     "200": {
                         "description": "JSON Web Key Set",
