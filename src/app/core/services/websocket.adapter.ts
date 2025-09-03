@@ -498,7 +498,7 @@ export class WebSocketAdapter {
             }
             
             const msgObj = parsedMessage as Record<string, unknown>;
-            if (!msgObj.message_type && !msgObj.event) {
+            if (!msgObj['message_type'] && !msgObj['event']) {
               return; // Not a TMI message
             }
 

@@ -8,7 +8,6 @@ import { ThreatModelService } from '../../pages/tm/services/threat-model.service
 import {
   WebSocketAdapter,
   WebSocketState,
-  MessageType,
   WebSocketErrorType,
 } from './websocket.adapter';
 import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
@@ -349,7 +348,8 @@ export class DfdCollaborationService implements OnDestroy {
           this._logger.error('Failed to join collaboration session via PUT', error);
 
           // Check if this is a 403 error - reader trying to join
-          if (error?.status === 403) {
+          const httpError = error as { status?: number };
+          if (httpError?.status === 403) {
             // Check if a session already exists that we can connect to directly
             const existingSession = this._collaborationState$.value.existingSessionAvailable;
             if (existingSession) {
@@ -605,7 +605,7 @@ export class DfdCollaborationService implements OnDestroy {
     if (currentUserEmail) {
       this._webSocketAdapter
         .sendTMIMessage({
-          event: 'leave',
+          message_type: 'leave',
           user_id: currentUserEmail,
           timestamp: new Date().toISOString(),
         })
@@ -647,7 +647,7 @@ export class DfdCollaborationService implements OnDestroy {
         userEmail: currentUserEmail,
       });
       const leaveEvent: LeaveEvent = {
-          event: 'leave',
+          message_type: 'leave',
           user_id: currentUserEmail,
           timestamp: new Date().toISOString(),
         };
@@ -1449,7 +1449,7 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Listen to session ended events
     this._subscriptions.add(
-      this._webSocketAdapter.getMessagesOfType(MessageType.SESSION_ENDED).subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType('session_ended').subscribe(message => {
         this._handleSessionEnded(message);
       }),
     );

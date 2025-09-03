@@ -25,20 +25,20 @@ import {
 } from '../types/websocket-message.types';
 import { ApiParticipant } from './dfd-collaboration.service';
 
-// Define the correct structure for ParticipantsUpdateMessage
-interface ParticipantsUpdateMessage {
-  message_type: 'participants_update';
-  participants: ApiParticipant[];
-  host?: string;
-  current_presenter?: string | null;
-}
-
 // Define custom message types not in websocket-message.types.ts
 interface SessionEndedMessage {
   message_type: 'session_ended';
   user_id: string;
   message: string;
   timestamp: string;
+}
+
+// Override the ParticipantsUpdateMessage to match the actual API response
+interface ApiParticipantsUpdateMessage {
+  message_type: 'participants_update';
+  participants: ApiParticipant[];
+  host?: string;
+  current_presenter?: string | null;
 }
 
 
@@ -79,124 +79,130 @@ export class TMIMessageHandlerService implements OnDestroy {
     // Session management messages
     this._logger.debugComponent('wsmsg', 'Setting up join event handler', {});
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('join').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<JoinEvent>('join').subscribe(message => {
         this._handleJoinEvent(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('leave').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<LeaveEvent>('leave').subscribe(message => {
         this._handleLeaveEvent(message);
       }),
     );
 
+    // Using 'as any' for custom message type not in TMIWebSocketMessage union
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('session_ended').subscribe(message => {
+      (this._webSocketAdapter as any).getTMIMessagesOfType('session_ended').subscribe((message: SessionEndedMessage) => {
         this._handleSessionEndedEvent(message);
       }),
     );
+    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 
     // Diagram operation messages
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('update').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<UpdateEvent>('update').subscribe(message => {
         this._handleUpdateEvent(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('diagram_operation').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation').subscribe(message => {
         this._handleDiagramOperation(message);
       }),
     );
 
     // Presenter mode messages
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('presenter_request').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<PresenterRequestMessage>('presenter_request').subscribe(message => {
         this._handlePresenterRequest(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('presenter_denied').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied').subscribe(message => {
         this._handlePresenterDenied(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('change_presenter').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<ChangePresenterMessage>('change_presenter').subscribe(message => {
         this._handleChangePresenter(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('current_presenter').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter').subscribe(message => {
         this._handleCurrentPresenter(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('presenter_cursor').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor').subscribe(message => {
         this._handlePresenterCursor(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('presenter_selection').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection').subscribe(message => {
         this._handlePresenterSelection(message);
       }),
     );
 
     // Authorization and state management
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('authorization_denied').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<AuthorizationDeniedMessage>('authorization_denied').subscribe(message => {
         this._handleAuthorizationDenied(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('state_correction').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<StateCorrectionMessage>('state_correction').subscribe(message => {
         this._handleStateCorrection(message);
       }),
     );
 
     // Synchronization messages
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('resync_request').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<ResyncRequestMessage>('resync_request').subscribe(message => {
         this._handleResyncRequest(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('resync_response').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<ResyncResponseMessage>('resync_response').subscribe(message => {
         this._handleResyncResponse(message);
       }),
     );
 
     // History operations
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('history_operation').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<HistoryOperationMessage>('history_operation').subscribe(message => {
         this._handleHistoryOperation(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('undo_request').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<UndoRequestMessage>('undo_request').subscribe(message => {
         this._handleUndoRequest(message);
       }),
     );
 
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('redo_request').subscribe(message => {
+      this._webSocketAdapter.getTMIMessagesOfType<RedoRequestMessage>('redo_request').subscribe(message => {
         this._handleRedoRequest(message);
       }),
     );
 
     // Participants update message
+    // Using 'as any' for custom message structure with ApiParticipant[]
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('participants_update').subscribe(message => {
+      (this._webSocketAdapter as any).getTMIMessagesOfType('participants_update').subscribe((message: ApiParticipantsUpdateMessage) => {
         this._handleParticipantsUpdate(message);
       }),
     );
+    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 
     this._isInitialized = true;
     this._logger.info('TMI message handlers initialized successfully');
@@ -484,7 +490,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
   // Participants update handler
 
-  private _handleParticipantsUpdate(message: ParticipantsUpdateMessage): void {
+  private _handleParticipantsUpdate(message: ApiParticipantsUpdateMessage): void {
     this._logger.info('TMI: Participants update received - START', {
       hasMessage: !!message,
       hasParticipants: !!message?.participants,
