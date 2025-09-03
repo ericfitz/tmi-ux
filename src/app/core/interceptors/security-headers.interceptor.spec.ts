@@ -27,7 +27,7 @@ describe('SecurityHeadersInterceptor', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     loggerSpy = {
       debug: vi.fn(),
       warning: vi.fn(),
@@ -79,10 +79,10 @@ describe('SecurityHeadersInterceptor', () => {
     mockNext.mockReturnValue(of(mockResponse));
 
     const result$ = interceptorFn(mockRequest, mockNext);
-    
+
     result$.subscribe(() => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
-      
+
       if (!environment.production) {
         expect(loggerSpy.debug).toHaveBeenCalledWith(
           'Missing security headers in API response',
@@ -105,17 +105,17 @@ describe('SecurityHeadersInterceptor', () => {
         'X-Frame-Options': 'DENY',
         'X-Content-Type-Options': 'nosniff',
         'Strict-Transport-Security': 'max-age=31536000',
-        'Content-Security-Policy': 'default-src \'self\'',
+        'Content-Security-Policy': "default-src 'self'",
       }),
     });
 
     mockNext.mockReturnValue(of(mockResponse));
 
     const result$ = interceptorFn(mockRequest, mockNext);
-    
+
     result$.subscribe(() => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
-      
+
       if (!environment.production) {
         expect(loggerSpy.debug).not.toHaveBeenCalled();
       }
@@ -135,10 +135,10 @@ describe('SecurityHeadersInterceptor', () => {
     mockNext.mockReturnValue(of(mockResponse));
 
     const result$ = interceptorFn(mockRequest, mockNext);
-    
+
     result$.subscribe(() => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
-      
+
       if (!environment.production) {
         expect(loggerSpy.warn).toHaveBeenCalledWith(
           'Security header warnings',
@@ -163,10 +163,10 @@ describe('SecurityHeadersInterceptor', () => {
     mockNext.mockReturnValue(of(mockResponse));
 
     const result$ = interceptorFn(mockRequest, mockNext);
-    
+
     result$.subscribe(() => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
-      
+
       if (!environment.production) {
         expect(loggerSpy.warn).toHaveBeenCalledWith(
           'Security header warnings',
@@ -193,10 +193,10 @@ describe('SecurityHeadersInterceptor', () => {
     mockNext.mockReturnValue(of(mockResponse));
 
     const result$ = interceptorFn(mockRequest, mockNext);
-    
+
     result$.subscribe(() => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
-      
+
       if (!environment.production) {
         expect(loggerSpy.warn).toHaveBeenCalledWith(
           'Security header warnings',
@@ -219,7 +219,7 @@ describe('SecurityHeadersInterceptor', () => {
     mockNext.mockReturnValue(of(mockResponse));
 
     const result$ = interceptorFn(mockRequest, mockNext);
-    
+
     result$.subscribe(() => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
       // For non-API requests, we still check HTTPS for HSTS

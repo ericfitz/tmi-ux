@@ -138,9 +138,19 @@ export class CollaborativeOperationService {
       cells: cellOperations,
     };
 
+    // Get user profile for user object
+    const userProfile = this.authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
     const message: DiagramOperationMessage = {
       message_type: 'diagram_operation',
-      user_id: this._config.userId,
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
       operation_id: uuid(),
       operation: operation,
     };
@@ -211,9 +221,18 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('Insufficient permissions to undo'));
     }
 
+    const userProfile = this.authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
     const message: UndoRequestMessage = {
       message_type: 'undo_request',
-      user_id: this._config.userId,
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
     };
 
     this.logger.debug('Requesting undo operation');
@@ -232,9 +251,18 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('Insufficient permissions to redo'));
     }
 
+    const userProfile = this.authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
     const message: RedoRequestMessage = {
       message_type: 'redo_request',
-      user_id: this._config.userId,
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
     };
 
     this.logger.debug('Requesting redo operation');
@@ -249,15 +277,23 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
     }
 
+    const userProfile = this.authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
     const message: ResyncRequestMessage = {
       message_type: 'resync_request',
-      user_id: this._config.userId,
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
     };
 
     this.logger.info('Requesting diagram resync');
     return this.webSocketAdapter.sendTMIMessage(message);
   }
-
 
   /**
    * Send presenter cursor position (presenter only)
@@ -272,9 +308,18 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('Only presenter can send cursor updates'));
     }
 
+    const userProfile = this.authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
     const message: PresenterCursorMessage = {
       message_type: 'presenter_cursor',
-      user_id: this._config.userId,
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
       cursor_position: position,
     };
 
@@ -294,9 +339,18 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('Only presenter can send selection updates'));
     }
 
+    const userProfile = this.authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+
     const message: PresenterSelectionMessage = {
       message_type: 'presenter_selection',
-      user_id: this._config.userId,
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
       selected_cells: selectedCellIds,
     };
 
@@ -327,42 +381,34 @@ export class CollaborativeOperationService {
         reject: error => observer.error(error),
       });
 
-      // Send via WebSocket with retry
-      this.webSocketAdapter
-        .sendMessageWithRetry(
-          {
-            type: 'COMMAND_EXECUTE' as any, // Map to internal message type
-            data: message as unknown as Record<string, unknown>,
-          },
-          maxRetries,
-        )
-        .subscribe({
-          next: () => {
-            this._pendingOperations.delete(message.operation_id);
-            observer.next();
-            observer.complete();
-          },
-          error: error => {
-            this._pendingOperations.delete(message.operation_id);
+      // Send via WebSocket directly as TMI message
+      this.webSocketAdapter.sendTMIMessage(message).subscribe({
+        next: () => {
+          this._pendingOperations.delete(message.operation_id);
+          observer.next();
+          observer.complete();
+        },
+        error: error => {
+          this._pendingOperations.delete(message.operation_id);
 
-            // If error is retryable and we haven't exceeded retries, queue for later
-            if (this._isRetryableOperationError(error) && maxRetries > 0) {
-              this.logger.warn('Operation failed, queuing for retry', {
-                operationId: message.operation_id,
-                error,
-              });
-              this._queueOperation(message, maxRetries - 1);
-              observer.next(); // Consider queued operation as "sent"
-              observer.complete();
-            } else {
-              this.logger.error('Operation failed permanently', {
-                operationId: message.operation_id,
-                error,
-              });
-              observer.error(error);
-            }
-          },
-        });
+          // If error is retryable and we haven't exceeded retries, queue for later
+          if (this._isRetryableOperationError(error) && maxRetries > 0) {
+            this.logger.warn('Operation failed, queuing for retry', {
+              operationId: message.operation_id,
+              error,
+            });
+            this._queueOperation(message, maxRetries - 1);
+            observer.next(); // Consider queued operation as "sent"
+            observer.complete();
+          } else {
+            this.logger.error('Operation failed permanently', {
+              operationId: message.operation_id,
+              error,
+            });
+            observer.error(error);
+          }
+        },
+      });
 
       // Set timeout for operation acknowledgment
       setTimeout(() => {

@@ -5,14 +5,10 @@ import { Router } from '@angular/router';
 import { LoggerService } from './logger.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
-import {
-  WebSocketAdapter,
-  WebSocketState,
-  WebSocketErrorType,
-} from './websocket.adapter';
+import { WebSocketAdapter, WebSocketState, WebSocketErrorType } from './websocket.adapter';
 import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
 import { environment } from '../../../environments/environment';
-import { JoinEvent, LeaveEvent } from '../types/websocket-message.types';
+import { SessionTerminatedMessage, ChangePresenterMessage } from '../types/websocket-message.types';
 
 /**
  * Represents a user in a collaboration session
@@ -600,20 +596,8 @@ export class DfdCollaborationService implements OnDestroy {
       return this.endCollaboration();
     }
 
-    // Send leave message via WebSocket
-    const currentUserEmail = this.getCurrentUserEmail();
-    if (currentUserEmail) {
-      this._webSocketAdapter
-        .sendTMIMessage({
-          message_type: 'leave',
-          user_id: currentUserEmail,
-          timestamp: new Date().toISOString(),
-        })
-        .subscribe({
-          next: () => this._logger.info('Leave session message sent'),
-          error: error => this._logger.error('Failed to send leave session message', error),
-        });
-    }
+    // The server handles participant tracking when the WebSocket disconnects
+    // Client should not send leave messages
 
     // Mark as intentional disconnection to suppress notification
     this._intentionalDisconnection = true;
@@ -640,31 +624,8 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('No active collaboration session'));
     }
 
-    // Send leave message before ending the session
-    const currentUserEmail = this.getCurrentUserEmail();
-    if (currentUserEmail && this._webSocketAdapter.isConnected) {
-      this._logger.info('Sending leave message before ending session', {
-        userEmail: currentUserEmail,
-      });
-      const leaveEvent: LeaveEvent = {
-          message_type: 'leave',
-          user_id: currentUserEmail,
-          timestamp: new Date().toISOString(),
-        };
-        this._webSocketAdapter
-        .sendTMIMessage(leaveEvent)
-        .subscribe({
-          next: () => {
-            this._logger.debugComponent('wsmsg', 'Leave message sent successfully', {
-              userEmail: currentUserEmail,
-            });
-          },
-          error: error => {
-            this._logger.error('Failed to send leave message', error);
-            // Continue with session end even if leave message fails
-          },
-        });
-    }
+    // The server handles participant tracking when the WebSocket disconnects
+    // Client should not send leave messages
 
     // Make API call to end collaboration session
     return this._threatModelService
@@ -1082,10 +1043,18 @@ export class DfdCollaborationService implements OnDestroy {
     this.updateUserPresenterRequestState(currentUserEmail, 'hand_raised');
 
     // Send presenter request via WebSocket
+    const userProfile = this._authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User profile not available'));
+    }
     return this._webSocketAdapter
       .sendTMIMessage({
         message_type: 'presenter_request',
-        user_id: currentUserEmail,
+        user: {
+          user_id: userProfile.id,
+          email: userProfile.email,
+          displayName: userProfile.name,
+        },
       })
       .pipe(
         map(() => {
@@ -1146,10 +1115,18 @@ export class DfdCollaborationService implements OnDestroy {
     });
 
     // Send denial via WebSocket
+    const userProfile = this._authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User profile not available'));
+    }
     return this._webSocketAdapter
       .sendTMIMessage({
         message_type: 'presenter_denied',
-        user_id: this.getCurrentUserEmail() || '',
+        user: {
+          user_id: userProfile.id,
+          email: userProfile.email,
+          displayName: userProfile.name,
+        },
         target_user: userEmail,
       })
       .pipe(
@@ -1185,40 +1162,48 @@ export class DfdCollaborationService implements OnDestroy {
     this._updateState({ currentPresenterEmail: userEmail });
     this._updateUsersPresenterStatus(userEmail);
 
-    // Send presenter update via WebSocket
-    return this._webSocketAdapter
-      .sendTMIMessage({
-        message_type: 'presenter_update',
-        user_id: userEmail || undefined,
-      })
-      .pipe(
-        map(() => {
-          // Show presenter assigned notification
-          const currentUserEmail = this.getCurrentUserEmail();
-          if (userEmail === currentUserEmail) {
-            this._notificationService.showPresenterEvent('assigned').subscribe();
-          } else if (userEmail) {
-            const user = this._collaborationState$.value.users.find(u => u.email === userEmail);
-            this._notificationService
-              .showPresenterEvent('assigned', user?.name || userEmail)
-              .subscribe();
-          } else {
-            this._notificationService.showPresenterEvent('cleared').subscribe();
-          }
-          return true;
-        }),
-        catchError((error: unknown) => {
-          this._logger.error('Failed to send presenter update', error);
-          // Revert local state on error
-          this._updateState({ currentPresenterEmail: null });
-          this._updateUsersPresenterStatus(null);
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    // Send presenter change via WebSocket
+    const userProfile = this._authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('No user profile available'));
+    }
+
+    const message: ChangePresenterMessage = {
+      message_type: 'change_presenter',
+      user: {
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
+      },
+      new_presenter: userEmail || '', // Empty string if no presenter
+    };
+
+    return this._webSocketAdapter.sendTMIMessage(message).pipe(
+      map(() => {
+        // Show presenter assigned notification
+        const currentUserEmail = this.getCurrentUserEmail();
+        if (userEmail === currentUserEmail) {
+          this._notificationService.showPresenterEvent('assigned').subscribe();
+        } else if (userEmail) {
+          const user = this._collaborationState$.value.users.find(u => u.email === userEmail);
           this._notificationService
-            .showOperationError('update presenter', errorMessage)
+            .showPresenterEvent('assigned', user?.name || userEmail)
             .subscribe();
-          return throwError(() => error);
-        }),
-      );
+        } else {
+          this._notificationService.showPresenterEvent('cleared').subscribe();
+        }
+        return true;
+      }),
+      catchError((error: unknown) => {
+        this._logger.error('Failed to send presenter update', error);
+        // Revert local state on error
+        this._updateState({ currentPresenterEmail: null });
+        this._updateUsersPresenterStatus(null);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this._notificationService.showOperationError('update presenter', errorMessage).subscribe();
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
@@ -1305,37 +1290,17 @@ export class DfdCollaborationService implements OnDestroy {
     this._webSocketAdapter.connect(fullWebSocketUrl).subscribe({
       next: () => {
         this._logger.info('WebSocket connection established successfully');
-
-        // Send join message to notify server we've connected
-        const currentUserEmail = this.getCurrentUserEmail();
-        if (currentUserEmail) {
-          this._logger.info('Sending join message to TMI server', { userEmail: currentUserEmail });
-          const joinEvent: JoinEvent = {
-              message_type: 'join',
-              user_id: currentUserEmail,
-              timestamp: new Date().toISOString(),
-            };
-          this._webSocketAdapter
-            .sendTMIMessage(joinEvent)
-            .subscribe({
-              next: () => {
-                this._logger.debugComponent('wsmsg', 'Join message sent successfully', {
-                  userEmail: currentUserEmail,
-                });
-              },
-              error: (error: unknown) => {
-                this._logger.error('Failed to send join message', error);
-              },
-            });
-        }
+        // The server handles participant tracking when the WebSocket connection is established
+        // Client should not send join messages
       },
       error: (error: unknown) => {
         this._logger.error('Failed to connect to WebSocket', error);
-        
+
         // Type guard for error object
-        const errorMessage = error instanceof Error ? error.message : 'Failed to connect to collaboration server';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to connect to collaboration server';
         const errorObj = error as { type?: string; message?: string } | undefined;
-        
+
         this._notificationService
           .showWebSocketError(
             {
@@ -1449,9 +1414,11 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Listen to session ended events
     this._subscriptions.add(
-      this._webSocketAdapter.getTMIMessagesOfType('session_ended').subscribe(message => {
-        this._handleSessionEnded(message);
-      }),
+      this._webSocketAdapter
+        .getTMIMessagesOfType<SessionTerminatedMessage>('session_terminated')
+        .subscribe(message => {
+          this._handleSessionEnded(message);
+        }),
     );
 
     // NOTE: TMI join/leave events are now handled by TMIMessageHandlerService
@@ -1494,31 +1461,8 @@ export class DfdCollaborationService implements OnDestroy {
         break;
       case WebSocketState.CONNECTED: {
         this._notificationService.showWebSocketStatus(state).subscribe();
-
-        // Send join message when reconnected (in case this is after a reconnection)
-        const currentUserEmail = this.getCurrentUserEmail();
-        if (currentUserEmail) {
-          this._logger.info('Sending join message after WebSocket (re)connection', {
-            userEmail: currentUserEmail,
-          });
-          const joinEvent: JoinEvent = {
-              message_type: 'join',
-              user_id: currentUserEmail,
-              timestamp: new Date().toISOString(),
-            };
-          this._webSocketAdapter
-            .sendTMIMessage(joinEvent)
-            .subscribe({
-              next: () => {
-                this._logger.debugComponent('wsmsg', 'Join message sent after reconnection', {
-                  userEmail: currentUserEmail,
-                });
-              },
-              error: error => {
-                this._logger.error('Failed to send join message after reconnection', error);
-              },
-            });
-        }
+        // The server handles participant tracking when the WebSocket reconnects
+        // Client should not send join messages
         break;
       }
       case WebSocketState.DISCONNECTED:
@@ -1576,7 +1520,11 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Handle session ended messages from WebSocket
    */
-  private _handleSessionEnded(message: { message_type?: string; user_id?: string; message?: string }): void {
+  private _handleSessionEnded(message: {
+    message_type?: string;
+    user_id?: string;
+    message?: string;
+  }): void {
     this._logger.debug('Session ended via WebSocket', message);
 
     // If current user is not the host and session was ended, redirect to dashboard

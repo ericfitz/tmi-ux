@@ -49,8 +49,8 @@ channels:
       - Multiple clients can participate in the same session simultaneously
       - Each session tracks active participants and their join times
     parameters:
-      id:
-        description: Unique identifier of the threat model (matches OpenAPI path parameter)
+      threat_model_id:
+        description: Unique identifier of the threat model (matches OpenAPI path parameter)  
         schema:
           type: string
           format: uuid
@@ -62,18 +62,6 @@ channels:
           format: uuid
           example: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
     messages:
-      clientMessage:
-        $ref: '#/components/messages/ClientMessage'
-      serverMessage:
-        $ref: '#/components/messages/ServerMessage'
-      joinEvent:
-        $ref: '#/components/messages/JoinEvent'
-      leaveEvent:
-        $ref: '#/components/messages/LeaveEvent'
-      sessionEndedEvent:
-        $ref: '#/components/messages/SessionEndedEvent'
-      updateEvent:
-        $ref: '#/components/messages/UpdateEvent'
       diagramOperationMessage:
         $ref: '#/components/messages/DiagramOperationMessage'
       presenterRequestMessage:
@@ -104,6 +92,12 @@ channels:
         $ref: '#/components/messages/RedoRequestMessage'
       participantsUpdateMessage:
         $ref: '#/components/messages/ParticipantsUpdateMessage'
+      participantJoinedMessage:
+        $ref: '#/components/messages/ParticipantJoinedMessage'
+      participantLeftMessage:
+        $ref: '#/components/messages/ParticipantLeftMessage'
+      sessionTerminatedMessage:
+        $ref: '#/components/messages/SessionTerminatedMessage'
 
 operations:
   sendDiagramOperation:
@@ -120,7 +114,6 @@ operations:
       - Operation size limit: 50KB per operation
       - Write timeout: 10 seconds per message
     messages:
-      - $ref: '#/components/messages/ClientMessage'
       - $ref: '#/components/messages/DiagramOperationMessage'
       - $ref: '#/components/messages/PresenterRequestMessage'
       - $ref: '#/components/messages/ChangePresenterMessage'
@@ -144,11 +137,6 @@ operations:
       - Automatic reconnection recommended for production clients
       - Sessions persist for up to 15 minutes after last activity
     messages:
-      - $ref: '#/components/messages/ServerMessage'
-      - $ref: '#/components/messages/JoinEvent'
-      - $ref: '#/components/messages/LeaveEvent'
-      - $ref: '#/components/messages/SessionEndedEvent'
-      - $ref: '#/components/messages/UpdateEvent'
       - $ref: '#/components/messages/DiagramOperationMessage'
       - $ref: '#/components/messages/PresenterDeniedMessage'
       - $ref: '#/components/messages/CurrentPresenterMessage'
@@ -159,6 +147,9 @@ operations:
       - $ref: '#/components/messages/ResyncResponseMessage'
       - $ref: '#/components/messages/HistoryOperationMessage'
       - $ref: '#/components/messages/ParticipantsUpdateMessage'
+      - $ref: '#/components/messages/ParticipantJoinedMessage'
+      - $ref: '#/components/messages/ParticipantLeftMessage'
+      - $ref: '#/components/messages/SessionTerminatedMessage'
 
 components:
   parameters:
@@ -177,139 +168,6 @@ components:
         example: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
 
   messages:
-    ClientMessage:
-      name: ClientMessage
-      title: Client Operation Message
-      summary: Message sent by client to perform diagram operation
-      description: |
-        Message sent by clients to perform diagram operations. Contains the operation
-        details that will be validated, applied to the stored diagram, and broadcasted
-        to all connected participants.
-      payload:
-        $ref: '#/components/schemas/ClientMessagePayload'
-      examples:
-        - name: AddCellOperation
-          summary: Example of adding a new cell to the diagram
-          payload:
-            operation:
-              type: add
-              component:
-                id: '123e4567-e89b-12d3-a456-426614174000'
-                shape: process
-                x: 100
-                y: 150
-                width: 120
-                height: 80
-                label: User Authentication
-
-        - name: UpdateCellOperation
-          summary: Example of updating an existing cell
-          payload:
-            operation:
-              type: update
-              component_id: '123e4567-e89b-12d3-a456-426614174000'
-              properties:
-                label: Updated Authentication Process
-                x: 110
-                y: 160
-
-        - name: RemoveCellOperation
-          summary: Example of removing a cell from the diagram
-          payload:
-            operation:
-              type: remove
-              component_id: '123e4567-e89b-12d3-a456-426614174000'
-
-    ServerMessage:
-      name: ServerMessage
-      title: Server Event Message
-      summary: Base message sent by server for all events
-      description: |
-        Base message structure sent by the server. Contains event type, user information,
-        timestamp, and optional operation data for diagram updates.
-      payload:
-        $ref: '#/components/schemas/ServerMessagePayload'
-
-    JoinEvent:
-      name: JoinEvent
-      title: User Join Event
-      summary: Notification when a user joins the collaboration session
-      description: |
-        Sent to all participants when a new user joins the collaboration session.
-        Helps maintain awareness of active participants.
-      payload:
-        allOf:
-          - $ref: '#/components/schemas/ServerMessagePayload'
-          - type: object
-            properties:
-              event:
-                const: join
-      examples:
-        - name: UserJoinedSession
-          summary: Example of user joining collaboration session
-          payload:
-            event: join
-            user_id: john.doe@example.com
-            timestamp: '2024-01-15T10:30:00Z'
-
-    LeaveEvent:
-      name: LeaveEvent
-      title: User Leave Event
-      summary: Notification when a user leaves the collaboration session
-      description: |
-        Sent to all remaining participants when a user leaves the collaboration session.
-        Helps maintain awareness of active participants.
-      payload:
-        allOf:
-          - $ref: '#/components/schemas/ServerMessagePayload'
-          - type: object
-            properties:
-              event:
-                const: leave
-      examples:
-        - name: UserLeftSession
-          summary: Example of user leaving collaboration session
-          payload:
-            event: leave
-            user_id: jane.smith@example.com
-            timestamp: '2024-01-15T11:45:00Z'
-
-    UpdateEvent:
-      name: UpdateEvent
-      title: Diagram Update Event
-      summary: Notification of diagram operation from another user
-      description: |
-        Sent to all participants when another user performs a diagram operation.
-        Contains the complete operation details for real-time synchronization.
-      payload:
-        allOf:
-          - $ref: '#/components/schemas/ServerMessagePayload'
-          - type: object
-            properties:
-              event:
-                const: update
-              operation:
-                $ref: '#/components/schemas/DiagramOperation'
-            required:
-              - operation
-      examples:
-        - name: CellAddedByOtherUser
-          summary: Example of receiving a cell addition from another user
-          payload:
-            event: update
-            user_id: alice.wilson@example.com
-            timestamp: '2024-01-15T12:15:00Z'
-            operation:
-              type: add
-              component:
-                id: '987fcdeb-51a2-43d1-9f4e-123456789abc'
-                shape: datastore
-                x: 300
-                y: 200
-                width: 100
-                height: 60
-                label: User Database
-
     DiagramOperationMessage:
       name: DiagramOperationMessage
       title: Diagram Operation Message
@@ -583,35 +441,63 @@ components:
             message_type: redo_request
             user_id: alice@example.com
 
-    SessionEndedEvent:
-      name: SessionEndedEvent
-      title: Session Ended Event
+    ParticipantJoinedMessage:
+      name: ParticipantJoinedMessage
+      title: Participant Joined Message
+      summary: Notification when a participant joins a session
+      description: |
+        Sent to all participants when a new user joins the collaboration session.
+        Uses the standard message_type pattern for consistency.
+      payload:
+        $ref: '#/components/schemas/ParticipantJoinedPayload'
+      examples:
+        - name: UserJoinedSession
+          summary: Example of user joining collaboration session
+          payload:
+            message_type: participant_joined
+            user:
+              user_id: john.doe@example.com
+              email: john.doe@example.com
+              displayName: John Doe
+            timestamp: '2024-01-15T10:30:00Z'
+
+    ParticipantLeftMessage:
+      name: ParticipantLeftMessage
+      title: Participant Left Message
+      summary: Notification when a participant leaves a session
+      description: |
+        Sent to all remaining participants when a user leaves the collaboration session.
+        Uses the standard message_type pattern for consistency.
+      payload:
+        $ref: '#/components/schemas/ParticipantLeftPayload'
+      examples:
+        - name: UserLeftSession
+          summary: Example of user leaving collaboration session
+          payload:
+            message_type: participant_left
+            user:
+              user_id: jane.smith@example.com
+              email: jane.smith@example.com
+              displayName: Jane Smith
+            timestamp: '2024-01-15T11:45:00Z'
+
+    SessionTerminatedMessage:
+      name: SessionTerminatedMessage
+      title: Session Terminated Message
       summary: Notification when collaboration session is terminated
       description: |
         Sent to all participants when the collaboration session is ended,
-        typically when the host disconnects. Clients should
-        gracefully handle session termination and clean up local state.
+        typically when the host disconnects. Uses the standard message_type pattern.
       payload:
-        allOf:
-          - $ref: '#/components/schemas/ServerMessagePayload'
-          - type: object
-            properties:
-              event:
-                const: session_ended
-              message:
-                type: string
-                description: Reason for session termination
-                example: 'host disconnected'
-            required:
-              - message
+        $ref: '#/components/schemas/SessionTerminatedPayload'
       examples:
         - name: HostLeft
           summary: Example of session ending due to host departure
           payload:
-            event: session_ended
-            user_id: host@example.com
+            message_type: session_terminated
+            reason: host disconnected
+            host_id: host@example.com
             timestamp: '2024-01-15T14:30:00Z'
-            message: 'host disconnected'
 
     ParticipantsUpdateMessage:
       name: ParticipantsUpdateMessage
@@ -652,110 +538,101 @@ components:
             current_presenter: auth0|507f191e810c19729de860ea
 
   schemas:
-    ClientMessagePayload:
+    DiagramOperationPayload:
       type: object
-      description: Payload structure for messages sent by clients
+      description: Enhanced payload for collaborative diagram operations with conflict resolution
       properties:
+        message_type:
+          const: diagram_operation
+        user:
+          $ref: '#/components/schemas/User'
+        operation_id:
+          type: string
+          format: uuid
+          description: Client-generated UUID for idempotency and tracking
+          example: 123e4567-e89b-12d3-a456-426614174000
+        sequence_number:
+          type: integer
+          description: Server-assigned sequence number for operation ordering
+          minimum: 1
+          example: 12345
         operation:
-          $ref: '#/components/schemas/DiagramOperation'
+          $ref: '#/components/schemas/CellPatchOperation'
       required:
+        - message_type
+        - user
+        - operation_id
         - operation
       additionalProperties: false
 
-    ServerMessagePayload:
+    User:
       type: object
-      description: Base payload structure for messages sent by server
+      description: User information from JWT claims
       properties:
-        event:
-          type: string
-          enum: [join, leave, update, session_ended]
-          description: Type of event (join, leave, update, or session_ended)
         user_id:
           type: string
-          description: Identifier of the user who triggered the event (email or username)
-          example: john.doe@example.com
-        timestamp:
+          description: User identifier (from JWT sub claim)
+          example: auth0|507f1f77bcf86cd799439011
+        email:
           type: string
-          format: date-time
-          description: UTC timestamp when the event occurred
-          example: '2024-01-15T10:30:00Z'
-        operation:
-          $ref: '#/components/schemas/DiagramOperation'
+          description: User email address
+          example: alice@example.com
+        displayName:
+          type: string
+          description: User display name
+          example: Alice Johnson
       required:
-        - event
         - user_id
-        - timestamp
+        - email
+        - displayName
       additionalProperties: false
 
-    DiagramOperation:
+    CellPatchOperation:
       type: object
-      description: |
-        Defines a change operation to be applied to a diagram. Operations are validated
-        before being applied to ensure data integrity and consistency.
+      description: Mirrors REST PATCH operations for cells with batch support
       properties:
         type:
-          type: string
-          enum: [add, update, remove]
-          description: Type of operation to perform
-        component_id:
-          type: string
-          format: uuid
-          description: |
-            ID of the component to update or remove. Required for update and remove operations.
-          example: '123e4567-e89b-12d3-a456-426614174000'
-        component:
-          $ref: '#/components/schemas/Cell'
-        properties:
-          type: object
-          description: |
-            Key-value pairs of properties to update. Used with update operations
-            as an alternative to providing the full component. Property keys
-            cannot exceed 255 characters.
-          additionalProperties: true
-          example:
-            label: Updated Process Name
-            x: 150
-            y: 200
+          const: patch
+        cells:
+          type: array
+          description: Array of cell operations to perform
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Cell ID for the operation
+              operation:
+                type: string
+                enum: [add, update, remove]
+                description: Operation type to perform on the cell
+              data:
+                $ref: '#/components/schemas/Cell'
+            required:
+              - id
+              - operation
+            allOf:
+              - if:
+                  properties:
+                    operation:
+                      enum: [add, update]
+                then:
+                  required:
+                    - data
+              - if:
+                  properties:
+                    operation:
+                      const: remove
+                then:
+                  properties:
+                    data:
+                      not: {}
+          minItems: 1
       required:
         - type
+        - cells
       additionalProperties: false
-      allOf:
-        - if:
-            properties:
-              type:
-                const: add
-          then:
-            required:
-              - component
-            properties:
-              component_id:
-                not: {}
-              properties:
-                not: {}
-        - if:
-            properties:
-              type:
-                const: remove
-          then:
-            required:
-              - component_id
-            properties:
-              component:
-                not: {}
-              properties:
-                not: {}
-        - if:
-            properties:
-              type:
-                const: update
-          then:
-            required:
-              - component_id
-            anyOf:
-              - required:
-                  - component
-              - required:
-                  - properties
 
     Cell:
       type: object
@@ -1212,6 +1089,70 @@ components:
         - current_presenter
       additionalProperties: false
 
+    ParticipantJoinedPayload:
+      type: object
+      description: Notification when a participant joins a session
+      properties:
+        message_type:
+          const: participant_joined
+        user:
+          $ref: '#/components/schemas/User'
+        timestamp:
+          type: string
+          format: date-time
+          description: UTC timestamp when the event occurred
+          example: '2024-01-15T10:30:00Z'
+      required:
+        - message_type
+        - user
+        - timestamp
+      additionalProperties: false
+
+    ParticipantLeftPayload:
+      type: object
+      description: Notification when a participant leaves a session
+      properties:
+        message_type:
+          const: participant_left
+        user:
+          $ref: '#/components/schemas/User'
+        timestamp:
+          type: string
+          format: date-time
+          description: UTC timestamp when the event occurred
+          example: '2024-01-15T11:45:00Z'
+      required:
+        - message_type
+        - user
+        - timestamp
+      additionalProperties: false
+
+    SessionTerminatedPayload:
+      type: object
+      description: Notification when collaboration session is terminated
+      properties:
+        message_type:
+          const: session_terminated
+        reason:
+          type: string
+          description: Reason for session termination
+          example: host disconnected
+        host_id:
+          type: string
+          description: User ID of the host who left
+          example: host@example.com
+        timestamp:
+          type: string
+          format: date-time
+          description: UTC timestamp when the session was terminated
+          example: '2024-01-15T14:30:00Z'
+      required:
+        - message_type
+        - reason
+        - host_id
+        - timestamp
+      additionalProperties: false
+
   securitySchemes:
     jwtAuth:
       type: http
@@ -1234,38 +1175,3 @@ components:
         - Token must contain valid user identification claims (sub, email)
 
         Example: ws://localhost:8080/threat_models/123/diagrams/456/ws?token=eyJ0eXAiOiJKV1Q...
-
-traits:
-  secured:
-    description: This operation requires JWT authentication
-    security:
-      - jwtAuth: []
-
-  rateLimited:
-    description: |
-      This operation is subject to rate limiting and connection management:
-      - Message size limit: 4KB per message  
-      - Operation size limit: 50KB per operation
-      - Read timeout: 60 seconds with ping/pong keepalive
-      - Write timeout: 10 seconds per message
-      - Session cleanup: 15 minutes after last activity
-      - Origin validation in production mode
-
-  validated:
-    description: |
-      This operation includes comprehensive validation:
-      - Operation type must be 'add', 'update', or 'remove'
-      - Component IDs must be valid UUIDs (non-zero UUID for cells)
-      - Required fields must be present based on operation type
-      - Cell properties must meet defined constraints (shape, coordinates, dimensions)
-      - Property keys cannot exceed 255 characters
-      - Operations are applied to stored diagrams and broadcasted to all participants
-
-  sessionManaged:
-    description: |
-      This operation participates in session management:
-      - Sessions are created automatically when first client connects
-      - Multiple clients can join the same session simultaneously
-      - Join/leave events are broadcast to all session participants
-      - Sessions track participant information and connection times
-      - Inactive sessions are cleaned up automatically after 15 minutes

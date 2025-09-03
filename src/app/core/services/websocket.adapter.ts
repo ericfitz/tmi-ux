@@ -14,7 +14,7 @@
  * - Handles user presence updates and cursor position synchronization
  * - Supports command execution and event broadcasting
  * - Provides error handling and connection recovery mechanisms
- * - Implements heartbeat/ping-pong for connection health monitoring
+ * - Relies on WebSocket protocol-level ping-pong for connection health monitoring
  * - Supports message queuing for offline scenarios
  * - Provides logging and debugging for WebSocket communication
  */
@@ -93,7 +93,6 @@ export enum MessageType {
 
   // System messages
   ERROR = 'error',
-  HEARTBEAT = 'heartbeat',
   ACKNOWLEDGMENT = 'ack',
 }
 
@@ -122,7 +121,6 @@ export class WebSocketAdapter {
   private _reconnectAttempts = 0;
   private readonly _maxReconnectAttempts = 5;
   private readonly _reconnectDelay = 1000;
-  private _heartbeatInterval: number | null = null;
   private readonly _destroy$ = new Subject<void>();
 
   // Shared subjects for TMI messages to avoid duplicate handlers
@@ -141,8 +139,6 @@ export class WebSocketAdapter {
   // Enhanced error tracking
   private _lastError: WebSocketError | null = null;
   private _connectionHealth = 100; // Health percentage (0-100)
-  private _missedHeartbeats = 0;
-  private readonly _maxMissedHeartbeats = 3;
 
   // Message acknowledgment tracking
   private readonly _pendingAcks = new Map<
@@ -244,7 +240,6 @@ export class WebSocketAdapter {
         const openHandler = (): void => {
           this._connectionState$.next(WebSocketState.CONNECTED);
           this._reconnectAttempts = 0;
-          this._startHeartbeat();
 
           // Log successful WebSocket connection with component debug logging
           this.logger.debugComponent('websocket-api', 'WebSocket connection established:', {
@@ -257,15 +252,25 @@ export class WebSocketAdapter {
           observer.complete();
         };
 
-        const errorHandler = (event: Event | ErrorEvent | { message?: string; error?: { message?: string } }): void => {
+        const errorHandler = (
+          event: Event | ErrorEvent | { message?: string; error?: { message?: string } },
+        ): void => {
           this._connectionState$.next(WebSocketState.ERROR);
           let errorMessage = 'WebSocket connection failed';
-          
+
           if ('message' in event && typeof event.message === 'string') {
             errorMessage = event.message;
-          } else if ('error' in event && event.error && typeof event.error === 'object' && 'message' in event.error) {
+          } else if (
+            'error' in event &&
+            event.error &&
+            typeof event.error === 'object' &&
+            'message' in event.error
+          ) {
             const errorObj = event.error as { message: unknown };
-            errorMessage = typeof errorObj.message === 'string' ? errorObj.message : 'WebSocket connection failed';
+            errorMessage =
+              typeof errorObj.message === 'string'
+                ? errorObj.message
+                : 'WebSocket connection failed';
           }
 
           // Classify the error for appropriate recovery strategy
@@ -298,8 +303,6 @@ export class WebSocketAdapter {
    * Disconnect from WebSocket server
    */
   disconnect(): void {
-    this._stopHeartbeat();
-
     if (this._socket) {
       // Log WebSocket disconnection with component debug logging
       this.logger.debugComponent('websocket-api', 'WebSocket disconnection requested:', {
@@ -496,7 +499,7 @@ export class WebSocketAdapter {
             if (typeof parsedMessage !== 'object' || parsedMessage === null) {
               return; // Not a valid message object
             }
-            
+
             const msgObj = parsedMessage as Record<string, unknown>;
             if (!msgObj['message_type'] && !msgObj['event']) {
               return; // Not a TMI message
@@ -514,11 +517,16 @@ export class WebSocketAdapter {
             }
 
             const message = parsedMessage as TMIWebSocketMessage;
-            
+
             // Type assertion for accessing various message properties
             const messageData = message as {
               message_type?: string;
-              user_id?: string;
+              user?: {
+                user_id?: string;
+                email?: string;
+                displayName?: string;
+              };
+              user_id?: string; // Legacy field, some messages might still have this
               timestamp?: string;
               operation_id?: string;
               sequence_number?: number;
@@ -535,13 +543,14 @@ export class WebSocketAdapter {
               operation_type?: string;
               message?: string;
             };
-            
+
             const messageTypeToCheck = messageData.message_type;
 
             // Log ALL TMI messages for debugging
             this.logger.debugComponent('wsmsg', 'TMI WebSocket message received', {
               messageType: messageTypeToCheck,
-              userId: messageData.user_id,
+              userId: messageData.user?.user_id || messageData.user_id,
+              userEmail: messageData.user?.email,
               timestamp: messageData.timestamp,
               operationId: messageData.operation_id,
               sequenceNumber: messageData.sequence_number,
@@ -596,20 +605,26 @@ export class WebSocketAdapter {
         // Type assertion for accessing message properties
         const messageData = message as {
           message_type?: string;
-          user_id?: string;
+          user?: {
+            user_id?: string;
+            email?: string;
+          };
+          user_id?: string; // Legacy field
           operation_id?: string;
           operation?: unknown;
         };
 
         this.logger.debug('Sending TMI message', {
           type: messageData.message_type,
-          userId: messageData.user_id,
+          userId: messageData.user?.user_id || messageData.user_id,
+          userEmail: messageData.user?.email,
         });
 
         // Log WebSocket message send with component debug logging
         this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
           messageType: messageData.message_type,
-          userId: messageData.user_id,
+          userId: messageData.user?.user_id || messageData.user_id,
+          userEmail: messageData.user?.email,
           operationId: messageData.operation_id,
           hasOperation: !!messageData.operation,
           body: this._redactSensitiveData(message),
@@ -662,7 +677,9 @@ export class WebSocketAdapter {
         }
 
         // Check if this is a TMI message (has message_type or event field)
-        const isTMIMessage = typeof parsedMessage === 'object' && parsedMessage !== null && 
+        const isTMIMessage =
+          typeof parsedMessage === 'object' &&
+          parsedMessage !== null &&
           ('message_type' in parsedMessage || 'event' in parsedMessage);
 
         if (isTMIMessage) {
@@ -688,12 +705,6 @@ export class WebSocketAdapter {
         // Handle acknowledgments
         if (message.type === MessageType.ACKNOWLEDGMENT) {
           this._handleAcknowledgment(message.data['messageId'] as string);
-          return;
-        }
-
-        // Handle heartbeat
-        if (message.type === MessageType.HEARTBEAT) {
-          this._handleHeartbeat();
           return;
         }
 
@@ -732,7 +743,6 @@ export class WebSocketAdapter {
 
     this._socket.addEventListener('close', event => {
       this._connectionState$.next(WebSocketState.DISCONNECTED);
-      this._stopHeartbeat();
       this._updateConnectionHealth(-20); // Health decrease on disconnect
 
       this.logger.info('WebSocket connection closed', {
@@ -831,74 +841,6 @@ export class WebSocketAdapter {
         });
       }
     }, delay);
-  }
-
-  /**
-   * Start heartbeat to keep connection alive
-   */
-  private _startHeartbeat(): void {
-    this._stopHeartbeat();
-
-    this._heartbeatInterval = window.setInterval(() => {
-      if (this.isConnected) {
-        this.sendMessage({
-          type: MessageType.HEARTBEAT,
-          data: { timestamp: Date.now() },
-        }).subscribe({
-          next: () => {
-            // Heartbeat successful - improve health
-            this._updateConnectionHealth(2);
-            this._missedHeartbeats = 0;
-          },
-          error: (error: unknown) => {
-            // Heartbeat failed - track missed heartbeats
-            this._missedHeartbeats++;
-            this._updateConnectionHealth(-10);
-
-            this.logger.warn('Heartbeat failed', {
-              missedCount: this._missedHeartbeats,
-              maxMissed: this._maxMissedHeartbeats,
-              health: this._connectionHealth,
-              error,
-            });
-
-            // If too many heartbeats missed, force reconnection
-            if (this._missedHeartbeats >= this._maxMissedHeartbeats) {
-              this.logger.error('Too many missed heartbeats, forcing reconnection');
-              this._connectionState$.next(WebSocketState.ERROR);
-              const wsError: WebSocketError = {
-                type: WebSocketErrorType.TIMEOUT,
-                message: 'Connection unhealthy - too many missed heartbeats',
-                originalError: error,
-                isRecoverable: true,
-                retryable: true,
-              };
-              this._lastError = wsError;
-              this._errors$.next(wsError);
-              this._attemptReconnection();
-            }
-          },
-        });
-      }
-    }, 30000); // Send heartbeat every 30 seconds
-  }
-
-  /**
-   * Stop heartbeat
-   */
-  private _stopHeartbeat(): void {
-    if (this._heartbeatInterval) {
-      clearInterval(this._heartbeatInterval);
-      this._heartbeatInterval = null;
-    }
-  }
-
-  /**
-   * Handle incoming heartbeat
-   */
-  private _handleHeartbeat(): void {
-    // Respond to server heartbeat if needed
-    // For now, just acknowledge that connection is alive
   }
 
   /**
@@ -1068,9 +1010,7 @@ export class WebSocketAdapter {
   private _isRetryableError(error: unknown): boolean {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return (
-      !errorMessage.includes('401') &&
-      !errorMessage.includes('403') &&
-      this._connectionHealth > 0
+      !errorMessage.includes('401') && !errorMessage.includes('403') && this._connectionHealth > 0
     );
   }
 
@@ -1082,7 +1022,6 @@ export class WebSocketAdapter {
 
     // Reset health and error state
     this._connectionHealth = 100;
-    this._missedHeartbeats = 0;
     this._lastError = null;
     this._reconnectAttempts = 0;
 
@@ -1107,7 +1046,7 @@ export class WebSocketAdapter {
 
     // Type guard to ensure message has expected properties
     const msg = message as { id?: unknown; type?: unknown; timestamp?: unknown; data?: unknown };
-    
+
     // Check required fields for general WebSocket messages
     if (typeof msg.id !== 'string' || !msg.id.trim()) {
       return { isValid: false, error: 'Message must have a valid id string' };
@@ -1177,7 +1116,8 @@ export class WebSocketAdapter {
     const msg = message as {
       message_type?: unknown;
       event?: unknown;
-      user_id?: unknown;
+      user?: unknown;
+      user_id?: unknown; // Legacy field
       operation_id?: unknown;
       operation?: unknown;
       cursor_position?: unknown;
@@ -1190,7 +1130,21 @@ export class WebSocketAdapter {
       return { isValid: false, error: 'TMI message must have message_type or event string' };
     }
 
-    // Validate user_id if present
+    // Validate user object if present
+    if (msg.user !== undefined) {
+      if (typeof msg.user !== 'object' || msg.user === null) {
+        return { isValid: false, error: 'user must be an object if provided' };
+      }
+      const userObj = msg.user as { user_id?: unknown; email?: unknown };
+      if (userObj.user_id !== undefined && typeof userObj.user_id !== 'string') {
+        return { isValid: false, error: 'user.user_id must be a string if provided' };
+      }
+      if (userObj.email !== undefined && typeof userObj.email !== 'string') {
+        return { isValid: false, error: 'user.email must be a string if provided' };
+      }
+    }
+
+    // Legacy: Validate user_id if present (for backward compatibility)
     if (msg.user_id !== undefined && typeof msg.user_id !== 'string') {
       return { isValid: false, error: 'user_id must be a string if provided' };
     }
@@ -1207,7 +1161,7 @@ export class WebSocketAdapter {
       }
 
       const operation = msg.operation as { type?: unknown; cells?: unknown };
-      
+
       if (typeof operation.type !== 'string') {
         return { isValid: false, error: 'operation must have type string' };
       }

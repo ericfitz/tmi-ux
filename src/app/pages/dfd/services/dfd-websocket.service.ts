@@ -23,7 +23,6 @@ import {
   PresenterSelectionMessage,
   PresenterRequestMessage,
   PresenterDeniedMessage,
-  PresenterUpdateMessage,
 } from '../../../core/types/websocket-message.types';
 
 /**
@@ -108,62 +107,62 @@ export type DfdDomainEvent =
 export class DfdWebSocketService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
-  
+
   // Domain event streams
   private readonly _domainEvents$ = new Subject<DfdDomainEvent>();
-  
+
   // Typed observables for specific events
   public readonly diagramOperations$ = this._domainEvents$.pipe(
     filter((event): event is DiagramOperationEvent => event.type === 'diagram-operation'),
-    map(event => event.message)
+    map(event => event.message),
   );
-  
+
   public readonly authorizationDenied$ = this._domainEvents$.pipe(
-    filter((event): event is AuthorizationDeniedEvent => event.type === 'authorization-denied')
+    filter((event): event is AuthorizationDeniedEvent => event.type === 'authorization-denied'),
   );
-  
+
   public readonly stateCorrections$ = this._domainEvents$.pipe(
-    filter((event): event is StateCorrectionEvent => event.type === 'state-correction')
+    filter((event): event is StateCorrectionEvent => event.type === 'state-correction'),
   );
-  
+
   public readonly historyOperations$ = this._domainEvents$.pipe(
-    filter((event): event is HistoryOperationEvent => event.type === 'history-operation')
+    filter((event): event is HistoryOperationEvent => event.type === 'history-operation'),
   );
-  
+
   public readonly resyncRequests$ = this._domainEvents$.pipe(
-    filter((event): event is ResyncRequestedEvent => event.type === 'resync-requested')
+    filter((event): event is ResyncRequestedEvent => event.type === 'resync-requested'),
   );
-  
+
   public readonly presenterChanges$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterChangedEvent => event.type === 'presenter-changed')
+    filter((event): event is PresenterChangedEvent => event.type === 'presenter-changed'),
   );
-  
+
   public readonly presenterCursors$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterCursorEvent => event.type === 'presenter-cursor')
+    filter((event): event is PresenterCursorEvent => event.type === 'presenter-cursor'),
   );
-  
+
   public readonly presenterSelections$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterSelectionEvent => event.type === 'presenter-selection')
+    filter((event): event is PresenterSelectionEvent => event.type === 'presenter-selection'),
   );
-  
+
   public readonly presenterRequests$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterRequestEvent => event.type === 'presenter-request')
+    filter((event): event is PresenterRequestEvent => event.type === 'presenter-request'),
   );
-  
+
   public readonly presenterDenials$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterDeniedEvent => event.type === 'presenter-denied')
+    filter((event): event is PresenterDeniedEvent => event.type === 'presenter-denied'),
   );
-  
+
   public readonly presenterUpdates$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterUpdateEvent => event.type === 'presenter-update')
+    filter((event): event is PresenterUpdateEvent => event.type === 'presenter-update'),
   );
-  
+
   // General event stream for components that want all events
   public readonly domainEvents$ = this._domainEvents$.asObservable();
 
   constructor(
     private _logger: LoggerService,
-    private _webSocketAdapter: WebSocketAdapter
+    private _webSocketAdapter: WebSocketAdapter,
   ) {
     this._logger.info('DfdWebSocketService initialized');
   }
@@ -182,7 +181,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handleDiagramOperation(message),
           error: error => this._logger.error('Error in diagram operation subscription', error),
-        })
+        }),
     );
 
     // Subscribe to authorization denied messages
@@ -193,7 +192,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handleAuthorizationDenied(message),
           error: error => this._logger.error('Error in authorization denied subscription', error),
-        })
+        }),
     );
 
     // Subscribe to state correction messages
@@ -204,7 +203,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handleStateCorrection(message),
           error: error => this._logger.error('Error in state correction subscription', error),
-        })
+        }),
     );
 
     // Subscribe to history operation messages
@@ -215,7 +214,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handleHistoryOperation(message),
           error: error => this._logger.error('Error in history operation subscription', error),
-        })
+        }),
     );
 
     // Subscribe to resync response messages
@@ -226,7 +225,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handleResyncResponse(message),
           error: error => this._logger.error('Error in resync response subscription', error),
-        })
+        }),
     );
 
     // Subscribe to presenter messages
@@ -237,7 +236,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handleCurrentPresenter(message),
           error: error => this._logger.error('Error in current presenter subscription', error),
-        })
+        }),
     );
 
     this._subscriptions.add(
@@ -247,7 +246,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handlePresenterCursor(message),
           error: error => this._logger.error('Error in presenter cursor subscription', error),
-        })
+        }),
     );
 
     this._subscriptions.add(
@@ -257,7 +256,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handlePresenterSelection(message),
           error: error => this._logger.error('Error in presenter selection subscription', error),
-        })
+        }),
     );
 
     this._subscriptions.add(
@@ -267,7 +266,7 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handlePresenterRequest(message),
           error: error => this._logger.error('Error in presenter request subscription', error),
-        })
+        }),
     );
 
     this._subscriptions.add(
@@ -277,18 +276,9 @@ export class DfdWebSocketService implements OnDestroy {
         .subscribe({
           next: message => this._handlePresenterDenied(message),
           error: error => this._logger.error('Error in presenter denied subscription', error),
-        })
+        }),
     );
 
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<PresenterUpdateMessage>('presenter_update')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handlePresenterUpdate(message),
-          error: error => this._logger.error('Error in presenter update subscription', error),
-        })
-    );
 
     this._logger.info('DFD WebSocket subscriptions initialized successfully');
   }
@@ -307,7 +297,8 @@ export class DfdWebSocketService implements OnDestroy {
 
   private _handleDiagramOperation(message: DiagramOperationMessage): void {
     this._logger.debug('Received diagram operation', {
-      userId: message.user_id,
+      userId: message.user.user_id,
+      userEmail: message.user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
     });
@@ -379,62 +370,56 @@ export class DfdWebSocketService implements OnDestroy {
 
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
     this._logger.debug('Presenter cursor update', {
-      userId: message.user_id,
+      userId: message.user.user_id,
+      userEmail: message.user.email,
       position: message.cursor_position,
     });
 
     this._domainEvents$.next({
       type: 'presenter-cursor',
-      userId: message.user_id,
+      userId: message.user.user_id,
       position: message.cursor_position,
     });
   }
 
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
     this._logger.debug('Presenter selection update', {
-      userId: message.user_id,
+      userId: message.user.user_id,
+      userEmail: message.user.email,
       cellCount: message.selected_cells.length,
     });
 
     this._domainEvents$.next({
       type: 'presenter-selection',
-      userId: message.user_id,
+      userId: message.user.user_id,
       selectedCells: message.selected_cells,
     });
   }
 
   private _handlePresenterRequest(message: PresenterRequestMessage): void {
     this._logger.info('Presenter request received', {
-      userId: message.user_id,
+      userId: message.user.user_id,
+      userEmail: message.user.email,
     });
 
     this._domainEvents$.next({
       type: 'presenter-request',
-      userId: message.user_id,
+      userId: message.user.user_id,
     });
   }
 
   private _handlePresenterDenied(message: PresenterDeniedMessage): void {
     this._logger.info('Presenter request denied', {
-      userId: message.user_id,
+      userId: message.user.user_id,
+      userEmail: message.user.email,
       targetUser: message.target_user,
     });
 
     this._domainEvents$.next({
       type: 'presenter-denied',
-      userId: message.user_id,
+      userId: message.user.user_id,
       targetUser: message.target_user,
     });
   }
 
-  private _handlePresenterUpdate(message: PresenterUpdateMessage): void {
-    this._logger.info('Presenter update', {
-      presenter: message.user_id,
-    });
-
-    this._domainEvents$.next({
-      type: 'presenter-update',
-      presenterEmail: message.user_id || null,
-    });
-  }
 }

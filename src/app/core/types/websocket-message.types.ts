@@ -3,6 +3,12 @@
  * Based on tmi-asyncapi.yaml specification
  */
 
+export interface User {
+  user_id: string;
+  email: string;
+  displayName: string;
+}
+
 export interface CursorPosition {
   x: number;
   y: number;
@@ -32,7 +38,7 @@ export interface CellPatchOperation {
 
 export interface DiagramOperationMessage {
   message_type: 'diagram_operation';
-  user_id: string;
+  user: User;
   operation_id: string;
   sequence_number?: number;
   operation: CellPatchOperation;
@@ -40,23 +46,18 @@ export interface DiagramOperationMessage {
 
 export interface PresenterRequestMessage {
   message_type: 'presenter_request';
-  user_id: string;
+  user: User;
 }
 
 export interface PresenterDeniedMessage {
   message_type: 'presenter_denied';
-  user_id: string;
+  user: User;
   target_user: string;
-}
-
-export interface PresenterUpdateMessage {
-  message_type: 'presenter_update';
-  user_id?: string;
 }
 
 export interface ChangePresenterMessage {
   message_type: 'change_presenter';
-  user_id: string;
+  user: User;
   new_presenter: string;
 }
 
@@ -67,13 +68,13 @@ export interface CurrentPresenterMessage {
 
 export interface PresenterCursorMessage {
   message_type: 'presenter_cursor';
-  user_id: string;
+  user: User;
   cursor_position: CursorPosition;
 }
 
 export interface PresenterSelectionMessage {
   message_type: 'presenter_selection';
-  user_id: string;
+  user: User;
   selected_cells: string[];
 }
 
@@ -90,12 +91,12 @@ export interface StateCorrectionMessage {
 
 export interface ResyncRequestMessage {
   message_type: 'resync_request';
-  user_id: string;
+  user: User;
 }
 
 export interface ResyncResponseMessage {
   message_type: 'resync_response';
-  user_id: string;
+  user: User;
   target_user: string;
   method: 'rest_api';
   diagram_id: string;
@@ -104,12 +105,12 @@ export interface ResyncResponseMessage {
 
 export interface UndoRequestMessage {
   message_type: 'undo_request';
-  user_id: string;
+  user: User;
 }
 
 export interface RedoRequestMessage {
   message_type: 'redo_request';
-  user_id: string;
+  user: User;
 }
 
 export interface HistoryOperationMessage {
@@ -118,45 +119,46 @@ export interface HistoryOperationMessage {
   message: 'resync_required' | 'no_operations_to_undo' | 'no_operations_to_redo';
 }
 
-export interface ParticipantInfo {
-  user_id: string;
+export interface Participant {
+  user: {
+    user_id: string;
+    name: string;
+    email: string;
+  };
   permissions: 'reader' | 'writer';
-  joined_at: string;
-  is_host: boolean;
-  is_presenter: boolean;
+  last_activity: string;
 }
 
 export interface ParticipantsUpdateMessage {
   message_type: 'participants_update';
-  participants: ParticipantInfo[];
-  host?: string;
-  current_presenter?: string;
+  participants: Participant[];
+  host: string;
+  current_presenter: string | null;
 }
 
-export interface JoinEvent {
-  message_type: 'join';
-  user_id: string;
+export interface ParticipantJoinedMessage {
+  message_type: 'participant_joined';
+  user: User;
   timestamp: string;
 }
 
-export interface LeaveEvent {
-  message_type: 'leave';
-  user_id: string;
+export interface ParticipantLeftMessage {
+  message_type: 'participant_left';
+  user: User;
   timestamp: string;
 }
 
-export interface UpdateEvent {
-  message_type: 'update';
-  user_id: string;
+export interface SessionTerminatedMessage {
+  message_type: 'session_terminated';
+  reason: string;
+  host_id: string;
   timestamp: string;
-  operation: CellPatchOperation;
 }
 
 export type TMIWebSocketMessage =
   | DiagramOperationMessage
   | PresenterRequestMessage
   | PresenterDeniedMessage
-  | PresenterUpdateMessage
   | ChangePresenterMessage
   | CurrentPresenterMessage
   | PresenterCursorMessage
@@ -169,15 +171,14 @@ export type TMIWebSocketMessage =
   | RedoRequestMessage
   | HistoryOperationMessage
   | ParticipantsUpdateMessage
-  | JoinEvent
-  | LeaveEvent
-  | UpdateEvent;
+  | ParticipantJoinedMessage
+  | ParticipantLeftMessage
+  | SessionTerminatedMessage;
 
 export type TMIMessageType =
   | 'diagram_operation'
   | 'presenter_request'
   | 'presenter_denied'
-  | 'presenter_update'
   | 'change_presenter'
   | 'current_presenter'
   | 'presenter_cursor'
@@ -189,11 +190,10 @@ export type TMIMessageType =
   | 'undo_request'
   | 'redo_request'
   | 'history_operation'
-  | 'join'
-  | 'leave'
-  | 'update'
-  | 'session_ended'
-  | 'participants_update';
+  | 'participants_update'
+  | 'participant_joined'
+  | 'participant_left'
+  | 'session_terminated';
 
 /**
  * Options for applying remote operations to local graph

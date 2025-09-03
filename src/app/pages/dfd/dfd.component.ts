@@ -52,10 +52,7 @@ import { DfdCollaborationComponent } from './components/collaboration/collaborat
 import { CollaborativeOperationService } from './services/collaborative-operation.service';
 import { DfdWebSocketService } from './services/dfd-websocket.service';
 import { DfdStateService } from './services/dfd-state.service';
-import {
-  CellOperation,
-  Cell as WSCell,
-} from '../../core/types/websocket-message.types';
+import { CellOperation, Cell as WSCell } from '../../core/types/websocket-message.types';
 
 // Import providers needed for standalone component
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
@@ -471,7 +468,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Initialize all TMI message handlers
     this.tmiMessageHandler.initialize();
-    
+
     // Initialize WebSocket and state services
     this.dfdWebSocketService.initialize();
     this.dfdStateService.initialize();
@@ -481,14 +478,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.dfdStateService.applyOperationEvents$.subscribe({
         next: event => this.applyRemoteOperation(event.operation, event.userId, event.operationId),
         error: error => this.logger.error('Error handling apply operation event', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdStateService.applyCorrectionEvents$.subscribe({
         next: cells => this.applyCorrectedState(cells),
         error: error => this.logger.error('Error handling apply correction event', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
@@ -499,7 +496,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         error: error => this.logger.error('Error handling resync request event', error),
-      })
+      }),
     );
 
     // Subscribe to WebSocket domain events for UI updates
@@ -507,14 +504,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.dfdWebSocketService.authorizationDenied$.subscribe({
         next: event => this.showAuthorizationDeniedNotification(event.reason),
         error: error => this.logger.error('Error handling authorization denied', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdWebSocketService.historyOperations$.subscribe({
         next: event => this.handleHistoryOperationEvent(event),
         error: error => this.logger.error('Error handling history operation', error),
-      })
+      }),
     );
 
     // Subscribe to presenter events for UI updates
@@ -522,7 +519,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.dfdWebSocketService.presenterChanges$.subscribe({
         next: event => this.handlePresenterChange(event.presenterEmail),
         error: error => this.logger.error('Error handling presenter change', error),
-      })
+      }),
     );
 
     // Subscribe to session end events to force resync
@@ -534,42 +531,42 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           void this.performRESTResync();
         },
         error: error => this.logger.error('Error handling session end event', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdWebSocketService.presenterCursors$.subscribe({
         next: event => this.showPresenterCursor(event.userId, event.position),
         error: error => this.logger.error('Error handling presenter cursor', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdWebSocketService.presenterSelections$.subscribe({
         next: event => this.showPresenterSelection(event.userId, event.selectedCells),
         error: error => this.logger.error('Error handling presenter selection', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdWebSocketService.presenterRequests$.subscribe({
         next: event => this.handlePresenterRequestEvent(event.userId),
         error: error => this.logger.error('Error handling presenter request', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdWebSocketService.presenterDenials$.subscribe({
         next: event => this.handlePresenterDenialEvent(event.userId, event.targetUser),
         error: error => this.logger.error('Error handling presenter denial', error),
-      })
+      }),
     );
 
     this._subscriptions.add(
       this.dfdWebSocketService.presenterUpdates$.subscribe({
         next: event => this.handlePresenterUpdateEvent(event.presenterEmail),
         error: error => this.logger.error('Error handling presenter update', error),
-      })
+      }),
     );
 
     // Subscribe to state changes for UI updates
@@ -579,7 +576,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isApplyingRemoteChange = isApplying;
         },
         error: error => this.logger.error('Error handling remote change state', error),
-      })
+      }),
     );
 
     this.logger.info('WebSocket message handlers initialized');
@@ -1694,7 +1691,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-
   /**
    * Apply remote operation to local graph
    */
@@ -1804,24 +1800,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debug('Applied remote cell remove', { cellId: cellOp.id });
   }
 
-
-
-
-
-
-
-
-
-
-
   /**
    * Perform full diagram resync using REST API
-   * 
+   *
    * This is critical when:
    * - User disconnects from collaborative session (intentional or network issue)
    * - Server requests resync due to state conflicts
    * - History operations complete (undo/redo)
-   * 
+   *
    * Forces ThreatModelService to refresh its cache and ensures local diagram
    * state matches the server's authoritative state.
    */
@@ -1839,7 +1825,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const threatModel = await this.threatModelService
         .getThreatModelById(this.threatModelId, true) // forceRefresh = true
         .toPromise();
-      
+
       if (!threatModel) {
         this.logger.error('Threat model not found during resync');
         return;
@@ -1865,7 +1851,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Notify state service that resync is complete
         this.dfdStateService.resyncComplete();
-        
+
         this.logger.info('REST resync completed successfully');
         this.notificationService.showSuccess('Diagram synchronized with server').subscribe();
       }
@@ -1933,20 +1919,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Apply a remote operation to the graph
    */
-  private applyRemoteOperation(operation: CellOperation, userId: string, operationId: string): void {
+  private applyRemoteOperation(
+    operation: CellOperation,
+    userId: string,
+    operationId: string,
+  ): void {
     // Skip if this is our own operation (echo prevention)
     if (userId === this.collaborationService.getCurrentUserEmail()) {
       this.logger.debug('Skipping own operation', { operationId });
       return;
     }
 
-    this.logger.info('Applying remote operation', { 
-      userId, 
-      operationId, 
+    this.logger.info('Applying remote operation', {
+      userId,
+      operationId,
       cellId: operation.id,
-      operationType: operation.operation 
+      operationType: operation.operation,
     });
-    
+
     const graph = this.x6GraphAdapter.getGraph();
     if (!graph) {
       this.logger.error('Cannot apply remote operation: graph not initialized');
@@ -1978,7 +1968,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private applyCorrectedState(cells: WSCell[]): void {
     this.logger.info('Applying corrected state', { cellCount: cells.length });
-    
+
     this.dfdStateService.setApplyingRemoteChange(true);
     try {
       const graph = this.x6GraphAdapter.getGraph();
@@ -1991,7 +1981,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     } finally {
       this.dfdStateService.setApplyingRemoteChange(false);
     }
-    
+
     // Mark resync as complete
     this.dfdStateService.resyncComplete();
   }

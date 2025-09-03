@@ -28,10 +28,7 @@ import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { MockDataService } from '../../mocks/mock-data.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
-import {
-  WebSocketAdapter,
-  MessageType,
-} from './websocket.adapter';
+import { WebSocketAdapter, MessageType } from './websocket.adapter';
 
 /**
  * Interface for collaboration session data

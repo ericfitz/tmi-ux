@@ -83,10 +83,10 @@ export class DfdStateService implements OnDestroy {
   public readonly diagramState$ = this._diagramState$.asObservable();
   public readonly syncState$ = this._diagramState$.pipe(
     filter(state => !!state.syncState),
-    map(state => state.syncState)
+    map(state => state.syncState),
   );
   public readonly isApplyingRemoteChange$ = this._diagramState$.pipe(
-    map(state => state.isApplyingRemoteChange)
+    map(state => state.isApplyingRemoteChange),
   );
 
   // Event emitters for operations that need to be applied to the graph
@@ -106,7 +106,7 @@ export class DfdStateService implements OnDestroy {
     private _logger: LoggerService,
     private _webSocketService: DfdWebSocketService,
     private _collaborationService: DfdCollaborationService,
-    private _threatModelService: ThreatModelService
+    private _threatModelService: ThreatModelService,
   ) {
     this._logger.info('DfdStateService initialized');
   }
@@ -121,32 +121,32 @@ export class DfdStateService implements OnDestroy {
     this._subscriptions.add(
       this._webSocketService.domainEvents$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processDomainEvent(event))
+        .subscribe(event => this._processDomainEvent(event)),
     );
 
     // Subscribe to specific events for targeted handling
     this._subscriptions.add(
       this._webSocketService.diagramOperations$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(message => this._processDiagramOperation(message))
+        .subscribe(message => this._processDiagramOperation(message)),
     );
 
     this._subscriptions.add(
       this._webSocketService.stateCorrections$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processStateCorrection(event))
+        .subscribe(event => this._processStateCorrection(event)),
     );
 
     this._subscriptions.add(
       this._webSocketService.historyOperations$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processHistoryOperation(event))
+        .subscribe(event => this._processHistoryOperation(event)),
     );
 
     this._subscriptions.add(
       this._webSocketService.resyncRequests$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processResyncRequest(event))
+        .subscribe(event => this._processResyncRequest(event)),
     );
 
     this._logger.info('DFD state management initialized successfully');
@@ -165,11 +165,14 @@ export class DfdStateService implements OnDestroy {
   private _updateState(updates: Partial<DfdDiagramState>): void {
     const currentState = this._diagramState$.value;
     const newState = { ...currentState, ...updates };
-    
+
     if (updates.syncState) {
-      newState.syncState = { ...currentState.syncState, ...updates.syncState as Partial<SyncState> };
+      newState.syncState = {
+        ...currentState.syncState,
+        ...(updates.syncState as Partial<SyncState>),
+      };
     }
-    
+
     this._diagramState$.next(newState);
   }
 
@@ -189,13 +192,18 @@ export class DfdStateService implements OnDestroy {
     // Update sync state based on event type
     switch (event.type) {
       case 'diagram-operation':
-        this._updateSyncState({ pendingOperations: this.getCurrentState().syncState.pendingOperations + 1 });
+        this._updateSyncState({
+          pendingOperations: this.getCurrentState().syncState.pendingOperations + 1,
+        });
         break;
-      
+
       case 'state-correction':
-        this._updateState({ syncState: { ...this.getCurrentState().syncState, isSynced: false }, conflictCount: this.getCurrentState().conflictCount + 1 });
+        this._updateState({
+          syncState: { ...this.getCurrentState().syncState, isSynced: false },
+          conflictCount: this.getCurrentState().conflictCount + 1,
+        });
         break;
-      
+
       case 'authorization-denied':
         this._updateState({ conflictCount: this.getCurrentState().conflictCount + 1 });
         break;
@@ -208,7 +216,7 @@ export class DfdStateService implements OnDestroy {
   private _processDiagramOperation(message: DiagramOperationMessage): void {
     // Skip our own operations
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();
-    if (message.user_id === currentUserEmail) {
+    if (message.user.email === currentUserEmail) {
       this._logger.debug('Skipping own operation', { operationId: message.operation_id });
       return;
     }
@@ -220,7 +228,8 @@ export class DfdStateService implements OnDestroy {
     }
 
     this._logger.info('Processing remote diagram operation', {
-      userId: message.user_id,
+      userId: message.user.user_id,
+      userEmail: message.user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
     });
@@ -232,7 +241,7 @@ export class DfdStateService implements OnDestroy {
         ...this.getCurrentState().pendingRemoteOperations,
         {
           operationId: message.operation_id,
-          userId: message.user_id,
+          userId: message.user.user_id,
           operation: message.operation,
           timestamp: Date.now(),
         },
@@ -244,7 +253,7 @@ export class DfdStateService implements OnDestroy {
       message.operation.cells.forEach(cellOp => {
         this._applyOperationEvent$.next({
           operation: cellOp,
-          userId: message.user_id,
+          userId: message.user.user_id,
           operationId: message.operation_id,
         });
       });
@@ -307,14 +316,14 @@ export class DfdStateService implements OnDestroy {
    */
   resyncComplete(): void {
     this._logger.info('Resync complete');
-    
+
     this._updateSyncState({
       isSynced: true,
       isResyncing: false,
       pendingOperations: 0,
       lastSyncTimestamp: Date.now(),
     });
-    
+
     this._updateState({
       pendingRemoteOperations: [],
       conflictCount: 0,
@@ -341,7 +350,7 @@ export class DfdStateService implements OnDestroy {
     const currentState = this.getCurrentState();
     this._updateState({
       pendingRemoteOperations: currentState.pendingRemoteOperations.filter(
-        op => op.operationId !== operationId
+        op => op.operationId !== operationId,
       ),
     });
   }
