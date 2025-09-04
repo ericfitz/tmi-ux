@@ -163,6 +163,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
   private _isInitialized = false;
+  private _isDestroying = false;
 
   // Collaborative editing state
   private isApplyingRemoteChange = false;
@@ -703,6 +704,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Mark component as destroying to prevent any async operations
+    this._isDestroying = true;
+    
     // Skip saving on destroy since we already save manually in closeDiagram()
     // This prevents overwriting with empty graph after disposal
     this.logger.info(
@@ -1817,6 +1821,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Skip resync if component is being destroyed
+    if (this._isDestroying) {
+      this.logger.info('Skipping REST resync - component is being destroyed');
+      return;
+    }
+
     try {
       this.logger.info('Performing REST resync');
 
@@ -1837,6 +1847,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         // Replace entire local diagram state
         this.isApplyingRemoteChange = true;
         try {
+          // Check again before accessing graph in case component was destroyed during async operation
+          if (this._isDestroying) {
+            this.logger.info('Aborting resync - component is being destroyed');
+            return;
+          }
+          
           const graph = this.x6GraphAdapter.getGraph();
           if (graph) {
             // Clear existing graph
