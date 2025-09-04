@@ -9,6 +9,14 @@
       <button
         mat-icon-button
         color="primary"
+        (click)="refreshThreatModels()"
+        [matTooltip]="'common.refresh' | transloco"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
         (click)="loadFromDesktop()"
         [matTooltip]="'threatModels.tooltips.loadFromDesktop' | transloco"
       >

@@ -159,6 +159,16 @@ export class DfdCollaborationService implements OnDestroy {
     // Log before emitting to track timing
     this._logger.debug('[DfdCollaborationService] About to emit state update via BehaviorSubject');
 
+    // Log detailed user changes if users were updated
+    if (updates.users) {
+      this._logger.info('[DfdCollaborationService] User list updated', {
+        timestamp: new Date().toISOString(),
+        previousUsers: currentState.users.map(u => ({ email: u.email, name: u.name })),
+        newUsers: newState.users.map(u => ({ email: u.email, name: u.name })),
+        userCountChange: `${currentState.users.length} -> ${newState.users.length}`,
+      });
+    }
+
     this._collaborationState$.next(newState);
 
     this._logger.debug('[DfdCollaborationService] State update complete - emitted to subscribers', {
@@ -202,6 +212,25 @@ export class DfdCollaborationService implements OnDestroy {
     this._threatModelId = threatModelId;
     this._diagramId = diagramId;
     this._logger.info('Diagram context set for collaboration', { threatModelId, diagramId });
+  }
+
+  /**
+   * Check if the diagram context is set
+   * @returns true if both threatModelId and diagramId are set
+   */
+  isDiagramContextSet(): boolean {
+    return !!(this._threatModelId && this._diagramId);
+  }
+
+  /**
+   * Get the current diagram context
+   * @returns object with threatModelId and diagramId
+   */
+  getDiagramContext(): { threatModelId: string | null; diagramId: string | null } {
+    return {
+      threatModelId: this._threatModelId,
+      diagramId: this._diagramId,
+    };
   }
 
   /**

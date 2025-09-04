@@ -223,14 +223,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Initialize X6 cell extensions first
     this.logger.info('Initializing X6 cell extensions');
     initializeX6CellExtensions();
+  }
+
+  ngOnInit(): void {
+    this.logger.info('DfdComponent ngOnInit called');
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
     this.dfdId = this.route.snapshot.paramMap.get('dfdId');
 
-    this.logger.info('DFD Component initialized with parameters', {
+    this.logger.info('DFD Component route parameters extracted', {
       threatModelId: this.threatModelId,
       dfdId: this.dfdId,
+      allParams: this.route.snapshot.paramMap.keys,
     });
 
     // Set collaboration context if we have the required parameters
@@ -255,11 +260,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.logger.warn('Failed to check for existing session on startup', error);
           },
         });
+    } else {
+      this.logger.warn('Cannot set collaboration context - missing required parameters', {
+        threatModelId: this.threatModelId,
+        dfdId: this.dfdId,
+        url: this.route.snapshot.url,
+        queryParams: this.route.snapshot.queryParams,
+      });
     }
-  }
-
-  ngOnInit(): void {
-    this.logger.info('DfdComponent ngOnInit called');
 
     // Get threat model from route resolver
     const threatModel = this.route.snapshot.data['threatModel'];
@@ -279,8 +287,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           // Update the collaboration service with new permissions
-          if (this.collaborationService && this.threatModelId) {
-            this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId || '');
+          if (this.collaborationService && this.threatModelId && this.dfdId) {
+            this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
           }
 
           this.cdr.markForCheck();

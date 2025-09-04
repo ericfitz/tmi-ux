@@ -238,6 +238,7 @@
     "createNewSourceCode": "Create New Source Code",
     "createdBy": "Created By:",
     "dashboard": "Dashboard",
+    "dataFlowDiagram": "Data Flow Diagram",
     "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
     "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",

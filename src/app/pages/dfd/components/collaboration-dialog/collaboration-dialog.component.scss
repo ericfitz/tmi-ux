@@ -1,0 +1,208 @@
+// Dialog title
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// WebSocket status icons
+.websocket-status-connected {
+  color: #4caf50;
+}
+
+.websocket-status-error {
+  color: #f44336;
+}
+
+.websocket-status-not-configured {
+  color: rgb(0 0 0 / 54%);
+}
+
+// Dialog content
+mat-dialog-content {
+  padding: 0;
+  max-height: 600px;
+  min-width: 500px;
+  overflow-y: auto;
+}
+
+// Collaboration action section
+.collaboration-action {
+  padding: 24px;
+  text-align: center;
+
+  .action-button {
+    min-width: 200px;
+  }
+}
+
+// Copy link section
+.copy-link-section {
+  .copy-link-content {
+    padding: 24px;
+    text-align: center;
+  }
+
+  .section-title {
+    margin: 0 0 16px;
+    color: rgb(0 0 0 / 87%);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .copy-link-button {
+    min-width: 150px;
+  }
+}
+
+// Users section
+.users-section {
+  padding: 24px 24px 16px;
+
+  .section-title {
+    margin: 0 0 16px;
+    color: rgb(0 0 0 / 87%);
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+// Users list
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// User item
+.user-item {
+  display: grid;
+  grid-template-columns: 40px 40px 1fr 40px 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgb(0 0 0 / 4%);
+  }
+}
+
+// Column styles
+.user-type-column,
+.permissions-column {
+  display: flex;
+  justify-content: center;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.username-column {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.presenter-column {
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+  .presenter-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    
+    &.inactive {
+      opacity: 0.3;
+    }
+
+    &.hand-raised {
+      color: #ff9800;
+    }
+
+    &.with-overlay {
+      position: relative;
+    }
+  }
+
+  .presenter-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    position: relative;
+    
+    .overlay-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+    }
+  }
+
+  .presenter-placeholder {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.remove-column {
+  display: flex;
+  justify-content: center;
+  
+  button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Dialog actions
+mat-dialog-actions {
+  padding: 8px 24px 16px;
+  margin: 0;
+}
+
+// Dividers
+mat-divider {
+  margin: 0;
+}
+
+// Responsive adjustments
+@media (width <= 600px) {
+  mat-dialog-content {
+    min-width: 300px;
+  }
+
+  .user-item {
+    grid-template-columns: 32px 32px 1fr 32px 32px;
+    gap: 4px;
+    padding: 4px;
+  }
+}

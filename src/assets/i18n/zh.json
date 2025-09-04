@@ -238,6 +238,7 @@
     "createNewSourceCode": "创建新源代码",
     "createdBy": "创建者:",
     "dashboard": "仪表板",
+    "dataFlowDiagram": "数据流图",
     "deleteConfirmationMessage": "您确定要删除威胁模型\"{{name}}\"吗？",
     "deleteWarningDownload": "考虑先下载本地副本以保存您的工作。",
     "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",

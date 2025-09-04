@@ -238,6 +238,7 @@
     "createNewSourceCode": "إنشاء كود مصدري جديد",
     "createdBy": "تم إنشاؤه بواسطة:",
     "dashboard": "لوحة المعلومات",
+    "dataFlowDiagram": "مخطط تدفق البيانات",
     "deleteConfirmationMessage": "هل أنت متأكد من أنك تريد حذف نموذج التهديد \"{{name}}\"؟",
     "deleteWarningDownload": "فكر في تحميل نسخة محلية أولاً للحفاظ على عملك.",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",

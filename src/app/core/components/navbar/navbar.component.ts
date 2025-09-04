@@ -19,7 +19,8 @@ import {
   ServerConnectionService,
   ServerConnectionStatus,
 } from '../../services/server-connection.service';
-import { WebSocketAdapter } from '../../services/websocket.adapter';
+import { WebSocketAdapter, WebSocketState } from '../../services/websocket.adapter';
+import { DfdCollaborationService } from '../../services/dfd-collaboration.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../../../environments/environment';
 
@@ -55,6 +56,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   serverConnectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED;
   ServerConnectionStatus = ServerConnectionStatus; // Expose enum to template
 
+  // WebSocket connection status
+  webSocketState: WebSocketState = WebSocketState.DISCONNECTED;
+  showWebSocketStatus = false; // Only show when in a collaboration session
+
   // Menu trigger reference
   @ViewChild('userProfileButton', { read: MatMenuTrigger }) userProfileMenuTrigger!: MatMenuTrigger;
 
@@ -73,6 +78,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
     private webSocketAdapter: WebSocketAdapter,
+    private collaborationService: DfdCollaborationService,
     private translocoService: TranslocoService,
   ) {
     // Get available languages
@@ -104,10 +110,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
       },
     );
 
-    // Subscribe to WebSocket connection status changes to trigger tooltip updates
-    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(() => {
-      // This subscription triggers change detection when WebSocket state changes
-      // The tooltip will be updated automatically through Angular's change detection
+    // Subscribe to WebSocket connection status changes
+    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(state => {
+      this.webSocketState = state;
+    });
+
+    // Subscribe to collaboration state to show/hide WebSocket indicator
+    this.collaborationService.collaborationState$.subscribe(state => {
+      this.showWebSocketStatus = state.isActive;
     });
   }
 
@@ -307,5 +317,44 @@ export class NavbarComponent implements OnInit, OnDestroy {
       default:
         return 'navbar.serverStatus.noServerConfigured';
     }
+  }
+
+  /**
+   * Get the appropriate Material icon for the WebSocket connection status
+   */
+  getWebSocketStatusIcon(): string {
+    if (this.webSocketAdapter.isConnected) {
+      return 'sensors';
+    } else {
+      return 'sensors_off';
+    }
+  }
+
+  /**
+   * Get the appropriate CSS class for the WebSocket connection status icon
+   */
+  getWebSocketStatusIconClass(): string {
+    if (this.webSocketAdapter.isConnected) {
+      return 'websocket-status-connected';
+    } else {
+      return 'websocket-status-error';
+    }
+  }
+
+  /**
+   * Get the appropriate tooltip text for the WebSocket connection status
+   */
+  getWebSocketStatusTooltip(): string {
+    let statusText: string;
+    if (this.webSocketAdapter.isConnected) {
+      statusText = this.translocoService.translate('collaboration.websocketStatus.connected');
+    } else {
+      statusText = this.translocoService.translate('collaboration.websocketStatus.notConnected');
+    }
+
+    // Get the actual WebSocket URL from the collaboration service
+    const wsUrl = this.collaborationService.currentWebSocketUrl || 'WebSocket URL: (unavailable)';
+
+    return `${statusText}\n${wsUrl}`;
   }
 }

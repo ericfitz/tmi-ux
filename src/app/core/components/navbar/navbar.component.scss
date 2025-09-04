@@ -57,6 +57,15 @@
   color: var(--color-server-connected);
 }
 
+// WebSocket connection status indicator styles
+.websocket-status-connected .mat-icon {
+  color: var(--color-server-connected);
+}
+
+.websocket-status-error .mat-icon {
+  color: var(--color-server-error);
+}
+
 // RTL adjustments
 :host-context([dir='rtl']) {
   .app-title {

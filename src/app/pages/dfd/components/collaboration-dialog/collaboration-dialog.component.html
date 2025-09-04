@@ -1,0 +1,202 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon fontSet="material-symbols-outlined" fontWeight="100" style="font-variation-settings: 'FILL' 0">
+    group
+  </mat-icon>
+  <span>{{ 'collaboration.title' | transloco }}</span>
+</h2>
+
+<mat-dialog-content>
+  <!-- Toggle collaboration button -->
+  <div class="collaboration-action">
+    <button
+      mat-flat-button
+      [color]="isCollaborating ? 'warn' : 'success'"
+      (click)="toggleCollaboration(); $event.stopPropagation()"
+      class="action-button"
+    >
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        fontWeight="100"
+        style="font-variation-settings: 'FILL' 0"
+      >
+        {{ isCollaborating ? 'stop' : 'play_arrow' }}
+      </mat-icon>
+      <ng-container *ngIf="!isCollaborating && !existingSessionAvailable">
+        {{ 'collaboration.startCollaboration' | transloco }}
+      </ng-container>
+      <ng-container *ngIf="!isCollaborating && existingSessionAvailable">
+        {{ 'collaboration.joinSession' | transloco }}
+      </ng-container>
+      <ng-container *ngIf="isCollaborating && isCurrentUserHost()">
+        {{ 'collaboration.endCollaboration' | transloco }}
+      </ng-container>
+      <ng-container *ngIf="isCollaborating && !isCurrentUserHost()">
+        {{ 'collaboration.leaveSession' | transloco }}
+      </ng-container>
+    </button>
+  </div>
+
+  <!-- Copy Link section (only visible when collaborating) -->
+  <div *ngIf="isCollaborating" class="copy-link-section">
+    <mat-divider></mat-divider>
+    <div class="copy-link-content">
+      <h4 class="section-title">{{ 'collaboration.shareLinkHeader' | transloco }}</h4>
+      <button mat-flat-button color="primary" (click)="copyLinkToClipboard()" class="copy-link-button">
+        <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
+        {{ 'collaboration.copyLink' | transloco }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Users list (visible when collaborating) -->
+  <div *ngIf="isCollaborating && collaborationUsers.length > 0" class="users-section">
+    <mat-divider></mat-divider>
+    <h4 class="section-title">{{ 'collaboration.collaboratorsHeader' | transloco }}</h4>
+    <div class="users-list">
+      <div *ngFor="let user of collaborationUsers; trackBy: trackByUserEmail" class="user-item">
+        <!-- Column 1: User Type -->
+        <div class="user-type-column">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            [matTooltip]="
+              user.isHost
+                ? ('common.sessionRoles.host' | transloco)
+                : ('common.sessionRoles.participant' | transloco)
+            "
+          >
+            {{ user.isHost ? 'admin_panel_settings' : 'person' }}
+          </mat-icon>
+        </div>
+
+        <!-- Column 2: Permissions -->
+        <div class="permissions-column">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            [matTooltip]="
+              user.permission === 'writer'
+                ? ('common.roles.writer' | transloco)
+                : ('common.roles.reader' | transloco)
+            "
+          >
+            {{ user.permission === 'writer' ? 'edit' : 'edit_off' }}
+          </mat-icon>
+        </div>
+
+        <!-- Column 3: Username -->
+        <div class="username-column" [matTooltip]="user.email">
+          {{ user.name }}
+        </div>
+
+        <!-- Column 4: Presenter Control -->
+        <div class="presenter-column">
+          <!-- Host as Presenter -->
+          <mat-icon
+            *ngIf="user.isHost && user.isPresenter"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            [matTooltip]="'common.sessionRoles.presenter' | transloco"
+            class="presenter-icon"
+          >
+            podium
+          </mat-icon>
+
+          <!-- Host not Presenter -->
+          <mat-icon
+            *ngIf="user.isHost && !user.isPresenter"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            class="presenter-icon inactive"
+          >
+            podium
+          </mat-icon>
+
+          <!-- Participant as Presenter - Can take back presenter -->
+          <button
+            *ngIf="!user.isHost && user.isPresenter && isCurrentUserHost()"
+            mat-icon-button
+            (click)="takeBackPresenterPrivileges()"
+            [matTooltip]="'collaboration.takeBackPresenter' | transloco"
+            class="presenter-button"
+          >
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              fontWeight="100"
+              style="font-variation-settings: 'FILL' 0"
+              class="presenter-icon with-overlay"
+            >
+              podium
+            </mat-icon>
+            <mat-icon class="overlay-icon">close</mat-icon>
+          </button>
+
+          <!-- Participant not Presenter - Show state-based button -->
+          <ng-container *ngIf="!user.isHost && !user.isPresenter">
+            <!-- Hand Down State -->
+            <button
+              *ngIf="
+                isCurrentUser(user.email) &&
+                (!user.presenterRequestState || user.presenterRequestState === 'hand_down')
+              "
+              mat-icon-button
+              (click)="requestPresenterPrivileges()"
+              [matTooltip]="'collaboration.requestPresenter' | transloco"
+              class="presenter-button"
+            >
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                fontWeight="100"
+                style="font-variation-settings: 'FILL' 0"
+              >
+                person_raised_hand
+              </mat-icon>
+            </button>
+
+            <!-- Hand Raised State -->
+            <mat-icon
+              *ngIf="isCurrentUser(user.email) && user.presenterRequestState === 'hand_raised'"
+              fontSet="material-symbols-outlined"
+              fontWeight="100"
+              style="font-variation-settings: 'FILL' 0"
+              [matTooltip]="'collaboration.presenterModeRequested' | transloco"
+              class="presenter-icon hand-raised"
+            >
+              person_raised_hand
+            </mat-icon>
+
+            <!-- Other users - no button -->
+            <div *ngIf="!isCurrentUser(user.email)" class="presenter-placeholder"></div>
+          </ng-container>
+        </div>
+
+        <!-- Column 5: Remove User -->
+        <div class="remove-column">
+          <button
+            *ngIf="!user.isHost && isCurrentUserHost()"
+            mat-icon-button
+            color="warn"
+            (click)="removeUser(user.email)"
+            [matTooltip]="'collaboration.removeFromSession' | transloco"
+          >
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              fontWeight="100"
+              style="font-variation-settings: 'FILL' 0"
+            >
+              person_remove
+            </mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()">{{ 'common.close' | transloco }}</button>
+</mat-dialog-actions>

@@ -673,6 +673,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
     const dialogRef = this.dialog.open(CreateDiagramDialogComponent, {
       width: '400px',
+      data: {
+        threatModelName: this.threatModel?.name || '',
+      },
     });
 
     this._subscriptions.add(

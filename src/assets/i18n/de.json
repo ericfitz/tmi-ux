@@ -238,6 +238,7 @@
     "createNewSourceCode": "Neuen Quellcode erstellen",
     "createdBy": "Erstellt von:",
     "dashboard": "Dashboard",
+    "dataFlowDiagram": "Datenflussdiagramm",
     "deleteConfirmationMessage": "Sind Sie sicher, dass Sie das Bedrohungsmodell \"{{name}}\" löschen möchten?",
     "deleteWarningDownload": "Erwägen Sie, zuerst eine lokale Kopie herunterzuladen, um Ihre Arbeit zu bewahren.",
     "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",

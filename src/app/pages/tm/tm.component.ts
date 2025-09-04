@@ -254,6 +254,18 @@ export class TmComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Refresh the threat models list
+   */
+  refreshThreatModels(): void {
+    this.logger.info('Manually refreshing threat models');
+    this.threatModelService.getThreatModelList().subscribe(models => {
+      this.threatModels = models || [];
+      this.logger.info('Threat models refreshed', { count: this.threatModels.length });
+      this.cdr.detectChanges();
+    });
+  }
+
+  /**
    * Navigate to the DFD page for a specific diagram
    * @param diagramId The ID of the diagram to open
    */
