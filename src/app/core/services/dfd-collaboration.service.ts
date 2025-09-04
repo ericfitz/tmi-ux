@@ -69,6 +69,7 @@ export interface CollaborationState {
   pendingPresenterRequests: string[];
   sessionInfo: CollaborationSession | null;
   existingSessionAvailable: CollaborationSession | null;
+  isDiagramContextReady: boolean;
 }
 
 /**
@@ -78,6 +79,8 @@ export interface CollaborationState {
   providedIn: 'root',
 })
 export class DfdCollaborationService implements OnDestroy {
+  // Instance ID for debugging
+  private readonly _instanceId = Math.random().toString(36).substring(7);
   // Unified collaboration state
   private _collaborationState$ = new BehaviorSubject<CollaborationState>({
     isActive: false,
@@ -86,6 +89,7 @@ export class DfdCollaborationService implements OnDestroy {
     pendingPresenterRequests: [],
     sessionInfo: null,
     existingSessionAvailable: null,
+    isDiagramContextReady: false, // Always start with false
   });
   public collaborationState$ = this._collaborationState$.asObservable();
 
@@ -126,7 +130,9 @@ export class DfdCollaborationService implements OnDestroy {
     private _notificationService: DfdNotificationService,
     private _router: Router,
   ) {
-    this._logger.info('DfdCollaborationService initialized');
+    this._logger.info('DfdCollaborationService initialized', {
+      instanceId: this._instanceId,
+    });
     // WebSocket listeners will be set up when collaboration is actually started
   }
 
@@ -136,6 +142,22 @@ export class DfdCollaborationService implements OnDestroy {
    */
   private _updateState(updates: Partial<CollaborationState>): void {
     const currentState = this._collaborationState$.value;
+    
+    // Special handling for isDiagramContextReady - validate it matches actual context
+    if ('isDiagramContextReady' in updates) {
+      const actuallyReady = !!(this._threatModelId && this._diagramId);
+      if (updates.isDiagramContextReady && !actuallyReady) {
+        this._logger.warn('Preventing isDiagramContextReady=true when context is not actually set', {
+          instanceId: this._instanceId,
+          requestedReady: updates.isDiagramContextReady,
+          actuallyReady,
+          threatModelId: this._threatModelId,
+          diagramId: this._diagramId,
+        });
+        updates.isDiagramContextReady = false;
+      }
+    }
+    
     const newState = { ...currentState, ...updates };
 
     // Enhanced logging for debugging WebSocket flow
@@ -209,9 +231,28 @@ export class DfdCollaborationService implements OnDestroy {
    * @param diagramId The diagram ID
    */
   setDiagramContext(threatModelId: string, diagramId: string): void {
+    this._logger.info('setDiagramContext called', {
+      instanceId: this._instanceId,
+      newThreatModelId: threatModelId,
+      newDiagramId: diagramId,
+      previousThreatModelId: this._threatModelId,
+      previousDiagramId: this._diagramId,
+      currentContextReady: this._collaborationState$.value.isDiagramContextReady,
+    });
+    
     this._threatModelId = threatModelId;
     this._diagramId = diagramId;
-    this._logger.info('Diagram context set for collaboration', { threatModelId, diagramId });
+    
+    // Update state to indicate context is ready
+    if (threatModelId && diagramId) {
+      this._logger.info('Setting isDiagramContextReady to true');
+      this._updateState({ isDiagramContextReady: true });
+    } else {
+      this._logger.warn('Context values are null/empty, not setting ready flag', {
+        threatModelId,
+        diagramId,
+      });
+    }
   }
 
   /**
@@ -219,7 +260,28 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns true if both threatModelId and diagramId are set
    */
   isDiagramContextSet(): boolean {
-    return !!(this._threatModelId && this._diagramId);
+    const isSet = !!(this._threatModelId && this._diagramId);
+    const stateReady = this._collaborationState$.value.isDiagramContextReady;
+    
+    // Log any mismatch between actual context and state
+    if (isSet !== stateReady) {
+      this._logger.warn('Context mismatch detected in isDiagramContextSet', {
+        instanceId: this._instanceId,
+        isSet,
+        stateReady,
+        threatModelId: this._threatModelId,
+        diagramId: this._diagramId,
+      });
+    }
+    
+    this._logger.debug('isDiagramContextSet called', {
+      instanceId: this._instanceId,
+      isSet,
+      threatModelId: this._threatModelId,
+      diagramId: this._diagramId,
+      isDiagramContextReady: stateReady,
+    });
+    return isSet;
   }
 
   /**
@@ -231,6 +293,57 @@ export class DfdCollaborationService implements OnDestroy {
       threatModelId: this._threatModelId,
       diagramId: this._diagramId,
     };
+  }
+
+  /**
+   * Check if the diagram context is ready (from state)
+   * @returns true if the state indicates context is ready
+   */
+  isDiagramContextReady(): boolean {
+    return this._collaborationState$.value.isDiagramContextReady;
+  }
+
+  /**
+   * Clear the diagram context
+   * This should be called when navigating away from the DFD editor
+   */
+  clearDiagramContext(): void {
+    this._logger.info('clearDiagramContext called', {
+      instanceId: this._instanceId,
+      previousThreatModelId: this._threatModelId,
+      previousDiagramId: this._diagramId,
+    });
+    
+    this._threatModelId = null;
+    this._diagramId = null;
+    
+    // Update state to indicate context is no longer ready
+    this._updateState({ isDiagramContextReady: false });
+  }
+
+  /**
+   * Reset the entire collaboration state
+   * This ensures a clean state when needed
+   */
+  resetState(): void {
+    this._logger.info('resetState called', {
+      instanceId: this._instanceId,
+    });
+    
+    this._threatModelId = null;
+    this._diagramId = null;
+    this._currentSession = null;
+    
+    // Reset to initial state
+    this._collaborationState$.next({
+      isActive: false,
+      users: [],
+      currentPresenterEmail: null,
+      pendingPresenterRequests: [],
+      sessionInfo: null,
+      existingSessionAvailable: null,
+      isDiagramContextReady: false,
+    });
   }
 
   /**

@@ -52,6 +52,11 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   isCollaborating = false;
   collaborationUsers: CollaborationUser[] = [];
   existingSessionAvailable: CollaborationSession | null = null;
+  
+  // This must always reflect the actual context state, not a cached value
+  get isContextReady(): boolean {
+    return this._collaborationService.isDiagramContextSet();
+  }
 
   // Subscription management
   private _subscriptions = new Subscription();
@@ -64,7 +69,11 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this._logger.info('DfdCollaborationComponent initialized');
+    this._logger.info('DfdCollaborationComponent initialized', {
+      initialIsContextReady: this.isContextReady,
+      serviceContextSet: this._collaborationService.isDiagramContextSet(),
+      serviceContext: this._collaborationService.getDiagramContext(),
+    });
 
     // Subscribe to the unified collaboration state
     // This subscription is only for updating the badge count and button state
@@ -80,6 +89,17 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         this.isCollaborating = state.isActive;
         this.collaborationUsers = [...state.users];
         this.existingSessionAvailable = state.existingSessionAvailable;
+        
+        // Log state mismatches for debugging
+        const actuallySet = this._collaborationService.isDiagramContextSet();
+        
+        if (state.isDiagramContextReady !== actuallySet) {
+          this._logger.warn('[CollaborationComponent] State mismatch detected', {
+            stateContextReady: state.isDiagramContextReady,
+            actuallySet,
+            context: this._collaborationService.getDiagramContext(),
+          });
+        }
 
         // Force immediate change detection
         this._cdr.detectChanges();
@@ -100,31 +120,18 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       timestamp: new Date().toISOString(),
       userCount: this.collaborationUsers.length,
       isCollaborating: this.isCollaborating,
-      isDiagramContextSet: this._collaborationService.isDiagramContextSet(),
+      isContextReady: this.isContextReady,
       diagramContext: this._collaborationService.getDiagramContext(),
     });
 
-    // Check if diagram context is set before opening dialog
-    if (!this._collaborationService.isDiagramContextSet()) {
-      this._logger.warn('[CollaborationComponent] Cannot open dialog - diagram context not set', {
+    // This should not happen since button is disabled, but check anyway
+    if (!this.isContextReady) {
+      this._logger.error('[CollaborationComponent] Dialog opened without context ready', {
         context: this._collaborationService.getDiagramContext(),
       });
-      // Wait a bit and retry once, as the parent component might still be initializing
-      setTimeout(() => {
-        if (this._collaborationService.isDiagramContextSet()) {
-          this._logger.info('[CollaborationComponent] Context now set after delay, opening dialog');
-          this._openDialog();
-        } else {
-          this._logger.error('[CollaborationComponent] Context still not set after delay');
-        }
-      }, 100);
       return;
     }
 
-    this._openDialog();
-  }
-
-  private _openDialog(): void {
     const dialogRef = this._dialog.open(CollaborationDialogComponent, {
       width: '600px',
       data: {},
@@ -155,6 +162,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * @returns The tooltip text
    */
   getCollaborationButtonTooltip(): string {
+    if (!this.isContextReady) {
+      return 'Loading diagram context...';
+    }
     if (this.isCollaborating) {
       return 'Manage Collaboration';
     }

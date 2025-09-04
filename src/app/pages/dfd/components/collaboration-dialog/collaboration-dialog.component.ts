@@ -65,6 +65,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   pendingPresenterRequests: string[] = [];
   isCurrentUserHostFlag = false;
   existingSessionAvailable: CollaborationSession | null = null;
+  isDiagramContextReady = false;
 
   // Subscription management
   private _subscriptions = new Subscription();
@@ -90,10 +91,23 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
     // Check if diagram context is set
     const contextSet = this._collaborationService.isDiagramContextSet();
     const context = this._collaborationService.getDiagramContext();
+    const stateContextReady = this._collaborationService.getCurrentState().isDiagramContextReady;
+    
     this._logger.info('Diagram context status', {
       contextSet,
       context,
+      stateContextReady,
+      mismatch: stateContextReady !== contextSet,
     });
+    
+    // If there's a mismatch, log a warning
+    if (stateContextReady !== contextSet) {
+      this._logger.warn('Context ready state mismatch detected', {
+        stateContextReady,
+        actualContextSet: contextSet,
+        context,
+      });
+    }
 
     // Subscribe to the unified collaboration state
     this._subscriptions.add(
@@ -114,6 +128,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
         this.currentPresenterEmail = state.currentPresenterEmail;
         this.pendingPresenterRequests = [...state.pendingPresenterRequests];
         this.existingSessionAvailable = state.existingSessionAvailable;
+        this.isDiagramContextReady = state.isDiagramContextReady;
 
         // Update host flag
         this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
@@ -198,6 +213,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
     this.currentPresenterEmail = currentState.currentPresenterEmail;
     this.pendingPresenterRequests = [...currentState.pendingPresenterRequests];
     this.existingSessionAvailable = currentState.existingSessionAvailable;
+    this.isDiagramContextReady = currentState.isDiagramContextReady;
     this.isCurrentUserHostFlag = this._collaborationService.isCurrentUserHost();
 
     this._logger.info('[CollaborationDialog] Initial state sync complete', {
@@ -311,10 +327,13 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
       existingSessionAvailable: !!this.existingSessionAvailable,
     });
 
-    // Check if diagram context is set before proceeding
-    if (!this._collaborationService.isDiagramContextSet()) {
+    // Check if diagram context is ready before proceeding
+    if (!this.isDiagramContextReady) {
       const context = this._collaborationService.getDiagramContext();
-      this._logger.error('Cannot toggle collaboration: diagram context not set', context);
+      this._logger.error('Cannot toggle collaboration: diagram context not ready', {
+        isDiagramContextReady: this.isDiagramContextReady,
+        context,
+      });
       this._notificationService.showError('Unable to start collaboration. Please refresh the page and try again.').subscribe();
       return;
     }

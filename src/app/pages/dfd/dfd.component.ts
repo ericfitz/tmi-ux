@@ -240,6 +240,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Set collaboration context if we have the required parameters
     if (this.threatModelId && this.dfdId) {
+      this.logger.info('Setting collaboration context', {
+        threatModelId: this.threatModelId,
+        dfdId: this.dfdId,
+      });
       this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
       // Check for existing collaboration session on startup
       this.collaborationService
@@ -723,6 +727,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info(
       'Skipping diagram save on destroy - manual save already performed in closeDiagram()',
     );
+
+    // Clear collaboration context when leaving the DFD editor
+    this.collaborationService.clearDiagramContext();
 
     // Disconnect the mutation observer
     if (this._observer) {

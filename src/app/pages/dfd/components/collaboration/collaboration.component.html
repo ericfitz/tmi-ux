@@ -3,6 +3,7 @@
   <button
     mat-icon-button
     [color]="getCollaborationButtonColor()"
+    [disabled]="!isContextReady"
     [matBadge]="collaborationUsers.length || null"
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
