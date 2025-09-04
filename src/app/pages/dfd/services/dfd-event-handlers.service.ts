@@ -415,9 +415,9 @@ export class DfdEventHandlersService {
     if (threatModelId) {
       // Navigate back to the threat model editor page
       // Use replaceUrl to avoid issues with browser history when coming from collaboration
-      void this.router.navigate(['/tm', threatModelId], { 
+      void this.router.navigate(['/tm', threatModelId], {
         replaceUrl: true,
-        queryParams: { refresh: 'true' } // Force resolver to refresh data
+        queryParams: { refresh: 'true' }, // Force resolver to refresh data
       });
     } else {
       // Fallback to the threat models list if no threat model ID is available

@@ -25,7 +25,8 @@
       "Bash(uv:*)",
       "Bash(done)",
       "Bash(true)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(git log:*)"
     ]
   },
   "enableAllProjectMcpServers": false

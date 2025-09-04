@@ -279,7 +279,6 @@ export class DfdWebSocketService implements OnDestroy {
         }),
     );
 
-
     this._logger.info('DFD WebSocket subscriptions initialized successfully');
   }
 
@@ -421,5 +420,4 @@ export class DfdWebSocketService implements OnDestroy {
       targetUser: message.target_user,
     });
   }
-
 }

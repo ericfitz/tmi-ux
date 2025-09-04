@@ -527,9 +527,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.collaborationService.sessionEnded$.subscribe({
         next: event => {
-          this.logger.info('Collaboration session ended, forcing resync', { reason: event.reason });
-          // Force a resync to ensure local state matches server
-          void this.performRESTResync();
+          this.logger.info('Collaboration session ended', { reason: event.reason });
+          // Only force resync if session ended unexpectedly (not when user intentionally left)
+          if (event.reason !== 'user_ended') {
+            this.logger.info('Forcing resync due to unexpected session end');
+            void this.performRESTResync();
+          }
         },
         error: error => this.logger.error('Error handling session end event', error),
       }),
@@ -706,7 +709,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     // Mark component as destroying to prevent any async operations
     this._isDestroying = true;
-    
+
     // Skip saving on destroy since we already save manually in closeDiagram()
     // This prevents overwriting with empty graph after disposal
     this.logger.info(
@@ -1852,7 +1855,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.logger.info('Aborting resync - component is being destroyed');
             return;
           }
-          
+
           const graph = this.x6GraphAdapter.getGraph();
           if (graph) {
             // Clear existing graph

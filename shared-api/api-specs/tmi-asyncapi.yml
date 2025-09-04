@@ -98,6 +98,8 @@ channels:
         $ref: '#/components/messages/ParticipantLeftMessage'
       sessionTerminatedMessage:
         $ref: '#/components/messages/SessionTerminatedMessage'
+      errorMessage:
+        $ref: '#/components/messages/ErrorMessage'
 
 operations:
   sendDiagramOperation:
@@ -150,6 +152,7 @@ operations:
       - $ref: '#/components/messages/ParticipantJoinedMessage'
       - $ref: '#/components/messages/ParticipantLeftMessage'
       - $ref: '#/components/messages/SessionTerminatedMessage'
+      - $ref: '#/components/messages/ErrorMessage'
 
 components:
   parameters:
@@ -183,7 +186,10 @@ components:
           summary: Example of batch cell operations
           payload:
             message_type: diagram_operation
-            user_id: alice@example.com
+            user:
+              user_id: alice@example.com
+              email: alice@example.com
+              displayName: Alice Johnson
             operation_id: 123e4567-e89b-12d3-a456-426614174000
             sequence_number: 12345
             operation:
@@ -220,7 +226,10 @@ components:
           summary: Example of requesting presenter mode
           payload:
             message_type: presenter_request
-            user_id: bob@example.com
+            user:
+              user_id: bob@example.com
+              email: bob@example.com
+              displayName: Bob Smith
 
     PresenterDeniedMessage:
       name: PresenterDeniedMessage
@@ -236,7 +245,10 @@ components:
           summary: Example of presenter request denial
           payload:
             message_type: presenter_denied
-            user_id: host@example.com
+            user:
+              user_id: host@example.com
+              email: host@example.com
+              displayName: Host Manager
             target_user: bob@example.com
 
     ChangePresenterMessage:
@@ -253,7 +265,10 @@ components:
           summary: Example of host changing presenter
           payload:
             message_type: change_presenter
-            user_id: host@example.com
+            user:
+              user_id: host@example.com
+              email: host@example.com
+              displayName: Host Manager
             new_presenter: alice@example.com
 
     CurrentPresenterMessage:
@@ -286,7 +301,10 @@ components:
           summary: Example of presenter cursor position
           payload:
             message_type: presenter_cursor
-            user_id: alice@example.com
+            user:
+              user_id: alice@example.com
+              email: alice@example.com
+              displayName: Alice Johnson
             cursor_position:
               x: 100
               y: 200
@@ -305,7 +323,10 @@ components:
           summary: Example of presenter selection
           payload:
             message_type: presenter_selection
-            user_id: alice@example.com
+            user:
+              user_id: alice@example.com
+              email: alice@example.com
+              displayName: Alice Johnson
             selected_cells:
               - cell-uuid-1
               - cell-uuid-2
@@ -364,7 +385,10 @@ components:
           summary: Example of resync request
           payload:
             message_type: resync_request
-            user_id: bob@example.com
+            user:
+              user_id: bob@example.com
+              email: bob@example.com
+              displayName: Bob Smith
 
     ResyncResponseMessage:
       name: ResyncResponseMessage
@@ -380,7 +404,10 @@ components:
           summary: Example of resync response
           payload:
             message_type: resync_response
-            user_id: system
+            user:
+              user_id: system
+              email: system@tmi.local
+              displayName: System
             target_user: bob@example.com
             method: rest_api
             diagram_id: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
@@ -423,7 +450,10 @@ components:
           summary: Example of undo request
           payload:
             message_type: undo_request
-            user_id: alice@example.com
+            user:
+              user_id: alice@example.com
+              email: alice@example.com
+              displayName: Alice Johnson
 
     RedoRequestMessage:
       name: RedoRequestMessage
@@ -439,7 +469,10 @@ components:
           summary: Example of redo request
           payload:
             message_type: redo_request
-            user_id: alice@example.com
+            user:
+              user_id: alice@example.com
+              email: alice@example.com
+              displayName: Alice Johnson
 
     ParticipantJoinedMessage:
       name: ParticipantJoinedMessage
@@ -498,6 +531,36 @@ components:
             reason: host disconnected
             host_id: host@example.com
             timestamp: '2024-01-15T14:30:00Z'
+
+    ErrorMessage:
+      name: ErrorMessage
+      title: Error Message
+      summary: General error message for WebSocket errors
+      description: |
+        Sent when WebSocket errors occur such as authentication failures,
+        session errors, or other operational errors. Follows the standard
+        message_type pattern with additional error details.
+      payload:
+        $ref: '#/components/schemas/ErrorPayload'
+      examples:
+        - name: UnauthorizedError
+          summary: Example of unauthorized access error
+          payload:
+            message_type: error
+            error: unauthorized
+            message: You don't have sufficient permissions to collaborate on this diagram
+            code: insufficient_permissions
+            timestamp: '2024-01-15T14:30:00Z'
+        - name: SessionInvalidError
+          summary: Example of invalid session error
+          payload:
+            message_type: error
+            error: session_invalid
+            message: The collaboration session ID is invalid or expired
+            code: session_mismatch
+            details:
+              new_session_id: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+            timestamp: '2024-01-15T14:35:00Z'
 
     ParticipantsUpdateMessage:
       name: ParticipantsUpdateMessage
@@ -686,95 +749,17 @@ components:
         - height
       additionalProperties: true
 
-    DiagramOperationPayload:
-      type: object
-      description: Enhanced payload for collaborative diagram operations with conflict resolution
-      properties:
-        message_type:
-          const: diagram_operation
-        user_id:
-          type: string
-          description: User performing the operation
-          example: alice@example.com
-        operation_id:
-          type: string
-          format: uuid
-          description: Client-generated UUID for idempotency and tracking
-          example: 123e4567-e89b-12d3-a456-426614174000
-        sequence_number:
-          type: integer
-          description: Server-assigned sequence number for operation ordering
-          minimum: 1
-          example: 12345
-        operation:
-          $ref: '#/components/schemas/CellPatchOperation'
-      required:
-        - message_type
-        - user_id
-        - operation_id
-        - operation
-      additionalProperties: false
-
-    CellPatchOperation:
-      type: object
-      description: Mirrors REST PATCH operations for cells with batch support
-      properties:
-        type:
-          const: patch
-        cells:
-          type: array
-          description: Array of cell operations to perform
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-                description: Cell ID for the operation
-              operation:
-                type: string
-                enum: [add, update, remove]
-                description: Operation type to perform on the cell
-              data:
-                $ref: '#/components/schemas/Cell'
-            required:
-              - id
-              - operation
-            allOf:
-              - if:
-                  properties:
-                    operation:
-                      enum: [add, update]
-                then:
-                  required:
-                    - data
-              - if:
-                  properties:
-                    operation:
-                      const: remove
-                then:
-                  properties:
-                    data:
-                      not: {}
-          minItems: 1
-      required:
-        - type
-        - cells
-      additionalProperties: false
-
     PresenterRequestPayload:
       type: object
       description: Request to become the active presenter
       properties:
         message_type:
           const: presenter_request
-        user_id:
-          type: string
-          description: User requesting presenter mode
-          example: bob@example.com
+        user:
+          $ref: '#/components/schemas/User'
       required:
         - message_type
-        - user_id
+        - user
       additionalProperties: false
 
     PresenterDeniedPayload:
@@ -783,17 +768,15 @@ components:
       properties:
         message_type:
           const: presenter_denied
-        user_id:
-          type: string
-          description: host who denied the request
-          example: host@example.com
+        user:
+          $ref: '#/components/schemas/User'
         target_user:
           type: string
-          description: User whose request was denied
+          description: User ID whose request was denied
           example: bob@example.com
       required:
         - message_type
-        - user_id
+        - user
         - target_user
       additionalProperties: false
 
@@ -803,17 +786,15 @@ components:
       properties:
         message_type:
           const: change_presenter
-        user_id:
-          type: string
-          description: host
-          example: host@example.com
+        user:
+          $ref: '#/components/schemas/User'
         new_presenter:
           type: string
-          description: User to become the new presenter
+          description: User ID to become the new presenter
           example: alice@example.com
       required:
         - message_type
-        - user_id
+        - user
         - new_presenter
       additionalProperties: false
 
@@ -838,10 +819,8 @@ components:
       properties:
         message_type:
           const: presenter_cursor
-        user_id:
-          type: string
-          description: Current presenter (must match active presenter)
-          example: alice@example.com
+        user:
+          $ref: '#/components/schemas/User'
         cursor_position:
           type: object
           description: Cursor coordinates
@@ -860,7 +839,7 @@ components:
           additionalProperties: false
       required:
         - message_type
-        - user_id
+        - user
         - cursor_position
       additionalProperties: false
 
@@ -870,10 +849,8 @@ components:
       properties:
         message_type:
           const: presenter_selection
-        user_id:
-          type: string
-          description: Current presenter (must match active presenter)
-          example: alice@example.com
+        user:
+          $ref: '#/components/schemas/User'
         selected_cells:
           type: array
           description: Array of selected cell IDs
@@ -885,7 +862,7 @@ components:
             - cell-uuid-2
       required:
         - message_type
-        - user_id
+        - user
         - selected_cells
       additionalProperties: false
 
@@ -934,13 +911,11 @@ components:
       properties:
         message_type:
           const: resync_request
-        user_id:
-          type: string
-          description: User requesting resync
-          example: bob@example.com
+        user:
+          $ref: '#/components/schemas/User'
       required:
         - message_type
-        - user_id
+        - user
       additionalProperties: false
 
     ResyncResponsePayload:
@@ -949,10 +924,8 @@ components:
       properties:
         message_type:
           const: resync_response
-        user_id:
-          type: string
-          description: User sending the response (usually 'system')
-          example: system
+        user:
+          $ref: '#/components/schemas/User'
         target_user:
           type: string
           description: User who requested the resync
@@ -974,7 +947,7 @@ components:
           example: 550e8400-e29b-41d4-a716-446655440000
       required:
         - message_type
-        - user_id
+        - user
         - target_user
         - method
         - diagram_id
@@ -1006,13 +979,11 @@ components:
       properties:
         message_type:
           const: undo_request
-        user_id:
-          type: string
-          description: User requesting undo (must have mutation permissions)
-          example: alice@example.com
+        user:
+          $ref: '#/components/schemas/User'
       required:
         - message_type
-        - user_id
+        - user
       additionalProperties: false
 
     RedoRequestPayload:
@@ -1021,13 +992,11 @@ components:
       properties:
         message_type:
           const: redo_request
-        user_id:
-          type: string
-          description: User requesting redo (must have mutation permissions)
-          example: alice@example.com
+        user:
+          $ref: '#/components/schemas/User'
       required:
         - message_type
-        - user_id
+        - user
       additionalProperties: false
 
     ParticipantsUpdatePayload:
@@ -1150,6 +1119,42 @@ components:
         - message_type
         - reason
         - host_id
+        - timestamp
+      additionalProperties: false
+
+    ErrorPayload:
+      type: object
+      description: General error message payload
+      properties:
+        message_type:
+          const: error
+        error:
+          type: string
+          description: Error code/type
+          example: unauthorized
+        message:
+          type: string
+          description: Human-readable error message
+          example: You don't have sufficient permissions to collaborate on this diagram
+        code:
+          type: string
+          description: Optional specific error code for categorization
+          example: insufficient_permissions
+        details:
+          type: object
+          description: Optional additional error details
+          additionalProperties: true
+          example:
+            new_session_id: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+        timestamp:
+          type: string
+          format: date-time
+          description: UTC timestamp when the error occurred
+          example: '2024-01-15T14:30:00Z'
+      required:
+        - message_type
+        - error
+        - message
         - timestamp
       additionalProperties: false
 

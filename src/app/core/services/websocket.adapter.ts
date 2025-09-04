@@ -665,6 +665,15 @@ export class WebSocketAdapter {
 
     this._socket.addEventListener('message', event => {
       try {
+        // Ignore messages if we're disconnecting or disconnected
+        if (
+          !this._socket ||
+          this._socket.readyState === WebSocket.CLOSING ||
+          this._socket.readyState === WebSocket.CLOSED
+        ) {
+          return;
+        }
+
         const rawData = event.data as string;
 
         // Parse JSON
@@ -676,11 +685,11 @@ export class WebSocketAdapter {
           return;
         }
 
-        // Check if this is a TMI message (has message_type or event field)
+        // Check if this is a TMI message (has message_type, event, or error field)
         const isTMIMessage =
           typeof parsedMessage === 'object' &&
           parsedMessage !== null &&
-          ('message_type' in parsedMessage || 'event' in parsedMessage);
+          ('message_type' in parsedMessage || 'event' in parsedMessage || 'error' in parsedMessage);
 
         if (isTMIMessage) {
           // Skip internal validation for TMI messages - they have different structure
