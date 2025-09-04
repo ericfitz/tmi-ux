@@ -1616,10 +1616,10 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._subscriptions.unsubscribe();
 
-    // End collaboration if active
+    // Leave collaboration session if active
     if (this._collaborationState$.value.isActive) {
-      this.endCollaboration().subscribe({
-        error: error => this._logger.error('Error ending collaboration on destroy', error),
+      this.leaveSession().subscribe({
+        error: error => this._logger.error('Error leaving collaboration on destroy', error),
       });
     }
 

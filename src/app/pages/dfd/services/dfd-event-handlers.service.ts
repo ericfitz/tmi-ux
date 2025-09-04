@@ -410,11 +410,15 @@ export class DfdEventHandlersService {
    * Closes the diagram and navigates back to the threat model editor page
    */
   closeDiagram(threatModelId: string | null, _dfdId: string | null): void {
-    this.logger.info('Closing diagram');
+    this.logger.info('Closing diagram', { threatModelId, dfdId: _dfdId });
 
     if (threatModelId) {
       // Navigate back to the threat model editor page
-      void this.router.navigate(['/tm', threatModelId]);
+      // Use replaceUrl to avoid issues with browser history when coming from collaboration
+      void this.router.navigate(['/tm', threatModelId], { 
+        replaceUrl: true,
+        queryParams: { refresh: 'true' } // Force resolver to refresh data
+      });
     } else {
       // Fallback to the threat models list if no threat model ID is available
       void this.router.navigate(['/tm']);

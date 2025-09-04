@@ -215,20 +215,20 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
-    // End collaboration if active when component is destroyed
+    // Leave collaboration session if active when component is destroyed
     if (this.isCollaborating) {
       this._collaborationService
-        .endCollaboration()
+        .leaveSession()
         .pipe(take(1))
         .subscribe({
           next: () => {
             this._logger.debugComponent(
               'Collaboration',
-              'Collaboration ended successfully during component destruction',
+              'Left collaboration session successfully during component destruction',
             );
           },
           error: (error: unknown) => {
-            this._logger.error('Failed to end collaboration during component destruction', error);
+            this._logger.error('Failed to leave collaboration during component destruction', error);
           },
         });
     }

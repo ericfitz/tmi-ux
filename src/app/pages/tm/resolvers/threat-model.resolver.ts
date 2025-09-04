@@ -28,13 +28,17 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
     return of(null);
   }
 
+  // Check if we should force refresh (e.g., when coming back from DFD editor)
+  const forceRefresh = route.queryParamMap.get('refresh') === 'true';
+
   logger.info('Resolving threat model data', {
     threatModelId,
     url: state.url,
+    forceRefresh,
   });
 
   // Load threat model with forced refresh to ensure fresh authorization data
-  return threatModelService.getThreatModelById(threatModelId, false).pipe(
+  return threatModelService.getThreatModelById(threatModelId, forceRefresh).pipe(
     tap(threatModel => {
       if (threatModel) {
         logger.info('Threat model resolved successfully', {
