@@ -426,8 +426,10 @@ export class AuthService {
   /**
    * Initiate login with specified provider (or default if none specified)
    * Now uses TMI OAuth proxy pattern
+   * @param providerId Optional provider ID to use
+   * @param returnUrl Optional URL to return to after authentication
    */
-  initiateLogin(providerId?: string): void {
+  initiateLogin(providerId?: string, returnUrl?: string): void {
     this.getAvailableProviders().subscribe({
       next: providers => {
         const selectedProviderId = providerId || this.defaultProvider;
@@ -443,11 +445,11 @@ export class AuthService {
         }
 
         if (selectedProviderId === 'local') {
-          this.logger.info('Initiating local provider login');
-          this.initiateLocalLogin();
+          this.logger.info('Initiating local provider login', { returnUrl });
+          this.initiateLocalLogin(returnUrl);
         } else {
-          this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`);
-          this.initiateTMIOAuthLogin(provider);
+          this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, { returnUrl });
+          this.initiateTMIOAuthLogin(provider, returnUrl);
         }
       },
       error: error => {
@@ -463,17 +465,20 @@ export class AuthService {
 
   /**
    * Initiate TMI OAuth proxy login
+   * @param provider OAuth provider information
+   * @param returnUrl Optional URL to return to after authentication
    */
-  private initiateTMIOAuthLogin(provider: OAuthProviderInfo): void {
+  private initiateTMIOAuthLogin(provider: OAuthProviderInfo, returnUrl?: string): void {
     try {
       this.logger.info(`Initiating TMI OAuth login with ${provider.name}`);
       this.logger.debugComponent('Auth', `Redirecting to TMI OAuth endpoint`, {
         providerId: provider.id,
         authUrl: provider.auth_url.replace(/\?.*$/, ''), // Remove query params for logging
         redirectUri: provider.redirect_uri,
+        returnUrl: returnUrl,
       });
 
-      const state = this.generateRandomState();
+      const state = this.generateRandomState(returnUrl);
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', provider.id);
 
@@ -505,13 +510,14 @@ export class AuthService {
 
   /**
    * Initiate local provider login
+   * @param returnUrl Optional URL to return to after authentication
    */
-  private initiateLocalLogin(): void {
+  private initiateLocalLogin(returnUrl?: string): void {
     try {
-      this.logger.info('Initiating local provider login');
-      this.logger.debugComponent('Auth', 'AuthService.initiateLocalLogin called');
+      this.logger.info('Initiating local provider login', { returnUrl });
+      this.logger.debugComponent('Auth', 'AuthService.initiateLocalLogin called', { returnUrl });
 
-      const state = this.generateRandomState();
+      const state = this.generateRandomState(returnUrl);
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', 'local');
 
@@ -545,13 +551,27 @@ export class AuthService {
   }
 
   /**
-   * Generate a random state string for CSRF protection
-   * @returns Random state string
+   * Generate a state string for CSRF protection and return URL preservation
+   * @param returnUrl Optional URL to return to after authentication
+   * @returns State string (Base64 encoded JSON if returnUrl provided)
    */
-  private generateRandomState(): string {
+  private generateRandomState(returnUrl?: string): string {
     const array = new Uint8Array(16);
     window.crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    const csrf = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+
+    if (returnUrl) {
+      // Create structured state object with both CSRF token and return URL
+      const stateObject = {
+        csrf: csrf,
+        returnUrl: returnUrl
+      };
+      // Base64 encode the JSON object for URL safety
+      return btoa(JSON.stringify(stateObject));
+    }
+
+    // If no returnUrl, just return the CSRF token for backward compatibility
+    return csrf;
   }
 
   /**
@@ -569,6 +589,29 @@ export class AuthService {
 
     // Check if it matches Base64 pattern and length is multiple of 4
     return base64Regex.test(str) && str.length % 4 === 0 && str.length > 16;
+  }
+
+  /**
+   * Decode state parameter and extract CSRF token and return URL
+   * @param state State parameter from OAuth callback
+   * @returns Object containing csrf token and optional returnUrl
+   */
+  private decodeState(state: string): { csrf: string; returnUrl?: string } {
+    try {
+      // Check if state is Base64 encoded (structured state)
+      if (this.isBase64(state)) {
+        const decoded = JSON.parse(atob(state)) as { csrf: string; returnUrl?: string };
+        return {
+          csrf: decoded.csrf,
+          returnUrl: decoded.returnUrl
+        };
+      }
+    } catch (error) {
+      this.logger.debugComponent('Auth', 'Failed to decode structured state, treating as plain CSRF token', error);
+    }
+
+    // If not Base64 or decoding failed, treat as plain CSRF token
+    return { csrf: state };
   }
 
   /**
@@ -591,11 +634,19 @@ export class AuthService {
       return of(false);
     }
 
+    // Variable to store decoded return URL
+    let returnUrl: string | undefined;
+
     // Verify state parameter to prevent CSRF attacks (if present)
     if (response.state) {
       const storedState = localStorage.getItem('oauth_state');
       const providerId = localStorage.getItem('oauth_provider');
       const receivedState = response.state;
+
+      // Decode the state to extract CSRF token and return URL
+      const decodedStoredState = storedState ? this.decodeState(storedState) : null;
+      const decodedReceivedState = this.decodeState(receivedState);
+      returnUrl = decodedReceivedState.returnUrl;
 
       this.logger.debugComponent('Auth', 'State parameter validation starting', {
         receivedState: response.state,
@@ -610,14 +661,15 @@ export class AuthService {
           receivedState,
           storedState,
           providerId,
-          statesMatch: storedState === receivedState,
-          hasStoredState: !!storedState,
-          hasReceivedState: !!receivedState,
+          decodedReceivedCsrf: decodedReceivedState.csrf,
+          decodedStoredCsrf: decodedStoredState?.csrf,
+          returnUrl: returnUrl,
+          statesMatch: decodedStoredState?.csrf === decodedReceivedState.csrf,
         });
 
-        if (!storedState || storedState !== receivedState) {
+        if (!decodedStoredState || decodedStoredState.csrf !== decodedReceivedState.csrf) {
           this.logger.error(
-            `Local provider state mismatch: received "${receivedState}", stored "${storedState}"`,
+            `Local provider state mismatch: received CSRF "${decodedReceivedState.csrf}", stored CSRF "${decodedStoredState?.csrf}"`,
           );
           this.handleAuthError({
             code: 'invalid_state',
@@ -641,22 +693,13 @@ export class AuthService {
           },
         );
 
-        // Try to decode Base64 state if present, but don't fail if it doesn't match
-        if (this.isBase64(receivedState)) {
-          try {
-            const decodedState = atob(receivedState);
-            this.logger.debugComponent('Auth', 'Decoded Base64 state from TMI server', {
-              originalState: response.state,
-              decodedState: decodedState,
-              decodedAsHex: Array.from(decodedState)
-                .map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
-                .join(''),
-              storedState: storedState,
-            });
-          } catch (error) {
-            this.logger.warn('Failed to decode TMI Base64 state parameter', error);
-          }
-        }
+        // Log the decoded state information for TMI OAuth proxy
+        this.logger.debugComponent('Auth', 'TMI OAuth proxy state decoded', {
+          originalState: response.state,
+          decodedCsrf: decodedReceivedState.csrf,
+          returnUrl: returnUrl,
+          storedCsrf: decodedStoredState?.csrf,
+        });
 
         // For TMI OAuth proxy with access tokens, we trust the server's state management
         // The security is provided by the TMI server's OAuth implementation
@@ -671,9 +714,9 @@ export class AuthService {
       }
       // For other flows without access tokens, enforce strict validation
       else {
-        if (!storedState || storedState !== receivedState) {
+        if (!decodedStoredState || decodedStoredState.csrf !== decodedReceivedState.csrf) {
           this.logger.error(
-            `State parameter mismatch for ${providerId || 'unknown'} provider: received "${receivedState}", stored "${storedState}"`,
+            `State parameter mismatch for ${providerId || 'unknown'} provider: received CSRF "${decodedReceivedState.csrf}", stored CSRF "${decodedStoredState?.csrf}"`,
           );
           this.handleAuthError({
             code: 'invalid_state',
@@ -691,12 +734,12 @@ export class AuthService {
 
     // Handle local provider
     if (providerId === 'local' && response.code) {
-      return this.handleLocalCallback(response);
+      return this.handleLocalCallback(response, returnUrl);
     }
 
     // Handle TMI OAuth proxy response with tokens
     if (response.access_token) {
-      return this.handleTMITokenResponse(response, providerId);
+      return this.handleTMITokenResponse(response, providerId, returnUrl);
     }
 
     // If we have a code but no access_token, this might be an old-style callback
@@ -723,9 +766,11 @@ export class AuthService {
 
   /**
    * Handle local OAuth callback
+   * @param response OAuth response containing code
+   * @param returnUrl Optional URL to return to after authentication
    */
-  private handleLocalCallback(response: OAuthResponse): Observable<boolean> {
-    this.logger.info('handleLocalCallback called', { code: response.code });
+  private handleLocalCallback(response: OAuthResponse, returnUrl?: string): Observable<boolean> {
+    this.logger.info('handleLocalCallback called', { code: response.code, returnUrl });
 
     const userInfo = this.localProvider.exchangeCodeForUser(response.code!);
     this.logger.info('exchangeCodeForUser result', userInfo);
@@ -753,7 +798,15 @@ export class AuthService {
       this.isAuthenticatedSubject.next(true);
       this.userProfileSubject.next(userInfo);
 
-      this.logger.info(`Local user ${userInfo.email} successfully logged in`);
+      this.logger.info(`Local user ${userInfo.email} successfully logged in`, { returnUrl });
+      
+      // Navigate to return URL if provided, otherwise to default
+      if (returnUrl) {
+        void this.router.navigateByUrl(returnUrl);
+      } else {
+        void this.router.navigate(['/tm']);
+      }
+      
       return of(true);
     } catch (error) {
       this.logger.error('Error in handleLocalCallback', error);
@@ -769,10 +822,14 @@ export class AuthService {
   /**
    * Handle TMI OAuth proxy token response
    * TMI has already exchanged the code and returns tokens directly
+   * @param response OAuth response containing tokens
+   * @param providerId OAuth provider ID
+   * @param returnUrl Optional URL to return to after authentication
    */
   private handleTMITokenResponse(
     response: OAuthResponse,
     providerId: string | null,
+    returnUrl?: string
   ): Observable<boolean> {
     try {
       this.logger.debugComponent('Auth', 'Processing TMI token response', {
@@ -839,8 +896,15 @@ export class AuthService {
         storedTokenMatches: storedToken?.token === token.token,
       });
 
-      this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`);
-      void this.router.navigate(['/tm']);
+      this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`, { returnUrl });
+      
+      // Navigate to return URL if provided, otherwise to default
+      if (returnUrl) {
+        void this.router.navigateByUrl(returnUrl);
+      } else {
+        void this.router.navigate(['/tm']);
+      }
+      
       return of(true);
     } catch (error) {
       this.logger.error('Error processing TMI token response', error);

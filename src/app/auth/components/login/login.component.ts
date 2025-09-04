@@ -158,7 +158,7 @@ export class LoginComponent implements OnInit {
       authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown', // Remove query params for logging
     });
 
-    this.authService.initiateLogin(providerId);
+    this.authService.initiateLogin(providerId, this.returnUrl || undefined);
   }
 
   private handleOAuthCallback(response: OAuthResponse): void {
@@ -168,11 +168,8 @@ export class LoginComponent implements OnInit {
       next: success => {
         this.isLoading = false;
         if (success) {
-          this.logger.info('OAuth callback successful, navigating to return URL');
-          // Add a small delay to ensure authentication state is fully propagated
-          setTimeout(() => {
-            void this.router.navigateByUrl(this.returnUrl || '/tm');
-          }, 100);
+          this.logger.info('OAuth callback successful');
+          // Navigation is now handled by AuthService which has the decoded returnUrl
         } else {
           this.handleLoginError({
             code: 'oauth_failed',
