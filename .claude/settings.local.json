@@ -6,7 +6,6 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
-      "Bash(rm -rf node_modules package-lock.json && pnpm install)",
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(rg:*)",
@@ -27,11 +26,11 @@
       "Bash(true)",
       "Bash(awk:*)",
       "Bash(git log:*)",
-      "Bash(pnmp run build)",
       "Bash(rm:*)",
       "Bash(git mv:*)",
       "Bash(pgrep:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(jq:*)"
     ]
   },
   "enableAllProjectMcpServers": false

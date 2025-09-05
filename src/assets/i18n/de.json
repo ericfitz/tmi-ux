@@ -21,6 +21,15 @@
     "sourcetitle": "TMI-Anwendung",
     "title": "Über TMI"
   },
+  "auth": {
+    "unauthorized": {
+      "401": "401 Nicht autorisiert",
+      "403": "403 Verboten",
+      "noPermission": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen.",
+      "requiredRole": "Sie benötigen die Rolle {{role}}, um diesen Inhalt anzuzeigen.",
+      "title": "Unberechtigter Zugriff"
+    }
+  },
   "collaboration": {
     "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
     "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen",

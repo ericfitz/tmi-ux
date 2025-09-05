@@ -21,6 +21,15 @@
     "sourcetitle": "تطبيق تي إم آي",
     "title": "حول تي إم آي"
   },
+  "auth": {
+    "unauthorized": {
+      "401": "401 غير مصرح",
+      "403": "403 ممنوع",
+      "noPermission": "ليس لديك صلاحية للوصول إلى هذه الصفحة.",
+      "requiredRole": "تحتاج إلى دور {{role}} لعرض هذا المحتوى.",
+      "title": "وصول غير مصرح"
+    }
+  },
   "collaboration": {
     "approvePresenterRequest": "الموافقة على طلب المقدم",
     "availableCollaborationSessions": "جلسات التعاون المتاحة",

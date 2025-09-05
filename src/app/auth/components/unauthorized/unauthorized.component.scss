@@ -12,6 +12,18 @@
   text-align: center;
 }
 
+.centered-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.centered-actions {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
 .error-message {
   color: var(--mat-form-field-error-color);
   display: flex;

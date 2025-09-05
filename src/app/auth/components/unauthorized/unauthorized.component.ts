@@ -2,21 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { LoggerService } from '../../../core/services/logger.service';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 interface UnauthorizedQueryParams {
   requiredRole?: string;
   currentUrl?: string;
   reason?: string;
+  statusCode?: string;
 }
 
 @Component({
   selector: 'app-unauthorized',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule],
+  imports: [CommonModule, MatButtonModule, MatCardModule, TranslocoPipe],
   templateUrl: './unauthorized.component.html',
   styleUrls: ['./unauthorized.component.scss'],
 })
@@ -24,6 +25,7 @@ export class UnauthorizedComponent implements OnInit {
   requiredRole: string | null = null;
   currentUrl: string | null = null;
   reason: string | null = null;
+  statusCode: number = 403; // Default to 403 Forbidden
 
   constructor(
     private route: ActivatedRoute,
@@ -36,17 +38,21 @@ export class UnauthorizedComponent implements OnInit {
       this.requiredRole = params.requiredRole || null;
       this.currentUrl = params.currentUrl || null;
       this.reason = params.reason || null;
+      
+      // Determine status code from reason or statusCode param
+      if (params.statusCode) {
+        this.statusCode = parseInt(params.statusCode, 10);
+      } else if (params.reason === 'unauthorized_api') {
+        this.statusCode = 401;
+      }
+      
       this.logger.warn(
-        `Unauthorized access attempt. Required Role: ${this.requiredRole}, Current URL: ${this.currentUrl}, Reason: ${this.reason}`,
+        `Unauthorized access attempt. Status: ${this.statusCode}, Required Role: ${this.requiredRole}, Current URL: ${this.currentUrl}, Reason: ${this.reason}`,
       );
     });
   }
 
   goBack(): void {
-    if (this.currentUrl && this.currentUrl !== '/unauthorized') {
-      void this.router.navigateByUrl(this.currentUrl);
-    } else {
-      void this.router.navigate(['/']); // Navigate to home or a safe default
-    }
+    void this.router.navigate(['/']); // Always navigate to home page
   }
 }

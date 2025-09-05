@@ -21,6 +21,15 @@
     "sourcetitle": "แอปพลิเคชัน TMI",
     "title": "เกี่ยวกับ TMI"
   },
+  "auth": {
+    "unauthorized": {
+      "401": "401 ไม่ได้รับอนุญาต",
+      "403": "403 ห้ามเข้าถึง",
+      "noPermission": "คุณไม่มีสิทธิ์ในการเข้าถึงหน้านี้",
+      "requiredRole": "คุณต้องมีบทบาท {{role}} เพื่อดูเนื้อหานี้",
+      "title": "การเข้าถึงไม่ได้รับอนุญาต"
+    }
+  },
   "collaboration": {
     "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",

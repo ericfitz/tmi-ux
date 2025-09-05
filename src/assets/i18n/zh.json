@@ -21,6 +21,15 @@
     "sourcetitle": "TMI 应用程序",
     "title": "关于 TMI"
   },
+  "auth": {
+    "unauthorized": {
+      "401": "401 未授权",
+      "403": "403 禁止访问",
+      "noPermission": "您没有权限访问此页面。",
+      "requiredRole": "您需要 {{role}} 角色才能查看此内容。",
+      "title": "未授权访问"
+    }
+  },
   "collaboration": {
     "approvePresenterRequest": "批准主讲人请求",
     "availableCollaborationSessions": "可用协作会话",

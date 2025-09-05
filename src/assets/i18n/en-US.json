@@ -21,6 +21,15 @@
     "sourcetitle": "TMI Application",
     "title": "About TMI"
   },
+  "auth": {
+    "unauthorized": {
+      "401": "401 Unauthorized",
+      "403": "403 Forbidden",
+      "noPermission": "You do not have permission to access this page.",
+      "requiredRole": "You need the {{role}} role to view this content.",
+      "title": "Unauthorized Access"
+    }
+  },
   "collaboration": {
     "approvePresenterRequest": "Approve Presenter Request",
     "availableCollaborationSessions": "Available Collaboration Sessions",

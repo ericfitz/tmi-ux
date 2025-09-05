@@ -1,18 +1,18 @@
 <div class="unauthorized-container">
   <mat-card class="unauthorized-card">
-    <mat-card-header>
-      <mat-card-title>Unauthorized Access</mat-card-title>
+    <mat-card-header class="centered-header">
+      <mat-card-title>{{ 'auth.unauthorized.title' | transloco }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <p>You do not have permission to access this page.</p>
+      <p>{{ 'auth.unauthorized.noPermission' | transloco }}</p>
       <p *ngIf="requiredRole">
-        You need the <strong>{{ requiredRole }}</strong> role to view this content.
+        {{ 'auth.unauthorized.requiredRole' | transloco: { role: requiredRole } }}
       </p>
-      <p *ngIf="reason">Reason: {{ reason }}</p>
+      <p>{{ statusCode === 401 ? ('auth.unauthorized.401' | transloco) : ('auth.unauthorized.403' | transloco) }}</p>
     </mat-card-content>
-    <mat-card-actions>
+    <mat-card-actions class="centered-actions">
       <button mat-raised-button color="primary" (click)="goBack()">
-        <mat-icon>arrow_back</mat-icon> Go Back
+        {{ 'common.ok' | transloco }}
       </button>
     </mat-card-actions>
   </mat-card>
