@@ -1309,9 +1309,11 @@ export class X6GraphAdapter implements IGraphAdapter {
       );
 
       // Enable history plugin with centralized filtering via GraphHistoryCoordinator
+      // Start disabled - will be enabled after diagram load completes
       this._graph.use(
         new History({
           stackSize: 10,
+          enabled: false, // Start disabled to prevent auto-saves during initialization
           beforeAddCommand: (event: string, args: any) => {
             // Delegate filtering to the centralized history coordinator
             return this._shouldIncludeInHistory(event, args);
@@ -1795,7 +1797,6 @@ export class X6GraphAdapter implements IGraphAdapter {
       if (args.key === 'attrs' && args.current && args.previous) {
         // Instead of checking all current attributes, check what actually changed
         const actualChanges = this._findActualAttributeChanges(args.current, args.previous);
-        this.logger.debugComponent('X6Graph', 'Actual attribute changes detected:', actualChanges);
 
         // Check if all actual changes are visual-only
         const isOnlyVisualAttributes = actualChanges.every(changePath => {
@@ -1808,6 +1809,9 @@ export class X6GraphAdapter implements IGraphAdapter {
           // this.logger.debugComponent('X6Graph', 'Excluding visual-only attribute changes');
           return false; // Don't add to history
         }
+        
+        // Only log when we have non-visual changes
+        this.logger.debugComponent('X6Graph', 'Actual attribute changes detected:', actualChanges);
         // this.logger.debugComponent('X6Graph', 'Including attribute changes - not all visual');
       }
 
