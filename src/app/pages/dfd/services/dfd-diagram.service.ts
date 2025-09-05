@@ -187,6 +187,9 @@ export class DfdDiagramService {
 
         this.logger.info('Adding nodes to graph', { nodeCount: nodes.length });
         // Add nodes first, then edges (to ensure proper dependencies)
+        // Track nodes that have parent relationships to establish after all nodes are created
+        const nodesWithParents: Array<{ nodeId: string; parentId: string }> = [];
+        
         nodes.forEach((nodeConfig, index) => {
           try {
             this.logger.info(`Adding node ${index + 1}/${nodes.length}`, {
@@ -209,11 +212,46 @@ export class DfdDiagramService {
               node.setZIndex(nodeConfig.zIndex);
             }
 
+            // Track parent relationship to establish later
+            if (nodeConfig.parent) {
+              nodesWithParents.push({ nodeId: nodeConfig.id, parentId: nodeConfig.parent });
+            }
+
             this.logger.info(`Successfully added node ${nodeInfo.id}`);
           } catch (error) {
             this.logger.error('Error adding node during batch load', {
               nodeId: nodeConfig.id,
               nodeIndex: index,
+              error,
+            });
+          }
+        });
+
+        // Establish parent-child relationships after all nodes are created
+        this.logger.info('Establishing embedding relationships', { count: nodesWithParents.length });
+        nodesWithParents.forEach(({ nodeId, parentId }) => {
+          try {
+            const childNode = graph.getCellById(nodeId);
+            const parentNode = graph.getCellById(parentId);
+            
+            if (childNode && parentNode && childNode.isNode() && parentNode.isNode()) {
+              childNode.setParent(parentNode);
+              this.logger.info('Established embedding relationship', {
+                childId: nodeId,
+                parentId: parentId,
+              });
+            } else {
+              this.logger.warn('Could not establish embedding relationship', {
+                childId: nodeId,
+                parentId: parentId,
+                childFound: !!childNode,
+                parentFound: !!parentNode,
+              });
+            }
+          } catch (error) {
+            this.logger.error('Error establishing embedding relationship', {
+              childId: nodeId,
+              parentId: parentId,
               error,
             });
           }
@@ -355,6 +393,16 @@ export class DfdDiagramService {
       }
     }
 
+    // Add parent property if present (for embedded nodes)
+    if (mockCell.parent) {
+      cellConfig.parent = mockCell.parent;
+    }
+
+    // Add children property if present (for container nodes)
+    if (mockCell.children && Array.isArray(mockCell.children)) {
+      cellConfig.children = mockCell.children;
+    }
+
     return cellConfig;
   }
 
@@ -494,6 +542,7 @@ export class DfdDiagramService {
       height: nodeConfig.height,
       label: nodeConfig.label || '',
       data: hybridData,
+      parent: nodeConfig.parent,
       markup: nodeConfig.markup,
       tools: nodeConfig.tools,
     });
@@ -766,7 +815,7 @@ export class DfdDiagramService {
       try {
         if (cell.isNode()) {
           // Convert node to cell format
-          const nodeCell = {
+          const nodeCell: any = {
             id: cell.id,
             shape: cell.shape,
             x: cell.position().x,
@@ -791,6 +840,19 @@ export class DfdDiagramService {
             },
             data: this.convertCellDataToArray(cell.getData()),
           };
+
+          // Add parent property if the node is embedded
+          const parent = cell.getParent();
+          if (parent && parent.isNode()) {
+            nodeCell.parent = parent.id;
+          }
+
+          // Add children property if the node has embedded children
+          const children = graphCells.filter(c => c.isNode() && c.getParent()?.id === cell.id);
+          if (children.length > 0) {
+            nodeCell.children = children.map(c => c.id);
+          }
+
           cells.push(nodeCell);
         } else if (cell.isEdge()) {
           // Convert edge to cell format

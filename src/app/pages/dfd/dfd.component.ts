@@ -371,6 +371,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Subscribe to collaboration state changes to initialize collaborative operations
     this._subscriptions.add(
       this.collaborationService.isCollaborating$.subscribe(isCollaborating => {
+        // Update history tracking based on collaboration state
+        // In collaboration mode, history is managed by the server
+        this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
+        
         if (isCollaborating && this.threatModelId && this.dfdId) {
           // Initialize collaborative operation service when collaboration starts
           const currentUserEmail = this.collaborationService.getCurrentUserEmail();
@@ -1638,6 +1642,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private autoSaveDiagram(reason: string): void {
     if (!this._isInitialized || !this.dfdId || !this.threatModelId) {
+      return;
+    }
+
+    // Skip auto-save during collaboration - history is handled by the server
+    if (this.collaborationService.isCollaborating()) {
+      this.logger.debug('Skipping auto-save during collaboration session - server handles history');
       return;
     }
 

@@ -728,6 +728,25 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Enable or disable history tracking based on collaboration state
+   * When in collaboration, history is managed by the server
+   */
+  setHistoryEnabled(enabled: boolean): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot set history enabled state - graph not initialized');
+      return;
+    }
+
+    if (enabled) {
+      this._historyManager.enable(this._graph);
+      this.logger.info('History tracking enabled (solo editing mode)');
+    } else {
+      this._historyManager.disable(this._graph);
+      this.logger.info('History tracking disabled (collaborative mode - server manages history)');
+    }
+  }
+
+  /**
    * Debug method to manually inspect edge rendering
    * Call this from browser console: adapter.debugEdgeRendering()
    */
