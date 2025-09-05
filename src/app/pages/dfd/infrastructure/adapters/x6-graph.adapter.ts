@@ -747,6 +747,20 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Update embedding appearances for all nodes in the graph
+   * Applies proper fill/shading to embedded nodes based on their embedding depth
+   */
+  updateAllEmbeddingAppearances(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot update embedding appearances - graph not initialized');
+      return;
+    }
+
+    this._embeddingAdapter.updateAllEmbeddingAppearances(this._graph);
+    this.logger.info('Updated embedding appearances for all nodes in graph');
+  }
+
+  /**
    * Debug method to manually inspect edge rendering
    * Call this from browser console: adapter.debugEdgeRendering()
    */

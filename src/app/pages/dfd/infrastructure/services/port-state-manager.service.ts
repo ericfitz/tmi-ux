@@ -130,12 +130,12 @@ export class PortStateManagerService {
       lastUpdated: new Date(),
     });
 
-    this._logger.debugComponent('DfdPortStateManager', 'Updated node port visibility', {
-      nodeId: node.id,
-      totalPorts: ports.length,
-      connectedPorts: connectedPorts.size,
-      visiblePorts: visiblePorts.size,
-    });
+    // this._logger.debugComponent('DfdPortStateManager', 'Updated node port visibility', {
+    //   nodeId: node.id,
+    //   totalPorts: ports.length,
+    //   connectedPorts: connectedPorts.size,
+    //   visiblePorts: visiblePorts.size,
+    // });
   }
 
   /**
@@ -165,9 +165,9 @@ export class PortStateManagerService {
         });
       });
 
-      this._logger.debugComponent('DfdPortStateManager', 'Showed all ports on all nodes', {
-        nodeCount: nodes.length,
-      });
+      // this._logger.debugComponent('DfdPortStateManager', 'Showed all ports on all nodes', {
+      //   nodeCount: nodes.length,
+      // });
     });
   }
 
@@ -186,9 +186,9 @@ export class PortStateManagerService {
         this._updateNodePortVisibilityInternal(graph, node);
       });
 
-      this._logger.debugComponent('DfdPortStateManager', 'Hid unconnected ports on all nodes', {
-        nodeCount: nodes.length,
-      });
+      // this._logger.debugComponent('DfdPortStateManager', 'Hid unconnected ports on all nodes', {
+      //   nodeCount: nodes.length,
+      // });
     });
   }
 
@@ -229,11 +229,11 @@ export class PortStateManagerService {
             sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
             this._updatePortStateCache(sourceNode.id, sourcePortId, true, true);
 
-            this._logger.debugComponent('DfdPortStateManager', 'Made source port visible', {
-              edgeId: edge.id,
-              sourceNodeId: sourceCellId,
-              sourcePortId,
-            });
+            // this._logger.debugComponent('DfdPortStateManager', 'Made source port visible', {
+            //   edgeId: edge.id,
+            //   sourceNodeId: sourceCellId,
+            //   sourcePortId,
+            // });
           } else {
             this._logger.warn('Source port does not exist on node', {
               edgeId: edge.id,
@@ -256,11 +256,11 @@ export class PortStateManagerService {
             targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
             this._updatePortStateCache(targetNode.id, targetPortId, true, true);
 
-            this._logger.debugComponent('DfdPortStateManager', 'Made target port visible', {
-              edgeId: edge.id,
-              targetNodeId: targetCellId,
-              targetPortId,
-            });
+            // this._logger.debugComponent('DfdPortStateManager', 'Made target port visible', {
+            //   edgeId: edge.id,
+            //   targetNodeId: targetCellId,
+            //   targetPortId,
+            // });
           } else {
             this._logger.warn('Target port does not exist on node', {
               edgeId: edge.id,

@@ -914,6 +914,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.logger.info('Successfully loaded diagram cells into graph');
 
+        // Update embedding appearances for nodes with parents (embedded nodes)
+        this.x6GraphAdapter.updateAllEmbeddingAppearances();
+
         // Check if cells were actually added to the graph
         const graphCells = graph.getCells();
         this.logger.info('Graph state after loading', {
