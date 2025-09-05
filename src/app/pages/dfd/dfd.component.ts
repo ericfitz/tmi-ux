@@ -373,7 +373,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.collaborationService.isCollaborating$.subscribe(isCollaborating => {
         // Update history tracking based on collaboration state
         // In collaboration mode, history is managed by the server
-        this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
+        // Only set history state if graph is initialized
+        if (this.x6GraphAdapter.getGraph()) {
+          this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
+        }
         
         if (isCollaborating && this.threatModelId && this.dfdId) {
           // Initialize collaborative operation service when collaboration starts
@@ -858,6 +861,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.logger.info('Graph initialization complete');
 
+      // Initialize history tracking based on current collaboration state
+      const isCollaborating = this.collaborationService.isCollaborating();
+      this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
+
       // Apply read-only mode if user lacks edit permissions
       this.initializePermissions();
 
@@ -914,9 +921,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.logger.info('Successfully loaded diagram cells into graph');
 
-        // Update embedding appearances for nodes with parents (embedded nodes)
-        this.x6GraphAdapter.updateAllEmbeddingAppearances();
-
         // Check if cells were actually added to the graph
         const graphCells = graph.getCells();
         this.logger.info('Graph state after loading', {
@@ -931,6 +935,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           historyManager.enable(graph);
           this.logger.info('History tracking re-enabled after diagram load completed');
         }
+        
+        // Update embedding appearances AFTER history is cleared and re-enabled
+        // This prevents the appearance updates from triggering auto-save
+        this.x6GraphAdapter.updateAllEmbeddingAppearances();
       }
 
       this.cdr.markForCheck();
