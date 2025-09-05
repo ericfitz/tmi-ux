@@ -28,18 +28,6 @@
 
     <!-- Right side: Server status, User info and logout button -->
     <div class="navbar-right">
-      <!-- Server connection indicator -->
-      <span
-        [matTooltip]="getServerStatusTooltip()"
-        matTooltipPosition="below"
-        matTooltipClass="multiline-tooltip"
-        style="display: inline-block"
-      >
-        <button mat-icon-button [class]="getServerStatusIconClass()" disabled>
-          <mat-icon>{{ getServerStatusIcon() }}</mat-icon>
-        </button>
-      </span>
-
       <!-- WebSocket connection indicator -->
       <span
         *ngIf="showWebSocketStatus"
@@ -50,6 +38,18 @@
       >
         <button mat-icon-button [class]="getWebSocketStatusIconClass()" disabled>
           <mat-icon fontSet="material-symbols-outlined">{{ getWebSocketStatusIcon() }}</mat-icon>
+        </button>
+      </span>
+
+      <!-- Server connection indicator -->
+      <span
+        [matTooltip]="getServerStatusTooltip()"
+        matTooltipPosition="below"
+        matTooltipClass="multiline-tooltip"
+        style="display: inline-block"
+      >
+        <button mat-icon-button [class]="getServerStatusIconClass()" disabled>
+          <mat-icon>{{ getServerStatusIcon() }}</mat-icon>
         </button>
       </span>
 

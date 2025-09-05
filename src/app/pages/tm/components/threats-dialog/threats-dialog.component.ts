@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
@@ -7,7 +6,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { MaterialModule } from '../../../../shared/material/material.module';
+import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { Threat } from '../../models/threat-model.model';
 import {
   ThreatEditorDialogComponent,
@@ -42,7 +41,7 @@ export interface ThreatsDialogData {
 @Component({
   selector: 'app-threats-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule, TranslocoModule],
+  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './threats-dialog.component.html',
   styleUrls: ['./threats-dialog.component.scss'],
 })

@@ -20,7 +20,6 @@
  * - Provides export functionality for multiple formats (PNG, JPG, SVG)
  */
 
-import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -42,8 +41,7 @@ import { take } from 'rxjs/operators';
 import { Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
-import { CoreMaterialModule } from '../../shared/material/core-material.module';
-import { FeedbackMaterialModule } from '../../shared/material/feedback-material.module';
+import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { NodeType } from './domain/value-objects/node-info';
 import { getX6ShapeForNodeType } from './infrastructure/adapters/x6-shape-definitions';
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
@@ -56,10 +54,11 @@ import { CellOperation, Cell as WSCell } from '../../core/types/websocket-messag
 
 // Import providers needed for standalone component
 import { EdgeQueryService } from './infrastructure/services/edge-query.service';
-import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler';
+import { EdgeService } from './infrastructure/services/edge.service';
+import { X6KeyboardHandler } from './infrastructure/adapters/x6-keyboard-handler.service';
 import { X6ZOrderAdapter } from './infrastructure/adapters/x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './infrastructure/adapters/x6-embedding.adapter';
-import { X6HistoryManager } from './infrastructure/adapters/x6-history-manager';
+import { X6HistoryManager } from './infrastructure/adapters/x6-history-manager.service';
 import { EmbeddingService } from './infrastructure/services/embedding.service';
 
 // Import the facade service and remaining infrastructure
@@ -78,6 +77,7 @@ import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
+import { COLLABORATION_NOTIFICATION_SERVICE } from '../../core/interfaces/collaboration-notification.interface';
 import { TMIMessageHandlerService } from '../../core/services/tmi-message-handler.service';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
@@ -100,9 +100,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
   selector: 'app-dfd',
   standalone: true,
   imports: [
-    CommonModule,
-    CoreMaterialModule,
-    FeedbackMaterialModule,
+    ...COMMON_IMPORTS,
+    ...CORE_MATERIAL_IMPORTS,
+    ...FEEDBACK_MATERIAL_IMPORTS,
     MatMenuModule,
     MatTooltipModule,
     TranslocoModule,
@@ -112,6 +112,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     // Infrastructure adapters
     X6GraphAdapter,
     EdgeQueryService,
+    EdgeService,
     NodeConfigurationService,
     X6KeyboardHandler,
     X6ZOrderAdapter,
@@ -142,14 +143,11 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     // X6 Event Logger
     X6EventLoggerService,
 
-    // Threat Model Service
-    ThreatModelService,
-
-    // Collaboration Service
-    DfdCollaborationService,
-
-    // Notification Service
-    DfdNotificationService,
+    // Provide DfdNotificationService as implementation of collaboration notification interface
+    {
+      provide: COLLABORATION_NOTIFICATION_SERVICE,
+      useClass: DfdNotificationService,
+    },
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],

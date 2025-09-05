@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
@@ -6,7 +5,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { MaterialModule } from '../../../../shared/material/material.module';
+import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { Authorization } from '../../models/threat-model.model';
 
 export interface PermissionsDialogData {
@@ -18,7 +17,7 @@ export interface PermissionsDialogData {
 @Component({
   selector: 'app-permissions-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule, TranslocoModule],
+  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, ...FORM_MATERIAL_IMPORTS, TranslocoModule],
   template: `
     <div class="permissions-dialog">
       <h2 mat-dialog-title>

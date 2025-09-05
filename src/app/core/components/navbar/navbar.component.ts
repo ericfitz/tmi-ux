@@ -1,15 +1,12 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, isDevMode, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 
-// Import only the specific Material modules needed
-import { CoreMaterialModule } from '../../../shared/material/core-material.module';
-import { FeedbackMaterialModule } from '../../../shared/material/feedback-material.module';
+// Import the shared constants
+import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
 
 // Services
 import { AuthService } from '../../../auth/services/auth.service';
@@ -32,10 +29,9 @@ import { UserPreferencesDialogComponent } from '../user-preferences-dialog/user-
   styleUrl: './navbar.component.scss',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
-    CoreMaterialModule,
-    FeedbackMaterialModule,
+    ...COMMON_IMPORTS,
+    ...CORE_MATERIAL_IMPORTS,
+    ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
   ],
 })

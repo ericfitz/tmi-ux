@@ -68,7 +68,7 @@ export class NodeInfo {
    * Gets custom data (excluding reserved metadata namespace)
    */
   getCustomData(): Record<string, any> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const { _metadata: _, ...customData } = this.data;
     return customData;
   }

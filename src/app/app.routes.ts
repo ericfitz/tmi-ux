@@ -77,7 +77,7 @@ export const routes: Routes = [
   },
   {
     path: 'tm',
-    loadChildren: () => import('./pages/tm/tm-routing.module').then(m => m.TmRoutingModule),
+    loadChildren: () => import('./pages/tm/tm.routes').then(m => m.TM_ROUTES),
     canActivate: [authGuard],
   },
   {

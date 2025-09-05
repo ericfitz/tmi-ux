@@ -2,7 +2,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { TranslocoModule, provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 
-import { TranslocoHttpLoader } from './transloco-loader';
+import { TranslocoHttpLoader } from './transloco-loader.service';
 import { environment } from '../../environments/environment';
 
 // Function to get the initial language

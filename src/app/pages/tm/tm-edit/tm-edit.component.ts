@@ -1,16 +1,13 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, Subject } from 'rxjs';
@@ -20,7 +17,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { environment } from '../../../../environments/environment';
 import { MockDataService } from '../../../mocks/mock-data.service';
 
-import { MaterialModule } from '../../../shared/material/material.module';
+import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
 import {
   DocumentEditorDialogComponent,
@@ -89,14 +86,14 @@ interface SourceCodeFormResult {
   selector: 'app-tm-edit',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    MaterialModule,
+    ...COMMON_IMPORTS,
+    ...CORE_MATERIAL_IMPORTS,
+    ...FORM_MATERIAL_IMPORTS,
+    ...DATA_MATERIAL_IMPORTS,
+    ...FEEDBACK_MATERIAL_IMPORTS,
     MatListModule,
     MatGridListModule,
     TranslocoModule,
-    ReactiveFormsModule,
-    RouterModule,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],

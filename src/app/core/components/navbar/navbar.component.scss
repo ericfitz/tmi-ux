@@ -66,6 +66,15 @@
   color: var(--color-server-error);
 }
 
+// Connection status indicators alignment
+.navbar-right {
+  > span {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+}
+
 // RTL adjustments
 :host-context([dir='rtl']) {
   .app-title {

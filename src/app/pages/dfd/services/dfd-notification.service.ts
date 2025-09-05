@@ -12,6 +12,11 @@ import {
   WebSocketError,
   WebSocketErrorType,
 } from '../../../core/services/websocket.adapter';
+import { 
+  ICollaborationNotificationService, 
+  SessionEventType, 
+  PresenterEventType 
+} from '../../../core/interfaces/collaboration-notification.interface';
 
 /**
  * Notification types for consistent styling and behavior
@@ -48,7 +53,7 @@ interface NotificationPresets {
 @Injectable({
   providedIn: 'root',
 })
-export class DfdNotificationService implements OnDestroy {
+export class DfdNotificationService implements OnDestroy, ICollaborationNotificationService {
   private readonly _destroy$ = new Subject<void>();
   private _activeNotifications = new Map<string, MatSnackBarRef<SimpleSnackBar>>();
   private _subscriptions = new Subscription();
@@ -368,39 +373,45 @@ export class DfdNotificationService implements OnDestroy {
 
   /**
    * Show collaboration session event notification
-   * @param event The session event type
-   * @param details Additional details (e.g., user name)
+   * @param eventType The session event type
+   * @param displayName Additional details (e.g., user name)
    */
   showSessionEvent(
-    event: 'started' | 'ended' | 'userJoined' | 'userLeft',
-    details?: string,
+    eventType: SessionEventType,
+    displayName?: string,
   ): Observable<void> {
     // Only show notifications for events that aren't already indicated by UI state
     // Session start/end are already visible via collaboration icon state
     // Only show user join/leave events since they provide useful information
-    switch (event) {
+    switch (eventType) {
       case 'started':
       case 'ended':
         // These are already indicated by the collaboration icon state - no notification needed
-        this._logger.debug('Session event suppressed - already indicated by UI', { event });
+        this._logger.debug('Session event suppressed - already indicated by UI', { eventType });
         return new Observable<void>(observer => {
           observer.next();
           observer.complete();
         });
       case 'userJoined':
-        if (details) {
-          const message = `${details} joined the collaboration`;
+        if (displayName) {
+          const message = `${displayName} joined the collaboration`;
           return this.showPreset('userJoined', message);
         }
         break;
       case 'userLeft':
-        if (details) {
-          const message = `${details} left the collaboration`;
+        if (displayName) {
+          const message = `${displayName} left the collaboration`;
           return this.showPreset('userLeft', message);
         }
         break;
+      case 'disconnected':
+        return this.showPreset('warning', 'Disconnected from collaboration session');
+      case 'reconnecting':
+        return this.showPreset('info', 'Reconnecting to collaboration session...');
+      case 'reconnected':
+        return this.showPreset('success', 'Reconnected to collaboration session');
       default:
-        this._logger.warn('Unknown session event', { event });
+        this._logger.warn('Unknown session event', { eventType });
         break;
     }
 
@@ -414,25 +425,19 @@ export class DfdNotificationService implements OnDestroy {
   /**
    * Show presenter mode notification
    * @param event The presenter event type
-   * @param userName Optional user name for context
+   * @param displayName Optional user name for context
    */
   showPresenterEvent(
-    event:
-      | 'assigned'
-      | 'requestSent'
-      | 'requestApproved'
-      | 'requestDenied'
-      | 'cleared'
-      | 'requested',
-    userName?: string,
+    eventType: PresenterEventType,
+    displayName?: string,
   ): Observable<void> {
     let message: string;
     let presetKey: string;
 
-    switch (event) {
+    switch (eventType) {
       case 'assigned':
-        if (userName) {
-          message = `${userName} is now the presenter`;
+        if (displayName) {
+          message = `${displayName} is now the presenter`;
         } else {
           message = 'You are now the presenter';
         }
@@ -442,10 +447,7 @@ export class DfdNotificationService implements OnDestroy {
         message = 'Presenter request sent to session owner';
         presetKey = 'presenterRequestSent';
         break;
-      case 'requestApproved':
-        message = 'Your presenter request was approved. You are now the presenter.';
-        presetKey = 'presenterRequestApproved';
-        break;
+      // Note: 'requestApproved' removed since it's handled by 'assigned' event
       case 'requestDenied':
         message = 'Your presenter request was denied';
         presetKey = 'presenterRequestDenied';
@@ -455,11 +457,27 @@ export class DfdNotificationService implements OnDestroy {
         presetKey = 'info';
         break;
       case 'requested':
-        if (userName) {
-          message = `${userName} is requesting presenter privileges`;
+        if (displayName) {
+          message = `${displayName} is requesting presenter privileges`;
         } else {
           message = 'Presenter privileges requested';
         }
+        presetKey = 'info';
+        break;
+      case 'removed':
+        if (displayName) {
+          message = `${displayName} is no longer the presenter`;
+        } else {
+          message = 'You are no longer the presenter';
+        }
+        presetKey = 'info';
+        break;
+      case 'cursorMoved':
+        message = 'Presenter cursor moved';
+        presetKey = 'info';
+        break;
+      case 'selectionChanged':
+        message = 'Presenter selection changed';
         presetKey = 'info';
         break;
       default:
@@ -473,16 +491,14 @@ export class DfdNotificationService implements OnDestroy {
   /**
    * Show operation error notification
    * @param operation The operation that failed
-   * @param error The error details
-   * @param retryCallback Optional retry callback
+   * @param errorMessage The error message
    */
   showOperationError(
     operation: string,
-    error: string,
-    retryCallback?: () => void,
+    errorMessage: string,
   ): Observable<void> {
-    const message = `Failed to ${operation}: ${error}`;
-    return this.showPreset('operationError', message, { actionCallback: retryCallback });
+    const message = `Failed to ${operation}: ${errorMessage}`;
+    return this.showPreset('operationError', message);
   }
 
   /**

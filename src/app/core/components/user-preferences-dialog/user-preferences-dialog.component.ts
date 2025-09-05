@@ -1,11 +1,7 @@
 import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
-import { FormsModule } from '@angular/forms';
-import { FeedbackMaterialModule } from '../../../shared/material/feedback-material.module';
-import { FormMaterialModule } from '../../../shared/material/form-material.module';
-import { CoreMaterialModule } from '../../../shared/material/core-material.module';
+import { DIALOG_IMPORTS } from '@app/shared/imports';
 import { LoggerService } from '../../services/logger.service';
 
 export interface UserPreferences {
@@ -20,12 +16,8 @@ interface CheckboxChangeEvent {
   selector: 'app-user-preferences-dialog',
   standalone: true,
   imports: [
-    CommonModule,
-    FeedbackMaterialModule,
-    FormMaterialModule,
-    CoreMaterialModule,
+    ...DIALOG_IMPORTS,
     TranslocoModule,
-    FormsModule,
   ],
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>

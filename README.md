@@ -61,7 +61,28 @@ Older
 1. [Demo 2025-05-16](https://youtu.be/ikTxE0xJL1w) Shows localization, basic functionality
 2. [Demo 2025-05-20](https://youtu.be/quOBYdKNx2E) Shows detailed threat editing
 
-**Note:** Documentation about architecture, implementation plans, and development guidelines can be found in the [context](./context) and [docs](./docs) directories. Authorization details are documented in [AUTHORIZATION.md](./docs/AUTHORIZATION.md) and collaborative editing information in [COLLABORATIVE_EDITING.md](./docs/COLLABORATIVE_EDITING.md).
+## Documentation
+
+Comprehensive documentation is organized as follows:
+
+### 📚 Main Documentation Hub
+- **[/docs](docs/)** - Central documentation directory with guides, standards, and decision records
+- **[Architecture Guide](docs/ARCHITECTURE.md)** - Complete architecture overview and patterns
+- **[Architecture Decision Records](docs/adr/)** - Key architectural decisions with context and rationale
+- **[Service Provisioning Standards](docs/SERVICE_PROVISIONING_STANDARDS.md)** - Where and how to provide services
+- **[Architecture Validation](docs/ARCHITECTURE_VALIDATION.md)** - How to validate architecture compliance
+
+### 🛠️ Developer Resources
+- **[CLAUDE.md](CLAUDE.md)** - AI assistant instructions and comprehensive project overview
+- **[/context](context/)** - Developer-specific implementation details and technical guides
+- **[Naming Conventions](docs/NAMING_CONVENTIONS.md)** - File naming standards
+- **[Bundle Size Analysis](docs/BUNDLE_SIZE_ANALYSIS.md)** - Performance optimization results
+
+### 🚀 Quick Start for Developers
+1. Read **[CLAUDE.md](CLAUDE.md)** for project overview and key patterns
+2. Review **[Architecture Guide](docs/ARCHITECTURE.md)** for system design
+3. Check **[Service Provisioning Standards](docs/SERVICE_PROVISIONING_STANDARDS.md)** before adding services
+4. Follow **[Architecture TODO](docs/ARCHITECTURE_TODO.md)** for ongoing improvements
 
 ## Development
 

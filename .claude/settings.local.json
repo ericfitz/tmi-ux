@@ -26,7 +26,12 @@
       "Bash(done)",
       "Bash(true)",
       "Bash(awk:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(pnmp run build)",
+      "Bash(rm:*)",
+      "Bash(git mv:*)",
+      "Bash(pgrep:*)",
+      "Bash(npm test:*)"
     ]
   },
   "enableAllProjectMcpServers": false

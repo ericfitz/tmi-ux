@@ -41,10 +41,10 @@ import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { EmbeddingService } from '../services/embedding.service';
 import { PortStateManagerService } from '../services/port-state-manager.service';
-import { X6KeyboardHandler } from './x6-keyboard-handler';
+import { X6KeyboardHandler } from './x6-keyboard-handler.service';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';
-import { X6HistoryManager } from './x6-history-manager';
+import { X6HistoryManager } from './x6-history-manager.service';
 import { X6SelectionAdapter } from './x6-selection.adapter';
 import { X6EventLoggerService } from './x6-event-logger.service';
 import { DfdEdgeService } from '../../services/dfd-edge.service';
@@ -1738,7 +1738,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   private _shouldIncludeInHistory(event: string, args: any): boolean {
     // Completely exclude tools from history
     if (event === 'cell:change:tools') {
-      this.logger.debugComponent('X6Graph', 'Excluding tools event');
+      // this.logger.debugComponent('X6Graph', 'Excluding tools event');
       return false;
     }
 
@@ -1748,7 +1748,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
       // Exclude tool changes
       if (args.key === 'tools') {
-        this.logger.debugComponent('X6Graph', 'Excluding tools key change');
+        // this.logger.debugComponent('X6Graph', 'Excluding tools key change');
         return false;
       }
 
@@ -1767,15 +1767,15 @@ export class X6GraphAdapter implements IGraphAdapter {
         // Check if all actual changes are visual-only
         const isOnlyVisualAttributes = actualChanges.every(changePath => {
           const isExcluded = this._historyCoordinator.shouldExcludeAttribute(changePath);
-          this.logger.debugComponent('X6Graph', `Checking ${changePath}: excluded=${isExcluded}`);
+          // this.logger.debugComponent('X6Graph', `Checking ${changePath}: excluded=${isExcluded}`);
           return isExcluded;
         });
 
         if (isOnlyVisualAttributes) {
-          this.logger.debugComponent('X6Graph', 'Excluding visual-only attribute changes');
+          // this.logger.debugComponent('X6Graph', 'Excluding visual-only attribute changes');
           return false; // Don't add to history
         }
-        this.logger.debugComponent('X6Graph', 'Including attribute changes - not all visual');
+        // this.logger.debugComponent('X6Graph', 'Including attribute changes - not all visual');
       }
 
       // Handle port changes - check if they're only visibility changes
@@ -1786,27 +1786,27 @@ export class X6GraphAdapter implements IGraphAdapter {
         );
 
         if (isPortVisibilityOnly) {
-          this.logger.debugComponent(
+          /* this.logger.debugComponent(
             'X6Graph',
             'Excluding port visibility change:',
             args.options.propertyPath,
-          );
+          ); */
           return false; // Don't add to history
         }
-        this.logger.debugComponent(
+        /* this.logger.debugComponent(
           'X6Graph',
           'Including port change - not visibility only:',
           args.options.propertyPath,
-        );
+        ); */
       }
 
       // For other cell:change:* events, allow them unless they're specifically excluded
-      this.logger.debugComponent('X6Graph', 'Including cell:change:* event with key:', args.key);
+      // this.logger.debugComponent('X6Graph', 'Including cell:change:* event with key:', args.key);
       return true;
     }
 
     // Allow all other changes (position, size, labels, structure)
-    this.logger.debugComponent('X6Graph', 'Including other event type:', event);
+    // this.logger.debugComponent('X6Graph', 'Including other event type:', event);
     return true;
   }
 

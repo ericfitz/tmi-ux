@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { AuthService } from '../../auth/services/auth.service';
+import { IAuthService } from '../interfaces';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { throwError } from 'rxjs';
 import {
@@ -39,7 +39,7 @@ vi.mock('../../../environments/environment', () => ({
 import { environment } from '../../../environments/environment';
 
 // Mock interfaces for type safety
-interface MockAuthService {
+interface MockAuthService extends Partial<IAuthService> {
   logout: ReturnType<typeof vi.fn>;
 }
 
@@ -84,7 +84,7 @@ describe('ApiService', () => {
       httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       router as unknown as Router,
-      authService as unknown as AuthService,
+      authService as unknown as IAuthService,
       dialog as unknown as MatDialog,
     );
   });

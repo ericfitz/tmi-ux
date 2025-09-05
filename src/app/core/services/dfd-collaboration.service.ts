@@ -1,12 +1,17 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, Subscription, of, Subject } from 'rxjs';
 import { map, catchError, tap, skip } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from './logger.service';
-import { AuthService } from '../../auth/services/auth.service';
-import { ThreatModelService } from '../../pages/tm/services/threat-model.service';
 import { WebSocketAdapter, WebSocketState, WebSocketErrorType } from './websocket.adapter';
-import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
+import { 
+  ICollaborationNotificationService, 
+  COLLABORATION_NOTIFICATION_SERVICE,
+  IAuthService,
+  IThreatModelService,
+  AUTH_SERVICE,
+  THREAT_MODEL_SERVICE
+} from '../interfaces';
 import { environment } from '../../../environments/environment';
 import { SessionTerminatedMessage, ChangePresenterMessage } from '../types/websocket-message.types';
 
@@ -124,10 +129,11 @@ export class DfdCollaborationService implements OnDestroy {
 
   constructor(
     private _logger: LoggerService,
-    private _authService: AuthService,
-    private _threatModelService: ThreatModelService,
+    @Inject(AUTH_SERVICE) private _authService: IAuthService,
+    @Inject(THREAT_MODEL_SERVICE) private _threatModelService: IThreatModelService,
     private _webSocketAdapter: WebSocketAdapter,
-    private _notificationService: DfdNotificationService,
+    @Optional() @Inject(COLLABORATION_NOTIFICATION_SERVICE) 
+    private _notificationService: ICollaborationNotificationService | null,
     private _router: Router,
   ) {
     this._logger.info('DfdCollaborationService initialized', {
@@ -274,13 +280,6 @@ export class DfdCollaborationService implements OnDestroy {
       });
     }
     
-    this._logger.debug('isDiagramContextSet called', {
-      instanceId: this._instanceId,
-      isSet,
-      threatModelId: this._threatModelId,
-      diagramId: this._diagramId,
-      isDiagramContextReady: stateReady,
-    });
     return isSet;
   }
 
@@ -477,7 +476,7 @@ export class DfdCollaborationService implements OnDestroy {
         // Participants will be updated through WebSocket messages only
         tap(() => {
           // Show session joined notification only after user is verified in list
-          this._notificationService.showSessionEvent('userJoined').subscribe();
+          this._notificationService?.showSessionEvent('userJoined').subscribe();
 
           // Participants will be updated through WebSocket messages only
         }),
@@ -531,7 +530,7 @@ export class DfdCollaborationService implements OnDestroy {
               this._connectToWebSocket(existingSession.websocket_url);
 
               // Show session joined notification
-              this._notificationService.showSessionEvent('userJoined').subscribe();
+              this._notificationService?.showSessionEvent('userJoined').subscribe();
 
               return of(true);
             } else {
@@ -539,8 +538,7 @@ export class DfdCollaborationService implements OnDestroy {
               this._logger.warn(
                 'Reader cannot create collaboration session - no existing session found',
               );
-              this._notificationService
-                .showError('You need writer permissions to start a collaboration session')
+              this._notificationService?.showError('You need writer permissions to start a collaboration session')
                 .subscribe();
               return of(false);
             }
@@ -623,12 +621,12 @@ export class DfdCollaborationService implements OnDestroy {
         }),
         // No longer ensuring user in participant list via REST API
         // Participants will be managed through WebSocket messages only
-        tap(result => {
+        tap((result: { isNewSession: boolean }) => {
           // Show appropriate notification based on whether session was created or joined
           if (result.isNewSession) {
-            this._notificationService.showSessionEvent('started').subscribe();
+            this._notificationService?.showSessionEvent('started').subscribe();
           } else {
-            this._notificationService.showSessionEvent('userJoined').subscribe();
+            this._notificationService?.showSessionEvent('userJoined').subscribe();
           }
 
           // Participants will be updated through WebSocket messages only
@@ -709,7 +707,7 @@ export class DfdCollaborationService implements OnDestroy {
         // Participants will be managed through WebSocket messages only
         tap(() => {
           // Show session started notification only after user is verified in list
-          this._notificationService.showSessionEvent('started').subscribe();
+          this._notificationService?.showSessionEvent('started').subscribe();
 
           // Participants will be updated through WebSocket messages only
         }),
@@ -803,7 +801,7 @@ export class DfdCollaborationService implements OnDestroy {
           });
 
           // Show session ended notification
-          this._notificationService.showSessionEvent('ended').subscribe();
+          this._notificationService?.showSessionEvent('ended').subscribe();
         }),
         map(() => true),
         catchError((error: unknown) => {
@@ -827,7 +825,7 @@ export class DfdCollaborationService implements OnDestroy {
           });
 
           // Show session ended notification even on error
-          this._notificationService.showSessionEvent('ended').subscribe();
+          this._notificationService?.showSessionEvent('ended').subscribe();
 
           return throwError(() => error);
         }),
@@ -1201,7 +1199,7 @@ export class DfdCollaborationService implements OnDestroy {
       .pipe(
         map(() => {
           // Show request sent notification
-          this._notificationService.showPresenterEvent('requestSent').subscribe();
+          this._notificationService?.showPresenterEvent('requestSent').subscribe();
           return true;
         }),
         catchError((error: unknown) => {
@@ -1209,8 +1207,7 @@ export class DfdCollaborationService implements OnDestroy {
           // Revert state on error
           this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this._notificationService
-            .showOperationError('send presenter request', errorMessage)
+          this._notificationService?.showOperationError('send presenter request', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1274,14 +1271,13 @@ export class DfdCollaborationService implements OnDestroy {
       .pipe(
         map(() => {
           // Show denial notification (for owner)
-          this._notificationService.showPresenterEvent('requestDenied').subscribe();
+          this._notificationService?.showPresenterEvent('requestDenied').subscribe();
           return true;
         }),
         catchError((error: unknown) => {
           this._logger.error('Failed to send presenter denial', error);
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this._notificationService
-            .showOperationError('deny presenter request', errorMessage)
+          this._notificationService?.showOperationError('deny presenter request', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1325,14 +1321,13 @@ export class DfdCollaborationService implements OnDestroy {
         // Show presenter assigned notification
         const currentUserEmail = this.getCurrentUserEmail();
         if (userEmail === currentUserEmail) {
-          this._notificationService.showPresenterEvent('assigned').subscribe();
+          this._notificationService?.showPresenterEvent('assigned').subscribe();
         } else if (userEmail) {
           const user = this._collaborationState$.value.users.find(u => u.email === userEmail);
-          this._notificationService
-            .showPresenterEvent('assigned', user?.name || userEmail)
+          this._notificationService?.showPresenterEvent('assigned', user?.name || userEmail)
             .subscribe();
         } else {
-          this._notificationService.showPresenterEvent('cleared').subscribe();
+          this._notificationService?.showPresenterEvent('cleared').subscribe();
         }
         return true;
       }),
@@ -1342,7 +1337,7 @@ export class DfdCollaborationService implements OnDestroy {
         this._updateState({ currentPresenterEmail: null });
         this._updateUsersPresenterStatus(null);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        this._notificationService.showOperationError('update presenter', errorMessage).subscribe();
+        this._notificationService?.showOperationError('update presenter', errorMessage).subscribe();
         return throwError(() => error);
       }),
     );
@@ -1443,8 +1438,7 @@ export class DfdCollaborationService implements OnDestroy {
           error instanceof Error ? error.message : 'Failed to connect to collaboration server';
         const errorObj = error as { type?: string; message?: string } | undefined;
 
-        this._notificationService
-          .showWebSocketError(
+        this._notificationService?.showWebSocketError(
             {
               type: (errorObj?.type as WebSocketErrorType) || 'connection_failed',
               message: errorMessage,
@@ -1544,8 +1538,7 @@ export class DfdCollaborationService implements OnDestroy {
     // Listen to connection errors
     this._subscriptions.add(
       this._webSocketAdapter.errors$.subscribe(error => {
-        this._notificationService
-          .showWebSocketError(error, () => this._retryWebSocketConnection())
+        this._notificationService?.showWebSocketError(error, () => this._retryWebSocketConnection())
           .subscribe();
       }),
     );
@@ -1599,10 +1592,10 @@ export class DfdCollaborationService implements OnDestroy {
 
     switch (state) {
       case WebSocketState.CONNECTING:
-        this._notificationService.showWebSocketStatus(state).subscribe();
+        this._notificationService?.showWebSocketStatus(state).subscribe();
         break;
       case WebSocketState.CONNECTED: {
-        this._notificationService.showWebSocketStatus(state).subscribe();
+        this._notificationService?.showWebSocketStatus(state).subscribe();
         // The server handles participant tracking when the WebSocket reconnects
         // Client should not send join messages
         break;
@@ -1618,16 +1611,14 @@ export class DfdCollaborationService implements OnDestroy {
           return;
         }
         // Show notification for unexpected disconnections
-        this._notificationService
-          .showWebSocketStatus(state, () => this._retryWebSocketConnection())
+        this._notificationService?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
           .subscribe();
         // Emit session ended event for unexpected disconnection
         this._sessionEndedSubject.next({ reason: 'disconnected' });
         break;
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
-        this._notificationService
-          .showWebSocketStatus(state, () => this._retryWebSocketConnection())
+        this._notificationService?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
           .subscribe();
         // Emit session ended event for errors
         if (this._collaborationState$.value.isActive) {
@@ -1635,7 +1626,7 @@ export class DfdCollaborationService implements OnDestroy {
         }
         break;
       case WebSocketState.RECONNECTING:
-        this._notificationService.showWebSocketStatus(state).subscribe();
+        this._notificationService?.showWebSocketStatus(state).subscribe();
         break;
     }
   }
@@ -1649,8 +1640,7 @@ export class DfdCollaborationService implements OnDestroy {
       this._connectToWebSocket(this._currentSession.websocket_url);
     } else {
       this._logger.warn('Cannot retry WebSocket connection - no session URL available');
-      this._notificationService
-        .showError('Cannot retry connection - no active session')
+      this._notificationService?.showError('Cannot retry connection - no active session')
         .subscribe();
     }
   }
@@ -1702,14 +1692,14 @@ export class DfdCollaborationService implements OnDestroy {
     const currentUserEmail = this.getCurrentUserEmail();
 
     if (message.current_presenter === currentUserEmail) {
-      this._notificationService.showPresenterEvent('assigned').subscribe();
+      this._notificationService?.showPresenterEvent('assigned').subscribe();
     } else {
       // Find the user in the participants list to get their display name
       const presenterUser = this._collaborationState$.value.users.find(
         user => user.email === message.current_presenter,
       );
       const displayName = presenterUser?.name || message.current_presenter;
-      this._notificationService.showPresenterEvent('assigned', displayName).subscribe();
+      this._notificationService?.showPresenterEvent('assigned', displayName).subscribe();
     }
 
     // Presenter info will be updated through participants_update WebSocket message

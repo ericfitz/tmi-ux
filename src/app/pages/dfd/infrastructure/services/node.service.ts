@@ -311,8 +311,17 @@ export class DfdNodeService {
       // Convert NodeInfo to X6 node configuration
       const nodeConfig = this.convertNodeInfoToX6Config(nodeInfo);
 
-      // Add node directly to X6 graph
-      const node = this.x6CoreOps.addNode(graph, nodeConfig);
+      let node: any;
+
+      if (suppressHistory) {
+        // Execute without history for remote operations
+        node = this.historyCoordinator.executeRemoteOperation(graph, () => {
+          return this.x6CoreOps.addNode(graph, nodeConfig);
+        });
+      } else {
+        // Add node directly to X6 graph
+        node = this.x6CoreOps.addNode(graph, nodeConfig);
+      }
 
       if (!node) {
         throw new Error(`Failed to create node with ID: ${nodeInfo.id}`);
@@ -405,10 +414,13 @@ export class DfdNodeService {
   removeNodeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
     const cell = graph.getCellById(cellId);
     if (cell && cell.isNode()) {
-      // Use existing core operations service
-      this.x6CoreOps.removeNode(graph, cellId, {
-        suppressErrors: options?.suppressErrors ?? false,
-        logOperation: options?.logOperation ?? true,
+      // Execute without history for remote operations
+      this.historyCoordinator.executeRemoteOperation(graph, () => {
+        // Use existing core operations service
+        this.x6CoreOps.removeNode(graph, cellId, {
+          suppressErrors: options?.suppressErrors ?? false,
+          logOperation: options?.logOperation ?? true,
+        });
       });
     }
   }

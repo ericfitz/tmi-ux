@@ -1,15 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-
-import { MaterialModule } from '../../shared/material/material.module';
-import { SharedModule } from '../../shared/shared.module';
+import { COMMON_IMPORTS } from '@app/shared/imports';
 
 @Component({
   selector: 'app-tos',
   standalone: true,
-  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule, RouterModule],
+  imports: [...COMMON_IMPORTS, TranslocoModule],
   templateUrl: './tos.component.html',
   styleUrl: './tos.component.scss',
 })

@@ -653,7 +653,7 @@ export class ThreatModelService implements OnDestroy {
     data: Partial<ThreatModel> & { id: string; name: string },
   ): Observable<ThreatModel> {
     // Remove the original ID and server-managed timestamps, let the server assign new ones
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const { id, created_at, modified_at, ...importData } = data;
 
     const body = {

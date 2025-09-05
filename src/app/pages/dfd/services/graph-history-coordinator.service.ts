@@ -51,6 +51,31 @@ export class GraphHistoryCoordinator {
   }
 
   /**
+   * Execute a remote operation with history suppressed
+   * Remote operations from collaboration should not create local history entries
+   */
+  executeRemoteOperation<T>(graph: Graph, operation: () => T): T {
+    const historyPlugin = (graph as any).history;
+    if (
+      historyPlugin &&
+      typeof historyPlugin.disable === 'function' &&
+      typeof historyPlugin.enable === 'function'
+    ) {
+      // Temporarily disable history for remote operations
+      historyPlugin.disable();
+      try {
+        return operation();
+      } finally {
+        // Re-enable history after the operation
+        historyPlugin.enable();
+      }
+    } else {
+      // No history plugin or already disabled, execute directly
+      return operation();
+    }
+  }
+
+  /**
    * Get default options for operation - visual effects should be excluded
    */
   getDefaultOptionsForOperation(): any {

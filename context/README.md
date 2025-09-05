@@ -12,14 +12,8 @@ Additional product documentation that is intended to be exposed to users of the 
 
 AI assistants should update this list whenever adding a new file, or when you discover an expected file is no longer present.
 
-- COLLABORATIVE_EDITING.md
-  High-level plan and architecture for implementing collaborative diagram editing with WebSocket communication, permission models, and X6-specific implementation details.
-
 - debug-component-names.md
   Reference list of all debug component names for targeted logging configuration, organized by functional category (Auth, TM, DFD, etc.).
-
-- Developers Guide AntVX6 Graphing Library v2.md
-  This file contains a developer focused reference to the objects, methods, attributes, functions and events implemented in the AntV X6 graphing library v2.
 
 - DFD_GRAPH_INTERACTION.md
   This file describes how the user interacts with the graphing page.
@@ -48,3 +42,5 @@ The following files were previously in this directory but have been moved to the
 - CLIENT_OAUTH_INTEGRATION.md → shared-api/docs/CLIENT_OAUTH_INTEGRATION.md
 - tmi_api_server_authentication.md → moved/merged with other auth documentation
 - tmi-server-integration-plan.md → moved/merged with other integration documentation
+- COLLABORATIVE_EDITING.md → consolidated into docs/WEBSOCKET_COLLABORATION.md
+- Developers Guide AntVX6 Graphing Library v2.md → consolidated into docs/X6_COMPLETE_GUIDE.md

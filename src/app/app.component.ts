@@ -19,7 +19,7 @@ import { RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { FooterComponent } from './core/components/footer/footer.component';
-import { setInjector } from './core/utils/dynamic-material-loader';
+import { setInjector } from './core/utils/dynamic-material-loader.util';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { environment } from '../environments/environment';
 import { LoggerService } from './core/services/logger.service';

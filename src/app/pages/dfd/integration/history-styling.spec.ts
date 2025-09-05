@@ -30,7 +30,7 @@ import { EdgeQueryService } from '../infrastructure/services/edge-query.service'
 import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
 import { EmbeddingService } from '../infrastructure/services/embedding.service';
 import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
-import { X6KeyboardHandler } from '../infrastructure/adapters/x6-keyboard-handler';
+import { X6KeyboardHandler } from '../infrastructure/adapters/x6-keyboard-handler.service';
 import { ZOrderService } from '../infrastructure/services/z-order.service';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
 import { X6EmbeddingAdapter } from '../infrastructure/adapters/x6-embedding.adapter';

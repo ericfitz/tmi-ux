@@ -1,16 +1,12 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-
-import { MaterialModule } from '../../shared/material/material.module';
-import { SharedModule } from '../../shared/shared.module';
+import { COMMON_IMPORTS } from '@app/shared/imports';
 import { OperatorService } from '../../core/services/operator.service';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule, SharedModule, MaterialModule, TranslocoModule, RouterModule],
+  imports: [...COMMON_IMPORTS, TranslocoModule],
   templateUrl: './about.component.html',
   styleUrl: './about.component.scss',
 })

@@ -18,7 +18,7 @@ import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { EmbeddingService } from '../services/embedding.service';
 import { PortStateManagerService } from '../services/port-state-manager.service';
-import { X6KeyboardHandler } from './x6-keyboard-handler';
+import { X6KeyboardHandler } from './x6-keyboard-handler.service';
 import { ZOrderService } from '../services/z-order.service';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 import { X6EmbeddingAdapter } from './x6-embedding.adapter';

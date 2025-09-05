@@ -1,19 +1,17 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-
-import { TmComponent } from './tm.component';
-import { TmEditComponent } from './tm-edit/tm-edit.component';
+import { Routes } from '@angular/router';
 import { authGuard } from '../../auth/guards/auth.guard';
 import { threatModelResolver } from './resolvers/threat-model.resolver';
 
-const routes: Routes = [
+export const TM_ROUTES: Routes = [
   {
     path: '',
-    component: TmComponent,
+    loadComponent: () =>
+      import(/* webpackChunkName: "tm" */ './tm.component').then(c => c.TmComponent),
   },
   {
     path: ':id',
-    component: TmEditComponent,
+    loadComponent: () =>
+      import(/* webpackChunkName: "tm-edit" */ './tm-edit/tm-edit.component').then(c => c.TmEditComponent),
     resolve: {
       threatModel: threatModelResolver,
     },
@@ -28,9 +26,3 @@ const routes: Routes = [
     },
   },
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-})
-export class TmRoutingModule {}

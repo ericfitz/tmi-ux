@@ -4,6 +4,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { PortStateManagerService } from './port-state-manager.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 /**
  * Consolidated Edge Service
@@ -16,14 +17,13 @@ import { X6CoreOperationsService } from './x6-core-operations.service';
  * - Use EdgeInfo.update() for domain model updates
  * - Provide consistent edge attribute handling
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class EdgeService {
   constructor(
     private readonly _logger: LoggerService,
     private readonly _portStateManager: PortStateManagerService,
     private readonly _x6CoreOps: X6CoreOperationsService,
+    private readonly _historyCoordinator: GraphHistoryCoordinator,
   ) {}
 
   /**
@@ -35,9 +35,10 @@ export class EdgeService {
     options: {
       ensureVisualRendering?: boolean;
       updatePortVisibility?: boolean;
+      suppressHistory?: boolean;
     } = {},
   ): Edge {
-    const { ensureVisualRendering = true, updatePortVisibility = true } = options;
+    const { ensureVisualRendering = true, updatePortVisibility = true, suppressHistory = false } = options;
 
     this._logger.info('Creating edge from EdgeInfo', {
       edgeId: edgeInfo.id,
@@ -73,7 +74,17 @@ export class EdgeService {
       tools: edgeInfo.tools,
     };
 
-    const x6Edge = this._x6CoreOps.addEdge(graph, edgeParams);
+    let x6Edge: Edge | null;
+
+    if (suppressHistory) {
+      // Execute without history for remote operations
+      x6Edge = this._historyCoordinator.executeRemoteOperation(graph, () => {
+        return this._x6CoreOps.addEdge(graph, edgeParams);
+      });
+    } else {
+      // Add edge directly to X6 graph
+      x6Edge = this._x6CoreOps.addEdge(graph, edgeParams);
+    }
 
     if (!x6Edge) {
       throw new Error(`Failed to create edge with ID: ${edgeInfo.id}`);

@@ -27,7 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
+import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager.service';
 import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
 import { EdgeService } from '../infrastructure/services/edge.service';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
@@ -848,6 +848,7 @@ export class DfdEdgeService {
     this.edgeService.createEdge(graph, edgeInfo, {
       ensureVisualRendering: options?.ensureVisualRendering ?? true,
       updatePortVisibility: options?.updatePortVisibility ?? true,
+      suppressHistory: options?.suppressHistory ?? true,
     });
   }
 
@@ -857,8 +858,11 @@ export class DfdEdgeService {
   removeEdgeFromRemoteOperation(graph: Graph, cellId: string, _options: any): void {
     const cell = graph.getCellById(cellId);
     if (cell && cell.isEdge()) {
-      // Use infrastructure EdgeService (doesn't take options parameter)
-      this.edgeService.removeEdge(graph, cellId);
+      // Execute without history for remote operations
+      this.historyCoordinator.executeRemoteOperation(graph, () => {
+        // Use infrastructure EdgeService (doesn't take options parameter)
+        this.edgeService.removeEdge(graph, cellId);
+      });
     }
   }
 

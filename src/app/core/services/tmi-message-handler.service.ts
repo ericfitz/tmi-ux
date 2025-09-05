@@ -1,9 +1,12 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter } from './websocket.adapter';
 import { DfdCollaborationService } from './dfd-collaboration.service';
-import { DfdNotificationService } from '../../pages/dfd/services/dfd-notification.service';
+import { 
+  ICollaborationNotificationService, 
+  COLLABORATION_NOTIFICATION_SERVICE 
+} from '../interfaces/collaboration-notification.interface';
 import {
   ParticipantJoinedMessage,
   ParticipantLeftMessage,
@@ -51,7 +54,8 @@ export class TMIMessageHandlerService implements OnDestroy {
     private _logger: LoggerService,
     private _webSocketAdapter: WebSocketAdapter,
     private _collaborationService: DfdCollaborationService,
-    private _notificationService: DfdNotificationService,
+    @Optional() @Inject(COLLABORATION_NOTIFICATION_SERVICE) 
+    private _notificationService: ICollaborationNotificationService | null,
   ) {}
 
   /**
@@ -268,7 +272,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
     // Show notification
     const displayName = message.user.displayName || message.user.email;
-    this._notificationService.showSessionEvent('userJoined', displayName).subscribe();
+    this._notificationService?.showSessionEvent('userJoined', displayName).subscribe();
   }
 
   private _handleParticipantLeftEvent(message: ParticipantLeftMessage): void {
@@ -297,7 +301,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
     // Show notification
     const displayName = message.user.displayName || message.user.email;
-    this._notificationService.showSessionEvent('userLeft', displayName).subscribe();
+    this._notificationService?.showSessionEvent('userLeft', displayName).subscribe();
 
     // Check if the current user left (shouldn't happen but handle gracefully)
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();
@@ -352,7 +356,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
       // Show notification about the request
       const displayName = message.user.displayName || message.user.email;
-      this._notificationService.showPresenterEvent('requested', displayName).subscribe();
+      this._notificationService?.showPresenterEvent('requested', displayName).subscribe();
     }
   }
 
@@ -369,7 +373,7 @@ export class TMIMessageHandlerService implements OnDestroy {
       this._collaborationService.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
 
       // Show denial notification
-      this._notificationService.showPresenterEvent('requestDenied').subscribe();
+      this._notificationService?.showPresenterEvent('requestDenied').subscribe();
     }
   }
 

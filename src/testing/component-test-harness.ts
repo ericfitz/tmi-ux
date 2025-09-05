@@ -8,9 +8,10 @@ import { Type } from '@angular/core';
 
 /**
  * Creates a component fixture with the provided configuration
+ * Supports both standalone and non-standalone components
  * @param component The component type to create
  * @param providers Optional providers for the test module
- * @param declarations Optional declarations for the test module
+ * @param declarations Optional declarations for the test module (for non-standalone components)
  * @param imports Optional imports for the test module
  * @returns A ComponentFixture for the component
  */
@@ -26,12 +27,23 @@ export function createComponentFixture<T>(
     imports?: unknown[];
   } = {},
 ): ComponentFixture<T> {
-  // Use void to explicitly mark the promise as ignored
-  void TestBed.configureTestingModule({
-    imports,
-    declarations: [component, ...declarations],
-    providers,
-  }).compileComponents();
+  const componentMetadata = (component as any)['ɵcmp'] || (component as any)['__annotations__']?.[0];
+  const isStandalone = componentMetadata?.standalone === true;
+
+  if (isStandalone) {
+    // For standalone components, import the component itself
+    void TestBed.configureTestingModule({
+      imports: [component, ...imports],
+      providers,
+    }).compileComponents();
+  } else {
+    // For non-standalone components, use declarations
+    void TestBed.configureTestingModule({
+      imports,
+      declarations: [component, ...declarations],
+      providers,
+    }).compileComponents();
+  }
 
   return TestBed.createComponent(component);
 }

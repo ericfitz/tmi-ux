@@ -5,6 +5,18 @@ import { expect, describe, it, beforeEach, vi } from 'vitest';
 import { SecurityConfigService } from './security-config.service';
 import { LoggerService } from './logger.service';
 
+// Mock the environment module
+vi.mock('../../../environments/environment', () => ({
+  environment: {
+    production: false,
+    apiUrl: 'http://localhost:8080',
+    logLevel: 'DEBUG',
+    authTokenExpiryMinutes: 60,
+    operatorName: 'TMI Operator (Test)',
+    operatorContact: 'test@example.com',
+  },
+}));
+
 describe('SecurityConfigService', () => {
   let service: SecurityConfigService;
   let loggerSpy: LoggerService;

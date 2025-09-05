@@ -35,6 +35,9 @@ import { TranslocoRootModule } from './i18n/transloco.module';
 import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interceptor';
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 import { SecurityConfigService } from './core/services/security-config.service';
+import { AUTH_SERVICE, THREAT_MODEL_SERVICE } from './core/interfaces';
+import { AuthService } from './auth/services/auth.service';
+import { ThreatModelService } from './pages/tm/services/threat-model.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -85,6 +88,15 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeSecurityMonitoring,
       deps: [SecurityConfigService],
       multi: true,
+    },
+    // Provide services with interface tokens to satisfy DI requirements
+    {
+      provide: AUTH_SERVICE,
+      useExisting: AuthService,
+    },
+    {
+      provide: THREAT_MODEL_SERVICE,
+      useExisting: ThreatModelService,
     },
   ],
 };

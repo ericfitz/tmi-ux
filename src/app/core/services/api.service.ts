@@ -16,7 +16,7 @@
  */
 
 import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, retry, timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -24,7 +24,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../../auth/services/auth.service';
+import { AUTH_SERVICE, IAuthService } from '../interfaces';
 import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import {
   ValidationErrorDialogComponent,
@@ -47,7 +47,7 @@ export class ApiService {
     private http: HttpClient,
     private logger: LoggerService,
     private router: Router,
-    private authService: AuthService,
+    @Inject(AUTH_SERVICE) private authService: IAuthService,
     private dialog: MatDialog,
   ) {
     this.logger.info(`API Service initialized with endpoint: ${this.apiUrl}`);
