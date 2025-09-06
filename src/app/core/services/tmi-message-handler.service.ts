@@ -3,9 +3,9 @@ import { Subscription } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter } from './websocket.adapter';
 import { DfdCollaborationService } from './dfd-collaboration.service';
-import { 
-  ICollaborationNotificationService, 
-  COLLABORATION_NOTIFICATION_SERVICE 
+import {
+  ICollaborationNotificationService,
+  COLLABORATION_NOTIFICATION_SERVICE,
 } from '../interfaces/collaboration-notification.interface';
 import {
   ParticipantJoinedMessage,
@@ -54,7 +54,8 @@ export class TMIMessageHandlerService implements OnDestroy {
     private _logger: LoggerService,
     private _webSocketAdapter: WebSocketAdapter,
     private _collaborationService: DfdCollaborationService,
-    @Optional() @Inject(COLLABORATION_NOTIFICATION_SERVICE) 
+    @Optional()
+    @Inject(COLLABORATION_NOTIFICATION_SERVICE)
     private _notificationService: ICollaborationNotificationService | null,
   ) {}
 
@@ -68,12 +69,16 @@ export class TMIMessageHandlerService implements OnDestroy {
     }
 
     this._logger.info('Initializing TMI message handlers');
-    this._logger.debugComponent('wsmsg', 'Starting TMI handler initialization', {
+    this._logger.debugComponent('websocket-adapter', 'Starting TMI handler initialization', {
       timestamp: new Date().toISOString(),
     });
 
     // Session management messages
-    this._logger.debugComponent('wsmsg', 'Setting up participant joined event handler', {});
+    this._logger.debugComponent(
+      'websocket-adapter',
+      'Setting up participant joined event handler',
+      {},
+    );
     this._subscriptions.add(
       this._webSocketAdapter
         .getTMIMessagesOfType<ParticipantJoinedMessage>('participant_joined')
@@ -230,7 +235,7 @@ export class TMIMessageHandlerService implements OnDestroy {
 
     this._isInitialized = true;
     this._logger.info('TMI message handlers initialized successfully');
-    this._logger.debugComponent('wsmsg', 'TMI handler initialization complete', {
+    this._logger.debugComponent('websocket-adapter', 'TMI handler initialization complete', {
       timestamp: new Date().toISOString(),
       handlersCount: 17,
     });
@@ -254,7 +259,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     });
 
     // Log with component debugging
-    this._logger.debugComponent('wsmsg', 'Processing participant joined event', {
+    this._logger.debugComponent('websocket-adapter', 'Processing participant joined event', {
       user: message.user,
       timestamp: message.timestamp,
       messageType: message.message_type,
@@ -283,7 +288,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     });
 
     // Log with component debugging
-    this._logger.debugComponent('wsmsg', 'Processing participant left event', {
+    this._logger.debugComponent('websocket-adapter', 'Processing participant left event', {
       user: message.user,
       timestamp: message.timestamp,
       messageType: message.message_type,
@@ -527,7 +532,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     });
 
     // Log with component debugging
-    this._logger.debugComponent('wsmsg', 'Processing participants update', {
+    this._logger.debugComponent('websocket-adapter', 'Processing participants update', {
       participantCount: message?.participants?.length,
       host: message?.host,
       currentPresenter: message?.current_presenter,
