@@ -73,6 +73,20 @@
     align-items: center;
     vertical-align: middle;
   }
+
+  // Ensure both status indicators are properly aligned
+  .mat-mdc-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+  }
 }
 
 // RTL adjustments

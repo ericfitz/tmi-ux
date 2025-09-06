@@ -984,7 +984,7 @@ export class DfdCollaborationService implements OnDestroy {
       });
 
       return {
-        name: participant.user.displayName,
+        name: participant.user.displayName || participant.user.email, // Use email as fallback if displayName is empty
         email: participant.user.email,
         permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
         status: 'active' as const,

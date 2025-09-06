@@ -547,7 +547,7 @@ export class WebSocketAdapter {
             const messageTypeToCheck = messageData.message_type;
 
             // Log ALL TMI messages for debugging
-            this.logger.debugComponent('wsmsg', 'TMI WebSocket message received', {
+            this.logger.debugComponent('websocket-api', 'TMI WebSocket message received', {
               messageType: messageTypeToCheck,
               userId: messageData.user?.user_id || messageData.user_id,
               userEmail: messageData.user?.email,
@@ -731,16 +731,6 @@ export class WebSocketAdapter {
           timestamp: message.timestamp,
           requiresAck: message.requiresAck,
           body: this._redactSensitiveData(message.data),
-        });
-
-        // Also log with wsmsg component for consistency
-        this.logger.debugComponent('wsmsg', 'Internal WebSocket message received', {
-          messageId: message.id,
-          messageType: message.type,
-          sessionId: message.sessionId,
-          userId: message.userId,
-          timestamp: message.timestamp,
-          fullBody: this._redactSensitiveData(message.data),
         });
 
         this._messages$.next(message);
