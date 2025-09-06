@@ -129,15 +129,4 @@ describe('TmComponent', () => {
     cy.get('@navigateSpy').should('have.been.calledWith', ['/tm/new']);
   });
 
-  it('should toggle mock data when clicking the toggle', () => {
-    cy.spy(mockDataServiceStub, 'toggleMockData').as('toggleSpy');
-
-    cy.mount(TmComponent, mountConfig);
-
-    // Click on the mock data toggle
-    cy.get('.mock-data-toggle').click();
-
-    // Check that the toggle method was called with the correct value
-    cy.get('@toggleSpy').should('have.been.calledWith', false);
-  });
 });

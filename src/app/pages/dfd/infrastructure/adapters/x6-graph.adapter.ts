@@ -469,6 +469,13 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Check if the graph has been initialized
+   */
+  isInitialized(): boolean {
+    return this._graph !== null;
+  }
+
+  /**
    * Get the underlying X6 Graph instance for direct access when needed
    */
   getGraph(): Graph {

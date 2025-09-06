@@ -81,19 +81,6 @@ export class ThreatModelListPage extends PageObject {
     return this.getSearchInput().clear();
   }
 
-  /**
-   * Get the mock data toggle
-   */
-  getMockDataToggle(): Cypress.Chainable<JQuery<HTMLElement>> {
-    return this.getBySelector('.mock-data-toggle');
-  }
-
-  /**
-   * Toggle mock data
-   */
-  toggleMockData(): Cypress.Chainable<JQuery<HTMLElement>> {
-    return this.getMockDataToggle().click();
-  }
 
   /**
    * Check if a threat model with the specified name exists
