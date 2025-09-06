@@ -7,7 +7,7 @@ import { Environment } from './environment.interface';
 export const environment: Environment = {
   production: false,
   logLevel: 'DEBUG', // Most verbose logging in development
-  debugComponents: [], // Enable component-specific debug logging for API calls
+  debugComponents: ['websocket-api', 'websocket-adapter'], // Enable component-specific debug logging for WebSocket messages
   apiUrl: 'http://localhost:8080',
   authTokenExpiryMinutes: 1440, // 24 hours for easier development
   operatorName: 'TMI Operator (Development)',

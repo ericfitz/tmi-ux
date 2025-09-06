@@ -524,7 +524,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     this._logger.info('TMI: Participants details', {
       participants: message?.participants?.map((p: ApiParticipant) => ({
         userId: p.user?.user_id,
-        displayName: p.user?.displayName,
+        name: p.user?.name,
         email: p.user?.email,
         permissions: p.permissions,
         lastActivity: p.last_activity,

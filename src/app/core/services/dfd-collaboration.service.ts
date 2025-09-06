@@ -37,7 +37,7 @@ export interface CollaborationUser {
 export interface ApiUser {
   user_id: string;
   email: string;
-  displayName: string;
+  name: string;
 }
 
 /**
@@ -949,7 +949,7 @@ export class DfdCollaborationService implements OnDestroy {
     participants: Array<{
       user: {
         user_id: string;
-        displayName: string;
+        name: string;
         email: string;
       };
       permissions: 'reader' | 'writer' | 'owner';
@@ -984,7 +984,7 @@ export class DfdCollaborationService implements OnDestroy {
       });
 
       return {
-        name: participant.user.displayName || participant.user.email, // Use email as fallback if displayName is empty
+        name: participant.user.name,
         email: participant.user.email,
         permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
         status: 'active' as const,
