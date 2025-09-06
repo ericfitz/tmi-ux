@@ -157,17 +157,7 @@ describe('PortStateManagerService', () => {
       expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledWith(graph, node.id, 'port2');
       expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledWith(graph, node.id, 'port3');
 
-      // Verify logging
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Updated node port visibility',
-        {
-          nodeId: node.id,
-          totalPorts: 3,
-          connectedPorts: 2,
-          visiblePorts: 2,
-        },
-      );
+      // Verify logging is commented out in service, so no logging expectations
     });
 
     it('should handle nodes without ports gracefully', () => {
@@ -244,18 +234,11 @@ describe('PortStateManagerService', () => {
         'visible',
       );
 
-      // Verify logging
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Showed all ports on all nodes',
-        {
-          nodeCount: 2,
-        },
-      );
+      // Verify logging is commented out in service, so no logging expectations
     });
 
     it('should hide unconnected ports on all nodes', () => {
-      graph.addNode({
+      const node2 = graph.addNode({
         shape: 'ellipse',
         x: 300,
         y: 300,
@@ -267,6 +250,10 @@ describe('PortStateManagerService', () => {
         ],
       });
 
+      // Spy on setPortProp for both nodes
+      const setPortProp1Spy = vi.spyOn(node, 'setPortProp');
+      const setPortProp2Spy = vi.spyOn(node2, 'setPortProp');
+
       // Mock connection status for all ports
       vi.mocked(mockEdgeQueryService.isPortConnected)
         .mockReturnValueOnce(true) // node1 port1 connected
@@ -277,14 +264,37 @@ describe('PortStateManagerService', () => {
 
       service.hideUnconnectedPorts(graph);
 
-      // Verify logging
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Hid unconnected ports on all nodes',
-        {
-          nodeCount: 2,
-        },
+      // Verify connected ports remain visible
+      expect(setPortProp1Spy).toHaveBeenCalledWith(
+        'port1',
+        'attrs/circle/style/visibility',
+        'visible',
       );
+      expect(setPortProp2Spy).toHaveBeenCalledWith(
+        'port5',
+        'attrs/circle/style/visibility',
+        'visible',
+      );
+
+      // Verify unconnected ports are hidden
+      expect(setPortProp1Spy).toHaveBeenCalledWith(
+        'port2',
+        'attrs/circle/style/visibility',
+        'hidden',
+      );
+      expect(setPortProp1Spy).toHaveBeenCalledWith(
+        'port3',
+        'attrs/circle/style/visibility',
+        'hidden',
+      );
+      expect(setPortProp2Spy).toHaveBeenCalledWith(
+        'port4',
+        'attrs/circle/style/visibility',
+        'hidden',
+      );
+
+      // Verify isPortConnected was called for all ports
+      expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledTimes(5);
     });
 
     it('should handle empty graph gracefully', () => {
@@ -294,23 +304,20 @@ describe('PortStateManagerService', () => {
         height: 400,
       });
 
-      service.showAllPorts(emptyGraph);
-      service.hideUnconnectedPorts(emptyGraph);
+      // Spy on graph.getNodes to verify it's called
+      const getNodesSpy = vi.spyOn(emptyGraph, 'getNodes');
 
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Showed all ports on all nodes',
-        {
-          nodeCount: 0,
-        },
-      );
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Hid unconnected ports on all nodes',
-        {
-          nodeCount: 0,
-        },
-      );
+      // Should not throw errors
+      expect(() => {
+        service.showAllPorts(emptyGraph);
+        service.hideUnconnectedPorts(emptyGraph);
+      }).not.toThrow();
+
+      // Verify getNodes was called for both operations
+      expect(getNodesSpy).toHaveBeenCalledTimes(2);
+      
+      // Verify no port operations were attempted (since there are no nodes)
+      expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
 
       emptyGraph.dispose();
     });
@@ -364,7 +371,7 @@ describe('PortStateManagerService', () => {
         'visible',
       );
 
-      // Verify logging
+      // Verify that the service logs the edge being processed (this log is active)
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdPortStateManager',
         'Ensuring connected ports are visible for edge',
@@ -377,25 +384,7 @@ describe('PortStateManagerService', () => {
         },
       );
 
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Made source port visible',
-        {
-          edgeId: edge.id,
-          sourceNodeId: sourceNode.id,
-          sourcePortId: 'source-port',
-        },
-      );
-
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Made target port visible',
-        {
-          edgeId: edge.id,
-          targetNodeId: targetNode.id,
-          targetPortId: 'target-port',
-        },
-      );
+      // The "Made source/target port visible" logs are commented out in service
     });
 
     it('should handle edge with non-existent source port', () => {
@@ -746,17 +735,23 @@ describe('PortStateManagerService', () => {
       // Should complete in reasonable time (less than 1 second)
       expect(endTime - startTime).toBeLessThan(1000);
 
-      // Verify logging shows correct port count
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdPortStateManager',
-        'Updated node port visibility',
-        {
-          nodeId: nodeWithManyPorts.id,
-          totalPorts: 100,
-          connectedPorts: 0,
-          visiblePorts: 0,
-        },
-      );
+      // Verify setPortProp was called for all ports
+      const setPortPropSpy = vi.spyOn(nodeWithManyPorts, 'setPortProp');
+      
+      // Call service again to capture the spy
+      service.updateNodePortVisibility(graph, nodeWithManyPorts);
+      
+      // Should have called setPortProp for each of the 100 ports
+      expect(setPortPropSpy).toHaveBeenCalledTimes(100);
+      
+      // All ports should be hidden since none are connected
+      for (let i = 0; i < 100; i++) {
+        expect(setPortPropSpy).toHaveBeenCalledWith(
+          `port${i}`,
+          'attrs/circle/style/visibility',
+          'hidden',
+        );
+      }
     });
   });
 });
