@@ -579,7 +579,7 @@ export class TMIMessageHandlerService implements OnDestroy {
    */
   private _getUserDisplayName(userId: string): string {
     if (!userId) {
-      return 'Unknown User';
+      return 'Unknown - Missing user ID';
     }
 
     // If it's an email, use the part before @ as the display name
