@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, isDevMode, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 
@@ -58,7 +59,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   // WebSocket connection status
   webSocketState: WebSocketState = WebSocketState.DISCONNECTED;
-  showWebSocketStatus = false; // Only show when in a collaboration session
+  showWebSocketStatus = false; // Only show when in a collaboration session AND on DFD page
+  isOnDfdPage = false;
 
   // Menu trigger reference
   @ViewChild('userProfileButton', { read: MatMenuTrigger }) userProfileMenuTrigger!: MatMenuTrigger;
@@ -69,6 +71,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private languageSubscription: Subscription | null = null;
   private serverConnectionSubscription: Subscription | null = null;
   private webSocketConnectionSubscription: Subscription | null = null;
+  private routerSubscription: Subscription | null = null;
+  private collaborationSubscription: Subscription | null = null;
 
   constructor(
     private router: Router,
@@ -86,6 +90,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Initialize current page state
+    this.isOnDfdPage = this.router.url.includes('/dfd');
+
     // Subscribe to auth state
     this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
@@ -117,10 +124,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
       },
     );
 
+    // Subscribe to router navigation events to track current page
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.isOnDfdPage = event.urlAfterRedirects.includes('/dfd');
+        this.updateWebSocketStatusVisibility();
+      });
+
     // Subscribe to collaboration state to show/hide WebSocket indicator
-    this.collaborationService.collaborationState$.subscribe(state => {
-      this.showWebSocketStatus = state.isActive;
-    });
+    this.collaborationSubscription = this.collaborationService.collaborationState$.subscribe(
+      _state => {
+        this.updateWebSocketStatusVisibility();
+      },
+    );
   }
 
   ngOnDestroy(): void {
@@ -144,6 +161,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (this.webSocketConnectionSubscription) {
       this.webSocketConnectionSubscription.unsubscribe();
     }
+
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+
+    if (this.collaborationSubscription) {
+      this.collaborationSubscription.unsubscribe();
+    }
+  }
+
+  /**
+   * Update websocket status visibility based on current page and collaboration state
+   */
+  private updateWebSocketStatusVisibility(): void {
+    const collaborationState = this.collaborationService.getCurrentState();
+    this.showWebSocketStatus = this.isOnDfdPage && collaborationState.isActive;
   }
 
   updateHomeLink(): void {

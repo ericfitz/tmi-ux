@@ -43,9 +43,7 @@ interface ApiParticipantsUpdateMessage {
  * This service sets up listeners for all TMI message types defined in the AsyncAPI
  * specification and provides centralized handling for each message type.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class TMIMessageHandlerService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _isInitialized = false;

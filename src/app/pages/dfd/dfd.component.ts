@@ -152,6 +152,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
       provide: COLLABORATION_NOTIFICATION_SERVICE,
       useClass: DfdNotificationService,
     },
+
+    // Provide TMI message handler at component level so it can access the notification service
+    TMIMessageHandlerService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
