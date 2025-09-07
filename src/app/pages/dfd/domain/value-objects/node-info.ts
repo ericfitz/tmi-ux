@@ -68,7 +68,6 @@ export class NodeInfo {
    * Gets custom data (excluding reserved metadata namespace)
    */
   getCustomData(): Record<string, any> {
-     
     const { _metadata: _, ...customData } = this.data;
     return customData;
   }

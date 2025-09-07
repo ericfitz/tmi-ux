@@ -29,7 +29,12 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
-import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
+import {
+  COMMON_IMPORTS,
+  CORE_MATERIAL_IMPORTS,
+  DATA_MATERIAL_IMPORTS,
+  FEEDBACK_MATERIAL_IMPORTS,
+} from '@app/shared/imports';
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from './models/threat-model.model';
 import { TMListItem } from './models/tm-list-item.model';
@@ -51,7 +56,13 @@ import {
 @Component({
   selector: 'app-tm',
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, ...DATA_MATERIAL_IMPORTS, ...FEEDBACK_MATERIAL_IMPORTS, TranslocoModule],
+  imports: [
+    ...COMMON_IMPORTS,
+    ...CORE_MATERIAL_IMPORTS,
+    ...DATA_MATERIAL_IMPORTS,
+    ...FEEDBACK_MATERIAL_IMPORTS,
+    TranslocoModule,
+  ],
   templateUrl: './tm.component.html',
   styleUrl: './tm.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

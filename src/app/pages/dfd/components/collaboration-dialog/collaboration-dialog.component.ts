@@ -92,14 +92,14 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
     const contextSet = this._collaborationService.isDiagramContextSet();
     const context = this._collaborationService.getDiagramContext();
     const stateContextReady = this._collaborationService.getCurrentState().isDiagramContextReady;
-    
+
     this._logger.info('Diagram context status', {
       contextSet,
       context,
       stateContextReady,
       mismatch: stateContextReady !== contextSet,
     });
-    
+
     // If there's a mismatch, log a warning
     if (stateContextReady !== contextSet) {
       this._logger.warn('Context ready state mismatch detected', {
@@ -334,7 +334,9 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
         isDiagramContextReady: this.isDiagramContextReady,
         context,
       });
-      this._notificationService.showError('Unable to start collaboration. Please refresh the page and try again.').subscribe();
+      this._notificationService
+        .showError('Unable to start collaboration. Please refresh the page and try again.')
+        .subscribe();
       return;
     }
 

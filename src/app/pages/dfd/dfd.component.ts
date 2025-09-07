@@ -41,7 +41,11 @@ import { take } from 'rxjs/operators';
 import { Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
-import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
+import {
+  COMMON_IMPORTS,
+  CORE_MATERIAL_IMPORTS,
+  FEEDBACK_MATERIAL_IMPORTS,
+} from '@app/shared/imports';
 import { NodeType } from './domain/value-objects/node-info';
 import { getX6ShapeForNodeType } from './infrastructure/adapters/x6-shape-definitions';
 import { NodeConfigurationService } from './infrastructure/services/node-configuration.service';
@@ -377,7 +381,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.x6GraphAdapter.isInitialized()) {
           this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
         }
-        
+
         if (isCollaborating && this.threatModelId && this.dfdId) {
           // Initialize collaborative operation service when collaboration starts
           const currentUserEmail = this.collaborationService.getCurrentUserEmail();
@@ -819,7 +823,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const height = container.clientHeight;
 
     this.facade
-      .addGraphNode(shapeType, width, height, this.dfdId || 'default-diagram', this.x6GraphAdapter.isInitialized())
+      .addGraphNode(
+        shapeType,
+        width,
+        height,
+        this.dfdId || 'default-diagram',
+        this.x6GraphAdapter.isInitialized(),
+      )
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -884,7 +894,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.logger.error('Cannot load diagram cells: graph not initialized');
       return;
     }
-    
+
     try {
       const graph = this.x6GraphAdapter.getGraph();
 
@@ -927,7 +937,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           historyManager.enable(graph);
           this.logger.info('History tracking re-enabled after diagram load completed');
         }
-        
+
         // Update embedding appearances AFTER history is cleared and re-enabled
         // This prevents the appearance updates from triggering auto-save
         this.x6GraphAdapter.updateAllEmbeddingAppearances();
@@ -1500,23 +1510,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
       this._subscriptions.add(
-          this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-            next: success => {
-              if (success) {
-                this.logger.info('Diagram changes saved successfully');
-              } else {
-                this.logger.warn('Failed to save diagram changes');
-              }
-              // Navigate away regardless of save success/failure
-              this.facade.closeDiagram(this.threatModelId, this.dfdId);
-            },
-            error: error => {
-              this.logger.error('Error saving diagram changes', error);
-              // Navigate away even if save failed
-              this.facade.closeDiagram(this.threatModelId, this.dfdId);
-            },
-          }),
-        );
+        this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
+          next: success => {
+            if (success) {
+              this.logger.info('Diagram changes saved successfully');
+            } else {
+              this.logger.warn('Failed to save diagram changes');
+            }
+            // Navigate away regardless of save success/failure
+            this.facade.closeDiagram(this.threatModelId, this.dfdId);
+          },
+          error: error => {
+            this.logger.error('Error saving diagram changes', error);
+            // Navigate away even if save failed
+            this.facade.closeDiagram(this.threatModelId, this.dfdId);
+          },
+        }),
+      );
       return;
     }
 
@@ -1530,7 +1540,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private handleEdgeAdded(edge: Edge): void {
     const graph = this.x6GraphAdapter.getGraph();
     this.facade
-      .handleEdgeAdded(edge, graph, this.dfdId || 'default-diagram', this.x6GraphAdapter.isInitialized())
+      .handleEdgeAdded(
+        edge,
+        graph,
+        this.dfdId || 'default-diagram',
+        this.x6GraphAdapter.isInitialized(),
+      )
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -2017,7 +2032,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.logger.error('Cannot apply state correction: graph not initialized');
       return;
     }
-    
+
     try {
       const graph = this.x6GraphAdapter.getGraph();
       // Apply corrected state for each cell

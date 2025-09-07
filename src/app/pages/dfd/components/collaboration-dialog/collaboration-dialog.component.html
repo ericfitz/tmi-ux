@@ -1,5 +1,9 @@
 <h2 mat-dialog-title class="dialog-title">
-  <mat-icon fontSet="material-symbols-outlined" fontWeight="100" style="font-variation-settings: 'FILL' 0">
+  <mat-icon
+    fontSet="material-symbols-outlined"
+    fontWeight="100"
+    style="font-variation-settings: 'FILL' 0"
+  >
     group
   </mat-icon>
   <span>{{ 'collaboration.title' | transloco }}</span>
@@ -41,7 +45,12 @@
     <mat-divider></mat-divider>
     <div class="copy-link-content">
       <h4 class="section-title">{{ 'collaboration.shareLinkHeader' | transloco }}</h4>
-      <button mat-flat-button color="primary" (click)="copyLinkToClipboard()" class="copy-link-button">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="copyLinkToClipboard()"
+        class="copy-link-button"
+      >
         <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
         {{ 'collaboration.copyLink' | transloco }}
       </button>

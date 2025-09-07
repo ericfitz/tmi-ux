@@ -55,7 +55,7 @@ export class CreateDiagramDialogComponent {
     const dfdLabel = this.translocoService.translate('threatModels.dataFlowDiagram');
     // Create default name: "Threat Model Name — Data Flow Diagram"
     const defaultName = `${this.data.threatModelName} — ${dfdLabel}`;
-    
+
     this.diagramForm = this.fb.group({
       type: [{ value: 'DFD-1.0.0', disabled: true }, [Validators.required]],
       name: [defaultName, [Validators.required, Validators.maxLength(100)]],

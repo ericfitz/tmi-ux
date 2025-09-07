@@ -37,7 +37,7 @@ import { COMMON_STANDALONE_IMPORTS } from '@app/shared/imports';
   selector: 'app-example',
   standalone: true,
   imports: [...COMMON_STANDALONE_IMPORTS],
-  template: `...`
+  template: `...`,
 })
 export class ExampleComponent {}
 ```
@@ -52,7 +52,7 @@ import { DATA_DISPLAY_IMPORTS } from '@app/shared/imports';
   selector: 'app-data-table',
   standalone: true,
   imports: [...DATA_DISPLAY_IMPORTS],
-  template: `...`
+  template: `...`,
 })
 export class DataTableComponent {}
 ```
@@ -68,12 +68,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'app-dialog',
   standalone: true,
   imports: [...DIALOG_IMPORTS],
-  template: `...`
+  template: `...`,
 })
 export class DialogComponent {
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 }
 ```
@@ -89,7 +89,7 @@ import { MatListModule } from '@angular/material/list';
   selector: 'app-custom',
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, MatListModule],
-  template: `...`
+  template: `...`,
 })
 export class CustomComponent {}
 ```
@@ -97,6 +97,7 @@ export class CustomComponent {}
 ## Migration Complete
 
 The migration to standalone components is now complete:
+
 - ✅ SharedModule and MaterialModule have been removed
 - ✅ All components use explicit imports via constants
 - ✅ All NgModules have been converted to standalone components

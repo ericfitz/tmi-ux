@@ -315,7 +315,7 @@ describe('PortStateManagerService', () => {
 
       // Verify getNodes was called for both operations
       expect(getNodesSpy).toHaveBeenCalledTimes(2);
-      
+
       // Verify no port operations were attempted (since there are no nodes)
       expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
 
@@ -737,13 +737,13 @@ describe('PortStateManagerService', () => {
 
       // Verify setPortProp was called for all ports
       const setPortPropSpy = vi.spyOn(nodeWithManyPorts, 'setPortProp');
-      
+
       // Call service again to capture the spy
       service.updateNodePortVisibility(graph, nodeWithManyPorts);
-      
+
       // Should have called setPortProp for each of the 100 ports
       expect(setPortPropSpy).toHaveBeenCalledTimes(100);
-      
+
       // All ports should be hidden since none are connected
       for (let i = 0; i < 100; i++) {
         expect(setPortPropSpy).toHaveBeenCalledWith(

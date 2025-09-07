@@ -1816,7 +1816,7 @@ export class X6GraphAdapter implements IGraphAdapter {
           // this.logger.debugComponent('X6Graph', 'Excluding visual-only attribute changes');
           return false; // Don't add to history
         }
-        
+
         // Only log when we have non-visual changes
         this.logger.debugComponent('X6Graph', 'Actual attribute changes detected:', actualChanges);
         // this.logger.debugComponent('X6Graph', 'Including attribute changes - not all visual');

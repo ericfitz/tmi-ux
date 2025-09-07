@@ -81,7 +81,6 @@ export class ThreatModelListPage extends PageObject {
     return this.getSearchInput().clear();
   }
 
-
   /**
    * Check if a threat model with the specified name exists
    * @param name The name of the threat model

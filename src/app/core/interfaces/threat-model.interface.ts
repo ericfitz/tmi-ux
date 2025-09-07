@@ -49,8 +49,5 @@ export interface IThreatModelService {
   /**
    * End a collaboration session for a diagram
    */
-  endDiagramCollaborationSession(
-    threatModelId: string,
-    diagramId: string,
-  ): Observable<void>;
+  endDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<void>;
 }

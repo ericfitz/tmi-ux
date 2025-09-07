@@ -6,7 +6,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 
 // Import the shared constants
-import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
+import {
+  COMMON_IMPORTS,
+  CORE_MATERIAL_IMPORTS,
+  FEEDBACK_MATERIAL_IMPORTS,
+} from '@app/shared/imports';
 
 // Services
 import { AuthService } from '../../../auth/services/auth.service';
@@ -107,9 +111,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     );
 
     // Subscribe to WebSocket connection status changes
-    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(state => {
-      this.webSocketState = state;
-    });
+    this.webSocketConnectionSubscription = this.webSocketAdapter.connectionState$.subscribe(
+      state => {
+        this.webSocketState = state;
+      },
+    );
 
     // Subscribe to collaboration state to show/hide WebSocket indicator
     this.collaborationService.collaborationState$.subscribe(state => {

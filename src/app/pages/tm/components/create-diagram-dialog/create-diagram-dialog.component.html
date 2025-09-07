@@ -29,7 +29,13 @@
   <button mat-button (click)="onCancel()">
     {{ 'common.cancel' | transloco }}
   </button>
-  <button mat-raised-button color="primary" type="submit" [disabled]="diagramForm.invalid" (click)="onSubmit()">
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="diagramForm.invalid"
+    (click)="onSubmit()"
+  >
     {{ 'common.ok' | transloco }}
   </button>
 </mat-dialog-actions>

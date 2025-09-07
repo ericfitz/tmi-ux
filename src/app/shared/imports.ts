@@ -1,12 +1,12 @@
 /**
  * Shared Import Constants
- * 
+ *
  * This file provides reusable import constants for standalone components
  * to reduce duplication and standardize imports across the application.
- * 
+ *
  * Usage:
  * import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
- * 
+ *
  * @Component({
  *   standalone: true,
  *   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS]
@@ -48,7 +48,7 @@ export const COMMON_IMPORTS = [
   CommonModule,
   FormsModule,
   ReactiveFormsModule,
-  RouterModule
+  RouterModule,
 ] as const;
 
 /**
@@ -60,7 +60,7 @@ export const CORE_MATERIAL_IMPORTS = [
   MatToolbarModule,
   MatMenuModule,
   MatTooltipModule,
-  MatDividerModule
+  MatDividerModule,
 ] as const;
 
 /**
@@ -72,7 +72,7 @@ export const FORM_MATERIAL_IMPORTS = [
   MatSelectModule,
   MatCheckboxModule,
   MatRadioModule,
-  MatSlideToggleModule
+  MatSlideToggleModule,
 ] as const;
 
 /**
@@ -85,7 +85,7 @@ export const DATA_MATERIAL_IMPORTS = [
   MatCardModule,
   MatListModule,
   MatGridListModule,
-  MatBadgeModule
+  MatBadgeModule,
 ] as const;
 
 /**
@@ -94,7 +94,7 @@ export const DATA_MATERIAL_IMPORTS = [
 export const FEEDBACK_MATERIAL_IMPORTS = [
   MatProgressSpinnerModule,
   MatSnackBarModule,
-  MatDialogModule
+  MatDialogModule,
 ] as const;
 
 /**
@@ -104,7 +104,7 @@ export const ALL_MATERIAL_IMPORTS = [
   ...CORE_MATERIAL_IMPORTS,
   ...FORM_MATERIAL_IMPORTS,
   ...DATA_MATERIAL_IMPORTS,
-  ...FEEDBACK_MATERIAL_IMPORTS
+  ...FEEDBACK_MATERIAL_IMPORTS,
 ] as const;
 
 /**
@@ -113,7 +113,7 @@ export const ALL_MATERIAL_IMPORTS = [
 export const COMMON_STANDALONE_IMPORTS = [
   ...COMMON_IMPORTS,
   ...CORE_MATERIAL_IMPORTS,
-  ...FORM_MATERIAL_IMPORTS
+  ...FORM_MATERIAL_IMPORTS,
 ] as const;
 
 /**
@@ -122,7 +122,7 @@ export const COMMON_STANDALONE_IMPORTS = [
 export const DATA_DISPLAY_IMPORTS = [
   ...COMMON_IMPORTS,
   ...CORE_MATERIAL_IMPORTS,
-  ...DATA_MATERIAL_IMPORTS
+  ...DATA_MATERIAL_IMPORTS,
 ] as const;
 
 /**
@@ -132,5 +132,5 @@ export const DIALOG_IMPORTS = [
   ...COMMON_IMPORTS,
   ...CORE_MATERIAL_IMPORTS,
   ...FORM_MATERIAL_IMPORTS,
-  MatDialogModule
+  MatDialogModule,
 ] as const;

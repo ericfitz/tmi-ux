@@ -11,7 +11,9 @@ export const TM_ROUTES: Routes = [
   {
     path: ':id',
     loadComponent: () =>
-      import(/* webpackChunkName: "tm-edit" */ './tm-edit/tm-edit.component').then(c => c.TmEditComponent),
+      import(/* webpackChunkName: "tm-edit" */ './tm-edit/tm-edit.component').then(
+        c => c.TmEditComponent,
+      ),
     resolve: {
       threatModel: threatModelResolver,
     },

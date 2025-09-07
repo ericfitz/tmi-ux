@@ -128,5 +128,4 @@ describe('TmComponent', () => {
     // Check that the router was called with the correct route
     cy.get('@navigateSpy').should('have.been.calledWith', ['/tm/new']);
   });
-
 });

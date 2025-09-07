@@ -8,7 +8,13 @@
       <p *ngIf="requiredRole">
         {{ 'auth.unauthorized.requiredRole' | transloco: { role: requiredRole } }}
       </p>
-      <p>{{ statusCode === 401 ? ('auth.unauthorized.401' | transloco) : ('auth.unauthorized.403' | transloco) }}</p>
+      <p>
+        {{
+          statusCode === 401
+            ? ('auth.unauthorized.401' | transloco)
+            : ('auth.unauthorized.403' | transloco)
+        }}
+      </p>
     </mat-card-content>
     <mat-card-actions class="centered-actions">
       <button mat-raised-button color="primary" (click)="goBack()">

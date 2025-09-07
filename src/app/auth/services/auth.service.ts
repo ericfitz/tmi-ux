@@ -448,7 +448,9 @@ export class AuthService {
           this.logger.info('Initiating local provider login', { returnUrl });
           this.initiateLocalLogin(returnUrl);
         } else {
-          this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, { returnUrl });
+          this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
+            returnUrl,
+          });
           this.initiateTMIOAuthLogin(provider, returnUrl);
         }
       },
@@ -564,7 +566,7 @@ export class AuthService {
       // Create structured state object with both CSRF token and return URL
       const stateObject = {
         csrf: csrf,
-        returnUrl: returnUrl
+        returnUrl: returnUrl,
       };
       // Base64 encode the JSON object for URL safety
       return btoa(JSON.stringify(stateObject));
@@ -603,11 +605,15 @@ export class AuthService {
         const decoded = JSON.parse(atob(state)) as { csrf: string; returnUrl?: string };
         return {
           csrf: decoded.csrf,
-          returnUrl: decoded.returnUrl
+          returnUrl: decoded.returnUrl,
         };
       }
     } catch (error) {
-      this.logger.debugComponent('Auth', 'Failed to decode structured state, treating as plain CSRF token', error);
+      this.logger.debugComponent(
+        'Auth',
+        'Failed to decode structured state, treating as plain CSRF token',
+        error,
+      );
     }
 
     // If not Base64 or decoding failed, treat as plain CSRF token
@@ -799,14 +805,14 @@ export class AuthService {
       this.userProfileSubject.next(userInfo);
 
       this.logger.info(`Local user ${userInfo.email} successfully logged in`, { returnUrl });
-      
+
       // Navigate to return URL if provided, otherwise to default
       if (returnUrl) {
         void this.router.navigateByUrl(returnUrl);
       } else {
         void this.router.navigate(['/tm']);
       }
-      
+
       return of(true);
     } catch (error) {
       this.logger.error('Error in handleLocalCallback', error);
@@ -829,7 +835,7 @@ export class AuthService {
   private handleTMITokenResponse(
     response: OAuthResponse,
     providerId: string | null,
-    returnUrl?: string
+    returnUrl?: string,
   ): Observable<boolean> {
     try {
       this.logger.debugComponent('Auth', 'Processing TMI token response', {
@@ -896,15 +902,17 @@ export class AuthService {
         storedTokenMatches: storedToken?.token === token.token,
       });
 
-      this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`, { returnUrl });
-      
+      this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`, {
+        returnUrl,
+      });
+
       // Navigate to return URL if provided, otherwise to default
       if (returnUrl) {
         void this.router.navigateByUrl(returnUrl);
       } else {
         void this.router.navigate(['/tm']);
       }
-      
+
       return of(true);
     } catch (error) {
       this.logger.error('Error processing TMI token response', error);

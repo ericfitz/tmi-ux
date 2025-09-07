@@ -52,7 +52,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   isCollaborating = false;
   collaborationUsers: CollaborationUser[] = [];
   existingSessionAvailable: CollaborationSession | null = null;
-  
+
   // This must always reflect the actual context state, not a cached value
   get isContextReady(): boolean {
     return this._collaborationService.isDiagramContextSet();
@@ -89,10 +89,10 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
         this.isCollaborating = state.isActive;
         this.collaborationUsers = [...state.users];
         this.existingSessionAvailable = state.existingSessionAvailable;
-        
+
         // Log state mismatches for debugging
         const actuallySet = this._collaborationService.isDiagramContextSet();
-        
+
         if (state.isDiagramContextReady !== actuallySet) {
           this._logger.warn('[CollaborationComponent] State mismatch detected', {
             stateContextReady: state.isDiagramContextReady,

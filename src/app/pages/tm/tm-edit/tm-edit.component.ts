@@ -1,9 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
@@ -14,10 +10,17 @@ import { Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
 import { LanguageService } from '../../../i18n/language.service';
 import { LoggerService } from '../../../core/services/logger.service';
+import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import { MockDataService } from '../../../mocks/mock-data.service';
 
-import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS, FEEDBACK_MATERIAL_IMPORTS } from '@app/shared/imports';
+import {
+  COMMON_IMPORTS,
+  CORE_MATERIAL_IMPORTS,
+  FORM_MATERIAL_IMPORTS,
+  DATA_MATERIAL_IMPORTS,
+  FEEDBACK_MATERIAL_IMPORTS,
+} from '@app/shared/imports';
 import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
 import {
   DocumentEditorDialogComponent,
@@ -129,6 +132,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private languageService: LanguageService,
     private logger: LoggerService,
+    private apiService: ApiService,
     private transloco: TranslocoService,
     private frameworkService: FrameworkService,
     private mockDataService: MockDataService,
@@ -776,12 +780,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Update the diagram in the map for backward compatibility
           DIAGRAMS_BY_ID.set(diagram.id, updatedDiagram);
 
-          // Update the diagram using the direct diagram API
+          // Update the diagram using PATCH to only update the name
+          // Create JSON Patch operations for the name update
+          const patchOperations = [
+            {
+              op: 'replace' as const,
+              path: '/name',
+              value: newName,
+            },
+          ];
+
           this._subscriptions.add(
-            this.threatModelService
-              .updateDiagram(this.threatModel.id, diagram.id, {
-                name: newName,
-              })
+            this.apiService
+              .patch<Diagram>(
+                `threat_models/${this.threatModel.id}/diagrams/${diagram.id}`,
+                patchOperations,
+              )
               .subscribe({
                 next: result => {
                   if (result) {

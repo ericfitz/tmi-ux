@@ -189,7 +189,7 @@ export class DfdDiagramService {
         // Add nodes first, then edges (to ensure proper dependencies)
         // Track nodes that have parent relationships to establish after all nodes are created
         const nodesWithParents: Array<{ nodeId: string; parentId: string }> = [];
-        
+
         nodes.forEach((nodeConfig, index) => {
           try {
             this.logger.info(`Adding node ${index + 1}/${nodes.length}`, {
@@ -228,12 +228,14 @@ export class DfdDiagramService {
         });
 
         // Establish parent-child relationships after all nodes are created
-        this.logger.info('Establishing embedding relationships', { count: nodesWithParents.length });
+        this.logger.info('Establishing embedding relationships', {
+          count: nodesWithParents.length,
+        });
         nodesWithParents.forEach(({ nodeId, parentId }) => {
           try {
             const childNode = graph.getCellById(nodeId);
             const parentNode = graph.getCellById(parentId);
-            
+
             if (childNode && parentNode && childNode.isNode() && parentNode.isNode()) {
               childNode.setParent(parentNode);
               this.logger.info('Established embedding relationship', {

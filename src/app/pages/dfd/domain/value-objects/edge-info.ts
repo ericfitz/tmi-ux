@@ -42,7 +42,6 @@ export class EdgeInfo {
    * Gets custom data (excluding reserved metadata namespace)
    */
   getCustomData(): Record<string, unknown> {
-     
     const { _metadata: _, ...customData } = this.data;
     return customData;
   }

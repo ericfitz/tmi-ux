@@ -58,7 +58,7 @@ export interface ICollaborationNotificationService {
 /**
  * Types of session events that can trigger notifications
  */
-export type SessionEventType = 
+export type SessionEventType =
   | 'started'
   | 'ended'
   | 'userJoined'
@@ -70,7 +70,7 @@ export type SessionEventType =
 /**
  * Types of presenter events that can trigger notifications
  */
-export type PresenterEventType = 
+export type PresenterEventType =
   | 'requestSent'
   | 'requestDenied'
   | 'assigned'
@@ -85,5 +85,5 @@ export type PresenterEventType =
  */
 import { InjectionToken } from '@angular/core';
 
-export const COLLABORATION_NOTIFICATION_SERVICE = 
+export const COLLABORATION_NOTIFICATION_SERVICE =
   new InjectionToken<ICollaborationNotificationService>('CollaborationNotificationService');

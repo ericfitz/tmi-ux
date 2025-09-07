@@ -1,4 +1,3 @@
-
 /**
  * JWT token structure
  */

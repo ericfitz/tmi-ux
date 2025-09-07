@@ -38,7 +38,11 @@ export class EdgeService {
       suppressHistory?: boolean;
     } = {},
   ): Edge {
-    const { ensureVisualRendering = true, updatePortVisibility = true, suppressHistory = false } = options;
+    const {
+      ensureVisualRendering = true,
+      updatePortVisibility = true,
+      suppressHistory = false,
+    } = options;
 
     this._logger.info('Creating edge from EdgeInfo', {
       edgeId: edgeInfo.id,

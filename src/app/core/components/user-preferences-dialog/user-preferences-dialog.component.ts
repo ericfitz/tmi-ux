@@ -15,10 +15,7 @@ interface CheckboxChangeEvent {
 @Component({
   selector: 'app-user-preferences-dialog',
   standalone: true,
-  imports: [
-    ...DIALOG_IMPORTS,
-    TranslocoModule,
-  ],
+  imports: [...DIALOG_IMPORTS, TranslocoModule],
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>
     <mat-dialog-content>

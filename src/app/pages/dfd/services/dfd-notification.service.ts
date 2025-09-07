@@ -12,10 +12,10 @@ import {
   WebSocketError,
   WebSocketErrorType,
 } from '../../../core/services/websocket.adapter';
-import { 
-  ICollaborationNotificationService, 
-  SessionEventType, 
-  PresenterEventType 
+import {
+  ICollaborationNotificationService,
+  SessionEventType,
+  PresenterEventType,
 } from '../../../core/interfaces/collaboration-notification.interface';
 
 /**
@@ -376,10 +376,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
    * @param eventType The session event type
    * @param displayName Additional details (e.g., user name)
    */
-  showSessionEvent(
-    eventType: SessionEventType,
-    displayName?: string,
-  ): Observable<void> {
+  showSessionEvent(eventType: SessionEventType, displayName?: string): Observable<void> {
     // Only show notifications for events that aren't already indicated by UI state
     // Session start/end are already visible via collaboration icon state
     // Only show user join/leave events since they provide useful information
@@ -427,10 +424,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
    * @param event The presenter event type
    * @param displayName Optional user name for context
    */
-  showPresenterEvent(
-    eventType: PresenterEventType,
-    displayName?: string,
-  ): Observable<void> {
+  showPresenterEvent(eventType: PresenterEventType, displayName?: string): Observable<void> {
     let message: string;
     let presetKey: string;
 
@@ -493,10 +487,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
    * @param operation The operation that failed
    * @param errorMessage The error message
    */
-  showOperationError(
-    operation: string,
-    errorMessage: string,
-  ): Observable<void> {
+  showOperationError(operation: string, errorMessage: string): Observable<void> {
     const message = `Failed to ${operation}: ${errorMessage}`;
     return this.showPreset('operationError', message);
   }

@@ -4,13 +4,13 @@ import { map, catchError, tap, skip } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter, WebSocketState, WebSocketErrorType } from './websocket.adapter';
-import { 
-  ICollaborationNotificationService, 
+import {
+  ICollaborationNotificationService,
   COLLABORATION_NOTIFICATION_SERVICE,
   IAuthService,
   IThreatModelService,
   AUTH_SERVICE,
-  THREAT_MODEL_SERVICE
+  THREAT_MODEL_SERVICE,
 } from '../interfaces';
 import { environment } from '../../../environments/environment';
 import { SessionTerminatedMessage, ChangePresenterMessage } from '../types/websocket-message.types';
@@ -132,7 +132,8 @@ export class DfdCollaborationService implements OnDestroy {
     @Inject(AUTH_SERVICE) private _authService: IAuthService,
     @Inject(THREAT_MODEL_SERVICE) private _threatModelService: IThreatModelService,
     private _webSocketAdapter: WebSocketAdapter,
-    @Optional() @Inject(COLLABORATION_NOTIFICATION_SERVICE) 
+    @Optional()
+    @Inject(COLLABORATION_NOTIFICATION_SERVICE)
     private _notificationService: ICollaborationNotificationService | null,
     private _router: Router,
   ) {
@@ -148,22 +149,25 @@ export class DfdCollaborationService implements OnDestroy {
    */
   private _updateState(updates: Partial<CollaborationState>): void {
     const currentState = this._collaborationState$.value;
-    
+
     // Special handling for isDiagramContextReady - validate it matches actual context
     if ('isDiagramContextReady' in updates) {
       const actuallyReady = !!(this._threatModelId && this._diagramId);
       if (updates.isDiagramContextReady && !actuallyReady) {
-        this._logger.warn('Preventing isDiagramContextReady=true when context is not actually set', {
-          instanceId: this._instanceId,
-          requestedReady: updates.isDiagramContextReady,
-          actuallyReady,
-          threatModelId: this._threatModelId,
-          diagramId: this._diagramId,
-        });
+        this._logger.warn(
+          'Preventing isDiagramContextReady=true when context is not actually set',
+          {
+            instanceId: this._instanceId,
+            requestedReady: updates.isDiagramContextReady,
+            actuallyReady,
+            threatModelId: this._threatModelId,
+            diagramId: this._diagramId,
+          },
+        );
         updates.isDiagramContextReady = false;
       }
     }
-    
+
     const newState = { ...currentState, ...updates };
 
     // Enhanced logging for debugging WebSocket flow
@@ -245,10 +249,10 @@ export class DfdCollaborationService implements OnDestroy {
       previousDiagramId: this._diagramId,
       currentContextReady: this._collaborationState$.value.isDiagramContextReady,
     });
-    
+
     this._threatModelId = threatModelId;
     this._diagramId = diagramId;
-    
+
     // Update state to indicate context is ready
     if (threatModelId && diagramId) {
       this._logger.info('Setting isDiagramContextReady to true');
@@ -268,7 +272,7 @@ export class DfdCollaborationService implements OnDestroy {
   isDiagramContextSet(): boolean {
     const isSet = !!(this._threatModelId && this._diagramId);
     const stateReady = this._collaborationState$.value.isDiagramContextReady;
-    
+
     // Log any mismatch between actual context and state
     if (isSet !== stateReady) {
       this._logger.warn('Context mismatch detected in isDiagramContextSet', {
@@ -279,7 +283,7 @@ export class DfdCollaborationService implements OnDestroy {
         diagramId: this._diagramId,
       });
     }
-    
+
     return isSet;
   }
 
@@ -312,10 +316,10 @@ export class DfdCollaborationService implements OnDestroy {
       previousThreatModelId: this._threatModelId,
       previousDiagramId: this._diagramId,
     });
-    
+
     this._threatModelId = null;
     this._diagramId = null;
-    
+
     // Update state to indicate context is no longer ready
     this._updateState({ isDiagramContextReady: false });
   }
@@ -328,11 +332,11 @@ export class DfdCollaborationService implements OnDestroy {
     this._logger.info('resetState called', {
       instanceId: this._instanceId,
     });
-    
+
     this._threatModelId = null;
     this._diagramId = null;
     this._currentSession = null;
-    
+
     // Reset to initial state
     this._collaborationState$.next({
       isActive: false,
@@ -538,7 +542,8 @@ export class DfdCollaborationService implements OnDestroy {
               this._logger.warn(
                 'Reader cannot create collaboration session - no existing session found',
               );
-              this._notificationService?.showError('You need writer permissions to start a collaboration session')
+              this._notificationService
+                ?.showError('You need writer permissions to start a collaboration session')
                 .subscribe();
               return of(false);
             }
@@ -1207,7 +1212,8 @@ export class DfdCollaborationService implements OnDestroy {
           // Revert state on error
           this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this._notificationService?.showOperationError('send presenter request', errorMessage)
+          this._notificationService
+            ?.showOperationError('send presenter request', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1277,7 +1283,8 @@ export class DfdCollaborationService implements OnDestroy {
         catchError((error: unknown) => {
           this._logger.error('Failed to send presenter denial', error);
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this._notificationService?.showOperationError('deny presenter request', errorMessage)
+          this._notificationService
+            ?.showOperationError('deny presenter request', errorMessage)
             .subscribe();
           return throwError(() => error);
         }),
@@ -1324,7 +1331,8 @@ export class DfdCollaborationService implements OnDestroy {
           this._notificationService?.showPresenterEvent('assigned').subscribe();
         } else if (userEmail) {
           const user = this._collaborationState$.value.users.find(u => u.email === userEmail);
-          this._notificationService?.showPresenterEvent('assigned', user?.name || userEmail)
+          this._notificationService
+            ?.showPresenterEvent('assigned', user?.name || userEmail)
             .subscribe();
         } else {
           this._notificationService?.showPresenterEvent('cleared').subscribe();
@@ -1438,7 +1446,8 @@ export class DfdCollaborationService implements OnDestroy {
           error instanceof Error ? error.message : 'Failed to connect to collaboration server';
         const errorObj = error as { type?: string; message?: string } | undefined;
 
-        this._notificationService?.showWebSocketError(
+        this._notificationService
+          ?.showWebSocketError(
             {
               type: (errorObj?.type as WebSocketErrorType) || 'connection_failed',
               message: errorMessage,
@@ -1538,7 +1547,8 @@ export class DfdCollaborationService implements OnDestroy {
     // Listen to connection errors
     this._subscriptions.add(
       this._webSocketAdapter.errors$.subscribe(error => {
-        this._notificationService?.showWebSocketError(error, () => this._retryWebSocketConnection())
+        this._notificationService
+          ?.showWebSocketError(error, () => this._retryWebSocketConnection())
           .subscribe();
       }),
     );
@@ -1611,14 +1621,16 @@ export class DfdCollaborationService implements OnDestroy {
           return;
         }
         // Show notification for unexpected disconnections
-        this._notificationService?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
+        this._notificationService
+          ?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
           .subscribe();
         // Emit session ended event for unexpected disconnection
         this._sessionEndedSubject.next({ reason: 'disconnected' });
         break;
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
-        this._notificationService?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
+        this._notificationService
+          ?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
           .subscribe();
         // Emit session ended event for errors
         if (this._collaborationState$.value.isActive) {
@@ -1640,7 +1652,8 @@ export class DfdCollaborationService implements OnDestroy {
       this._connectToWebSocket(this._currentSession.websocket_url);
     } else {
       this._logger.warn('Cannot retry WebSocket connection - no session URL available');
-      this._notificationService?.showError('Cannot retry connection - no active session')
+      this._notificationService
+        ?.showError('Cannot retry connection - no active session')
         .subscribe();
     }
   }

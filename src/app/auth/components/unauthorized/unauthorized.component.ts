@@ -38,14 +38,14 @@ export class UnauthorizedComponent implements OnInit {
       this.requiredRole = params.requiredRole || null;
       this.currentUrl = params.currentUrl || null;
       this.reason = params.reason || null;
-      
+
       // Determine status code from reason or statusCode param
       if (params.statusCode) {
         this.statusCode = parseInt(params.statusCode, 10);
       } else if (params.reason === 'unauthorized_api') {
         this.statusCode = 401;
       }
-      
+
       this.logger.warn(
         `Unauthorized access attempt. Status: ${this.statusCode}, Required Role: ${this.requiredRole}, Current URL: ${this.currentUrl}, Reason: ${this.reason}`,
       );

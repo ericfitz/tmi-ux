@@ -27,7 +27,8 @@ export function createComponentFixture<T>(
     imports?: unknown[];
   } = {},
 ): ComponentFixture<T> {
-  const componentMetadata = (component as any)['ɵcmp'] || (component as any)['__annotations__']?.[0];
+  const componentMetadata =
+    (component as any)['ɵcmp'] || (component as any)['__annotations__']?.[0];
   const isStandalone = componentMetadata?.standalone === true;
 
   if (isStandalone) {
