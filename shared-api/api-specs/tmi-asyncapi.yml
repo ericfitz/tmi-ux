@@ -96,6 +96,8 @@ channels:
         $ref: '#/components/messages/ParticipantJoinedMessage'
       participantLeftMessage:
         $ref: '#/components/messages/ParticipantLeftMessage'
+      removeParticipantMessage:
+        $ref: '#/components/messages/RemoveParticipantMessage'
       sessionTerminatedMessage:
         $ref: '#/components/messages/SessionTerminatedMessage'
       errorMessage:
@@ -124,6 +126,7 @@ operations:
       - $ref: '#/components/messages/ResyncRequestMessage'
       - $ref: '#/components/messages/UndoRequestMessage'
       - $ref: '#/components/messages/RedoRequestMessage'
+      - $ref: '#/components/messages/RemoveParticipantMessage'
 
   receiveDiagramEvents:
     action: receive
@@ -513,6 +516,32 @@ components:
               email: jane.smith@example.com
               displayName: Jane Smith
             timestamp: '2024-01-15T11:45:00Z'
+
+    RemoveParticipantMessage:
+      name: RemoveParticipantMessage
+      title: Remove Participant Message
+      summary: Host removes a participant from collaboration session
+      description: |
+        Message sent by the host to remove a specific participant from the collaboration session.
+        Only the host can send this message. When processed, the server will:
+        1. Disconnect the specified user from the current session
+        2. Add the user to a session-specific deny list
+        3. Broadcast a participants_update message to all remaining participants
+        
+        The removed participant will not be able to rejoin the same session but can
+        participate in other collaboration sessions.
+      payload:
+        $ref: '#/components/schemas/RemoveParticipantPayload'
+      examples:
+        - name: HostRemovesParticipant
+          summary: Example of host removing a participant
+          payload:
+            message_type: remove_participant
+            user:
+              user_id: host@example.com
+              email: host@example.com
+              displayName: Host Manager
+            target_user: disruptive-user@example.com
 
     SessionTerminatedMessage:
       name: SessionTerminatedMessage
@@ -1094,6 +1123,24 @@ components:
         - message_type
         - user
         - timestamp
+      additionalProperties: false
+
+    RemoveParticipantPayload:
+      type: object
+      description: Host removes a participant from collaboration session
+      properties:
+        message_type:
+          const: remove_participant
+        user:
+          $ref: '#/components/schemas/User'
+        target_user:
+          type: string
+          description: User ID of the participant to be removed from the session
+          example: disruptive-user@example.com
+      required:
+        - message_type
+        - user
+        - target_user
       additionalProperties: false
 
     SessionTerminatedPayload:
