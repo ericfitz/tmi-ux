@@ -7,6 +7,7 @@ import {
 } from '@angular/material/snack-bar';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { LoggerService } from '../../../core/services/logger.service';
+import { TranslocoService } from '@jsverse/transloco';
 import {
   WebSocketState,
   WebSocketError,
@@ -178,6 +179,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
   constructor(
     private _snackBar: MatSnackBar,
     private _logger: LoggerService,
+    private _transloco: TranslocoService,
   ) {
     this._logger.info('DfdNotificationService initialized');
   }
@@ -391,13 +393,17 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
         });
       case 'userJoined':
         if (displayName) {
-          const message = `${displayName} joined the collaboration`;
+          const message = this._transloco.translate('collaboration.userJoined', {
+            user: displayName,
+          });
           return this.showPreset('userJoined', message);
         }
         break;
       case 'userLeft':
         if (displayName) {
-          const message = `${displayName} left the collaboration`;
+          const message = this._transloco.translate('collaboration.userLeft', {
+            user: displayName,
+          });
           return this.showPreset('userLeft', message);
         }
         break;

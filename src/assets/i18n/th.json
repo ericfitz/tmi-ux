@@ -49,6 +49,8 @@
     "startCollaboration": "เริ่มการทำงานร่วมกัน",
     "takeBackPresenter": "เอาผู้นำเสนอกลับ",
     "title": "การทำงานร่วมกัน",
+    "userJoined": "{{user}} เข้าร่วมการทำงานร่วมกัน",
+    "userLeft": "{{user}} ออกจากการทำงานร่วมกัน",
     "websocketStatus": {
       "connected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว",
       "noSession": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",

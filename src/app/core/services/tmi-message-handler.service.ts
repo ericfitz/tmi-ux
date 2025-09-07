@@ -275,9 +275,11 @@ export class TMIMessageHandlerService implements OnDestroy {
     // The participants list is managed exclusively through participants_update messages
     this._logger.info('Participant joined - showing notification only', { user: message.user });
 
-    // Show notification
-    const displayName = message.user.displayName || message.user.email;
-    this._notificationService?.showSessionEvent('userJoined', displayName).subscribe();
+    // Show notification with both display name and email
+    const userIdentifier = message.user.displayName
+      ? `${message.user.displayName} (${message.user.email})`
+      : message.user.email;
+    this._notificationService?.showSessionEvent('userJoined', userIdentifier).subscribe();
   }
 
   private _handleParticipantLeftEvent(message: ParticipantLeftMessage): void {
@@ -304,9 +306,11 @@ export class TMIMessageHandlerService implements OnDestroy {
     // The participants list is managed exclusively through participants_update messages
     this._logger.info('Participant left - showing notification only', { user: message.user });
 
-    // Show notification
-    const displayName = message.user.displayName || message.user.email;
-    this._notificationService?.showSessionEvent('userLeft', displayName).subscribe();
+    // Show notification with both display name and email
+    const userIdentifier = message.user.displayName
+      ? `${message.user.displayName} (${message.user.email})`
+      : message.user.email;
+    this._notificationService?.showSessionEvent('userLeft', userIdentifier).subscribe();
 
     // Check if the current user left (shouldn't happen but handle gracefully)
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();

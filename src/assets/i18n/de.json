@@ -49,6 +49,8 @@
     "startCollaboration": "Zusammenarbeit starten",
     "takeBackPresenter": "Präsentator zurückholen",
     "title": "Zusammenarbeit",
+    "userJoined": "{{user}} ist der Zusammenarbeit beigetreten",
+    "userLeft": "{{user}} hat die Zusammenarbeit verlassen",
     "websocketStatus": {
       "connected": "Websocket Verbunden",
       "noSession": "Keine Kollaborationssitzung Aktiv",

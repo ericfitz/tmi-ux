@@ -49,6 +49,8 @@
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
     "title": "Collaboration",
+    "userJoined": "{{user}} joined the collaboration",
+    "userLeft": "{{user}} left the collaboration",
     "websocketStatus": {
       "connected": "Websocket Connected",
       "noSession": "No Collaboration Session Active",

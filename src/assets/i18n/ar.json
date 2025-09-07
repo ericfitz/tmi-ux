@@ -49,6 +49,8 @@
     "startCollaboration": "بدء التعاون",
     "takeBackPresenter": "استرداد المقدم",
     "title": "التعاون",
+    "userJoined": "انضم {{user}} إلى جلسة التعاون",
+    "userLeft": "غادر {{user}} جلسة التعاون",
     "websocketStatus": {
       "connected": "ويب سوكيت متصل",
       "noSession": "لا توجد جلسة تعاون نشطة",
