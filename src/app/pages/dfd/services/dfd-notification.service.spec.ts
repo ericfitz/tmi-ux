@@ -13,6 +13,7 @@ describe('DfdNotificationService', () => {
   let service: DfdNotificationService;
   let mockSnackBar: any;
   let mockLogger: any;
+  let mockTransloco: any;
 
   beforeEach(() => {
     // Create mocks
@@ -28,6 +29,17 @@ describe('DfdNotificationService', () => {
       error: vi.fn(),
     };
 
+    mockTransloco = {
+      translate: vi.fn((key: string, params?: any) => {
+        // Mock translations
+        const translations: Record<string, string> = {
+          'collaboration.userJoined': `${params?.user || 'User'} joined the collaboration`,
+          'collaboration.userLeft': `${params?.user || 'User'} left the collaboration`,
+        };
+        return translations[key] || key;
+      }),
+    };
+
     // Setup default snackbar behavior
     const mockSnackBarRef = {
       onAction: vi.fn(() => of(null)),
@@ -37,7 +49,7 @@ describe('DfdNotificationService', () => {
     mockSnackBar.open.mockReturnValue(mockSnackBarRef);
 
     // Create service instance directly with mocks
-    service = new DfdNotificationService(mockSnackBar, mockLogger);
+    service = new DfdNotificationService(mockSnackBar, mockLogger, mockTransloco);
   });
 
   it('should be created', () => {

@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -51,6 +52,7 @@ export interface CollaborationDialogData {
     MatInputModule,
     MatSelectModule,
     MatSnackBarModule,
+    MatMenuModule,
     TranslocoModule,
   ],
   templateUrl: './collaboration-dialog.component.html',
@@ -680,5 +682,12 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
    */
   trackByUserEmail(_index: number, user: CollaborationUser): string {
     return user.email;
+  }
+
+  /**
+   * Check if a user has a pending presenter request
+   */
+  hasPresenterRequest(userEmail: string): boolean {
+    return this.pendingPresenterRequests.includes(userEmail);
   }
 }

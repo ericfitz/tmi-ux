@@ -42,6 +42,7 @@
     "leaveSession": "ออกจากเซสชัน",
     "makePresenter": "ทำให้เป็นผู้นำเสนอ",
     "manageCollaboration": "จัดการการทำงานร่วมกัน",
+    "participantRequestsPresenterRole": "ผู้เข้าร่วมขอบทบาทผู้นำเสนอ",
     "presenterModeRequested": "ขอสิทธิ์การนำเสนอแล้ว",
     "removeFromSession": "ลบออกจากเซสชัน",
     "requestPresenter": "ขอเป็นผู้นำเสนอ",

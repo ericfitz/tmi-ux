@@ -178,8 +178,26 @@
               person_raised_hand
             </mat-icon>
 
-            <!-- Other users - no button -->
-            <div *ngIf="!isCurrentUser(user.email)" class="presenter-placeholder"></div>
+            <!-- Other users - show presenter request icon if they have pending request -->
+            <mat-icon
+              *ngIf="!isCurrentUser(user.email) && hasPresenterRequest(user.email)"
+              fontSet="material-symbols-outlined"
+              fontWeight="100"
+              style="font-variation-settings: 'FILL' 0"
+              [matTooltip]="'collaboration.participantRequestsPresenterRole' | transloco"
+              [matMenuTriggerFor]="presenterRequestMenu"
+              [matMenuTriggerData]="{ userEmail: user.email }"
+              class="presenter-icon hand-raised clickable"
+              (contextmenu)="$event.preventDefault()"
+            >
+              person_raised_hand
+            </mat-icon>
+
+            <!-- Other users without presenter request - placeholder -->
+            <div
+              *ngIf="!isCurrentUser(user.email) && !hasPresenterRequest(user.email)"
+              class="presenter-placeholder"
+            ></div>
           </ng-container>
         </div>
 
@@ -204,6 +222,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Context Menu for Presenter Requests (Host Only) -->
+  <mat-menu #presenterRequestMenu="matMenu">
+    <ng-template matMenuContent let-userEmail="userEmail">
+      <button
+        *ngIf="isCurrentUserHost()"
+        mat-menu-item
+        (click)="approvePresenterRequest(userEmail)"
+      >
+        <mat-icon>check</mat-icon>
+        <span>{{ 'collaboration.approvePresenterRequest' | transloco }}</span>
+      </button>
+      <button *ngIf="isCurrentUserHost()" mat-menu-item (click)="denyPresenterRequest(userEmail)">
+        <mat-icon>close</mat-icon>
+        <span>{{ 'collaboration.denyPresenterRequest' | transloco }}</span>
+      </button>
+    </ng-template>
+  </mat-menu>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

@@ -42,6 +42,7 @@
     "leaveSession": "Leave Session",
     "makePresenter": "Make Presenter",
     "manageCollaboration": "Manage Collaboration",
+    "participantRequestsPresenterRole": "Participant Requests Presenter Role",
     "presenterModeRequested": "Presenter Mode Requested",
     "removeFromSession": "Remove from Session",
     "requestPresenter": "Request Presenter",

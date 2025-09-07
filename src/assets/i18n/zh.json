@@ -42,6 +42,7 @@
     "leaveSession": "离开会话",
     "makePresenter": "设为主讲人",
     "manageCollaboration": "管理协作",
+    "participantRequestsPresenterRole": "参与者请求主讲人角色",
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
     "requestPresenter": "请求主讲人",
