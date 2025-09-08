@@ -7,9 +7,7 @@
     [matBadge]="collaborationUsers.length || null"
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
-    [matMenuTriggerFor]="contextMenu"
-    #menuTrigger="matMenuTrigger"
-    (click)="openCollaborationDialog()"
+    (click)="handleCollaborationAction()"
     (contextmenu)="onRightClick($event)"
   >
     <mat-icon
@@ -37,4 +35,11 @@
       <span *ngIf="!isCurrentUserHost()">{{ 'collaboration.viewParticipants' | transloco }}</span>
     </button>
   </mat-menu>
+
+  <!-- Hidden menu trigger for programmatic access -->
+  <span
+    [matMenuTriggerFor]="contextMenu"
+    #menuTrigger="matMenuTrigger"
+    style="display: none;"
+  ></span>
 </div>

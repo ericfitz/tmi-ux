@@ -123,7 +123,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Handle collaboration button click - performs the appropriate action based on current state
    */
-  openCollaborationDialog(): void {
+  handleCollaborationAction(): void {
     this._logger.info('[CollaborationComponent] Collaboration button clicked', {
       timestamp: new Date().toISOString(),
       userCount: this.collaborationUsers.length,
