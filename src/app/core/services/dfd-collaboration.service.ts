@@ -419,11 +419,11 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Join an existing collaboration session using PUT method
+   * Join an existing collaboration session by connecting to WebSocket
    * @returns Observable<boolean> indicating success or failure
    */
   public joinCollaboration(): Observable<boolean> {
-    this._logger.info('Joining existing collaboration session using PUT method');
+    this._logger.info('Joining existing collaboration session by connecting to WebSocket');
 
     if (!this._threatModelId || !this._diagramId) {
       this._logger.error('Cannot join collaboration: diagram context not set');
@@ -437,125 +437,56 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('Collaboration session is already active'));
     }
 
-    // Use PUT method to join existing collaboration session
-    return this._threatModelService
-      .joinDiagramCollaborationSession(this._threatModelId, this._diagramId)
-      .pipe(
-        tap((session: CollaborationSession) => {
-          this._logger.info('Successfully joined existing collaboration session', {
-            sessionId: session.session_id,
-            threatModelId: session.threat_model_id,
-            diagramId: session.diagram_id,
-            websocketUrl: session.websocket_url,
-          });
+    // Get existing session from state (should have been set by checkForExistingSession)
+    const existingSession = this._collaborationState$.value.existingSessionAvailable;
+    if (!existingSession) {
+      this._logger.error('No existing session available to join');
+      return throwError(() => new Error('No existing session available to join'));
+    }
 
-          // Store the session
-          this._currentSession = session;
+    this._logger.info('Joining existing session', {
+      sessionId: existingSession.session_id,
+      threatModelId: existingSession.threat_model_id,
+      diagramId: existingSession.diagram_id,
+      websocketUrl: existingSession.websocket_url,
+    });
 
-          // Initialize with current user immediately to ensure UI shows at least one participant
-          const currentUserEmail = this.getCurrentUserEmail();
-          const isCurrentUserPresenter = currentUserEmail === session.presenter;
-          const initialUser: CollaborationUser = {
-            name: this._authService.userProfile?.name || '',
-            email: currentUserEmail || '',
-            permission: 'writer',
-            status: 'active',
-            isHost: currentUserEmail === session.host, // Check if current user is the host from session data
-            isPresenter: isCurrentUserPresenter, // Check if current user is the presenter from session data
-            lastActivity: new Date(),
-            presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
-          };
+    // Store the session
+    this._currentSession = existingSession;
 
-          // Update collaboration state atomically
-          this._updateState({
-            isActive: true,
-            users: [initialUser],
-            sessionInfo: session,
-            existingSessionAvailable: null,
-            currentPresenterEmail: session.presenter || null,
-          });
+    // Initialize with current user immediately to ensure UI shows at least one participant
+    const currentUserEmail = this.getCurrentUserEmail();
+    const isCurrentUserPresenter = currentUserEmail === existingSession.presenter;
+    const initialUser: CollaborationUser = {
+      name: this._authService.userProfile?.name || '',
+      email: currentUserEmail || '',
+      permission: 'writer', // Will be updated from WebSocket messages
+      status: 'active',
+      isHost: currentUserEmail === existingSession.host,
+      isPresenter: isCurrentUserPresenter,
+      lastActivity: new Date(),
+      presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
+    };
 
-          // Set up WebSocket listeners before connecting
-          this._setupWebSocketListeners();
+    // Update collaboration state atomically
+    this._updateState({
+      isActive: true,
+      users: [initialUser],
+      sessionInfo: existingSession,
+      existingSessionAvailable: null,
+      currentPresenterEmail: existingSession.presenter || null,
+    });
 
-          // Connect to WebSocket immediately - no delay needed with unified state
-          this._connectToWebSocket(session.websocket_url);
-        }),
-        // Participants will be updated through WebSocket messages only
-        tap(() => {
-          // Show session joined notification only after user is verified in list
-          this._notificationService?.showSessionEvent('userJoined').subscribe();
+    // Set up WebSocket listeners before connecting
+    this._setupWebSocketListeners();
 
-          // Participants will be updated through WebSocket messages only
-        }),
-        map(() => true),
-        catchError((error: unknown) => {
-          this._logger.error('Failed to join collaboration session via PUT', error);
+    // Connect to WebSocket - participant management happens via WebSocket
+    this._connectToWebSocket(existingSession.websocket_url);
 
-          // Check if this is a 403 error - reader trying to join
-          const httpError = error as { status?: number };
-          if (httpError?.status === 403) {
-            // Check if a session already exists that we can connect to directly
-            const existingSession = this._collaborationState$.value.existingSessionAvailable;
-            if (existingSession) {
-              this._logger.info(
-                'Reader received 403 on PUT, but session exists - connecting directly to WebSocket',
-                {
-                  sessionId: existingSession.session_id,
-                  websocketUrl: existingSession.websocket_url,
-                },
-              );
+    // Show session joined notification
+    this._notificationService?.showSessionEvent('userJoined').subscribe();
 
-              // Store the session
-              this._currentSession = existingSession;
-
-              // Initialize with current user immediately to ensure UI shows at least one participant
-              const currentUserEmail = this.getCurrentUserEmail();
-              const initialUser: CollaborationUser = {
-                name: this._authService.userProfile?.name || '',
-                email: currentUserEmail || '',
-                permission: 'reader', // Reader permission for this fallback case
-                status: 'active',
-                isHost: false,
-                isPresenter: false,
-                lastActivity: new Date(),
-                presenterRequestState: 'hand_down',
-              };
-
-              // Update collaboration state atomically
-              this._updateState({
-                isActive: true,
-                users: [initialUser],
-                sessionInfo: existingSession,
-                existingSessionAvailable: null,
-                currentPresenterEmail: existingSession.presenter || null,
-              });
-
-              // Set up WebSocket listeners before connecting
-              this._setupWebSocketListeners();
-
-              // Connect to WebSocket immediately - no delay needed with unified state
-              this._connectToWebSocket(existingSession.websocket_url);
-
-              // Show session joined notification
-              this._notificationService?.showSessionEvent('userJoined').subscribe();
-
-              return of(true);
-            } else {
-              // No existing session - reader cannot create one
-              this._logger.warn(
-                'Reader cannot create collaboration session - no existing session found',
-              );
-              this._notificationService
-                ?.showError('You need writer permissions to start a collaboration session')
-                .subscribe();
-              return of(false);
-            }
-          }
-
-          return throwError(() => error);
-        }),
-      );
+    return of(true);
   }
 
   /**
@@ -793,8 +724,6 @@ export class DfdCollaborationService implements OnDestroy {
           // Mark as intentional disconnection to suppress notification
           this._intentionalDisconnection = true;
 
-          // No periodic refresh to stop - using WebSocket messages only
-
           // Disconnect WebSocket
           this._disconnectFromWebSocket();
 
@@ -811,6 +740,9 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Show session ended notification
           this._notificationService?.showSessionEvent('ended').subscribe();
+
+          // Navigate back to threat model edit page (as specified in requirements)
+          this._redirectToThreatModel();
         }),
         map(() => true),
         catchError((error: unknown) => {
@@ -819,8 +751,6 @@ export class DfdCollaborationService implements OnDestroy {
           // Even if API call fails, clean up local state
           // Mark as intentional disconnection to suppress notification
           this._intentionalDisconnection = true;
-
-          // No periodic refresh to stop - using WebSocket messages only
 
           this._disconnectFromWebSocket();
           this._currentSession = null;
@@ -835,6 +765,9 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Show session ended notification even on error
           this._notificationService?.showSessionEvent('ended').subscribe();
+
+          // Navigate back to threat model edit page even on error
+          this._redirectToThreatModel();
 
           return throwError(() => error);
         }),
@@ -1775,6 +1708,25 @@ export class DfdCollaborationService implements OnDestroy {
       .catch(error => {
         this._logger.error('Failed to redirect to dashboard', error);
       });
+  }
+
+  /**
+   * Redirect user to threat model edit page
+   */
+  private _redirectToThreatModel(): void {
+    if (this._threatModelId) {
+      this._router
+        .navigate(['/tm', this._threatModelId])
+        .then(() => {
+          this._logger.info('Redirected to threat model edit page');
+        })
+        .catch(error => {
+          this._logger.error('Failed to redirect to threat model edit page', error);
+        });
+    } else {
+      this._logger.warn('No threat model ID available, redirecting to dashboard instead');
+      this._redirectToDashboard();
+    }
   }
 
   /**

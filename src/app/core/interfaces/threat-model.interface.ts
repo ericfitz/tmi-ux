@@ -31,14 +31,6 @@ export interface IThreatModelService {
   ): Observable<CollaborationSession>;
 
   /**
-   * Join an existing collaboration session for a diagram
-   */
-  joinDiagramCollaborationSession(
-    threatModelId: string,
-    diagramId: string,
-  ): Observable<CollaborationSession>;
-
-  /**
    * Smart method to start a new session or join existing one
    */
   startOrJoinDiagramCollaborationSession(

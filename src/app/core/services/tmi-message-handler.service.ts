@@ -360,7 +360,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     if (!message.user || !message.user.email) {
       this._logger.warn('Received malformed presenter_request message - missing user data', {
         messageType: message.message_type,
-        user: message.user
+        user: message.user,
       });
       return;
     }
@@ -379,11 +379,14 @@ export class TMIMessageHandlerService implements OnDestroy {
   private _handlePresenterDenied(message: PresenterDeniedMessage): void {
     // Guard against malformed messages that don't conform to AsyncAPI spec
     if (!message.user || !message.target_user) {
-      this._logger.warn('Received malformed presenter_denied message - missing user or target_user data', {
-        messageType: message.message_type,
-        user: message.user,
-        targetUser: message.target_user
-      });
+      this._logger.warn(
+        'Received malformed presenter_denied message - missing user or target_user data',
+        {
+          messageType: message.message_type,
+          user: message.user,
+          targetUser: message.target_user,
+        },
+      );
       return;
     }
 
@@ -406,11 +409,14 @@ export class TMIMessageHandlerService implements OnDestroy {
   private _handleChangePresenter(message: ChangePresenterMessage): void {
     // Guard against malformed messages that don't conform to AsyncAPI spec
     if (!message.user || !message.new_presenter) {
-      this._logger.warn('Received malformed change_presenter message - missing user or new_presenter data', {
-        messageType: message.message_type,
-        user: message.user,
-        newPresenter: message.new_presenter
-      });
+      this._logger.warn(
+        'Received malformed change_presenter message - missing user or new_presenter data',
+        {
+          messageType: message.message_type,
+          user: message.user,
+          newPresenter: message.new_presenter,
+        },
+      );
       return;
     }
 
@@ -443,7 +449,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     if (!message.user || !message.user.user_id || !message.user.email) {
       this._logger.warn('Received malformed presenter_cursor message - missing user data', {
         messageType: message.message_type,
-        user: message.user
+        user: message.user,
       });
       return;
     }
@@ -463,7 +469,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     if (!message.user || !message.user.user_id || !message.user.email) {
       this._logger.warn('Received malformed presenter_selection message - missing user data', {
         messageType: message.message_type,
-        user: message.user
+        user: message.user,
       });
       return;
     }
