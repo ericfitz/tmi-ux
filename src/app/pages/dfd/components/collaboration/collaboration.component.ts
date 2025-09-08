@@ -12,11 +12,13 @@ import {
   OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -42,6 +44,7 @@ import { CollaborationDialogComponent } from '../collaboration-dialog/collaborat
     MatIconModule,
     MatTooltipModule,
     MatBadgeModule,
+    MatMenuModule,
     TranslocoModule,
   ],
   templateUrl: './collaboration.component.html',
@@ -53,6 +56,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   isCollaborating = false;
   collaborationUsers: CollaborationUser[] = [];
   existingSessionAvailable: CollaborationSession | null = null;
+
+  // ViewChild for context menu
+  @ViewChild('contextMenuTrigger', { static: false }) contextMenuTrigger!: MatMenuTrigger;
 
   // This must always reflect the actual context state, not a cached value
   get isContextReady(): boolean {
@@ -146,7 +152,6 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
             next: success => {
               if (success) {
                 this._logger.info('Collaboration ended successfully');
-                this._openDialog();
               } else {
                 this._logger.error('Failed to end collaboration');
               }
@@ -164,7 +169,6 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
             next: success => {
               if (success) {
                 this._logger.info('Left collaboration session successfully');
-                this._openDialog();
               } else {
                 this._logger.error('Failed to leave collaboration session');
               }
@@ -188,7 +192,6 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
           next: success => {
             if (success) {
               this._logger.info('Collaboration started or joined successfully');
-              this._openDialog();
             } else {
               this._logger.error('Failed to start or join collaboration');
             }
@@ -216,17 +219,17 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the color for the collaboration button based on current state
-   * @returns The Material color to use for the button
+   * Get the CSS class for the collaboration icon based on current state
+   * @returns The CSS class to apply to the icon for coloring
    */
-  getCollaborationButtonColor(): string {
+  getCollaborationIconClass(): string {
     if (this.isCollaborating) {
-      return 'accent'; // Green - currently participating in session
+      return 'icon-active'; // Green - currently participating in session
     }
     if (this.existingSessionAvailable) {
-      return 'primary'; // Blue - session exists but not participating
+      return 'icon-session-available'; // Blue - session exists but not participating
     }
-    return 'primary'; // Default state - current color (unchanged)
+    return 'icon-default'; // Default state - current color (unchanged)
   }
 
   /**
@@ -249,5 +252,51 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       return 'Join Session'; // Join existing session
     }
     return 'Start Collaboration'; // Start new collaboration
+  }
+
+  /**
+   * Handle right-click on collaboration button to show context menu
+   * @param event The mouse event
+   */
+  onRightClick(event: MouseEvent): void {
+    event.preventDefault();
+    this.contextMenuTrigger.openMenu();
+  }
+
+  /**
+   * Check if the current user is the host of the collaboration session
+   * @returns True if current user is host, false otherwise
+   */
+  isCurrentUserHost(): boolean {
+    return this._collaborationService.isCurrentUserHost();
+  }
+
+  /**
+   * Copy the collaboration link to clipboard
+   */
+  copyCollaborationLink(): void {
+    // Find the collaboration dialog component to reuse its copy link functionality
+    // We'll call the collaboration service's copy link method directly
+    this._logger.info('[CollaborationComponent] Copying collaboration link from context menu');
+
+    // Get the current URL and construct collaboration link
+    const currentUrl = window.location.href;
+    navigator.clipboard
+      .writeText(currentUrl)
+      .then(() => {
+        this._logger.info('[CollaborationComponent] Collaboration link copied successfully');
+        // You may want to show a notification here
+      })
+      .catch(error => {
+        this._logger.error('[CollaborationComponent] Failed to copy collaboration link', error);
+      });
+  }
+
+  /**
+   * Open the participants dialog (collaboration dialog)
+   */
+  openParticipantsDialog(): void {
+    this._logger.info('[CollaborationComponent] Opening participants dialog from context menu');
+    this._openDialog();
   }
 }

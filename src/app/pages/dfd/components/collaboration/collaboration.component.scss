@@ -14,13 +14,19 @@ button {
   mat-icon {
     vertical-align: middle;
 
-    &.active {
-      // Active collaboration session
+    &.icon-default {
+      // Default state - use theme default color
       color: inherit;
     }
 
-    &.session-available {
-      // Existing session available to join
+    &.icon-active {
+      // Green - currently participating in session
+      color: #4caf50;
+    }
+
+    &.icon-session-available {
+      // Blue - session exists but not participating
+      color: #2196f3;
       animation: pulse 2s ease-in-out infinite;
     }
   }

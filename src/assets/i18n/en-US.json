@@ -42,6 +42,7 @@
     "leaveSession": "Leave Session",
     "makePresenter": "Make Presenter",
     "manageCollaboration": "Manage Collaboration",
+    "manageParticipants": "Manage Participants",
     "participantRequestsPresenterRole": "Participant Requests Presenter Role",
     "presenterModeRequested": "Presenter Mode Requested",
     "removeFromSession": "Remove from Session",
@@ -50,6 +51,7 @@
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
     "title": "Collaboration",
+    "viewParticipants": "View Participants",
     "userJoined": "{{user}} joined the collaboration",
     "userLeft": "{{user}} left the collaboration",
     "websocketStatus": {

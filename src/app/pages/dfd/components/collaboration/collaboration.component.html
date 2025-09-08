@@ -2,21 +2,43 @@
   <!-- Main collaboration button with badge showing number of users when active -->
   <button
     mat-icon-button
-    [color]="getCollaborationButtonColor()"
     [disabled]="!isContextReady"
     [matBadge]="collaborationUsers.length || null"
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
     (click)="openCollaborationDialog()"
+    (contextmenu)="onRightClick($event)"
   >
     <mat-icon
       fontSet="material-symbols-outlined"
       fontWeight="100"
       style="font-variation-settings: 'FILL' 0"
-      [class.active]="isCollaborating"
-      [class.session-available]="existingSessionAvailable && !isCollaborating"
+      [class]="getCollaborationIconClass()"
     >
       group
     </mat-icon>
   </button>
+
+  <!-- Context menu -->
+  <mat-menu #contextMenu="matMenu" xPosition="before">
+    <!-- Copy Link menu item -->
+    <button mat-menu-item *ngIf="isCollaborating" (click)="copyCollaborationLink()">
+      <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
+      <span>{{ 'collaboration.copyLink' | transloco }}</span>
+    </button>
+
+    <!-- Participants menu item -->
+    <button mat-menu-item (click)="openParticipantsDialog()">
+      <mat-icon fontSet="material-symbols-outlined" fontWeight="100">group</mat-icon>
+      <span *ngIf="isCurrentUserHost()">{{ 'collaboration.manageParticipants' | transloco }}</span>
+      <span *ngIf="!isCurrentUserHost()">{{ 'collaboration.viewParticipants' | transloco }}</span>
+    </button>
+  </mat-menu>
+
+  <!-- Hidden menu trigger for programmatic access -->
+  <span
+    [matMenuTriggerFor]="contextMenu"
+    #contextMenuTrigger="matMenuTrigger"
+    style="display: none"
+  ></span>
 </div>
