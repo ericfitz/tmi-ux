@@ -3,6 +3,7 @@
   display: inline-flex;
   align-items: center;
   margin-right: 8px; // Shift left to align with close button below
+  position: relative; // Add relative positioning for absolute children
 }
 
 // Collaboration button
@@ -54,4 +55,13 @@ button {
   100% {
     opacity: 1;
   }
+}
+
+// Hidden trigger positioning
+.hidden-trigger {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 40px;
+  height: 40px;
 }

@@ -58,8 +58,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   collaborationUsers: CollaborationUser[] = [];
   existingSessionAvailable: CollaborationSession | null = null;
 
-  // ViewChild for context menu
+  // ViewChild for context menu and button
   @ViewChild('menuTrigger', { static: false }) menuTrigger!: MatMenuTrigger;
+  @ViewChild('collaborationButton', { static: false }) collaborationButton!: ElementRef;
 
   // This must always reflect the actual context state, not a cached value
   get isContextReady(): boolean {
