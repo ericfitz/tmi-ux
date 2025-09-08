@@ -13,7 +13,11 @@ import {
   THREAT_MODEL_SERVICE,
 } from '../interfaces';
 import { environment } from '../../../environments/environment';
-import { SessionTerminatedMessage, ChangePresenterMessage } from '../types/websocket-message.types';
+import {
+  SessionTerminatedMessage,
+  ChangePresenterMessage,
+  RemoveParticipantMessage,
+} from '../types/websocket-message.types';
 
 /**
  * Represents a user in a collaboration session
@@ -868,16 +872,42 @@ export class DfdCollaborationService implements OnDestroy {
   public removeUser(userEmail: string): Observable<boolean> {
     this._logger.info('Removing user from collaboration session', { userEmail });
 
-    // In a real implementation, this would notify the server to remove the user
-    // The server would then update the participants list via WebSocket
-    // We should NOT modify the local state here
+    // Only the host can remove users
+    if (!this.isCurrentUserHost()) {
+      return throwError(() => new Error('Only host can remove users from session'));
+    }
 
-    return new Observable<boolean>(observer => {
-      // Simulate API call to remove user
-      // Just return success - the participants list will be updated via WebSocket
-      observer.next(true);
-      observer.complete();
-    });
+    // Find the participant to remove from the current collaboration state
+    const currentState = this._collaborationState$.value;
+    const participantToRemove = currentState.users.find(user => user.email === userEmail);
+
+    if (!participantToRemove) {
+      return throwError(
+        () => new Error(`Participant with email ${userEmail} not found in session`),
+      );
+    }
+
+    // Send remove participant message via WebSocket with the participant's information
+    const removeMessage: RemoveParticipantMessage = {
+      message_type: 'remove_participant',
+      user: {
+        user_id: participantToRemove.email, // Use email as user_id since that's what we have
+        email: participantToRemove.email,
+        displayName: participantToRemove.name,
+      },
+      target_user: userEmail,
+    };
+
+    return this._webSocketAdapter.sendTMIMessage(removeMessage).pipe(
+      map(() => {
+        this._logger.info('Remove participant message sent successfully', { userEmail });
+        return true;
+      }),
+      catchError((error: unknown) => {
+        this._logger.error('Failed to send remove participant message', { error, userEmail });
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**

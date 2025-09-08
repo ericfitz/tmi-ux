@@ -148,6 +148,12 @@ export interface ParticipantLeftMessage {
   timestamp: string;
 }
 
+export interface RemoveParticipantMessage {
+  message_type: 'remove_participant';
+  user: User;
+  target_user: string;
+}
+
 export interface SessionTerminatedMessage {
   message_type: 'session_terminated';
   reason: string;
@@ -173,6 +179,7 @@ export type TMIWebSocketMessage =
   | ParticipantsUpdateMessage
   | ParticipantJoinedMessage
   | ParticipantLeftMessage
+  | RemoveParticipantMessage
   | SessionTerminatedMessage;
 
 export type TMIMessageType =
@@ -193,6 +200,7 @@ export type TMIMessageType =
   | 'participants_update'
   | 'participant_joined'
   | 'participant_left'
+  | 'remove_participant'
   | 'session_terminated';
 
 /**
