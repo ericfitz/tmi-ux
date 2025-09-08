@@ -42,6 +42,7 @@
     "leaveSession": "ออกจากเซสชัน",
     "makePresenter": "ทำให้เป็นผู้นำเสนอ",
     "manageCollaboration": "จัดการการทำงานร่วมกัน",
+    "manageParticipants": "จัดการผู้เข้าร่วม",
     "participantRequestsPresenterRole": "ผู้เข้าร่วมขอบทบาทผู้นำเสนอ",
     "presenterModeRequested": "ขอสิทธิ์การนำเสนอแล้ว",
     "removeFromSession": "ลบออกจากเซสชัน",
@@ -52,6 +53,7 @@
     "title": "การทำงานร่วมกัน",
     "userJoined": "{{user}} เข้าร่วมการทำงานร่วมกัน",
     "userLeft": "{{user}} ออกจากการทำงานร่วมกัน",
+    "viewParticipants": "ดูผู้เข้าร่วม",
     "websocketStatus": {
       "connected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว",
       "noSession": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",
@@ -308,10 +310,6 @@
       "deleteThreat": "ลบภัยคุกคาม",
       "editSourceCode": "แก้ไขที่เก็บซอร์สโค้ด",
       "loadFromDesktop": "โหลดจากเดสก์ทอป"
-    },
-    "validation": {
-      "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
-      "required": "ช่องนี้จำเป็น"
     },
     "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
   },

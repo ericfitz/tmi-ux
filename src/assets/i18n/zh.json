@@ -42,6 +42,7 @@
     "leaveSession": "离开会话",
     "makePresenter": "设为主讲人",
     "manageCollaboration": "管理协作",
+    "manageParticipants": "管理参与者",
     "participantRequestsPresenterRole": "参与者请求主讲人角色",
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
@@ -52,6 +53,7 @@
     "title": "协作",
     "userJoined": "{{user}} 加入了协作",
     "userLeft": "{{user}} 离开了协作",
+    "viewParticipants": "查看参与者",
     "websocketStatus": {
       "connected": "WebSocket 已连接",
       "noSession": "没有活跃的协作会话",
@@ -308,10 +310,6 @@
       "deleteThreat": "删除威胁",
       "editSourceCode": "编辑源代码存储库",
       "loadFromDesktop": "从桌面加载"
-    },
-    "validation": {
-      "maxLength": "最大长度为{{max}}个字符",
-      "required": "此字段为必填项"
     },
     "yourThreatModels": "您的威胁模型"
   },

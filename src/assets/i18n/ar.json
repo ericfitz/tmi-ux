@@ -42,6 +42,7 @@
     "leaveSession": "مغادرة الجلسة",
     "makePresenter": "جعله مقدمًا",
     "manageCollaboration": "إدارة التعاون",
+    "manageParticipants": "إدارة المشاركين",
     "participantRequestsPresenterRole": "المشارك يطلب دور المقدم",
     "presenterModeRequested": "تم طلب وضع المقدم",
     "removeFromSession": "إزالة من الجلسة",
@@ -52,6 +53,7 @@
     "title": "التعاون",
     "userJoined": "انضم {{user}} إلى جلسة التعاون",
     "userLeft": "غادر {{user}} جلسة التعاون",
+    "viewParticipants": "عرض المشاركين",
     "websocketStatus": {
       "connected": "ويب سوكيت متصل",
       "noSession": "لا توجد جلسة تعاون نشطة",
@@ -308,10 +310,6 @@
       "deleteThreat": "حذف التهديد",
       "editSourceCode": "تحرير مستودع الكود المصدري",
       "loadFromDesktop": "تحميل من سطح المكتب"
-    },
-    "validation": {
-      "maxLength": "الطول الأقصى هو {{max}} حرف",
-      "required": "هذا الحقل مطلوب"
     },
     "yourThreatModels": "نماذج التهديدات الخاصة بك"
   },

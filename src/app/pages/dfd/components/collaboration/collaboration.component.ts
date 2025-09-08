@@ -263,7 +263,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   onRightClick(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    
+
     // Open the context menu
     this.openContextMenu();
   }

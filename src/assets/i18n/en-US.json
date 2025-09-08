@@ -51,9 +51,9 @@
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
     "title": "Collaboration",
-    "viewParticipants": "View Participants",
     "userJoined": "{{user}} joined the collaboration",
     "userLeft": "{{user}} left the collaboration",
+    "viewParticipants": "View Participants",
     "websocketStatus": {
       "connected": "Websocket Connected",
       "noSession": "No Collaboration Session Active",
@@ -310,10 +310,6 @@
       "deleteThreat": "Delete Threat",
       "editSourceCode": "Edit Source Code Repository",
       "loadFromDesktop": "Load From Desktop"
-    },
-    "validation": {
-      "maxLength": "Maximum length is {{max}} characters",
-      "required": "This field is required"
     },
     "yourThreatModels": "Your Threat Models"
   },

@@ -42,6 +42,7 @@
     "leaveSession": "Sitzung verlassen",
     "makePresenter": "Zum Präsentator machen",
     "manageCollaboration": "Zusammenarbeit verwalten",
+    "manageParticipants": "Teilnehmer verwalten",
     "participantRequestsPresenterRole": "Teilnehmer fordert Präsentatorrolle an",
     "presenterModeRequested": "Präsentationsmodus angefordert",
     "removeFromSession": "Aus Sitzung entfernen",
@@ -52,6 +53,7 @@
     "title": "Zusammenarbeit",
     "userJoined": "{{user}} ist der Zusammenarbeit beigetreten",
     "userLeft": "{{user}} hat die Zusammenarbeit verlassen",
+    "viewParticipants": "Teilnehmer anzeigen",
     "websocketStatus": {
       "connected": "Websocket Verbunden",
       "noSession": "Keine Kollaborationssitzung Aktiv",
@@ -308,10 +310,6 @@
       "deleteThreat": "Bedrohung löschen",
       "editSourceCode": "Quellcode-Repository bearbeiten",
       "loadFromDesktop": "Vom Desktop laden"
-    },
-    "validation": {
-      "maxLength": "Maximale Länge ist {{max}} Zeichen",
-      "required": "Dieses Feld ist erforderlich"
     },
     "yourThreatModels": "Ihre Bedrohungsmodelle"
   },
