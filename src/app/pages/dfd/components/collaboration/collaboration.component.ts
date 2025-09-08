@@ -13,6 +13,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -58,7 +59,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   existingSessionAvailable: CollaborationSession | null = null;
 
   // ViewChild for context menu
-  @ViewChild('contextMenuTrigger', { static: false }) contextMenuTrigger!: MatMenuTrigger;
+  @ViewChild('menuTrigger', { static: false }) menuTrigger!: MatMenuTrigger;
 
   // This must always reflect the actual context state, not a cached value
   get isContextReady(): boolean {
@@ -260,7 +261,17 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   onRightClick(event: MouseEvent): void {
     event.preventDefault();
-    this.contextMenuTrigger.openMenu();
+    event.stopPropagation();
+    
+    // Open the context menu
+    this.openContextMenu();
+  }
+
+  /**
+   * Open the context menu
+   */
+  private openContextMenu(): void {
+    this.menuTrigger.openMenu();
   }
 
   /**
@@ -275,14 +286,16 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * Copy the collaboration link to clipboard
    */
   copyCollaborationLink(): void {
-    // Find the collaboration dialog component to reuse its copy link functionality
-    // We'll call the collaboration service's copy link method directly
     this._logger.info('[CollaborationComponent] Copying collaboration link from context menu');
 
-    // Get the current URL and construct collaboration link
-    const currentUrl = window.location.href;
+    // Get the current URL and clear existing query parameters
+    const currentUrl = new URL(window.location.href);
+    currentUrl.search = ''; // Clear all existing query parameters
+    currentUrl.searchParams.set('joinCollaboration', 'true');
+    const collaborationUrl = currentUrl.toString();
+
     navigator.clipboard
-      .writeText(currentUrl)
+      .writeText(collaborationUrl)
       .then(() => {
         this._logger.info('[CollaborationComponent] Collaboration link copied successfully');
         // You may want to show a notification here

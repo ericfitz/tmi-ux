@@ -1,11 +1,14 @@
 <div class="collaboration-container">
   <!-- Main collaboration button with badge showing number of users when active -->
   <button
+    #collaborationButton
     mat-icon-button
     [disabled]="!isContextReady"
     [matBadge]="collaborationUsers.length || null"
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
+    [matMenuTriggerFor]="contextMenu"
+    #menuTrigger="matMenuTrigger"
     (click)="openCollaborationDialog()"
     (contextmenu)="onRightClick($event)"
   >
@@ -20,7 +23,7 @@
   </button>
 
   <!-- Context menu -->
-  <mat-menu #contextMenu="matMenu" xPosition="before">
+  <mat-menu #contextMenu="matMenu" yPosition="below" xPosition="after">
     <!-- Copy Link menu item -->
     <button mat-menu-item *ngIf="isCollaborating" (click)="copyCollaborationLink()">
       <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
@@ -34,11 +37,4 @@
       <span *ngIf="!isCurrentUserHost()">{{ 'collaboration.viewParticipants' | transloco }}</span>
     </button>
   </mat-menu>
-
-  <!-- Hidden menu trigger for programmatic access -->
-  <span
-    [matMenuTriggerFor]="contextMenu"
-    #contextMenuTrigger="matMenuTrigger"
-    style="display: none"
-  ></span>
 </div>
