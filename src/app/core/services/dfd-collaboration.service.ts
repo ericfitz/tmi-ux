@@ -877,23 +877,19 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('Only host can remove users from session'));
     }
 
-    // Find the participant to remove from the current collaboration state
-    const currentState = this._collaborationState$.value;
-    const participantToRemove = currentState.users.find(user => user.email === userEmail);
-
-    if (!participantToRemove) {
-      return throwError(
-        () => new Error(`Participant with email ${userEmail} not found in session`),
-      );
+    // Get the host's (current user's) profile information
+    const userProfile = this._authService.userProfile;
+    if (!userProfile) {
+      return throwError(() => new Error('User profile not available'));
     }
 
-    // Send remove participant message via WebSocket with the participant's information
+    // Send remove participant message via WebSocket with the HOST's information
     const removeMessage: RemoveParticipantMessage = {
       message_type: 'remove_participant',
       user: {
-        user_id: participantToRemove.email, // Use email as user_id since that's what we have
-        email: participantToRemove.email,
-        displayName: participantToRemove.name,
+        user_id: userProfile.id,
+        email: userProfile.email,
+        displayName: userProfile.name,
       },
       target_user: userEmail,
     };

@@ -10,53 +10,6 @@
 </h2>
 
 <mat-dialog-content>
-  <!-- Toggle collaboration button -->
-  <div class="collaboration-action">
-    <button
-      mat-flat-button
-      [color]="isCollaborating ? 'warn' : 'success'"
-      (click)="toggleCollaboration(); $event.stopPropagation()"
-      class="action-button"
-    >
-      <mat-icon
-        fontSet="material-symbols-outlined"
-        fontWeight="100"
-        style="font-variation-settings: 'FILL' 0"
-      >
-        {{ isCollaborating ? 'stop' : 'play_arrow' }}
-      </mat-icon>
-      <ng-container *ngIf="!isCollaborating && !existingSessionAvailable">
-        {{ 'collaboration.startCollaboration' | transloco }}
-      </ng-container>
-      <ng-container *ngIf="!isCollaborating && existingSessionAvailable">
-        {{ 'collaboration.joinSession' | transloco }}
-      </ng-container>
-      <ng-container *ngIf="isCollaborating && isCurrentUserHost()">
-        {{ 'collaboration.endCollaboration' | transloco }}
-      </ng-container>
-      <ng-container *ngIf="isCollaborating && !isCurrentUserHost()">
-        {{ 'collaboration.leaveSession' | transloco }}
-      </ng-container>
-    </button>
-  </div>
-
-  <!-- Copy Link section (only visible when collaborating) -->
-  <div *ngIf="isCollaborating" class="copy-link-section">
-    <mat-divider></mat-divider>
-    <div class="copy-link-content">
-      <h4 class="section-title">{{ 'collaboration.shareLinkHeader' | transloco }}</h4>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="copyLinkToClipboard()"
-        class="copy-link-button"
-      >
-        <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
-        {{ 'collaboration.copyLink' | transloco }}
-      </button>
-    </div>
-  </div>
-
   <!-- Users list (visible when collaborating) -->
   <div *ngIf="isCollaborating && collaborationUsers.length > 0" class="users-section">
     <mat-divider></mat-divider>
@@ -75,7 +28,7 @@
                 : ('common.sessionRoles.participant' | transloco)
             "
           >
-            {{ user.isHost ? 'admin_panel_settings' : 'person' }}
+            {{ user.isHost ? 'co_present' : 'person' }}
           </mat-icon>
         </div>
 

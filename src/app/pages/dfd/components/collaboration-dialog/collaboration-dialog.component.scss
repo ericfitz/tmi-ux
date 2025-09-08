@@ -195,6 +195,13 @@ mat-dialog-content {
   }
 }
 
+// Fix presenter button icon size
+.presenter-column .presenter-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
 // Dialog actions
 mat-dialog-actions {
   padding: 8px 24px 16px;
