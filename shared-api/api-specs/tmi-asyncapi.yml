@@ -98,8 +98,6 @@ channels:
         $ref: '#/components/messages/ParticipantLeftMessage'
       removeParticipantMessage:
         $ref: '#/components/messages/RemoveParticipantMessage'
-      sessionTerminatedMessage:
-        $ref: '#/components/messages/SessionTerminatedMessage'
       errorMessage:
         $ref: '#/components/messages/ErrorMessage'
 
@@ -543,23 +541,6 @@ components:
               displayName: Host Manager
             target_user: disruptive-user@example.com
 
-    SessionTerminatedMessage:
-      name: SessionTerminatedMessage
-      title: Session Terminated Message
-      summary: Notification when collaboration session is terminated
-      description: |
-        Sent to all participants when the collaboration session is ended,
-        typically when the host disconnects. Uses the standard message_type pattern.
-      payload:
-        $ref: '#/components/schemas/SessionTerminatedPayload'
-      examples:
-        - name: HostLeft
-          summary: Example of session ending due to host departure
-          payload:
-            message_type: session_terminated
-            reason: host disconnected
-            host_id: host@example.com
-            timestamp: '2024-01-15T14:30:00Z'
 
     ErrorMessage:
       name: ErrorMessage
@@ -1143,31 +1124,6 @@ components:
         - target_user
       additionalProperties: false
 
-    SessionTerminatedPayload:
-      type: object
-      description: Notification when collaboration session is terminated
-      properties:
-        message_type:
-          const: session_terminated
-        reason:
-          type: string
-          description: Reason for session termination
-          example: host disconnected
-        host_id:
-          type: string
-          description: User ID of the host who left
-          example: host@example.com
-        timestamp:
-          type: string
-          format: date-time
-          description: UTC timestamp when the session was terminated
-          example: '2024-01-15T14:30:00Z'
-      required:
-        - message_type
-        - reason
-        - host_id
-        - timestamp
-      additionalProperties: false
 
     ErrorPayload:
       type: object

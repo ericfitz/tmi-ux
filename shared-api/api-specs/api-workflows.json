@@ -1,0 +1,682 @@
+{
+  "version": "1.0.0",
+  "description": "API workflows for testing all supported HTTP methods and object hierarchies in the TMI OpenAPI specification",
+  "oauth_flow": "implicit",
+  "base_oauth_sequence": {
+    "oauth_init": {
+      "action": "GET /oauth2/authorize",
+      "description": "Initiate OAuth flow with identity provider",
+      "auth_required": false,
+      "parameters": {
+        "idp": "required - identity provider (e.g., 'test')",
+        "client_callback": "optional - client callback URL",
+        "login_hint": "optional - login hint for test provider"
+      }
+    },
+    "oauth_complete": {
+      "action": "GET /oauth2/callback",
+      "description": "Handle OAuth callback and receive JWT token",
+      "auth_required": false,
+      "returns": "JWT access_token for Bearer authentication"
+    }
+  },
+  "public_endpoints": {
+    "discovery": {
+      "root": {
+        "action": "GET /",
+        "description": "API root endpoint",
+        "auth_required": false,
+        "prereqs": []
+      },
+      "openid_config": {
+        "action": "GET /.well-known/openid-configuration",
+        "description": "OpenID Connect configuration",
+        "auth_required": false,
+        "prereqs": []
+      },
+      "oauth_server_config": {
+        "action": "GET /.well-known/oauth-authorization-server",
+        "description": "OAuth authorization server metadata",
+        "auth_required": false,
+        "prereqs": []
+      },
+      "jwks": {
+        "action": "GET /.well-known/jwks.json",
+        "description": "JSON Web Key Set for token verification",
+        "auth_required": false,
+        "prereqs": []
+      }
+    },
+    "oauth": {
+      "providers_list": {
+        "action": "GET /oauth2/providers",
+        "description": "List available OAuth providers",
+        "auth_required": false,
+        "prereqs": []
+      },
+      "authorize": {
+        "action": "GET /oauth2/authorize",
+        "description": "Start OAuth authorization flow",
+        "auth_required": false,
+        "prereqs": []
+      },
+      "callback": {
+        "action": "GET /oauth2/callback",
+        "description": "OAuth callback endpoint",
+        "auth_required": false,
+        "prereqs": ["oauth_init"]
+      },
+      "token": {
+        "action": "POST /oauth2/token",
+        "description": "Exchange authorization code for tokens",
+        "auth_required": false,
+        "prereqs": ["oauth_callback"]
+      },
+      "refresh": {
+        "action": "POST /oauth2/refresh",
+        "description": "Refresh access token",
+        "auth_required": false,
+        "prereqs": ["oauth_token"]
+      },
+      "introspect": {
+        "action": "POST /oauth2/introspect",
+        "description": "Introspect token information",
+        "auth_required": false,
+        "prereqs": []
+      }
+    }
+  },
+  "authenticated_endpoints": {
+    "oauth_user": {
+      "userinfo": {
+        "action": "GET /oauth2/userinfo",
+        "description": "Get authenticated user information",
+        "auth_required": true,
+        "prereqs": ["oauth_complete"]
+      },
+      "revoke": {
+        "action": "POST /oauth2/revoke",
+        "description": "Revoke access token",
+        "auth_required": true,
+        "prereqs": ["oauth_complete"]
+      }
+    },
+    "collaboration": {
+      "sessions_list": {
+        "action": "GET /collaboration/sessions",
+        "description": "List active collaboration sessions",
+        "auth_required": true,
+        "prereqs": ["oauth_complete"]
+      }
+    }
+  },
+  "threat_model_workflows": {
+    "threat_model": {
+      "dependencies": [],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models",
+          "description": "List all threat models for authenticated user",
+          "auth_required": true,
+          "prereqs": ["oauth_complete"]
+        },
+        "create": {
+          "action": "POST /threat_models",
+          "description": "Create a new threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete"],
+          "body_required": true
+        },
+        "get": {
+          "action": "GET /threat_models/{threat_model_id}",
+          "description": "Get specific threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        },
+        "update": {
+          "action": "PUT /threat_models/{threat_model_id}",
+          "description": "Update entire threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "patch": {
+          "action": "PATCH /threat_models/{threat_model_id}",
+          "description": "Partially update threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "delete": {
+          "action": "DELETE /threat_models/{threat_model_id}",
+          "description": "Delete threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        }
+      }
+    },
+    "threat_model_metadata": {
+      "dependencies": ["threat_model"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/metadata",
+          "description": "List threat model metadata",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/metadata",
+          "description": "Create threat model metadata entry",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "get_key": {
+          "action": "GET /threat_models/{threat_model_id}/metadata/{key}",
+          "description": "Get specific metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_model_metadata_create"]
+        },
+        "set_key": {
+          "action": "PUT /threat_models/{threat_model_id}/metadata/{key}",
+          "description": "Set specific metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "delete_key": {
+          "action": "DELETE /threat_models/{threat_model_id}/metadata/{key}",
+          "description": "Delete specific metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_model_metadata_set_key"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/metadata/bulk",
+          "description": "Bulk create/update metadata entries",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        }
+      }
+    },
+    "threat": {
+      "dependencies": ["threat_model"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/threats",
+          "description": "List threats in threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/threats",
+          "description": "Create a new threat",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "get": {
+          "action": "GET /threat_models/{threat_model_id}/threats/{threat_id}",
+          "description": "Get specific threat",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"]
+        },
+        "update": {
+          "action": "PUT /threat_models/{threat_model_id}/threats/{threat_id}",
+          "description": "Update entire threat",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        },
+        "patch": {
+          "action": "PATCH /threat_models/{threat_model_id}/threats/{threat_id}",
+          "description": "Partially update threat",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        },
+        "delete": {
+          "action": "DELETE /threat_models/{threat_model_id}/threats/{threat_id}",
+          "description": "Delete threat",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/threats/bulk",
+          "description": "Bulk create threats",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "bulk_update": {
+          "action": "PUT /threat_models/{threat_model_id}/threats/bulk",
+          "description": "Bulk update threats",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "batch_patch": {
+          "action": "POST /threat_models/{threat_model_id}/threats/batch/patch",
+          "description": "Batch patch multiple threats",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        },
+        "batch_delete": {
+          "action": "DELETE /threat_models/{threat_model_id}/threats/batch",
+          "description": "Batch delete threats",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        }
+      }
+    },
+    "threat_metadata": {
+      "dependencies": ["threat_model", "threat"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/threats/{threat_id}/metadata",
+          "description": "List threat metadata",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/threats/{threat_id}/metadata",
+          "description": "Create threat metadata entry",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        },
+        "get_key": {
+          "action": "GET /threat_models/{threat_model_id}/threats/{threat_id}/metadata/{key}",
+          "description": "Get specific threat metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create", "threat_metadata_create"]
+        },
+        "set_key": {
+          "action": "PUT /threat_models/{threat_model_id}/threats/{threat_id}/metadata/{key}",
+          "description": "Set specific threat metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        },
+        "delete_key": {
+          "action": "DELETE /threat_models/{threat_model_id}/threats/{threat_id}/metadata/{key}",
+          "description": "Delete specific threat metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create", "threat_metadata_set_key"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/threats/{threat_id}/metadata/bulk",
+          "description": "Bulk create/update threat metadata entries",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "threat_create"],
+          "body_required": true
+        }
+      }
+    },
+    "diagram": {
+      "dependencies": ["threat_model"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/diagrams",
+          "description": "List diagrams in threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/diagrams",
+          "description": "Create a new diagram",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "get": {
+          "action": "GET /threat_models/{threat_model_id}/diagrams/{diagram_id}",
+          "description": "Get specific diagram",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"]
+        },
+        "update": {
+          "action": "PUT /threat_models/{threat_model_id}/diagrams/{diagram_id}",
+          "description": "Update entire diagram",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"],
+          "body_required": true
+        },
+        "patch": {
+          "action": "PATCH /threat_models/{threat_model_id}/diagrams/{diagram_id}",
+          "description": "Partially update diagram",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"],
+          "body_required": true
+        },
+        "delete": {
+          "action": "DELETE /threat_models/{threat_model_id}/diagrams/{diagram_id}",
+          "description": "Delete diagram",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"]
+        }
+      }
+    },
+    "diagram_collaboration": {
+      "dependencies": ["threat_model", "diagram"],
+      "methods": {
+        "get_session": {
+          "action": "GET /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate",
+          "description": "Get collaboration session info",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"]
+        },
+        "start_session": {
+          "action": "POST /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate",
+          "description": "Start collaboration session",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"],
+          "body_required": true
+        },
+        "update_session": {
+          "action": "PUT /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate",
+          "description": "Update collaboration session",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create", "diagram_collaboration_start_session"],
+          "body_required": true
+        },
+        "end_session": {
+          "action": "DELETE /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate",
+          "description": "End collaboration session",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create", "diagram_collaboration_start_session"]
+        }
+      }
+    },
+    "diagram_metadata": {
+      "dependencies": ["threat_model", "diagram"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata",
+          "description": "List diagram metadata",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata",
+          "description": "Create diagram metadata entry",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"],
+          "body_required": true
+        },
+        "get_key": {
+          "action": "GET /threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/{key}",
+          "description": "Get specific diagram metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create", "diagram_metadata_create"]
+        },
+        "set_key": {
+          "action": "PUT /threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/{key}",
+          "description": "Set specific diagram metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"],
+          "body_required": true
+        },
+        "delete_key": {
+          "action": "DELETE /threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/{key}",
+          "description": "Delete specific diagram metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create", "diagram_metadata_set_key"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/diagrams/{diagram_id}/metadata/bulk",
+          "description": "Bulk create/update diagram metadata entries",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "diagram_create"],
+          "body_required": true
+        }
+      }
+    },
+    "document": {
+      "dependencies": ["threat_model"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/documents",
+          "description": "List documents in threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/documents",
+          "description": "Create a new document",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "get": {
+          "action": "GET /threat_models/{threat_model_id}/documents/{document_id}",
+          "description": "Get specific document",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"]
+        },
+        "update": {
+          "action": "PUT /threat_models/{threat_model_id}/documents/{document_id}",
+          "description": "Update entire document",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"],
+          "body_required": true
+        },
+        "delete": {
+          "action": "DELETE /threat_models/{threat_model_id}/documents/{document_id}",
+          "description": "Delete document",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/documents/bulk",
+          "description": "Bulk create documents",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        }
+      }
+    },
+    "document_metadata": {
+      "dependencies": ["threat_model", "document"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/documents/{document_id}/metadata",
+          "description": "List document metadata",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/documents/{document_id}/metadata",
+          "description": "Create document metadata entry",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"],
+          "body_required": true
+        },
+        "get_key": {
+          "action": "GET /threat_models/{threat_model_id}/documents/{document_id}/metadata/{key}",
+          "description": "Get specific document metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create", "document_metadata_create"]
+        },
+        "set_key": {
+          "action": "PUT /threat_models/{threat_model_id}/documents/{document_id}/metadata/{key}",
+          "description": "Set specific document metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"],
+          "body_required": true
+        },
+        "delete_key": {
+          "action": "DELETE /threat_models/{threat_model_id}/documents/{document_id}/metadata/{key}",
+          "description": "Delete specific document metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create", "document_metadata_set_key"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/documents/{document_id}/metadata/bulk",
+          "description": "Bulk create/update document metadata entries",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "document_create"],
+          "body_required": true
+        }
+      }
+    },
+    "source": {
+      "dependencies": ["threat_model"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/sources",
+          "description": "List sources in threat model",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/sources",
+          "description": "Create a new source",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        },
+        "get": {
+          "action": "GET /threat_models/{threat_model_id}/sources/{source_id}",
+          "description": "Get specific source",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"]
+        },
+        "update": {
+          "action": "PUT /threat_models/{threat_model_id}/sources/{source_id}",
+          "description": "Update entire source",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"],
+          "body_required": true
+        },
+        "delete": {
+          "action": "DELETE /threat_models/{threat_model_id}/sources/{source_id}",
+          "description": "Delete source",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/sources/bulk",
+          "description": "Bulk create sources",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create"],
+          "body_required": true
+        }
+      }
+    },
+    "source_metadata": {
+      "dependencies": ["threat_model", "source"],
+      "methods": {
+        "list": {
+          "action": "GET /threat_models/{threat_model_id}/sources/{source_id}/metadata",
+          "description": "List source metadata",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"]
+        },
+        "create": {
+          "action": "POST /threat_models/{threat_model_id}/sources/{source_id}/metadata",
+          "description": "Create source metadata entry",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"],
+          "body_required": true
+        },
+        "get_key": {
+          "action": "GET /threat_models/{threat_model_id}/sources/{source_id}/metadata/{key}",
+          "description": "Get specific source metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create", "source_metadata_create"]
+        },
+        "set_key": {
+          "action": "PUT /threat_models/{threat_model_id}/sources/{source_id}/metadata/{key}",
+          "description": "Set specific source metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"],
+          "body_required": true
+        },
+        "delete_key": {
+          "action": "DELETE /threat_models/{threat_model_id}/sources/{source_id}/metadata/{key}",
+          "description": "Delete specific source metadata key",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create", "source_metadata_set_key"]
+        },
+        "bulk_create": {
+          "action": "POST /threat_models/{threat_model_id}/sources/{source_id}/metadata/bulk",
+          "description": "Bulk create/update source metadata entries",
+          "auth_required": true,
+          "prereqs": ["oauth_complete", "threat_model_create", "source_create"],
+          "body_required": true
+        }
+      }
+    }
+  },
+  "complete_workflow_sequences": {
+    "threat_model_full_crud": [
+      {"step": 1, "action": "GET /oauth2/authorize", "description": "Start OAuth flow", "auth_required": false},
+      {"step": 2, "action": "GET /oauth2/callback", "description": "Complete OAuth and get JWT", "auth_required": false},
+      {"step": 3, "action": "POST /threat_models", "description": "Create threat model", "auth_required": true, "body_required": true},
+      {"step": 4, "action": "GET /threat_models", "description": "List threat models", "auth_required": true},
+      {"step": 5, "action": "GET /threat_models/{threat_model_id}", "description": "Get specific threat model", "auth_required": true},
+      {"step": 6, "action": "PUT /threat_models/{threat_model_id}", "description": "Update threat model", "auth_required": true, "body_required": true},
+      {"step": 7, "action": "PATCH /threat_models/{threat_model_id}", "description": "Partially update threat model", "auth_required": true, "body_required": true},
+      {"step": 8, "action": "DELETE /threat_models/{threat_model_id}", "description": "Delete threat model", "auth_required": true}
+    ],
+    "threat_full_crud": [
+      {"step": 1, "action": "GET /oauth2/authorize", "description": "Start OAuth flow", "auth_required": false},
+      {"step": 2, "action": "GET /oauth2/callback", "description": "Complete OAuth and get JWT", "auth_required": false},
+      {"step": 3, "action": "POST /threat_models", "description": "Create parent threat model", "auth_required": true, "body_required": true},
+      {"step": 4, "action": "POST /threat_models/{threat_model_id}/threats", "description": "Create threat", "auth_required": true, "body_required": true},
+      {"step": 5, "action": "GET /threat_models/{threat_model_id}/threats", "description": "List threats", "auth_required": true},
+      {"step": 6, "action": "GET /threat_models/{threat_model_id}/threats/{threat_id}", "description": "Get specific threat", "auth_required": true},
+      {"step": 7, "action": "PUT /threat_models/{threat_model_id}/threats/{threat_id}", "description": "Update threat", "auth_required": true, "body_required": true},
+      {"step": 8, "action": "PATCH /threat_models/{threat_model_id}/threats/{threat_id}", "description": "Partially update threat", "auth_required": true, "body_required": true},
+      {"step": 9, "action": "DELETE /threat_models/{threat_model_id}/threats/{threat_id}", "description": "Delete threat", "auth_required": true}
+    ],
+    "diagram_full_crud_with_collaboration": [
+      {"step": 1, "action": "GET /oauth2/authorize", "description": "Start OAuth flow", "auth_required": false},
+      {"step": 2, "action": "GET /oauth2/callback", "description": "Complete OAuth and get JWT", "auth_required": false},
+      {"step": 3, "action": "POST /threat_models", "description": "Create parent threat model", "auth_required": true, "body_required": true},
+      {"step": 4, "action": "POST /threat_models/{threat_model_id}/diagrams", "description": "Create diagram", "auth_required": true, "body_required": true},
+      {"step": 5, "action": "GET /threat_models/{threat_model_id}/diagrams", "description": "List diagrams", "auth_required": true},
+      {"step": 6, "action": "GET /threat_models/{threat_model_id}/diagrams/{diagram_id}", "description": "Get specific diagram", "auth_required": true},
+      {"step": 7, "action": "POST /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate", "description": "Start collaboration session", "auth_required": true, "body_required": true},
+      {"step": 8, "action": "GET /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate", "description": "Get collaboration info", "auth_required": true},
+      {"step": 9, "action": "PUT /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate", "description": "Update collaboration session", "auth_required": true, "body_required": true},
+      {"step": 10, "action": "PUT /threat_models/{threat_model_id}/diagrams/{diagram_id}", "description": "Update diagram", "auth_required": true, "body_required": true},
+      {"step": 11, "action": "PATCH /threat_models/{threat_model_id}/diagrams/{diagram_id}", "description": "Partially update diagram", "auth_required": true, "body_required": true},
+      {"step": 12, "action": "DELETE /threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate", "description": "End collaboration session", "auth_required": true},
+      {"step": 13, "action": "DELETE /threat_models/{threat_model_id}/diagrams/{diagram_id}", "description": "Delete diagram", "auth_required": true}
+    ],
+    "metadata_full_operations": [
+      {"step": 1, "action": "GET /oauth2/authorize", "description": "Start OAuth flow", "auth_required": false},
+      {"step": 2, "action": "GET /oauth2/callback", "description": "Complete OAuth and get JWT", "auth_required": false},
+      {"step": 3, "action": "POST /threat_models", "description": "Create parent threat model", "auth_required": true, "body_required": true},
+      {"step": 4, "action": "POST /threat_models/{threat_model_id}/metadata", "description": "Create metadata entry", "auth_required": true, "body_required": true},
+      {"step": 5, "action": "GET /threat_models/{threat_model_id}/metadata", "description": "List all metadata", "auth_required": true},
+      {"step": 6, "action": "PUT /threat_models/{threat_model_id}/metadata/{key}", "description": "Set specific metadata key", "auth_required": true, "body_required": true},
+      {"step": 7, "action": "GET /threat_models/{threat_model_id}/metadata/{key}", "description": "Get specific metadata key", "auth_required": true},
+      {"step": 8, "action": "POST /threat_models/{threat_model_id}/metadata/bulk", "description": "Bulk update metadata", "auth_required": true, "body_required": true},
+      {"step": 9, "action": "DELETE /threat_models/{threat_model_id}/metadata/{key}", "description": "Delete metadata key", "auth_required": true}
+    ],
+    "bulk_operations": [
+      {"step": 1, "action": "GET /oauth2/authorize", "description": "Start OAuth flow", "auth_required": false},
+      {"step": 2, "action": "GET /oauth2/callback", "description": "Complete OAuth and get JWT", "auth_required": false},
+      {"step": 3, "action": "POST /threat_models", "description": "Create parent threat model", "auth_required": true, "body_required": true},
+      {"step": 4, "action": "POST /threat_models/{threat_model_id}/threats/bulk", "description": "Bulk create threats", "auth_required": true, "body_required": true},
+      {"step": 5, "action": "PUT /threat_models/{threat_model_id}/threats/bulk", "description": "Bulk update threats", "auth_required": true, "body_required": true},
+      {"step": 6, "action": "POST /threat_models/{threat_model_id}/threats/batch/patch", "description": "Batch patch threats", "auth_required": true, "body_required": true},
+      {"step": 7, "action": "POST /threat_models/{threat_model_id}/documents/bulk", "description": "Bulk create documents", "auth_required": true, "body_required": true},
+      {"step": 8, "action": "POST /threat_models/{threat_model_id}/sources/bulk", "description": "Bulk create sources", "auth_required": true, "body_required": true},
+      {"step": 9, "action": "DELETE /threat_models/{threat_model_id}/threats/batch", "description": "Batch delete threats", "auth_required": true, "body_required": true}
+    ]
+  },
+  "notes": {
+    "oauth_flow": "The API uses OAuth 2.0 implicit flow. The /oauth2/authorize endpoint redirects to the identity provider, and upon successful authentication, redirects to the callback URL with the JWT token.",
+    "authentication": "All endpoints under /threat_models require Bearer token authentication using JWT tokens obtained from the OAuth flow.",
+    "hierarchies": "The API follows a hierarchical structure: threat_model → {threats, diagrams, documents, sources} → metadata. Child objects cannot exist without their parent objects.",
+    "websockets": "Real-time collaboration is available for diagrams via WebSocket connections at /ws/diagrams/{id} endpoint (not included in this REST API workflow).",
+    "bulk_operations": "Many endpoints support bulk operations for efficiency when dealing with multiple objects.",
+    "metadata_pattern": "All primary objects (threat_models, threats, diagrams, documents, sources) support metadata operations following the same pattern: list, create, get_key, set_key, delete_key, bulk_create."
+  }
+}

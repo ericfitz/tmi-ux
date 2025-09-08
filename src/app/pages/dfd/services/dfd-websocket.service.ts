@@ -368,6 +368,15 @@ export class DfdWebSocketService implements OnDestroy {
   }
 
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
+    // Guard against malformed messages that don't conform to AsyncAPI spec
+    if (!message.user || !message.user.user_id || !message.user.email) {
+      this._logger.warn('Received malformed presenter_cursor message - missing user data', {
+        messageType: message.message_type,
+        user: message.user
+      });
+      return;
+    }
+
     this._logger.debug('Presenter cursor update', {
       userId: message.user.user_id,
       userEmail: message.user.email,
@@ -382,6 +391,15 @@ export class DfdWebSocketService implements OnDestroy {
   }
 
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
+    // Guard against malformed messages that don't conform to AsyncAPI spec
+    if (!message.user || !message.user.user_id || !message.user.email) {
+      this._logger.warn('Received malformed presenter_selection message - missing user data', {
+        messageType: message.message_type,
+        user: message.user
+      });
+      return;
+    }
+
     this._logger.debug('Presenter selection update', {
       userId: message.user.user_id,
       userEmail: message.user.email,
@@ -396,6 +414,15 @@ export class DfdWebSocketService implements OnDestroy {
   }
 
   private _handlePresenterRequest(message: PresenterRequestMessage): void {
+    // Guard against malformed messages that don't conform to AsyncAPI spec
+    if (!message.user || !message.user.user_id || !message.user.email) {
+      this._logger.warn('Received malformed presenter_request message - missing user data', {
+        messageType: message.message_type,
+        user: message.user
+      });
+      return;
+    }
+
     this._logger.info('Presenter request received', {
       userId: message.user.user_id,
       userEmail: message.user.email,
@@ -408,6 +435,16 @@ export class DfdWebSocketService implements OnDestroy {
   }
 
   private _handlePresenterDenied(message: PresenterDeniedMessage): void {
+    // Guard against malformed messages that don't conform to AsyncAPI spec
+    if (!message.user || !message.user.user_id || !message.user.email || !message.target_user) {
+      this._logger.warn('Received malformed presenter_denied message - missing user or target_user data', {
+        messageType: message.message_type,
+        user: message.user,
+        targetUser: message.target_user
+      });
+      return;
+    }
+
     this._logger.info('Presenter request denied', {
       userId: message.user.user_id,
       userEmail: message.user.email,

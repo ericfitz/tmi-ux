@@ -22,13 +22,13 @@ This guide provides frontend developers with everything needed to implement coll
 ### 1. Basic Connection Setup
 
 ```javascript
-import { TMICollaborativeClient } from './tmi-client';
+import { TMICollaborativeClient } from "./tmi-client";
 
 const client = new TMICollaborativeClient({
-  diagramId: 'your-diagram-uuid',
-  threatModelId: 'your-threat-model-uuid',
-  jwtToken: 'your-jwt-token',
-  serverUrl: 'ws://localhost:8080', // or wss://api.tmi.example.com
+  diagramId: "your-diagram-uuid",
+  threatModelId: "your-threat-model-uuid",
+  jwtToken: "your-jwt-token",
+  serverUrl: "ws://localhost:8080", // or wss://api.tmi.example.com
 });
 
 // Connect and join session
@@ -38,12 +38,12 @@ await client.connect();
 ### 2. Handle Real-time Updates
 
 ```javascript
-client.on('diagramOperation', operation => {
+client.on("diagramOperation", (operation) => {
   // Apply remote operation to your diagram
   applyOperationToDiagram(operation);
 });
 
-client.on('presenterCursor', cursor => {
+client.on("presenterCursor", (cursor) => {
   // Show presenter's cursor position
   showPresenterCursor(cursor.cursor_position);
 });
@@ -55,18 +55,18 @@ client.on('presenterCursor', cursor => {
 // Send a cell add operation
 await client.addCell({
   id: uuid(),
-  shape: 'process',
+  shape: "process",
   x: 100,
   y: 150,
   width: 120,
   height: 80,
-  label: 'New Process',
+  label: "New Process",
 });
 
 // Send a batch operation
 await client.sendBatchOperation([
-  { id: 'cell-1', operation: 'add', data: cellData1 },
-  { id: 'cell-2', operation: 'update', data: cellData2 },
+  { id: "cell-1", operation: "add", data: cellData1 },
+  { id: "cell-2", operation: "update", data: cellData2 },
 ]);
 ```
 
@@ -82,10 +82,10 @@ Before establishing a WebSocket connection for real-time collaboration, clients 
 
 ```javascript
 async function getActiveCollaborationSessions(jwtToken) {
-  const response = await fetch('/collaboration/sessions', {
+  const response = await fetch("/collaboration/sessions", {
     headers: {
       Authorization: `Bearer ${jwtToken}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
@@ -131,13 +131,13 @@ async function createCollaborationSession(threatModelId, diagramId, jwtToken) {
   const response = await fetch(
     `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${jwtToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       // No body required - user identity comes from JWT
-    },
+    }
   );
 
   if (response.status === 201) {
@@ -148,7 +148,9 @@ async function createCollaborationSession(threatModelId, diagramId, jwtToken) {
     const conflict = await response.json();
     throw new SessionExistsError(conflict.join_url);
   } else {
-    throw new Error(`Failed to create session: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to create session: ${response.status} ${response.statusText}`
+    );
   }
 }
 ```
@@ -162,13 +164,13 @@ async function joinCollaborationSession(threatModelId, diagramId, jwtToken) {
   const response = await fetch(
     `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
     {
-      method: 'PUT',
+      method: "PUT",
       headers: {
         Authorization: `Bearer ${jwtToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       // No body required - user identity comes from JWT
-    },
+    }
   );
 
   if (response.status === 200) {
@@ -176,9 +178,13 @@ async function joinCollaborationSession(threatModelId, diagramId, jwtToken) {
     return await response.json();
   } else if (response.status === 404) {
     // No session exists
-    throw new NoSessionError('No collaboration session exists for this diagram');
+    throw new NoSessionError(
+      "No collaboration session exists for this diagram"
+    );
   } else {
-    throw new Error(`Failed to join session: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to join session: ${response.status} ${response.statusText}`
+    );
   }
 }
 ```
@@ -186,7 +192,11 @@ async function joinCollaborationSession(threatModelId, diagramId, jwtToken) {
 #### Smart Session Handler
 
 ```javascript
-async function startOrJoinCollaborationSession(threatModelId, diagramId, jwtToken) {
+async function startOrJoinCollaborationSession(
+  threatModelId,
+  diagramId,
+  jwtToken
+) {
   try {
     // Try creating first
     return await createCollaborationSession(threatModelId, diagramId, jwtToken);
@@ -214,7 +224,7 @@ async function startOrJoinCollaborationSession(threatModelId, diagramId, jwtToke
 ```javascript
 class SessionExistsError extends Error {
   constructor(joinUrl) {
-    super('Session already exists');
+    super("Session already exists");
     this.joinUrl = joinUrl;
   }
 }
@@ -382,7 +392,10 @@ class SessionJoinErrorHandler {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        return await this.sessionManager.joinCollaborationSession(threatModelId, diagramId);
+        return await this.sessionManager.joinCollaborationSession(
+          threatModelId,
+          diagramId
+        );
       } catch (error) {
         lastError = error;
         console.warn(`Session join attempt ${attempt} failed:`, error.message);
@@ -390,24 +403,26 @@ class SessionJoinErrorHandler {
         if (attempt < maxRetries) {
           const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
           console.log(`Retrying in ${delay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
     }
 
-    throw new Error(`Failed to join session after ${maxRetries} attempts: ${lastError.message}`);
+    throw new Error(
+      `Failed to join session after ${maxRetries} attempts: ${lastError.message}`
+    );
   }
 
   handleSessionJoinError(error, response) {
     switch (response.status) {
       case 401:
-        return 'Authentication failed. Please log in again.';
+        return "Authentication failed. Please log in again.";
       case 403:
-        return 'You do not have permission to access this diagram.';
+        return "You do not have permission to access this diagram.";
       case 404:
-        return 'Diagram or threat model not found.';
+        return "Diagram or threat model not found.";
       case 500:
-        return 'Server error. Please try again later.';
+        return "Server error. Please try again later.";
       default:
         return `Failed to join collaboration session: ${error.message}`;
     }
@@ -426,9 +441,9 @@ async function getSessionStatus(threatModelId, diagramId, jwtToken) {
     {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    },
+    }
   );
 
   if (response.status === 404) {
@@ -459,12 +474,12 @@ async function leaveCollaborationSession(threatModelId, diagramId, jwtToken) {
   const response = await fetch(
     `/threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`,
     {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${jwtToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    },
+    }
   );
 
   if (!response.ok && response.status !== 404) {
@@ -520,18 +535,18 @@ class ParticipantManager {
 
   setupParticipantEventListeners() {
     // Handle user joining the session
-    this.wsClient.on('message', message => {
-      if (message.event === 'join') {
+    this.wsClient.on("message", (message) => {
+      if (message.event === "join") {
         console.log(`User ${message.user_id} joined the session`);
         this.handleUserJoined(message.user_id, message.timestamp);
       }
 
-      if (message.event === 'leave') {
+      if (message.event === "leave") {
         console.log(`User ${message.user_id} left the session`);
         this.handleUserLeft(message.user_id, message.timestamp);
       }
 
-      if (message.event === 'session_ended') {
+      if (message.event === "session_ended") {
         console.log(`Session ended: ${message.message}`);
         this.handleSessionEnded(message);
       }
@@ -540,7 +555,10 @@ class ParticipantManager {
 
   async handleUserJoined(userId, timestamp) {
     // Show immediate notification
-    this.showNotification(`${this.getDisplayName(userId)} joined the session`, 'info');
+    this.showNotification(
+      `${this.getDisplayName(userId)} joined the session`,
+      "info"
+    );
 
     // Optionally refresh participant list with full details
     if (this.needsParticipantDetails) {
@@ -550,10 +568,15 @@ class ParticipantManager {
 
   async handleUserLeft(userId, timestamp) {
     // Show immediate notification
-    this.showNotification(`${this.getDisplayName(userId)} left the session`, 'info');
+    this.showNotification(
+      `${this.getDisplayName(userId)} left the session`,
+      "info"
+    );
 
     // Remove from local participant list
-    this.currentParticipants = this.currentParticipants.filter(p => p.user_id !== userId);
+    this.currentParticipants = this.currentParticipants.filter(
+      (p) => p.user_id !== userId
+    );
     this.updateParticipantUI();
 
     // Optionally refresh participant list for accurate state
@@ -567,16 +590,18 @@ class ParticipantManager {
       // Get updated session info from REST API
       const session = await this.sessionManager.getSessionStatus(
         this.sessionManager.currentSession.threat_model_id,
-        this.sessionManager.currentSession.diagram_id,
+        this.sessionManager.currentSession.diagram_id
       );
 
       if (session && session.participants) {
         this.currentParticipants = session.participants;
         this.updateParticipantUI();
-        console.log(`Updated participant list: ${session.participants.length} participants`);
+        console.log(
+          `Updated participant list: ${session.participants.length} participants`
+        );
       }
     } catch (error) {
-      console.warn('Failed to refresh participant list:', error);
+      console.warn("Failed to refresh participant list:", error);
     }
   }
 
@@ -587,8 +612,8 @@ class ParticipantManager {
     // Show prominent notification to user
     this.showNotification(
       `Session ended: ${message.message}`,
-      'warning',
-      { duration: 0, persistent: true }, // Persistent notification
+      "warning",
+      { duration: 0, persistent: true } // Persistent notification
     );
 
     // Clean up local state
@@ -616,36 +641,37 @@ class ParticipantManager {
     // Show options to user
     const actions = [
       {
-        text: 'Return to Dashboard',
-        action: () => (window.location.href = '/dashboard'),
+        text: "Return to Dashboard",
+        action: () => (window.location.href = "/dashboard"),
       },
       {
-        text: 'Start New Session',
+        text: "Start New Session",
         action: () => this.startNewCollaborationSession(),
       },
     ];
 
-    this.showActionDialog('Session Ended', message.message, actions);
+    this.showActionDialog("Session Ended", message.message, actions);
   }
 
   updateParticipantUI() {
     // Update your UI to show current participants with their permissions
     const participantElements = this.currentParticipants.map(
-      p => `
+      (p) => `
       <div class="participant">
         <span class="user-name">${this.getDisplayName(p.user_id)}</span>
         <span class="permission-badge ${p.permissions}">${p.permissions}</span>
         <span class="join-time">${this.formatTime(p.joined_at)}</span>
       </div>
-    `,
+    `
     );
 
-    document.getElementById('participants-list').innerHTML = participantElements.join('');
+    document.getElementById("participants-list").innerHTML =
+      participantElements.join("");
   }
 
   getDisplayName(userId) {
     // Convert email to display name or use user directory
-    return userId.split('@')[0] || userId;
+    return userId.split("@")[0] || userId;
   }
 
   formatTime(timestamp) {
@@ -693,36 +719,46 @@ class ParticipantManager {
 class CollaborationClient {
   async initializeCollaboration(threatModelId, diagramId) {
     // Step 1: Join via REST API
-    const session = await this.sessionManager.joinCollaborationSession(threatModelId, diagramId);
-    console.log(`Joined session with ${session.participants.length} participants`);
+    const session = await this.sessionManager.joinCollaborationSession(
+      threatModelId,
+      diagramId
+    );
+    console.log(
+      `Joined session with ${session.participants.length} participants`
+    );
 
     // Step 2: Set up participant tracking
-    this.participantManager = new ParticipantManager(this.wsClient, this.sessionManager);
+    this.participantManager = new ParticipantManager(
+      this.wsClient,
+      this.sessionManager
+    );
     this.participantManager.currentParticipants = session.participants;
     this.participantManager.updateParticipantUI();
 
     // Step 3: Set up collaboration features
     this.setupDiagramCollaboration();
 
-    console.log('✅ Collaboration fully initialized');
+    console.log("✅ Collaboration fully initialized");
   }
 
   setupDiagramCollaboration() {
     // Handle diagram operations
-    this.wsClient.on('diagram_operation', operation => {
+    this.wsClient.on("diagram_operation", (operation) => {
       if (operation.user_id !== this.currentUser.email) {
         this.applyRemoteOperation(operation);
 
         // Show who made the change
         this.participantManager.showNotification(
-          `${this.participantManager.getDisplayName(operation.user_id)} updated the diagram`,
-          'info',
+          `${this.participantManager.getDisplayName(
+            operation.user_id
+          )} updated the diagram`,
+          "info"
         );
       }
     });
 
     // Handle presenter mode changes
-    this.wsClient.on('current_presenter', message => {
+    this.wsClient.on("current_presenter", (message) => {
       this.handlePresenterChange(message.current_presenter);
     });
   }
@@ -765,7 +801,7 @@ The WebSocket connection requires a valid JWT token with the following claims:
 
 ```json
 {
-  "sub": "user-id-or-email",
+  "sub": "oauth-provider-specific-string",
   "email": "user@example.com",
   "name": "User Name",
   "exp": 1640995200,
@@ -787,21 +823,21 @@ class TMICollaborativeClient {
     this.ws = new WebSocket(this.buildConnectionURL());
 
     this.ws.onopen = () => {
-      console.log('Connected to collaborative session');
+      console.log("Connected to collaborative session");
       this.heartbeat = setInterval(() => this.ping(), 30000);
     };
 
-    this.ws.onmessage = event => {
+    this.ws.onmessage = (event) => {
       this.handleMessage(JSON.parse(event.data));
     };
 
-    this.ws.onclose = event => {
+    this.ws.onclose = (event) => {
       this.handleDisconnection(event);
       clearInterval(this.heartbeat);
     };
 
-    this.ws.onerror = error => {
-      console.error('WebSocket error:', error);
+    this.ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
     };
   }
 
@@ -823,15 +859,15 @@ class TMICollaborativeClient {
 
 ```javascript
 const operation = {
-  message_type: 'diagram_operation',
+  message_type: "diagram_operation",
   user_id: this.currentUser.email,
   operation_id: uuid(), // Client-generated UUID
   operation: {
-    type: 'patch',
+    type: "patch",
     cells: [
       {
-        id: 'cell-uuid',
-        operation: 'add', // 'add', 'update', 'remove'
+        id: "cell-uuid",
+        operation: "add", // 'add', 'update', 'remove'
         data: {
           /* cell properties */
         },
@@ -849,27 +885,27 @@ this.ws.send(JSON.stringify(operation));
 // Request presenter mode
 this.ws.send(
   JSON.stringify({
-    message_type: 'presenter_request',
+    message_type: "presenter_request",
     user_id: this.currentUser.email,
-  }),
+  })
 );
 
 // Send cursor position (only if you're the presenter)
 this.ws.send(
   JSON.stringify({
-    message_type: 'presenter_cursor',
+    message_type: "presenter_cursor",
     user_id: this.currentUser.email,
     cursor_position: { x: 100, y: 200 },
-  }),
+  })
 );
 
 // Send selection (only if you're the presenter)
 this.ws.send(
   JSON.stringify({
-    message_type: 'presenter_selection',
+    message_type: "presenter_selection",
     user_id: this.currentUser.email,
-    selected_cells: ['cell-uuid-1', 'cell-uuid-2'],
-  }),
+    selected_cells: ["cell-uuid-1", "cell-uuid-2"],
+  })
 );
 ```
 
@@ -879,17 +915,17 @@ this.ws.send(
 // Request undo
 this.ws.send(
   JSON.stringify({
-    message_type: 'undo_request',
+    message_type: "undo_request",
     user_id: this.currentUser.email,
-  }),
+  })
 );
 
 // Request redo
 this.ws.send(
   JSON.stringify({
-    message_type: 'redo_request',
+    message_type: "redo_request",
     user_id: this.currentUser.email,
-  }),
+  })
 );
 ```
 
@@ -997,7 +1033,7 @@ class DiagramCollaborationManager {
     this.isApplyingRemoteChange = false; // Echo prevention flag
 
     // Listen to local diagram changes
-    this.diagramEditor.on('cellChanged', change => {
+    this.diagramEditor.on("cellChanged", (change) => {
       if (this.isApplyingRemoteChange) {
         return; // DON'T send WebSocket message for remote changes
       }
@@ -1030,13 +1066,13 @@ class DiagramCollaborationManager {
   applyOperationToEditor(operation) {
     for (const cellOp of operation.cells) {
       switch (cellOp.operation) {
-        case 'add':
+        case "add":
           this.diagramEditor.addCell(cellOp.data);
           break;
-        case 'update':
+        case "update":
           this.diagramEditor.updateCell(cellOp.id, cellOp.data);
           break;
-        case 'remove':
+        case "remove":
           this.diagramEditor.removeCell(cellOp.id);
           break;
       }
@@ -1058,7 +1094,7 @@ class PresenterModeManager {
 
   requestPresenterMode() {
     this.wsClient.send({
-      message_type: 'presenter_request',
+      message_type: "presenter_request",
       user_id: this.currentUser.email,
     });
   }
@@ -1081,10 +1117,10 @@ class PresenterModeManager {
 
   enablePresenterMode() {
     // Send cursor updates on mouse move
-    this.diagramEditor.on('mousemove', event => {
+    this.diagramEditor.on("mousemove", (event) => {
       if (this.isPresenter) {
         this.wsClient.send({
-          message_type: 'presenter_cursor',
+          message_type: "presenter_cursor",
           user_id: this.currentUser.email,
           cursor_position: { x: event.x, y: event.y },
         });
@@ -1092,12 +1128,12 @@ class PresenterModeManager {
     });
 
     // Send selection updates
-    this.diagramEditor.on('selectionChanged', selectedCells => {
+    this.diagramEditor.on("selectionChanged", (selectedCells) => {
       if (this.isPresenter) {
         this.wsClient.send({
-          message_type: 'presenter_selection',
+          message_type: "presenter_selection",
           user_id: this.currentUser.email,
-          selected_cells: selectedCells.map(cell => cell.id),
+          selected_cells: selectedCells.map((cell) => cell.id),
         });
       }
     });
@@ -1122,7 +1158,7 @@ class PresenterModeManager {
 ```javascript
 class StateManager {
   handleStateCorrection(message) {
-    console.log('Received state correction, updating local state');
+    console.log("Received state correction, updating local state");
 
     this.isApplyingRemoteChange = true;
 
@@ -1130,12 +1166,12 @@ class StateManager {
       // Apply corrected state for each cell
       for (const cell of message.cells) {
         this.diagramEditor.updateCell(cell.id, cell, {
-          source: 'server_correction',
+          source: "server_correction",
         });
       }
 
       // Show user notification
-      this.showNotification('Diagram synchronized with server', 'info');
+      this.showNotification("Diagram synchronized with server", "info");
     } finally {
       this.isApplyingRemoteChange = false;
     }
@@ -1143,7 +1179,7 @@ class StateManager {
 
   handleAuthorizationDenied(message) {
     // Show error to user
-    this.showNotification(`Operation denied: ${message.reason}`, 'error');
+    this.showNotification(`Operation denied: ${message.reason}`, "error");
 
     // The server will send a state_correction message next
   }
@@ -1164,7 +1200,10 @@ class SyncManager {
   handleDiagramOperation(message) {
     // Check for sequence issues (if server provides sequence numbers)
     if (message.sequence_number) {
-      if (this.expectedSequence > 0 && message.sequence_number !== this.expectedSequence + 1) {
+      if (
+        this.expectedSequence > 0 &&
+        message.sequence_number !== this.expectedSequence + 1
+      ) {
         this.handleSequenceGap(message.sequence_number);
       }
       this.expectedSequence = message.sequence_number;
@@ -1176,7 +1215,7 @@ class SyncManager {
 
   handleSequenceGap(actualSequence) {
     this.outOfSyncWarnings++;
-    console.warn('Sequence gap detected:', {
+    console.warn("Sequence gap detected:", {
       expected: this.expectedSequence + 1,
       received: actualSequence,
       warnings: this.outOfSyncWarnings,
@@ -1188,15 +1227,15 @@ class SyncManager {
   }
 
   requestResync() {
-    console.log('Requesting resync due to sync issues');
+    console.log("Requesting resync due to sync issues");
     this.wsClient.send({
-      message_type: 'resync_request',
+      message_type: "resync_request",
       user_id: this.currentUser.email,
     });
   }
 
   handleResyncResponse(message) {
-    if (message.method === 'rest_api') {
+    if (message.method === "rest_api") {
       this.performRESTResync();
     }
   }
@@ -1208,7 +1247,7 @@ class SyncManager {
         `/threat_models/${this.threatModelId}/diagrams/${this.diagramId}`,
         {
           headers: { Authorization: `Bearer ${this.jwtToken}` },
-        },
+        }
       );
 
       const diagram = await response.json();
@@ -1222,10 +1261,10 @@ class SyncManager {
       this.outOfSyncWarnings = 0;
       this.expectedSequence = 0;
 
-      this.showNotification('Diagram synchronized', 'success');
+      this.showNotification("Diagram synchronized", "success");
     } catch (error) {
-      console.error('Resync failed:', error);
-      this.showNotification('Failed to synchronize diagram', 'error');
+      console.error("Resync failed:", error);
+      this.showNotification("Failed to synchronize diagram", "error");
     }
   }
 }
@@ -1243,13 +1282,16 @@ class ConnectionManager {
 
   scheduleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      this.showNotification('Connection lost. Please refresh the page.', 'error');
+      this.showNotification(
+        "Connection lost. Please refresh the page.",
+        "error"
+      );
       return;
     }
 
     const delay = Math.min(
       this.reconnectDelay * Math.pow(2, this.reconnectAttempts),
-      30000, // Max 30 seconds
+      30000 // Max 30 seconds
     );
 
     setTimeout(() => {
@@ -1263,9 +1305,9 @@ class ConnectionManager {
     try {
       await this.connect();
       this.reconnectAttempts = 0; // Reset on success
-      this.showNotification('Connection restored', 'success');
+      this.showNotification("Connection restored", "success");
     } catch (error) {
-      console.error('Reconnection failed:', error);
+      console.error("Reconnection failed:", error);
       this.scheduleReconnection();
     }
   }
@@ -1278,18 +1320,21 @@ class ConnectionManager {
 class HistoryManager {
   handleHistoryOperation(message) {
     switch (message.message) {
-      case 'resync_required':
+      case "resync_required":
         // Server processed undo/redo successfully, need to resync
         this.performRESTResync();
-        this.showNotification(`${message.operation_type} completed, refreshing diagram`, 'info');
+        this.showNotification(
+          `${message.operation_type} completed, refreshing diagram`,
+          "info"
+        );
         break;
 
-      case 'no_operations_to_undo':
-        this.showNotification('No operations to undo', 'info');
+      case "no_operations_to_undo":
+        this.showNotification("No operations to undo", "info");
         break;
 
-      case 'no_operations_to_redo':
-        this.showNotification('No operations to redo', 'info');
+      case "no_operations_to_redo":
+        this.showNotification("No operations to redo", "info");
         break;
     }
   }
@@ -1299,14 +1344,14 @@ class HistoryManager {
     // Replace local undo/redo with server requests
     this.diagramEditor.setUndoHandler(() => {
       this.wsClient.send({
-        message_type: 'undo_request',
+        message_type: "undo_request",
         user_id: this.currentUser.email,
       });
     });
 
     this.diagramEditor.setRedoHandler(() => {
       this.wsClient.send({
-        message_type: 'redo_request',
+        message_type: "redo_request",
         user_id: this.currentUser.email,
       });
     });
@@ -1337,15 +1382,12 @@ class PerformanceOptimizer {
         lastRan = Date.now();
       } else {
         clearTimeout(lastFunc);
-        lastFunc = setTimeout(
-          function () {
-            if (Date.now() - lastRan >= limit) {
-              func.apply(context, args);
-              lastRan = Date.now();
-            }
-          },
-          limit - (Date.now() - lastRan),
-        );
+        lastFunc = setTimeout(function () {
+          if (Date.now() - lastRan >= limit) {
+            func.apply(context, args);
+            lastRan = Date.now();
+          }
+        }, limit - (Date.now() - lastRan));
       }
     };
   }
@@ -1379,7 +1421,7 @@ class UXManager {
       message += ` modified ${cellCount} cells`;
     }
 
-    this.showToast(message, { duration: 2000, type: 'info' });
+    this.showToast(message, { duration: 2000, type: "info" });
   }
 
   showPresenterIndicator(presenterName) {
@@ -1393,9 +1435,10 @@ class UXManager {
   handlePermissionError() {
     // Clear explanation for read-only users
     this.showDialog({
-      title: 'Read-only Access',
-      message: 'You have read-only access to this diagram. You can view changes but cannot edit.',
-      type: 'info',
+      title: "Read-only Access",
+      message:
+        "You have read-only access to this diagram. You can view changes but cannot edit.",
+      type: "info",
     });
   }
 }
@@ -1408,11 +1451,11 @@ class ValidationManager {
   validateOperation(operation) {
     // Validate before sending
     if (!operation.operation_id || !this.isValidUUID(operation.operation_id)) {
-      throw new Error('Invalid operation ID');
+      throw new Error("Invalid operation ID");
     }
 
     if (!operation.operation || !operation.operation.cells) {
-      throw new Error('Invalid operation structure');
+      throw new Error("Invalid operation structure");
     }
 
     for (const cellOp of operation.operation.cells) {
@@ -1422,15 +1465,18 @@ class ValidationManager {
 
   validateCellOperation(cellOp) {
     if (!cellOp.id || !this.isValidUUID(cellOp.id)) {
-      throw new Error('Invalid cell ID');
+      throw new Error("Invalid cell ID");
     }
 
-    if (!['add', 'update', 'remove'].includes(cellOp.operation)) {
-      throw new Error('Invalid cell operation type');
+    if (!["add", "update", "remove"].includes(cellOp.operation)) {
+      throw new Error("Invalid cell operation type");
     }
 
-    if ((cellOp.operation === 'add' || cellOp.operation === 'update') && !cellOp.data) {
-      throw new Error('Cell data required for add/update operations');
+    if (
+      (cellOp.operation === "add" || cellOp.operation === "update") &&
+      !cellOp.data
+    ) {
+      throw new Error("Cell data required for add/update operations");
     }
   }
 }
@@ -1454,7 +1500,7 @@ interface CollaborationSession {
 interface SessionParticipant {
   user_id: string;
   joined_at: string; // ISO 8601 timestamp
-  permissions: 'reader' | 'writer';
+  permissions: "reader" | "writer";
 }
 
 interface SessionManagerConfig {
@@ -1472,7 +1518,7 @@ interface SessionJoinResult {
 
 // Message Types
 interface DiagramOperationMessage {
-  message_type: 'diagram_operation';
+  message_type: "diagram_operation";
   user_id: string;
   operation_id: string;
   sequence_number?: number;
@@ -1480,13 +1526,13 @@ interface DiagramOperationMessage {
 }
 
 interface CellPatchOperation {
-  type: 'patch';
+  type: "patch";
   cells: CellOperation[];
 }
 
 interface CellOperation {
   id: string;
-  operation: 'add' | 'update' | 'remove';
+  operation: "add" | "update" | "remove";
   data?: Cell;
 }
 
@@ -1503,69 +1549,72 @@ interface Cell {
 
 // Presenter Mode
 interface PresenterRequestMessage {
-  message_type: 'presenter_request';
+  message_type: "presenter_request";
   user_id: string;
 }
 
 interface CurrentPresenterMessage {
-  message_type: 'current_presenter';
+  message_type: "current_presenter";
   current_presenter: string;
 }
 
 interface PresenterCursorMessage {
-  message_type: 'presenter_cursor';
+  message_type: "presenter_cursor";
   user_id: string;
   cursor_position: { x: number; y: number };
 }
 
 // Error Handling
 interface AuthorizationDeniedMessage {
-  message_type: 'authorization_denied';
+  message_type: "authorization_denied";
   original_operation_id: string;
   reason: string;
 }
 
 interface StateCorrectionMessage {
-  message_type: 'state_correction';
+  message_type: "state_correction";
   cells: Cell[];
 }
 
 interface ResyncResponseMessage {
-  message_type: 'resync_response';
+  message_type: "resync_response";
   user_id: string;
   target_user: string;
-  method: 'rest_api';
+  method: "rest_api";
   diagram_id: string;
   threat_model_id: string;
 }
 
 // History Operations
 interface UndoRequestMessage {
-  message_type: 'undo_request';
+  message_type: "undo_request";
   user_id: string;
 }
 
 interface HistoryOperationMessage {
-  message_type: 'history_operation';
-  operation_type: 'undo' | 'redo';
-  message: 'resync_required' | 'no_operations_to_undo' | 'no_operations_to_redo';
+  message_type: "history_operation";
+  operation_type: "undo" | "redo";
+  message:
+    | "resync_required"
+    | "no_operations_to_undo"
+    | "no_operations_to_redo";
 }
 
 // Participant Join/Leave Events (Legacy Format)
 interface UserJoinedEvent {
-  event: 'join';
+  event: "join";
   user_id: string;
   timestamp: string; // ISO 8601 timestamp
 }
 
 interface UserLeftEvent {
-  event: 'leave';
+  event: "leave";
   user_id: string;
   timestamp: string; // ISO 8601 timestamp
 }
 
 interface SessionEndedEvent {
-  event: 'session_ended';
+  event: "session_ended";
   user_id: string; // host who left
   message: string; // Reason for session termination
   timestamp: string; // ISO 8601 timestamp
@@ -1624,53 +1673,53 @@ class TMICollaborativeClient extends EventEmitter {
 
     this.ws.onopen = () => {
       this.isConnected = true;
-      this.emit('connected');
+      this.emit("connected");
     };
 
-    this.ws.onmessage = event => {
+    this.ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
       this.handleMessage(message);
     };
 
-    this.ws.onclose = event => {
+    this.ws.onclose = (event) => {
       this.isConnected = false;
-      this.emit('disconnected', event);
+      this.emit("disconnected", event);
       if (event.code !== 1000) {
         this.connectionManager.scheduleReconnection();
       }
     };
 
-    this.ws.onerror = error => {
-      this.emit('error', error);
+    this.ws.onerror = (error) => {
+      this.emit("error", error);
     };
   }
 
   handleMessage(message) {
     // Emit specific events for different message types
     this.emit(message.message_type, message);
-    this.emit('message', message);
+    this.emit("message", message);
   }
 
   send(message) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.warn('WebSocket not connected, message not sent:', message);
+      console.warn("WebSocket not connected, message not sent:", message);
     }
   }
 
   // High-level API methods
   async addCell(cellData) {
     const operation = {
-      message_type: 'diagram_operation',
+      message_type: "diagram_operation",
       user_id: this.currentUser.email,
       operation_id: this.generateUUID(),
       operation: {
-        type: 'patch',
+        type: "patch",
         cells: [
           {
             id: cellData.id,
-            operation: 'add',
+            operation: "add",
             data: cellData,
           },
         ],
@@ -1682,15 +1731,15 @@ class TMICollaborativeClient extends EventEmitter {
 
   async updateCell(cellId, updates) {
     const operation = {
-      message_type: 'diagram_operation',
+      message_type: "diagram_operation",
       user_id: this.currentUser.email,
       operation_id: this.generateUUID(),
       operation: {
-        type: 'patch',
+        type: "patch",
         cells: [
           {
             id: cellId,
-            operation: 'update',
+            operation: "update",
             data: updates,
           },
         ],
@@ -1702,15 +1751,15 @@ class TMICollaborativeClient extends EventEmitter {
 
   async removeCell(cellId) {
     const operation = {
-      message_type: 'diagram_operation',
+      message_type: "diagram_operation",
       user_id: this.currentUser.email,
       operation_id: this.generateUUID(),
       operation: {
-        type: 'patch',
+        type: "patch",
         cells: [
           {
             id: cellId,
-            operation: 'remove',
+            operation: "remove",
           },
         ],
       },
@@ -1721,28 +1770,28 @@ class TMICollaborativeClient extends EventEmitter {
 
   requestPresenterMode() {
     this.send({
-      message_type: 'presenter_request',
+      message_type: "presenter_request",
       user_id: this.currentUser.email,
     });
   }
 
   sendUndo() {
     this.send({
-      message_type: 'undo_request',
+      message_type: "undo_request",
       user_id: this.currentUser.email,
     });
   }
 
   sendRedo() {
     this.send({
-      message_type: 'redo_request',
+      message_type: "redo_request",
       user_id: this.currentUser.email,
     });
   }
 
   disconnect() {
     if (this.ws) {
-      this.ws.close(1000, 'Client disconnect');
+      this.ws.close(1000, "Client disconnect");
     }
   }
 }
@@ -1753,7 +1802,7 @@ class TMICollaborativeClient extends EventEmitter {
 ### Unit Testing Message Handlers
 
 ```javascript
-describe('TMICollaborativeClient', () => {
+describe("TMICollaborativeClient", () => {
   let client;
   let mockWebSocket;
 
@@ -1763,32 +1812,32 @@ describe('TMICollaborativeClient', () => {
     client.ws = mockWebSocket;
   });
 
-  test('should handle diagram operations without echo', () => {
+  test("should handle diagram operations without echo", () => {
     const operation = {
-      message_type: 'diagram_operation',
-      user_id: 'other@example.com', // Not current user
-      operation_id: 'test-uuid',
+      message_type: "diagram_operation",
+      user_id: "other@example.com", // Not current user
+      operation_id: "test-uuid",
       operation: {
-        type: 'patch',
-        cells: [{ id: 'cell-1', operation: 'add', data: mockCellData }],
+        type: "patch",
+        cells: [{ id: "cell-1", operation: "add", data: mockCellData }],
       },
     };
 
-    const applySpy = jest.spyOn(client, 'applyOperationToEditor');
+    const applySpy = jest.spyOn(client, "applyOperationToEditor");
     client.handleMessage(operation);
 
     expect(applySpy).toHaveBeenCalledWith(operation.operation);
   });
 
-  test('should not echo own operations', () => {
+  test("should not echo own operations", () => {
     const operation = {
-      message_type: 'diagram_operation',
+      message_type: "diagram_operation",
       user_id: client.currentUser.email, // Same as current user
-      operation_id: 'test-uuid',
-      operation: { type: 'patch', cells: [] },
+      operation_id: "test-uuid",
+      operation: { type: "patch", cells: [] },
     };
 
-    const applySpy = jest.spyOn(client, 'applyOperationToEditor');
+    const applySpy = jest.spyOn(client, "applyOperationToEditor");
     client.handleMessage(operation);
 
     expect(applySpy).not.toHaveBeenCalled();
@@ -1799,8 +1848,8 @@ describe('TMICollaborativeClient', () => {
 ### Integration Testing
 
 ```javascript
-describe('Collaborative Editing Integration', () => {
-  test('should maintain sync across multiple clients', async () => {
+describe("Collaborative Editing Integration", () => {
+  test("should maintain sync across multiple clients", async () => {
     const client1 = new TMICollaborativeClient(config1);
     const client2 = new TMICollaborativeClient(config2);
 
@@ -1810,8 +1859,8 @@ describe('Collaborative Editing Integration', () => {
     await client1.addCell(testCell);
 
     // Client 2 should receive the operation
-    await new Promise(resolve => {
-      client2.on('diagram_operation', op => {
+    await new Promise((resolve) => {
+      client2.on("diagram_operation", (op) => {
         expect(op.operation.cells[0].data).toEqual(testCell);
         resolve();
       });
@@ -1823,21 +1872,21 @@ describe('Collaborative Editing Integration', () => {
 ### Error Scenario Testing
 
 ```javascript
-test('should handle authorization denied gracefully', () => {
+test("should handle authorization denied gracefully", () => {
   const deniedMessage = {
-    message_type: 'authorization_denied',
-    original_operation_id: 'test-uuid',
-    reason: 'insufficient_permissions',
+    message_type: "authorization_denied",
+    original_operation_id: "test-uuid",
+    reason: "insufficient_permissions",
   };
 
-  const errorSpy = jest.spyOn(client, 'emit');
+  const errorSpy = jest.spyOn(client, "emit");
   client.handleMessage(deniedMessage);
 
-  expect(errorSpy).toHaveBeenCalledWith('authorization_denied', deniedMessage);
+  expect(errorSpy).toHaveBeenCalledWith("authorization_denied", deniedMessage);
 });
 
-test('should request resync after multiple sync warnings', () => {
-  const sendSpy = jest.spyOn(client, 'send');
+test("should request resync after multiple sync warnings", () => {
+  const sendSpy = jest.spyOn(client, "send");
 
   // Simulate multiple sequence gaps
   for (let i = 0; i < 3; i++) {
@@ -1845,7 +1894,7 @@ test('should request resync after multiple sync warnings', () => {
   }
 
   expect(sendSpy).toHaveBeenCalledWith({
-    message_type: 'resync_request',
+    message_type: "resync_request",
     user_id: client.currentUser.email,
   });
 });
