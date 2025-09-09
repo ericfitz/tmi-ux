@@ -278,7 +278,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         dfdId: this.dfdId,
       });
       this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
-      
+
       // Check for existing collaboration session on startup
       this.collaborationService
         .checkForExistingSession()
@@ -293,7 +293,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                   this.collaborationService.isCurrentUserManagerOfExistingSession(),
               });
             }
-            
+
             // Check for collaboration join request after session check completes
             this.handleJoinCollaborationQueryParam();
           },

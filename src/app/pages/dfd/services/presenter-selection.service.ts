@@ -81,11 +81,16 @@ export class PresenterSelectionService implements OnDestroy {
       const selectedCellIds = selectedCells.map(cell => cell.id);
 
       // Send selection update via collaborative operation service
-      this.collaborativeOperationService.sendPresenterSelection(selectedCellIds);
-
-      this.logger.debug('Broadcast presenter selection change', {
-        selectedCellIds,
-        count: selectedCellIds.length,
+      this.collaborativeOperationService.sendPresenterSelection(selectedCellIds).subscribe({
+        next: () => {
+          this.logger.debug('Broadcast presenter selection change', {
+            selectedCellIds,
+            count: selectedCellIds.length,
+          });
+        },
+        error: error => {
+          this.logger.error('Error broadcasting selection change', error);
+        },
       });
     } catch (error) {
       this.logger.error('Error broadcasting selection change', error);

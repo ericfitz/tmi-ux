@@ -195,11 +195,16 @@ export class PresenterCursorService implements OnDestroy {
    */
   private _broadcastCursorPosition(position: CursorPosition): void {
     try {
-      this.collaborativeOperationService.sendPresenterCursor(position);
-
-      this.logger.debug('Broadcast presenter cursor position', {
-        x: position.x,
-        y: position.y,
+      this.collaborativeOperationService.sendPresenterCursor(position).subscribe({
+        next: () => {
+          this.logger.debug('Broadcast presenter cursor position', {
+            x: position.x,
+            y: position.y,
+          });
+        },
+        error: error => {
+          this.logger.error('Error broadcasting cursor position', error);
+        },
       });
     } catch (error) {
       this.logger.error('Error broadcasting cursor position', error);

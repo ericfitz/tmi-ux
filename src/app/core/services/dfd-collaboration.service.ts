@@ -1629,6 +1629,20 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService
           ?.showWebSocketStatus(state) // , () => this._retryWebSocketConnection()) // COMMENTED OUT
           .subscribe();
+
+        // Clean up collaboration state for unexpected disconnection
+        this._logger.info('Unexpected disconnection - cleaning up collaboration state');
+        this._cleanupSessionState();
+
+        // Navigate based on user role - host goes to TM editor, participant goes to dashboard
+        if (this.isCurrentUserHost()) {
+          this._logger.info('Host disconnected unexpectedly - redirecting to threat model editor');
+          this._redirectToThreatModel();
+        } else {
+          this._logger.info('Participant disconnected unexpectedly - redirecting to dashboard');
+          this._redirectToDashboard();
+        }
+
         // Emit session ended event for unexpected disconnection
         this._sessionEndedSubject.next({ reason: 'disconnected' });
         break;
@@ -1637,8 +1651,22 @@ export class DfdCollaborationService implements OnDestroy {
         this._notificationService
           ?.showWebSocketStatus(state) // , () => this._retryWebSocketConnection()) // COMMENTED OUT
           .subscribe();
-        // Emit session ended event for errors
+
+        // Clean up collaboration state for errors
         if (this._collaborationState$.value.isActive) {
+          this._logger.info('WebSocket error/failed - cleaning up collaboration state');
+          this._cleanupSessionState();
+
+          // Navigate based on user role - host goes to TM editor, participant goes to dashboard
+          if (this.isCurrentUserHost()) {
+            this._logger.info('Host connection error - redirecting to threat model editor');
+            this._redirectToThreatModel();
+          } else {
+            this._logger.info('Participant connection error - redirecting to dashboard');
+            this._redirectToDashboard();
+          }
+
+          // Emit session ended event for errors
           this._sessionEndedSubject.next({ reason: 'error' });
         }
         break;
