@@ -513,7 +513,7 @@ export class CollaborativeOperationService {
       !error.message?.includes('401') &&
       !error.message?.includes('403') &&
       !error.message?.includes('permission') &&
-      this.webSocketAdapter.connectionHealth > 0
+      this.webSocketAdapter.isConnected // Use isConnected instead of connectionHealth
     );
   }
 

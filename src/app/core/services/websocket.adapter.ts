@@ -20,7 +20,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
@@ -138,7 +138,7 @@ export class WebSocketAdapter {
 
   // Enhanced error tracking
   private _lastError: WebSocketError | null = null;
-  private _connectionHealth = 100; // Health percentage (0-100)
+  // private _connectionHealth = 100; // Health percentage (0-100) - COMMENTED OUT
 
   // Message acknowledgment tracking
   private readonly _pendingAcks = new Map<
@@ -174,9 +174,9 @@ export class WebSocketAdapter {
   /**
    * Get connection health percentage (0-100)
    */
-  get connectionHealth(): number {
-    return this._connectionHealth;
-  }
+  // get connectionHealth(): number {
+  //   return this._connectionHealth;
+  // }
 
   /**
    * Get last error information
@@ -188,9 +188,9 @@ export class WebSocketAdapter {
   /**
    * Check if connection is healthy (connected and good health)
    */
-  get isHealthy(): boolean {
-    return this.isConnected && this._connectionHealth > 50;
-  }
+  // get isHealthy(): boolean {
+  //   return this.isConnected && this._connectionHealth > 50;
+  // }
 
   /**
    * Get current connection state
@@ -276,7 +276,7 @@ export class WebSocketAdapter {
           // Classify the error for appropriate recovery strategy
           const wsError = this._classifyConnectionError(event, errorMessage);
           this._lastError = wsError;
-          this._updateConnectionHealth(-30); // Decrease health on connection error
+          // this._updateConnectionHealth(-30); // Decrease health on connection error - COMMENTED OUT
 
           this.logger.error('WebSocket connection error', {
             url: url,
@@ -308,7 +308,7 @@ export class WebSocketAdapter {
       this.logger.debugComponent('websocket-api', 'WebSocket disconnection requested:', {
         url: this._url?.replace(/\?.*$/, ''),
         readyState: this._socket.readyState,
-        connectionHealth: this._connectionHealth,
+        // connectionHealth: this._connectionHealth, // COMMENTED OUT
       });
 
       this._socket.close(1000, 'Client disconnect');
@@ -734,7 +734,7 @@ export class WebSocketAdapter {
         });
 
         this._messages$.next(message);
-        this._updateConnectionHealth(5); // Small health boost for successful message
+        // this._updateConnectionHealth(5); // Small health boost for successful message - COMMENTED OUT
       } catch (error) {
         this._handleMalformedMessage('Unexpected error processing message', error, event.data);
       }
@@ -742,7 +742,7 @@ export class WebSocketAdapter {
 
     this._socket.addEventListener('close', event => {
       this._connectionState$.next(WebSocketState.DISCONNECTED);
-      this._updateConnectionHealth(-20); // Health decrease on disconnect
+      // this._updateConnectionHealth(-20); // Health decrease on disconnect - COMMENTED OUT
 
       this.logger.info('WebSocket connection closed', {
         code: event.code,
@@ -751,33 +751,34 @@ export class WebSocketAdapter {
       });
 
       // Attempt reconnection if not a clean close and connection is recoverable
-      if (event.code !== 1000 && this._shouldAttemptReconnection()) {
-        this._attemptReconnection();
-      } else if (event.code !== 1000) {
-        // Max reconnect attempts reached
-        this._connectionState$.next(WebSocketState.FAILED);
-        const wsError: WebSocketError = {
-          type: WebSocketErrorType.CONNECTION_FAILED,
-          message: `Connection lost and max reconnection attempts (${this._maxReconnectAttempts}) reached`,
-          originalError: event,
-          isRecoverable: false,
-          retryable: false,
-        };
-        this._lastError = wsError;
-        this._errors$.next(wsError);
-      }
+      // AUTOMATIC RECONNECTION LOGIC COMMENTED OUT
+      // if (event.code !== 1000 && this._shouldAttemptReconnection()) {
+      //   this._attemptReconnection();
+      // } else if (event.code !== 1000) {
+      //   // Max reconnect attempts reached
+      //   this._connectionState$.next(WebSocketState.FAILED);
+      //   const wsError: WebSocketError = {
+      //     type: WebSocketErrorType.CONNECTION_FAILED,
+      //     message: `Connection lost and max reconnection attempts (${this._maxReconnectAttempts}) reached`,
+      //     originalError: event,
+      //     isRecoverable: false,
+      //     retryable: false,
+      //   };
+      //   this._lastError = wsError;
+      //   this._errors$.next(wsError);
+      // }
     });
 
     this._socket.addEventListener('error', event => {
       this._connectionState$.next(WebSocketState.ERROR);
-      this._updateConnectionHealth(-25); // Larger health decrease for errors
+      // this._updateConnectionHealth(-25); // Larger health decrease for errors - COMMENTED OUT
 
       const wsError: WebSocketError = {
         type: WebSocketErrorType.NETWORK_ERROR,
         message: 'WebSocket error occurred',
         originalError: event,
-        isRecoverable: this._connectionHealth > 0,
-        retryable: this._connectionHealth > 0,
+        isRecoverable: true, // this._connectionHealth > 0, // COMMENTED OUT
+        retryable: true, // this._connectionHealth > 0, // COMMENTED OUT
       };
       this._lastError = wsError;
       this._errors$.next(wsError);
@@ -787,60 +788,61 @@ export class WebSocketAdapter {
   /**
    * Check if reconnection should be attempted
    */
-  private _shouldAttemptReconnection(): boolean {
-    return (
-      this._reconnectAttempts < this._maxReconnectAttempts &&
-      this._connectionHealth > 0 &&
-      (!this._lastError || this._lastError.retryable)
-    );
-  }
+  // private _shouldAttemptReconnection(): boolean {
+  //   return (
+  //     this._reconnectAttempts < this._maxReconnectAttempts &&
+  //     this._connectionHealth > 0 &&
+  //     (!this._lastError || this._lastError.retryable)
+  //   );
+  // }
 
   /**
    * Attempt to reconnect to WebSocket server
    */
-  private _attemptReconnection(): void {
-    if (!this._url || !this._shouldAttemptReconnection()) {
-      this.logger.warn('Reconnection not attempted', {
-        hasUrl: !!this._url,
-        attempts: this._reconnectAttempts,
-        maxAttempts: this._maxReconnectAttempts,
-        health: this._connectionHealth,
-        lastErrorRetryable: this._lastError?.retryable,
-      });
-      return;
-    }
+  // AUTOMATIC RECONNECTION METHOD COMMENTED OUT
+  // private _attemptReconnection(): void {
+  //   if (!this._url || !this._shouldAttemptReconnection()) {
+  //     this.logger.warn('Reconnection not attempted', {
+  //       hasUrl: !!this._url,
+  //       attempts: this._reconnectAttempts,
+  //       maxAttempts: this._maxReconnectAttempts,
+  //       // health: this._connectionHealth, // COMMENTED OUT
+  //       lastErrorRetryable: this._lastError?.retryable,
+  //     });
+  //     return;
+  //   }
 
-    this._reconnectAttempts++;
-    this._connectionState$.next(WebSocketState.RECONNECTING);
-    const delay = this._reconnectDelay * Math.pow(2, this._reconnectAttempts - 1);
+  //   this._reconnectAttempts++;
+  //   this._connectionState$.next(WebSocketState.RECONNECTING);
+  //   const delay = this._reconnectDelay * Math.pow(2, this._reconnectAttempts - 1);
 
-    this.logger.info('WebSocket attempting reconnection', {
-      attempt: this._reconnectAttempts,
-      maxAttempts: this._maxReconnectAttempts,
-      delay,
-      health: this._connectionHealth,
-      url: this._url.replace(/\?.*$/, ''), // Don't log query params
-    });
+  //   this.logger.info('WebSocket attempting reconnection', {
+  //     attempt: this._reconnectAttempts,
+  //     maxAttempts: this._maxReconnectAttempts,
+  //     delay,
+  //     // health: this._connectionHealth, // COMMENTED OUT
+  //     url: this._url.replace(/\?.*$/, ''), // Don't log query params
+  //   });
 
-    setTimeout(() => {
-      if (this._url && this._shouldAttemptReconnection()) {
-        this.connect(this._url).subscribe({
-          next: () => {
-            this.logger.info('WebSocket reconnection successful');
-            this._updateConnectionHealth(30); // Health boost on successful reconnection
-          },
-          error: (error: unknown) => {
-            this.logger.warn('WebSocket reconnection failed', {
-              error,
-              attempt: this._reconnectAttempts,
-            });
-            this._updateConnectionHealth(-10); // Health decrease on failed reconnection
-            this._attemptReconnection();
-          },
-        });
-      }
-    }, delay);
-  }
+  //   setTimeout(() => {
+  //     if (this._url && this._shouldAttemptReconnection()) {
+  //       this.connect(this._url).subscribe({
+  //         next: () => {
+  //           this.logger.info('WebSocket reconnection successful');
+  //           // this._updateConnectionHealth(30); // Health boost on successful reconnection - COMMENTED OUT
+  //         },
+  //         error: (error: unknown) => {
+  //           this.logger.warn('WebSocket reconnection failed', {
+  //             error,
+  //             attempt: this._reconnectAttempts,
+  //           });
+  //           // this._updateConnectionHealth(-10); // Health decrease on failed reconnection - COMMENTED OUT
+  //           this._attemptReconnection();
+  //         },
+  //       });
+  //     }
+  //   }, delay);
+  // }
 
   /**
    * Wait for message acknowledgment
@@ -953,19 +955,19 @@ export class WebSocketAdapter {
   /**
    * Update connection health score
    */
-  private _updateConnectionHealth(delta: number): void {
-    this._connectionHealth = Math.max(0, Math.min(100, this._connectionHealth + delta));
+  // private _updateConnectionHealth(delta: number): void {
+  //   this._connectionHealth = Math.max(0, Math.min(100, this._connectionHealth + delta));
 
-    if (this._connectionHealth === 0) {
-      this._connectionState$.next(WebSocketState.FAILED);
-    }
+  //   if (this._connectionHealth === 0) {
+  //     this._connectionState$.next(WebSocketState.FAILED);
+  //   }
 
-    this.logger.debug('Connection health updated', {
-      health: this._connectionHealth,
-      delta,
-      state: this.connectionState,
-    });
-  }
+  //   this.logger.debug('Connection health updated', {
+  //     health: this._connectionHealth,
+  //     delta,
+  //     state: this.connectionState,
+  //   });
+  // }
 
   /**
    * Send message with retry mechanism
@@ -1009,30 +1011,31 @@ export class WebSocketAdapter {
   private _isRetryableError(error: unknown): boolean {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return (
-      !errorMessage.includes('401') && !errorMessage.includes('403') && this._connectionHealth > 0
+      !errorMessage.includes('401') && !errorMessage.includes('403') // && this._connectionHealth > 0 // COMMENTED OUT
     );
   }
 
   /**
    * Force reconnection with health reset
    */
-  forceReconnect(): Observable<void> {
-    this.logger.info('Forcing WebSocket reconnection');
+  // MANUAL RECONNECTION METHOD COMMENTED OUT
+  // forceReconnect(): Observable<void> {
+  //   this.logger.info('Forcing WebSocket reconnection');
 
-    // Reset health and error state
-    this._connectionHealth = 100;
-    this._lastError = null;
-    this._reconnectAttempts = 0;
+  //   // Reset health and error state
+  //   // this._connectionHealth = 100; // COMMENTED OUT
+  //   this._lastError = null;
+  //   this._reconnectAttempts = 0;
 
-    // Disconnect and reconnect
-    this.disconnect();
+  //   // Disconnect and reconnect
+  //   this.disconnect();
 
-    if (this._url) {
-      return this.connect(this._url);
-    } else {
-      return throwError(() => new Error('No URL available for reconnection'));
-    }
-  }
+  //   if (this._url) {
+  //     return this.connect(this._url);
+  //   } else {
+  //     return throwError(() => new Error('No URL available for reconnection'));
+  //   }
+  // }
 
   /**
    * Validate WebSocket message structure
@@ -1208,13 +1211,13 @@ export class WebSocketAdapter {
     };
 
     this._lastError = wsError;
-    this._updateConnectionHealth(-5); // Small health decrease for malformed message
+    // this._updateConnectionHealth(-5); // Small health decrease for malformed message - COMMENTED OUT
 
     this.logger.error('Received malformed WebSocket message', {
       reason,
       rawData: truncatedData,
       originalError,
-      connectionHealth: this._connectionHealth,
+      // connectionHealth: this._connectionHealth, // COMMENTED OUT
     });
 
     this._errors$.next(wsError);

@@ -278,6 +278,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         dfdId: this.dfdId,
       });
       this.collaborationService.setDiagramContext(this.threatModelId, this.dfdId);
+      
       // Check for existing collaboration session on startup
       this.collaborationService
         .checkForExistingSession()
@@ -292,9 +293,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                   this.collaborationService.isCurrentUserManagerOfExistingSession(),
               });
             }
+            
+            // Check for collaboration join request after session check completes
+            this.handleJoinCollaborationQueryParam();
           },
           error: error => {
             this.logger.warn('Failed to check for existing session on startup', error);
+            // Still try to handle join collaboration in case of error
+            this.handleJoinCollaborationQueryParam();
           },
         });
     } else {
@@ -338,24 +344,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadDiagramData(this.dfdId);
     }
 
-    // Check for collaboration join request
-    const joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration');
-    if (joinCollaboration === 'true' && this.threatModelId && this.dfdId) {
-      this.logger.info('Auto-joining collaboration session from navigation', {
-        threatModelId: this.threatModelId,
-        dfdId: this.dfdId,
-      });
-
-      // Join existing collaboration session
-      this.collaborationService.joinCollaboration().subscribe({
-        next: success => {
-          this.logger.info('Collaboration session joined successfully', { success });
-        },
-        error: error => {
-          this.logger.error('Failed to join collaboration session', error);
-        },
-      });
-    }
+    // Join collaboration logic moved to handleJoinCollaborationQueryParam() method
+    // which is called after checkForExistingSession() completes
 
     // Initialize event handlers
     this.facade.initializeEventHandlers(this.x6GraphAdapter);
@@ -2174,5 +2164,28 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Presenter updated', { presenterEmail });
     this.collaborationService.updatePresenterEmail(presenterEmail);
     this.updateReadOnlyMode();
+  }
+
+  /**
+   * Handle joinCollaboration query parameter after checking for existing session
+   */
+  private handleJoinCollaborationQueryParam(): void {
+    const joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration');
+    if (joinCollaboration === 'true' && this.threatModelId && this.dfdId) {
+      this.logger.info('Auto-joining collaboration session from navigation', {
+        threatModelId: this.threatModelId,
+        dfdId: this.dfdId,
+      });
+
+      // Join existing collaboration session (existingSessionAvailable should now be set)
+      this.collaborationService.joinCollaboration().subscribe({
+        next: success => {
+          this.logger.info('Collaboration session joined successfully', { success });
+        },
+        error: error => {
+          this.logger.error('Failed to join collaboration session', error);
+        },
+      });
+    }
   }
 }

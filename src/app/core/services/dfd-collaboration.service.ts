@@ -1460,7 +1460,7 @@ export class DfdCollaborationService implements OnDestroy {
               isRecoverable: true,
               retryable: true,
             },
-            () => this._retryWebSocketConnection(),
+            // () => this._retryWebSocketConnection(), // COMMENTED OUT
           )
           .subscribe();
       },
@@ -1553,7 +1553,7 @@ export class DfdCollaborationService implements OnDestroy {
     this._subscriptions.add(
       this._webSocketAdapter.errors$.subscribe(error => {
         this._notificationService
-          ?.showWebSocketError(error, () => this._retryWebSocketConnection())
+          ?.showWebSocketError(error) // , () => this._retryWebSocketConnection()) // COMMENTED OUT
           .subscribe();
       }),
     );
@@ -1627,7 +1627,7 @@ export class DfdCollaborationService implements OnDestroy {
         }
         // Show notification for unexpected disconnections
         this._notificationService
-          ?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
+          ?.showWebSocketStatus(state) // , () => this._retryWebSocketConnection()) // COMMENTED OUT
           .subscribe();
         // Emit session ended event for unexpected disconnection
         this._sessionEndedSubject.next({ reason: 'disconnected' });
@@ -1635,7 +1635,7 @@ export class DfdCollaborationService implements OnDestroy {
       case WebSocketState.ERROR:
       case WebSocketState.FAILED:
         this._notificationService
-          ?.showWebSocketStatus(state, () => this._retryWebSocketConnection())
+          ?.showWebSocketStatus(state) // , () => this._retryWebSocketConnection()) // COMMENTED OUT
           .subscribe();
         // Emit session ended event for errors
         if (this._collaborationState$.value.isActive) {
@@ -1651,17 +1651,18 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Retry WebSocket connection
    */
-  private _retryWebSocketConnection(): void {
-    if (this._currentSession?.websocket_url) {
-      this._logger.info('Retrying WebSocket connection');
-      this._connectToWebSocket(this._currentSession.websocket_url);
-    } else {
-      this._logger.warn('Cannot retry WebSocket connection - no session URL available');
-      this._notificationService
-        ?.showError('Cannot retry connection - no active session')
-        .subscribe();
-    }
-  }
+  // MANUAL RETRY METHOD COMMENTED OUT
+  // private _retryWebSocketConnection(): void {
+  //   if (this._currentSession?.websocket_url) {
+  //     this._logger.info('Retrying WebSocket connection');
+  //     this._connectToWebSocket(this._currentSession.websocket_url);
+  //   } else {
+  //     this._logger.warn('Cannot retry WebSocket connection - no session URL available');
+  //     this._notificationService
+  //       ?.showError('Cannot retry connection - no active session')
+  //       .subscribe();
+  //   }
+  // }
 
   // Duplicate participant update handlers removed
   // All participant updates now come through updateAllParticipants()
