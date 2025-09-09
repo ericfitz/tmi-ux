@@ -114,14 +114,19 @@ export class PresenterSelectionService implements OnDestroy {
     }
 
     try {
+      // First, clear any existing selection
+      this._selectionAdapter.clearSelection(this._graph);
+
       // Get all cells in the graph
       const allCells = this._graph.getCells();
 
       // Find cells that match the selected IDs
       const cellsToSelect = allCells.filter(cell => selectedCellIds.includes(cell.id));
 
-      // Apply selection using the selection adapter
-      this._selectionAdapter.selectCells(this._graph, cellsToSelect);
+      // Apply new selection using the selection adapter
+      if (cellsToSelect.length > 0) {
+        this._selectionAdapter.selectCells(this._graph, cellsToSelect);
+      }
 
       // Also reset cursor timeout to keep presenter cursor active
       this.presenterCursorDisplayService.handlePresenterSelectionUpdate();

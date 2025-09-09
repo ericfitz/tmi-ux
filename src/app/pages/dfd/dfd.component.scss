@@ -40,6 +40,19 @@
   .presenter-mode-active {
     color: #4caf50 !important; // Green color when presenter mode is active
   }
+
+  button[mat-icon-button] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+  }
 }
 
 .graph-toolbar {
@@ -150,5 +163,18 @@
 
   .mat-menu-item {
     font-size: 14px;
+  }
+
+  // Presenter cursor styling
+  .presenter-cursor-active {
+    cursor:
+      url('/presenter-cursor.svg') 12 12,
+      auto !important;
+
+    * {
+      cursor:
+        url('/presenter-cursor.svg') 12 12,
+        auto !important;
+    }
   }
 }

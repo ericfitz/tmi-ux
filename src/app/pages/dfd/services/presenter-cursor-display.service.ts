@@ -50,8 +50,16 @@ export class PresenterCursorDisplayService implements OnDestroy {
   handlePresenterCursorUpdate(position: CursorPosition): void {
     // Only apply cursor if current user is not the presenter
     if (this.collaborationService.isCurrentUserPresenter()) {
+      this.logger.debug('Skipping presenter cursor update - current user is presenter');
       return;
     }
+
+    this.logger.info('Handling presenter cursor update', {
+      position,
+      isCurrentUserPresenter: this.collaborationService.isCurrentUserPresenter(),
+      hasContainer: !!this._graphContainer,
+      hasGraph: !!this._graph,
+    });
 
     try {
       // Apply presenter cursor styling
@@ -66,9 +74,10 @@ export class PresenterCursorDisplayService implements OnDestroy {
       // Reset timeout for reverting to normal cursor
       this._resetCursorTimeout();
 
-      this.logger.debug('Applied presenter cursor position', {
+      this.logger.info('Applied presenter cursor position', {
         graphPosition: position,
         viewportPosition,
+        isShowingCursor: this._isShowingPresenterCursor,
       });
     } catch (error) {
       this.logger.error('Error handling presenter cursor update', error);
@@ -136,8 +145,15 @@ export class PresenterCursorDisplayService implements OnDestroy {
    */
   private _applyPresenterCursor(): void {
     if (!this._graphContainer) {
+      this.logger.warn('Cannot apply presenter cursor - no graph container');
       return;
     }
+
+    this.logger.info('Applying presenter cursor styling', {
+      containerTagName: this._graphContainer.tagName,
+      containerClasses: this._graphContainer.className,
+      cursorUrl: PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_URL,
+    });
 
     // Add presenter cursor class for styling
     this._graphContainer.classList.add(PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_CLASS);
@@ -146,6 +162,14 @@ export class PresenterCursorDisplayService implements OnDestroy {
     this._graphContainer.style.cursor = PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_URL;
 
     this._isShowingPresenterCursor = true;
+
+    this.logger.info('Presenter cursor applied', {
+      hasClass: this._graphContainer.classList.contains(
+        PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_CLASS,
+      ),
+      cursorStyle: this._graphContainer.style.cursor,
+      isShowing: this._isShowingPresenterCursor,
+    });
   }
 
   /**
