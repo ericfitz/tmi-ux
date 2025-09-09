@@ -152,14 +152,31 @@ export class PresenterCursorDisplayService implements OnDestroy {
     this.logger.info('Applying presenter cursor styling', {
       containerTagName: this._graphContainer.tagName,
       containerClasses: this._graphContainer.className,
+      containerId: this._graphContainer.id,
       cursorUrl: PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_URL,
     });
 
     // Add presenter cursor class for styling
     this._graphContainer.classList.add(PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_CLASS);
 
-    // Apply custom cursor via CSS
-    this._graphContainer.style.cursor = PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_URL;
+    // Apply custom cursor via CSS - use inline style for higher specificity
+    this._graphContainer.style.setProperty(
+      'cursor',
+      PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_URL,
+      'important',
+    );
+
+    // Also apply to all child elements to ensure coverage
+    const graphElements = this._graphContainer.querySelectorAll(
+      '.x6-graph, .x6-graph-view, .x6-graph-scroller, svg, canvas',
+    );
+    graphElements.forEach(element => {
+      (element as HTMLElement).style.setProperty(
+        'cursor',
+        PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_URL,
+        'important',
+      );
+    });
 
     this._isShowingPresenterCursor = true;
 
@@ -168,6 +185,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
         PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_CLASS,
       ),
       cursorStyle: this._graphContainer.style.cursor,
+      childElementsStyled: graphElements.length,
       isShowing: this._isShowingPresenterCursor,
     });
   }
@@ -183,12 +201,22 @@ export class PresenterCursorDisplayService implements OnDestroy {
     // Remove presenter cursor class
     this._graphContainer.classList.remove(PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_CLASS);
 
-    // Revert to normal cursor
-    this._graphContainer.style.cursor = '';
+    // Revert to normal cursor on main container
+    this._graphContainer.style.removeProperty('cursor');
+
+    // Also remove cursor from all child elements
+    const graphElements = this._graphContainer.querySelectorAll(
+      '.x6-graph, .x6-graph-view, .x6-graph-scroller, svg, canvas',
+    );
+    graphElements.forEach(element => {
+      (element as HTMLElement).style.removeProperty('cursor');
+    });
 
     this._isShowingPresenterCursor = false;
 
-    this.logger.debug('Reverted to normal cursor');
+    this.logger.debug('Reverted to normal cursor', {
+      childElementsCleared: graphElements.length,
+    });
   }
 
   /**
@@ -200,26 +228,63 @@ export class PresenterCursorDisplayService implements OnDestroy {
     }
 
     try {
-      // Create synthetic mousemove event
-      const syntheticEvent = new MouseEvent('mousemove', {
-        clientX: position.x,
-        clientY: position.y,
-        bubbles: true,
-        cancelable: true,
+      // Get container bounds for absolute positioning
+      const containerRect = this._graphContainer.getBoundingClientRect();
+      const absoluteX = containerRect.left + position.x;
+      const absoluteY = containerRect.top + position.y;
+
+      this.logger.info('Generating synthetic mouse event', {
+        position,
+        containerRect: {
+          left: containerRect.left,
+          top: containerRect.top,
+          width: containerRect.width,
+          height: containerRect.height,
+        },
+        absolutePosition: { x: absoluteX, y: absoluteY },
       });
 
-      // Find the element at the cursor position
-      const elementAtPosition = document.elementFromPoint(position.x, position.y);
+      // Create synthetic mousemove event with absolute coordinates
+      const syntheticEvent = new MouseEvent('mousemove', {
+        clientX: absoluteX,
+        clientY: absoluteY,
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      });
 
-      // Dispatch the event to trigger hover effects
+      // Find the element at the absolute cursor position
+      const elementAtPosition = document.elementFromPoint(absoluteX, absoluteY);
+
+      this.logger.info('Element at position', {
+        element: elementAtPosition?.tagName,
+        className: elementAtPosition?.className,
+        isInContainer: elementAtPosition ? this._graphContainer.contains(elementAtPosition) : false,
+      });
+
+      // Dispatch multiple events to ensure hover effects work
       if (elementAtPosition && this._graphContainer.contains(elementAtPosition)) {
+        // Dispatch to the specific element
         elementAtPosition.dispatchEvent(syntheticEvent);
+
+        // Also dispatch a mouseover event for better hover detection
+        const mouseOverEvent = new MouseEvent('mouseover', {
+          clientX: absoluteX,
+          clientY: absoluteY,
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        elementAtPosition.dispatchEvent(mouseOverEvent);
       } else {
         // Fallback: dispatch to container
         this._graphContainer.dispatchEvent(syntheticEvent);
       }
 
-      this.logger.debug('Generated synthetic mouse event', { position });
+      this.logger.debug('Generated synthetic mouse events', {
+        position,
+        targetElement: elementAtPosition?.tagName || 'container',
+      });
     } catch (error) {
       this.logger.error('Error generating synthetic mouse event', error);
     }

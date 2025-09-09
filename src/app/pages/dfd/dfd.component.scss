@@ -165,16 +165,23 @@
     font-size: 14px;
   }
 
-  // Presenter cursor styling
-  .presenter-cursor-active {
+  // Presenter cursor styling - target the graph container and all X6 elements
+  .presenter-cursor-active,
+  .presenter-cursor-active .x6-graph,
+  .presenter-cursor-active .x6-graph-view,
+  .presenter-cursor-active .x6-graph-scroller,
+  .presenter-cursor-active .x6-graph-svg,
+  .presenter-cursor-active .x6-graph-svg-container,
+  .presenter-cursor-active svg,
+  .presenter-cursor-active canvas {
     cursor:
       url('/presenter-cursor.svg') 12 12,
       auto !important;
+  }
 
-    * {
-      cursor:
-        url('/presenter-cursor.svg') 12 12,
-        auto !important;
-    }
+  .presenter-cursor-active * {
+    cursor:
+      url('/presenter-cursor.svg') 12 12,
+      auto !important;
   }
 }
