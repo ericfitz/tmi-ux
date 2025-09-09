@@ -60,3 +60,4 @@ unused
 localization_dedup_plan.*
 .ck/
 .ck/**
+*.log

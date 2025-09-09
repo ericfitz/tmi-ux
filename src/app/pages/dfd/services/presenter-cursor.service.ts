@@ -128,13 +128,15 @@ export class PresenterCursorService implements OnDestroy {
     }
 
     try {
-      // Get mouse position relative to graph container
-      const containerRect = this._graphContainer.getBoundingClientRect();
-      const mouseX = event.clientX - containerRect.left;
-      const mouseY = event.clientY - containerRect.top;
+      // Convert page coordinates directly to graph coordinates
+      // This automatically handles pan/zoom transformations
+      const cursorPosition = this._convertToGraphCoordinates(event.clientX, event.clientY);
 
-      // Convert to graph content-relative coordinates
-      const cursorPosition = this._convertToGraphCoordinates(mouseX, mouseY);
+      // Only proceed if coordinate conversion succeeded
+      if (!cursorPosition) {
+        this.logger.debug('Skipping cursor broadcast - coordinate conversion failed');
+        return;
+      }
 
       // Only send if position has changed significantly (avoid spam)
       if (this._shouldBroadcastPosition(cursorPosition)) {
@@ -147,31 +149,35 @@ export class PresenterCursorService implements OnDestroy {
   }
 
   /**
-   * Convert viewport coordinates to graph content-relative coordinates
+   * Convert page coordinates to X6 graph coordinates
+   * Uses X6's coordinate transformation to handle pan/zoom automatically
    */
-  private _convertToGraphCoordinates(viewportX: number, viewportY: number): CursorPosition {
+  private _convertToGraphCoordinates(pageX: number, pageY: number): CursorPosition | null {
     if (!this._graph) {
-      return { x: viewportX, y: viewportY };
+      this.logger.warn('Cannot convert coordinates - graph not available');
+      return null;
     }
 
     try {
-      // Get the graph's content bounding box
-      const contentBBox = this._graph.getContentBBox();
+      // First convert from page coordinates to local coordinates
+      const localCoords = this._graph.pageToLocal(pageX, pageY);
+      
+      // Then convert from local coordinates to graph coordinates
+      const graphCoords = this._graph.localToGraph(localCoords.x, localCoords.y);
 
-      // Convert viewport coordinates to graph coordinates
-      const graphPoint = this._graph.clientToLocal(viewportX, viewportY);
-
-      // Express coordinates relative to content bounds
-      const relativeX = graphPoint.x - contentBBox.x;
-      const relativeY = graphPoint.y - contentBBox.y;
+      this.logger.debug('Converting presenter cursor coordinates', {
+        pagePosition: { x: pageX, y: pageY },
+        localPosition: { x: localCoords.x, y: localCoords.y },
+        graphPosition: { x: graphCoords.x, y: graphCoords.y },
+      });
 
       return {
-        x: relativeX,
-        y: relativeY,
+        x: graphCoords.x,
+        y: graphCoords.y,
       };
     } catch (error) {
-      this.logger.error('Error converting coordinates', error);
-      return { x: viewportX, y: viewportY };
+      this.logger.error('Error converting page coordinates to graph coordinates', error);
+      return null;
     }
   }
 
@@ -212,21 +218,51 @@ export class PresenterCursorService implements OnDestroy {
   }
 
   /**
-   * Validate mouse event is within graph bounds
+   * Validate mouse event is within presenter's viewport
+   * Only broadcast cursor position if presenter cursor is within their viewport
    */
   private _isValidMouseEvent(event: MouseEvent): boolean {
     if (!this._graphContainer) {
       return false;
     }
 
-    const containerRect = this._graphContainer.getBoundingClientRect();
-    const mouseX = event.clientX - containerRect.left;
-    const mouseY = event.clientY - containerRect.top;
+    try {
+      // Check if mouse is within the presenter's viewport (browser window)
+      const isWithinViewport = 
+        event.clientX >= 0 && event.clientX <= window.innerWidth &&
+        event.clientY >= 0 && event.clientY <= window.innerHeight;
 
-    // Check if mouse is within container bounds
-    return (
-      mouseX >= 0 && mouseX <= containerRect.width && mouseY >= 0 && mouseY <= containerRect.height
-    );
+      if (!isWithinViewport) {
+        this.logger.debug('Presenter cursor outside viewport - skipping broadcast', {
+          cursorPosition: { x: event.clientX, y: event.clientY },
+          viewportSize: { width: window.innerWidth, height: window.innerHeight },
+        });
+        return false;
+      }
+
+      // Also check if mouse is within the graph container for additional validation
+      const containerRect = this._graphContainer.getBoundingClientRect();
+      const mouseX = event.clientX - containerRect.left;
+      const mouseY = event.clientY - containerRect.top;
+
+      const isWithinContainer = 
+        mouseX >= 0 && mouseX <= containerRect.width && 
+        mouseY >= 0 && mouseY <= containerRect.height;
+
+      if (!isWithinContainer) {
+        this.logger.debug('Presenter cursor outside graph container - skipping broadcast', {
+          cursorPosition: { x: event.clientX, y: event.clientY },
+          containerPosition: { x: mouseX, y: mouseY },
+          containerSize: { width: containerRect.width, height: containerRect.height },
+        });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      this.logger.error('Error validating mouse event', error);
+      return false;
+    }
   }
 
   /**

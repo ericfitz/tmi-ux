@@ -45,7 +45,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
   /**
    * Handle incoming presenter cursor position
    * Called when a PresenterCursorMessage is received
-   * @param position The cursor position in graph content-relative coordinates
+   * @param position The cursor position in X6 graph coordinates
    */
   handlePresenterCursorUpdate(position: CursorPosition): void {
     // Only apply cursor if current user is not the presenter
@@ -54,19 +54,26 @@ export class PresenterCursorDisplayService implements OnDestroy {
       return;
     }
 
-    this.logger.info('Handling presenter cursor update', {
-      position,
+    this.logger.debug('Handling presenter cursor update', {
+      position: { x: position.x, y: position.y },
       isCurrentUserPresenter: this.collaborationService.isCurrentUserPresenter(),
       hasContainer: !!this._graphContainer,
       hasGraph: !!this._graph,
     });
 
     try {
-      // Apply presenter cursor styling
-      this._applyPresenterCursor();
-
-      // Convert graph coordinates back to viewport coordinates
+      // Convert graph coordinates to participant's viewport coordinates
       const viewportPosition = this._convertToViewportCoordinates(position);
+
+      if (!viewportPosition) {
+        // Presenter cursor is outside participant's viewport - hide cursor
+        this.logger.debug('Presenter cursor outside participant viewport - hiding cursor');
+        this._removePresenterCursor();
+        return;
+      }
+
+      // Apply presenter cursor styling (cursor is visible)
+      this._applyPresenterCursor();
 
       // Generate synthetic mouse event for hover effects
       this._generateSyntheticMouseEvent(viewportPosition);
@@ -74,9 +81,9 @@ export class PresenterCursorDisplayService implements OnDestroy {
       // Reset timeout for reverting to normal cursor
       this._resetCursorTimeout();
 
-      this.logger.info('Applied presenter cursor position', {
-        graphPosition: position,
-        viewportPosition,
+      this.logger.debug('Applied presenter cursor position', {
+        graphPosition: { x: position.x, y: position.y },
+        viewportPosition: { x: viewportPosition.x, y: viewportPosition.y },
         isShowingCursor: this._isShowingPresenterCursor,
       });
     } catch (error) {
@@ -109,34 +116,48 @@ export class PresenterCursorDisplayService implements OnDestroy {
   }
 
   /**
-   * Convert graph content-relative coordinates to viewport coordinates
+   * Convert X6 graph coordinates to participant page coordinates
+   * Uses X6's coordinate transformation to handle participant's pan/zoom state
    */
-  private _convertToViewportCoordinates(graphPosition: CursorPosition): CursorPosition {
-    if (!this._graph || !this._graphContainer) {
-      return graphPosition;
+  private _convertToViewportCoordinates(graphPosition: CursorPosition): CursorPosition | null {
+    if (!this._graph) {
+      this.logger.warn('Cannot convert coordinates - graph not available');
+      return null;
     }
 
     try {
-      // Get the graph's content bounding box
-      const contentBBox = this._graph.getContentBBox();
+      // First convert from graph coordinates to local coordinates
+      const localCoords = this._graph.graphToLocal(graphPosition.x, graphPosition.y);
+      
+      // Then convert from local coordinates to page coordinates
+      const pageCoords = this._graph.localToPage(localCoords.x, localCoords.y);
 
-      // Calculate absolute graph coordinates
-      const absoluteX = contentBBox.x + graphPosition.x;
-      const absoluteY = contentBBox.y + graphPosition.y;
+      this.logger.debug('Converting participant cursor coordinates', {
+        graphPosition: { x: graphPosition.x, y: graphPosition.y },
+        localPosition: { x: localCoords.x, y: localCoords.y },
+        pagePosition: { x: pageCoords.x, y: pageCoords.y },
+      });
 
-      // Convert graph coordinates to client coordinates
-      const clientPoint = this._graph.localToClient(absoluteX, absoluteY);
+      // Check if the resulting page coordinates are within the participant's viewport
+      const isWithinViewport = 
+        pageCoords.x >= 0 && pageCoords.x <= window.innerWidth &&
+        pageCoords.y >= 0 && pageCoords.y <= window.innerHeight;
 
-      // Get container bounds to make coordinates relative to container
-      const containerRect = this._graphContainer.getBoundingClientRect();
+      if (!isWithinViewport) {
+        this.logger.debug('Presenter cursor position outside participant viewport', {
+          pagePosition: { x: pageCoords.x, y: pageCoords.y },
+          viewportSize: { width: window.innerWidth, height: window.innerHeight },
+        });
+        return null; // Return null to indicate cursor should be hidden
+      }
 
       return {
-        x: clientPoint.x - containerRect.left,
-        y: clientPoint.y - containerRect.top,
+        x: pageCoords.x,
+        y: pageCoords.y,
       };
     } catch (error) {
-      this.logger.error('Error converting coordinates', error);
-      return graphPosition;
+      this.logger.error('Error converting graph coordinates to page coordinates', error);
+      return null;
     }
   }
 
@@ -228,35 +249,28 @@ export class PresenterCursorDisplayService implements OnDestroy {
     }
 
     try {
-      // Get container bounds for absolute positioning
-      const containerRect = this._graphContainer.getBoundingClientRect();
-      const absoluteX = containerRect.left + position.x;
-      const absoluteY = containerRect.top + position.y;
+      // Position is already in page coordinates from the conversion
+      const pageX = position.x;
+      const pageY = position.y;
 
-      this.logger.info('Generating synthetic mouse event', {
-        position,
-        containerRect: {
-          left: containerRect.left,
-          top: containerRect.top,
-          width: containerRect.width,
-          height: containerRect.height,
-        },
-        absolutePosition: { x: absoluteX, y: absoluteY },
+      this.logger.debug('Generating synthetic mouse event', {
+        pagePosition: { x: pageX, y: pageY },
+        viewportSize: { width: window.innerWidth, height: window.innerHeight },
       });
 
-      // Create synthetic mousemove event with absolute coordinates
+      // Create synthetic mousemove event with page coordinates
       const syntheticEvent = new MouseEvent('mousemove', {
-        clientX: absoluteX,
-        clientY: absoluteY,
+        clientX: pageX,
+        clientY: pageY,
         bubbles: true,
         cancelable: true,
         view: window,
       });
 
-      // Find the element at the absolute cursor position
-      const elementAtPosition = document.elementFromPoint(absoluteX, absoluteY);
+      // Find the element at the cursor position
+      const elementAtPosition = document.elementFromPoint(pageX, pageY);
 
-      this.logger.info('Element at position', {
+      this.logger.debug('Element at position', {
         element: elementAtPosition?.tagName,
         className: elementAtPosition?.className,
         isInContainer: elementAtPosition ? this._graphContainer.contains(elementAtPosition) : false,
@@ -269,8 +283,8 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
         // Also dispatch a mouseover event for better hover detection
         const mouseOverEvent = new MouseEvent('mouseover', {
-          clientX: absoluteX,
-          clientY: absoluteY,
+          clientX: pageX,
+          clientY: pageY,
           bubbles: true,
           cancelable: true,
           view: window,
@@ -282,7 +296,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
       }
 
       this.logger.debug('Generated synthetic mouse events', {
-        position,
+        pagePosition: { x: pageX, y: pageY },
         targetElement: elementAtPosition?.tagName || 'container',
       });
     } catch (error) {

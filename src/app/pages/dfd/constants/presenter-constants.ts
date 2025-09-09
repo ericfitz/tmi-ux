@@ -23,7 +23,7 @@ export const PRESENTER_CURSOR_STYLES = {
   PRESENTER_CURSOR_CLASS: 'presenter-cursor-active',
 
   /**
-   * CSS custom cursor URL for presenter cursor
+   * CSS custom cursor URL for presenter cursor with hotspot coordinates
    */
-  PRESENTER_CURSOR_URL: 'url("/presenter-cursor.svg"), auto',
+  PRESENTER_CURSOR_URL: 'url("/presenter-cursor.svg") 12 12, auto',
 } as const;
