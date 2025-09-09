@@ -30,7 +30,8 @@
       "Bash(git mv:*)",
       "Bash(pgrep:*)",
       "Bash(npm test:*)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "WebSearch"
     ]
   },
   "enableAllProjectMcpServers": false
