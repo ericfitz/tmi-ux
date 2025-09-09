@@ -32,6 +32,16 @@
   }
 }
 
+.collaboration-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .presenter-mode-active {
+    color: #4caf50 !important; // Green color when presenter mode is active
+  }
+}
+
 .graph-toolbar {
   display: flex;
   align-items: center;

@@ -216,6 +216,10 @@
       "serverConnectionError": "Server Connection Error"
     }
   },
+  "presenter": {
+    "startPresenting": "Start Presenting",
+    "stopPresenting": "Stop Presenting"
+  },
   "privacy": {
     "changesContent": "The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
     "changesTitle": "Changes to This Policy",

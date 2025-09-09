@@ -79,6 +79,7 @@ export interface CollaborationState {
   sessionInfo: CollaborationSession | null;
   existingSessionAvailable: CollaborationSession | null;
   isDiagramContextReady: boolean;
+  isPresenterModeActive: boolean;
 }
 
 /**
@@ -98,6 +99,7 @@ export class DfdCollaborationService implements OnDestroy {
     pendingPresenterRequests: [],
     sessionInfo: null,
     existingSessionAvailable: null,
+    isPresenterModeActive: false,
     isDiagramContextReady: false, // Always start with false
   });
   public collaborationState$ = this._collaborationState$.asObservable();
@@ -349,6 +351,7 @@ export class DfdCollaborationService implements OnDestroy {
       pendingPresenterRequests: [],
       sessionInfo: null,
       existingSessionAvailable: null,
+      isPresenterModeActive: false,
       isDiagramContextReady: false,
     });
   }
@@ -736,6 +739,7 @@ export class DfdCollaborationService implements OnDestroy {
             pendingPresenterRequests: [],
             sessionInfo: null,
             existingSessionAvailable: null,
+            isPresenterModeActive: false,
           });
 
           // Show session ended notification
@@ -761,6 +765,7 @@ export class DfdCollaborationService implements OnDestroy {
             pendingPresenterRequests: [],
             sessionInfo: null,
             existingSessionAvailable: null,
+            isPresenterModeActive: false,
           });
 
           // Show session ended notification even on error
@@ -1099,18 +1104,6 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Check if the current user is the presenter
-   * @returns boolean indicating if current user is presenter
-   */
-  public isCurrentUserPresenter(): boolean {
-    const users = this._collaborationState$.value.users;
-    const currentUserEmail = this.getCurrentUserEmail();
-    const currentUser = users.find(user => user.email === currentUserEmail);
-
-    return currentUser?.isPresenter || false;
-  }
-
-  /**
    * Get current collaboration status
    * @returns boolean indicating if currently collaborating
    */
@@ -1343,6 +1336,59 @@ export class DfdCollaborationService implements OnDestroy {
   public updatePresenterEmail(presenterEmail: string | null): void {
     this._updateState({ currentPresenterEmail: presenterEmail });
     this._updateUsersPresenterStatus(presenterEmail);
+  }
+
+  /**
+   * Toggle presenter mode on/off for the current presenter
+   * Only the current presenter can toggle their own presenter mode
+   * @returns true if presenter mode is now active, false if deactivated
+   */
+  public togglePresenterMode(): boolean {
+    const currentState = this._collaborationState$.value;
+    const currentUserEmail = this.getCurrentUserEmail();
+
+    // Only allow current presenter to toggle presenter mode
+    if (currentState.currentPresenterEmail !== currentUserEmail) {
+      this._logger.warn('Only the current presenter can toggle presenter mode', {
+        currentPresenter: currentState.currentPresenterEmail,
+        currentUser: currentUserEmail,
+      });
+      return currentState.isPresenterModeActive;
+    }
+
+    const newPresenterModeState = !currentState.isPresenterModeActive;
+    this._updateState({ isPresenterModeActive: newPresenterModeState });
+
+    this._logger.info('Presenter mode toggled', {
+      isActive: newPresenterModeState,
+      presenter: currentUserEmail,
+    });
+
+    return newPresenterModeState;
+  }
+
+  /**
+   * Check if the current user is the presenter and presenter mode is active
+   * @returns true if current user is presenter and presenter mode is active
+   */
+  public isCurrentUserPresenterModeActive(): boolean {
+    const currentState = this._collaborationState$.value;
+    const currentUserEmail = this.getCurrentUserEmail();
+
+    return (
+      currentState.currentPresenterEmail === currentUserEmail && currentState.isPresenterModeActive
+    );
+  }
+
+  /**
+   * Check if the current user is the presenter (regardless of presenter mode state)
+   * @returns true if current user is the presenter
+   */
+  public isCurrentUserPresenter(): boolean {
+    const currentState = this._collaborationState$.value;
+    const currentUserEmail = this.getCurrentUserEmail();
+
+    return currentState.currentPresenterEmail === currentUserEmail;
   }
 
   /**
@@ -1693,6 +1739,7 @@ export class DfdCollaborationService implements OnDestroy {
       currentPresenterEmail: null,
       pendingPresenterRequests: [],
       sessionInfo: null,
+      isPresenterModeActive: false,
     });
   }
 

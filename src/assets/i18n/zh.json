@@ -216,6 +216,10 @@
       "serverConnectionError": "服务器连接错误"
     }
   },
+  "presenter": {
+    "startPresenting": "开始演示",
+    "stopPresenting": "停止演示"
+  },
   "privacy": {
     "changesContent": "运营商可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
     "changesTitle": "本政策的变更",

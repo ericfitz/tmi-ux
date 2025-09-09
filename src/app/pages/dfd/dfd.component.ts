@@ -36,8 +36,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 import { Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
@@ -77,6 +77,10 @@ import { DfdTooltipService } from './services/dfd-tooltip.service';
 import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
 import { GraphHistoryCoordinator } from './services/graph-history-coordinator.service';
 import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
+import { PresenterCursorService } from './services/presenter-cursor.service';
+import { PresenterCursorDisplayService } from './services/presenter-cursor-display.service';
+import { PresenterSelectionService } from './services/presenter-selection.service';
+import { PresenterCoordinatorService } from './services/presenter-coordinator.service';
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
@@ -155,6 +159,12 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // Provide TMI message handler at component level so it can access the notification service
     TMIMessageHandlerService,
+
+    // Presenter mode services
+    PresenterCursorService,
+    PresenterCursorDisplayService,
+    PresenterSelectionService,
+    PresenterCoordinatorService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],
@@ -191,6 +201,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedCellIsTextBox = false;
   selectedCellIsSecurityBoundary = false;
 
+  // Presenter mode observables for template binding
+  isCurrentUserPresenter$: Observable<boolean>;
+  isPresenterModeActive$: Observable<boolean>;
+
   // Undo/redo state properties - updated by X6 history addon
   canUndo = false;
   canRedo = false;
@@ -222,12 +236,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private authorizationService: ThreatModelAuthorizationService,
     private tmiMessageHandler: TMIMessageHandlerService,
     private notificationService: DfdNotificationService,
+    private presenterCoordinatorService: PresenterCoordinatorService,
+    private x6SelectionAdapter: X6SelectionAdapter,
   ) {
     this.logger.info('DfdComponent constructor called');
 
     // Initialize X6 cell extensions first
     this.logger.info('Initializing X6 cell extensions');
     initializeX6CellExtensions();
+
+    // Initialize presenter mode observables
+    this.isCurrentUserPresenter$ = this.collaborationService.collaborationState$.pipe(
+      map(state => {
+        const currentUserEmail = this.collaborationService.getCurrentUserEmail();
+        return state.currentPresenterEmail === currentUserEmail;
+      }),
+    );
+
+    this.isPresenterModeActive$ = this.collaborationService.collaborationState$.pipe(
+      map(state => state.isPresenterModeActive),
+    );
   }
 
   ngOnInit(): void {
@@ -756,6 +784,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Dispose tooltip adapter
     this.tooltipAdapter.dispose();
 
+    // Cleanup presenter coordinator
+    this.presenterCoordinatorService.cleanupPresenterDisplay();
+
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
@@ -845,6 +876,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Toggle presenter mode on/off for the current presenter
+   */
+  togglePresenterMode(): void {
+    const newState = this.collaborationService.togglePresenterMode();
+    this.logger.info('Presenter mode toggled', { isActive: newState });
+  }
+
+  /**
    * Initialize the X6 graph and related systems
    */
   private initializeGraph(): void {
@@ -862,6 +901,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Set up additional systems that depend on the graph
       this.setupDomObservation();
       this.tooltipAdapter.initialize(graph);
+
+      // Initialize presenter coordinator for presenter mode functionality
+      this.presenterCoordinatorService.initialize(container, graph, this.x6SelectionAdapter);
 
       this.logger.info('Graph initialization complete');
 

@@ -216,6 +216,10 @@
       "serverConnectionError": "Server-Verbindungsfehler"
     }
   },
+  "presenter": {
+    "startPresenting": "Präsentation starten",
+    "stopPresenting": "Präsentation beenden"
+  },
   "privacy": {
     "changesContent": "Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
     "changesTitle": "Änderungen an dieser Richtlinie",

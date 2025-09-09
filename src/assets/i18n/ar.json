@@ -216,6 +216,10 @@
       "serverConnectionError": "خطأ في اتصال الخادم"
     }
   },
+  "presenter": {
+    "startPresenting": "بدء العرض",
+    "stopPresenting": "إيقاف العرض"
+  },
   "privacy": {
     "changesContent": "قد يقوم المشغل بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة مع تاريخ \"آخر تحديث\" محدث.",
     "changesTitle": "التغييرات في هذه السياسة",
