@@ -20,6 +20,7 @@ overrides:
   form-data@>=4.0.0 <4.0.4: '>=4.0.4'
   '@eslint/plugin-kit@<0.3.4': '>=0.3.4'
   wrap-ansi@9.0.1: 9.0.0
+  slice-ansi@7.1.1: 7.1.0
 
 importers:
 
@@ -5649,8 +5650,8 @@ packages:
     resolution: {integrity: sha512-FC+lgizVPfie0kkhqUScwRu1O/lF6NOgJmlCgK+/LYxDCTk8sGelYaHDhFcDN+Sn3Cv+3VSa4Byeo+IMCzpMgQ==}
     engines: {node: '>=12'}
 
-  slice-ansi@7.1.1:
-    resolution: {integrity: sha512-XDlMeinV+EUYCSqueWO1VqYY/9c/WF6wynbx1gXEmv5C1hIEONxQ3WnrBGckEUDm86wOnKfS8T4SB5adFqGeqg==}
+  slice-ansi@7.1.0:
+    resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
     engines: {node: '>=18'}
 
   smart-buffer@4.2.0:
@@ -11380,7 +11381,7 @@ snapshots:
     dependencies:
       ansi-escapes: 7.0.0
       cli-cursor: 5.0.0
-      slice-ansi: 7.1.1
+      slice-ansi: 7.1.0
       strip-ansi: 7.1.2
       wrap-ansi: 9.0.0
 
@@ -12570,7 +12571,7 @@ snapshots:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 4.0.0
 
-  slice-ansi@7.1.1:
+  slice-ansi@7.1.0:
     dependencies:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
