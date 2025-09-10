@@ -31,6 +31,7 @@
     }
   },
   "collaboration": {
+    "activeUsers": "{{count}} 个活跃用户",
     "approvePresenterRequest": "批准主讲人请求",
     "availableCollaborationSessions": "可用协作会话",
     "collaboratorsHeader": "参与者",
@@ -38,7 +39,9 @@
     "currentPresenter": "当前主讲人",
     "denyPresenterRequest": "拒绝主讲人请求",
     "endCollaboration": "结束协作",
+    "hostedBy": "由以下主办",
     "joinSession": "加入会话",
+    "justNow": "刚刚",
     "leaveSession": "离开会话",
     "makePresenter": "设为主讲人",
     "manageCollaboration": "管理协作",
@@ -47,6 +50,7 @@
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
     "requestPresenter": "请求主讲人",
+    "sessionStarted": "开始于",
     "shareLinkHeader": "分享协作链接",
     "startCollaboration": "开始协作",
     "takeBackPresenter": "收回主讲人",

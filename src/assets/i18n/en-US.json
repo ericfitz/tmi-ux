@@ -31,6 +31,7 @@
     }
   },
   "collaboration": {
+    "activeUsers": "{{count}} active users",
     "approvePresenterRequest": "Approve Presenter Request",
     "availableCollaborationSessions": "Available Collaboration Sessions",
     "collaboratorsHeader": "Participants",
@@ -38,7 +39,9 @@
     "currentPresenter": "Current Presenter",
     "denyPresenterRequest": "Deny Presenter Request",
     "endCollaboration": "End Collaboration",
+    "hostedBy": "Hosted by",
     "joinSession": "Join Session",
+    "justNow": "just now",
     "leaveSession": "Leave Session",
     "makePresenter": "Make Presenter",
     "manageCollaboration": "Manage Collaboration",
@@ -47,6 +50,7 @@
     "presenterModeRequested": "Presenter Mode Requested",
     "removeFromSession": "Remove from Session",
     "requestPresenter": "Request Presenter",
+    "sessionStarted": "Started",
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",

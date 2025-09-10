@@ -31,6 +31,7 @@
     }
   },
   "collaboration": {
+    "activeUsers": "{{count}} aktive Benutzer",
     "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
     "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen",
     "collaboratorsHeader": "Teilnehmer",
@@ -38,7 +39,9 @@
     "currentPresenter": "Aktueller Präsentator",
     "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
     "endCollaboration": "Zusammenarbeit beenden",
+    "hostedBy": "Gehostet von",
     "joinSession": "Sitzung beitreten",
+    "justNow": "gerade eben",
     "leaveSession": "Sitzung verlassen",
     "makePresenter": "Zum Präsentator machen",
     "manageCollaboration": "Zusammenarbeit verwalten",
@@ -47,6 +50,7 @@
     "presenterModeRequested": "Präsentationsmodus angefordert",
     "removeFromSession": "Aus Sitzung entfernen",
     "requestPresenter": "Präsentator anfordern",
+    "sessionStarted": "Gestartet",
     "shareLinkHeader": "Kollaborationslink teilen",
     "startCollaboration": "Zusammenarbeit starten",
     "takeBackPresenter": "Präsentator zurückholen",

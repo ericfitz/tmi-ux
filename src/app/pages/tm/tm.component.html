@@ -9,14 +9,6 @@
       <button
         mat-icon-button
         color="primary"
-        (click)="refreshThreatModels()"
-        [matTooltip]="'common.refresh' | transloco"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        color="primary"
         (click)="loadFromDesktop()"
         [matTooltip]="'threatModels.tooltips.loadFromDesktop' | transloco"
       >
@@ -108,16 +100,7 @@
     <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
       Available Collaboration Sessions
     </h2>
-    <div class="header-actions">
-      <button
-        mat-icon-button
-        color="primary"
-        (click)="refreshCollaborationSessions()"
-        [matTooltip]="'common.refresh' | transloco"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
-    </div>
+    <div class="header-actions"></div>
   </div>
 
   <div class="collaboration-sessions-list">
@@ -136,14 +119,22 @@
             <p class="collaboration-session-diagram">
               <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
             </p>
-            <p class="collaboration-session-manager">
-              <mat-icon>person</mat-icon> Managed by {{ session.host }}
+            <p class="collaboration-session-host">
+              <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
+              {{ session.host }}
             </p>
             <p class="collaboration-session-time">
-              <mat-icon>schedule</mat-icon> Started {{ formatSessionTime(session.startedAt) }}
+              <mat-icon>schedule</mat-icon>
+              <span class="session-text">
+                {{ 'collaboration.sessionStarted' | transloco }}
+                {{ formatSessionTime(session.startedAt) }}
+              </span>
             </p>
             <p class="collaboration-session-users">
-              <mat-icon>group</mat-icon> {{ session.activeUsers }} active users
+              <mat-icon>group</mat-icon>
+              <span class="session-text">
+                {{ 'collaboration.activeUsers' | transloco: { count: session.activeUsers } }}
+              </span>
             </p>
           </div>
         </div>

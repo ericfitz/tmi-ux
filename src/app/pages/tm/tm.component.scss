@@ -188,7 +188,9 @@ mat-card-content {
 // RTL support
 // Specific styles for collaboration sessions
 .collaboration-session-diagram,
-.collaboration-session-manager {
+.collaboration-session-host,
+.collaboration-session-time,
+.collaboration-session-users {
   display: flex;
   align-items: center;
   margin: 4px 0;
@@ -200,6 +202,12 @@ mat-card-content {
     height: 16px;
     width: 16px;
     margin-right: 4px;
+    flex-shrink: 0;
+  }
+
+  .session-text {
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -229,7 +237,9 @@ mat-card-content {
   }
 
   .collaboration-session-diagram,
-  .collaboration-session-manager {
+  .collaboration-session-host,
+  .collaboration-session-time,
+  .collaboration-session-users {
     mat-icon {
       margin-right: 0;
       margin-left: 4px;

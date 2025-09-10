@@ -25,7 +25,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
@@ -89,6 +89,7 @@ export class TmComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -179,6 +180,7 @@ export class TmComponent implements OnInit, OnDestroy {
 
   /**
    * Format session start time as a relative time string
+   * Uses Intl.RelativeTimeFormat for proper internationalization
    */
   formatSessionTime(startedAt: Date): string {
     const now = new Date();
@@ -187,11 +189,13 @@ export class TmComponent implements OnInit, OnDestroy {
     const diffHours = Math.floor(diffMinutes / 60);
 
     if (diffMinutes < 1) {
-      return 'just now';
+      return this.transloco.translate('collaboration.justNow');
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+      // Use Intl.RelativeTimeFormat for minutes
+      return this.formatRelativeTime(-diffMinutes, 'minute');
     } else if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+      // Use Intl.RelativeTimeFormat for hours
+      return this.formatRelativeTime(-diffHours, 'hour');
     } else {
       // For sessions older than 24 hours, show the actual time
       return new Intl.DateTimeFormat(this.currentLocale, {
@@ -201,6 +205,34 @@ export class TmComponent implements OnInit, OnDestroy {
         minute: '2-digit',
       }).format(startedAt);
     }
+  }
+
+  /**
+   * Format relative time using Intl.RelativeTimeFormat with fallback
+   * @param value The relative time value (negative for past)
+   * @param unit The time unit ('minute', 'hour', etc.)
+   * @returns Localized relative time string
+   */
+  private formatRelativeTime(value: number, unit: 'minute' | 'hour'): string {
+    try {
+      // Check if Intl.RelativeTimeFormat is supported
+      if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
+        const rtf = new Intl.RelativeTimeFormat(this.currentLocale, {
+          numeric: 'auto',
+          style: 'long',
+        });
+        return rtf.format(value, unit);
+      }
+    } catch {
+      // Fallback if RelativeTimeFormat fails
+      this.logger.debugComponent('TM', 'RelativeTimeFormat not supported, using fallback');
+    }
+
+    // Fallback to English format for unsupported browsers
+    const absValue = Math.abs(value);
+    const unitText = unit === 'minute' ? 'minute' : 'hour';
+    const pluralSuffix = absValue === 1 ? '' : 's';
+    return `${absValue} ${unitText}${pluralSuffix} ago`;
   }
 
   deleteThreatModel(id: string, event: MouseEvent): void {

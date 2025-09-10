@@ -31,6 +31,7 @@
     }
   },
   "collaboration": {
+    "activeUsers": "{{count}} مستخدمين نشطين",
     "approvePresenterRequest": "الموافقة على طلب المقدم",
     "availableCollaborationSessions": "جلسات التعاون المتاحة",
     "collaboratorsHeader": "المشاركون",
@@ -38,7 +39,9 @@
     "currentPresenter": "المقدم الحالي",
     "denyPresenterRequest": "رفض طلب المقدم",
     "endCollaboration": "إنهاء التعاون",
+    "hostedBy": "مستضاف من قبل",
     "joinSession": "الانضمام إلى الجلسة",
+    "justNow": "الآن",
     "leaveSession": "مغادرة الجلسة",
     "makePresenter": "جعله مقدمًا",
     "manageCollaboration": "إدارة التعاون",
@@ -47,6 +50,7 @@
     "presenterModeRequested": "تم طلب وضع المقدم",
     "removeFromSession": "إزالة من الجلسة",
     "requestPresenter": "طلب المقدم",
+    "sessionStarted": "بدأت",
     "shareLinkHeader": "مشاركة رابط التعاون",
     "startCollaboration": "بدء التعاون",
     "takeBackPresenter": "استرداد المقدم",

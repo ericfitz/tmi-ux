@@ -31,6 +31,7 @@
     }
   },
   "collaboration": {
+    "activeUsers": "ผู้ใช้ {{count}} คนที่ใช้งานอยู่",
     "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
     "collaboratorsHeader": "ผู้เข้าร่วม",
@@ -38,7 +39,9 @@
     "currentPresenter": "ผู้นำเสนอปัจจุบัน",
     "denyPresenterRequest": "ปฏิเสธคำขอเป็นผู้นำเสนอ",
     "endCollaboration": "สิ้นสุดการทำงานร่วมกัน",
+    "hostedBy": "โฮสต์โดย",
     "joinSession": "เข้าร่วมเซสชัน",
+    "justNow": "เดี๋ยวนี้",
     "leaveSession": "ออกจากเซสชัน",
     "makePresenter": "ทำให้เป็นผู้นำเสนอ",
     "manageCollaboration": "จัดการการทำงานร่วมกัน",
@@ -47,6 +50,7 @@
     "presenterModeRequested": "ขอสิทธิ์การนำเสนอแล้ว",
     "removeFromSession": "ลบออกจากเซสชัน",
     "requestPresenter": "ขอเป็นผู้นำเสนอ",
+    "sessionStarted": "เริ่มต้น",
     "shareLinkHeader": "แชร์ลิงก์การทำงานร่วมกัน",
     "startCollaboration": "เริ่มการทำงานร่วมกัน",
     "takeBackPresenter": "เอาผู้นำเสนอกลับ",
