@@ -24,6 +24,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
   private _graph: Graph | null = null;
   private _cursorTimeout: number | null = null;
   private _isShowingPresenterCursor = false;
+  private _lastHoveredElement: Element | null = null;
 
   constructor(
     private logger: LoggerService,
@@ -219,6 +220,9 @@ export class PresenterCursorDisplayService implements OnDestroy {
       return;
     }
 
+    // Clear any lingering hover effects by firing mouseout on last hovered element
+    this._clearLastHoveredElement();
+
     // Remove presenter cursor class
     this._graphContainer.classList.remove(PRESENTER_CURSOR_STYLES.PRESENTER_CURSOR_CLASS);
 
@@ -238,6 +242,40 @@ export class PresenterCursorDisplayService implements OnDestroy {
     this.logger.debug('Reverted to normal cursor', {
       childElementsCleared: graphElements.length,
     });
+  }
+
+  /**
+   * Clear last hovered element and generate mouseout event
+   */
+  private _clearLastHoveredElement(): void {
+    if (this._lastHoveredElement) {
+      try {
+        // Generate mouseout and mouseleave events to clear hover state
+        const mouseOutEvent = new MouseEvent('mouseout', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        
+        const mouseLeaveEvent = new MouseEvent('mouseleave', {
+          bubbles: false,
+          cancelable: true,
+          view: window,
+        });
+
+        this._lastHoveredElement.dispatchEvent(mouseOutEvent);
+        this._lastHoveredElement.dispatchEvent(mouseLeaveEvent);
+        
+        this.logger.debug('Cleared hover effects for element', {
+          element: this._lastHoveredElement.tagName,
+          className: this._lastHoveredElement.className,
+        });
+      } catch (error) {
+        this.logger.error('Error clearing last hovered element', error);
+      } finally {
+        this._lastHoveredElement = null;
+      }
+    }
   }
 
   /**
@@ -269,35 +307,92 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
       // Find the element at the cursor position
       const elementAtPosition = document.elementFromPoint(pageX, pageY);
+      const validElement = elementAtPosition && this._graphContainer.contains(elementAtPosition) ? elementAtPosition : null;
 
       this.logger.debug('Element at position', {
         element: elementAtPosition?.tagName,
         className: elementAtPosition?.className,
-        isInContainer: elementAtPosition ? this._graphContainer.contains(elementAtPosition) : false,
+        isInContainer: !!validElement,
+        lastHoveredElement: this._lastHoveredElement?.tagName,
       });
 
-      // Dispatch multiple events to ensure hover effects work
-      if (elementAtPosition && this._graphContainer.contains(elementAtPosition)) {
-        // Dispatch to the specific element
-        elementAtPosition.dispatchEvent(syntheticEvent);
-
-        // Also dispatch a mouseover event for better hover detection
-        const mouseOverEvent = new MouseEvent('mouseover', {
+      // Handle mouseout event for previously hovered element
+      if (this._lastHoveredElement && this._lastHoveredElement !== validElement) {
+        const mouseOutEvent = new MouseEvent('mouseout', {
           clientX: pageX,
           clientY: pageY,
           bubbles: true,
           cancelable: true,
           view: window,
+          relatedTarget: validElement,
         });
-        elementAtPosition.dispatchEvent(mouseOverEvent);
+        
+        const mouseLeaveEvent = new MouseEvent('mouseleave', {
+          clientX: pageX,
+          clientY: pageY,
+          bubbles: false, // mouseleave doesn't bubble
+          cancelable: true,
+          view: window,
+          relatedTarget: validElement,
+        });
+
+        this._lastHoveredElement.dispatchEvent(mouseOutEvent);
+        this._lastHoveredElement.dispatchEvent(mouseLeaveEvent);
+        
+        this.logger.debug('Generated mouseout/mouseleave events for', {
+          element: this._lastHoveredElement.tagName,
+          className: this._lastHoveredElement.className,
+        });
+      }
+
+      // Dispatch mousemove to appropriate element
+      if (validElement) {
+        // Dispatch to the specific element
+        validElement.dispatchEvent(syntheticEvent);
+
+        // Dispatch mouseover event if this is a new element
+        if (this._lastHoveredElement !== validElement) {
+          const mouseOverEvent = new MouseEvent('mouseover', {
+            clientX: pageX,
+            clientY: pageY,
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            relatedTarget: this._lastHoveredElement,
+          });
+          
+          const mouseEnterEvent = new MouseEvent('mouseenter', {
+            clientX: pageX,
+            clientY: pageY,
+            bubbles: false, // mouseenter doesn't bubble
+            cancelable: true,
+            view: window,
+            relatedTarget: this._lastHoveredElement,
+          });
+
+          validElement.dispatchEvent(mouseOverEvent);
+          validElement.dispatchEvent(mouseEnterEvent);
+          
+          this.logger.debug('Generated mouseover/mouseenter events for', {
+            element: validElement.tagName,
+            className: validElement.className,
+          });
+        }
       } else {
         // Fallback: dispatch to container
         this._graphContainer.dispatchEvent(syntheticEvent);
       }
 
+      // Track if element changed before updating
+      const elementChanged = this._lastHoveredElement !== validElement;
+      
+      // Update the last hovered element
+      this._lastHoveredElement = validElement;
+
       this.logger.debug('Generated synthetic mouse events', {
         pagePosition: { x: pageX, y: pageY },
-        targetElement: elementAtPosition?.tagName || 'container',
+        targetElement: validElement?.tagName || 'container',
+        hoveredElementChanged: elementChanged,
       });
     } catch (error) {
       this.logger.error('Error generating synthetic mouse event', error);
@@ -343,6 +438,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
     }
 
     this._removePresenterCursor();
+    this._clearLastHoveredElement();
     this._subscriptions.unsubscribe();
     this._graphContainer = null;
     this._graph = null;

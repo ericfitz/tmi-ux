@@ -25,6 +25,35 @@ TMI (Threat Modeling Improved) is a server based threat modeling web application
 
 The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
 
+## Demo Videos
+
+### NEW!
+
+- [Demo 2025-09-09](https://youtu.be/QCmlf8YFQ84) Demonstration of collaborative presentation of a data flow diagram
+- [Demo 2025-08-05](https://youtu.be/dH9V-7fmbLI) Nearly feature complete; walkthrough of all basic functionality with voiceover
+
+### Older
+
+- [Demo 2025-05-20](https://youtu.be/quOBYdKNx2E) Early build, shows detailed threat editing
+- [Demo 2025-05-16](https://youtu.be/ikTxE0xJL1w) Early build, shows localization, basic functionality
+
+## Documentation
+
+Comprehensive documentation is organized as follows:
+
+### 📚 Main Documentation Hub
+
+- **[/docs](docs/)** - Central documentation directory with guides, standards, and decision records
+
+### 🛠️ Developer Resources
+
+- **[CLAUDE.md](CLAUDE.md)** - AI assistant instructions and comprehensive project overview
+- **[/context](context/)** - Developer-specific implementation details and technical guides
+- **[Architecture Guide](docs/ARCHITECTURE.md)** - Complete architecture overview and patterns
+- **[Architecture Decision Records](docs/adr/)** - Key architectural decisions with context and rationale
+- **[Service Provisioning Standards](docs/SERVICE_PROVISIONING_STANDARDS.md)** - Where and how to provide services
+- **[Architecture Validation](docs/ARCHITECTURE_VALIDATION.md)** - How to validate architecture compliance
+
 ## Shared Resources
 
 This repository includes shared resources from the TMI backend repository via git subtree:
@@ -39,57 +68,18 @@ This repository includes shared resources from the TMI backend repository via gi
 ### Key Shared Files
 
 - `shared-api/api-specs/tmi-openapi.json` - OpenAPI 3.0 REST API specification
-- `shared-api/api-specs/tmi-asyncapi.yaml` - AsyncAPI WebSocket specification  
+- `shared-api/api-specs/tmi-asyncapi.yaml` - AsyncAPI WebSocket specification
 - `shared-api/docs/AUTHORIZATION.md` - Authorization and RBAC documentation
 - `shared-api/docs/CLIENT_INTEGRATION_GUIDE.md` - Complete client integration guide
 - `shared-api/docs/CLIENT_OAUTH_INTEGRATION.md` - OAuth setup and configuration
 
-### Updating Shared Resources
-
-To pull the latest shared resources from the TMI repository:
-
-```bash
-git subtree pull --prefix=shared-api https://github.com/ericfitz/tmi.git shared --squash
-```
-
-## Demo Videos
-
-NEW! [Demo 2025-08-05](https://youtu.be/dH9V-7fmbLI) Walkthrough of all basic functionality with voiceover
-
-Older
-
-1. [Demo 2025-05-16](https://youtu.be/ikTxE0xJL1w) Shows localization, basic functionality
-2. [Demo 2025-05-20](https://youtu.be/quOBYdKNx2E) Shows detailed threat editing
-
-## Documentation
-
-Comprehensive documentation is organized as follows:
-
-### 📚 Main Documentation Hub
-- **[/docs](docs/)** - Central documentation directory with guides, standards, and decision records
-- **[Architecture Guide](docs/ARCHITECTURE.md)** - Complete architecture overview and patterns
-- **[Architecture Decision Records](docs/adr/)** - Key architectural decisions with context and rationale
-- **[Service Provisioning Standards](docs/SERVICE_PROVISIONING_STANDARDS.md)** - Where and how to provide services
-- **[Architecture Validation](docs/ARCHITECTURE_VALIDATION.md)** - How to validate architecture compliance
-
-### 🛠️ Developer Resources
-- **[CLAUDE.md](CLAUDE.md)** - AI assistant instructions and comprehensive project overview
-- **[/context](context/)** - Developer-specific implementation details and technical guides
-- **[Naming Conventions](docs/NAMING_CONVENTIONS.md)** - File naming standards
-- **[Bundle Size Analysis](docs/BUNDLE_SIZE_ANALYSIS.md)** - Performance optimization results
-
-### 🚀 Quick Start for Developers
-1. Read **[CLAUDE.md](CLAUDE.md)** for project overview and key patterns
-2. Review **[Architecture Guide](docs/ARCHITECTURE.md)** for system design
-3. Check **[Service Provisioning Standards](docs/SERVICE_PROVISIONING_STANDARDS.md)** before adding services
-4. Follow **[Architecture TODO](docs/ARCHITECTURE_TODO.md)** for ongoing improvements
-
-## Development
+## Development (this is how you can play with it now)
 
 ### Prerequisites
 
-- Node.js (latest LTS version recommended)
-- pnpm
+- Clone this repo and change to the repo root
+- [Download](https://nodejs.org/en/download/) and install **Node.js** (latest LTS version recommended; I use 20.19.2)
+- Download and [Install](https://pnpm.io/installation) **pnpm**
 
 ### Setup
 
@@ -97,7 +87,7 @@ Comprehensive documentation is organized as follows:
 # Install dependencies
 pnpm install
 
-# Start development server
+# Start application server
 pnpm run dev
 ```
 
@@ -108,7 +98,7 @@ The application supports multiple environment configurations:
 1. **Default Configuration**
 
    ```bash
-   pnpm run dev  # Uses environment.ts file
+   pnpm run dev  # Uses environment.ts file; this starts the app listening on port 4200
    ```
 
 2. **Environment-specific Configurations**
@@ -138,7 +128,7 @@ The application supports multiple environment configurations:
 
 Environment files are located in `src/environments/`. The application uses:
 
-- `environment.ts` - Default development environment
+- `environment.ts` - Default environment
 - `environment.dev.ts` - Development environment (when configured)
 - `environment.local.ts` - Local development environment
 - `environment.prod.ts` - Production environment
@@ -149,7 +139,7 @@ Environment files are located in `src/environments/`. The application uses:
 To create a custom environment:
 
 1. Copy `environment.example.ts` to a new file (e.g., `environment.custom.ts`)
-2. Configure values as needed
+2. Configure values as needed - at a minimum you need to configure apiUrl to your development TMI server, typically http://localhost:8080
 3. Update `angular.json` with a new configuration if needed
 
 ### Available Environment Settings
@@ -169,97 +159,16 @@ To create a custom environment:
 | `tlsCertPath`            | Path to TLS certificate                                 | `undefined`                    |
 | `tlsSubjectName`         | TLS subject name                                        | System hostname                |
 
-## Building
+## Building & testing
 
 ```bash
+# Development build
+pnpm run build
+
 # Production build
 pnpm run build:prod
-
-# Staging build
-pnpm run build:staging
-
-# Test build
-pnpm run build:test
 ```
 
-## Code Quality
+All important commands for building, linting, testing, file validation, and a lot of utilities are exposed through `pnpm` scripts.
 
-```bash
-# Run linting
-pnpm run lint
-
-# Run SCSS linting
-pnpm run lint:scss
-
-# Run all linting
-pnpm run lint:all
-
-# Format code
-pnpm run format
-
-# Check formatting
-pnpm run format:check
-
-# Run all checks
-pnpm run check
-```
-
-## Testing
-
-The project uses Vitest with the AnalogJS Vite plugin for Angular testing. This provides faster test execution, better developer experience, and improved integration with the Vite build system. Cypress is used for end-to-end and component testing.
-
-```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode (automatically re-runs on file changes)
-pnpm run test:watch
-
-# Run tests with the Vitest UI
-pnpm run test:ui
-
-# Generate test coverage report
-pnpm run test:coverage
-
-# Run tests for a specific component
-pnpm run test:component
-# or specify any test file
-vitest run "src/app/path/to/file.spec.ts"
-
-# Run end-to-end tests
-pnpm run test:e2e
-
-# Run end-to-end tests with UI
-pnpm run test:e2e:open
-
-# Run component tests with Cypress
-pnpm run test:e2e:component
-
-# Run component tests with Cypress UI
-pnpm run test:e2e:component:open
-```
-
-### Test Strategy
-
-- **Unit Tests**: All components, services, and utilities should have unit tests (Vitest)
-- **Integration Tests**: Key component interactions should be tested
-- **Component Tests**: UI components are tested with Cypress component testing
-- **End-to-End Tests**: Critical user flows are tested with Cypress
-- **Test Environment**: Unit tests run in a JSDOM environment (confirmed in vitest.config.ts)
-- **Coverage Reporting**: Coverage reports are generated in both text and HTML formats
-
-### Focusing Tests
-
-To focus on specific tests during development:
-
-```typescript
-// Focus on a specific test
-it.only('should do something', () => {
-  // Test code
-});
-
-// Focus on a specific test suite
-describe.only('Component', () => {
-  // Test suites and specs
-});
-```
+Get a list of pnpm scripts with `pnpm run`.
