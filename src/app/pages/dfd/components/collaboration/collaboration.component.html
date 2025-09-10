@@ -1,4 +1,55 @@
 <div class="collaboration-container">
+  <!-- Request Presenter button (shown for non-presenters during active sessions) -->
+  <button
+    *ngIf="isCollaborating && !isCurrentUserPresenter() && !isCurrentUserHost()"
+    mat-icon-button
+    [disabled]="!isContextReady"
+    [matTooltip]="'collaboration.requestPresenter' | transloco"
+    (click)="requestPresenterPrivileges()"
+  >
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      fontWeight="100"
+      style="font-variation-settings: 'FILL' 0"
+    >
+      person_raised_hand
+    </mat-icon>
+  </button>
+
+  <!-- Manage Participants button (shown during active sessions) -->
+  <button
+    *ngIf="isCollaborating"
+    mat-icon-button
+    [disabled]="!isContextReady"
+    [matTooltip]="'collaboration.manageParticipants' | transloco"
+    (click)="openParticipantsDialog()"
+  >
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      fontWeight="100"
+      style="font-variation-settings: 'FILL' 0"
+    >
+      group
+    </mat-icon>
+  </button>
+
+  <!-- Copy Link button (shown during active sessions) -->
+  <button
+    *ngIf="isCollaborating"
+    mat-icon-button
+    [disabled]="!isContextReady"
+    [matTooltip]="'collaboration.copyLink' | transloco"
+    (click)="copyCollaborationLink()"
+  >
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      fontWeight="100"
+      style="font-variation-settings: 'FILL' 0"
+    >
+      link
+    </mat-icon>
+  </button>
+
   <!-- Main collaboration button with badge showing number of users when active -->
   <button
     #collaborationButton
@@ -8,7 +59,6 @@
     matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
     (click)="handleCollaborationAction()"
-    (contextmenu)="onRightClick($event)"
   >
     <mat-icon
       fontSet="material-symbols-outlined"
@@ -16,30 +66,7 @@
       style="font-variation-settings: 'FILL' 0"
       [class]="getCollaborationIconClass()"
     >
-      group
+      {{ getCollaborationButtonIcon() }}
     </mat-icon>
   </button>
-
-  <!-- Context menu -->
-  <mat-menu #contextMenu="matMenu" yPosition="below" xPosition="after">
-    <!-- Copy Link menu item -->
-    <button mat-menu-item *ngIf="isCollaborating" (click)="copyCollaborationLink()">
-      <mat-icon fontSet="material-symbols-outlined" fontWeight="100">content_copy</mat-icon>
-      <span>{{ 'collaboration.copyLink' | transloco }}</span>
-    </button>
-
-    <!-- Participants menu item -->
-    <button mat-menu-item (click)="openParticipantsDialog()">
-      <mat-icon fontSet="material-symbols-outlined" fontWeight="100">group</mat-icon>
-      <span *ngIf="isCurrentUserHost()">{{ 'collaboration.manageParticipants' | transloco }}</span>
-      <span *ngIf="!isCurrentUserHost()">{{ 'collaboration.viewParticipants' | transloco }}</span>
-    </button>
-  </mat-menu>
-
-  <!-- Hidden menu trigger for programmatic access -->
-  <span
-    [matMenuTriggerFor]="contextMenu"
-    #menuTrigger="matMenuTrigger"
-    class="hidden-trigger"
-  ></span>
 </div>

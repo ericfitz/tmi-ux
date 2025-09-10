@@ -161,7 +161,7 @@ export class PresenterCursorService implements OnDestroy {
     try {
       // First convert from page coordinates to local coordinates
       const localCoords = this._graph.pageToLocal(pageX, pageY);
-      
+
       // Then convert from local coordinates to graph coordinates
       const graphCoords = this._graph.localToGraph(localCoords.x, localCoords.y);
 
@@ -228,9 +228,11 @@ export class PresenterCursorService implements OnDestroy {
 
     try {
       // Check if mouse is within the presenter's viewport (browser window)
-      const isWithinViewport = 
-        event.clientX >= 0 && event.clientX <= window.innerWidth &&
-        event.clientY >= 0 && event.clientY <= window.innerHeight;
+      const isWithinViewport =
+        event.clientX >= 0 &&
+        event.clientX <= window.innerWidth &&
+        event.clientY >= 0 &&
+        event.clientY <= window.innerHeight;
 
       if (!isWithinViewport) {
         this.logger.debug('Presenter cursor outside viewport - skipping broadcast', {
@@ -245,9 +247,11 @@ export class PresenterCursorService implements OnDestroy {
       const mouseX = event.clientX - containerRect.left;
       const mouseY = event.clientY - containerRect.top;
 
-      const isWithinContainer = 
-        mouseX >= 0 && mouseX <= containerRect.width && 
-        mouseY >= 0 && mouseY <= containerRect.height;
+      const isWithinContainer =
+        mouseX >= 0 &&
+        mouseX <= containerRect.width &&
+        mouseY >= 0 &&
+        mouseY <= containerRect.height;
 
       if (!isWithinContainer) {
         this.logger.debug('Presenter cursor outside graph container - skipping broadcast', {

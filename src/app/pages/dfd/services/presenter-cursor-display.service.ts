@@ -129,7 +129,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
     try {
       // First convert from graph coordinates to local coordinates
       const localCoords = this._graph.graphToLocal(graphPosition.x, graphPosition.y);
-      
+
       // Then convert from local coordinates to page coordinates
       const pageCoords = this._graph.localToPage(localCoords.x, localCoords.y);
 
@@ -140,9 +140,11 @@ export class PresenterCursorDisplayService implements OnDestroy {
       });
 
       // Check if the resulting page coordinates are within the participant's viewport
-      const isWithinViewport = 
-        pageCoords.x >= 0 && pageCoords.x <= window.innerWidth &&
-        pageCoords.y >= 0 && pageCoords.y <= window.innerHeight;
+      const isWithinViewport =
+        pageCoords.x >= 0 &&
+        pageCoords.x <= window.innerWidth &&
+        pageCoords.y >= 0 &&
+        pageCoords.y <= window.innerHeight;
 
       if (!isWithinViewport) {
         this.logger.debug('Presenter cursor position outside participant viewport', {
@@ -256,7 +258,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
           cancelable: true,
           view: window,
         });
-        
+
         const mouseLeaveEvent = new MouseEvent('mouseleave', {
           bubbles: false,
           cancelable: true,
@@ -265,7 +267,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
         this._lastHoveredElement.dispatchEvent(mouseOutEvent);
         this._lastHoveredElement.dispatchEvent(mouseLeaveEvent);
-        
+
         this.logger.debug('Cleared hover effects for element', {
           element: this._lastHoveredElement.tagName,
           className: this._lastHoveredElement.className,
@@ -307,7 +309,10 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
       // Find the element at the cursor position
       const elementAtPosition = document.elementFromPoint(pageX, pageY);
-      const validElement = elementAtPosition && this._graphContainer.contains(elementAtPosition) ? elementAtPosition : null;
+      const validElement =
+        elementAtPosition && this._graphContainer.contains(elementAtPosition)
+          ? elementAtPosition
+          : null;
 
       this.logger.debug('Element at position', {
         element: elementAtPosition?.tagName,
@@ -326,7 +331,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
           view: window,
           relatedTarget: validElement,
         });
-        
+
         const mouseLeaveEvent = new MouseEvent('mouseleave', {
           clientX: pageX,
           clientY: pageY,
@@ -338,7 +343,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
         this._lastHoveredElement.dispatchEvent(mouseOutEvent);
         this._lastHoveredElement.dispatchEvent(mouseLeaveEvent);
-        
+
         this.logger.debug('Generated mouseout/mouseleave events for', {
           element: this._lastHoveredElement.tagName,
           className: this._lastHoveredElement.className,
@@ -360,7 +365,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
             view: window,
             relatedTarget: this._lastHoveredElement,
           });
-          
+
           const mouseEnterEvent = new MouseEvent('mouseenter', {
             clientX: pageX,
             clientY: pageY,
@@ -372,7 +377,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
           validElement.dispatchEvent(mouseOverEvent);
           validElement.dispatchEvent(mouseEnterEvent);
-          
+
           this.logger.debug('Generated mouseover/mouseenter events for', {
             element: validElement.tagName,
             className: validElement.className,
@@ -385,7 +390,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
 
       // Track if element changed before updating
       const elementChanged = this._lastHoveredElement !== validElement;
-      
+
       // Update the last hovered element
       this._lastHoveredElement = validElement;
 

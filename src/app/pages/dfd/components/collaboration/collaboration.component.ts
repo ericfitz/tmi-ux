@@ -19,7 +19,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -45,7 +44,6 @@ import { CollaborationDialogComponent } from '../collaboration-dialog/collaborat
     MatIconModule,
     MatTooltipModule,
     MatBadgeModule,
-    MatMenuModule,
     TranslocoModule,
   ],
   templateUrl: './collaboration.component.html',
@@ -58,8 +56,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   collaborationUsers: CollaborationUser[] = [];
   existingSessionAvailable: CollaborationSession | null = null;
 
-  // ViewChild for context menu and button
-  @ViewChild('menuTrigger', { static: false }) menuTrigger!: MatMenuTrigger;
+  // ViewChild for button
   @ViewChild('collaborationButton', { static: false }) collaborationButton!: ElementRef;
 
   // This must always reflect the actual context state, not a cached value
@@ -257,25 +254,6 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle right-click on collaboration button to show context menu
-   * @param event The mouse event
-   */
-  onRightClick(event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Open the context menu
-    this.openContextMenu();
-  }
-
-  /**
-   * Open the context menu
-   */
-  private openContextMenu(): void {
-    this.menuTrigger.openMenu();
-  }
-
-  /**
    * Check if the current user is the host of the collaboration session
    * @returns True if current user is host, false otherwise
    */
@@ -287,7 +265,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * Copy the collaboration link to clipboard
    */
   copyCollaborationLink(): void {
-    this._logger.info('[CollaborationComponent] Copying collaboration link from context menu');
+    this._logger.info('[CollaborationComponent] Copying collaboration link');
 
     // Get the current URL and clear existing query parameters
     const currentUrl = new URL(window.location.href);
@@ -310,7 +288,42 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * Open the participants dialog (collaboration dialog)
    */
   openParticipantsDialog(): void {
-    this._logger.info('[CollaborationComponent] Opening participants dialog from context menu');
+    this._logger.info('[CollaborationComponent] Opening participants dialog');
     this._openDialog();
+  }
+
+  /**
+   * Request presenter privileges
+   */
+  requestPresenterPrivileges(): void {
+    this._logger.info('[CollaborationComponent] Requesting presenter privileges');
+    this._collaborationService
+      .requestPresenterPrivileges()
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this._logger.info('Presenter request sent successfully');
+        },
+        error: error => {
+          this._logger.error('Failed to request presenter privileges', error);
+        },
+      });
+  }
+
+  /**
+   * Check if current user is the presenter
+   */
+  isCurrentUserPresenter(): boolean {
+    return this._collaborationService.isCurrentUserPresenter();
+  }
+
+  /**
+   * Get the appropriate icon for the collaboration button based on current state
+   */
+  getCollaborationButtonIcon(): string {
+    if (this.isCollaborating) {
+      return 'stop_circle'; // End collaboration mode
+    }
+    return 'play_circle'; // Start collaboration mode
   }
 }
