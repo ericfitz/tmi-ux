@@ -19,6 +19,7 @@ overrides:
   on-headers@<1.1.0: '>=1.1.0'
   form-data@>=4.0.0 <4.0.4: '>=4.0.4'
   '@eslint/plugin-kit@<0.3.4': '>=0.3.4'
+  wrap-ansi@9.0.1: 9.0.0
 
 importers:
 
@@ -6422,8 +6423,8 @@ packages:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}
     engines: {node: '>=12'}
 
-  wrap-ansi@9.0.1:
-    resolution: {integrity: sha512-n84lsZmcV2vUTRThlsxQhujZcDja2KIPCsEKZYP04cGtceS1vXTCboD7/zIJcZgEL9r3PdYrIX5KqX/DDWyMKw==}
+  wrap-ansi@9.0.0:
+    resolution: {integrity: sha512-G8ura3S+3Z2G+mkgNRq8dqaFZAuxfsxpBB8OCTGRTCtp+l/v9nbFNmCUP1BZMts3G1142MsZfn6eeUKrr4PD1Q==}
     engines: {node: '>=18'}
 
   wrappy@1.0.2:
@@ -9527,7 +9528,7 @@ snapshots:
     dependencies:
       string-width: 7.2.0
       strip-ansi: 7.1.2
-      wrap-ansi: 9.0.1
+      wrap-ansi: 9.0.0
 
   clone-deep@4.0.1:
     dependencies:
@@ -11306,7 +11307,7 @@ snapshots:
       eventemitter3: 5.0.1
       log-update: 6.1.0
       rfdc: 1.4.1
-      wrap-ansi: 9.0.1
+      wrap-ansi: 9.0.0
 
   lmdb@3.4.2:
     dependencies:
@@ -11381,7 +11382,7 @@ snapshots:
       cli-cursor: 5.0.0
       slice-ansi: 7.1.1
       strip-ansi: 7.1.2
-      wrap-ansi: 9.0.1
+      wrap-ansi: 9.0.0
 
   loupe@3.2.1: {}
 
@@ -13485,7 +13486,7 @@ snapshots:
       string-width: 5.1.2
       strip-ansi: 7.1.2
 
-  wrap-ansi@9.0.1:
+  wrap-ansi@9.0.0:
     dependencies:
       ansi-styles: 6.2.3
       string-width: 7.2.0
