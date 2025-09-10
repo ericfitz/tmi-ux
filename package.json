@@ -120,6 +120,9 @@
     "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=20.0.0 <21.0.0"
+  },
   "resolutions": {
     "http-proxy-middleware": "3.0.5"
   },
