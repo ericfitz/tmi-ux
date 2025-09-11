@@ -39,6 +39,7 @@
   <!-- Manage Participants button (shown during active sessions) -->
   <button
     *ngIf="isCollaborating"
+    #manageParticipantsButton
     mat-icon-button
     [disabled]="!isContextReady"
     [matBadge]="collaborationUsers.length || null"

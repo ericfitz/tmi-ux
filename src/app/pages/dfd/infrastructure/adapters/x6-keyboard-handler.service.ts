@@ -37,9 +37,6 @@ export class X6KeyboardHandler {
     graph.on('node:mousemove', this._handleNodeMouseMove);
     graph.on('node:mouseup', this._handleNodeMouseUp);
 
-    // Also listen for global mouse up to handle cases where mouse is released outside the graph
-    document.addEventListener('mouseup', this._handleDocumentMouseUp);
-
     // Handle window blur to reset state if user switches windows while dragging
     window.addEventListener('blur', this._handleWindowBlur);
 
@@ -52,7 +49,6 @@ export class X6KeyboardHandler {
   cleanup(): void {
     document.removeEventListener('keydown', this._handleKeyDown);
     document.removeEventListener('keyup', this._handleKeyUp);
-    document.removeEventListener('mouseup', this._handleDocumentMouseUp);
     window.removeEventListener('blur', this._handleWindowBlur);
   }
 
@@ -105,6 +101,9 @@ export class X6KeyboardHandler {
     this._isDragging = true;
     this._updateSnapToGrid();
 
+    // Add global mouseup listener only when dragging starts
+    document.addEventListener('mouseup', this._handleDocumentMouseUp);
+
     // Get the initial position of the node when the drag starts
     const initialPosition = new Point(node.position().x, node.position().y);
 
@@ -143,6 +142,9 @@ export class X6KeyboardHandler {
       this._isDragging = false;
       this._updateSnapToGrid();
 
+      // Remove global mouseup listener when dragging ends
+      document.removeEventListener('mouseup', this._handleDocumentMouseUp);
+
       // Clear the initial position for backward compatibility
       this._initialNodePositions.delete(node.id);
     }
@@ -157,6 +159,9 @@ export class X6KeyboardHandler {
       this._updateSnapToGrid();
       // Clear all initial positions if mouse up happens outside a node
       this._initialNodePositions.clear();
+
+      // Remove global mouseup listener when dragging ends
+      document.removeEventListener('mouseup', this._handleDocumentMouseUp);
     }
   };
 
@@ -165,6 +170,10 @@ export class X6KeyboardHandler {
    */
   private _handleWindowBlur = (): void => {
     this._isShiftPressed = false;
+    if (this._isDragging) {
+      // Remove global mouseup listener if dragging when window loses focus
+      document.removeEventListener('mouseup', this._handleDocumentMouseUp);
+    }
     this._isDragging = false;
     this._updateSnapToGrid();
     this._initialNodePositions.clear();

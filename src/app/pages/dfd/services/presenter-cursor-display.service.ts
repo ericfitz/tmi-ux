@@ -250,7 +250,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
    * Clear last hovered element and generate mouseout event
    */
   private _clearLastHoveredElement(): void {
-    if (this._lastHoveredElement) {
+    if (this._lastHoveredElement && this._graphContainer?.contains(this._lastHoveredElement)) {
       try {
         // Generate mouseout and mouseleave events to clear hover state
         const mouseOutEvent = new MouseEvent('mouseout', {
@@ -274,10 +274,11 @@ export class PresenterCursorDisplayService implements OnDestroy {
         });
       } catch (error) {
         this.logger.error('Error clearing last hovered element', error);
-      } finally {
-        this._lastHoveredElement = null;
       }
     }
+
+    // Always clear the reference regardless of containment
+    this._lastHoveredElement = null;
   }
 
   /**
@@ -322,7 +323,12 @@ export class PresenterCursorDisplayService implements OnDestroy {
       });
 
       // Handle mouseout event for previously hovered element
-      if (this._lastHoveredElement && this._lastHoveredElement !== validElement) {
+      // Only dispatch events to elements that were actually in the graph container
+      if (
+        this._lastHoveredElement &&
+        this._lastHoveredElement !== validElement &&
+        this._graphContainer?.contains(this._lastHoveredElement)
+      ) {
         const mouseOutEvent = new MouseEvent('mouseout', {
           clientX: pageX,
           clientY: pageY,
@@ -391,7 +397,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
       // Track if element changed before updating
       const elementChanged = this._lastHoveredElement !== validElement;
 
-      // Update the last hovered element
+      // Update the last hovered element - only track elements within graph container
       this._lastHoveredElement = validElement;
 
       this.logger.debug('Generated synthetic mouse events', {

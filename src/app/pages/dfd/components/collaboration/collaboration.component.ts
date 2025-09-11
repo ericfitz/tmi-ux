@@ -24,7 +24,6 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-
 import { LoggerService } from '../../../../core/services/logger.service';
 import {
   DfdCollaborationService,
@@ -60,8 +59,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   // Presenter mode observable for template binding
   isPresenterModeActive$: Observable<boolean>;
 
-  // ViewChild for button
+  // ViewChild for buttons
   @ViewChild('collaborationButton', { static: false }) collaborationButton!: ElementRef;
+  @ViewChild('manageParticipantsButton', { static: false }) manageParticipantsButton!: ElementRef;
 
   // This must always reflect the actual context state, not a cached value
   get isContextReady(): boolean {
@@ -89,6 +89,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       serviceContextSet: this._collaborationService.isDiagramContextSet(),
       serviceContext: this._collaborationService.getDiagramContext(),
     });
+
 
     // Subscribe to the unified collaboration state
     // This subscription is only for updating the badge count and button state
@@ -123,6 +124,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
   }
@@ -223,6 +225,46 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(() => {
       this._logger.info('[CollaborationComponent] Collaboration dialog closed');
+
+
+      // Find the button that was clicked to clear its visual state
+      const button = document.querySelector('app-dfd-collaboration button[matbadge]') as HTMLButtonElement;
+
+      if (button) {
+
+        // Clear CSS visual state by dispatching synthetic events
+        setTimeout(() => {
+          const elements = [button, ...Array.from(button.querySelectorAll('*'))];
+          
+          elements.forEach(element => {
+            // Dispatch mouseup to clear :active state
+            const mouseUpEvent = new MouseEvent('mouseup', {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            });
+            
+            // Dispatch mouseleave to clear :hover state
+            const mouseLeaveEvent = new MouseEvent('mouseleave', {
+              bubbles: false,
+              cancelable: true,
+              view: window,
+            });
+            
+            element.dispatchEvent(mouseUpEvent);
+            element.dispatchEvent(mouseLeaveEvent);
+          });
+          
+          // Force style recalculation
+          void button.offsetHeight;
+          
+          // Force classList manipulation to trigger style updates
+          const tempClass = 'force-style-update-temp';
+          button.classList.add(tempClass);
+          void button.offsetHeight;
+          button.classList.remove(tempClass);
+        }, 50);
+      }
     });
   }
 
@@ -299,11 +341,11 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   openParticipantsDialog(event?: Event): void {
     this._logger.info('[CollaborationComponent] Opening participants dialog');
 
-    // Stop propagation to prevent event bubbling, but don't prevent default
-    // as that interferes with normal button mouseup handling
+    // Stop propagation to prevent event bubbling
     if (event) {
       event.stopPropagation();
     }
+
 
     this._openDialog();
   }
