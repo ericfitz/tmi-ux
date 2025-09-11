@@ -36,8 +36,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Edge } from '@antv/x6';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
@@ -201,10 +201,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedCellIsTextBox = false;
   selectedCellIsSecurityBoundary = false;
 
-  // Presenter mode observables for template binding
-  isCurrentUserPresenter$: Observable<boolean>;
-  isPresenterModeActive$: Observable<boolean>;
-
   // Undo/redo state properties - updated by X6 history addon
   canUndo = false;
   canRedo = false;
@@ -244,18 +240,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Initialize X6 cell extensions first
     this.logger.info('Initializing X6 cell extensions');
     initializeX6CellExtensions();
-
-    // Initialize presenter mode observables
-    this.isCurrentUserPresenter$ = this.collaborationService.collaborationState$.pipe(
-      map(state => {
-        const currentUserEmail = this.collaborationService.getCurrentUserEmail();
-        return state.currentPresenterEmail === currentUserEmail;
-      }),
-    );
-
-    this.isPresenterModeActive$ = this.collaborationService.collaborationState$.pipe(
-      map(state => state.isPresenterModeActive),
-    );
   }
 
   ngOnInit(): void {
@@ -863,14 +847,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.error('Error adding node', error);
         },
       });
-  }
-
-  /**
-   * Toggle presenter mode on/off for the current presenter
-   */
-  togglePresenterMode(): void {
-    const newState = this.collaborationService.togglePresenterMode();
-    this.logger.info('Presenter mode toggled', { isActive: newState });
   }
 
   /**

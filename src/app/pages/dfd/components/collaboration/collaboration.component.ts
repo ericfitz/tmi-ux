@@ -21,8 +21,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import {
@@ -56,6 +56,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   collaborationUsers: CollaborationUser[] = [];
   existingSessionAvailable: CollaborationSession | null = null;
 
+  // Presenter mode observable for template binding
+  isPresenterModeActive$: Observable<boolean>;
+
   // ViewChild for button
   @ViewChild('collaborationButton', { static: false }) collaborationButton!: ElementRef;
 
@@ -72,7 +75,12 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private _collaborationService: DfdCollaborationService,
     private _dialog: MatDialog,
-  ) {}
+  ) {
+    // Initialize presenter mode observable
+    this.isPresenterModeActive$ = this._collaborationService.collaborationState$.pipe(
+      map(state => state.isPresenterModeActive),
+    );
+  }
 
   ngOnInit(): void {
     this._logger.info('DfdCollaborationComponent initialized', {
@@ -287,8 +295,15 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Open the participants dialog (collaboration dialog)
    */
-  openParticipantsDialog(): void {
+  openParticipantsDialog(event?: Event): void {
     this._logger.info('[CollaborationComponent] Opening participants dialog');
+
+    // Prevent default action and stop propagation to avoid button state issues
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     this._openDialog();
   }
 
@@ -325,5 +340,13 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
       return 'stop_circle'; // End collaboration mode
     }
     return 'play_circle'; // Start collaboration mode
+  }
+
+  /**
+   * Toggle presenter mode on/off for the current presenter
+   */
+  togglePresenterMode(): void {
+    const newState = this._collaborationService.togglePresenterMode();
+    this._logger.info('Presenter mode toggled', { isActive: newState });
   }
 }

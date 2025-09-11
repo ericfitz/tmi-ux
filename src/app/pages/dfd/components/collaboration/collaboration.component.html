@@ -1,4 +1,24 @@
 <div class="collaboration-container">
+  <!-- Start/Stop Presenter button (shown for current presenter) -->
+  <button
+    *ngIf="isCurrentUserPresenter() && isCollaborating"
+    mat-icon-button
+    [class.presenter-mode-active]="isPresenterModeActive$ | async"
+    (click)="togglePresenterMode()"
+    [matTooltip]="
+      (isPresenterModeActive$ | async)
+        ? ('presenter.stopPresenting' | transloco)
+        : ('presenter.startPresenting' | transloco)
+    "
+  >
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      fontWeight="100"
+      style="font-variation-settings: 'FILL' 0"
+      >podium</mat-icon
+    >
+  </button>
+
   <!-- Request Presenter button (shown for non-presenters during active sessions) -->
   <button
     *ngIf="isCollaborating && !isCurrentUserPresenter() && !isCurrentUserHost()"
@@ -21,8 +41,10 @@
     *ngIf="isCollaborating"
     mat-icon-button
     [disabled]="!isContextReady"
+    [matBadge]="collaborationUsers.length || null"
+    matBadgeColor="accent"
     [matTooltip]="'collaboration.manageParticipants' | transloco"
-    (click)="openParticipantsDialog()"
+    (click)="openParticipantsDialog($event)"
   >
     <mat-icon
       fontSet="material-symbols-outlined"
@@ -50,13 +72,11 @@
     </mat-icon>
   </button>
 
-  <!-- Main collaboration button with badge showing number of users when active -->
+  <!-- Main collaboration button -->
   <button
     #collaborationButton
     mat-icon-button
     [disabled]="!isContextReady"
-    [matBadge]="collaborationUsers.length || null"
-    matBadgeColor="accent"
     [matTooltip]="getCollaborationButtonTooltip()"
     (click)="handleCollaborationAction()"
   >
