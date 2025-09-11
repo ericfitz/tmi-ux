@@ -1188,7 +1188,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens the metadata dialog for a specific source code repository
    */
   openSourceCodeMetadataDialog(sourceCode: Source, event: Event): void {
-    event.preventDefault();
     event.stopPropagation();
 
     const dialogData: MetadataDialogData = {
@@ -1236,7 +1235,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens the metadata dialog for a specific document
    */
   openDocumentMetadataDialog(document: Document, event: Event): void {
-    event.preventDefault();
     event.stopPropagation();
 
     const dialogData: MetadataDialogData = {
@@ -1383,7 +1381,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens the metadata dialog for a specific diagram
    */
   openDiagramMetadataDialog(diagram: Diagram, event: Event): void {
-    event.preventDefault();
     event.stopPropagation();
 
     const dialogData: MetadataDialogData = {
@@ -1430,7 +1427,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens the metadata dialog for a specific threat
    */
   openThreatMetadataDialog(threat: Threat, event: Event): void {
-    event.preventDefault();
     event.stopPropagation();
 
     const dialogData: MetadataDialogData = {

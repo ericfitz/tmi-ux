@@ -24,6 +24,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
+
 import { LoggerService } from '../../../../core/services/logger.service';
 import {
   DfdCollaborationService,
@@ -298,9 +299,9 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   openParticipantsDialog(event?: Event): void {
     this._logger.info('[CollaborationComponent] Opening participants dialog');
 
-    // Prevent default action and stop propagation to avoid button state issues
+    // Stop propagation to prevent event bubbling, but don't prevent default
+    // as that interferes with normal button mouseup handling
     if (event) {
-      event.preventDefault();
       event.stopPropagation();
     }
 

@@ -29,12 +29,15 @@ import {
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { BidiModule } from '@angular/cdk/bidi';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
 import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interceptor';
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 import { SecurityConfigService } from './core/services/security-config.service';
+import { DialogDirectionService } from './core/services/dialog-direction.service';
 import { AUTH_SERVICE, THREAT_MODEL_SERVICE } from './core/interfaces';
 import { AuthService } from './auth/services/auth.service';
 import { ThreatModelService } from './pages/tm/services/threat-model.service';
@@ -59,6 +62,13 @@ function initializeSecurityMonitoring(securityConfig: SecurityConfigService): ()
   };
 }
 
+// Dialog direction initialization function
+function initializeDialogDirection(_dialogDirection: DialogDirectionService): () => void {
+  return () => {
+    // Service initialization happens in constructor
+  };
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     // Still provide LOCALE_ID for date and number formatting
@@ -67,6 +77,19 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
     provideAnimations(),
+    // Add Bidi module for RTL/LTR support
+    importProvidersFrom(BidiModule),
+    // Configure Material Dialog to respect document direction
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        hasBackdrop: true,
+        disableClose: false,
+        autoFocus: true,
+        restoreFocus: true,
+        direction: undefined, // Will use document direction
+      },
+    },
     // Add Transloco root module
     importProvidersFrom(TranslocoRootModule),
     // Register HTTP interceptors (order matters - first registered runs first)
@@ -87,6 +110,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeSecurityMonitoring,
       deps: [SecurityConfigService],
+      multi: true,
+    },
+    // Initialize dialog direction service
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeDialogDirection,
+      deps: [DialogDirectionService],
       multi: true,
     },
     // Provide services with interface tokens to satisfy DI requirements
