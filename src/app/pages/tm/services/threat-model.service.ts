@@ -742,7 +742,7 @@ export class ThreatModelService implements OnDestroy {
     updates: Partial<
       Pick<
         ThreatModel,
-        'name' | 'description' | 'threat_model_framework' | 'issue_url' | 'authorization'
+        'name' | 'description' | 'threat_model_framework' | 'issue_url' | 'authorization' | 'owner'
       >
     >,
   ): Observable<ThreatModel> {
@@ -907,10 +907,14 @@ export class ThreatModelService implements OnDestroy {
       return of(newThreat);
     }
 
+    // Remove id field from threat data before sending to API
+
+    const { id, ...threatData } = threat as Threat;
+
     return this.apiService
       .post<Threat>(
         `threat_models/${threatModelId}/threats`,
-        threat as unknown as Record<string, unknown>,
+        threatData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {

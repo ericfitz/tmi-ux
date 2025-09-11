@@ -12,6 +12,7 @@ export interface PermissionsDialogData {
   permissions: Authorization[];
   owner: string;
   isReadOnly?: boolean;
+  onOwnerChange?: (newOwner: string) => void;
 }
 
 @Component({
@@ -89,24 +90,26 @@ export interface PermissionsDialogData {
               <ng-container matColumnDef="actions" *ngIf="!data.isReadOnly">
                 <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | transloco }}</th>
                 <td mat-cell *matCellDef="let auth; let i = index" class="actions-cell">
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="setAsOwner(i)"
-                    [matTooltip]="'threatModels.setAsOwner' | transloco"
-                    [disabled]="auth.role === 'owner'"
-                  >
-                    <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deletePermission(i)"
-                    [matTooltip]="'common.delete' | transloco"
-                    [disabled]="i === 0"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  <div class="actions-container">
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      (click)="setAsOwner(i)"
+                      [matTooltip]="'threatModels.setAsOwner' | transloco"
+                      [disabled]="auth.subject === data.owner"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="deletePermission(i)"
+                      [matTooltip]="'common.delete' | transloco"
+                      [disabled]="i === 0"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </td>
               </ng-container>
 
@@ -231,6 +234,48 @@ export interface PermissionsDialogData {
       .mat-mdc-cell,
       .mat-mdc-header-cell {
         padding: 8px 4px;
+        vertical-align: middle;
+      }
+
+      .mat-mdc-cell {
+        height: 56px; /* Consistent row height */
+      }
+
+      .actions-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        height: 100%;
+        min-height: 40px;
+        margin-top: -16px; /* Move buttons up by 6px */
+      }
+
+      .actions-cell {
+        vertical-align: middle;
+      }
+
+      /* Center align icons in action buttons */
+      .actions-container mat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .actions-container button[mat-icon-button] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Ensure form fields don't make cells too tall */
+      .table-field .mat-mdc-form-field-wrapper {
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .table-field .mat-mdc-form-field-flex {
+        align-items: center;
       }
 
       .no-items-message {
@@ -362,20 +407,35 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Sets the selected user as owner (placeholder - no functionality yet)
-   * @param _index The index of the permission to set as owner
+   * Sets the selected user as owner
+   * @param index The index of the permission to set as owner
    */
-  setAsOwner(_index: number): void {
-    // Placeholder method - no functionality implemented yet
-    // TODO: Implement set as owner functionality
-    // For now, this method does nothing as requested
+  setAsOwner(index: number): void {
+    if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      const selectedAuth = this.permissionsDataSource.data[index];
+      const newOwner = selectedAuth.subject;
+
+      // Update the local owner value
+      this.data.owner = newOwner;
+
+      // Notify parent component about the owner change if callback is provided
+      if (this.data.onOwnerChange) {
+        this.data.onOwnerChange(newOwner);
+      }
+
+      // Refresh the table to update button states
+      this.permissionsTable.renderRows();
+    }
   }
 
   /**
    * Saves the permissions and closes the dialog
    */
   save(): void {
-    this.dialogRef.close(this.permissionsDataSource.data);
+    this.dialogRef.close({
+      permissions: this.permissionsDataSource.data,
+      owner: this.data.owner,
+    });
   }
 
   /**

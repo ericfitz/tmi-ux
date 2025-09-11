@@ -401,7 +401,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Initialize with empty data for new threats
       if (!this.data.threat) {
         this.data.threat = {
-          id: '',
           threat_model_id: this.data.threatModelId,
           name: '',
           description: '',
@@ -420,7 +419,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           status: 'Open',
           issue_url: '',
           metadata: [],
-        };
+        } as unknown as Threat;
       }
     } else if (this.data.mode === 'edit') {
       this.dialogTitle = 'common.editThreat';

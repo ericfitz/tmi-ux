@@ -1293,10 +1293,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Capture the original owner before opening the dialog
+    const originalOwner = this.threatModel.owner;
+
     const dialogData: PermissionsDialogData = {
       permissions: this.threatModel.authorization || [],
       owner: this.threatModel.owner,
       isReadOnly: false, // You can add logic here to determine if user has edit permissions
+      onOwnerChange: (newOwner: string) => {
+        if (this.threatModel) {
+          this.threatModel.owner = newOwner;
+          this.threatModel.modified_at = new Date().toISOString();
+        }
+      },
     };
 
     const dialogRef = this.dialog.open(PermissionsDialogComponent, {
@@ -1308,31 +1317,40 @@ export class TmEditComponent implements OnInit, OnDestroy {
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Authorization[] | undefined) => {
-        if (result && this.threatModel) {
-          this.threatModel.authorization = result;
-          this.threatModel.modified_at = new Date().toISOString();
+      dialogRef
+        .afterClosed()
+        .subscribe((result: { permissions: Authorization[]; owner: string } | undefined) => {
+          if (result && this.threatModel) {
 
-          // Create a clean threat model object with only basic fields (no entities)
-          // Use PATCH to update only the authorization field
-          const updates = {
-            authorization: this.threatModel.authorization,
-          };
+            this.threatModel.authorization = result.permissions;
+            this.threatModel.owner = result.owner;
+            this.threatModel.modified_at = new Date().toISOString();
 
-          // Update the threat model with PATCH (only authorization field)
-          this._subscriptions.add(
-            this.threatModelService
-              .patchThreatModel(this.threatModel.id, updates)
-              .subscribe(updatedModel => {
-                if (updatedModel && this.threatModel) {
-                  // Update only the authorization and modified_at fields from the result
-                  this.threatModel.authorization = updatedModel.authorization;
-                  this.threatModel.modified_at = updatedModel.modified_at;
-                }
-              }),
-          );
-        }
-      }),
+            // Create updates object with both authorization and owner if owner changed
+            const updates: Partial<Pick<ThreatModel, 'authorization' | 'owner'>> = {
+              authorization: this.threatModel.authorization,
+            };
+
+            // Only include owner in updates if it changed
+            if (originalOwner !== result.owner) {
+              updates.owner = result.owner;
+            }
+
+            // Update the threat model with PATCH
+            this._subscriptions.add(
+              this.threatModelService
+                .patchThreatModel(this.threatModel.id, updates)
+                .subscribe(updatedModel => {
+                  if (updatedModel && this.threatModel) {
+                    // Update the relevant fields from the result
+                    this.threatModel.authorization = updatedModel.authorization;
+                    this.threatModel.owner = updatedModel.owner;
+                    this.threatModel.modified_at = updatedModel.modified_at;
+                  }
+                }),
+            );
+          }
+        }),
     );
   }
 
