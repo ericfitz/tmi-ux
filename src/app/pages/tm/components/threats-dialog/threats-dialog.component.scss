@@ -45,6 +45,19 @@
       min-height: 60px;
     }
 
+    .clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover:not(.readonly-row) {
+        background-color: rgb(0 0 0 / 4%);
+      }
+
+      &.readonly-row {
+        cursor: default;
+      }
+    }
+
     .mat-mdc-cell {
       padding: 12px 8px;
       vertical-align: middle;

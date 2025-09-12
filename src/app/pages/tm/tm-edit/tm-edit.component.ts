@@ -55,6 +55,7 @@ import {
 import { ThreatModelService } from '../services/threat-model.service';
 import { ThreatModelReportService } from '../services/threat-model-report.service';
 import { FrameworkService } from '../../../shared/services/framework.service';
+import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../../shared/models/framework.model';
 
 // Define form value interface
@@ -137,6 +138,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private frameworkService: FrameworkService,
     private mockDataService: MockDataService,
     private authorizationService: ThreatModelAuthorizationService,
+    private cellDataExtractionService: CellDataExtractionService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -504,6 +506,70 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // If editing a threat, refresh the threat model to get the latest threat data from server
+    if (mode === 'edit' && threat) {
+      this.logger.info('Refreshing threat model data before opening threat editor', {
+        threatId: threat.id,
+        threatModelId: this.threatModel.id,
+      });
+
+      this._subscriptions.add(
+        this.threatModelService.getThreatModelById(this.threatModel.id, true).subscribe({
+          next: refreshedThreatModel => {
+            if (!refreshedThreatModel) {
+              this.logger.error('Failed to refresh threat model data');
+              return;
+            }
+
+            // Find the updated threat in the refreshed data
+            const updatedThreat = refreshedThreatModel.threats?.find(t => t.id === threat.id);
+            if (!updatedThreat) {
+              this.logger.warn('Threat not found in refreshed data, using original threat', {
+                threatId: threat.id,
+              });
+              this.openThreatEditorWithData(threat, shapeType, mode);
+            } else {
+              this.logger.info('Using refreshed threat data for editor', {
+                threatId: updatedThreat.id,
+                hasAllProperties: !!(
+                  updatedThreat.priority &&
+                  updatedThreat.status &&
+                  updatedThreat.score
+                ),
+              });
+              this.openThreatEditorWithData(updatedThreat, shapeType, mode);
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to refresh threat model data, using cached threat', error);
+            this.openThreatEditorWithData(threat, shapeType, mode);
+          },
+        }),
+      );
+    } else {
+      // For create mode, use existing logic
+      this.openThreatEditorWithData(threat, shapeType, mode);
+    }
+  }
+
+  /**
+   * Opens the threat editor dialog with the provided data
+   * @param threat Optional threat to edit or view
+   * @param shapeType Optional shape type to filter applicable threat types
+   * @param mode Dialog mode
+   */
+  private openThreatEditorWithData(
+    threat?: Threat,
+    shapeType?: string,
+    mode?: 'create' | 'edit' | 'view',
+  ): void {
+    if (!this.threatModel) {
+      return;
+    }
+
+    // Determine the mode based on whether a threat is provided (if not already specified)
+    const dialogMode: 'create' | 'edit' | 'view' = mode || (threat ? 'edit' : 'create');
+
     // Get the current framework from the form (which may be different from saved model)
     const currentFrameworkName =
       (this.threatModelForm.get('threat_model_framework')?.value as string) ||
@@ -526,10 +592,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
       });
     }
 
+    // Extract diagram and cell data using the utility service
+    const cellData = this.cellDataExtractionService.extractFromThreatModel(this.threatModel);
+
     const dialogData: ThreatEditorDialogData = {
       threat,
       threatModelId: this.threatModel.id,
-      mode,
+      mode: dialogMode,
+      diagramId: threat?.diagram_id,
+      cellId: threat?.cell_id,
+      diagrams: cellData.diagrams,
+      cells: cellData.cells,
       framework,
       shapeType,
     };
@@ -1321,7 +1394,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
         .afterClosed()
         .subscribe((result: { permissions: Authorization[]; owner: string } | undefined) => {
           if (result && this.threatModel) {
-
             this.threatModel.authorization = result.permissions;
             this.threatModel.owner = result.owner;
             this.threatModel.modified_at = new Date().toISOString();

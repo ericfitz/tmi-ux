@@ -181,8 +181,12 @@ export class DfdFacadeService {
   /**
    * Open threat editor dialog
    */
-  openThreatEditor(threatModelId: string | null, dfdId: string | null): void {
-    this.eventHandlersService.openThreatEditor(threatModelId, dfdId);
+  openThreatEditor(
+    threatModelId: string | null, 
+    dfdId: string | null,
+    diagramName?: string | null
+  ): void {
+    this.eventHandlersService.openThreatEditor(threatModelId, dfdId, diagramName);
   }
 
   /**

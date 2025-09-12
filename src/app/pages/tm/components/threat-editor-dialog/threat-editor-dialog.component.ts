@@ -50,6 +50,7 @@ export interface DiagramOption {
 export interface CellOption {
   id: string;
   label: string;
+  diagramId?: string; // NEW: Which diagram this cell belongs to
 }
 
 /**
@@ -98,14 +99,18 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
   // Dropdown options
   diagramOptions: DiagramOption[] = [];
-  cellOptions: CellOption[] = [];
+  cellOptions: CellOption[] = []; // Currently displayed cell options
   threatTypeOptions: string[] = [];
+  
+  // Complete cell data (all cells from all diagrams) for filtering
+  private allCellOptions: CellOption[] = [];
 
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
 
   private langSubscription: Subscription | null = null;
   private directionSubscription: Subscription | null = null;
+  private diagramChangeSubscription: Subscription | null = null;
 
   // Track dialog source for debugging
   dialogSource: string = '';
@@ -209,19 +214,40 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       },
     ];
 
-    // Add diagrams from input if provided
-    if (this.data.diagrams && this.data.diagrams.length > 0) {
-      this.diagramOptions = [...this.diagramOptions, ...this.data.diagrams];
-    }
-    // If no diagrams provided but there's a current diagram ID, add it as an option
-    else if (this.data.diagramId) {
-      this.diagramOptions.push({
-        id: this.data.diagramId,
-        name: this.data.diagramId, // Use ID as name if no name provided
-      });
+    // If there's a current diagram ID, find it and add as second option
+    let currentDiagramOption: DiagramOption | null = null;
+    if (this.data.diagramId) {
+      // Look for current diagram in provided diagrams
+      if (this.data.diagrams && this.data.diagrams.length > 0) {
+        currentDiagramOption = this.data.diagrams.find(diagram => diagram.id === this.data.diagramId) || null;
+      }
+      
+      // If not found in provided diagrams, create option with ID as name
+      if (!currentDiagramOption) {
+        currentDiagramOption = {
+          id: this.data.diagramId,
+          name: this.data.diagramId, // Use ID as name if no name provided
+        };
+      }
+      
+      // Add current diagram as second option
+      this.diagramOptions.push(currentDiagramOption);
     }
 
-    this.logger.info('Diagram options initialized:', this.diagramOptions);
+    // Add remaining diagrams from input (excluding the current one already added)
+    if (this.data.diagrams && this.data.diagrams.length > 0) {
+      const remainingDiagrams = this.data.diagrams.filter(diagram => 
+        diagram.id !== this.data.diagramId
+      );
+      this.diagramOptions = [...this.diagramOptions, ...remainingDiagrams];
+    }
+
+    this.logger.info('Diagram options initialized:', {
+      currentDiagramId: this.data.diagramId,
+      optionsCount: this.diagramOptions.length,
+      firstOption: this.diagramOptions[0]?.name,
+      secondOption: this.diagramOptions[1]?.name,
+    });
   }
 
   /**
@@ -272,27 +298,122 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    * Initialize cell options for the dropdown
    */
   private initializeCellOptions(): void {
-    // Initialize with "Not associated" option
-    this.cellOptions = [
-      {
-        id: this.NOT_ASSOCIATED_VALUE,
-        label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
-      },
-    ];
+    // Store all cells for filtering
+    this.allCellOptions = this.data.cells || [];
+    
+    // Apply initial filtering based on current diagram selection
+    this.filterCellOptions();
 
-    // Add cells from input if provided
-    if (this.data.cells && this.data.cells.length > 0) {
-      this.cellOptions = [...this.cellOptions, ...this.data.cells];
+    this.logger.info('Cell options initialized:', {
+      currentCellId: this.data.cellId,
+      currentDiagramId: this.data.diagramId,
+      totalCells: this.allCellOptions.length,
+      filteredCells: this.cellOptions.length,
+      firstOption: this.cellOptions[0]?.label,
+      secondOption: this.cellOptions[1]?.label,
+    });
+  }
+
+  /**
+   * Filters cell options based on the currently selected diagram.
+   * This method is called initially and whenever the diagram selection changes.
+   */
+  private filterCellOptions(selectedDiagramId?: string): void {
+    const diagramId = selectedDiagramId || this.threatForm?.get('diagram_id')?.value || this.data.diagramId;
+    
+    // Start with "Not associated" option
+    const notAssociatedOption: CellOption = {
+      id: this.NOT_ASSOCIATED_VALUE,
+      label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
+    };
+    
+    let filteredCells: CellOption[] = [];
+    
+    if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
+      // Filter cells for the selected diagram
+      filteredCells = this.allCellOptions.filter(cell => 
+        cell.diagramId === diagramId
+      );
+    } else {
+      // If no diagram selected, show all cells
+      filteredCells = [...this.allCellOptions];
     }
-    // If no cells provided but there's a current cell ID, add it as an option
-    else if (this.data.cellId) {
-      this.cellOptions.push({
-        id: this.data.cellId,
-        label: this.data.cellId, // Use ID as label if no label provided
+    
+    // If there's a current cell ID, ensure it's included and appears as second option
+    let currentCellOption: CellOption | null = null;
+    if (this.data.cellId) {
+      currentCellOption = filteredCells.find(cell => cell.id === this.data.cellId) || null;
+      
+      // If current cell not found in filtered list (e.g., from different diagram), create it
+      if (!currentCellOption) {
+        // Check if it exists in all cells
+        const currentInAll = this.allCellOptions.find(cell => cell.id === this.data.cellId);
+        if (currentInAll) {
+          currentCellOption = currentInAll;
+        } else {
+          // Create fallback option
+          currentCellOption = {
+            id: this.data.cellId,
+            label: this.data.cellId, // Use ID as label if no label provided
+            diagramId: this.data.diagramId, // Associate with current diagram
+          };
+        }
+      }
+    }
+    
+    // Build final options: [Not associated, Current cell (if any), Other cells]
+    this.cellOptions = [notAssociatedOption];
+    
+    if (currentCellOption) {
+      this.cellOptions.push(currentCellOption);
+      // Add remaining cells (excluding current one)
+      const remainingCells = filteredCells.filter(cell => cell.id !== this.data.cellId);
+      this.cellOptions = [...this.cellOptions, ...remainingCells];
+    } else {
+      // No current cell, add all filtered cells
+      this.cellOptions = [...this.cellOptions, ...filteredCells];
+    }
+    
+    this.logger.info('Filtered cell options:', {
+      selectedDiagramId: diagramId,
+      totalAvailableCells: this.allCellOptions.length,
+      filteredCellCount: filteredCells.length,
+      finalOptionsCount: this.cellOptions.length,
+      currentCellId: this.data.cellId,
+      hasCurrentCell: !!currentCellOption,
+    });
+  }
+
+  /**
+   * Sets up reactive subscription to filter cell options when diagram selection changes.
+   */
+  private setupDiagramChangeFiltering(): void {
+    // Subscribe to diagram_id field changes
+    const diagramControl = this.threatForm.get('diagram_id');
+    if (diagramControl) {
+      this.diagramChangeSubscription = diagramControl.valueChanges.subscribe(diagramId => {
+      this.logger.info('Diagram selection changed, filtering cells', {
+        newDiagramId: diagramId,
+        previousCellId: this.threatForm.get('cell_id')?.value,
+      });
+
+      // Filter cell options based on new diagram selection
+      this.filterCellOptions(diagramId);
+
+      // If the current cell_id doesn't exist in the new filtered list, reset it
+      const currentCellId = this.threatForm.get('cell_id')?.value;
+      if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
+        const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
+        if (!cellExists) {
+          this.logger.info('Current cell not available in selected diagram, resetting to not associated', {
+            currentCellId,
+            newDiagramId: diagramId,
+          });
+          this.threatForm.patchValue({ cell_id: this.NOT_ASSOCIATED_VALUE }, { emitEvent: false });
+        }
+      }
       });
     }
-
-    this.logger.info('Cell options initialized:', this.cellOptions);
   }
 
   ngOnInit(): void {
@@ -429,7 +550,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     // Initialize form with empty values for text fields and default values for other fields
     // We're using floatLabel="always" in the HTML to ensure labels are always visible
-    const defaultCellId = this.data.cellId || '';
 
     // Use first threat type from framework, or fallback to a default
     const defaultThreatType =
@@ -440,8 +560,8 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       description: '',
       severity: 'High',
       threat_type: defaultThreatType,
-      diagram_id: this.data.diagramId || '',
-      cell_id: defaultCellId,
+      diagram_id: this.data.diagramId || this.NOT_ASSOCIATED_VALUE,
+      cell_id: this.data.cellId || this.NOT_ASSOCIATED_VALUE,
       score: 10.0,
       priority: 'High',
       mitigated: false,
@@ -454,18 +574,39 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Store the initial issue URL value
       this.initialIssueUrlValue = this.data.threat.issue_url || '';
 
+      // Debug log the threat data being used for form population
+      this.logger.info('Populating threat editor form with threat data', {
+        threatId: this.data.threat.id,
+        name: this.data.threat.name,
+        description: this.data.threat.description,
+        severity: this.data.threat.severity,
+        threat_type: this.data.threat.threat_type,
+        diagram_id: this.data.threat.diagram_id,
+        cell_id: this.data.threat.cell_id,
+        score: this.data.threat.score,
+        priority: this.data.threat.priority,
+        mitigated: this.data.threat.mitigated,
+        status: this.data.threat.status,
+        issue_url: this.data.threat.issue_url,
+      });
+
       this.threatForm.patchValue({
         name: this.data.threat.name,
         description: this.data.threat.description || '',
         severity: this.data.threat.severity || 'High',
         threat_type: this.data.threat.threat_type || '',
-        diagram_id: this.data.threat.diagram_id || '',
-        cell_id: this.data.threat.cell_id || '',
+        diagram_id: this.data.threat.diagram_id || this.NOT_ASSOCIATED_VALUE,
+        cell_id: this.data.threat.cell_id || this.NOT_ASSOCIATED_VALUE,
         score: this.data.threat.score || null,
         priority: this.data.threat.priority || '',
         mitigated: this.data.threat.mitigated || false,
         status: this.data.threat.status || 'Open',
         issue_url: this.initialIssueUrlValue,
+      });
+
+      // Debug log the form values after patching
+      this.logger.info('Form values after patching', {
+        formValues: this.threatForm.value as ThreatFormValues,
       });
 
       // If view only, disable the form
@@ -497,6 +638,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Force translation update when direction changes
       this.forceTranslationUpdate();
     });
+
+    // Set up reactive filtering for cell options based on diagram selection
+    this.setupDiagramChangeFiltering();
 
     // Initialize enhanced save behavior
     this.initializeEnhancedSaveBehavior();
@@ -646,6 +790,11 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     if (this.directionSubscription) {
       this.directionSubscription.unsubscribe();
       this.directionSubscription = null;
+    }
+
+    if (this.diagramChangeSubscription) {
+      this.diagramChangeSubscription.unsubscribe();
+      this.diagramChangeSubscription = null;
     }
 
     // Clean up subscriptions

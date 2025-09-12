@@ -9,10 +9,13 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
 import { FrameworkService } from '../../../shared/services/framework.service';
+import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
 import { Threat } from '../../tm/models/threat-model.model';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
+  DiagramOption,
+  CellOption,
 } from '../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import {
   CellPropertiesDialogComponent,
@@ -57,6 +60,7 @@ export class DfdEventHandlersService {
   private _rightClickedCell: Cell | null = null;
   private _selectedCells$ = new BehaviorSubject<Cell[]>([]);
   private _subscriptions = new Subscription();
+  private _x6GraphAdapter: any = null;
 
   // Label change observables
   private _labelChanged$ = new Subject<LabelChangeEvent>();
@@ -75,12 +79,16 @@ export class DfdEventHandlersService {
     private frameworkService: FrameworkService,
     private dialog: MatDialog,
     private router: Router,
+    private cellDataExtractionService: CellDataExtractionService,
   ) {}
 
   /**
    * Initialize event handlers
    */
   initialize(x6GraphAdapter: any): void {
+    // Store reference to graph adapter for later use
+    this._x6GraphAdapter = x6GraphAdapter;
+    
     // Subscribe to selection state changes
     this._subscriptions.add(
       x6GraphAdapter.selectionChanged$.subscribe({
@@ -257,7 +265,11 @@ export class DfdEventHandlersService {
   /**
    * Opens the threat editor dialog to create a new threat
    */
-  openThreatEditor(threatModelId: string | null, dfdId: string | null): void {
+  openThreatEditor(
+    threatModelId: string | null, 
+    dfdId: string | null,
+    diagramName?: string | null
+  ): void {
     if (!threatModelId) {
       this.logger.warn('Cannot add threat: No threat model ID available');
       return;
@@ -318,11 +330,36 @@ export class DfdEventHandlersService {
               });
             }
 
+            // Extract diagram and cell data using the utility service
+            let diagrams: DiagramOption[] = [];
+            let cells: CellOption[] = [];
+
+            if (this._x6GraphAdapter && dfdId && diagramName) {
+              try {
+                const graph = this._x6GraphAdapter.getGraph();
+                const cellData = this.cellDataExtractionService.extractFromX6Graph(
+                  graph, 
+                  dfdId, 
+                  diagramName
+                );
+                diagrams = cellData.diagrams;
+                cells = cellData.cells;
+              } catch (error) {
+                this.logger.error('Error extracting cell data for threat editor', error);
+                // Fallback: create basic diagram option
+                if (dfdId && diagramName) {
+                  diagrams = [{ id: dfdId, name: diagramName }];
+                }
+              }
+            }
+
             const dialogData: ThreatEditorDialogData = {
               threatModelId: threatModelId,
               mode: 'create',
               diagramId: dfdId || '',
               cellId: selectedCell?.id || '',
+              diagrams: diagrams,
+              cells: cells,
               framework,
               shapeType,
             };

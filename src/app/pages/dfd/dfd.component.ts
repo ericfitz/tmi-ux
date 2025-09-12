@@ -96,6 +96,7 @@ import {
   ThreatsDialogComponent,
   ThreatsDialogData,
 } from '../tm/components/threats-dialog/threats-dialog.component';
+import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import {
   X6HistoryDialogComponent,
   X6HistoryDialogData,
@@ -230,6 +231,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dfdStateService: DfdStateService,
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
+    private cellDataExtractionService: CellDataExtractionService,
     private tmiMessageHandler: TMIMessageHandlerService,
     private notificationService: DfdNotificationService,
     private presenterCoordinatorService: PresenterCoordinatorService,
@@ -1235,7 +1237,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Opens the threat editor dialog to create a new threat
    */
   openThreatEditor(): void {
-    this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+    this.facade.openThreatEditor(this.threatModelId, this.dfdId, this.diagramName);
   }
 
   /**
@@ -1264,26 +1266,96 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       ? `${localizedShapeName}: ${cellLabel} (${cellId})`
       : `${localizedShapeName}: (${cellId})`;
 
-    // Load the threat model to get threats for this cell
+    // Load the threat model to get threats for this cell (force refresh to get latest threats)
     this._subscriptions.add(
-      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
+      this.threatModelService.getThreatModelById(this.threatModelId, true).subscribe({
         next: threatModel => {
           if (!threatModel) {
             this.logger.error('Threat model not found', { id: this.threatModelId });
             return;
           }
 
+          // Debug: Log all threats and their associations
+          this.logger.info('All threats in threat model', {
+            totalThreats: threatModel.threats?.length || 0,
+            threats:
+              threatModel.threats?.map(t => ({
+                id: t.id,
+                name: t.name,
+                cell_id: t.cell_id,
+                diagram_id: t.diagram_id,
+              })) || [],
+          });
+
           // Filter threats for this specific cell and diagram
-          const cellThreats =
+          // Workaround: If server is not storing cell_id/diagram_id properly (returns null),
+          // fall back to showing all threats for this diagram
+          let cellThreats =
             threatModel.threats?.filter(
               threat => threat.cell_id === cellId && threat.diagram_id === this.dfdId,
             ) || [];
+
+          // If no cell-specific threats found and we have threats with null cell_id,
+          // show threats associated with this diagram (fallback for server bug)
+          if (cellThreats.length === 0) {
+            const diagramThreats =
+              threatModel.threats?.filter(
+                threat =>
+                  (threat.diagram_id === this.dfdId || threat.diagram_id === null) &&
+                  threat.cell_id === null,
+              ) || [];
+
+            if (diagramThreats.length > 0) {
+              this.logger.warn(
+                'Server bug: cell_id and diagram_id are null, showing diagram threats as fallback',
+                {
+                  expectedCellId: cellId,
+                  expectedDiagramId: this.dfdId,
+                  fallbackCount: diagramThreats.length,
+                },
+              );
+              cellThreats = diagramThreats;
+            }
+          }
 
           this.logger.info('Found threats for cell', {
             cellId,
             diagramId: this.dfdId,
             threatCount: cellThreats.length,
+            filterCriteria: {
+              expectedCellId: cellId,
+              expectedDiagramId: this.dfdId,
+            },
+            matchingThreats: cellThreats.map(t => ({
+              id: t.id,
+              name: t.name,
+              cell_id: t.cell_id,
+              diagram_id: t.diagram_id,
+            })),
           });
+
+          // Extract diagram and cell data for the threat editor dropdowns
+          let diagrams: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').DiagramOption[] = [];
+          let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] = [];
+          
+          if (this.x6GraphAdapter && this.dfdId && this.diagramName) {
+            try {
+              const graph = this.x6GraphAdapter.getGraph();
+              const cellData = this.cellDataExtractionService.extractFromX6Graph(
+                graph,
+                this.dfdId,
+                this.diagramName
+              );
+              diagrams = cellData.diagrams;
+              cells = cellData.cells;
+            } catch (error) {
+              this.logger.error('Error extracting cell data for threats dialog', error);
+              // Fallback: create basic diagram option
+              if (this.dfdId && this.diagramName) {
+                diagrams = [{ id: this.dfdId, name: this.diagramName }];
+              }
+            }
+          }
 
           const dialogData: ThreatsDialogData = {
             threats: cellThreats,
@@ -1292,6 +1364,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             objectName: objectName,
             threatModelId: this.threatModelId || undefined,
             diagramId: this.dfdId || undefined,
+            diagramName: this.diagramName || undefined,
+            diagrams: diagrams,
+            cells: cells,
           };
 
           const dialogRef = this.dialog.open(ThreatsDialogComponent, {
@@ -1361,7 +1436,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(originalThreatChangedSubscription);
 
     // Open the threat editor
-    this.facade.openThreatEditor(this.threatModelId, this.dfdId);
+    this.facade.openThreatEditor(this.threatModelId, this.dfdId, this.diagramName);
   }
 
   /**
@@ -1383,16 +1458,64 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Filter threats for this specific cell and diagram
-          const cellThreats =
+          // Workaround: If server is not storing cell_id/diagram_id properly (returns null),
+          // fall back to showing all threats for this diagram
+          let cellThreats =
             threatModel.threats?.filter(
               threat => threat.cell_id === cellId && threat.diagram_id === this.dfdId,
             ) || [];
+
+          // If no cell-specific threats found and we have threats with null cell_id,
+          // show threats associated with this diagram (fallback for server bug)
+          if (cellThreats.length === 0) {
+            const diagramThreats =
+              threatModel.threats?.filter(
+                threat =>
+                  (threat.diagram_id === this.dfdId || threat.diagram_id === null) &&
+                  threat.cell_id === null,
+              ) || [];
+
+            if (diagramThreats.length > 0) {
+              this.logger.warn(
+                'Server bug in reopen: cell_id and diagram_id are null, showing diagram threats as fallback',
+                {
+                  expectedCellId: cellId,
+                  expectedDiagramId: this.dfdId,
+                  fallbackCount: diagramThreats.length,
+                },
+              );
+              cellThreats = diagramThreats;
+            }
+          }
 
           this.logger.info('Reopening manage threats dialog with updated data', {
             cellId,
             diagramId: this.dfdId,
             threatCount: cellThreats.length,
           });
+
+          // Extract diagram and cell data for the threat editor dropdowns
+          let diagrams: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').DiagramOption[] = [];
+          let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] = [];
+          
+          if (this.x6GraphAdapter && this.dfdId && this.diagramName) {
+            try {
+              const graph = this.x6GraphAdapter.getGraph();
+              const cellData = this.cellDataExtractionService.extractFromX6Graph(
+                graph,
+                this.dfdId,
+                this.diagramName
+              );
+              diagrams = cellData.diagrams;
+              cells = cellData.cells;
+            } catch (error) {
+              this.logger.error('Error extracting cell data for reopened threats dialog', error);
+              // Fallback: create basic diagram option
+              if (this.dfdId && this.diagramName) {
+                diagrams = [{ id: this.dfdId, name: this.diagramName }];
+              }
+            }
+          }
 
           const dialogData: ThreatsDialogData = {
             threats: cellThreats,
@@ -1401,6 +1524,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             objectName: objectName,
             threatModelId: this.threatModelId || undefined,
             diagramId: this.dfdId || undefined,
+            diagramName: this.diagramName || undefined,
+            diagrams: diagrams,
+            cells: cells,
           };
 
           const dialogRef = this.dialog.open(ThreatsDialogComponent, {

@@ -677,12 +677,8 @@ export class ThreatModelService implements OnDestroy {
   private updateExistingThreatModel(
     data: Partial<ThreatModel> & { id: string; name: string },
   ): Observable<ThreatModel> {
-    // Preserve server-managed fields, update with imported data
-    const updateData = {
-      ...data,
-      // Preserve server timestamp management
-      modified_at: new Date().toISOString(),
-    };
+    // Remove server-managed fields from imported data before sending to API
+    const { id, created_at, modified_at, ...updateData } = data;
 
     return this.apiService.put<ThreatModel>(
       `threat_models/${data.id}`,
@@ -719,10 +715,13 @@ export class ThreatModelService implements OnDestroy {
       'ThreatModelService',
       `Updating threat model with ID: ${threatModel.id} via API`,
     );
+    // Remove server-managed fields from threat model data before sending to API
+    const { created_at, modified_at, ...threatModelData } = threatModel;
+
     return this.apiService
       .put<ThreatModel>(
         `threat_models/${threatModel.id}`,
-        threatModel as unknown as Record<string, unknown>,
+        threatModelData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -907,9 +906,9 @@ export class ThreatModelService implements OnDestroy {
       return of(newThreat);
     }
 
-    // Remove id field from threat data before sending to API
+    // Remove id, created_at, and modified_at fields from threat data before sending to API
 
-    const { id, ...threatData } = threat as Threat;
+    const { id, created_at, modified_at, ...threatData } = threat as Threat;
 
     return this.apiService
       .post<Threat>(
@@ -950,10 +949,13 @@ export class ThreatModelService implements OnDestroy {
       return of(threat as Threat);
     }
 
+    // Remove server-managed fields from threat data before sending to API
+    const { created_at, modified_at, ...threatData } = threat as Threat;
+
     return this.apiService
       .put<Threat>(
         `threat_models/${threatModelId}/threats/${threatId}`,
-        threat as unknown as Record<string, unknown>,
+        threatData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1014,10 +1016,13 @@ export class ThreatModelService implements OnDestroy {
       return of(newDocument);
     }
 
+    // Remove id field from document data before sending to API (documents don't have timestamp fields)
+    const { id, ...documentData } = document as TMDocument;
+
     return this.apiService
       .post<TMDocument>(
         `threat_models/${threatModelId}/documents`,
-        document as unknown as Record<string, unknown>,
+        documentData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1113,10 +1118,13 @@ export class ThreatModelService implements OnDestroy {
       return of(newSource);
     }
 
+    // Remove id field from source data before sending to API (sources don't have timestamp fields)
+    const { id, ...sourceData } = source as Source;
+
     return this.apiService
       .post<Source>(
         `threat_models/${threatModelId}/sources`,
-        source as unknown as Record<string, unknown>,
+        sourceData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1215,10 +1223,13 @@ export class ThreatModelService implements OnDestroy {
       return of(newDiagram);
     }
 
+    // Remove id, created_at, and modified_at fields from diagram data before sending to API
+    const { id, created_at, modified_at, ...diagramData } = diagram as Diagram;
+
     return this.apiService
       .post<Diagram>(
         `threat_models/${threatModelId}/diagrams`,
-        diagram as unknown as Record<string, unknown>,
+        diagramData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1242,10 +1253,13 @@ export class ThreatModelService implements OnDestroy {
       return of({ ...diagram, modified_at: new Date().toISOString() } as Diagram);
     }
 
+    // Remove server-managed fields from diagram data before sending to API
+    const { created_at, modified_at, ...diagramData } = diagram as Diagram;
+
     return this.apiService
       .put<Diagram>(
         `threat_models/${threatModelId}/diagrams/${diagramId}`,
-        diagram as unknown as Record<string, unknown>,
+        diagramData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1283,16 +1297,12 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // Create JSON Patch operations for the cells update
+    // Note: Do not include modified_at - the server manages timestamps automatically
     const operations = [
       {
         op: 'replace' as const,
         path: '/cells',
         value: cells,
-      },
-      {
-        op: 'replace' as const,
-        path: '/modified_at',
-        value: new Date().toISOString(),
       },
     ];
 

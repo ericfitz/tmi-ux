@@ -11,6 +11,8 @@ import { Threat } from '../../models/threat-model.model';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
+  DiagramOption,
+  CellOption,
 } from '../threat-editor-dialog/threat-editor-dialog.component';
 import { ThreatModelService } from '../../services/threat-model.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -36,6 +38,9 @@ export interface ThreatsDialogData {
   objectName?: string;
   threatModelId?: string;
   diagramId?: string;
+  diagramName?: string;
+  diagrams?: DiagramOption[];
+  cells?: CellOption[];
 }
 
 @Component({
@@ -86,6 +91,17 @@ export class ThreatsDialogComponent implements OnInit {
       default:
         return 'severity-unknown';
     }
+  }
+
+  /**
+   * Handles row click to open threat for editing
+   * @param threat The threat to edit
+   */
+  onThreatRowClick(threat: Threat): void {
+    if (this.data.isReadOnly) {
+      return; // Don't allow editing in read-only mode
+    }
+    this.editThreat(threat);
   }
 
   /**
@@ -159,6 +175,8 @@ export class ThreatsDialogComponent implements OnInit {
       mode: 'edit',
       diagramId: this.data.diagramId,
       cellId: threat.cell_id,
+      diagrams: this.data.diagrams || [],
+      cells: this.data.cells || [],
       framework: framework,
     };
 
