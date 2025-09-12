@@ -6,7 +6,7 @@ import { Environment } from './environment.interface';
  */
 export const environment: Environment = {
   production: false, // Not true production but mimics it
-  logLevel: 'WARNING', // Only show warnings and errors in staging
+  logLevel: 'WARN', // Only show warnings and errors in staging
   debugComponents: ['websocket-api', 'websocket-adapter'], // Enable WebSocket debug logging even in staging
   apiUrl: 'https://api.staging.example.com/v1',
   authTokenExpiryMinutes: 60,

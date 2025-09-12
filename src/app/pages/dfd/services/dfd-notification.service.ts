@@ -25,7 +25,7 @@ import {
 export enum NotificationType {
   SUCCESS = 'success',
   INFO = 'info',
-  WARNING = 'warning',
+  WARN = 'warning',
   ERROR = 'error',
 }
 
@@ -73,7 +73,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
       panelClass: ['notification-success'],
     },
     websocketDisconnected: {
-      type: NotificationType.WARNING,
+      type: NotificationType.WARN,
       duration: 0, // Persistent until resolved
       panelClass: ['notification-warning'],
       actionLabel: 'Retry',
@@ -129,7 +129,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
       panelClass: ['notification-success'],
     },
     presenterRequestDenied: {
-      type: NotificationType.WARNING,
+      type: NotificationType.WARN,
       duration: 3000,
       panelClass: ['notification-warning'],
     },
@@ -165,7 +165,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
       panelClass: ['notification-info'],
     },
     warning: {
-      type: NotificationType.WARNING,
+      type: NotificationType.WARN,
       duration: 4000,
       panelClass: ['notification-warning'],
     },
@@ -580,7 +580,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
     switch (type) {
       case NotificationType.SUCCESS:
         return ['notification-success'];
-      case NotificationType.WARNING:
+      case NotificationType.WARN:
         return ['notification-warning'];
       case NotificationType.ERROR:
         return ['notification-error'];

@@ -44,7 +44,7 @@ Indicates if this is a production environment. When true, Angular enables produc
 Controls the application's logging verbosity. Valid options from least to most verbose:
 
 - `ERROR` (default) - Only errors are logged
-- `WARNING` - Warnings and errors are logged
+- `WARN` - Warnings and errors are logged
 - `INFO` - Informational messages, warnings, and errors are logged
 - `DEBUG` - All messages are logged, including debug information
 

@@ -27,11 +27,13 @@ function checkCSPImplementation(): SecurityCheckResult {
   const dynamicCSPComment = indexContent.includes('CSP will be dynamically injected');
 
   if (!cspMatch && !dynamicCSPComment) {
-    result.errors.push('No CSP implementation found (neither static meta tag nor dynamic injection comment)');
+    result.errors.push(
+      'No CSP implementation found (neither static meta tag nor dynamic injection comment)',
+    );
     result.passed = false;
   } else if (dynamicCSPComment) {
     console.log('✅ Dynamic CSP injection configured');
-    
+
     // Verify security service exists and implements CSP injection
     const servicePath = join(
       process.cwd(),
@@ -41,7 +43,7 @@ function checkCSPImplementation(): SecurityCheckResult {
       'services',
       'security-config.service.ts',
     );
-    
+
     if (existsSync(servicePath)) {
       const serviceContent = readFileSync(servicePath, 'utf-8');
       if (serviceContent.includes('injectDynamicCSP')) {
@@ -51,14 +53,14 @@ function checkCSPImplementation(): SecurityCheckResult {
         result.passed = false;
       }
     }
-    
+
     // Warnings for dynamic CSP
     result.warnings.push("CSP uses 'unsafe-inline' - consider implementing nonce-based CSP");
     result.warnings.push("CSP uses 'unsafe-eval' - review if necessary for your framework");
   } else if (cspMatch) {
     console.log('⚠️ Static CSP meta tag found - consider using dynamic CSP for API flexibility');
     result.warnings.push('Static CSP may not accommodate dynamic API URLs');
-    
+
     // Check static CSP content
     const cspContent = cspMatch[0];
     if (cspContent.includes('unsafe-inline')) {
@@ -97,7 +99,7 @@ function checkEnvironmentConfig(): SecurityCheckResult {
   const result: SecurityCheckResult = { passed: true, warnings: [], errors: [] };
   const environments = ['dev', 'prod', 'staging'];
 
-  environments.forEach((env) => {
+  environments.forEach(env => {
     const envPath = join(process.cwd(), 'src', 'environments', `environment.${env}.ts`);
     if (existsSync(envPath)) {
       const content = readFileSync(envPath, 'utf-8');
@@ -128,14 +130,14 @@ function printResults(results: SecurityCheckResult[]): boolean {
   let hasErrors = false;
   let hasWarnings = false;
 
-  results.forEach((result) => {
+  results.forEach(result => {
     if (result.errors.length > 0) {
       hasErrors = true;
-      result.errors.forEach((error) => console.error(`❌ ERROR: ${error}`));
+      result.errors.forEach(error => console.error(`❌ ERROR: ${error}`));
     }
     if (result.warnings.length > 0) {
       hasWarnings = true;
-      result.warnings.forEach((warning) => console.warn(`⚠️  WARNING: ${warning}`));
+      result.warnings.forEach(warning => console.warn(`⚠️  WARN: ${warning}`));
     }
   });
 
@@ -147,9 +149,7 @@ function printResults(results: SecurityCheckResult[]): boolean {
       console.error(`❌ Found ${results.reduce((sum, r) => sum + r.errors.length, 0)} errors`);
     }
     if (hasWarnings) {
-      console.warn(
-        `⚠️  Found ${results.reduce((sum, r) => sum + r.warnings.length, 0)} warnings`,
-      );
+      console.warn(`⚠️  Found ${results.reduce((sum, r) => sum + r.warnings.length, 0)} warnings`);
     }
   }
 

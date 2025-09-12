@@ -144,20 +144,20 @@ To create a custom environment:
 
 ### Available Environment Settings
 
-| Setting                  | Description                                             | Default                        |
-| ------------------------ | ------------------------------------------------------- | ------------------------------ |
-| `production`             | Enable production mode                                  | `false`                        |
-| `logLevel`               | Logging verbosity ('DEBUG', 'INFO', 'WARNING', 'ERROR') | `'ERROR'`                      |
-| `apiUrl`                 | API server URL                                          | `'https://api.example.com/v1'` |
-| `authTokenExpiryMinutes` | Authentication token validity                           | `60`                           |
-| `operatorName`           | Name of service operator                                | `'TMI Operator'`               |
-| `operatorContact`        | Contact information                                     | `'contact@example.com'`        |
-| `serverPort`             | Server listening port                                   | `4200`                         |
-| `serverInterface`        | Server listening interface                              | `'0.0.0.0'`                    |
-| `enableTLS`              | Enable HTTPS                                            | `false`                        |
-| `tlsKeyPath`             | Path to TLS private key                                 | `undefined`                    |
-| `tlsCertPath`            | Path to TLS certificate                                 | `undefined`                    |
-| `tlsSubjectName`         | TLS subject name                                        | System hostname                |
+| Setting                  | Description                                          | Default                        |
+| ------------------------ | ---------------------------------------------------- | ------------------------------ |
+| `production`             | Enable production mode                               | `false`                        |
+| `logLevel`               | Logging verbosity ('DEBUG', 'INFO', 'WARN', 'ERROR') | `'ERROR'`                      |
+| `apiUrl`                 | API server URL                                       | `'https://api.example.com/v1'` |
+| `authTokenExpiryMinutes` | Authentication token validity                        | `60`                           |
+| `operatorName`           | Name of service operator                             | `'TMI Operator'`               |
+| `operatorContact`        | Contact information                                  | `'contact@example.com'`        |
+| `serverPort`             | Server listening port                                | `4200`                         |
+| `serverInterface`        | Server listening interface                           | `'0.0.0.0'`                    |
+| `enableTLS`              | Enable HTTPS                                         | `false`                        |
+| `tlsKeyPath`             | Path to TLS private key                              | `undefined`                    |
+| `tlsCertPath`            | Path to TLS certificate                              | `undefined`                    |
+| `tlsSubjectName`         | TLS subject name                                     | System hostname                |
 
 ## Building & testing
 

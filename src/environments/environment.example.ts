@@ -28,12 +28,12 @@ export const environment: Environment = {
    * Allowed values:
    * - 'DEBUG': All messages (most verbose)
    * - 'INFO': Info, warnings, and errors
-   * - 'WARNING': Warnings and errors
+   * - 'WARN': Warnings and errors
    * - 'ERROR': Only errors (least verbose)
    *
    * Standard values for different environments:
    * - Development: 'DEBUG'
-   * - Test/Staging: 'WARNING'
+   * - Test/Staging: 'WARN'
    * - Production: 'ERROR'
    *
    * Default: 'ERROR'

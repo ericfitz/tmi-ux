@@ -122,8 +122,8 @@ describe('LoggerService', () => {
       expect(consoleSpy.error).toHaveBeenCalledWith(expect.stringContaining('Error message'));
     });
 
-    it('should respect log level hierarchy for WARNING level', () => {
-      service.setLogLevel(LogLevel.WARNING);
+    it('should respect log level hierarchy for WARN level', () => {
+      service.setLogLevel(LogLevel.WARN);
 
       service.debug('Debug message');
       service.info('Info message');
@@ -181,7 +181,7 @@ describe('LoggerService', () => {
 
       expect(consoleSpy.warn).toHaveBeenCalledWith(
         expect.stringMatching(
-          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \[WARNING\] Test warning message$/,
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \[WARN\] Test warning message$/,
         ),
       );
     });
@@ -280,7 +280,7 @@ describe('LoggerService', () => {
 
       expect(consoleSpy.debug).toHaveBeenCalledWith(expect.stringContaining('[DEBUG]'));
       expect(consoleSpy.info).toHaveBeenCalledWith(expect.stringContaining('[INFO]'));
-      expect(consoleSpy.warn).toHaveBeenCalledWith(expect.stringContaining('[WARNING]'));
+      expect(consoleSpy.warn).toHaveBeenCalledWith(expect.stringContaining('[WARN]'));
       expect(consoleSpy.error).toHaveBeenCalledWith(expect.stringContaining('[ERROR]'));
     });
 

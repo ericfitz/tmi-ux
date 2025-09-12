@@ -6,7 +6,7 @@ import { Environment } from './environment.interface';
  */
 export const environment: Environment = {
   production: false,
-  logLevel: 'WARNING', // Only show warnings and errors in test environment
+  logLevel: 'WARN', // Only show warnings and errors in test environment
   apiUrl: 'https://api.test.example.com/v1',
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Test)',

@@ -6,7 +6,7 @@
  *
  * Key functionality:
  * - Provides standardized logging with ISO8601 timestamps
- * - Supports configurable log levels (DEBUG, INFO, WARNING, ERROR)
+ * - Supports configurable log levels (DEBUG, INFO, WARN, ERROR)
  * - Enables component-specific debug logging via environment configuration
  * - Filters logs based on environment settings for performance
  * - Provides specialized logging methods for variable initialization tracking
@@ -25,7 +25,7 @@ import { environment } from '../../../environments/environment';
 export enum LogLevel {
   DEBUG = 'DEBUG',
   INFO = 'INFO',
-  WARNING = 'WARNING',
+  WARN = 'WARN',
   ERROR = 'ERROR',
 }
 
@@ -36,7 +36,7 @@ export enum LogLevel {
 const LOG_LEVEL_PRIORITY = {
   [LogLevel.DEBUG]: 0,
   [LogLevel.INFO]: 1,
-  [LogLevel.WARNING]: 2,
+  [LogLevel.WARN]: 2,
   [LogLevel.ERROR]: 3,
 };
 
@@ -113,8 +113,8 @@ export class LoggerService {
    * Log a warning message
    */
   warn(message: string, ...optionalParams: unknown[]): void {
-    if (this.shouldLog(LogLevel.WARNING)) {
-      console.warn(this.formatMessage(LogLevel.WARNING, message), ...optionalParams);
+    if (this.shouldLog(LogLevel.WARN)) {
+      console.warn(this.formatMessage(LogLevel.WARN, message), ...optionalParams);
     }
   }
 

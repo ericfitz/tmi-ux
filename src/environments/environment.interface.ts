@@ -26,7 +26,7 @@ export interface Environment {
 
   /**
    * Application logging level
-   * Allowed values: 'DEBUG', 'INFO', 'WARNING', 'ERROR'
+   * Allowed values: 'DEBUG', 'INFO', 'WARN', 'ERROR'
    * Default: 'ERROR'
    */
   logLevel: string;

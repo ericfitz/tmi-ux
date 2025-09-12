@@ -9,7 +9,7 @@ The Logger Service provides standardized logging throughout the application with
 ### Features
 
 - ISO8601 timestamp format for all log messages
-- Four log levels: DEBUG, INFO, WARNING, ERROR
+- Four log levels: DEBUG, INFO, WARN, ERROR
 - Environment-configurable log level threshold
 - Consistent formatting across the application
 
@@ -49,13 +49,13 @@ export const environment = {
 // Test environment (src/environments/environment.test.ts)
 export const environment = {
   // ...
-  logLevel: 'WARNING', // Only show warnings and errors in test
+  logLevel: 'WARN', // Only show warnings and errors in test
 };
 
 // Staging environment (src/environments/environment.staging.ts)
 export const environment = {
   // ...
-  logLevel: 'WARNING', // Only show warnings and errors in staging
+  logLevel: 'WARN', // Only show warnings and errors in staging
 };
 
 // Production environment (src/environments/environment.prod.ts)
@@ -71,10 +71,10 @@ From most to least verbose:
 
 1. **DEBUG** - Detailed information for debugging purposes
 2. **INFO** - General informational messages about system operation
-3. **WARNING** - Potential issues that aren't yet errors
+3. **WARN** - Potential issues that aren't yet errors
 4. **ERROR** - Error conditions that should be addressed
 
-Each level includes all higher-priority levels. For example, setting the level to WARNING will show both WARNING and ERROR messages, but not INFO or DEBUG.
+Each level includes all higher-priority levels. For example, setting the level to WARN will show both WARN and ERROR messages, but not INFO or DEBUG.
 
 ### Runtime Configuration
 
