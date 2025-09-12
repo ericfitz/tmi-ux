@@ -79,6 +79,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
 
     mockGraphHistoryCoordinator = {
       executeVisualEffect: vi.fn((graph, operation) => operation()),
+      executeAtomicOperation: vi.fn((graph, operation) => operation()),
     };
 
     mockEdgeService = {

@@ -209,21 +209,6 @@ export class DfdEdgeService {
     const originalVertices = edge.getVertices();
     const originalLabel = (edge as any).getLabel() || 'Flow';
 
-    // Process the original edge vertices if needed
-    let processedOriginalVertices = [...originalVertices];
-    if (originalVertices.length === 0) {
-      // Add a vertex at the center and move it perpendicular to the source-destination line
-      processedOriginalVertices = this._addCenterVertexToStraightEdge(edge);
-      // Update the original edge with the new vertex
-      edge.setVertices(processedOriginalVertices);
-    }
-
-    // Calculate mirrored vertices for the inverse edge
-    const inverseVertices = this._mirrorVerticesAroundSourceTargetLine(
-      processedOriginalVertices,
-      edge,
-    );
-
     // Process label for inverse edge
     const inverseLabel = this._processLabelForInverse(originalLabel);
 
@@ -231,24 +216,44 @@ export class DfdEdgeService {
     const inverseEdgeId = uuidv4();
 
     try {
-      // Create inverse EdgeInfo domain object with vertices (without label initially)
-      const inverseEdgeInfo = EdgeInfo.create({
-        id: inverseEdgeId,
-        sourceNodeId: targetNodeId, // Swap source and target for inverse
-        targetNodeId: sourceNodeId,
-        sourcePortId: targetPortId,
-        targetPortId: sourcePortId,
-        vertices: inverseVertices,
-      });
+      // Execute all inverse connection operations as a single atomic operation
+      const inverseEdge = this.historyCoordinator.executeAtomicOperation(graph, () => {
+        // Step 1: Process the original edge vertices if needed (inside transaction)
+        let processedOriginalVertices = [...originalVertices];
+        if (originalVertices.length === 0) {
+          // Add a vertex at the center and move it perpendicular to the source-destination line
+          processedOriginalVertices = this._addCenterVertexToStraightEdge(edge);
+          // Update the original edge with the new vertex
+          edge.setVertices(processedOriginalVertices);
+        }
 
-      // Delegate to EdgeService for X6 operations (proper layered architecture)
-      const inverseEdge = this.edgeService.createEdge(graph, inverseEdgeInfo, {
-        ensureVisualRendering: true,
-        updatePortVisibility: true,
-      });
+        // Step 2: Calculate mirrored vertices for the inverse edge
+        const inverseVertices = this._mirrorVerticesAroundSourceTargetLine(
+          processedOriginalVertices,
+          edge,
+        );
 
-      // Set the label using the utility function
-      this.updateEdgeLabel(inverseEdge, inverseLabel);
+        // Step 3: Create inverse EdgeInfo domain object (without label initially)
+        const inverseEdgeInfo = EdgeInfo.create({
+          id: inverseEdgeId,
+          sourceNodeId: targetNodeId, // Swap source and target for inverse
+          targetNodeId: sourceNodeId,
+          sourcePortId: targetPortId,
+          targetPortId: sourcePortId,
+          vertices: inverseVertices,
+        });
+
+        // Step 4: Create the inverse edge via EdgeService (suppress history since we're in atomic operation)
+        const createdInverseEdge = this.edgeService.createEdge(graph, inverseEdgeInfo, {
+          ensureVisualRendering: true,
+          updatePortVisibility: true,
+        });
+
+        // Step 5: Set the label using the utility function (inside same transaction)
+        this.updateEdgeLabel(createdInverseEdge, inverseLabel);
+
+        return createdInverseEdge;
+      });
 
       // Apply visual effects (z-order and highlighting) outside of history
       this.historyCoordinator.executeVisualEffect(graph, () => {
@@ -260,7 +265,7 @@ export class DfdEdgeService {
       });
 
       this.logger.info(
-        'Inverse edge created successfully with vertex processing and label customization',
+        'Inverse edge created successfully with atomic operation (edge creation, vertex processing, and label setting)',
         {
           originalEdgeId: edge.id,
           inverseEdgeId,
@@ -269,11 +274,13 @@ export class DfdEdgeService {
           newSourcePort: targetPortId,
           newTargetPort: sourcePortId,
           originalVertexCount: originalVertices.length,
-          processedVertexCount: processedOriginalVertices.length,
-          inverseVertexCount: inverseVertices.length,
+          inverseVertexCount:
+            inverseEdge && typeof inverseEdge.getVertices === 'function'
+              ? inverseEdge.getVertices().length
+              : 'N/A (mock)',
           originalLabel,
           inverseLabel,
-          appliedZIndexLogic: true,
+          atomicOperationUsed: true,
         },
       );
 
@@ -317,7 +324,7 @@ export class DfdEdgeService {
 
     // Move 15 pixels perpendicular from the geometric center
     const vertexX = centerX + perpX * 15;
-    const vertexY = centerY + perpY * 15;
+    const vertexY = centerY - perpY * 15;
 
     return [{ x: vertexX, y: vertexY }];
   }
