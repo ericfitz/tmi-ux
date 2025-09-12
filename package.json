@@ -26,6 +26,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "dev": "ng serve --open",
+    "dev:0": "ng serve --host 0.0.0.0 --port 4200 --open",
     "dev:staging": "ng serve --configuration=staging --open",
     "dev:test": "ng serve --configuration=test --open",
     "dev:prod": "ng serve --configuration=production --open",
