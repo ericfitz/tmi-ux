@@ -88,7 +88,7 @@ export class DfdEventHandlersService {
   initialize(x6GraphAdapter: any): void {
     // Store reference to graph adapter for later use
     this._x6GraphAdapter = x6GraphAdapter;
-    
+
     // Subscribe to selection state changes
     this._subscriptions.add(
       x6GraphAdapter.selectionChanged$.subscribe({
@@ -266,9 +266,9 @@ export class DfdEventHandlersService {
    * Opens the threat editor dialog to create a new threat
    */
   openThreatEditor(
-    threatModelId: string | null, 
+    threatModelId: string | null,
     dfdId: string | null,
-    diagramName?: string | null
+    diagramName?: string | null,
   ): void {
     if (!threatModelId) {
       this.logger.warn('Cannot add threat: No threat model ID available');
@@ -338,9 +338,9 @@ export class DfdEventHandlersService {
               try {
                 const graph = this._x6GraphAdapter.getGraph();
                 const cellData = this.cellDataExtractionService.extractFromX6Graph(
-                  graph, 
-                  dfdId, 
-                  diagramName
+                  graph,
+                  dfdId,
+                  diagramName,
                 );
                 diagrams = cellData.diagrams;
                 cells = cellData.cells;

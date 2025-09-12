@@ -829,7 +829,11 @@ export class DfdCollaborationService implements OnDestroy {
         email: userProfile.email,
         displayName: userProfile.name,
       },
-      target_user: userEmail,
+      removed_user: {
+        user_id: userEmail, // Using email as user_id fallback
+        email: userEmail,
+        displayName: userEmail, // Using email as displayName fallback
+      },
     };
 
     return this._webSocketAdapter.sendTMIMessage(removeMessage).pipe(

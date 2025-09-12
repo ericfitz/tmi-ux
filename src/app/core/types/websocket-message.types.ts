@@ -151,7 +151,7 @@ export interface ParticipantLeftMessage {
 export interface RemoveParticipantMessage {
   message_type: 'remove_participant';
   user: User;
-  target_user: string;
+  removed_user: User;
 }
 
 export interface SessionTerminatedMessage {

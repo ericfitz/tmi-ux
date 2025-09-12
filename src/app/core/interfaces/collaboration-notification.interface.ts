@@ -63,6 +63,7 @@ export type SessionEventType =
   | 'ended'
   | 'userJoined'
   | 'userLeft'
+  | 'userRemoved'
   | 'disconnected'
   | 'reconnecting'
   | 'reconnected';

@@ -407,6 +407,15 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
           return this.showPreset('userLeft', message);
         }
         break;
+      case 'userRemoved':
+        if (displayName) {
+          const message = `${displayName} was removed from the session`;
+          return this.showPreset('userLeft', message); // Reuse userLeft preset for similar styling
+        } else {
+          const message = 'You have been removed from the collaboration session';
+          return this.showPreset('userLeft', message);
+        }
+        break;
       case 'disconnected':
         return this.showPreset('warning', 'Disconnected from collaboration session');
       case 'reconnecting':

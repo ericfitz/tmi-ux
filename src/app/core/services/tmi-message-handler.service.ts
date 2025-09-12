@@ -10,6 +10,7 @@ import {
 import {
   ParticipantJoinedMessage,
   ParticipantLeftMessage,
+  RemoveParticipantMessage,
   SessionTerminatedMessage,
   DiagramOperationMessage,
   PresenterRequestMessage,
@@ -90,6 +91,14 @@ export class TMIMessageHandlerService implements OnDestroy {
         .getTMIMessagesOfType<ParticipantLeftMessage>('participant_left')
         .subscribe(message => {
           this._handleParticipantLeftEvent(message);
+        }),
+    );
+
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<RemoveParticipantMessage>('remove_participant')
+        .subscribe(message => {
+          this._handleRemoveParticipant(message);
         }),
     );
 
@@ -235,7 +244,7 @@ export class TMIMessageHandlerService implements OnDestroy {
     this._logger.info('TMI message handlers initialized successfully');
     this._logger.debugComponent('websocket-adapter', 'TMI handler initialization complete', {
       timestamp: new Date().toISOString(),
-      handlersCount: 17,
+      handlersCount: 18,
     });
   }
 
@@ -318,6 +327,41 @@ export class TMIMessageHandlerService implements OnDestroy {
     ) {
       this._logger.warn('Current user received leave event, session may have ended');
       // The collaboration service will handle cleanup and redirect
+    }
+  }
+
+  private _handleRemoveParticipant(message: RemoveParticipantMessage): void {
+    this._logger.info('TMI: Remove participant request received', {
+      user: message.user,
+      removedUser: message.removed_user,
+      fullMessage: message,
+    });
+
+    // Log with component debugging
+    this._logger.debugComponent('websocket-adapter', 'Processing remove participant event', {
+      user: message.user,
+      removedUser: message.removed_user,
+      messageType: message.message_type,
+    });
+
+    // Validate message format
+    if (!message || !message.user || !message.removed_user) {
+      this._logger.warn('Invalid TMI remove participant message received', message);
+      return;
+    }
+
+    // The actual participant removal will be handled by the subsequent participants_update message
+    // This is just for logging/notification purposes
+    this._logger.info('Participant being removed by host', {
+      host: message.user.email,
+      removedUser: message.removed_user.email || message.removed_user.user_id,
+    });
+
+    // Show notification if current user is being removed
+    const currentUserEmail = this._collaborationService.getCurrentUserEmail();
+    if (message.removed_user.email === currentUserEmail) {
+      this._logger.warn('Current user is being removed from session');
+      this._notificationService?.showSessionEvent('userRemoved').subscribe();
     }
   }
 

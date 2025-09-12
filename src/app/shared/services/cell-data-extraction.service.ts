@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ThreatModel } from '../../pages/tm/models/threat-model.model';
-import { DiagramOption, CellOption } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
+import {
+  DiagramOption,
+  CellOption,
+} from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { LoggerService } from '../../core/services/logger.service';
 
 /**
@@ -63,7 +66,7 @@ export class CellDataExtractionService {
   /**
    * Extracts diagram and cell data from a threat model.
    * Optionally filters cells to a specific diagram.
-   * 
+   *
    * @param threatModel - The threat model containing diagrams and their cells
    * @param diagramId - Optional diagram ID to filter cells by
    * @returns DiagramCellData containing diagrams and cells for dropdowns
@@ -87,7 +90,7 @@ export class CellDataExtractionService {
 
     if (threatModel.diagrams) {
       // If filtering by diagram, only process that diagram
-      const diagramsToProcess = diagramId 
+      const diagramsToProcess = diagramId
         ? threatModel.diagrams.filter(diagram => diagram.id === diagramId)
         : threatModel.diagrams;
 
@@ -108,8 +111,8 @@ export class CellDataExtractionService {
     this.logger.info('Extracted cell data from threat model', {
       diagramCount: diagrams.length,
       cellCount: cells.length,
-      sampleCells: cells.slice(0, 3).map(c => ({ 
-        id: c.id.substring(0, 8) + '...', 
+      sampleCells: cells.slice(0, 3).map(c => ({
+        id: c.id.substring(0, 8) + '...',
         label: c.label,
       })),
     });
@@ -120,7 +123,7 @@ export class CellDataExtractionService {
   /**
    * Extracts cell data from X6 runtime graph.
    * Used when working with active DFD editor.
-   * 
+   *
    * @param x6Graph - The X6 Graph instance
    * @param diagramId - The current diagram ID
    * @param diagramName - The current diagram name
@@ -134,10 +137,12 @@ export class CellDataExtractionService {
     });
 
     // Create diagram options (just the current diagram)
-    const diagrams: DiagramOption[] = [{
-      id: diagramId,
-      name: diagramName,
-    }];
+    const diagrams: DiagramOption[] = [
+      {
+        id: diagramId,
+        name: diagramName,
+      },
+    ];
 
     // Extract cell options from current graph
     const cells: CellOption[] = [];
@@ -145,7 +150,7 @@ export class CellDataExtractionService {
     try {
       if (x6Graph && typeof x6Graph.getCells === 'function') {
         const x6Cells = x6Graph.getCells();
-        
+
         this.logger.info('Found X6 cells in graph', {
           totalCells: x6Cells.length,
         });
@@ -166,8 +171,8 @@ export class CellDataExtractionService {
     this.logger.info('Extracted cell data from X6 graph', {
       diagramCount: diagrams.length,
       cellCount: cells.length,
-      sampleCells: cells.slice(0, 3).map(c => ({ 
-        id: c.id.substring(0, 8) + '...', 
+      sampleCells: cells.slice(0, 3).map(c => ({
+        id: c.id.substring(0, 8) + '...',
         label: c.label,
       })),
     });
@@ -177,7 +182,7 @@ export class CellDataExtractionService {
 
   /**
    * Extracts the label from a cell, handling both stored cells and X6 runtime cells.
-   * 
+   *
    * @param cell - The cell object (either stored Cell or X6 Cell)
    * @param cellType - The type of cell to determine extraction method
    * @returns The cell label as a string
@@ -223,9 +228,9 @@ export class CellDataExtractionService {
         // For stored cells from threat model data
         // Note: This handles the basic Cell interface from diagram.model.ts
         // The stored cells may not have the same label structure as X6 runtime cells
-        
+
         // Try multiple approaches to get a meaningful label from stored data
-        
+
         // 1. Check if value contains actual text (not just whitespace or HTML)
         if (storedCell.value && typeof storedCell.value === 'string') {
           const cleanValue = storedCell.value.replace(/<[^>]*>/g, '').trim(); // Remove HTML tags
@@ -233,22 +238,22 @@ export class CellDataExtractionService {
             label = cleanValue;
           }
         }
-        
+
         // 2. If the cell has additional properties that might contain label info
         // Check if cell has any text-related properties (this is for future extensibility)
         if (!label || label === storedCell.id) {
           // Try to extract from style or other properties if they exist
           if (storedCell.style && typeof storedCell.style === 'string') {
             // Enhanced style parsing for different text encodings and formats
-            
+
             // Look for text content in various style attribute formats
             const stylePatterns = [
-              /text=([^;]+)/i,                    // text=value
-              /label=([^;]+)/i,                   // label=value  
-              /html=1;text=([^;]+)/i,             // html=1;text=value
-              /whiteSpace=wrap;.*text=([^;]+)/i,  // whiteSpace=wrap;...text=value
+              /text=([^;]+)/i, // text=value
+              /label=([^;]+)/i, // label=value
+              /html=1;text=([^;]+)/i, // html=1;text=value
+              /whiteSpace=wrap;.*text=([^;]+)/i, // whiteSpace=wrap;...text=value
             ];
-            
+
             for (const pattern of stylePatterns) {
               const styleMatch = storedCell.style.match(pattern);
               if (styleMatch && styleMatch[1]) {
@@ -258,24 +263,27 @@ export class CellDataExtractionService {
                   decodedText = decodedText.replace(/&[a-zA-Z0-9]+;/g, ' ').trim();
                   // Remove extra whitespace
                   decodedText = decodedText.replace(/\s+/g, ' ');
-                  
+
                   if (decodedText && decodedText !== storedCell.id && decodedText.length > 0) {
                     label = decodedText;
                     break; // Found a good match, stop searching
                   }
                 } catch (error) {
-                  this.logger.warn('Error decoding style text', { styleMatch: styleMatch[1], error });
+                  this.logger.warn('Error decoding style text', {
+                    styleMatch: styleMatch[1],
+                    error,
+                  });
                 }
               }
             }
           }
         }
-        
+
         // 3. As a last resort, if we still only have the ID, try to make it more user-friendly
         if (!label || label === storedCell.id) {
           label = this.generateFriendlyLabel(storedCell);
         }
-        
+
         // Note: Stored cells have limitations in label preservation
         // For better label display, the frontend should ideally store richer cell metadata
       }
@@ -287,7 +295,6 @@ export class CellDataExtractionService {
           label = cell.id; // Fallback to ID if label is empty
         }
       }
-
     } catch (error) {
       this.logger.warn('Error extracting cell label, using ID as fallback', {
         cellId: cell.id,
@@ -305,7 +312,7 @@ export class CellDataExtractionService {
    */
   private extractLabelText(label: X6CellLabel | undefined): string | null {
     if (!label) return null;
-    
+
     // Try to extract text from label attrs
     if (label.attrs) {
       for (const [_key, attr] of Object.entries(label.attrs)) {
@@ -314,7 +321,7 @@ export class CellDataExtractionService {
         }
       }
     }
-    
+
     return null;
   }
 
@@ -325,12 +332,12 @@ export class CellDataExtractionService {
   private generateFriendlyLabel(cell: X6Cell | StoredCell): string {
     // Try to create a more meaningful label based on cell properties
     const cellId = cell.id || 'unknown';
-    
+
     // If it's a short ID (like a UUID fragment), show it as is
     if (cellId.length <= 8) {
       return cellId;
     }
-    
+
     // For longer IDs, try to make them more readable
     if (cellId.includes('-')) {
       // If it looks like a UUID, show first part + "..."
@@ -339,12 +346,12 @@ export class CellDataExtractionService {
         return `${parts[0]}...`;
       }
     }
-    
+
     // For very long IDs, truncate and add ellipsis
     if (cellId.length > 12) {
       return `${cellId.substring(0, 8)}...`;
     }
-    
+
     return cellId;
   }
 }

@@ -1335,16 +1335,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           // Extract diagram and cell data for the threat editor dropdowns
-          let diagrams: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').DiagramOption[] = [];
-          let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] = [];
-          
+          let diagrams: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').DiagramOption[] =
+            [];
+          let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] =
+            [];
+
           if (this.x6GraphAdapter && this.dfdId && this.diagramName) {
             try {
               const graph = this.x6GraphAdapter.getGraph();
               const cellData = this.cellDataExtractionService.extractFromX6Graph(
                 graph,
                 this.dfdId,
-                this.diagramName
+                this.diagramName,
               );
               diagrams = cellData.diagrams;
               cells = cellData.cells;
@@ -1495,16 +1497,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           // Extract diagram and cell data for the threat editor dropdowns
-          let diagrams: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').DiagramOption[] = [];
-          let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] = [];
-          
+          let diagrams: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').DiagramOption[] =
+            [];
+          let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] =
+            [];
+
           if (this.x6GraphAdapter && this.dfdId && this.diagramName) {
             try {
               const graph = this.x6GraphAdapter.getGraph();
               const cellData = this.cellDataExtractionService.extractFromX6Graph(
                 graph,
                 this.dfdId,
-                this.diagramName
+                this.diagramName,
               );
               diagrams = cellData.diagrams;
               cells = cellData.cells;
