@@ -105,7 +105,6 @@ export interface PermissionsDialogData {
                       color="warn"
                       (click)="deletePermission(i)"
                       [matTooltip]="'common.delete' | transloco"
-                      [disabled]="i === 0"
                     >
                       <mat-icon>delete</mat-icon>
                     </button>
@@ -399,8 +398,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param index The index of the permission to delete
    */
   deletePermission(index: number): void {
-    // Don't allow deleting the first permission (owner)
-    if (index > 0 && index < this.permissionsDataSource.data.length) {
+    if (index >= 0 && index < this.permissionsDataSource.data.length) {
       this.permissionsDataSource.data.splice(index, 1);
       this.permissionsTable.renderRows();
     }
