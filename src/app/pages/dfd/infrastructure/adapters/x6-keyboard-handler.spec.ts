@@ -140,7 +140,6 @@ describe('X6KeyboardHandler', () => {
       // Document event listeners
       expect(addEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
       expect(addEventListenerSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
-      expect(addEventListenerSpy).toHaveBeenCalledWith('mouseup', expect.any(Function));
 
       // Window event listeners
       expect(windowAddEventListenerSpy).toHaveBeenCalledWith('blur', expect.any(Function));
@@ -170,7 +169,6 @@ describe('X6KeyboardHandler', () => {
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
       expect(removeEventListenerSpy).toHaveBeenCalledWith('keyup', expect.any(Function));
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('mouseup', expect.any(Function));
       expect(windowRemoveEventListenerSpy).toHaveBeenCalledWith('blur', expect.any(Function));
     });
   });

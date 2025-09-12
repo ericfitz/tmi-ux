@@ -4,6 +4,45 @@ import { DiagramOption, CellOption } from '../../pages/tm/components/threat-edit
 import { LoggerService } from '../../core/services/logger.service';
 
 /**
+ * Interface for X6 Graph basic operations
+ */
+interface X6Graph {
+  getCells(): X6Cell[];
+}
+
+/**
+ * Interface for X6 Cell operations
+ */
+interface X6Cell {
+  id: string;
+  isNode(): boolean;
+  isEdge(): boolean;
+  getLabel?(): X6CellLabel;
+  getLabels?(): X6CellLabel[];
+  getAttrByPath?(path: string): unknown;
+}
+
+/**
+ * Interface for X6 Cell Label
+ */
+interface X6CellLabel {
+  attrs?: { [key: string]: { value?: string } };
+}
+
+/**
+ * Interface for stored cell data from threat models
+ */
+interface StoredCell {
+  id: string;
+  value?: string;
+  style?: string | { [key: string]: unknown };
+  data?: {
+    id?: string;
+    label?: string;
+  };
+}
+
+/**
  * Interface for extracted cell data that includes both diagram and cell information
  */
 export interface DiagramCellData {
@@ -87,7 +126,7 @@ export class CellDataExtractionService {
    * @param diagramName - The current diagram name
    * @returns DiagramCellData containing current diagram and its cells
    */
-  extractFromX6Graph(x6Graph: any, diagramId: string, diagramName: string): DiagramCellData {
+  extractFromX6Graph(x6Graph: X6Graph, diagramId: string, diagramName: string): DiagramCellData {
     this.logger.info('Extracting cell data from X6 graph', {
       diagramId,
       diagramName,
@@ -111,7 +150,7 @@ export class CellDataExtractionService {
           totalCells: x6Cells.length,
         });
 
-        x6Cells.forEach((cell: any) => {
+        x6Cells.forEach((cell: X6Cell) => {
           const cellLabel = this.extractCellLabel(cell, 'x6');
           cells.push({
             id: cell.id,
@@ -143,7 +182,7 @@ export class CellDataExtractionService {
    * @param cellType - The type of cell to determine extraction method
    * @returns The cell label as a string
    */
-  private extractCellLabel(cell: any, cellType: 'stored' | 'x6'): string {
+  private extractCellLabel(cell: X6Cell | StoredCell, cellType: 'stored' | 'x6'): string {
     if (!cell || !cell.id) {
       return 'Unknown Cell';
     }
@@ -152,32 +191,35 @@ export class CellDataExtractionService {
 
     try {
       if (cellType === 'x6') {
+        const x6Cell = cell as X6Cell;
         // For X6 runtime cells, use the getLabel extension method if available
-        if (typeof cell.getLabel === 'function') {
-          const extractedLabel = cell.getLabel();
-          if (extractedLabel && extractedLabel.trim()) {
-            label = extractedLabel.trim();
+        if (typeof x6Cell.getLabel === 'function') {
+          const extractedLabel = x6Cell.getLabel();
+          const labelText = this.extractLabelText(extractedLabel);
+          if (labelText && labelText.trim()) {
+            label = labelText.trim();
           }
         } else {
           // Fallback manual extraction for X6 cells
-          if (cell.isNode && cell.isNode()) {
+          if (x6Cell.isNode && x6Cell.isNode()) {
             // Node cells - try text attributes
-            const textValue = cell.getAttrByPath ? cell.getAttrByPath('text/text') : null;
+            const textValue = x6Cell.getAttrByPath ? x6Cell.getAttrByPath('text/text') : null;
             if (textValue && typeof textValue === 'string') {
               label = textValue.trim();
             }
-          } else if (cell.isEdge && cell.isEdge()) {
+          } else if (x6Cell.isEdge && x6Cell.isEdge()) {
             // Edge cells - try labels array
-            const labels = cell.getLabels ? cell.getLabels() : null;
+            const labels = x6Cell.getLabels ? x6Cell.getLabels() : null;
             if (labels && labels.length > 0) {
               const firstLabel = labels[0];
-              if (firstLabel?.attrs?.text?.text) {
-                label = firstLabel.attrs.text.text.trim();
+              if (firstLabel?.attrs?.['text']?.value) {
+                label = firstLabel.attrs['text'].value.trim();
               }
             }
           }
         }
       } else if (cellType === 'stored') {
+        const storedCell = cell as StoredCell;
         // For stored cells from threat model data
         // Note: This handles the basic Cell interface from diagram.model.ts
         // The stored cells may not have the same label structure as X6 runtime cells
@@ -185,18 +227,18 @@ export class CellDataExtractionService {
         // Try multiple approaches to get a meaningful label from stored data
         
         // 1. Check if value contains actual text (not just whitespace or HTML)
-        if (cell.value && typeof cell.value === 'string') {
-          const cleanValue = cell.value.replace(/<[^>]*>/g, '').trim(); // Remove HTML tags
-          if (cleanValue && cleanValue !== cell.id) {
+        if (storedCell.value && typeof storedCell.value === 'string') {
+          const cleanValue = storedCell.value.replace(/<[^>]*>/g, '').trim(); // Remove HTML tags
+          if (cleanValue && cleanValue !== storedCell.id) {
             label = cleanValue;
           }
         }
         
         // 2. If the cell has additional properties that might contain label info
         // Check if cell has any text-related properties (this is for future extensibility)
-        if (!label || label === cell.id) {
+        if (!label || label === storedCell.id) {
           // Try to extract from style or other properties if they exist
-          if ((cell).style && typeof (cell).style === 'string') {
+          if (storedCell.style && typeof storedCell.style === 'string') {
             // Enhanced style parsing for different text encodings and formats
             
             // Look for text content in various style attribute formats
@@ -208,7 +250,7 @@ export class CellDataExtractionService {
             ];
             
             for (const pattern of stylePatterns) {
-              const styleMatch = (cell).style.match(pattern);
+              const styleMatch = storedCell.style.match(pattern);
               if (styleMatch && styleMatch[1]) {
                 try {
                   let decodedText = decodeURIComponent(styleMatch[1]).trim();
@@ -217,7 +259,7 @@ export class CellDataExtractionService {
                   // Remove extra whitespace
                   decodedText = decodedText.replace(/\s+/g, ' ');
                   
-                  if (decodedText && decodedText !== cell.id && decodedText.length > 0) {
+                  if (decodedText && decodedText !== storedCell.id && decodedText.length > 0) {
                     label = decodedText;
                     break; // Found a good match, stop searching
                   }
@@ -230,8 +272,8 @@ export class CellDataExtractionService {
         }
         
         // 3. As a last resort, if we still only have the ID, try to make it more user-friendly
-        if (!label || label === cell.id) {
-          label = this.generateFriendlyLabel(cell);
+        if (!label || label === storedCell.id) {
+          label = this.generateFriendlyLabel(storedCell);
         }
         
         // Note: Stored cells have limitations in label preservation
@@ -259,10 +301,28 @@ export class CellDataExtractionService {
   }
 
   /**
+   * Extracts text from an X6 cell label object
+   */
+  private extractLabelText(label: X6CellLabel | undefined): string | null {
+    if (!label) return null;
+    
+    // Try to extract text from label attrs
+    if (label.attrs) {
+      for (const [_key, attr] of Object.entries(label.attrs)) {
+        if (attr && typeof attr === 'object' && 'value' in attr && typeof attr.value === 'string') {
+          return attr.value;
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  /**
    * Generates a more user-friendly label from cell data when no proper label is available.
    * This is used as a fallback for stored cells that don't preserve label information.
    */
-  private generateFriendlyLabel(cell: any): string {
+  private generateFriendlyLabel(cell: X6Cell | StoredCell): string {
     // Try to create a more meaningful label based on cell properties
     const cellId = cell.id || 'unknown';
     

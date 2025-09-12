@@ -319,7 +319,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    * This method is called initially and whenever the diagram selection changes.
    */
   private filterCellOptions(selectedDiagramId?: string): void {
-    const diagramId = selectedDiagramId || this.threatForm?.get('diagram_id')?.value || this.data.diagramId;
+    const diagramId = selectedDiagramId || this.threatForm?.get('diagram_id')?.value as string || this.data.diagramId;
     
     // Start with "Not associated" option
     const notAssociatedOption: CellOption = {
@@ -375,7 +375,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     }
     
     this.logger.info('Filtered cell options:', {
-      selectedDiagramId: diagramId,
+      selectedDiagramId: diagramId as string,
       totalAvailableCells: this.allCellOptions.length,
       filteredCellCount: filteredCells.length,
       finalOptionsCount: this.cellOptions.length,
@@ -391,22 +391,22 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Subscribe to diagram_id field changes
     const diagramControl = this.threatForm.get('diagram_id');
     if (diagramControl) {
-      this.diagramChangeSubscription = diagramControl.valueChanges.subscribe(diagramId => {
+      this.diagramChangeSubscription = diagramControl.valueChanges.subscribe((diagramId: string) => {
       this.logger.info('Diagram selection changed, filtering cells', {
         newDiagramId: diagramId,
-        previousCellId: this.threatForm.get('cell_id')?.value,
+        previousCellId: this.threatForm.get('cell_id')?.value as string,
       });
 
       // Filter cell options based on new diagram selection
       this.filterCellOptions(diagramId);
 
       // If the current cell_id doesn't exist in the new filtered list, reset it
-      const currentCellId = this.threatForm.get('cell_id')?.value;
+      const currentCellId = this.threatForm.get('cell_id')?.value as string;
       if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
         const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
         if (!cellExists) {
           this.logger.info('Current cell not available in selected diagram, resetting to not associated', {
-            currentCellId,
+            currentCellId: currentCellId,
             newDiagramId: diagramId,
           });
           this.threatForm.patchValue({ cell_id: this.NOT_ASSOCIATED_VALUE }, { emitEvent: false });
