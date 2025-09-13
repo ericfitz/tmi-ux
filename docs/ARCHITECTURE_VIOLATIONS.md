@@ -5,7 +5,9 @@ This document tracks known architecture violations that need to be addressed. Th
 ## Core Services Importing from Features
 
 ### 1. ApiService → AuthService
+
 **Files:**
+
 - `src/app/core/services/api.service.ts`
 - `src/app/core/services/api.service.spec.ts`
 
@@ -14,20 +16,24 @@ This document tracks known architecture violations that need to be addressed. Th
 **Impact:** Creates circular dependency potential and violates clean architecture
 
 **Solution:**
+
 1. Create an interface in `core/interfaces/auth-token-provider.interface.ts`
 2. Have AuthService implement this interface
 3. Update ApiService to depend on the interface
 
 ### 2. DfdCollaborationService → AuthService & ThreatModelService
+
 **File:** `src/app/core/services/dfd-collaboration.service.ts`
 
 **Violations:**
+
 - Imports AuthService from auth feature
 - Imports ThreatModelService from pages/tm feature
 
 **Impact:** Core service has direct dependencies on two feature modules
 
 **Solution:**
+
 1. Create interfaces for required functionality:
    - `core/interfaces/user-provider.interface.ts`
    - `core/interfaces/threat-model-provider.interface.ts`
@@ -37,6 +43,7 @@ This document tracks known architecture violations that need to be addressed. Th
 ## Resolution Plan
 
 ### Phase 1: Create Interfaces
+
 ```typescript
 // core/interfaces/auth-token-provider.interface.ts
 export interface AuthTokenProvider {
@@ -56,16 +63,21 @@ export interface ThreatModelProvider {
 ```
 
 ### Phase 2: Implement Interfaces
+
 Update feature services to implement the interfaces:
+
 - AuthService implements AuthTokenProvider and UserProvider
 - ThreatModelService implements ThreatModelProvider
 
 ### Phase 3: Update Core Services
+
 Update core services to depend on interfaces instead of concrete implementations:
+
 - Inject using @Optional() decorator
 - Handle cases where provider might not be available
 
 ### Phase 4: Wire Dependencies
+
 Configure providers at the appropriate level (app.config.ts or component providers)
 
 ## Temporary Workaround
@@ -73,7 +85,6 @@ Configure providers at the appropriate level (app.config.ts or component provide
 Until these violations are resolved, you can disable the ESLint rule for specific files:
 
 ```javascript
-// eslint-disable-next-line no-restricted-imports
 import { AuthService } from '../../auth/services/auth.service';
 ```
 

@@ -32,10 +32,7 @@ import {
 import { DfdNotificationService } from '../../services/dfd-notification.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CollaborationDialogData {
-  // No initial data needed for now
-}
+export type CollaborationDialogData = object;
 
 @Component({
   selector: 'app-collaboration-dialog',
