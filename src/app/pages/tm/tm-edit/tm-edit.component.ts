@@ -282,6 +282,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
 
+
     // Subscribe to authorization changes
     this._subscriptions.add(
       this.authorizationService.canEdit$.subscribe(canEdit => {
@@ -1473,6 +1474,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   openDiagramMetadataDialog(diagram: Diagram, event: Event): void {
     event.stopPropagation();
 
+
     const dialogData: MetadataDialogData = {
       metadata: diagram.metadata || [],
       isReadOnly: false,
@@ -2052,24 +2054,38 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load diagrams for the threat model using separate API call
+   * Load diagrams for the threat model - use diagrams already included in threat model data
    */
   private loadDiagrams(threatModelId: string): void {
-    this._subscriptions.add(
-      this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(diagrams => {
-        this.diagrams = diagrams;
+    // Use diagrams that are already loaded with the threat model instead of making separate API call
+    // This preserves metadata that might not be included in the separate diagrams endpoint
+    if (this.threatModel?.diagrams && Array.isArray(this.threatModel.diagrams)) {
+      // The threat model already contains the diagrams with metadata
+      this.diagrams = this.threatModel.diagrams;
 
-        // Update DIAGRAMS_BY_ID map with real diagram data
-        this.diagrams.forEach(diagram => {
-          DIAGRAMS_BY_ID.set(diagram.id, diagram);
-        });
 
-        // Update threat model diagrams property for consistency
-        if (this.threatModel) {
-          this.threatModel.diagrams = diagrams;
-        }
-      }),
-    );
+      // Update DIAGRAMS_BY_ID map with real diagram data
+      this.diagrams.forEach(diagram => {
+        DIAGRAMS_BY_ID.set(diagram.id, diagram);
+      });
+    } else {
+      // Fallback to separate API call if diagrams not included in threat model
+      this._subscriptions.add(
+        this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(diagrams => {
+          this.diagrams = diagrams;
+
+          // Update DIAGRAMS_BY_ID map with real diagram data
+          this.diagrams.forEach(diagram => {
+            DIAGRAMS_BY_ID.set(diagram.id, diagram);
+          });
+
+          // Update threat model diagrams property for consistency
+          if (this.threatModel) {
+            this.threatModel.diagrams = diagrams;
+          }
+        }),
+      );
+    }
   }
 
   /**
