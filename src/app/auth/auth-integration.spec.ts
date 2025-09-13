@@ -39,6 +39,16 @@ interface MockStorage {
   clear: ReturnType<typeof vi.fn>;
 }
 
+interface MockCrypto {
+  getRandomValues: ReturnType<typeof vi.fn>;
+  subtle: {
+    digest: ReturnType<typeof vi.fn>;
+    importKey: ReturnType<typeof vi.fn>;
+    encrypt: ReturnType<typeof vi.fn>;
+    decrypt: ReturnType<typeof vi.fn>;
+  };
+}
+
 /**
  * Integration tests for authentication components
  * Tests that all authentication pieces work together correctly
@@ -49,6 +59,8 @@ describe('Authentication Integration', () => {
   let logger: MockLoggerService;
   let httpClient: MockHttpClient;
   let localStorageMock: MockStorage;
+  let sessionStorageMock: MockStorage;
+  let cryptoMock: MockCrypto;
   let localOAuthProvider: LocalOAuthProviderService;
   let serverConnectionService: { currentStatus: string };
 
@@ -69,9 +81,76 @@ describe('Authentication Integration', () => {
       clear: vi.fn(),
     };
 
-    // Mock global localStorage
+    sessionStorageMock = {
+      getItem: vi.fn().mockReturnValue(null),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    };
+
+    // Create functional crypto mock using XOR encryption
+    const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    const XOR_KEY = 0x5A; // Simple XOR key for test encryption
+    
+    cryptoMock = {
+      getRandomValues: vi.fn().mockReturnValue(mockArray),
+      subtle: {
+        digest: vi.fn().mockResolvedValue(new ArrayBuffer(32)),
+        importKey: vi.fn().mockResolvedValue({}),
+        encrypt: vi.fn().mockImplementation((algorithm, key, plaintext) => {
+          // XOR-based encryption - encrypt the input data
+          const plaintextArray = new Uint8Array(plaintext);
+          const encrypted = new Uint8Array(plaintextArray.length);
+          for (let i = 0; i < plaintextArray.length; i++) {
+            encrypted[i] = plaintextArray[i] ^ XOR_KEY;
+          }
+          return Promise.resolve(encrypted.buffer);
+        }),
+        decrypt: vi.fn().mockImplementation((algorithm, key, ciphertext) => {
+          // XOR-based decryption - decrypt the input data (XOR with same key)
+          const ciphertextArray = new Uint8Array(ciphertext);
+          const decrypted = new Uint8Array(ciphertextArray.length);
+          for (let i = 0; i < ciphertextArray.length; i++) {
+            decrypted[i] = ciphertextArray[i] ^ XOR_KEY;
+          }
+          return Promise.resolve(decrypted.buffer);
+        }),
+      },
+    };
+
+    // Mock global localStorage, sessionStorage, and crypto
     Object.defineProperty(global, 'localStorage', {
       value: localStorageMock,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'sessionStorage', {
+      value: sessionStorageMock,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'crypto', {
+      value: cryptoMock,
+      configurable: true,
+      writable: true,
+    });
+
+    // Mock navigator for browser fingerprinting
+    Object.defineProperty(global, 'navigator', {
+      value: {
+        userAgent: 'Mozilla/5.0 (Test)',
+        language: 'en-US',
+      },
+      configurable: true,
+      writable: true,
+    });
+
+    // Mock screen for browser fingerprinting  
+    Object.defineProperty(global, 'screen', {
+      value: {
+        width: 1920,
+        height: 1080,
+      },
       configurable: true,
       writable: true,
     });
@@ -386,7 +465,7 @@ describe('Authentication Integration', () => {
     });
 
     describe('Session Management Integration', () => {
-      it('should handle session restoration with refresh tokens', () => {
+      it('should handle session restoration with refresh tokens', async () => {
         const storedToken = {
           token: 'valid-stored-token',
           refreshToken: 'valid-stored-refresh-token',
@@ -402,15 +481,40 @@ describe('Authentication Integration', () => {
           picture: 'https://example.com/pic.jpg',
         };
 
+        // Helper function to XOR encrypt data like the real service would
+        const xorEncrypt = (data: string): string => {
+          const XOR_KEY = 0x5A;
+          const plaintext = new TextEncoder().encode(data);
+          const encrypted = new Uint8Array(plaintext.length);
+          for (let i = 0; i < plaintext.length; i++) {
+            encrypted[i] = plaintext[i] ^ XOR_KEY;
+          }
+          
+          // Convert to base64 like the real service does (iv:encrypted format)
+          const iv = 'AQEBAQEBAQEBAQEBAQEB'; // Mock IV base64
+          const encryptedB64 = btoa(String.fromCharCode(...encrypted));
+          return `${iv}:${encryptedB64}`;
+        };
+
         localStorageMock.getItem.mockImplementation((key: string) => {
           switch (key) {
             case 'auth_token':
-              return JSON.stringify(storedToken);
+              // Return encrypted format that our XOR mock can decrypt
+              return xorEncrypt(JSON.stringify(storedToken));
             case 'user_profile':
-              return JSON.stringify(storedProfile);
+              // Return encrypted format for user profile
+              return xorEncrypt(JSON.stringify(storedProfile));
             default:
               return null;
           }
+        });
+
+        // Provide session salt for encryption key derivation
+        sessionStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === '_ts') {
+            return 'test-session-salt-base64';
+          }
+          return null;
         });
 
         // Create a new service instance to test initialization
@@ -421,6 +525,9 @@ describe('Authentication Integration', () => {
           localOAuthProvider,
           serverConnectionService as unknown as ServerConnectionService,
         );
+
+        // Trigger async authentication restoration
+        await restoredAuthService.checkAuthStatus();
 
         // Should restore authentication state
         expect(restoredAuthService.isAuthenticated).toBe(true);

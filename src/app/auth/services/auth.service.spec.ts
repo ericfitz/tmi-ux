@@ -86,6 +86,7 @@ describe('AuthService', () => {
   let localProvider: LocalOAuthProviderService;
   let serverConnectionService: MockServerConnectionService;
   let localStorageMock: MockStorage;
+  let sessionStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
 
   // Test data
@@ -182,15 +183,41 @@ describe('AuthService', () => {
       clear: vi.fn(),
     };
 
-    // Create crypto mock
+    // Create sessionStorage mock
+    sessionStorageMock = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    };
+
+    // Create functional crypto mock using XOR encryption
     const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    const XOR_KEY = 0x5A; // Simple XOR key for test encryption
+    
     cryptoMock = {
       getRandomValues: vi.fn().mockReturnValue(mockArray),
       subtle: {
         digest: vi.fn().mockResolvedValue(new ArrayBuffer(32)),
         importKey: vi.fn().mockResolvedValue({}),
-        encrypt: vi.fn().mockResolvedValue(new ArrayBuffer(32)),
-        decrypt: vi.fn().mockResolvedValue(new ArrayBuffer(32)),
+        encrypt: vi.fn().mockImplementation((algorithm, key, plaintext) => {
+          // XOR-based encryption - encrypt the input data
+          const plaintextArray = new Uint8Array(plaintext);
+          const encrypted = new Uint8Array(plaintextArray.length);
+          for (let i = 0; i < plaintextArray.length; i++) {
+            encrypted[i] = plaintextArray[i] ^ XOR_KEY;
+          }
+          return Promise.resolve(encrypted.buffer);
+        }),
+        decrypt: vi.fn().mockImplementation((algorithm, key, ciphertext) => {
+          // XOR-based decryption - decrypt the input data (XOR with same key)
+          const ciphertextArray = new Uint8Array(ciphertext);
+          const decrypted = new Uint8Array(ciphertextArray.length);
+          for (let i = 0; i < ciphertextArray.length; i++) {
+            decrypted[i] = ciphertextArray[i] ^ XOR_KEY;
+          }
+          return Promise.resolve(decrypted.buffer);
+        }),
       },
     };
 
@@ -201,16 +228,26 @@ describe('AuthService', () => {
       configurable: true,
       writable: true,
     });
+    Object.defineProperty(global, 'sessionStorage', {
+      value: sessionStorageMock,
+      configurable: true,
+      writable: true,
+    });
     Object.defineProperty(global, 'crypto', {
       value: cryptoMock,
       configurable: true,
       writable: true,
     });
 
-    // Ensure window.localStorage and window.crypto are also mocked if window exists
+    // Ensure window.localStorage, sessionStorage and window.crypto are also mocked if window exists
     if (global.window) {
       Object.defineProperty(global.window, 'localStorage', {
         value: localStorageMock,
+        configurable: true,
+        writable: true,
+      });
+      Object.defineProperty(global.window, 'sessionStorage', {
+        value: sessionStorageMock,
         configurable: true,
         writable: true,
       });
@@ -277,18 +314,40 @@ describe('AuthService', () => {
       expect(service.userEmail).toBe('');
     });
 
-    it('should restore authentication state from localStorage', () => {
+    it('should restore authentication state from localStorage', async () => {
+      // Helper function to XOR encrypt data like the real service would
+      const xorEncrypt = (data: string): string => {
+        const XOR_KEY = 0x5A;
+        const plaintext = new TextEncoder().encode(data);
+        const encrypted = new Uint8Array(plaintext.length);
+        for (let i = 0; i < plaintext.length; i++) {
+          encrypted[i] = plaintext[i] ^ XOR_KEY;
+        }
+        
+        // Convert to base64 like the real service does (iv:encrypted format)
+        const iv = 'AQEBAQEBAQEBAQEBAQEB'; // Mock IV base64
+        const encryptedB64 = btoa(String.fromCharCode(...encrypted));
+        return `${iv}:${encryptedB64}`;
+      };
+
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') {
-          return JSON.stringify(mockJwtToken);
+          return xorEncrypt(JSON.stringify(mockJwtToken));
         }
         if (key === 'user_profile') {
-          return JSON.stringify(mockUserProfile);
+          return xorEncrypt(JSON.stringify(mockUserProfile));
         }
         return null;
       });
 
-      service.checkAuthStatus();
+      sessionStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === '_ts') {
+          return 'test-session-salt-base64';
+        }
+        return null;
+      });
+
+      await service.checkAuthStatus();
 
       expect(service.isAuthenticated).toBe(true);
       expect(service.userProfile).toEqual(mockUserProfile);
@@ -319,7 +378,7 @@ describe('AuthService', () => {
 
       expect(service.isAuthenticated).toBe(false);
       expect(loggerService.error).toHaveBeenCalledWith(
-        'Error retrieving stored token',
+        'Failed to decrypt stored token',
         expect.any(Error),
       );
     });
@@ -476,6 +535,9 @@ describe('AuthService', () => {
 
       const result = await result$.toPromise();
       
+      // Wait for async token storage to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
       expect(result).toBe(true);
       expect(localProvider.exchangeCodeForUser).toHaveBeenCalledWith('mock-auth-code');
       expect(service.isAuthenticated).toBe(true);
@@ -489,7 +551,7 @@ describe('AuthService', () => {
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
       
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
@@ -506,6 +568,9 @@ describe('AuthService', () => {
 
       const result = await result$.toPromise();
       
+      // Wait for async token storage to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
       expect(result).toBe(true);
       expect(service.isAuthenticated).toBe(true);
       expect(service.userProfile).toEqual(
@@ -518,7 +583,7 @@ describe('AuthService', () => {
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
       
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
@@ -613,6 +678,9 @@ describe('AuthService', () => {
 
       const result = await result$.toPromise();
       
+      // Wait for async token storage to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
       expect(result).toBe(true);
       expect(service.isAuthenticated).toBe(true);
       expect(service.userProfile).toEqual(
@@ -625,7 +693,7 @@ describe('AuthService', () => {
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
@@ -676,7 +744,7 @@ describe('AuthService', () => {
 
       expect(service.isAuthenticated).toBe(true);
       expect(service.userEmail).toBe(testEmail);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
@@ -701,7 +769,8 @@ describe('AuthService', () => {
     });
 
     it('should detect token expiration', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(mockExpiredToken));
+      // Set the expired token in the service cache
+      service['jwtTokenSubject'].next(mockExpiredToken);
 
       const isValid = service['isTokenValid']();
 
@@ -709,7 +778,8 @@ describe('AuthService', () => {
     });
 
     it('should not detect token expiration for a valid token', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(mockJwtToken));
+      // Set the token in the service cache (isTokenValid checks the cached token)
+      service['jwtTokenSubject'].next(mockJwtToken);
 
       const isValid = service['isTokenValid']();
 
@@ -719,12 +789,9 @@ describe('AuthService', () => {
     it('should logout and clear local storage', () => {
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
-
-      // Mock stored token for logout request
-      localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
-        return null;
-      });
+      
+      // Set the token in the service cache (logout uses cached token for Authorization header)
+      service['jwtTokenSubject'].next(mockJwtToken);
 
       // Mock the HTTP post method for logout
       vi.mocked(httpClient.post).mockReturnValue(of({}));
@@ -821,12 +888,9 @@ describe('AuthService', () => {
     it('should include Authorization header when token is available', () => {
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
-
-      // Mock stored token for logout request
-      localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
-        return null;
-      });
+      
+      // Set the token in the service cache (logout uses cached token for Authorization header)
+      service['jwtTokenSubject'].next(mockJwtToken);
 
       // Mock the HTTP post method for logout
       vi.mocked(httpClient.post).mockReturnValue(of({}));
@@ -1075,7 +1139,8 @@ describe('AuthService', () => {
           refreshToken: 'valid-refresh-token',
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
+        // Set token in service cache (refreshToken() uses cached token)
+        service['jwtTokenSubject'].next(currentToken);
 
         const refreshResponse = {
           access_token: 'new-access-token',
@@ -1200,7 +1265,8 @@ describe('AuthService', () => {
           expiresAt: new Date(Date.now() + 30000), // 30 seconds from now
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
+        // Set token in service cache
+        service['jwtTokenSubject'].next(soonToExpireToken);
 
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(true);
@@ -1247,7 +1313,8 @@ describe('AuthService', () => {
           expiresAt: new Date(Date.now() + 60000), // exactly 1 minute
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(exactBoundaryToken));
+        // Set token in service cache
+        service['jwtTokenSubject'].next(exactBoundaryToken);
 
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(true);
@@ -1260,7 +1327,8 @@ describe('AuthService', () => {
           expiresAt: new Date(Date.now() - 1000), // 1 second ago
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredToken));
+        // Set token in service cache
+        service['jwtTokenSubject'].next(expiredToken);
 
         const shouldRefresh = service['shouldRefreshToken']();
         expect(shouldRefresh).toBe(true);
@@ -1298,7 +1366,8 @@ describe('AuthService', () => {
           token_type: 'Bearer',
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
+        // Set token in service cache
+        service['jwtTokenSubject'].next(soonToExpireToken);
         vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
 
         const storeTokenSpy = vi.spyOn(service as any, 'storeToken');
@@ -1408,7 +1477,8 @@ describe('AuthService', () => {
           token_type: 'Bearer',
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiringSoonToken));
+        // Set token in service cache
+        service['jwtTokenSubject'].next(expiringSoonToken);
         vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
 
         // First call should trigger refresh

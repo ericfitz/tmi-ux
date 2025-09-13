@@ -1130,8 +1130,18 @@ export class AuthService {
       this.logger.warn('Could not decode JWT payload for logging', error);
     }
 
-    // Store token with encryption
-    void this.storeTokenEncrypted(token);
+    // Store token with encryption - handle errors but don't clear auth immediately
+    this.storeTokenEncrypted(token).catch(error => {
+      this.logger.error('Token storage encryption failed', error);
+      // Don't clear auth data here as it would break the current session
+      // The token is still in memory (jwtTokenSubject) and can be used
+      // Future page refreshes will fail to restore auth state, which is the desired behavior
+      this.handleAuthError({
+        code: 'token_encryption_failed',
+        message: 'Failed to securely store authentication token',
+        retryable: false,
+      });
+    });
     this.jwtTokenSubject.next(token);
   }
 
@@ -1164,7 +1174,11 @@ export class AuthService {
         }
         // Cache it and trigger re-encryption in background
         this.jwtTokenSubject.next(token);
-        void this.storeTokenEncrypted(token);
+        this.storeTokenEncrypted(token).catch(error => {
+          this.logger.error('Failed to re-encrypt cleartext token', error);
+          // Keep using the token for now since it was already in cleartext
+          // But log the error for security monitoring
+        });
         return token;
       }
 
@@ -1614,9 +1628,7 @@ export class AuthService {
       localStorage.setItem(this.tokenStorageKey, encryptedToken);
     } catch (error) {
       this.logger.error('Failed to encrypt token for storage', error);
-      // Fallback to cleartext storage with warning
-      this.logger.warn('Falling back to cleartext token storage due to encryption failure');
-      localStorage.setItem(this.tokenStorageKey, JSON.stringify(token));
+      throw new Error('Token encryption failed - cannot proceed without secure storage');
     }
   }
 
@@ -1639,7 +1651,13 @@ export class AuthService {
           parsed.expiresAt = new Date(parsed.expiresAt);
         }
         // Re-encrypt and store
-        await this.storeTokenEncrypted(parsed);
+        try {
+          await this.storeTokenEncrypted(parsed);
+        } catch (error) {
+          this.logger.error('Failed to re-encrypt cleartext token during retrieval', error);
+          // Log error but still return the token since it was already in cleartext
+          // Future sessions will continue to fail encryption until the underlying issue is fixed
+        }
         return parsed;
       }
 
