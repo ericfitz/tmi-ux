@@ -7,7 +7,6 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Directionality } from '@angular/cdk/bidi';
 import { LanguageService } from '../../i18n/language.service';
 import { Subscription } from 'rxjs';
 
@@ -19,20 +18,13 @@ export class DialogDirectionService implements OnDestroy {
 
   constructor(
     private languageService: LanguageService,
-    private directionality: Directionality,
     private dialog: MatDialog,
   ) {
-    // Subscribe to direction changes and update dialog configuration
-    this.subscription = this.languageService.direction$.subscribe(direction => {
-      // Update the Directionality service value using internal API
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-      (this.directionality as any).value = direction;
-
-      // Emit change to update existing dialogs
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-      (this.directionality as any).change.next(direction);
-
+    // Subscribe to direction changes and close dialogs so they reopen with correct direction
+    // The Directionality service will automatically detect the document direction changes
+    this.subscription = this.languageService.direction$.subscribe(_direction => {
       // Close any open dialogs so they reopen with correct direction
+      // The Directionality service reads from document.dir automatically
       this.dialog.closeAll();
     });
   }

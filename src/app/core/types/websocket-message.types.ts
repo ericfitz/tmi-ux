@@ -125,15 +125,15 @@ export interface Participant {
     name: string;
     email: string;
   };
-  permissions: 'reader' | 'writer';
+  permissions: 'reader' | 'writer' | 'owner';
   last_activity: string;
 }
 
 export interface ParticipantsUpdateMessage {
   message_type: 'participants_update';
   participants: Participant[];
-  host: string;
-  current_presenter: string | null;
+  host?: string;
+  current_presenter?: string | null;
 }
 
 export interface ParticipantJoinedMessage {

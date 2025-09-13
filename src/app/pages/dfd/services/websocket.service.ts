@@ -1,17 +1,21 @@
 /**
- * DFD WebSocket Service
+ * WebSocket Service
  *
- * Handles all WebSocket message subscriptions for the DFD module.
+ * Handles all WebSocket message subscriptions for collaboration.
  * Transforms WebSocket messages into domain events and provides
  * typed observables for each message type.
  */
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../core/services/websocket.adapter';
+import {
+  ICollaborationNotificationService,
+  COLLABORATION_NOTIFICATION_SERVICE,
+} from '../../../core/interfaces';
 import {
   DiagramOperationMessage,
   AuthorizationDeniedMessage,
@@ -23,6 +27,11 @@ import {
   PresenterSelectionMessage,
   PresenterRequestMessage,
   PresenterDeniedMessage,
+  ParticipantJoinedMessage,
+  ParticipantLeftMessage,
+  RemoveParticipantMessage,
+  ParticipantsUpdateMessage,
+  Participant,
 } from '../../../core/types/websocket-message.types';
 
 /**
@@ -88,7 +97,48 @@ export interface PresenterUpdateEvent {
   presenterEmail: string | null;
 }
 
-export type DfdDomainEvent =
+export interface ParticipantJoinedEvent {
+  type: 'participant-joined';
+  user: {
+    user_id: string;
+    email: string;
+    displayName: string;
+  };
+  timestamp: string;
+}
+
+export interface ParticipantLeftEvent {
+  type: 'participant-left';
+  user: {
+    user_id: string;
+    email: string;
+    displayName: string;
+  };
+  timestamp: string;
+}
+
+export interface ParticipantRemovedEvent {
+  type: 'participant-removed';
+  removedUser: {
+    user_id: string;
+    email: string;
+    displayName: string;
+  };
+  removingUser: {
+    user_id: string;
+    email: string;
+    displayName: string;
+  };
+}
+
+export interface ParticipantsUpdatedEvent {
+  type: 'participants-updated';
+  participants: Participant[];
+  host?: string;
+  currentPresenter?: string | null;
+}
+
+export type WebSocketDomainEvent =
   | DiagramOperationEvent
   | AuthorizationDeniedEvent
   | StateCorrectionEvent
@@ -99,17 +149,21 @@ export type DfdDomainEvent =
   | PresenterSelectionEvent
   | PresenterRequestEvent
   | PresenterDeniedEvent
-  | PresenterUpdateEvent;
+  | PresenterUpdateEvent
+  | ParticipantJoinedEvent
+  | ParticipantLeftEvent
+  | ParticipantRemovedEvent
+  | ParticipantsUpdatedEvent;
 
 @Injectable({
   providedIn: 'root',
 })
-export class DfdWebSocketService implements OnDestroy {
+export class WebSocketService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
 
   // Domain event streams
-  private readonly _domainEvents$ = new Subject<DfdDomainEvent>();
+  private readonly _domainEvents$ = new Subject<WebSocketDomainEvent>();
 
   // Typed observables for specific events
   public readonly diagramOperations$ = this._domainEvents$.pipe(
@@ -157,14 +211,33 @@ export class DfdWebSocketService implements OnDestroy {
     filter((event): event is PresenterUpdateEvent => event.type === 'presenter-update'),
   );
 
+  public readonly participantJoined$ = this._domainEvents$.pipe(
+    filter((event): event is ParticipantJoinedEvent => event.type === 'participant-joined'),
+  );
+
+  public readonly participantLeft$ = this._domainEvents$.pipe(
+    filter((event): event is ParticipantLeftEvent => event.type === 'participant-left'),
+  );
+
+  public readonly participantRemoved$ = this._domainEvents$.pipe(
+    filter((event): event is ParticipantRemovedEvent => event.type === 'participant-removed'),
+  );
+
+  public readonly participantsUpdated$ = this._domainEvents$.pipe(
+    filter((event): event is ParticipantsUpdatedEvent => event.type === 'participants-updated'),
+  );
+
   // General event stream for components that want all events
   public readonly domainEvents$ = this._domainEvents$.asObservable();
 
   constructor(
     private _logger: LoggerService,
     private _webSocketAdapter: WebSocketAdapter,
+    @Optional()
+    @Inject(COLLABORATION_NOTIFICATION_SERVICE)
+    private _notificationService: ICollaborationNotificationService | null,
   ) {
-    this._logger.info('DfdWebSocketService initialized');
+    this._logger.info('WebSocketService initialized');
   }
 
   /**
@@ -279,6 +352,47 @@ export class DfdWebSocketService implements OnDestroy {
         }),
     );
 
+    // Subscribe to participant management messages
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<ParticipantJoinedMessage>('participant_joined')
+        .pipe(takeUntil(this._destroy$))
+        .subscribe({
+          next: message => this._handleParticipantJoined(message),
+          error: error => this._logger.error('Error in participant joined subscription', error),
+        }),
+    );
+
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<ParticipantLeftMessage>('participant_left')
+        .pipe(takeUntil(this._destroy$))
+        .subscribe({
+          next: message => this._handleParticipantLeft(message),
+          error: error => this._logger.error('Error in participant left subscription', error),
+        }),
+    );
+
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<RemoveParticipantMessage>('remove_participant')
+        .pipe(takeUntil(this._destroy$))
+        .subscribe({
+          next: message => this._handleRemoveParticipant(message),
+          error: error => this._logger.error('Error in remove participant subscription', error),
+        }),
+    );
+
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<ParticipantsUpdateMessage>('participants_update')
+        .pipe(takeUntil(this._destroy$))
+        .subscribe({
+          next: message => this._handleParticipantsUpdate(message),
+          error: error => this._logger.error('Error in participants update subscription', error),
+        }),
+    );
+
     this._logger.info('DFD WebSocket subscriptions initialized successfully');
   }
 
@@ -286,7 +400,7 @@ export class DfdWebSocketService implements OnDestroy {
    * Clean up subscriptions
    */
   ngOnDestroy(): void {
-    this._logger.info('Destroying DfdWebSocketService');
+    this._logger.info('Destroying WebSocketService');
     this._destroy$.next();
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
@@ -458,6 +572,105 @@ export class DfdWebSocketService implements OnDestroy {
       type: 'presenter-denied',
       userId: message.user.user_id,
       targetUser: message.target_user,
+    });
+  }
+
+  // Participant management message handlers
+
+  private _handleParticipantJoined(message: ParticipantJoinedMessage): void {
+    this._logger.info('Participant joined event received', {
+      user: message.user,
+      timestamp: message.timestamp,
+    });
+
+    // Validate message format
+    if (!message || !message.user) {
+      this._logger.warn('Invalid participant joined message received', message);
+      return;
+    }
+
+    // Show notification with both display name and email
+    const userIdentifier = message.user.displayName
+      ? `${message.user.displayName} (${message.user.email})`
+      : message.user.email;
+    this._notificationService?.showSessionEvent('userJoined', userIdentifier).subscribe();
+
+    this._domainEvents$.next({
+      type: 'participant-joined',
+      user: message.user,
+      timestamp: message.timestamp,
+    });
+  }
+
+  private _handleParticipantLeft(message: ParticipantLeftMessage): void {
+    this._logger.info('Participant left event received', {
+      user: message.user,
+      timestamp: message.timestamp,
+    });
+
+    // Validate message format
+    if (!message || !message.user) {
+      this._logger.warn('Invalid participant left message received', message);
+      return;
+    }
+
+    // Show notification with both display name and email
+    const userIdentifier = message.user.displayName
+      ? `${message.user.displayName} (${message.user.email})`
+      : message.user.email;
+    this._notificationService?.showSessionEvent('userLeft', userIdentifier).subscribe();
+
+    this._domainEvents$.next({
+      type: 'participant-left',
+      user: message.user,
+      timestamp: message.timestamp,
+    });
+  }
+
+  private _handleRemoveParticipant(message: RemoveParticipantMessage): void {
+    this._logger.info('Remove participant request received', {
+      user: message.user,
+      removedUser: message.removed_user,
+    });
+
+    // Validate message format
+    if (!message || !message.user || !message.removed_user) {
+      this._logger.warn('Invalid remove participant message received', message);
+      return;
+    }
+
+    // Show notification if current user is being removed
+    // Note: We need collaboration service to check current user - will add this later
+    this._logger.info('Participant being removed by host', {
+      host: message.user.email,
+      removedUser: message.removed_user.email || message.removed_user.user_id,
+    });
+
+    this._domainEvents$.next({
+      type: 'participant-removed',
+      removedUser: message.removed_user,
+      removingUser: message.user,
+    });
+  }
+
+  private _handleParticipantsUpdate(message: ParticipantsUpdateMessage): void {
+    this._logger.info('Participants update received', {
+      participantCount: message?.participants?.length,
+      host: message?.host,
+      currentPresenter: message?.current_presenter,
+    });
+
+    // Validate message format
+    if (!message || !message.participants || !Array.isArray(message.participants)) {
+      this._logger.warn('Invalid participants update message received', message);
+      return;
+    }
+
+    this._domainEvents$.next({
+      type: 'participants-updated',
+      participants: message.participants,
+      host: message.host,
+      currentPresenter: message.current_presenter,
     });
   }
 }

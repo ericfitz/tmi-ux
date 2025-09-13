@@ -20,12 +20,13 @@ import {
   DiagramOperationMessage,
 } from '../../../core/types/websocket-message.types';
 import {
-  DfdWebSocketService,
-  DfdDomainEvent,
+  WebSocketService,
+  WebSocketDomainEvent,
   StateCorrectionEvent,
   HistoryOperationEvent,
   ResyncRequestedEvent,
-} from './dfd-websocket.service';
+  ParticipantsUpdatedEvent,
+} from './websocket.service';
 
 /**
  * Represents the synchronization state of the diagram
@@ -104,7 +105,7 @@ export class DfdStateService implements OnDestroy {
 
   constructor(
     private _logger: LoggerService,
-    private _webSocketService: DfdWebSocketService,
+    private _webSocketService: WebSocketService,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
   ) {
@@ -149,6 +150,13 @@ export class DfdStateService implements OnDestroy {
         .subscribe(event => this._processResyncRequest(event)),
     );
 
+    // Subscribe to participant management events
+    this._subscriptions.add(
+      this._webSocketService.participantsUpdated$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(event => this._processParticipantsUpdate(event)),
+    );
+
     this._logger.info('DFD state management initialized successfully');
   }
 
@@ -186,7 +194,7 @@ export class DfdStateService implements OnDestroy {
   /**
    * Process a domain event from the WebSocket service
    */
-  private _processDomainEvent(event: DfdDomainEvent): void {
+  private _processDomainEvent(event: WebSocketDomainEvent): void {
     this._logger.debug('Processing domain event', { type: event.type });
 
     // Update sync state based on event type
@@ -309,6 +317,26 @@ export class DfdStateService implements OnDestroy {
 
     this._updateSyncState({ isResyncing: true });
     this._requestResyncEvent$.next({ method: event.method });
+  }
+
+  private _processParticipantsUpdate(event: ParticipantsUpdatedEvent): void {
+    this._logger.info('Processing participants update', {
+      participantCount: event.participants?.length,
+      host: event.host,
+      currentPresenter: event.currentPresenter,
+    });
+
+    // Delegate to the collaboration service to update participants
+    try {
+      this._collaborationService.updateAllParticipants(
+        event.participants,
+        event.host,
+        event.currentPresenter,
+      );
+      this._logger.debug('Participants update processed successfully');
+    } catch (error) {
+      this._logger.error('Error processing participants update', error);
+    }
   }
 
   /**

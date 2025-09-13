@@ -1563,8 +1563,8 @@ export class DfdCollaborationService implements OnDestroy {
     );
 
     // Note: We no longer listen to individual user events here
-    // All participant updates come through the TMI participants_update message
-    // which is handled by TMIMessageHandlerService
+    // All participant updates come through the participants_update message
+    // which is handled by WebSocketService
 
     // Listen to session ended events
     this._subscriptions.add(
@@ -1575,13 +1575,13 @@ export class DfdCollaborationService implements OnDestroy {
         }),
     );
 
-    // NOTE: TMI join/leave events are now handled by TMIMessageHandlerService
+    // NOTE: join/leave events are now handled by WebSocketService
     // to avoid duplicate handling and conflicts with local state updates
 
     // Listen to TMI presenter change events
     this._subscriptions.add(
       this._webSocketAdapter.getTMIMessagesOfType('current_presenter').subscribe(message => {
-        this._handleTMIPresenterChanged(
+        this._handlePresenterChanged(
           message as { message_type: string; current_presenter: string },
         );
       }),
@@ -1698,7 +1698,7 @@ export class DfdCollaborationService implements OnDestroy {
 
   // Duplicate participant update handlers removed
   // All participant updates now come through updateAllParticipants()
-  // which is called by TMIMessageHandlerService when it receives participants_update messages
+  // which is called by WebSocketService when it receives participants_update messages
 
   /**
    * Handle session ended messages from WebSocket
@@ -1718,20 +1718,20 @@ export class DfdCollaborationService implements OnDestroy {
     }
   }
 
-  // TMI join/leave handlers removed - now handled by TMIMessageHandlerService
+  // join/leave handlers removed - now handled by WebSocketService
 
   /**
-   * Handle TMI presenter changed event
+   * Handle presenter changed event
    * Calls REST API to get updated session status and refresh participants list
    */
-  private _handleTMIPresenterChanged(message: {
+  private _handlePresenterChanged(message: {
     message_type: string;
     current_presenter: string;
   }): void {
-    this._logger.debug('TMI presenter changed event received', message);
+    this._logger.debug('Presenter changed event received', message);
 
     if (!message || !message.current_presenter) {
-      this._logger.warn('Invalid TMI presenter changed message received', message);
+      this._logger.warn('Invalid presenter changed message received', message);
       return;
     }
 

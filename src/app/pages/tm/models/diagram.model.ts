@@ -43,7 +43,16 @@ export const MOCK_DIAGRAMS: Diagram[] = [
     description: 'High-level system architecture diagram',
     created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
     modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-    metadata: [],
+    metadata: [
+      {
+        key: 'diagram_type',
+        value: 'authentication',
+      },
+      {
+        key: 'complexity',
+        value: 'high',
+      },
+    ],
     cells: [
       {
         id: 'cell-web-server',
@@ -97,7 +106,12 @@ export const MOCK_DIAGRAMS: Diagram[] = [
     description: 'Data flow between system components',
     created_at: new Date(Date.now() - 6 * 86400000).toISOString(),
     modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-    metadata: [],
+    metadata: [
+      {
+        key: 'security_level',
+        value: 'high',
+      },
+    ],
     cells: [
       {
         id: 'cell-user-actor',

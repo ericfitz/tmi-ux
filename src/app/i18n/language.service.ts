@@ -97,9 +97,15 @@ export class LanguageService implements OnDestroy {
     const direction = language.rtl ? 'rtl' : 'ltr';
     this.directionSubject.next(direction);
 
-    // Set document direction
-    document.documentElement.dir = direction;
-    document.documentElement.lang = langCode;
+    // Set document direction safely
+    try {
+      document.documentElement.dir = direction;
+      document.documentElement.lang = langCode;
+    } catch (error) {
+      // In some environments, these properties might be read-only
+      // Log the error but don't throw to avoid breaking the application
+      console.warn('Could not set document direction/language properties:', error);
+    }
   }
 
   /**

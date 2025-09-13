@@ -52,7 +52,7 @@ import { NodeConfigurationService } from './infrastructure/services/node-configu
 import { X6GraphAdapter } from './infrastructure/adapters/x6-graph.adapter';
 import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
 import { CollaborativeOperationService } from './services/collaborative-operation.service';
-import { DfdWebSocketService } from './services/dfd-websocket.service';
+import { WebSocketService } from './services/websocket.service';
 import { DfdStateService } from './services/dfd-state.service';
 import { CellOperation, Cell as WSCell } from '../../core/types/websocket-message.types';
 
@@ -86,7 +86,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
 import { COLLABORATION_NOTIFICATION_SERVICE } from '../../core/interfaces/collaboration-notification.interface';
-import { TMIMessageHandlerService } from '../../core/services/tmi-message-handler.service';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
   MetadataDialogComponent,
@@ -143,7 +142,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdExportService,
     DfdDiagramService,
     DfdTooltipService,
-    DfdWebSocketService,
+    WebSocketService,
     DfdStateService,
 
     // Facade service
@@ -157,9 +156,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
       provide: COLLABORATION_NOTIFICATION_SERVICE,
       useClass: DfdNotificationService,
     },
-
-    // Provide TMI message handler at component level so it can access the notification service
-    TMIMessageHandlerService,
 
     // Presenter mode services
     PresenterCursorService,
@@ -227,12 +223,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private nodeConfigurationService: NodeConfigurationService,
     private translocoService: TranslocoService,
     private collaborativeOperationService: CollaborativeOperationService,
-    private dfdWebSocketService: DfdWebSocketService,
+    private webSocketService: WebSocketService,
     private dfdStateService: DfdStateService,
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
-    private tmiMessageHandler: TMIMessageHandlerService,
     private notificationService: DfdNotificationService,
     private presenterCoordinatorService: PresenterCoordinatorService,
     private x6SelectionAdapter: X6SelectionAdapter,
@@ -491,10 +486,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Initializing WebSocket handlers for collaborative editing');
 
     // Initialize all TMI message handlers
-    this.tmiMessageHandler.initialize();
 
     // Initialize WebSocket and state services
-    this.dfdWebSocketService.initialize();
+    this.webSocketService.initialize();
     this.dfdStateService.initialize();
 
     // Subscribe to state service events for operations that need to be applied to the graph
@@ -525,14 +519,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to WebSocket domain events for UI updates
     this._subscriptions.add(
-      this.dfdWebSocketService.authorizationDenied$.subscribe({
+      this.webSocketService.authorizationDenied$.subscribe({
         next: event => this.showAuthorizationDeniedNotification(event.reason),
         error: error => this.logger.error('Error handling authorization denied', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdWebSocketService.historyOperations$.subscribe({
+      this.webSocketService.historyOperations$.subscribe({
         next: event => this.handleHistoryOperationEvent(event),
         error: error => this.logger.error('Error handling history operation', error),
       }),
@@ -540,7 +534,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to presenter events for UI updates
     this._subscriptions.add(
-      this.dfdWebSocketService.presenterChanges$.subscribe({
+      this.webSocketService.presenterChanges$.subscribe({
         next: event => this.handlePresenterChange(event.presenterEmail),
         error: error => this.logger.error('Error handling presenter change', error),
       }),
@@ -562,35 +556,35 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this._subscriptions.add(
-      this.dfdWebSocketService.presenterCursors$.subscribe({
+      this.webSocketService.presenterCursors$.subscribe({
         next: event => this.showPresenterCursor(event.userId, event.position),
         error: error => this.logger.error('Error handling presenter cursor', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdWebSocketService.presenterSelections$.subscribe({
+      this.webSocketService.presenterSelections$.subscribe({
         next: event => this.showPresenterSelection(event.userId, event.selectedCells),
         error: error => this.logger.error('Error handling presenter selection', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdWebSocketService.presenterRequests$.subscribe({
+      this.webSocketService.presenterRequests$.subscribe({
         next: event => this.handlePresenterRequestEvent(event.userId),
         error: error => this.logger.error('Error handling presenter request', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdWebSocketService.presenterDenials$.subscribe({
+      this.webSocketService.presenterDenials$.subscribe({
         next: event => this.handlePresenterDenialEvent(event.userId, event.targetUser),
         error: error => this.logger.error('Error handling presenter denial', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdWebSocketService.presenterUpdates$.subscribe({
+      this.webSocketService.presenterUpdates$.subscribe({
         next: event => this.handlePresenterUpdateEvent(event.presenterEmail),
         error: error => this.logger.error('Error handling presenter update', error),
       }),
