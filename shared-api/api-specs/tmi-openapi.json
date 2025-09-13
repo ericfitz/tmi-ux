@@ -4251,6 +4251,168 @@
               "default": 0
             },
             "description": "Number of threats to skip"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "created_at:desc"
+            },
+            "description": "Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc)"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat name (partial match)"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat description (partial match)"
+          },
+          {
+            "name": "threat_type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by threat type (exact match)"
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["Unknown", "None", "Low", "Medium", "High", "Critical"]
+            },
+            "description": "Filter by severity level (exact match)"
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by priority (exact match)"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by status (exact match)"
+          },
+          {
+            "name": "diagram_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by diagram ID (exact match)"
+          },
+          {
+            "name": "cell_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by cell ID (exact match)"
+          },
+          {
+            "name": "score_gt",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0
+            },
+            "description": "Filter threats with score greater than this value"
+          },
+          {
+            "name": "score_lt",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0
+            },
+            "description": "Filter threats with score less than this value"
+          },
+          {
+            "name": "score_eq",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0
+            },
+            "description": "Filter threats with score equal to this value"
+          },
+          {
+            "name": "score_ge",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0
+            },
+            "description": "Filter threats with score greater than or equal to this value"
+          },
+          {
+            "name": "score_le",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0
+            },
+            "description": "Filter threats with score less than or equal to this value"
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threats created after this date (RFC3339 format)"
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threats created before this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threats modified after this date (RFC3339 format)"
+          },
+          {
+            "name": "modified_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter threats modified before this date (RFC3339 format)"
           }
         ],
         "responses": {
