@@ -196,16 +196,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private loadUserEmail(): void {
-    const userProfile = localStorage.getItem('user_profile');
-    if (userProfile) {
-      try {
-        const profile = JSON.parse(userProfile) as { email?: string };
-        this.userEmail = profile.email || '';
-      } catch (e) {
-        this.logger.error('Error parsing user profile:', e);
-        this.userEmail = '';
-      }
-    }
+    // Use auth service's userEmail getter instead of parsing localStorage directly
+    // The auth service handles encrypted user profiles properly
+    this.userEmail = this.authService.userEmail;
   }
 
   openUserPreferences(): void {
@@ -247,45 +240,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Serialize current user profile data
-   */
-  private serializeUserProfile(): Record<string, unknown> {
-    // Get user profile from localStorage
-    const storedProfile = localStorage.getItem('user_profile');
-    let userProfile: Record<string, unknown> = {};
-
-    if (storedProfile) {
-      try {
-        userProfile = JSON.parse(storedProfile) as Record<string, unknown>;
-      } catch (error) {
-        this.logger.warn('Error parsing stored user profile', error);
-      }
-    }
-
-    // Create comprehensive user profile object
-    return {
-      // Authentication state
-      isAuthenticated: this.isAuthenticated,
-      username: this.username,
-      userEmail: this.userEmail,
-
-      // Stored profile data
-      storedProfile: userProfile,
-
-      // Current session info
-      currentLanguage: this.currentLanguage,
-      isDevelopmentMode: this.isDevelopmentMode,
-
-      // Timestamp
-      exportedAt: new Date().toISOString(),
-
-      // Environment info
-      environment: {
-        production: environment.production,
-      },
-    };
-  }
 
   /**
    * Get the appropriate Material icon for the current server connection status

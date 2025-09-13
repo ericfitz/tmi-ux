@@ -1216,12 +1216,40 @@ export class AuthService {
     try {
       const encProfile = localStorage.getItem(this.profileStorageKey);
       if (!encProfile) return null;
+
+      // Check if it's encrypted format (contains ':') vs cleartext (backward compatibility)
+      if (!encProfile.includes(':')) {
+        // This is cleartext from previous version or test setup
+        try {
+          const profile = JSON.parse(encProfile) as UserProfile;
+          // Re-encrypt and store for future use if we have a token
+          const tokenObj = this.getStoredToken();
+          if (tokenObj?.token) {
+            await this.storeUserProfile(profile);
+          }
+          return profile;
+        } catch (parseError) {
+          this.logger.error('Error parsing cleartext user profile', parseError);
+          return null;
+        }
+      }
+
+      // Encrypted format - decrypt normally
       const tokenObj = this.getStoredToken();
       const keyMaterial = tokenObj?.token;
       if (!keyMaterial) return null;
       return await this.decryptProfile(encProfile, keyMaterial);
     } catch (e) {
       this.logger.error('Error decrypting user profile', e);
+      // Try to parse as cleartext for additional backward compatibility
+      try {
+        const profileJson = localStorage.getItem(this.profileStorageKey);
+        if (profileJson && !profileJson.includes(':')) {
+          return JSON.parse(profileJson) as UserProfile;
+        }
+      } catch (parseError) {
+        this.logger.error('Could not parse user profile as cleartext either', parseError);
+      }
       return null;
     }
   }
