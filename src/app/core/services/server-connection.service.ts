@@ -266,7 +266,7 @@ export class ServerConnectionService implements OnDestroy {
   private isServerConfigured(): boolean {
     // Consider server not configured if apiUrl is empty, localhost with default port, or example URL
     const apiUrl = environment.apiUrl;
-    if (!apiUrl || apiUrl.includes('api.example.com') || apiUrl === 'http://localhost:8080/api') {
+    if (!apiUrl || apiUrl === 'http://localhost:8080/api') {
       return false;
     }
     return true;
