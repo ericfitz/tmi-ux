@@ -233,7 +233,13 @@ export class CellDataExtractionService {
 
         // 1. Check if value contains actual text (not just whitespace or HTML)
         if (storedCell.value && typeof storedCell.value === 'string') {
-          const cleanValue = storedCell.value.replace(/<[^>]*>/g, '').trim(); // Remove HTML tags
+          let cleanValue = storedCell.value;
+          let previousValue;
+          do {
+            previousValue = cleanValue;
+            cleanValue = cleanValue.replace(/<[^>]*>/g, '');
+          } while (cleanValue !== previousValue);
+          cleanValue = cleanValue.trim(); // Remove leading/trailing whitespace after tags are gone
           if (cleanValue && cleanValue !== storedCell.id) {
             label = cleanValue;
           }
