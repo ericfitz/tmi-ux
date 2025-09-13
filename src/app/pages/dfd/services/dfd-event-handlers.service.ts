@@ -715,7 +715,8 @@ export class DfdEventHandlersService {
     sanitized = sanitized.replace(/\s+/g, ' ');
 
     // Remove control characters but keep newlines for multi-line labels
-    sanitized = sanitized.replace(/[\p{Cc}&&[^\n\r]]/gu, '');
+    // eslint-disable-next-line no-control-regex
+    sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
     return sanitized;
   }
