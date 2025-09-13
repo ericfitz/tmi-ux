@@ -24,6 +24,7 @@ import {
   BehaviorSubject,
   Observable,
   catchError,
+  from,
   map,
   of,
   throwError,
@@ -740,7 +741,7 @@ export class AuthService {
 
     // Handle local provider
     if (providerId === 'local' && response.code) {
-      return this.handleLocalCallback(response, returnUrl);
+      return from(this.handleLocalCallback(response, returnUrl));
     }
 
     // Handle TMI OAuth proxy response with tokens
@@ -775,7 +776,7 @@ export class AuthService {
    * @param response OAuth response containing code
    * @param returnUrl Optional URL to return to after authentication
    */
-  private handleLocalCallback(response: OAuthResponse, returnUrl?: string): Observable<boolean> {
+  private async handleLocalCallback(response: OAuthResponse, returnUrl?: string): Promise<boolean> {
     this.logger.info('handleLocalCallback called', { code: response.code, returnUrl });
 
     const userInfo = this.localProvider.exchangeCodeForUser(response.code!);
@@ -787,7 +788,7 @@ export class AuthService {
         message: 'Failed to authenticate with local provider',
         retryable: true,
       });
-      return of(false);
+      return false;
     }
 
     try {
@@ -813,7 +814,7 @@ export class AuthService {
         void this.router.navigate(['/tm']);
       }
 
-      return of(true);
+      return true;
     } catch (error) {
       this.logger.error('Error in handleLocalCallback', error);
       this.handleAuthError({
@@ -821,7 +822,7 @@ export class AuthService {
         message: error instanceof Error ? error.message : 'Failed to create local token',
         retryable: true,
       });
-      return of(false);
+      return false;
     }
   }
 
@@ -888,7 +889,7 @@ export class AuthService {
       // Store token and extract user profile
       this.storeToken(token);
       const userProfile = this.extractUserProfileFromToken(token);
-      this.storeUserProfile(userProfile);
+      void this.storeUserProfile(userProfile);
 
       // Update authentication state
       this.isAuthenticatedSubject.next(true);
@@ -995,7 +996,7 @@ export class AuthService {
 
       // Store token and user profile
       this.storeToken(token);
-      this.storeUserProfile(userInfo);
+      void this.storeUserProfile(userInfo);
 
       // Update authentication state
       this.isAuthenticatedSubject.next(true);
@@ -1482,7 +1483,7 @@ export class AuthService {
 
     // Store token and profile
     this.storeToken(token);
-    this.storeUserProfile(userProfile);
+    void this.storeUserProfile(userProfile);
 
     // Update authentication state
     this.isAuthenticatedSubject.next(true);

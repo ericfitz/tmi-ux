@@ -8,6 +8,7 @@ export { Observable } from 'rxjs/internal/Observable';
 export { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 export { Subscription } from 'rxjs/internal/Subscription';
 export { of } from 'rxjs/internal/observable/of';
+export { from } from 'rxjs/internal/observable/from';
 export { interval } from 'rxjs/internal/observable/interval';
 
 // Operators
