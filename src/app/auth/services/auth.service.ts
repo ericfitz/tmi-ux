@@ -799,7 +799,7 @@ export class AuthService {
       });
 
       this.storeToken(token);
-      this.storeUserProfile(userInfo);
+      await this.storeUserProfile(userInfo);
 
       this.isAuthenticatedSubject.next(true);
       this.userProfileSubject.next(userInfo);
@@ -1169,9 +1169,110 @@ export class AuthService {
    * Store user profile in local storage
    * @param profile User profile
    */
-  private storeUserProfile(profile: UserProfile): void {
-    this.logger.debugComponent('Auth', 'Storing user profile');
-    localStorage.setItem(this.profileStorageKey, JSON.stringify(profile));
+  /**
+   * Encrypt and store user profile in local storage
+   * Uses access token as encryption key material
+   */
+  private async storeUserProfile(profile: UserProfile): Promise<void> {
+    this.logger.debugComponent('Auth', 'Storing encrypted user profile');
+    try {
+      // Use the JWT access token as key material
+      const tokenObj = this.getStoredToken();
+      const keyMaterial = tokenObj?.token;
+      if (!keyMaterial) {
+        throw new Error("Missing access token for profile encryption");
+      }
+      const encProfile = await this.encryptProfile(profile, keyMaterial);
+      localStorage.setItem(this.profileStorageKey, encProfile);
+    } catch (e) {
+      this.logger.error('Error encrypting user profile', e);
+    }
+  }
+
+  /**
+   * Decrypt and get user profile from local storage
+   * Uses access token as decryption key material
+   */
+  async getStoredUserProfile(): Promise<UserProfile|null> {
+    try {
+      const encProfile = localStorage.getItem(this.profileStorageKey);
+      if (!encProfile) return null;
+      const tokenObj = this.getStoredToken();
+      const keyMaterial = tokenObj?.token;
+      if (!keyMaterial) return null;
+      return await this.decryptProfile(encProfile, keyMaterial);
+    } catch (e) {
+      this.logger.error('Error decrypting user profile', e);
+      return null;
+    }
+  }
+
+  /**
+   * AES-GCM encrypt a profile with given key string
+   */
+  private async encryptProfile(profile: UserProfile, keyStr: string): Promise<string> {
+    // Hash the key string to get a 256-bit key
+    const key = await this.getAesKeyFromString(keyStr);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const plaintext = new TextEncoder().encode(JSON.stringify(profile));
+    const ciphertext = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      key,
+      plaintext
+    );
+    // Encode as base64: iv + ciphertext
+    const b64Iv = this.uint8ToB64(iv);
+    const b64Cipher = this.uint8ToB64(new Uint8Array(ciphertext));
+    return `${b64Iv}:${b64Cipher}`;
+  }
+
+  /**
+   * AES-GCM decrypt a profile with given key string
+   */
+  private async decryptProfile(encProfile: string, keyStr: string): Promise<UserProfile|null> {
+    const [b64Iv, b64Cipher] = encProfile.split(':');
+    if (!b64Iv || !b64Cipher) return null;
+    const key = await this.getAesKeyFromString(keyStr);
+    const iv = this.b64ToUint8(b64Iv);
+    const ciphertext = this.b64ToUint8(b64Cipher);
+    const plaintextBuf = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      key,
+      ciphertext
+    );
+    const profileStr = new TextDecoder().decode(plaintextBuf);
+    return JSON.parse(profileStr) as UserProfile;
+  }
+
+  /**
+   * SHA-256 derive AES key from string
+   */
+  private async getAesKeyFromString(keyStr: string): Promise<CryptoKey> {
+    const enc = new TextEncoder();
+    const hash = await crypto.subtle.digest('SHA-256', enc.encode(keyStr));
+    return await crypto.subtle.importKey(
+      "raw",
+      hash,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  /**
+   * Helpers to base64 encode/decode Uint8Array
+   */
+  private uint8ToB64(data: Uint8Array): string {
+    // Browser-friendly base64 encoding
+    return btoa(String.fromCharCode(...data));
+  }
+  private b64ToUint8(b64: string): Uint8Array {
+    const binStr = atob(b64);
+    const bytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; ++i) {
+      bytes[i] = binStr.charCodeAt(i);
+    }
+    return bytes;
   }
 
   /**
