@@ -106,7 +106,7 @@ export class AuthService {
   ) {
     this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
-    this.checkAuthStatus();
+    void this.checkAuthStatus();
   }
 
   /**
@@ -297,10 +297,19 @@ export class AuthService {
    * Check auth status from local storage
    * Loads JWT token and user profile if available
    */
-  checkAuthStatus(): void {
+  async checkAuthStatus(): Promise<void> {
     try {
-      // Get token once and use it for validation
-      const token = this.getStoredToken();
+      // Try to get token from cache first (fast path)
+      let token = this.jwtTokenSubject.value;
+      
+      // If no cached token, try to decrypt from storage
+      if (!token) {
+        token = await this.getStoredTokenDecrypted();
+        if (token) {
+          this.jwtTokenSubject.next(token);
+        }
+      }
+
       const isAuthenticated = this.isTokenValid(token);
       this.logger.debugComponent(
         'Auth',
@@ -309,10 +318,9 @@ export class AuthService {
       this.isAuthenticatedSubject.next(isAuthenticated);
 
       // Load user profile if authenticated
-      if (isAuthenticated) {
-        const storedProfile = localStorage.getItem(this.profileStorageKey);
-        if (storedProfile) {
-          const userProfile = JSON.parse(storedProfile) as UserProfile;
+      if (isAuthenticated && token) {
+        const userProfile = await this.getStoredUserProfile();
+        if (userProfile) {
           this.logger.debugComponent(
             'Auth',
             `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`,
@@ -1122,7 +1130,8 @@ export class AuthService {
       this.logger.warn('Could not decode JWT payload for logging', error);
     }
 
-    localStorage.setItem(this.tokenStorageKey, JSON.stringify(token));
+    // Store token with encryption
+    void this.storeTokenEncrypted(token);
     this.jwtTokenSubject.next(token);
   }
 
@@ -1131,35 +1140,44 @@ export class AuthService {
    * @returns JWT token or null if not found
    */
   getStoredToken(): JwtToken | null {
+    // First try to get from memory cache (set by jwtTokenSubject)
+    const cachedToken = this.jwtTokenSubject.value;
+    if (cachedToken) {
+      return cachedToken;
+    }
+
+    // If not in cache, try to decrypt from storage synchronously via a promise workaround
     try {
-      const tokenJson = localStorage.getItem(this.tokenStorageKey);
-      if (!tokenJson) {
+      // This is a temporary synchronous fallback - we'll trigger async decryption in background
+      const encryptedToken = localStorage.getItem(this.tokenStorageKey);
+      if (!encryptedToken) {
         this.logger.debugComponent('Auth', 'No token found in localStorage');
         return null;
       }
 
-      const token = JSON.parse(tokenJson) as JwtToken;
-      // Convert expiresAt string back to Date object
-      if (typeof token.expiresAt === 'string') {
-        token.expiresAt = new Date(token.expiresAt);
+      // Check if it's encrypted format (contains ':') vs cleartext (backward compatibility)
+      if (!encryptedToken.includes(':')) {
+        // This is cleartext from previous version, parse and cache
+        const token = JSON.parse(encryptedToken) as JwtToken;
+        if (typeof token.expiresAt === 'string') {
+          token.expiresAt = new Date(token.expiresAt);
+        }
+        // Cache it and trigger re-encryption in background
+        this.jwtTokenSubject.next(token);
+        void this.storeTokenEncrypted(token);
+        return token;
       }
 
-      const now = new Date();
-      const isExpired = token.expiresAt <= now;
-      const minutesUntilExpiry = Math.floor((token.expiresAt.getTime() - now.getTime()) / 60000);
-
-      // Only log token details if expires soon or there's an issue
-      if (isExpired || minutesUntilExpiry < 5) {
-        this.logger.debugComponent('Auth', 'Retrieved stored token', {
-          tokenLength: token.token?.length,
-          expiresAt: token.expiresAt.toISOString(),
-          isExpired,
-          minutesUntilExpiry,
-          hasRefreshToken: !!token.refreshToken,
-        });
-      }
-
-      return token;
+      // For encrypted tokens, we need async decryption
+      // Trigger async decryption and return null for now
+      void this.getStoredTokenDecrypted().then(token => {
+        if (token) {
+          this.jwtTokenSubject.next(token);
+        }
+      });
+      
+      this.logger.debugComponent('Auth', 'Encrypted token found, decryption in progress');
+      return null;
     } catch (error) {
       this.logger.error('Error retrieving stored token', error);
       return null;
@@ -1530,5 +1548,133 @@ export class AuthService {
       this.logger.error('Error extending test user session', error);
       return of(false);
     }
+  }
+
+  /**
+   * Generate encryption key for token storage based on browser fingerprint
+   * This provides some protection against token theft while remaining recoverable
+   */
+  private getTokenEncryptionKey(): string {
+    // Get or create session-specific salt
+    let sessionSalt = sessionStorage.getItem('_ts');
+    if (!sessionSalt) {
+      const saltArray = new Uint8Array(16);
+      crypto.getRandomValues(saltArray);
+      sessionSalt = this.uint8ToB64(saltArray);
+      sessionStorage.setItem('_ts', sessionSalt);
+    }
+
+    // Create browser fingerprint components
+    const fingerprint = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset().toString(),
+      sessionSalt
+    ].join('|');
+
+    return fingerprint;
+  }
+
+  /**
+   * Encrypt and store JWT token
+   */
+  private async storeTokenEncrypted(token: JwtToken): Promise<void> {
+    try {
+      const keyMaterial = this.getTokenEncryptionKey();
+      const encryptedToken = await this.encryptToken(token, keyMaterial);
+      localStorage.setItem(this.tokenStorageKey, encryptedToken);
+    } catch (error) {
+      this.logger.error('Failed to encrypt token for storage', error);
+      // Fallback to cleartext storage with warning
+      this.logger.warn('Falling back to cleartext token storage due to encryption failure');
+      localStorage.setItem(this.tokenStorageKey, JSON.stringify(token));
+    }
+  }
+
+  /**
+   * Decrypt and retrieve JWT token
+   */
+  private async getStoredTokenDecrypted(): Promise<JwtToken | null> {
+    try {
+      const encryptedToken = localStorage.getItem(this.tokenStorageKey);
+      if (!encryptedToken) {
+        return null;
+      }
+
+      // Check if it's already encrypted format (contains ':')
+      if (!encryptedToken.includes(':')) {
+        // This is likely cleartext from previous version
+        const parsed = JSON.parse(encryptedToken) as JwtToken;
+        // Convert expiresAt string back to Date object
+        if (typeof parsed.expiresAt === 'string') {
+          parsed.expiresAt = new Date(parsed.expiresAt);
+        }
+        // Re-encrypt and store
+        await this.storeTokenEncrypted(parsed);
+        return parsed;
+      }
+
+      const keyMaterial = this.getTokenEncryptionKey();
+      return await this.decryptToken(encryptedToken, keyMaterial);
+    } catch (error) {
+      this.logger.error('Failed to decrypt stored token', error);
+      // Try to parse as cleartext for backward compatibility
+      try {
+        const tokenJson = localStorage.getItem(this.tokenStorageKey);
+        if (tokenJson && !tokenJson.includes(':')) {
+          const parsed = JSON.parse(tokenJson) as JwtToken;
+          // Convert expiresAt string back to Date object if needed
+          if (typeof parsed.expiresAt === 'string') {
+            parsed.expiresAt = new Date(parsed.expiresAt);
+          }
+          return parsed;
+        }
+      } catch (parseError) {
+        this.logger.error('Could not parse token as cleartext either', parseError);
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Encrypt JWT token using AES-GCM
+   */
+  private async encryptToken(token: JwtToken, keyStr: string): Promise<string> {
+    const key = await this.getAesKeyFromString(keyStr);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const plaintext = new TextEncoder().encode(JSON.stringify(token));
+    const ciphertext = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      key,
+      plaintext
+    );
+    const b64Iv = this.uint8ToB64(iv);
+    const b64Cipher = this.uint8ToB64(new Uint8Array(ciphertext));
+    return `${b64Iv}:${b64Cipher}`;
+  }
+
+  /**
+   * Decrypt JWT token using AES-GCM
+   */
+  private async decryptToken(encryptedToken: string, keyStr: string): Promise<JwtToken | null> {
+    const [b64Iv, b64Cipher] = encryptedToken.split(':');
+    if (!b64Iv || !b64Cipher) return null;
+    
+    const key = await this.getAesKeyFromString(keyStr);
+    const iv = this.b64ToUint8(b64Iv);
+    const ciphertext = this.b64ToUint8(b64Cipher);
+    const plaintextBuf = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      key,
+      ciphertext
+    );
+    const plaintext = new TextDecoder().decode(plaintextBuf);
+    const parsed = JSON.parse(plaintext) as JwtToken;
+    // Convert expiresAt string back to Date object if needed
+    if (typeof parsed.expiresAt === 'string') {
+      parsed.expiresAt = new Date(parsed.expiresAt);
+    }
+    return parsed;
   }
 }
