@@ -282,7 +282,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
 
-
     // Subscribe to authorization changes
     this._subscriptions.add(
       this.authorizationService.canEdit$.subscribe(canEdit => {
@@ -1474,7 +1473,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
   openDiagramMetadataDialog(diagram: Diagram, event: Event): void {
     event.stopPropagation();
 
-
     const dialogData: MetadataDialogData = {
       metadata: diagram.metadata || [],
       isReadOnly: false,
@@ -2062,7 +2060,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (this.threatModel?.diagrams && Array.isArray(this.threatModel.diagrams)) {
       // The threat model already contains the diagrams with metadata
       this.diagrams = this.threatModel.diagrams;
-
 
       // Update DIAGRAMS_BY_ID map with real diagram data
       this.diagrams.forEach(diagram => {

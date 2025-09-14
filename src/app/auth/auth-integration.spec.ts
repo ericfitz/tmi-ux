@@ -90,8 +90,8 @@ describe('Authentication Integration', () => {
 
     // Create functional crypto mock using XOR encryption
     const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-    const XOR_KEY = 0x5A; // Simple XOR key for test encryption
-    
+    const XOR_KEY = 0x5a; // Simple XOR key for test encryption
+
     cryptoMock = {
       getRandomValues: vi.fn().mockReturnValue(mockArray),
       subtle: {
@@ -145,7 +145,7 @@ describe('Authentication Integration', () => {
       writable: true,
     });
 
-    // Mock screen for browser fingerprinting  
+    // Mock screen for browser fingerprinting
     Object.defineProperty(global, 'screen', {
       value: {
         width: 1920,
@@ -397,8 +397,7 @@ describe('Authentication Integration', () => {
 
     describe('OAuth Error Handling Integration', () => {
       it('should handle complete OAuth flow failure and recovery', () => {
-        // In the new TMI OAuth proxy pattern, receiving a code instead of tokens
-        // indicates a server misconfiguration
+        // Test authorization code exchange failure and recovery
         const mockOAuthResponse = {
           code: 'authorization-code',
           state: 'valid-state',
@@ -409,11 +408,15 @@ describe('Authentication Integration', () => {
             case 'oauth_state':
               return 'valid-state';
             case 'oauth_provider':
-              return 'google'; // Not local, so should expect tokens
+              return 'google';
             default:
               return null;
           }
         });
+
+        // Mock token exchange failure
+        const exchangeError = new Error('Invalid time value');
+        vi.mocked(httpClient.post).mockReturnValue(throwError(() => exchangeError));
 
         const result$ = authService.handleOAuthCallback(mockOAuthResponse);
 
@@ -429,7 +432,8 @@ describe('Authentication Integration', () => {
         });
 
         expect(logger.error).toHaveBeenCalledWith(
-          'Auth error: unexpected_callback_format - Received authorization code instead of access token from TMI server',
+          'Authorization code exchange failed',
+          exchangeError,
         );
       });
 
@@ -483,13 +487,13 @@ describe('Authentication Integration', () => {
 
         // Helper function to XOR encrypt data like the real service would
         const xorEncrypt = (data: string): string => {
-          const XOR_KEY = 0x5A;
+          const XOR_KEY = 0x5a;
           const plaintext = new TextEncoder().encode(data);
           const encrypted = new Uint8Array(plaintext.length);
           for (let i = 0; i < plaintext.length; i++) {
             encrypted[i] = plaintext[i] ^ XOR_KEY;
           }
-          
+
           // Convert to base64 like the real service does (iv:encrypted format)
           const iv = 'AQEBAQEBAQEBAQEBAQEB'; // Mock IV base64
           const encryptedB64 = btoa(String.fromCharCode(...encrypted));

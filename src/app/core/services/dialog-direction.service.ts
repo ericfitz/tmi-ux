@@ -29,7 +29,7 @@ export class DialogDirectionService implements OnDestroy {
       // Update the document direction attribute - this is the proper way in Angular CDK v20+
       // The Directionality service automatically detects changes to the document's dir attribute
       this.document.documentElement.setAttribute('dir', direction);
-      
+
       // Alternative: also set on body element for additional compatibility
       this.document.body.setAttribute('dir', direction);
 

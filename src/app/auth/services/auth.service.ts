@@ -301,7 +301,7 @@ export class AuthService {
     try {
       // Try to get token from cache first (fast path)
       let token = this.jwtTokenSubject.value;
-      
+
       // If no cached token, try to decrypt from storage
       if (!token) {
         token = await this.getStoredTokenDecrypted();
@@ -757,17 +757,10 @@ export class AuthService {
       return this.handleTMITokenResponse(response, providerId, returnUrl);
     }
 
-    // If we have a code but no access_token, this might be an old-style callback
+    // If we have a code but no access_token, exchange the code for tokens
     if (response.code) {
-      this.logger.warn(
-        'Received authorization code instead of access token - this may indicate server misconfiguration',
-      );
-      this.handleAuthError({
-        code: 'unexpected_callback_format',
-        message: 'Received authorization code instead of access token from TMI server',
-        retryable: true,
-      });
-      return of(false);
+      this.logger.info('Received authorization code - exchanging for tokens');
+      return this.exchangeAuthorizationCode(response, providerId, returnUrl);
     }
 
     // No tokens or code received
@@ -932,6 +925,116 @@ export class AuthService {
       });
       return of(false);
     }
+  }
+
+  /**
+   * Exchange authorization code for tokens
+   * @param response OAuth response containing the authorization code
+   * @param providerId OAuth provider ID
+   * @param returnUrl Optional URL to return to after authentication
+   */
+  private exchangeAuthorizationCode(
+    response: OAuthResponse,
+    providerId: string | null,
+    returnUrl?: string,
+  ): Observable<boolean> {
+    this.logger.debugComponent('Auth', 'Exchanging authorization code for tokens', {
+      providerId,
+      hasCode: !!response.code,
+      hasState: !!response.state,
+      returnUrl,
+    });
+
+    if (!response.code) {
+      this.handleAuthError({
+        code: 'missing_authorization_code',
+        message: 'No authorization code provided for token exchange',
+        retryable: false,
+      });
+      return of(false);
+    }
+
+    // Prepare the token exchange request
+    const redirectUri = `${window.location.origin}/oauth2/callback`;
+    const exchangeRequest = {
+      code: response.code,
+      redirect_uri: redirectUri,
+    };
+
+    // Add provider query parameter if we have one
+    const queryParams = providerId ? `?idp=${encodeURIComponent(providerId)}` : '';
+    const exchangeUrl = `${environment.apiUrl}/oauth2/token${queryParams}`;
+
+    this.logger.debugComponent('Auth', 'Sending token exchange request', {
+      exchangeUrl: exchangeUrl.replace(/\?.*$/, ''), // Log without query params
+      providerId,
+      redirectUri,
+      hasCode: !!exchangeRequest.code,
+    });
+
+    return this.http
+      .post<{
+        access_token: string;
+        refresh_token?: string;
+        expires_in: number;
+        token_type: string;
+      }>(exchangeUrl, exchangeRequest)
+      .pipe(
+        map(tokenResponse => {
+          this.logger.debugComponent('Auth', 'Token exchange successful', {
+            hasAccessToken: !!tokenResponse.access_token,
+            hasRefreshToken: !!tokenResponse.refresh_token,
+            expiresIn: tokenResponse.expires_in,
+            tokenType: tokenResponse.token_type,
+          });
+
+          // Create JWT token object from the response
+          const expiresAt = new Date();
+          const expiresInSeconds = tokenResponse.expires_in || 3600; // Default to 1 hour if not provided
+          expiresAt.setSeconds(expiresAt.getSeconds() + expiresInSeconds);
+
+          const token: JwtToken = {
+            token: tokenResponse.access_token,
+            refreshToken: tokenResponse.refresh_token,
+            expiresIn: expiresInSeconds,
+            expiresAt,
+          };
+
+          // Store token and extract user profile
+          this.storeToken(token);
+          const userProfile = this.extractUserProfileFromToken(token);
+          void this.storeUserProfile(userProfile);
+
+          // Update authentication state
+          this.isAuthenticatedSubject.next(true);
+          this.userProfileSubject.next(userProfile);
+
+          this.logger.info(
+            `User ${userProfile.email} successfully logged in via ${providerId} (code exchange)`,
+            {
+              returnUrl,
+            },
+          );
+
+          // Navigate to return URL if provided, otherwise to default
+          if (returnUrl) {
+            void this.router.navigateByUrl(returnUrl);
+          } else {
+            void this.router.navigate(['/tm']);
+          }
+
+          return true;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          this.logger.error('Authorization code exchange failed', error);
+          this.handleAuthError({
+            code: 'code_exchange_failed',
+            message: `Failed to exchange authorization code: ${error.message}`,
+            retryable: true,
+          });
+          return of(false);
+        }),
+      );
   }
 
   /**
@@ -1189,7 +1292,7 @@ export class AuthService {
           this.jwtTokenSubject.next(token);
         }
       });
-      
+
       this.logger.debugComponent('Auth', 'Encrypted token found, decryption in progress');
       return null;
     } catch (error) {
@@ -1213,7 +1316,7 @@ export class AuthService {
       const tokenObj = this.getStoredToken();
       const keyMaterial = tokenObj?.token;
       if (!keyMaterial) {
-        throw new Error("Missing access token for profile encryption");
+        throw new Error('Missing access token for profile encryption');
       }
       const encProfile = await this.encryptProfile(profile, keyMaterial);
       localStorage.setItem(this.profileStorageKey, encProfile);
@@ -1226,7 +1329,7 @@ export class AuthService {
    * Decrypt and get user profile from local storage
    * Uses access token as decryption key material
    */
-  async getStoredUserProfile(): Promise<UserProfile|null> {
+  async getStoredUserProfile(): Promise<UserProfile | null> {
     try {
       const encProfile = localStorage.getItem(this.profileStorageKey);
       if (!encProfile) return null;
@@ -1276,11 +1379,7 @@ export class AuthService {
     const key = await this.getAesKeyFromString(keyStr);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const plaintext = new TextEncoder().encode(JSON.stringify(profile));
-    const ciphertext = await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv },
-      key,
-      plaintext
-    );
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
     // Encode as base64: iv + ciphertext
     const b64Iv = this.uint8ToB64(iv);
     const b64Cipher = this.uint8ToB64(new Uint8Array(ciphertext));
@@ -1290,17 +1389,13 @@ export class AuthService {
   /**
    * AES-GCM decrypt a profile with given key string
    */
-  private async decryptProfile(encProfile: string, keyStr: string): Promise<UserProfile|null> {
+  private async decryptProfile(encProfile: string, keyStr: string): Promise<UserProfile | null> {
     const [b64Iv, b64Cipher] = encProfile.split(':');
     if (!b64Iv || !b64Cipher) return null;
     const key = await this.getAesKeyFromString(keyStr);
     const iv = this.b64ToUint8(b64Iv);
     const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv },
-      key,
-      ciphertext
-    );
+    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
     const profileStr = new TextDecoder().decode(plaintextBuf);
     return JSON.parse(profileStr) as UserProfile;
   }
@@ -1311,13 +1406,10 @@ export class AuthService {
   private async getAesKeyFromString(keyStr: string): Promise<CryptoKey> {
     const enc = new TextEncoder();
     const hash = await crypto.subtle.digest('SHA-256', enc.encode(keyStr));
-    return await crypto.subtle.importKey(
-      "raw",
-      hash,
-      { name: "AES-GCM", length: 256 },
-      false,
-      ["encrypt", "decrypt"]
-    );
+    return await crypto.subtle.importKey('raw', hash, { name: 'AES-GCM', length: 256 }, false, [
+      'encrypt',
+      'decrypt',
+    ]);
   }
 
   /**
@@ -1612,7 +1704,7 @@ export class AuthService {
       navigator.language,
       screen.width + 'x' + screen.height,
       new Date().getTimezoneOffset().toString(),
-      sessionSalt
+      sessionSalt,
     ].join('|');
 
     return fingerprint;
@@ -1690,11 +1782,7 @@ export class AuthService {
     const key = await this.getAesKeyFromString(keyStr);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const plaintext = new TextEncoder().encode(JSON.stringify(token));
-    const ciphertext = await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv },
-      key,
-      plaintext
-    );
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
     const b64Iv = this.uint8ToB64(iv);
     const b64Cipher = this.uint8ToB64(new Uint8Array(ciphertext));
     return `${b64Iv}:${b64Cipher}`;
@@ -1706,15 +1794,11 @@ export class AuthService {
   private async decryptToken(encryptedToken: string, keyStr: string): Promise<JwtToken | null> {
     const [b64Iv, b64Cipher] = encryptedToken.split(':');
     if (!b64Iv || !b64Cipher) return null;
-    
+
     const key = await this.getAesKeyFromString(keyStr);
     const iv = this.b64ToUint8(b64Iv);
     const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv },
-      key,
-      ciphertext
-    );
+    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
     const plaintext = new TextDecoder().decode(plaintextBuf);
     const parsed = JSON.parse(plaintext) as JwtToken;
     // Convert expiresAt string back to Date object if needed

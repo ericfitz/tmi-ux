@@ -240,7 +240,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-
   /**
    * Get the appropriate Material icon for the current server connection status
    */

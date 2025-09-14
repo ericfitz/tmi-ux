@@ -193,8 +193,8 @@ describe('AuthService', () => {
 
     // Create functional crypto mock using XOR encryption
     const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-    const XOR_KEY = 0x5A; // Simple XOR key for test encryption
-    
+    const XOR_KEY = 0x5a; // Simple XOR key for test encryption
+
     cryptoMock = {
       getRandomValues: vi.fn().mockReturnValue(mockArray),
       subtle: {
@@ -317,13 +317,13 @@ describe('AuthService', () => {
     it('should restore authentication state from localStorage', async () => {
       // Helper function to XOR encrypt data like the real service would
       const xorEncrypt = (data: string): string => {
-        const XOR_KEY = 0x5A;
+        const XOR_KEY = 0x5a;
         const plaintext = new TextEncoder().encode(data);
         const encrypted = new Uint8Array(plaintext.length);
         for (let i = 0; i < plaintext.length; i++) {
           encrypted[i] = plaintext[i] ^ XOR_KEY;
         }
-        
+
         // Convert to base64 like the real service does (iv:encrypted format)
         const iv = 'AQEBAQEBAQEBAQEBAQEB'; // Mock IV base64
         const encryptedB64 = btoa(String.fromCharCode(...encrypted));
@@ -534,10 +534,10 @@ describe('AuthService', () => {
       const result$ = service.handleOAuthCallback(mockOAuthResponse);
 
       const result = await result$.toPromise();
-      
+
       // Wait for async token storage to complete
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       expect(result).toBe(true);
       expect(localProvider.exchangeCodeForUser).toHaveBeenCalledWith('mock-auth-code');
       expect(service.isAuthenticated).toBe(true);
@@ -551,8 +551,11 @@ describe('AuthService', () => {
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
-      
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'auth_token',
+        expect.stringContaining(':'),
+      );
+
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
@@ -567,10 +570,10 @@ describe('AuthService', () => {
       const result$ = service.handleOAuthCallback(mockTMITokenResponse);
 
       const result = await result$.toPromise();
-      
+
       // Wait for async token storage to complete
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       expect(result).toBe(true);
       expect(service.isAuthenticated).toBe(true);
       expect(service.userProfile).toEqual(
@@ -583,8 +586,11 @@ describe('AuthService', () => {
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
-      
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'auth_token',
+        expect.stringContaining(':'),
+      );
+
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
@@ -608,30 +614,68 @@ describe('AuthService', () => {
       });
     });
 
-    it('should handle unexpected callback format', () => {
+    it('should handle authorization code exchange failure', () => {
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
-      // Mock receiving code instead of tokens (old-style callback)
-      const oldStyleResponse: OAuthResponse = {
+      // Mock receiving code that needs to be exchanged
+      const codeResponse: OAuthResponse = {
         code: 'auth-code',
         state: 'mock-state-value',
       };
 
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'oauth_state') return 'mock-state-value';
-        if (key === 'oauth_provider') return 'google'; // Not local
+        if (key === 'oauth_provider') return 'google';
         return null;
       });
 
-      const result$ = service.handleOAuthCallback(oldStyleResponse);
+      // Mock HTTP request failure for token exchange
+      const exchangeError = new Error('Token exchange failed');
+      httpClient.post.mockReturnValue(throwError(() => exchangeError));
+
+      const result$ = service.handleOAuthCallback(codeResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(false);
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-          code: 'unexpected_callback_format',
-          message: 'Received authorization code instead of access token from TMI server',
+          code: 'code_exchange_failed',
+          message: 'Failed to exchange authorization code: Token exchange failed',
           retryable: true,
         });
+      });
+    });
+
+    it('should handle successful authorization code exchange', () => {
+      // Mock receiving code that needs to be exchanged
+      const codeResponse: OAuthResponse = {
+        code: 'auth-code',
+        state: 'mock-state-value',
+      };
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return 'mock-state-value';
+        if (key === 'oauth_provider') return 'google';
+        return null;
+      });
+
+      // Mock successful token exchange
+      const tokenResponse = {
+        access_token:
+          'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZW1haWwiOiJqb2huQGV4YW1wbGUuY29tIiwiaWF0IjoxNjQwOTk1MjAwLCJleHAiOjE2NDA5OTg4MDB9.abc123',
+        expires_in: 3600,
+        token_type: 'Bearer',
+        refresh_token: 'refresh-token',
+      };
+      httpClient.post.mockReturnValue(of(tokenResponse));
+
+      const result$ = service.handleOAuthCallback(codeResponse);
+
+      result$.subscribe(result => {
+        expect(result).toBe(true);
+        expect(service.isAuthenticated).toBe(true);
+        expect(service.userProfile?.email).toBe('john@example.com');
+        expect(router.navigateByUrl).not.toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
       });
     });
 
@@ -677,10 +721,10 @@ describe('AuthService', () => {
       const result$ = service.handleOAuthCallback(responseWithBase64State);
 
       const result = await result$.toPromise();
-      
+
       // Wait for async token storage to complete
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       expect(result).toBe(true);
       expect(service.isAuthenticated).toBe(true);
       expect(service.userProfile).toEqual(
@@ -693,7 +737,10 @@ describe('AuthService', () => {
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'auth_token',
+        expect.stringContaining(':'),
+      );
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
@@ -744,7 +791,10 @@ describe('AuthService', () => {
 
       expect(service.isAuthenticated).toBe(true);
       expect(service.userEmail).toBe(testEmail);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', expect.stringContaining(':'));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'auth_token',
+        expect.stringContaining(':'),
+      );
       // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
@@ -789,7 +839,7 @@ describe('AuthService', () => {
     it('should logout and clear local storage', () => {
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
-      
+
       // Set the token in the service cache (logout uses cached token for Authorization header)
       service['jwtTokenSubject'].next(mockJwtToken);
 
@@ -888,7 +938,7 @@ describe('AuthService', () => {
     it('should include Authorization header when token is available', () => {
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
-      
+
       // Set the token in the service cache (logout uses cached token for Authorization header)
       service['jwtTokenSubject'].next(mockJwtToken);
 
