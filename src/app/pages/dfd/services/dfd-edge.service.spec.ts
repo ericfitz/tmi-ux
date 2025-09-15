@@ -845,10 +845,11 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       const result = service.isConnectionValid(args);
 
       expect(result).toBe(true);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdEdge',
-        'Connection validation passed',
-      );
+      // Note: debug logging is commented out to reduce console noise
+      // expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+      //   'DfdEdge',
+      //   'Connection validation passed',
+      // );
     });
 
     it('should reject connection to same port on same node', () => {
@@ -865,10 +866,11 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       const result = service.isConnectionValid(args);
 
       expect(result).toBe(false);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdEdge',
-        'Connection rejected: same port on same node',
-      );
+      // Note: debug logging is commented out to reduce console noise
+      // expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+      //   'DfdEdge',
+      //   'Connection rejected: same port on same node',
+      // );
     });
   });
 

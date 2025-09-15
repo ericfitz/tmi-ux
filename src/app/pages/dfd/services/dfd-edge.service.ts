@@ -728,7 +728,7 @@ export class DfdEdgeService {
 
     // Prevent creating an edge if source and target are the same port on the same node
     if (sourceView === targetView && sourceMagnet === targetMagnet) {
-      this.logger.debugComponent('DfdEdge', 'Connection rejected: same port on same node');
+      // this.logger.debugComponent('DfdEdge', 'Connection rejected: same port on same node');
       return false;
     }
 
@@ -752,7 +752,7 @@ export class DfdEdgeService {
       return false;
     }
 
-    this.logger.debugComponent('DfdEdge', 'Connection validation passed');
+    // this.logger.debugComponent('DfdEdge', 'Connection validation passed');
     return true;
   }
 
