@@ -1395,7 +1395,7 @@ export class AuthService {
     const key = await this.getAesKeyFromString(keyStr);
     const iv = this.b64ToUint8(b64Iv);
     const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv as BufferSource }, key, ciphertext as BufferSource);
     const profileStr = new TextDecoder().decode(plaintextBuf);
     return JSON.parse(profileStr) as UserProfile;
   }
@@ -1421,7 +1421,8 @@ export class AuthService {
   }
   private b64ToUint8(b64: string): Uint8Array {
     const binStr = atob(b64);
-    const bytes = new Uint8Array(binStr.length);
+    const buffer = new ArrayBuffer(binStr.length);
+    const bytes = new Uint8Array(buffer);
     for (let i = 0; i < binStr.length; ++i) {
       bytes[i] = binStr.charCodeAt(i);
     }
@@ -1798,7 +1799,7 @@ export class AuthService {
     const key = await this.getAesKeyFromString(keyStr);
     const iv = this.b64ToUint8(b64Iv);
     const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv as BufferSource }, key, ciphertext as BufferSource);
     const plaintext = new TextDecoder().decode(plaintextBuf);
     const parsed = JSON.parse(plaintext) as JwtToken;
     // Convert expiresAt string back to Date object if needed

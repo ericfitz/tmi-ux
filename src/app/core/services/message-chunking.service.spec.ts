@@ -5,10 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { MessageChunkingService } from './message-chunking.service';
-import {
-  DiagramOperationMessage,
-  ChunkedMessage,
-} from '../types/websocket-message.types';
+import { DiagramOperationMessage, ChunkedMessage } from '../types/websocket-message.types';
 
 describe('MessageChunkingService', () => {
   let service: MessageChunkingService;

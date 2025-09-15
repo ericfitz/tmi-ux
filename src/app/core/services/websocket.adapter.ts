@@ -25,7 +25,11 @@ import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/
 
 import { LoggerService } from './logger.service';
 import { MessageChunkingService } from './message-chunking.service';
-import { TMIWebSocketMessage, TMIMessageType, ChunkedMessage } from '../types/websocket-message.types';
+import {
+  TMIWebSocketMessage,
+  TMIMessageType,
+  ChunkedMessage,
+} from '../types/websocket-message.types';
 
 /**
  * WebSocket connection states
