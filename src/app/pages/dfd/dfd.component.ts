@@ -76,6 +76,7 @@ import { DfdDiagramService } from './services/dfd-diagram.service';
 import { DfdTooltipService } from './services/dfd-tooltip.service';
 import { X6TooltipAdapter } from './infrastructure/adapters/x6-tooltip.adapter';
 import { GraphHistoryCoordinator } from './services/graph-history-coordinator.service';
+import { DiagramOperationBroadcaster } from './services/diagram-operation-broadcaster.service';
 import { X6SelectionAdapter } from './infrastructure/adapters/x6-selection.adapter';
 import { PresenterCursorService } from './services/presenter-cursor.service';
 import { PresenterCursorDisplayService } from './services/presenter-cursor-display.service';
@@ -134,6 +135,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 
     // History coordination
     GraphHistoryCoordinator,
+
+    // Collaborative operation broadcasting
+    DiagramOperationBroadcaster,
 
     // New consolidated services
     DfdNodeService,

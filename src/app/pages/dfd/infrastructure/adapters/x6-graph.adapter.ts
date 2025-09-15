@@ -49,6 +49,7 @@ import { X6SelectionAdapter } from './x6-selection.adapter';
 import { X6EventLoggerService } from './x6-event-logger.service';
 import { DfdEdgeService } from '../../services/dfd-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { DiagramOperationBroadcaster } from '../../services/diagram-operation-broadcaster.service';
 import { X6CoreOperationsService } from '../services/x6-core-operations.service';
 
 // Import the extracted shape definitions
@@ -126,6 +127,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     private readonly _x6EventLogger: X6EventLoggerService,
     private readonly _edgeService: DfdEdgeService,
     private readonly _historyCoordinator: GraphHistoryCoordinator,
+    private readonly _diagramOperationBroadcaster: DiagramOperationBroadcaster,
     private readonly _x6CoreOps: X6CoreOperationsService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
@@ -464,6 +466,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
 
+    // Initialize collaborative operation broadcasting
+    this._diagramOperationBroadcaster.initializeListeners(this._graph);
+
     // Trigger an initial resize to ensure the graph fits the container properly
     this._scheduleInitialResize(container);
   }
@@ -490,6 +495,13 @@ export class X6GraphAdapter implements IGraphAdapter {
    */
   getHistoryManager(): X6HistoryManager {
     return this._historyManager;
+  }
+
+  /**
+   * Get the Diagram Operation Broadcaster for access to collaborative broadcasting
+   */
+  getDiagramOperationBroadcaster(): DiagramOperationBroadcaster {
+    return this._diagramOperationBroadcaster;
   }
 
   /**
@@ -813,6 +825,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     if (this._historyManager) {
       this._historyManager.dispose();
     }
+
+    // Clean up diagram operation broadcaster
+    this._diagramOperationBroadcaster.dispose();
 
     if (this._graph) {
       this._graph.dispose();

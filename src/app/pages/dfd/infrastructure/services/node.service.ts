@@ -157,17 +157,30 @@ export class DfdNodeService {
       // Use centralized history coordinator for consistent filtering and batching
       let createdNode: any;
 
-      this.historyCoordinator.executeCompoundOperation(graph, () => {
-        const node = this.x6CoreOps.addNode(graph, nodeConfig);
-        if (!node) {
-          throw new Error(`Failed to create node with ID: ${nodeId}`);
-        }
-        // Apply proper z-index using ZOrderService after node creation
-        this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
-        createdNode = node; // Capture the created node for visual effects
+      // Start atomic operation for collaborative broadcasting
+      const broadcaster = this.x6GraphAdapter.getDiagramOperationBroadcaster();
+      broadcaster.startAtomicOperation();
 
-        return node;
-      });
+      try {
+        this.historyCoordinator.executeCompoundOperation(graph, () => {
+          const node = this.x6CoreOps.addNode(graph, nodeConfig);
+          if (!node) {
+            throw new Error(`Failed to create node with ID: ${nodeId}`);
+          }
+          // Apply proper z-index using ZOrderService after node creation
+          this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+          createdNode = node; // Capture the created node for visual effects
+
+          return node;
+        });
+
+        // Commit collaborative operation after successful node creation
+        broadcaster.commitAtomicOperation();
+      } catch (error) {
+        // Cancel collaborative operation on error
+        broadcaster.cancelAtomicOperation();
+        throw error;
+      }
 
       // Apply visual effects AFTER the batched operation (outside of history)
       if (createdNode) {

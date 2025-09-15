@@ -195,8 +195,21 @@ export class DfdEventHandlersService {
 
     const graph = x6GraphAdapter.getGraph();
 
-    // Delegate to the selection adapter for proper batched deletion
-    this.x6SelectionAdapter.deleteSelected(graph);
+    // Start atomic operation for collaborative broadcasting
+    const broadcaster = x6GraphAdapter.getDiagramOperationBroadcaster();
+    broadcaster.startAtomicOperation();
+
+    try {
+      // Delegate to the selection adapter for proper batched deletion
+      this.x6SelectionAdapter.deleteSelected(graph);
+
+      // Commit collaborative operation after successful deletion
+      broadcaster.commitAtomicOperation();
+    } catch (error) {
+      // Cancel collaborative operation on error
+      broadcaster.cancelAtomicOperation();
+      throw error;
+    }
   }
 
   /**
