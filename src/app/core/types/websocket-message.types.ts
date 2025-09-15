@@ -180,7 +180,8 @@ export type TMIWebSocketMessage =
   | ParticipantJoinedMessage
   | ParticipantLeftMessage
   | RemoveParticipantMessage
-  | SessionTerminatedMessage;
+  | SessionTerminatedMessage
+  | ChunkedMessage;
 
 export type TMIMessageType =
   | 'diagram_operation'
@@ -201,7 +202,8 @@ export type TMIMessageType =
   | 'participant_joined'
   | 'participant_left'
   | 'remove_participant'
-  | 'session_terminated';
+  | 'session_terminated'
+  | 'chunked_message';
 
 /**
  * Options for applying remote operations to local graph
@@ -225,3 +227,37 @@ export interface CollaborativeOperationConfig {
   cursorThrottleMs?: number;
   selectionDebounceMs?: number;
 }
+
+/**
+ * Chunked message types for handling large payloads
+ */
+export interface MessageChunkInfo {
+  chunk_id: string;
+  total_chunks: number;
+  chunk_index: number;
+  original_message_type: TMIMessageType;
+  total_size: number;
+}
+
+export interface ChunkedMessage {
+  message_type: 'chunked_message';
+  chunk_info: MessageChunkInfo;
+  chunk_data: string; // Base64 encoded chunk data
+}
+
+export interface ChunkReassemblyInfo {
+  chunks: Map<number, string>;
+  totalChunks: number;
+  originalMessageType: TMIMessageType;
+  totalSize: number;
+  receivedAt: number;
+}
+
+/**
+ * Constants for message chunking
+ */
+export const MESSAGE_CHUNK_CONSTANTS = {
+  MAX_MESSAGE_SIZE: 64 * 1024, // 64KB
+  CHUNK_SIZE: 60 * 1024, // 60KB to leave room for metadata
+  CHUNK_TIMEOUT_MS: 30000, // 30 seconds timeout for chunk assembly
+} as const;
