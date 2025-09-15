@@ -31,7 +31,9 @@
       "Bash(pgrep:*)",
       "Bash(npm test:*)",
       "Bash(jq:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "WebFetch(domain:angular.dev)"
     ]
   },
   "enableAllProjectMcpServers": false
