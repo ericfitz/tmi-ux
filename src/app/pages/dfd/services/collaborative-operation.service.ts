@@ -146,7 +146,7 @@ export class CollaborativeOperationService {
 
     const message: DiagramOperationMessage = {
       message_type: 'diagram_operation',
-      user: {
+      initiating_user: {
         user_id: userProfile.id,
         email: userProfile.email,
         displayName: userProfile.name,

@@ -410,8 +410,8 @@ export class WebSocketService implements OnDestroy {
 
   private _handleDiagramOperation(message: DiagramOperationMessage): void {
     this._logger.debug('Received diagram operation', {
-      userId: message.user.user_id,
-      userEmail: message.user.email,
+      userId: message.initiating_user.user_id,
+      userEmail: message.initiating_user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
     });

@@ -224,7 +224,7 @@ export class DfdStateService implements OnDestroy {
   private _processDiagramOperation(message: DiagramOperationMessage): void {
     // Skip our own operations
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();
-    if (message.user.email === currentUserEmail) {
+    if (message.initiating_user.email === currentUserEmail) {
       this._logger.debug('Skipping own operation', { operationId: message.operation_id });
       return;
     }
@@ -236,8 +236,8 @@ export class DfdStateService implements OnDestroy {
     }
 
     this._logger.info('Processing remote diagram operation', {
-      userId: message.user.user_id,
-      userEmail: message.user.email,
+      userId: message.initiating_user.user_id,
+      userEmail: message.initiating_user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
     });
@@ -249,7 +249,7 @@ export class DfdStateService implements OnDestroy {
         ...this.getCurrentState().pendingRemoteOperations,
         {
           operationId: message.operation_id,
-          userId: message.user.user_id,
+          userId: message.initiating_user.user_id,
           operation: message.operation,
           timestamp: Date.now(),
         },
@@ -261,7 +261,7 @@ export class DfdStateService implements OnDestroy {
       message.operation.cells.forEach(cellOp => {
         this._applyOperationEvent$.next({
           operation: cellOp,
-          userId: message.user.user_id,
+          userId: message.initiating_user.user_id,
           operationId: message.operation_id,
         });
       });

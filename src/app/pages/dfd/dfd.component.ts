@@ -410,6 +410,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.initializeWebSocketHandlers();
             this._webSocketHandlersInitialized = true;
           }
+
+          // Re-initialize diagram operation broadcaster for collaborative editing
+          if (this.x6GraphAdapter.isInitialized()) {
+            const broadcaster = this.x6GraphAdapter.getDiagramOperationBroadcaster();
+            broadcaster.initializeListeners(this.x6GraphAdapter.getGraph());
+            this.logger.info('Re-initialized DiagramOperationBroadcaster for collaboration');
+          }
         }
       }),
     );

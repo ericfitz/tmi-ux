@@ -38,7 +38,7 @@ export interface CellPatchOperation {
 
 export interface DiagramOperationMessage {
   message_type: 'diagram_operation';
-  user: User;
+  initiating_user: User;
   operation_id: string;
   sequence_number?: number;
   operation: CellPatchOperation;
