@@ -1223,6 +1223,8 @@ describe('AuthService', () => {
         };
 
         localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
+        // Also set the in-memory cache so getStoredToken() returns this token
+        service['jwtTokenSubject'].next(currentToken);
 
         const error = new HttpErrorResponse({
           status: 401,
@@ -1286,6 +1288,8 @@ describe('AuthService', () => {
         };
 
         localStorageMock.getItem.mockReturnValue(JSON.stringify(currentToken));
+        // Also set the in-memory cache so getStoredToken() returns this token
+        service['jwtTokenSubject'].next(currentToken);
 
         const networkError = new HttpErrorResponse({
           status: 0,
@@ -1393,6 +1397,8 @@ describe('AuthService', () => {
         };
 
         localStorageMock.getItem.mockReturnValue(JSON.stringify(validToken));
+        // Also set the in-memory cache so getStoredToken() returns this token
+        service['jwtTokenSubject'].next(validToken);
 
         const result$ = service.getValidToken();
 
@@ -1456,6 +1462,8 @@ describe('AuthService', () => {
         };
 
         localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredTokenWithoutRefresh));
+        // Also set the in-memory cache so getStoredToken() returns this token
+        service['jwtTokenSubject'].next(expiredTokenWithoutRefresh);
 
         const result$ = service.getValidToken();
 
@@ -1477,6 +1485,8 @@ describe('AuthService', () => {
         };
 
         localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
+        // Also set the in-memory cache so getStoredToken() returns this token
+        service['jwtTokenSubject'].next(soonToExpireToken);
 
         const refreshError = new HttpErrorResponse({
           status: 401,

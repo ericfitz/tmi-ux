@@ -447,6 +447,8 @@ describe('Authentication Integration', () => {
         };
 
         localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredToken));
+        // Also set the in-memory cache so getStoredToken() returns this token
+        authService['jwtTokenSubject'].next(expiredToken);
 
         // Mock refresh failure
         const refreshError = new Error('Invalid refresh token');
