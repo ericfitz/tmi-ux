@@ -133,9 +133,17 @@ export class CollaborativeOperationService {
       return throwError(() => new Error('Insufficient permissions to edit diagram'));
     }
 
+    // Deduplicate operations by cell ID, keeping the latest operation for each cell
+    const deduplicatedOperations = this._deduplicateOperations(cellOperations);
+
+    this.logger.debug('Deduplicated cell operations', {
+      originalCount: cellOperations.length,
+      deduplicatedCount: deduplicatedOperations.length,
+    });
+
     const operation: CellPatchOperation = {
       type: 'patch',
-      cells: cellOperations,
+      cells: deduplicatedOperations,
     };
 
     // Get user profile for user object
@@ -157,8 +165,8 @@ export class CollaborativeOperationService {
 
     this.logger.debug('Sending diagram operation', {
       operationId: message.operation_id,
-      cellCount: cellOperations.length,
-      operations: cellOperations.map(op => ({ id: op.id, operation: op.operation })),
+      cellCount: deduplicatedOperations.length,
+      operations: deduplicatedOperations.map(op => ({ id: op.id, operation: op.operation })),
     });
 
     return this._sendOperationWithRetry(message);
@@ -552,5 +560,50 @@ export class CollaborativeOperationService {
     this.clearOperationQueue();
     this._config = null;
     this.logger.debug('CollaborativeOperationService reset');
+  }
+
+  /**
+   * Deduplicate operations by cell ID, keeping the most recent operation for each cell.
+   * For update operations on the same cell, merge the data together.
+   */
+  private _deduplicateOperations(operations: CellOperation[]): CellOperation[] {
+    const operationMap = new Map<string, CellOperation>();
+
+    for (const operation of operations) {
+      const existingOperation = operationMap.get(operation.id);
+
+      if (!existingOperation) {
+        // First operation for this cell ID
+        operationMap.set(operation.id, { ...operation });
+      } else {
+        // Handle duplicate operations for the same cell
+        if (operation.operation === 'remove') {
+          // Remove operations always take precedence
+          operationMap.set(operation.id, operation);
+        } else if (operation.operation === 'add') {
+          // Add operations should not be duplicated, but if they are, use the latest
+          operationMap.set(operation.id, operation);
+        } else if (operation.operation === 'update' && existingOperation.operation === 'update') {
+          // Merge update operations by combining their data
+          const mergedData = { ...existingOperation.data, ...operation.data } as Cell;
+          operationMap.set(operation.id, {
+            ...operation,
+            data: mergedData,
+          });
+        } else if (operation.operation === 'update' && existingOperation.operation === 'add') {
+          // Update after add - merge the update data into the add operation
+          const mergedData = { ...existingOperation.data, ...operation.data } as Cell;
+          operationMap.set(operation.id, {
+            ...existingOperation,
+            data: mergedData,
+          });
+        } else {
+          // For other cases, use the latest operation
+          operationMap.set(operation.id, operation);
+        }
+      }
+    }
+
+    return Array.from(operationMap.values());
   }
 }
