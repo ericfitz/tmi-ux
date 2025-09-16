@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, isDevMode, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  isDevMode,
+  ViewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -63,7 +70,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isOnDfdPage = false;
 
   // Menu trigger reference
-  @ViewChild('userProfileButton', { read: MatMenuTrigger }) userProfileMenuTrigger!: MatMenuTrigger;
+  @ViewChild('userProfileMenuTrigger', { read: MatMenuTrigger })
+  userProfileMenuTrigger!: MatMenuTrigger;
+
+  // Context menu position
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   // Subscriptions
   private authSubscription: Subscription | null = null;
@@ -84,6 +95,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private webSocketAdapter: WebSocketAdapter,
     private collaborationService: DfdCollaborationService,
     private translocoService: TranslocoService,
+    private cdr: ChangeDetectorRef,
   ) {
     // Get available languages
     this.languages = this.languageService.getAvailableLanguages();
@@ -217,7 +229,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
 
     event.preventDefault(); // Prevent default browser context menu
-    this.userProfileMenuTrigger.openMenu(); // Open the context menu
+
+    // Set the position of the context menu to where the user right-clicked
+    this.contextMenuPosition = {
+      x: `${event.clientX}px`,
+      y: `${event.clientY}px`,
+    };
+
+    // Force change detection to update the position
+    this.cdr.detectChanges();
+
+    // Open the context menu
+    this.userProfileMenuTrigger.openMenu();
   }
 
   /**

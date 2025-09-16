@@ -1395,7 +1395,11 @@ export class AuthService {
     const key = await this.getAesKeyFromString(keyStr);
     const iv = this.b64ToUint8(b64Iv);
     const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv as BufferSource }, key, ciphertext as BufferSource);
+    const plaintextBuf = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: iv as BufferSource },
+      key,
+      ciphertext as BufferSource,
+    );
     const profileStr = new TextDecoder().decode(plaintextBuf);
     return JSON.parse(profileStr) as UserProfile;
   }
@@ -1799,7 +1803,11 @@ export class AuthService {
     const key = await this.getAesKeyFromString(keyStr);
     const iv = this.b64ToUint8(b64Iv);
     const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv as BufferSource }, key, ciphertext as BufferSource);
+    const plaintextBuf = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: iv as BufferSource },
+      key,
+      ciphertext as BufferSource,
+    );
     const plaintext = new TextDecoder().decode(plaintextBuf);
     const parsed = JSON.parse(plaintext) as JwtToken;
     // Convert expiresAt string back to Date object if needed
