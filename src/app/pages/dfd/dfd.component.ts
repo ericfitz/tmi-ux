@@ -87,6 +87,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
 import { DiagramResyncService } from './services/diagram-resync.service';
+import { DiagramLoadingService } from './services/diagram-loading.service';
 import { COLLABORATION_NOTIFICATION_SERVICE } from '../../core/interfaces/collaboration-notification.interface';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
@@ -150,6 +151,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     WebSocketService,
     DfdStateService,
     DiagramResyncService,
+    DiagramLoadingService,
 
     // Facade service
     DfdFacadeService,
@@ -238,6 +240,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private presenterCoordinatorService: PresenterCoordinatorService,
     private x6SelectionAdapter: X6SelectionAdapter,
     private diagramResyncService: DiagramResyncService,
+    private diagramLoadingService: DiagramLoadingService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -531,6 +534,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     );
 
+    this._subscriptions.add(
+      this.dfdStateService.triggerResyncEvents$.subscribe({
+        next: () => {
+          this.diagramResyncService.triggerResync();
+        },
+        error: error => this.logger.error('Error handling trigger resync event', error),
+      }),
+    );
+
     // Subscribe to WebSocket domain events for UI updates
     this._subscriptions.add(
       this.webSocketService.authorizationDenied$.subscribe({
@@ -697,6 +709,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.dfdId || 'default-diagram',
                 this.threatModelId || '',
                 this.x6GraphAdapter.getGraph(),
+                this.x6GraphAdapter,
               );
               this.logger.info('DiagramResyncService initialized with context');
             }
@@ -929,50 +942,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const graph = this.x6GraphAdapter.getGraph();
 
-      this.logger.info('Loading diagram cells into graph with history disabled', {
-        cellCount: cells.length,
-        dfdId: this.dfdId,
-        cells: cells.map(cell => ({ id: cell.id, shape: cell.shape })),
-      });
-
-      // CRITICAL: Disable history tracking before loading diagram cells to prevent
-      // initial diagram load from creating history entries
-      const historyManager = this.x6GraphAdapter.getHistoryManager();
-      if (historyManager) {
-        historyManager.disable(graph);
-        this.logger.info('History tracking disabled for initial diagram load');
-      }
-
-      try {
-        // Use the facade service to handle batch loading with proper history management
-        this.facade.loadDiagramCellsBatch(
-          cells,
-          graph,
-          this.dfdId || 'default-diagram',
-          this.nodeConfigurationService,
-        );
-
-        this.logger.info('Successfully loaded diagram cells into graph');
-
-        // Check if cells were actually added to the graph
-        const graphCells = graph.getCells();
-        this.logger.info('Graph state after loading', {
-          totalCellsInGraph: graphCells.length,
-          cellIds: graphCells.map(cell => cell.id),
-        });
-      } finally {
-        // CRITICAL: Re-enable history tracking after diagram is fully loaded
-        if (historyManager) {
-          // Clear any history entries that might have been created during initialization
-          historyManager.clearHistory(graph);
-          historyManager.enable(graph);
-          this.logger.info('History tracking re-enabled after diagram load completed');
-        }
-
-        // Update embedding appearances AFTER history is cleared and re-enabled
-        // This prevents the appearance updates from triggering auto-save
-        this.x6GraphAdapter.updateAllEmbeddingAppearances();
-      }
+      // Use the shared diagram loading service for consistent cell loading
+      this.diagramLoadingService.loadCellsIntoGraph(
+        cells,
+        graph,
+        this.dfdId || 'default-diagram',
+        this.x6GraphAdapter,
+        {
+          clearExisting: false, // Don't clear for initial load (graph should be empty)
+          suppressHistory: true, // Don't create history entries during initial load
+          updateEmbedding: true, // Update embedding appearances
+          source: 'initial-load', // Mark source for logging
+        },
+      );
 
       this.cdr.markForCheck();
     } catch (error) {

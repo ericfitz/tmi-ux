@@ -13,7 +13,6 @@ import { filter, map, takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { DiagramResyncService } from './diagram-resync.service';
 import {
   CellOperation,
   CellPatchOperation,
@@ -99,17 +98,18 @@ export class DfdStateService implements OnDestroy {
   }>();
   private readonly _applyCorrectionEvent$ = new Subject<WSCell[]>();
   private readonly _requestResyncEvent$ = new Subject<{ method: string }>();
+  private readonly _triggerResyncEvent$ = new Subject<void>();
 
   public readonly applyOperationEvents$ = this._applyOperationEvent$.asObservable();
   public readonly applyCorrectionEvents$ = this._applyCorrectionEvent$.asObservable();
   public readonly requestResyncEvents$ = this._requestResyncEvent$.asObservable();
+  public readonly triggerResyncEvents$ = this._triggerResyncEvent$.asObservable();
 
   constructor(
     private _logger: LoggerService,
     private _webSocketService: WebSocketService,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
-    private _resyncService: DiagramResyncService,
   ) {
     this._logger.info('DfdStateService initialized');
   }
@@ -297,7 +297,7 @@ export class DfdStateService implements OnDestroy {
     });
 
     // Trigger debounced resynchronization instead of applying cells directly
-    this._resyncService.triggerResync();
+    this._triggerResyncEvent$.next();
 
     this._logger.debug('State correction processed - resync triggered');
   }

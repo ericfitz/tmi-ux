@@ -9,14 +9,14 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject, timer, of, throwError } from 'rxjs';
-import { debounceTime, switchMap, catchError, tap, takeUntil } from 'rxjs/operators';
+import { debounceTime, switchMap, catchError, tap, takeUntil, finalize } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { DfdFacadeService } from './dfd-facade.service';
 import { DfdStateService } from './dfd-state.service';
-import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
+import { DiagramLoadingService } from './diagram-loading.service';
+import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
 
 /**
  * Configuration for resynchronization behavior
@@ -47,6 +47,7 @@ export class DiagramResyncService implements OnDestroy {
   private _currentDiagramId: string | null = null;
   private _currentThreatModelId: string | null = null;
   private _currentGraph: Graph | null = null;
+  private _currentX6GraphAdapter: X6GraphAdapter | null = null;
 
   private readonly _config: ResyncConfig = {
     debounceMs: 1000, // 1 second debounce
@@ -64,9 +65,8 @@ export class DiagramResyncService implements OnDestroy {
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
-    private dfdFacadeService: DfdFacadeService,
     private dfdStateService: DfdStateService,
-    private nodeConfigurationService: NodeConfigurationService,
+    private diagramLoadingService: DiagramLoadingService,
   ) {
     this._setupDebouncedResync();
     this.logger.info('DiagramResyncService initialized');
@@ -75,10 +75,16 @@ export class DiagramResyncService implements OnDestroy {
   /**
    * Initialize the service with diagram context
    */
-  initialize(diagramId: string, threatModelId: string, graph: Graph): void {
+  initialize(
+    diagramId: string,
+    threatModelId: string,
+    graph: Graph,
+    x6GraphAdapter: X6GraphAdapter,
+  ): void {
     this._currentDiagramId = diagramId;
     this._currentThreatModelId = threatModelId;
     this._currentGraph = graph;
+    this._currentX6GraphAdapter = x6GraphAdapter;
 
     this.logger.info('DiagramResyncService initialized with context', {
       diagramId,
@@ -91,7 +97,12 @@ export class DiagramResyncService implements OnDestroy {
    * Multiple calls within the debounce window will be collapsed into a single resync
    */
   triggerResync(): void {
-    if (!this._currentDiagramId || !this._currentThreatModelId || !this._currentGraph) {
+    if (
+      !this._currentDiagramId ||
+      !this._currentThreatModelId ||
+      !this._currentGraph ||
+      !this._currentX6GraphAdapter
+    ) {
       this.logger.warn('Cannot trigger resync - service not properly initialized');
       return;
     }
@@ -195,7 +206,12 @@ export class DiagramResyncService implements OnDestroy {
    * Perform the actual resynchronization
    */
   private _performResync(): Observable<ResyncResult> {
-    if (!this._currentDiagramId || !this._currentThreatModelId || !this._currentGraph) {
+    if (
+      !this._currentDiagramId ||
+      !this._currentThreatModelId ||
+      !this._currentGraph ||
+      !this._currentX6GraphAdapter
+    ) {
       return throwError(() => new Error('Resync service not properly initialized'));
     }
 
@@ -231,10 +247,8 @@ export class DiagramResyncService implements OnDestroy {
           this.logger.error('Resync operation failed', error);
           throw error;
         }),
-        tap({
-          finalize: () => {
-            this._isResyncInProgress = false;
-          },
+        finalize(() => {
+          this._isResyncInProgress = false;
         }),
       );
   }
@@ -245,8 +259,8 @@ export class DiagramResyncService implements OnDestroy {
   private _updateLocalDiagram(diagram: any): Observable<ResyncResult> {
     return new Observable<ResyncResult>(observer => {
       try {
-        if (!this._currentGraph) {
-          throw new Error('Graph reference not available');
+        if (!this._currentGraph || !this._currentX6GraphAdapter) {
+          throw new Error('Graph reference or adapter not available');
         }
 
         const graph = this._currentGraph;
@@ -261,13 +275,18 @@ export class DiagramResyncService implements OnDestroy {
         this.dfdStateService.setApplyingRemoteChange(true);
 
         try {
-          // Use the facade service's batch loading mechanism
-          // This will handle proper conversion and loading without triggering history/collaboration
-          this.dfdFacadeService.loadDiagramCellsBatch(
+          // Use the shared diagram loading service with resync-specific options
+          this.diagramLoadingService.loadCellsIntoGraph(
             cells,
             graph,
             this._currentDiagramId!,
-            this.nodeConfigurationService,
+            this._currentX6GraphAdapter,
+            {
+              clearExisting: true, // Clear existing cells for full resync
+              suppressHistory: true, // Don't create history entries
+              updateEmbedding: true, // Update embedding appearances
+              source: 'resync', // Mark source for logging
+            },
           );
 
           const result: ResyncResult = {
@@ -300,6 +319,7 @@ export class DiagramResyncService implements OnDestroy {
     this._currentDiagramId = null;
     this._currentThreatModelId = null;
     this._currentGraph = null;
+    this._currentX6GraphAdapter = null;
     this._isResyncInProgress = false;
     this.logger.debug('DiagramResyncService reset');
   }
