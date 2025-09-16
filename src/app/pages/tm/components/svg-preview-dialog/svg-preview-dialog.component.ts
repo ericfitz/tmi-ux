@@ -26,14 +26,28 @@ export interface SvgPreviewDialogData {
       </div>
 
       <div mat-dialog-content class="dialog-content">
-        <div class="svg-container">
-          <img
-            [src]="data.svgDataUrl"
-            [alt]="'Large preview of ' + data.diagram.name"
-            class="svg-image"
-            (error)="onImageError($event)"
-            (load)="onImageLoad($event)"
-          />
+        <div class="svg-previews">
+          <div class="svg-container">
+            <h3>Original SVG</h3>
+            <img
+              [src]="data.svgDataUrl"
+              [alt]="'Original preview of ' + data.diagram.name"
+              class="svg-image"
+              (error)="onOriginalImageError($event)"
+              (load)="onOriginalImageLoad($event)"
+            />
+          </div>
+          
+          <div class="svg-container">
+            <h3>Processed SVG (viewBox removed)</h3>
+            <img
+              [src]="processedDataUrl"
+              [alt]="'Processed preview of ' + data.diagram.name"
+              class="svg-image"
+              (error)="onProcessedImageError($event)"
+              (load)="onProcessedImageLoad($event)"
+            />
+          </div>
         </div>
         
         <div class="diagram-info">
@@ -57,12 +71,23 @@ export interface SvgPreviewDialogData {
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Decoded SVG Content</mat-label>
+            <mat-label>Decoded SVG Content (Original)</mat-label>
             <textarea
               matInput
               [value]="decodedSvg"
               readonly
-              rows="8"
+              rows="6"
+              class="monospace-text"
+            ></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Processed SVG Content (viewBox removed)</mat-label>
+            <textarea
+              matInput
+              [value]="processedSvg"
+              readonly
+              rows="6"
               class="monospace-text"
             ></textarea>
           </mat-form-field>
@@ -105,16 +130,33 @@ export interface SvgPreviewDialogData {
       overflow: auto;
     }
 
+    .svg-previews {
+      display: flex;
+      gap: 16px;
+      flex: 1;
+      min-height: 400px;
+    }
+
     .svg-container {
       flex: 1;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column;
       border: 1px solid #e0e0e0;
       border-radius: 4px;
       background-color: #fafafa;
-      min-height: 400px;
       overflow: auto;
+    }
+
+    .svg-container h3 {
+      margin: 8px 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .svg-container .svg-image {
+      flex: 1;
+      margin: 12px;
     }
 
     .svg-image {
@@ -163,6 +205,8 @@ export interface SvgPreviewDialogData {
 export class SvgPreviewDialogComponent {
   base64Data: string;
   decodedSvg: string;
+  processedSvg: string;
+  processedDataUrl: string;
 
   constructor(
     public dialogRef: MatDialogRef<SvgPreviewDialogComponent>,
@@ -174,8 +218,12 @@ export class SvgPreviewDialogComponent {
     // Decode the base64 to get SVG content
     try {
       this.decodedSvg = atob(this.base64Data);
+      this.processedSvg = this.processSvgForBetterDisplay(this.decodedSvg);
+      this.processedDataUrl = `data:image/svg+xml;base64,${btoa(this.processedSvg)}`;
     } catch (error) {
       this.decodedSvg = `Error decoding base64: ${String(error)}`;
+      this.processedSvg = this.decodedSvg;
+      this.processedDataUrl = this.data.svgDataUrl;
       console.error('Failed to decode base64 SVG data:', error);
     }
   }
@@ -184,21 +232,68 @@ export class SvgPreviewDialogComponent {
     this.dialogRef.close();
   }
 
+  /**
+   * Process SVG to improve display by removing or adjusting viewBox
+   * @param svgContent The original SVG content
+   * @returns Processed SVG content
+   */
+  private processSvgForBetterDisplay(svgContent: string): string {
+    try {
+      // Create a temporary DOM element to parse the SVG
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+      
+      if (!svgElement) {
+        return svgContent; // Return original if we can't parse it
+      }
+
+      // Option 1: Remove viewBox entirely and let browser auto-fit
+      svgElement.removeAttribute('viewBox');
+      
+      // Option 2: Set width and height to auto to let content determine size
+      svgElement.setAttribute('width', 'auto');
+      svgElement.setAttribute('height', 'auto');
+      
+      // Option 3: Try to calculate bounding box of visible content
+      // This is more complex and would require analyzing all elements
+      
+      return new XMLSerializer().serializeToString(svgDoc);
+    } catch (error) {
+      console.error('Failed to process SVG:', error);
+      return svgContent; // Return original on error
+    }
+  }
+
   copyDataUrl(): void {
     void navigator.clipboard.writeText(this.data.svgDataUrl).then(() => {
       // Could add a snackbar here for feedback
     });
   }
 
-  onImageError(event: Event): void {
-    console.error('SVG image failed to load:', event);
-    console.error('Data URL that failed:', this.data.svgDataUrl.substring(0, 200));
+  onOriginalImageError(event: Event): void {
+    console.error('Original SVG image failed to load:', event);
+    console.error('Original data URL that failed:', this.data.svgDataUrl.substring(0, 200));
   }
 
-  onImageLoad(event: Event): void {
-    console.info('SVG image loaded successfully:', event);
+  onOriginalImageLoad(event: Event): void {
+    console.info('Original SVG image loaded successfully:', event);
     const img = event.target as HTMLImageElement;
-    console.info('Image dimensions:', { 
+    console.info('Original image dimensions:', { 
+      naturalWidth: img.naturalWidth, 
+      naturalHeight: img.naturalHeight 
+    });
+  }
+
+  onProcessedImageError(event: Event): void {
+    console.error('Processed SVG image failed to load:', event);
+    console.error('Processed data URL that failed:', this.processedDataUrl.substring(0, 200));
+  }
+
+  onProcessedImageLoad(event: Event): void {
+    console.info('Processed SVG image loaded successfully:', event);
+    const img = event.target as HTMLImageElement;
+    console.info('Processed image dimensions:', { 
       naturalWidth: img.naturalWidth, 
       naturalHeight: img.naturalHeight 
     });

@@ -2363,30 +2363,158 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const graph = this.x6GraphAdapter.getGraph();
 
-      // Cast graph to access export methods added by the plugin
+      // Get the content area before zooming (for logging)
+      const contentAreaBefore = graph.getContentArea();
+      
+      // Set zoom to 100% (1:1 scale) for thumbnail capture
+      this.logger.debug('Setting zoom to 100% before SVG export for thumbnail');
+      graph.zoomTo(1.0);
+      
+      // Get the content area after zooming
+      const contentAreaAfter = graph.getContentArea();
+      
+      this.logger.debug('Content area for SVG export', {
+        contentAreaBefore: contentAreaBefore,
+        contentAreaAfter: contentAreaAfter,
+        padding: 20
+      });
+
+      // Cast graph to access export methods added by the plugin with options
       const exportGraph = graph as {
-        toSVG: (callback: (svgString: string) => void) => void;
+        toSVG: (callback: (svgString: string) => void, options?: {
+          padding?: number;
+          viewBox?: string;
+          preserveAspectRatio?: string;
+          copyStyles?: boolean;
+        }) => void;
       };
 
       try {
+        // Create export options to center on content with padding
+        const exportOptions: {
+          padding: number;
+          copyStyles: boolean;
+          preserveAspectRatio: string;
+          viewBox?: string;
+        } = {
+          padding: 20, // 20px padding around visible content
+          copyStyles: false, // Exclude CSS styles - experiment
+          preserveAspectRatio: 'xMidYMid meet' // Center content in viewBox
+        };
+
+        // Note: Keeping original viewport, not setting custom viewBox
+        this.logger.debug('Using original viewport for SVG export', {
+          contentAreaAfter: contentAreaAfter,
+          exportOptions: exportOptions
+        });
+
         exportGraph.toSVG((svgString: string) => {
           try {
-            // Convert SVG string to base64
-            const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
-            this.logger.debug('Successfully captured diagram SVG', {
-              svgLength: svgString.length,
+            // Clean up the SVG by removing X6-specific classes and styling
+            const cleanedSvg = this.cleanSvgForThumbnail(svgString);
+            
+            // Convert cleaned SVG string to base64
+            const base64Svg = btoa(unescape(encodeURIComponent(cleanedSvg)));
+            this.logger.debug('Successfully captured and cleaned diagram SVG', {
+              originalLength: svgString.length,
+              cleanedLength: cleanedSvg.length,
               base64Length: base64Svg.length,
+              exportOptions: exportOptions
             });
             resolve(base64Svg);
           } catch (error) {
             this.logger.error('Error encoding SVG to base64', error);
             resolve(null);
           }
-        });
+        }, exportOptions);
       } catch (error) {
         this.logger.error('Error capturing SVG from graph', error);
         resolve(null);
       }
     });
+  }
+
+  /**
+   * Clean SVG by removing X6-specific classes and unnecessary styling attributes
+   * @param svgString The original SVG string from X6
+   * @returns Cleaned SVG string
+   */
+  private cleanSvgForThumbnail(svgString: string): string {
+    try {
+      // Parse the SVG
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+      
+      if (!svgElement) {
+        return svgString; // Return original if parsing fails
+      }
+
+      // Remove X6-specific classes and attributes
+      const elementsToClean = svgDoc.querySelectorAll('*');
+      elementsToClean.forEach(element => {
+        // Remove X6-specific classes
+        const classNames = element.className.baseVal || element.className;
+        if (typeof classNames === 'string') {
+          const cleanedClasses = classNames
+            .split(' ')
+            .filter(cls => !cls.startsWith('x6-'))
+            .join(' ');
+          if (cleanedClasses) {
+            element.setAttribute('class', cleanedClasses);
+          } else {
+            element.removeAttribute('class');
+          }
+        }
+        
+        // Remove X6-specific attributes
+        const attributesToRemove = [
+          'data-cell-id', 
+          'data-shape', 
+          'port', 
+          'port-group', 
+          'magnet',
+          'cursor',
+          'pointer-events'
+        ];
+        attributesToRemove.forEach(attr => {
+          element.removeAttribute(attr);
+        });
+        
+        // Clean up style attributes - remove visibility hidden for cleaner display
+        const style = element.getAttribute('style');
+        if (style) {
+          const cleanedStyle = style
+            .split(';')
+            .filter(prop => !prop.includes('visibility: hidden'))
+            .join(';');
+          if (cleanedStyle) {
+            element.setAttribute('style', cleanedStyle);
+          } else {
+            element.removeAttribute('style');
+          }
+        }
+      });
+
+      // Remove empty groups and decorative elements
+      const emptyGroups = svgDoc.querySelectorAll('g:empty');
+      emptyGroups.forEach(group => group.remove());
+      
+      // Remove specific X6 decorative elements
+      const decorativeSelectors = [
+        '.x6-graph-svg-primer',
+        '.x6-graph-svg-decorator',
+        '.x6-graph-svg-overlay'
+      ];
+      decorativeSelectors.forEach(selector => {
+        const elements = svgDoc.querySelectorAll(selector);
+        elements.forEach(el => el.remove());
+      });
+
+      return new XMLSerializer().serializeToString(svgDoc);
+    } catch (error) {
+      this.logger.warn('Failed to clean SVG, returning original', { error });
+      return svgString;
+    }
   }
 }

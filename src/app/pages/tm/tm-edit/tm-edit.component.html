@@ -247,15 +247,13 @@
             <div matListItemTitle class="diagram-title-with-thumbnail">
               <div class="diagram-name">{{ diagram.name }}</div>
               <div *ngIf="hasSvgImage(diagram)" class="diagram-thumbnail-container">
-                <img
-                  [src]="getSvgDataUrl(diagram)"
+                <div
                   class="diagram-thumbnail"
-                  [alt]="'Thumbnail of ' + diagram.name"
+                  [style.background-image]="'url(' + getSvgDataUrl(diagram) + ')'"
                   [matTooltip]="'Diagram preview'"
                   matTooltipPosition="above"
-                  (error)="onThumbnailError($event, diagram)"
-                  (load)="onThumbnailLoad($event, diagram)"
-                />
+                  [attr.aria-label]="'Thumbnail of ' + diagram.name"
+                ></div>
               </div>
             </div>
             <div matListItemMeta>

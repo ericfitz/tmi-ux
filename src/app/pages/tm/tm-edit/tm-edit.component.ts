@@ -1864,11 +1864,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
         // Check data URL
         if (isValid) {
           let dataUrl: string;
-          if (this.svgCacheService.hasDataUrlCache(cacheKey)) {
-            dataUrl = this.svgCacheService.getDataUrlCache(cacheKey)!;
+          const processedCacheKey = `${cacheKey}-processed`;
+          if (this.svgCacheService.hasDataUrlCache(processedCacheKey)) {
+            dataUrl = this.svgCacheService.getDataUrlCache(processedCacheKey)!;
           } else {
-            dataUrl = `data:image/svg+xml;base64,${diagram.image.svg}`;
-            this.svgCacheService.setDataUrlCache(cacheKey, dataUrl);
+            // Try to process SVG for better thumbnail display
+            const processedSvg = this.processSvgForThumbnail(diagram.image.svg);
+            dataUrl = `data:image/svg+xml;base64,${processedSvg}`;
+            this.svgCacheService.setDataUrlCache(processedCacheKey, dataUrl);
           }
           this.diagramSvgDataUrls.set(diagram.id, dataUrl);
         }
@@ -1892,6 +1895,41 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   getSvgDataUrl(diagram: Diagram): string {
     return this.diagramSvgDataUrls.get(diagram.id) || '';
+  }
+
+  /**
+   * Process SVG for better thumbnail display by removing viewBox
+   * @param base64Svg Base64 encoded SVG string
+   * @returns Processed base64 SVG string
+   */
+  private processSvgForThumbnail(base64Svg: string): string {
+    try {
+      // Decode the base64 SVG
+      const svgContent = atob(base64Svg);
+      
+      // Create a temporary DOM element to parse the SVG
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+      
+      if (!svgElement) {
+        return base64Svg; // Return original if we can't parse it
+      }
+
+      // Remove viewBox to let content determine the size
+      svgElement.removeAttribute('viewBox');
+      
+      // Set reasonable width and height for thumbnails
+      svgElement.setAttribute('width', '200');
+      svgElement.setAttribute('height', '150');
+      
+      // Serialize back to string and re-encode
+      const processedSvg = new XMLSerializer().serializeToString(svgDoc);
+      return btoa(processedSvg);
+    } catch (error) {
+      this.logger.warn('Failed to process SVG for thumbnail', { error });
+      return base64Svg; // Return original on error
+    }
   }
 
   /**
@@ -1949,6 +1987,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Handle thumbnail image load event
    * @param event The load event
    * @param diagram The diagram object
+   * @deprecated No longer used since switching to background-image approach
    */
   onThumbnailLoad(event: Event, diagram: Diagram): void {
     const img = event.target as HTMLImageElement;
@@ -1965,6 +2004,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Handle thumbnail image error event
    * @param event The error event
    * @param diagram The diagram object
+   * @deprecated No longer used since switching to background-image approach
    */
   onThumbnailError(event: Event, diagram: Diagram): void {
     const img = event.target as HTMLImageElement;
