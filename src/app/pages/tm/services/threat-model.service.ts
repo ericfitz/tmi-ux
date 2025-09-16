@@ -1354,6 +1354,9 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // Build operations array for both cells and image
+    // Exclude update_vector from image data when sending PATCH request
+    const { update_vector, ...imageDataForPatch } = imageData;
+
     const operations = [
       {
         op: 'replace' as const,
@@ -1363,7 +1366,7 @@ export class ThreatModelService implements OnDestroy {
       {
         op: 'replace' as const,
         path: '/image',
-        value: imageData,
+        value: imageDataForPatch,
       },
     ];
 

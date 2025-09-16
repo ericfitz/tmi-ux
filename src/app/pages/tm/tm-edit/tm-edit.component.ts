@@ -10,6 +10,7 @@ import { Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
 import { LanguageService } from '../../../i18n/language.service';
 import { LoggerService } from '../../../core/services/logger.service';
+import { SvgCacheService } from '../services/svg-cache.service';
 import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import { MockDataService } from '../../../mocks/mock-data.service';
@@ -30,6 +31,10 @@ import {
   SourceCodeEditorDialogComponent,
   SourceCodeEditorDialogData,
 } from '../components/source-code-editor-dialog/source-code-editor-dialog.component';
+import {
+  SvgPreviewDialogComponent,
+  SvgPreviewDialogData,
+} from '../components/svg-preview-dialog/svg-preview-dialog.component';
 import {
   PermissionsDialogComponent,
   PermissionsDialogData,
@@ -106,7 +111,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   threatModel: ThreatModel | undefined;
   threatModelForm: FormGroup;
   isNewThreatModel = false;
-  diagrams: Diagram[] = [];
+  private _diagrams: Diagram[] = [];
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
   isEditingIssueUrl = false;
@@ -116,6 +121,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
   // Permission properties
   canEdit = false;
   canManagePermissions = false;
+
+  // Computed SVG properties to prevent infinite loops
+  diagramSvgValidation = new Map<string, boolean>();
+  diagramSvgDataUrls = new Map<string, string>();
+
+  get diagrams(): Diagram[] {
+    return this._diagrams;
+  }
+
+  set diagrams(value: Diagram[]) {
+    this._diagrams = value;
+    this.computeDiagramSvgData();
+  }
 
   // Enhanced save behavior properties
   // Simplified form tracking
@@ -133,6 +151,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private languageService: LanguageService,
     private logger: LoggerService,
+    private svgCacheService: SvgCacheService,
     private apiService: ApiService,
     private transloco: TranslocoService,
     private frameworkService: FrameworkService,
@@ -346,6 +365,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Clean up subscriptions
     this._subscriptions.unsubscribe();
+
+    // Clear SVG caches to prevent memory leaks
+    this.clearSvgCaches();
+  }
+
+  /**
+   * Clear all SVG-related caches
+   * This should be called when navigating away from threat models
+   */
+  private clearSvgCaches(): void {
+    this.svgCacheService.clearAllCaches();
+    this.diagramSvgValidation.clear();
+    this.diagramSvgDataUrls.clear();
   }
 
   /**
@@ -1352,6 +1384,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   cancel(): void {
+    // Clear SVG caches before navigating away
+    this.clearSvgCaches();
     void this.router.navigate(['/tm']);
   }
 
@@ -1511,6 +1545,35 @@ export class TmEditComponent implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  /**
+   * Opens the SVG preview dialog for diagnosis
+   * @param diagram The diagram to preview
+   * @param event The right-click event
+   */
+  openSvgPreviewDialog(diagram: Diagram, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.hasSvgImage(diagram)) {
+      console.warn('No SVG data available for diagram:', diagram.id);
+      return;
+    }
+
+    const svgDataUrl = this.getSvgDataUrl(diagram);
+    const dialogData: SvgPreviewDialogData = {
+      diagram,
+      svgDataUrl,
+    };
+
+    this.dialog.open(SvgPreviewDialogComponent, {
+      width: '90vw',
+      height: '90vh',
+      maxWidth: '1400px',
+      maxHeight: '1000px',
+      data: dialogData,
+    });
   }
 
   /**
@@ -1774,6 +1837,163 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   getDiagramTooltip(diagram: Diagram): string {
     return diagram.type || 'Unknown Type';
+  }
+
+  /**
+   * Compute SVG data for all diagrams to prevent change detection loops
+   */
+  private computeDiagramSvgData(): void {
+    this.diagramSvgValidation.clear();
+    this.diagramSvgDataUrls.clear();
+
+    this._diagrams.forEach(diagram => {
+      if (diagram.image?.svg) {
+        // Create cache key from diagram ID and SVG data
+        const cacheKey = `${diagram.id}-${diagram.image.svg.substring(0, 50)}`;
+
+        // Check validation
+        let isValid: boolean;
+        if (this.svgCacheService.hasValidationCache(cacheKey)) {
+          isValid = this.svgCacheService.getValidationCache(cacheKey)!;
+        } else {
+          isValid = this.isValidBase64Svg(diagram.image.svg);
+          this.svgCacheService.setValidationCache(cacheKey, isValid);
+        }
+        this.diagramSvgValidation.set(diagram.id, isValid);
+
+        // Check data URL
+        if (isValid) {
+          let dataUrl: string;
+          if (this.svgCacheService.hasDataUrlCache(cacheKey)) {
+            dataUrl = this.svgCacheService.getDataUrlCache(cacheKey)!;
+          } else {
+            dataUrl = `data:image/svg+xml;base64,${diagram.image.svg}`;
+            this.svgCacheService.setDataUrlCache(cacheKey, dataUrl);
+          }
+          this.diagramSvgDataUrls.set(diagram.id, dataUrl);
+        }
+      }
+    });
+  }
+
+  /**
+   * Check if a diagram has a valid SVG image for thumbnail display
+   * @param diagram The diagram object
+   * @returns True if the diagram has valid SVG data
+   */
+  hasSvgImage(diagram: Diagram): boolean {
+    return this.diagramSvgValidation.get(diagram.id) || false;
+  }
+
+  /**
+   * Get the SVG data URL for a diagram thumbnail
+   * @param diagram The diagram object
+   * @returns SVG data URL or empty string
+   */
+  getSvgDataUrl(diagram: Diagram): string {
+    return this.diagramSvgDataUrls.get(diagram.id) || '';
+  }
+
+  /**
+   * Validate if a base64 string contains well-formed SVG
+   * @param base64Svg Base64 encoded SVG string
+   * @returns True if valid SVG
+   */
+  private isValidBase64Svg(base64Svg: string): boolean {
+    try {
+      // Basic validation - check if it's valid base64
+      if (!base64Svg || base64Svg.length === 0) {
+        return false;
+      }
+
+      // Decode base64
+      const svgText = atob(base64Svg);
+
+      // Log for debugging
+      this.logger.debug('Validating SVG', {
+        base64Length: base64Svg.length,
+        decodedLength: svgText.length,
+        preview: svgText.substring(0, 100),
+      });
+
+      // Basic SVG validation - check if it starts with SVG tag or XML declaration
+      const trimmed = svgText.trim();
+      if (!trimmed.startsWith('<svg') && !trimmed.startsWith('<?xml')) {
+        this.logger.warn('SVG validation failed: does not start with <svg or <?xml', {
+          actualStart: trimmed.substring(0, 20),
+        });
+        return false;
+      }
+
+      // Check if it contains svg tag
+      if (!trimmed.includes('<svg')) {
+        this.logger.warn('SVG validation failed: does not contain <svg tag');
+        return false;
+      }
+
+      // Very basic check for closing tag
+      if (!trimmed.includes('</svg>')) {
+        this.logger.warn('SVG validation failed: does not contain </svg> closing tag');
+        return false;
+      }
+
+      this.logger.debug('SVG validation passed');
+      return true;
+    } catch (error) {
+      this.logger.warn('SVG validation failed with error', { error });
+      return false;
+    }
+  }
+
+  /**
+   * Handle thumbnail image load event
+   * @param event The load event
+   * @param diagram The diagram object
+   */
+  onThumbnailLoad(event: Event, diagram: Diagram): void {
+    const img = event.target as HTMLImageElement;
+    this.logger.debug('Thumbnail loaded successfully', {
+      diagramId: diagram.id,
+      diagramName: diagram.name,
+      imageWidth: img.naturalWidth,
+      imageHeight: img.naturalHeight,
+      imageSrc: img.src.substring(0, 100),
+    });
+  }
+
+  /**
+   * Handle thumbnail image error event
+   * @param event The error event
+   * @param diagram The diagram object
+   */
+  onThumbnailError(event: Event, diagram: Diagram): void {
+    const img = event.target as HTMLImageElement;
+    this.logger.warn('Thumbnail failed to load', {
+      diagramId: diagram.id,
+      diagramName: diagram.name,
+      hasImageData: !!diagram.image?.svg,
+      svgLength: diagram.image?.svg?.length,
+      imageSrc: img.src.substring(0, 100),
+      errorEvent: event,
+    });
+
+    // Try to decode and check the SVG content
+    if (diagram.image?.svg) {
+      try {
+        const svgText = atob(diagram.image.svg);
+        this.logger.debug('SVG content analysis', {
+          diagramId: diagram.id,
+          svgStart: svgText.substring(0, 200),
+          svgEnd: svgText.substring(svgText.length - 100),
+          totalLength: svgText.length,
+        });
+      } catch (decodeError) {
+        this.logger.error('Failed to decode base64 SVG', {
+          diagramId: diagram.id,
+          decodeError,
+        });
+      }
+    }
   }
 
   /**

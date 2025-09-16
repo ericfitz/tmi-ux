@@ -234,6 +234,7 @@
             *ngFor="let diagram of diagrams"
             class="diagram-item"
             [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
+            (contextmenu)="openSvgPreviewDialog(diagram, $event)"
           >
             <mat-icon
               matListItemIcon
@@ -243,7 +244,20 @@
             >
               {{ getDiagramIcon(diagram) }}
             </mat-icon>
-            <div matListItemTitle>{{ diagram.name }}</div>
+            <div matListItemTitle class="diagram-title-with-thumbnail">
+              <div class="diagram-name">{{ diagram.name }}</div>
+              <div *ngIf="hasSvgImage(diagram)" class="diagram-thumbnail-container">
+                <img
+                  [src]="getSvgDataUrl(diagram)"
+                  class="diagram-thumbnail"
+                  [alt]="'Thumbnail of ' + diagram.name"
+                  [matTooltip]="'Diagram preview'"
+                  matTooltipPosition="above"
+                  (error)="onThumbnailError($event, diagram)"
+                  (load)="onThumbnailLoad($event, diagram)"
+                />
+              </div>
+            </div>
             <div matListItemMeta>
               <button
                 mat-icon-button

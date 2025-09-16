@@ -46,6 +46,7 @@ import {
   CollaborationSession,
 } from '../../core/services/collaboration-session.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { SvgCacheService } from './services/svg-cache.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -86,6 +87,7 @@ export class TmComponent implements OnInit, OnDestroy {
     private collaborationService: DfdCollaborationService,
     private collaborationSessionService: CollaborationSessionService,
     private logger: LoggerService,
+    private svgCacheService: SvgCacheService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
@@ -94,6 +96,9 @@ export class TmComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
+
+    // Clear SVG caches when initializing dashboard to ensure fresh start
+    this.svgCacheService.clearAllCaches();
 
     // Subscribe to collaboration session polling since we need session data on dashboard
     this.collaborationSessionService.subscribeToSessionPolling();
