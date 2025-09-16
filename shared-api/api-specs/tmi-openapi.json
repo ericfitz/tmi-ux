@@ -424,6 +424,11 @@
             },
             "description": "Key-value pairs for additional diagram metadata",
             "nullable": true
+          },
+          "svg_image": {
+            "type": "string",
+            "format": "byte",
+            "description": "BASE64 encoded SVG representation of the diagram, used for thumbnails and reports"
           }
         },
         "required": [
@@ -4299,7 +4304,14 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["Unknown", "None", "Low", "Medium", "High", "Critical"]
+              "enum": [
+                "Unknown",
+                "None",
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+              ]
             },
             "description": "Filter by severity level (exact match)"
           },
