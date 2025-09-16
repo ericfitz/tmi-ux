@@ -344,25 +344,40 @@ components:
     StateCorrectionMessage:
       name: StateCorrectionMessage
       title: State Correction
-      summary: Server sends corrected state to client
+      summary: Server sends state correction notification with update vector
       description: |
-        Message sent by server to correct client state after conflicts or unauthorized
-        operations. Contains the authoritative state for affected cells.
+        Message sent by server to notify clients that diagram state has changed and they
+        should resynchronize with the server. Used in two primary scenarios:
+        
+        ## REST API Updates
+        When a diagram is updated via REST API (not through WebSocket), all connected 
+        WebSocket clients receive a state_correction message containing the new update_vector.
+        This signals them to fetch the latest diagram state via REST API and compare 
+        update vectors to determine if they need to resync.
+        
+        ## Conflict Resolution
+        When WebSocket operations result in conflicts or invalid state, affected clients
+        receive a state_correction message with the current authoritative update_vector.
+        Clients should compare this with their local state and resync if necessary.
+        
+        ## Client Handling
+        Upon receiving a state_correction message, clients should:
+        1. Compare the provided update_vector with their local diagram state
+        2. If the server's update_vector is higher, fetch the latest diagram via REST API
+        3. Update their local state and resume normal operations
       payload:
         $ref: '#/components/schemas/StateCorrectionPayload'
       examples:
-        - name: StateCorrection
-          summary: Example of state correction
+        - name: RestApiUpdateNotification
+          summary: Notification of REST API update with new update vector
           payload:
             message_type: state_correction
-            cells:
-              - id: cell-uuid-1
-                shape: process
-                x: 100
-                y: 150
-                width: 120
-                height: 80
-                label: Corrected Label
+            update_vector: 15
+        - name: ConflictResolution
+          summary: Conflict resolution with current authoritative update vector
+          payload:
+            message_type: state_correction
+            update_vector: 23
 
     ResyncRequestMessage:
       name: ResyncRequestMessage
@@ -863,19 +878,25 @@ components:
 
     StateCorrectionPayload:
       type: object
-      description: Server sends corrected state to client
+      description: |
+        Server sends state correction notification with the current authoritative
+        update vector. Clients should compare this with their local state and
+        resync if the server's update vector is higher than their local version.
       properties:
         message_type:
           const: state_correction
-        cells:
-          type: array
-          description: Authoritative state for affected cells
-          items:
-            $ref: '#/components/schemas/Cell'
-          minItems: 1
+        update_vector:
+          type: integer
+          format: int64
+          minimum: 0
+          description: |
+            Current authoritative update vector for the diagram. Clients should
+            compare this with their local update vector and fetch the latest
+            diagram state via REST API if the server's vector is higher.
+          example: 15
       required:
         - message_type
-        - cells
+        - update_vector
       additionalProperties: false
 
     ResyncRequestPayload:

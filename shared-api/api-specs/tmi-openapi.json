@@ -425,10 +425,31 @@
             "description": "Key-value pairs for additional diagram metadata",
             "nullable": true
           },
+          "update_vector": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Server-managed monotonic version counter, incremented on each diagram update",
+            "readOnly": true,
+            "minimum": 0
+          },
           "svg_image": {
-            "type": "string",
-            "format": "byte",
-            "description": "BASE64 encoded SVG representation of the diagram, used for thumbnails and reports"
+            "type": "object",
+            "description": "SVG image data with version information",
+            "properties": {
+              "image": {
+                "type": "string",
+                "format": "byte",
+                "description": "BASE64 encoded SVG representation of the diagram, used for thumbnails and reports"
+              },
+              "update_vector": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Version of the diagram when this SVG was generated",
+                "readOnly": true,
+                "minimum": 0
+              }
+            },
+            "nullable": true
           }
         },
         "required": [

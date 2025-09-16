@@ -179,8 +179,9 @@ export class DfdDiagramService {
         edgeCount: edges.length,
       });
 
-      // Use history coordinator for atomic batch loading with history suppression
-      this.historyCoordinator.executeAtomicOperation(graph, () => {
+      // Use history coordinator for batch loading with history suppression
+      // executeRemoteOperation disables history during the operation
+      this.historyCoordinator.executeRemoteOperation(graph, () => {
         this.logger.info('Inside atomic operation - clearing existing cells');
         // Clear existing graph first
         graph.clearCells();
