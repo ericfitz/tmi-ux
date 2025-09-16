@@ -10,12 +10,12 @@ export function createMockDiagram(overrides?: Partial<Diagram>): Diagram {
   const defaultDiagram: Diagram = {
     id: uuidv4(),
     name: 'Mock Diagram',
-    description: 'Auto-generated mock diagram',
+    type: 'DFD-1.0.0',
     created_at: new Date().toISOString(),
     modified_at: new Date().toISOString(),
+    update_vector: 1,
     metadata: [],
     cells: [],
-    type: 'DFD-1.0.0',
   };
 
   return { ...defaultDiagram, ...overrides };

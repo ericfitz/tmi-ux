@@ -526,9 +526,9 @@ export class WebSocketAdapter {
                     this._tmiMessages$.next(reassembledMessage);
                   }
                 },
-                error: error => {
+                error: (error: unknown) => {
                   this.logger.error('Failed to process chunk', {
-                    error,
+                    error: error instanceof Error ? error : String(error),
                     chunkId: chunkMessage.chunk_info?.chunk_id,
                   });
                 },
@@ -674,8 +674,11 @@ export class WebSocketAdapter {
               // Send each chunk sequentially
               this._sendChunksSequentially(chunks, 0, observer);
             },
-            error: error => {
-              this.logger.error('Failed to chunk message', { error, message });
+            error: (error: unknown) => {
+              this.logger.error('Failed to chunk message', {
+                error: error instanceof Error ? error : String(error),
+                message,
+              });
               observer.error(error);
             },
           });

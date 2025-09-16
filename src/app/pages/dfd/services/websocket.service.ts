@@ -16,6 +16,7 @@ import {
   ICollaborationNotificationService,
   COLLABORATION_NOTIFICATION_SERVICE,
 } from '../../../core/interfaces';
+import { DfdStateStore } from '../state/dfd.state';
 import {
   DiagramOperationMessage,
   AuthorizationDeniedMessage,
@@ -50,7 +51,7 @@ export interface AuthorizationDeniedEvent {
 
 export interface StateCorrectionEvent {
   type: 'state-correction';
-  cells: any[];
+  update_vector: number;
 }
 
 export interface HistoryOperationEvent {
@@ -233,6 +234,7 @@ export class WebSocketService implements OnDestroy {
   constructor(
     private _logger: LoggerService,
     private _webSocketAdapter: WebSocketAdapter,
+    private _dfdStateStore: DfdStateStore,
     @Optional()
     @Inject(COLLABORATION_NOTIFICATION_SERVICE)
     private _notificationService: ICollaborationNotificationService | null,
@@ -436,14 +438,39 @@ export class WebSocketService implements OnDestroy {
   }
 
   private _handleStateCorrection(message: StateCorrectionMessage): void {
+    const currentUpdateVector = this._dfdStateStore.updateVector;
+
     this._logger.info('State correction received', {
-      cellCount: message.cells.length,
+      serverUpdateVector: message.update_vector,
+      currentUpdateVector,
     });
 
-    this._domainEvents$.next({
-      type: 'state-correction',
-      cells: message.cells,
-    });
+    // If our local copy has the same update vector as the server, we don't need to update
+    if (currentUpdateVector === message.update_vector) {
+      this._logger.debug('Local diagram is already up to date, ignoring state correction', {
+        updateVector: message.update_vector,
+      });
+      return;
+    }
+
+    // If the server's update vector is higher, we need to resync
+    if (message.update_vector > currentUpdateVector) {
+      this._logger.info('Server has newer version, triggering resync', {
+        serverUpdateVector: message.update_vector,
+        currentUpdateVector,
+      });
+
+      this._domainEvents$.next({
+        type: 'state-correction',
+        update_vector: message.update_vector,
+      });
+    } else {
+      // Server's update vector is lower than ours - this shouldn't normally happen
+      this._logger.warn('Received state correction with older update vector', {
+        serverUpdateVector: message.update_vector,
+        currentUpdateVector,
+      });
+    }
   }
 
   private _handleHistoryOperation(message: HistoryOperationMessage): void {

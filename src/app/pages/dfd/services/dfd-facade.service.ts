@@ -370,6 +370,23 @@ export class DfdFacadeService {
     return this.diagramService.saveDiagramChanges(graph, diagramId, threatModelId);
   }
 
+  /**
+   * Save diagram changes with image data back to the threat model
+   */
+  saveDiagramChangesWithImage(
+    graph: Graph,
+    diagramId: string,
+    threatModelId: string,
+    imageData: { svg?: string; update_vector?: number },
+  ): Observable<boolean> {
+    return this.diagramService.saveDiagramChangesWithImage(
+      graph,
+      diagramId,
+      threatModelId,
+      imageData,
+    );
+  }
+
   // ===============================
   // Remote Operation Methods for WebSocket Integration
   // ===============================

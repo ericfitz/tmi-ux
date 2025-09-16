@@ -621,6 +621,132 @@ export class DfdDiagramService {
   }
 
   /**
+   * Save diagram changes with image data back to the threat model
+   * Routes to WebSocket for collaborative sessions, REST for solo editing
+   * Implements graceful fallback to REST when WebSocket fails
+   */
+  saveDiagramChangesWithImage(
+    graph: Graph,
+    diagramId: string,
+    threatModelId: string,
+    imageData: { svg?: string; update_vector?: number },
+  ): Observable<boolean> {
+    // Check if in collaborative mode
+    if (this.collaborationService.isCollaborating()) {
+      this.logger.debug(
+        'Collaborative mode: attempting WebSocket save with image data and REST fallback',
+      );
+
+      // In collaborative mode, try WebSocket first, but fall back to REST if WebSocket fails
+      // For bulk save operations (like auto-save), we need to convert the entire graph state
+      return this._saveViaWebSocketWithImageFallback(graph, diagramId, threatModelId, imageData);
+    }
+
+    // Solo mode: use REST with image data
+    return this.saveViaRESTWithImage(graph, diagramId, threatModelId, imageData);
+  }
+
+  /**
+   * Attempt save via WebSocket with image data, falling back to REST if WebSocket fails
+   */
+  private _saveViaWebSocketWithImageFallback(
+    graph: Graph,
+    diagramId: string,
+    threatModelId: string,
+    imageData: { svg?: string; update_vector?: number },
+  ): Observable<boolean> {
+    // Convert current graph state to cell operations (full state sync)
+    const cells = this.convertGraphToCellsFormat(graph);
+    const operations: CellOperation[] = cells.map(cell => ({
+      id: cell.id,
+      operation: 'update',
+      data: cell,
+    }));
+
+    this.logger.debug('[DfdDiagram] Attempting WebSocket save with image data', {
+      diagramId,
+      threatModelId,
+      operationCount: operations.length,
+      hasImageData: !!imageData.svg,
+    });
+
+    // Try WebSocket save first
+    return this.sendCollaborativeOperation(operations, graph, diagramId, threatModelId).pipe(
+      map(() => true), // Convert void to boolean success
+      catchError((wsError: unknown) => {
+        this.logger.warn(
+          'WebSocket save with image failed, falling back to REST with image',
+          wsError,
+          {
+            diagramId,
+            threatModelId,
+            operationCount: operations.length,
+          },
+        );
+
+        // Fall back to REST save with image
+        return this.saveViaRESTWithImage(graph, diagramId, threatModelId, imageData).pipe(
+          catchError((restError: unknown) => {
+            this.logger.error('Both WebSocket and REST save with image failed', {
+              wsError: wsError instanceof Error ? wsError.message : String(wsError),
+              restError: restError instanceof Error ? restError.message : String(restError),
+            });
+            return of(false); // Return false instead of throwing to match REST behavior
+          }),
+        );
+      }),
+    );
+  }
+
+  /**
+   * Save diagram changes with image data via REST API (non-collaborative mode)
+   */
+  private saveViaRESTWithImage(
+    graph: Graph,
+    diagramId: string,
+    threatModelId: string,
+    imageData: { svg?: string; update_vector?: number },
+  ): Observable<boolean> {
+    this.logger.info('Saving diagram changes with image using REST PATCH', {
+      diagramId,
+      threatModelId,
+      hasImageData: !!imageData.svg,
+    });
+
+    // Convert current graph state to cells format
+    const cells = this.convertGraphToCellsFormat(graph);
+    this.logger.debug('[DfdDiagram] Converted graph to cells format with image', {
+      cellCount: cells.length,
+      hasImageData: !!imageData.svg,
+    });
+
+    // Use the PATCH method for diagram-only updates with image data
+    return this.threatModelService
+      .patchDiagramWithImage(threatModelId, diagramId, cells, imageData)
+      .pipe(
+        map(updatedDiagram => {
+          this.logger.info('Successfully saved diagram changes with image using REST PATCH', {
+            diagramId,
+            threatModelId,
+            cellCount: cells.length,
+            diagramName: updatedDiagram.name,
+            hasImageData: !!imageData.svg,
+          });
+          return true;
+        }),
+        catchError(error => {
+          this.logger.error('Error saving diagram changes with image using REST PATCH', error, {
+            diagramId,
+            threatModelId,
+            cellCount: cells.length,
+            hasImageData: !!imageData.svg,
+          });
+          return of(false);
+        }),
+      );
+  }
+
+  /**
    * Attempt save via WebSocket, falling back to REST if WebSocket fails
    */
   private _saveViaWebSocketWithFallback(

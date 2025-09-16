@@ -432,11 +432,11 @@
             "readOnly": true,
             "minimum": 0
           },
-          "svg_image": {
+          "image": {
             "type": "object",
-            "description": "SVG image data with version information",
+            "description": "Image data with version information",
             "properties": {
-              "image": {
+              "svg": {
                 "type": "string",
                 "format": "byte",
                 "description": "BASE64 encoded SVG representation of the diagram, used for thumbnails and reports"

@@ -54,6 +54,7 @@ import { DfdCollaborationComponent } from './components/collaboration/collaborat
 import { CollaborativeOperationService } from './services/collaborative-operation.service';
 import { WebSocketService } from './services/websocket.service';
 import { DfdStateService } from './services/dfd-state.service';
+import { DfdStateStore } from './state/dfd.state';
 import { CellOperation, Cell as WSCell } from '../../core/types/websocket-message.types';
 
 // Import providers needed for standalone component
@@ -233,6 +234,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private collaborativeOperationService: CollaborativeOperationService,
     private webSocketService: WebSocketService,
     private dfdStateService: DfdStateService,
+    private dfdStateStore: DfdStateStore,
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
@@ -1648,31 +1650,84 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.logger.info('Saving diagram changes before closing', {
         threatModelId: this.threatModelId,
         dfdId: this.dfdId,
+        hasWriterAccess: !this.isReadOnlyMode,
       });
 
-      this._subscriptions.add(
-        this.facade.saveDiagramChanges(graph, this.dfdId, this.threatModelId).subscribe({
-          next: success => {
-            if (success) {
-              this.logger.info('Diagram changes saved successfully');
-            } else {
-              this.logger.warn('Failed to save diagram changes');
-            }
-            // Navigate away regardless of save success/failure
-            this.facade.closeDiagram(this.threatModelId, this.dfdId);
-          },
-          error: error => {
-            this.logger.error('Error saving diagram changes', error);
-            // Navigate away even if save failed
-            this.facade.closeDiagram(this.threatModelId, this.dfdId);
-          },
-        }),
-      );
+      // Check if we should capture SVG image (autosave enabled + writer access)
+      const shouldCaptureImage = !this.isReadOnlyMode; // Writer access check
+
+      if (shouldCaptureImage) {
+        this.logger.info('Capturing diagram SVG before closing (user has writer access)');
+
+        // Capture SVG first, then save with image data
+        this.captureDiagramSvg()
+          .then(base64Svg => {
+            // Only include SVG in image data if it was successfully captured
+            const imageData = {
+              svg: base64Svg || undefined,
+              update_vector: this.dfdStateStore.updateVector,
+            };
+
+            this._subscriptions.add(
+              this.facade
+                .saveDiagramChangesWithImage(graph, this.dfdId!, this.threatModelId!, imageData)
+                .subscribe({
+                  next: success => {
+                    if (success) {
+                      this.logger.info('Diagram changes and image saved successfully');
+                    } else {
+                      this.logger.warn('Failed to save diagram changes and image');
+                    }
+                    // Navigate away regardless of save success/failure
+                    this.facade.closeDiagram(this.threatModelId, this.dfdId);
+                  },
+                  error: error => {
+                    this.logger.error('Error saving diagram changes and image', error);
+                    // Navigate away even if save failed
+                    this.facade.closeDiagram(this.threatModelId, this.dfdId);
+                  },
+                }),
+            );
+          })
+          .catch(error => {
+            this.logger.error('Error capturing SVG, falling back to regular save', error);
+            // Fall back to regular save without image
+            this._performRegularSave(graph);
+          });
+      } else {
+        // User doesn't have writer access or autosave disabled, use regular save
+        this.logger.debug('Skipping SVG capture (read-only mode or autosave disabled)');
+        this._performRegularSave(graph);
+      }
       return;
     }
 
     // If we don't have the necessary data or graph is not initialized, just close
     this.facade.closeDiagram(this.threatModelId, this.dfdId);
+  }
+
+  /**
+   * Perform regular diagram save without image capture
+   */
+  private _performRegularSave(graph: any): void {
+    this._subscriptions.add(
+      this.facade.saveDiagramChanges(graph, this.dfdId!, this.threatModelId!).subscribe({
+        next: success => {
+          if (success) {
+            this.logger.info('Diagram changes saved successfully');
+          } else {
+            this.logger.warn('Failed to save diagram changes');
+          }
+          // Navigate away regardless of save success/failure
+          this.facade.closeDiagram(this.threatModelId, this.dfdId);
+        },
+        error: error => {
+          this.logger.error('Error saving diagram changes', error);
+          // Navigate away even if save failed
+          this.facade.closeDiagram(this.threatModelId, this.dfdId);
+        },
+      }),
+    );
   }
 
   /**
@@ -2293,5 +2348,45 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         },
       });
     }
+  }
+
+  /**
+   * Capture SVG from the current graph and return as base64 encoded string
+   */
+  private captureDiagramSvg(): Promise<string | null> {
+    return new Promise(resolve => {
+      if (!this.x6GraphAdapter.isInitialized()) {
+        this.logger.warn('Cannot capture SVG - graph not initialized');
+        resolve(null);
+        return;
+      }
+
+      const graph = this.x6GraphAdapter.getGraph();
+
+      // Cast graph to access export methods added by the plugin
+      const exportGraph = graph as {
+        toSVG: (callback: (svgString: string) => void) => void;
+      };
+
+      try {
+        exportGraph.toSVG((svgString: string) => {
+          try {
+            // Convert SVG string to base64
+            const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
+            this.logger.debug('Successfully captured diagram SVG', {
+              svgLength: svgString.length,
+              base64Length: base64Svg.length,
+            });
+            resolve(base64Svg);
+          } catch (error) {
+            this.logger.error('Error encoding SVG to base64', error);
+            resolve(null);
+          }
+        });
+      } catch (error) {
+        this.logger.error('Error capturing SVG from graph', error);
+        resolve(null);
+      }
+    });
   }
 }

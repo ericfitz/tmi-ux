@@ -282,7 +282,7 @@ export class DfdStateService implements OnDestroy {
    */
   private _processStateCorrection(event: StateCorrectionEvent): void {
     this._logger.warn('Processing state correction - triggering debounced resync', {
-      cellCount: event.cells.length,
+      serverUpdateVector: event.update_vector,
     });
 
     // Update sync state to indicate we're out of sync

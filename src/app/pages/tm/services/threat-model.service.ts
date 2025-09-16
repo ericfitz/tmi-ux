@@ -1323,6 +1323,70 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Patch diagram cells and image data for a specific diagram
+   * This method updates both cells and image data using JSON Patch operations
+   */
+  patchDiagramWithImage(
+    threatModelId: string,
+    diagramId: string,
+    cells: Cell[],
+    imageData: { svg?: string; update_vector?: number },
+  ): Observable<Diagram> {
+    if (this._useMockData) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Patching mock diagram cells and image for diagram ID: ${diagramId}`,
+        { cellCount: cells.length, hasImageData: !!imageData.svg },
+      );
+
+      // For mock mode, simulate the patch operation
+      const mockDiagram: Diagram = {
+        id: diagramId,
+        name: 'Mock Diagram',
+        type: 'DFD-1.0.0',
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        cells,
+        image: imageData,
+      };
+
+      return of(mockDiagram);
+    }
+
+    // Build operations array for both cells and image
+    const operations = [
+      {
+        op: 'replace' as const,
+        path: '/cells',
+        value: cells,
+      },
+      {
+        op: 'replace' as const,
+        path: '/image',
+        value: imageData,
+      },
+    ];
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Patching diagram cells and image for diagram ID: ${diagramId} via API`,
+      { threatModelId, diagramId, cellCount: cells.length, hasImageData: !!imageData.svg },
+    );
+
+    return this.apiService
+      .patch<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`, operations)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error patching diagram with image for diagram ID: ${diagramId}`,
+            error,
+          );
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Delete a diagram from a threat model
    */
   deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {

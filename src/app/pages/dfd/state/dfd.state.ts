@@ -17,6 +17,7 @@ export interface DfdState {
   isLoading: boolean;
   isEditingLabel: boolean;
   error: Error | null;
+  updateVector: number; // Version tracking for collaborative editing
 }
 
 /**
@@ -32,6 +33,7 @@ export const initialDfdState: DfdState = {
   isLoading: false,
   isEditingLabel: false,
   error: null,
+  updateVector: 0,
 };
 
 /**
@@ -57,6 +59,7 @@ export class DfdStateStore {
   readonly isLoading$ = new BehaviorSubject<boolean>(false);
   readonly isEditingLabel$ = new BehaviorSubject<boolean>(false);
   readonly error$ = new BehaviorSubject<Error | null>(null);
+  readonly updateVector$ = new BehaviorSubject<number>(0);
 
   // Private BehaviorSubject holding the current state
   private _state = new BehaviorSubject<DfdState>(initialDfdState);
@@ -77,6 +80,7 @@ export class DfdStateStore {
       this.isLoading$.next(state.isLoading);
       this.isEditingLabel$.next(state.isEditingLabel);
       this.error$.next(state.error);
+      this.updateVector$.next(state.updateVector);
     });
   }
 
@@ -103,6 +107,10 @@ export class DfdStateStore {
 
   get canRedo(): boolean {
     return this._state.value.canRedo;
+  }
+
+  get updateVector(): number {
+    return this._state.value.updateVector;
   }
 
   // Public Methods

@@ -86,7 +86,7 @@ export interface AuthorizationDeniedMessage {
 
 export interface StateCorrectionMessage {
   message_type: 'state_correction';
-  cells: Cell[];
+  update_vector: number;
 }
 
 export interface ResyncRequestMessage {
