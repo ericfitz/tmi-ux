@@ -2453,8 +2453,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Remove X6-specific classes and attributes
       const elementsToClean = svgDoc.querySelectorAll('*');
       elementsToClean.forEach(element => {
-        // Remove X6-specific classes
+        // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
         const classNames = element.className.baseVal || element.className;
+        if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
+          element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
+        }
+        
+        // Remove X6-specific classes
         if (typeof classNames === 'string') {
           const cleanedClasses = classNames
             .split(' ')
