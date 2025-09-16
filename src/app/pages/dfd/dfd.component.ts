@@ -86,6 +86,7 @@ import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import { DfdNotificationService } from './services/dfd-notification.service';
+import { DiagramResyncService } from './services/diagram-resync.service';
 import { COLLABORATION_NOTIFICATION_SERVICE } from '../../core/interfaces/collaboration-notification.interface';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
@@ -148,6 +149,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdTooltipService,
     WebSocketService,
     DfdStateService,
+    DiagramResyncService,
 
     // Facade service
     DfdFacadeService,
@@ -235,6 +237,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private notificationService: DfdNotificationService,
     private presenterCoordinatorService: PresenterCoordinatorService,
     private x6SelectionAdapter: X6SelectionAdapter,
+    private diagramResyncService: DiagramResyncService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -687,6 +690,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (result.success && result.diagram) {
             this.diagramName = result.diagram.name;
+
+            // Initialize the resync service with diagram context
+            if (this.x6GraphAdapter.isInitialized()) {
+              this.diagramResyncService.initialize(
+                this.dfdId || 'default-diagram',
+                this.threatModelId || '',
+                this.x6GraphAdapter.getGraph(),
+              );
+              this.logger.info('DiagramResyncService initialized with context');
+            }
 
             // Load the diagram cells into the graph if available
             if (result.diagram.cells && result.diagram.cells.length > 0) {

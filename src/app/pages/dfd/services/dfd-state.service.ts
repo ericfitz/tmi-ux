@@ -13,6 +13,7 @@ import { filter, map, takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { DiagramResyncService } from './diagram-resync.service';
 import {
   CellOperation,
   CellPatchOperation,
@@ -108,6 +109,7 @@ export class DfdStateService implements OnDestroy {
     private _webSocketService: WebSocketService,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
+    private _resyncService: DiagramResyncService,
   ) {
     this._logger.info('DfdStateService initialized');
   }
@@ -276,25 +278,28 @@ export class DfdStateService implements OnDestroy {
 
   /**
    * Process a state correction from the server
+   * Uses debounced resynchronization instead of applying the correction directly
    */
   private _processStateCorrection(event: StateCorrectionEvent): void {
-    this._logger.warn('Processing state correction', { cellCount: event.cells.length });
+    this._logger.warn('Processing state correction - triggering debounced resync', {
+      cellCount: event.cells.length,
+    });
 
-    // Emit correction event for component to apply
-    this._applyCorrectionEvent$.next(event.cells);
-
-    // Update sync state
+    // Update sync state to indicate we're out of sync
     this._updateSyncState({
-      isSynced: true,
-      pendingOperations: 0,
-      lastSyncTimestamp: Date.now(),
+      isSynced: false,
+      isResyncing: true,
     });
 
-    // Clear pending operations as they're now obsolete
+    // Increment conflict count to track corrections
     this._updateState({
-      pendingRemoteOperations: [],
-      conflictCount: 0,
+      conflictCount: this.getCurrentState().conflictCount + 1,
     });
+
+    // Trigger debounced resynchronization instead of applying cells directly
+    this._resyncService.triggerResync();
+
+    this._logger.debug('State correction processed - resync triggered');
   }
 
   /**
