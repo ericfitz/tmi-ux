@@ -306,6 +306,35 @@ export class DfdExportService {
         elements.forEach(el => el.remove());
       });
 
+      // Remove circle elements with visibility: hidden
+      const hiddenCircles = svgDoc.querySelectorAll('circle');
+      hiddenCircles.forEach(circle => {
+        const style = circle.getAttribute('style');
+        if (style && style.includes('visibility: hidden')) {
+          circle.remove();
+        }
+      });
+
+      // Remove empty group elements that only contain a transform attribute
+      const groups = svgDoc.querySelectorAll('g');
+      groups.forEach(group => {
+        // Check if group has no children and only has a transform attribute
+        if (group.children.length === 0 && group.textContent?.trim() === '') {
+          const attributes = group.attributes;
+          if (attributes.length === 1 && attributes[0].name === 'transform') {
+            group.remove();
+          } else if (attributes.length === 0) {
+            // Also remove completely empty groups
+            group.remove();
+          }
+        }
+      });
+
+      // Set preserveAspectRatio on root SVG element
+      if (svgElement.hasAttribute('viewBox')) {
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+
       return new XMLSerializer().serializeToString(svgDoc);
     } catch (error) {
       this.logger.warn('Failed to clean SVG, returning original', { error });

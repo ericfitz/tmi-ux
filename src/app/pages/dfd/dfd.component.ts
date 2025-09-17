@@ -2458,9 +2458,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       elementsToClean.forEach(element => {
         // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
         const classNames = (element.className as any)?.baseVal || element.className;
-        if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
-          element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
-        }
+        // if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
+        //   element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
+        // }
 
         // Remove X6-specific classes
         if (typeof classNames === 'string') {
@@ -2489,12 +2489,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           element.removeAttribute(attr);
         });
 
-        // Clean up style attributes - remove visibility hidden for cleaner display
+        // Clean up style attributes
         const style = element.getAttribute('style');
         if (style) {
           const cleanedStyle = style
             .split(';')
-            .filter(prop => !prop.includes('visibility: hidden'))
+            .filter(prop => prop.trim() !== '') // Only remove empty properties
             .join(';');
           if (cleanedStyle) {
             element.setAttribute('style', cleanedStyle);
@@ -2518,6 +2518,35 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         const elements = svgDoc.querySelectorAll(selector);
         elements.forEach(el => el.remove());
       });
+
+      // Remove circle elements with visibility: hidden
+      const hiddenCircles = svgDoc.querySelectorAll('circle');
+      hiddenCircles.forEach(circle => {
+        const style = circle.getAttribute('style');
+        if (style && style.includes('visibility: hidden')) {
+          circle.remove();
+        }
+      });
+
+      // Remove empty group elements that only contain a transform attribute
+      const groups = svgDoc.querySelectorAll('g');
+      groups.forEach(group => {
+        // Check if group has no children and only has a transform attribute
+        if (group.children.length === 0 && group.textContent?.trim() === '') {
+          const attributes = group.attributes;
+          if (attributes.length === 1 && attributes[0].name === 'transform') {
+            group.remove();
+          } else if (attributes.length === 0) {
+            // Also remove completely empty groups
+            group.remove();
+          }
+        }
+      });
+
+      // Set preserveAspectRatio on root SVG element
+      if (svgElement.hasAttribute('viewBox')) {
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
 
       return new XMLSerializer().serializeToString(svgDoc);
     } catch (error) {
