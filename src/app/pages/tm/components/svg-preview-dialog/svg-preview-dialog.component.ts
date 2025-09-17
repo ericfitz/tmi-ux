@@ -16,11 +16,7 @@ export interface SvgPreviewDialogData {
     <div class="svg-preview-dialog">
       <div mat-dialog-title class="dialog-header">
         <h2>{{ data.diagram.name }}</h2>
-        <button
-          mat-icon-button
-          (click)="close()"
-          aria-label="Close"
-        >
+        <button mat-icon-button (click)="close()" aria-label="Close">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -37,7 +33,7 @@ export interface SvgPreviewDialogData {
               (load)="onOriginalImageLoad($event)"
             />
           </div>
-          
+
           <div class="svg-container">
             <h3>Processed SVG (viewBox removed)</h3>
             <img
@@ -49,7 +45,7 @@ export interface SvgPreviewDialogData {
             />
           </div>
         </div>
-        
+
         <div class="diagram-info">
           <p><strong>Diagram ID:</strong> {{ data.diagram.id }}</p>
           <p><strong>Type:</strong> {{ data.diagram.type }}</p>
@@ -100,107 +96,109 @@ export interface SvgPreviewDialogData {
       </div>
     </div>
   `,
-  styles: [`
-    .svg-preview-dialog {
-      width: 80vw;
-      height: 80vh;
-      max-width: 1200px;
-      max-height: 900px;
-      display: flex;
-      flex-direction: column;
-    }
+  styles: [
+    `
+      .svg-preview-dialog {
+        width: 80vw;
+        height: 80vh;
+        max-width: 1200px;
+        max-height: 900px;
+        display: flex;
+        flex-direction: column;
+      }
 
-    .dialog-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
+      .dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
 
-    .dialog-header h2 {
-      margin: 0;
-      flex: 1;
-    }
+      .dialog-header h2 {
+        margin: 0;
+        flex: 1;
+      }
 
-    .dialog-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow: auto;
-    }
+      .dialog-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow: auto;
+      }
 
-    .svg-previews {
-      display: flex;
-      gap: 16px;
-      flex: 1;
-      min-height: 400px;
-    }
+      .svg-previews {
+        display: flex;
+        gap: 16px;
+        flex: 1;
+        min-height: 400px;
+      }
 
-    .svg-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      background-color: #fafafa;
-      overflow: auto;
-    }
+      .svg-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background-color: #fafafa;
+        overflow: auto;
+      }
 
-    .svg-container h3 {
-      margin: 8px 12px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #333;
-    }
+      .svg-container h3 {
+        margin: 8px 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+      }
 
-    .svg-container .svg-image {
-      flex: 1;
-      margin: 12px;
-    }
+      .svg-container .svg-image {
+        flex: 1;
+        margin: 12px;
+      }
 
-    .svg-image {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 4px;
-    }
+      .svg-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 4px;
+      }
 
-    .diagram-info {
-      background-color: #f5f5f5;
-      padding: 12px;
-      border-radius: 4px;
-      font-family: 'Roboto Condensed', monospace;
-      font-size: 12px;
-    }
+      .diagram-info {
+        background-color: #f5f5f5;
+        padding: 12px;
+        border-radius: 4px;
+        font-family: 'Roboto Condensed', monospace;
+        font-size: 12px;
+      }
 
-    .diagram-info p {
-      margin: 4px 0;
-      word-break: break-all;
-    }
+      .diagram-info p {
+        margin: 4px 0;
+        word-break: break-all;
+      }
 
-    .data-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+      .data-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
 
-    .full-width {
-      width: 100%;
-    }
+      .full-width {
+        width: 100%;
+      }
 
-    .monospace-text {
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-    }
+      .monospace-text {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+      }
 
-    .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
-    }
-  `]
+      .dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 16px;
+      }
+    `,
+  ],
 })
 export class SvgPreviewDialogComponent {
   base64Data: string;
@@ -210,11 +208,11 @@ export class SvgPreviewDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<SvgPreviewDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: SvgPreviewDialogData
+    @Inject(MAT_DIALOG_DATA) public data: SvgPreviewDialogData,
   ) {
     // Extract base64 data from the diagram
     this.base64Data = data.diagram.image?.svg || '';
-    
+
     // Decode the base64 to get SVG content
     try {
       this.decodedSvg = atob(this.base64Data);
@@ -243,21 +241,21 @@ export class SvgPreviewDialogComponent {
       const parser = new DOMParser();
       const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
       const svgElement = svgDoc.querySelector('svg');
-      
+
       if (!svgElement) {
         return svgContent; // Return original if we can't parse it
       }
 
       // Option 1: Remove viewBox entirely and let browser auto-fit
       svgElement.removeAttribute('viewBox');
-      
+
       // Option 2: Set width and height to auto to let content determine size
       svgElement.setAttribute('width', 'auto');
       svgElement.setAttribute('height', 'auto');
-      
+
       // Option 3: Try to calculate bounding box of visible content
       // This is more complex and would require analyzing all elements
-      
+
       return new XMLSerializer().serializeToString(svgDoc);
     } catch (error) {
       console.error('Failed to process SVG:', error);
@@ -279,9 +277,9 @@ export class SvgPreviewDialogComponent {
   onOriginalImageLoad(event: Event): void {
     console.info('Original SVG image loaded successfully:', event);
     const img = event.target as HTMLImageElement;
-    console.info('Original image dimensions:', { 
-      naturalWidth: img.naturalWidth, 
-      naturalHeight: img.naturalHeight 
+    console.info('Original image dimensions:', {
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
     });
   }
 
@@ -293,9 +291,9 @@ export class SvgPreviewDialogComponent {
   onProcessedImageLoad(event: Event): void {
     console.info('Processed SVG image loaded successfully:', event);
     const img = event.target as HTMLImageElement;
-    console.info('Processed image dimensions:', { 
-      naturalWidth: img.naturalWidth, 
-      naturalHeight: img.naturalHeight 
+    console.info('Processed image dimensions:', {
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
     });
   }
 }

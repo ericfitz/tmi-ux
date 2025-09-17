@@ -2365,28 +2365,31 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Get the content area before zooming (for logging)
       const contentAreaBefore = graph.getContentArea();
-      
+
       // Set zoom to 100% (1:1 scale) for thumbnail capture
       this.logger.debug('Setting zoom to 100% before SVG export for thumbnail');
       graph.zoomTo(1.0);
-      
+
       // Get the content area after zooming
       const contentAreaAfter = graph.getContentArea();
-      
+
       this.logger.debug('Content area for SVG export', {
         contentAreaBefore: contentAreaBefore,
         contentAreaAfter: contentAreaAfter,
-        padding: 20
+        padding: 20,
       });
 
       // Cast graph to access export methods added by the plugin with options
       const exportGraph = graph as {
-        toSVG: (callback: (svgString: string) => void, options?: {
-          padding?: number;
-          viewBox?: string;
-          preserveAspectRatio?: string;
-          copyStyles?: boolean;
-        }) => void;
+        toSVG: (
+          callback: (svgString: string) => void,
+          options?: {
+            padding?: number;
+            viewBox?: string;
+            preserveAspectRatio?: string;
+            copyStyles?: boolean;
+          },
+        ) => void;
       };
 
       try {
@@ -2399,27 +2402,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         } = {
           padding: 20, // 20px padding around visible content
           copyStyles: false, // Exclude CSS styles - experiment
-          preserveAspectRatio: 'xMidYMid meet' // Center content in viewBox
+          preserveAspectRatio: 'xMidYMid meet', // Center content in viewBox
         };
 
         // Note: Keeping original viewport, not setting custom viewBox
         this.logger.debug('Using original viewport for SVG export', {
           contentAreaAfter: contentAreaAfter,
-          exportOptions: exportOptions
+          exportOptions: exportOptions,
         });
 
         exportGraph.toSVG((svgString: string) => {
           try {
             // Clean up the SVG by removing X6-specific classes and styling
             const cleanedSvg = this.cleanSvgForThumbnail(svgString);
-            
+
             // Convert cleaned SVG string to base64
             const base64Svg = btoa(unescape(encodeURIComponent(cleanedSvg)));
             this.logger.debug('Successfully captured and cleaned diagram SVG', {
               originalLength: svgString.length,
               cleanedLength: cleanedSvg.length,
               base64Length: base64Svg.length,
-              exportOptions: exportOptions
+              exportOptions: exportOptions,
             });
             resolve(base64Svg);
           } catch (error) {
@@ -2445,7 +2448,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const parser = new DOMParser();
       const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
       const svgElement = svgDoc.querySelector('svg');
-      
+
       if (!svgElement) {
         return svgString; // Return original if parsing fails
       }
@@ -2458,7 +2461,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
           element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
         }
-        
+
         // Remove X6-specific classes
         if (typeof classNames === 'string') {
           const cleanedClasses = classNames
@@ -2471,21 +2474,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             element.removeAttribute('class');
           }
         }
-        
+
         // Remove X6-specific attributes
         const attributesToRemove = [
-          'data-cell-id', 
-          'data-shape', 
-          'port', 
-          'port-group', 
+          'data-cell-id',
+          'data-shape',
+          'port',
+          'port-group',
           'magnet',
           'cursor',
-          'pointer-events'
+          'pointer-events',
         ];
         attributesToRemove.forEach(attr => {
           element.removeAttribute(attr);
         });
-        
+
         // Clean up style attributes - remove visibility hidden for cleaner display
         const style = element.getAttribute('style');
         if (style) {
@@ -2504,12 +2507,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Remove empty groups and decorative elements
       const emptyGroups = svgDoc.querySelectorAll('g:empty');
       emptyGroups.forEach(group => group.remove());
-      
+
       // Remove specific X6 decorative elements
       const decorativeSelectors = [
         '.x6-graph-svg-primer',
         '.x6-graph-svg-decorator',
-        '.x6-graph-svg-overlay'
+        '.x6-graph-svg-overlay',
       ];
       decorativeSelectors.forEach(selector => {
         const elements = svgDoc.querySelectorAll(selector);

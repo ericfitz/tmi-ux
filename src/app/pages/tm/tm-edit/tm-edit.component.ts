@@ -1906,23 +1906,23 @@ export class TmEditComponent implements OnInit, OnDestroy {
     try {
       // Decode the base64 SVG
       const svgContent = atob(base64Svg);
-      
+
       // Create a temporary DOM element to parse the SVG
       const parser = new DOMParser();
       const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
       const svgElement = svgDoc.querySelector('svg');
-      
+
       if (!svgElement) {
         return base64Svg; // Return original if we can't parse it
       }
 
       // Remove viewBox to let content determine the size
       svgElement.removeAttribute('viewBox');
-      
+
       // Set reasonable width and height for thumbnails
       svgElement.setAttribute('width', '200');
       svgElement.setAttribute('height', '150');
-      
+
       // Serialize back to string and re-encode
       const processedSvg = new XMLSerializer().serializeToString(svgDoc);
       return btoa(processedSvg);

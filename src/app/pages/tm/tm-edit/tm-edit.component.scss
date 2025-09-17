@@ -367,12 +367,12 @@ mat-card-header {
       border: 1px solid rgb(0 0 0 / 12%);
       background-color: white;
       display: block;
-      
+
       // Use background-image approach for better SVG scaling control
       background-size: contain; // Scale to fit while maintaining aspect ratio
       background-position: center; // Center the image in the container
       background-repeat: no-repeat; // Don't repeat the image
-      
+
       // Ensure the container is properly sized
       flex-shrink: 0;
       min-width: 96px;

@@ -100,7 +100,7 @@ export class DfdExportService {
 
       // Get the content area before zooming (for logging)
       const contentAreaBefore = graph.getContentArea();
-      
+
       // For SVG exports, zoom to fit content before export to center it in the viewport
       if (format === 'svg') {
         this.logger.debug('Zooming to fit content before SVG export');
@@ -108,25 +108,28 @@ export class DfdExportService {
         // For now, directly call the graph method
         graph.zoomToFit({ padding: 20 });
       }
-      
+
       // Get the content area after zooming (if zoomed)
       const contentAreaAfter = graph.getContentArea();
-      
+
       this.logger.debug('Content area for export', {
         format,
         contentAreaBefore: contentAreaBefore,
         contentAreaAfter: contentAreaAfter,
-        padding: 20
+        padding: 20,
       });
 
       // Cast graph to access export methods added by the plugin
       const exportGraph = graph as {
-        toSVG: (callback: (svgString: string) => void, options?: {
-          padding?: number;
-          viewBox?: string;
-          preserveAspectRatio?: string;
-          copyStyles?: boolean;
-        }) => void;
+        toSVG: (
+          callback: (svgString: string) => void,
+          options?: {
+            padding?: number;
+            viewBox?: string;
+            preserveAspectRatio?: string;
+            copyStyles?: boolean;
+          },
+        ) => void;
         toPNG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
         toJPEG: (callback: (dataUri: string) => void, options?: Record<string, unknown>) => void;
       };
@@ -141,27 +144,27 @@ export class DfdExportService {
         } = {
           padding: 20, // 20px padding around visible content
           copyStyles: false, // Exclude CSS styles - experiment
-          preserveAspectRatio: 'xMidYMid meet' // Center content in viewBox
+          preserveAspectRatio: 'xMidYMid meet', // Center content in viewBox
         };
 
         // Note: Keeping original viewport, not setting custom viewBox
         this.logger.debug('Using original viewport for SVG export (CSS excluded - experiment)', {
           contentAreaAfter: contentAreaAfter,
-          exportOptions: svgExportOptions
+          exportOptions: svgExportOptions,
         });
 
         exportGraph.toSVG((svgString: string) => {
           // Clean up the SVG by removing X6-specific classes and styling
           const cleanedSvg = this.cleanSvgForExport(svgString);
           const blob = new Blob([cleanedSvg], { type: 'image/svg+xml' });
-          
+
           // Handle async operation without blocking the callback
           handleExport(blob, filename, 'image/svg+xml')
             .then(() => {
-              this.logger.info('SVG export completed', { 
+              this.logger.info('SVG export completed', {
                 filename,
                 originalLength: svgString.length,
-                cleanedLength: cleanedSvg.length
+                cleanedLength: cleanedSvg.length,
               });
             })
             .catch(error => {
@@ -232,7 +235,7 @@ export class DfdExportService {
       const parser = new DOMParser();
       const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
       const svgElement = svgDoc.querySelector('svg');
-      
+
       if (!svgElement) {
         return svgString; // Return original if parsing fails
       }
@@ -245,7 +248,7 @@ export class DfdExportService {
         if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
           element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
         }
-        
+
         // Remove X6-specific classes
         if (typeof classNames === 'string') {
           const cleanedClasses = classNames
@@ -258,27 +261,27 @@ export class DfdExportService {
             element.removeAttribute('class');
           }
         }
-        
+
         // Remove X6-specific attributes
         const attributesToRemove = [
-          'data-cell-id', 
-          'data-shape', 
-          'port', 
-          'port-group', 
+          'data-cell-id',
+          'data-shape',
+          'port',
+          'port-group',
           'magnet',
           'cursor',
-          'pointer-events'
+          'pointer-events',
         ];
         attributesToRemove.forEach(attr => {
           element.removeAttribute(attr);
         });
-        
-        // Clean up style attributes - remove visibility hidden for cleaner display
+
+        // Clean up style attributes - preserve visibility hidden
         const style = element.getAttribute('style');
         if (style) {
           const cleanedStyle = style
             .split(';')
-            .filter(prop => !prop.includes('visibility: hidden'))
+            .filter(prop => prop.trim() !== '') // Only remove empty properties
             .join(';');
           if (cleanedStyle) {
             element.setAttribute('style', cleanedStyle);
@@ -291,12 +294,12 @@ export class DfdExportService {
       // Remove empty groups and decorative elements
       const emptyGroups = svgDoc.querySelectorAll('g:empty');
       emptyGroups.forEach(group => group.remove());
-      
+
       // Remove specific X6 decorative elements
       const decorativeSelectors = [
         '.x6-graph-svg-primer',
         '.x6-graph-svg-decorator',
-        '.x6-graph-svg-overlay'
+        '.x6-graph-svg-overlay',
       ];
       decorativeSelectors.forEach(selector => {
         const elements = svgDoc.querySelectorAll(selector);
