@@ -2417,7 +2417,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             const cleanedSvg = this.cleanSvgForThumbnail(svgString);
 
             // Convert cleaned SVG string to base64
-            const base64Svg = btoa(unescape(encodeURIComponent(cleanedSvg)));
+            const base64Svg = btoa(decodeURIComponent(encodeURIComponent(cleanedSvg)));
             this.logger.debug('Successfully captured and cleaned diagram SVG', {
               originalLength: svgString.length,
               cleanedLength: cleanedSvg.length,
@@ -2453,14 +2453,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return svgString; // Return original if parsing fails
       }
 
+      // Set preserveAspectRatio on root SVG element
+      if (svgElement.hasAttribute('viewBox')) {
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+
       // Remove X6-specific classes and attributes
       const elementsToClean = svgDoc.querySelectorAll('*');
       elementsToClean.forEach(element => {
         // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
         const classNames = (element.className as any)?.baseVal || element.className;
-        // if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
-        //   element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
-        // }
+        if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
+          element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
+        }
 
         // Remove X6-specific classes
         if (typeof classNames === 'string') {
@@ -2519,7 +2524,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         elements.forEach(el => el.remove());
       });
 
-      // Remove circle elements with visibility: hidden
+      // Remove circle elements with visibility: hidden (eg hidden ports)
       const hiddenCircles = svgDoc.querySelectorAll('circle');
       hiddenCircles.forEach(circle => {
         const style = circle.getAttribute('style');
@@ -2528,7 +2533,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
 
-      // Remove empty group elements that only contain a transform attribute
+      // Remove group elements that are empty or only contain a transform attribute
       const groups = svgDoc.querySelectorAll('g');
       groups.forEach(group => {
         // Check if group has no children and only has a transform attribute
@@ -2542,11 +2547,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       });
-
-      // Set preserveAspectRatio on root SVG element
-      if (svgElement.hasAttribute('viewBox')) {
-        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      }
 
       return new XMLSerializer().serializeToString(svgDoc);
     } catch (error) {
