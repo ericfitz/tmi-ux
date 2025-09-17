@@ -267,6 +267,7 @@
     "descriptionPlaceholder": "Describe the Purpose and Scope of This Threat Model",
     "details": "Threat Model Details",
     "diagramName": "Diagram Name",
+    "diagramPreview": "Diagram Preview",
     "diagramType": "Diagram Type",
     "diagrams": "Diagrams",
     "diagramsCount": "diagrams",

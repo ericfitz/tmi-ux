@@ -250,7 +250,7 @@
                 <div
                   class="diagram-thumbnail"
                   [style.background-image]="'url(' + getSvgDataUrl(diagram) + ')'"
-                  [matTooltip]="'Diagram preview'"
+                  [matTooltip]="'threatModels.diagramPreview' | transloco"
                   matTooltipPosition="above"
                   [attr.aria-label]="'Thumbnail of ' + diagram.name"
                 ></div>
