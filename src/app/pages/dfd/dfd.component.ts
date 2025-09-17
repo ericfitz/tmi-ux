@@ -2454,7 +2454,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const elementsToClean = svgDoc.querySelectorAll('*');
       elementsToClean.forEach(element => {
         // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
-        const classNames = element.className.baseVal || element.className;
+        const classNames = (element.className as any)?.baseVal || element.className;
         if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
           element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
         }

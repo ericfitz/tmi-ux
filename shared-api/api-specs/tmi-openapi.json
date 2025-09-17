@@ -444,8 +444,7 @@
               "update_vector": {
                 "type": "integer",
                 "format": "int64",
-                "description": "Version of the diagram when this SVG was generated",
-                "readOnly": true,
+                "description": "Version of the diagram when this SVG was generated. If not provided when svg is updated, will be auto-set to BaseDiagram.update_vector",
                 "minimum": 0
               }
             },
