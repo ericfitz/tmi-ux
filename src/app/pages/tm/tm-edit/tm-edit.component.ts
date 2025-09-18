@@ -32,10 +32,6 @@ import {
   SourceCodeEditorDialogData,
 } from '../components/source-code-editor-dialog/source-code-editor-dialog.component';
 import {
-  SvgPreviewDialogComponent,
-  SvgPreviewDialogData,
-} from '../components/svg-preview-dialog/svg-preview-dialog.component';
-import {
   PermissionsDialogComponent,
   PermissionsDialogData,
 } from '../components/permissions-dialog/permissions-dialog.component';
@@ -1548,35 +1544,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the SVG preview dialog for diagnosis
-   * @param diagram The diagram to preview
-   * @param event The right-click event
-   */
-  openSvgPreviewDialog(diagram: Diagram, event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!this.hasSvgImage(diagram)) {
-      console.warn('No SVG data available for diagram:', diagram.id);
-      return;
-    }
-
-    const svgDataUrl = this.getSvgDataUrl(diagram);
-    const dialogData: SvgPreviewDialogData = {
-      diagram,
-      svgDataUrl,
-    };
-
-    this.dialog.open(SvgPreviewDialogComponent, {
-      width: '90vw',
-      height: '90vh',
-      maxWidth: '1400px',
-      maxHeight: '1000px',
-      data: dialogData,
-    });
-  }
-
-  /**
    * Opens the metadata dialog for a specific threat
    */
   openThreatMetadataDialog(threat: Threat, event: Event): void {
@@ -1868,9 +1835,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
           if (this.svgCacheService.hasDataUrlCache(processedCacheKey)) {
             dataUrl = this.svgCacheService.getDataUrlCache(processedCacheKey)!;
           } else {
-            // Try to process SVG for better thumbnail display
-            const processedSvg = this.processSvgForThumbnail(diagram.image.svg);
-            dataUrl = `data:image/svg+xml;base64,${processedSvg}`;
+            // Create data URL directly from processed SVG - scaling handled by CSS
+            dataUrl = `data:image/svg+xml;base64,${diagram.image.svg}`;
             this.svgCacheService.setDataUrlCache(processedCacheKey, dataUrl);
           }
           this.diagramSvgDataUrls.set(diagram.id, dataUrl);
@@ -1928,40 +1894,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Process SVG for better thumbnail display
-   * @param base64Svg Base64 encoded SVG string
-   * @returns Processed base64 SVG string
-   */
-  private processSvgForThumbnail(base64Svg: string): string {
-    try {
-      // Decode the base64 SVG
-      const svgContent = atob(base64Svg);
-
-      // Create a temporary DOM element to parse the SVG
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-
-      if (!svgElement) {
-        return base64Svg; // Return original if we can't parse it
-      }
-
-      // Set reasonable width and height for thumbnails
-      // svgElement.setAttribute('width', '200');
-      // svgElement.setAttribute('height', '150');
-
-      // Serialize back to string and re-encode using modern UTF-8 safe approach
-      const processedSvg = new XMLSerializer().serializeToString(svgDoc);
-      const encoder = new TextEncoder();
-      const data = encoder.encode(processedSvg);
-      return btoa(String.fromCharCode(...data));
-    } catch (error) {
-      this.logger.warn('Failed to process SVG for thumbnail', { error });
-      return base64Svg; // Return original on error
-    }
-  }
-
-  /**
    * Validate if a base64 string contains well-formed SVG
    * @param base64Svg Base64 encoded SVG string
    * @returns True if valid SVG
@@ -2009,59 +1941,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.logger.warn('SVG validation failed with error', { error });
       return false;
-    }
-  }
-
-  /**
-   * Handle thumbnail image load event
-   * @param event The load event
-   * @param diagram The diagram object
-   * @deprecated No longer used since switching to background-image approach
-   */
-  onThumbnailLoad(event: Event, diagram: Diagram): void {
-    const img = event.target as HTMLImageElement;
-    this.logger.debug('Thumbnail loaded successfully', {
-      diagramId: diagram.id,
-      diagramName: diagram.name,
-      imageWidth: img.naturalWidth,
-      imageHeight: img.naturalHeight,
-      imageSrc: img.src.substring(0, 100),
-    });
-  }
-
-  /**
-   * Handle thumbnail image error event
-   * @param event The error event
-   * @param diagram The diagram object
-   * @deprecated No longer used since switching to background-image approach
-   */
-  onThumbnailError(event: Event, diagram: Diagram): void {
-    const img = event.target as HTMLImageElement;
-    this.logger.warn('Thumbnail failed to load', {
-      diagramId: diagram.id,
-      diagramName: diagram.name,
-      hasImageData: !!diagram.image?.svg,
-      svgLength: diagram.image?.svg?.length,
-      imageSrc: img.src.substring(0, 100),
-      errorEvent: event,
-    });
-
-    // Try to decode and check the SVG content
-    if (diagram.image?.svg) {
-      try {
-        const svgText = atob(diagram.image.svg);
-        this.logger.debug('SVG content analysis', {
-          diagramId: diagram.id,
-          svgStart: svgText.substring(0, 200),
-          svgEnd: svgText.substring(svgText.length - 100),
-          totalLength: svgText.length,
-        });
-      } catch (decodeError) {
-        this.logger.error('Failed to decode base64 SVG', {
-          diagramId: diagram.id,
-          decodeError,
-        });
-      }
     }
   }
 

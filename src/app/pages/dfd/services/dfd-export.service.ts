@@ -234,29 +234,44 @@ export class DfdExportService {
   }
 
   /**
-   * Process SVG string by cleaning X6-specific elements and removing width/height for scalability
+   * Process SVG string for export - preserves natural size with border
    * @param svgString The raw SVG string from X6
    * @param encodeBase64 Whether to encode the result as base64 (for thumbnails)
    * @returns Processed SVG string, optionally base64 encoded
    */
   processSvg(svgString: string, encodeBase64: boolean = false): string {
-    const cleanedSvg = this.cleanSvgContent(svgString);
-
-    // Post-process: remove width/height attrs for scalability
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(cleanedSvg, 'image/svg+xml');
-
-    const finalSvg = new XMLSerializer().serializeToString(doc);
-
     if (encodeBase64) {
-      // Convert final SVG string to base64
-      // Use modern approach to handle UTF-8 encoding properly
-      const encoder = new TextEncoder();
-      const data = encoder.encode(finalSvg);
-      return btoa(String.fromCharCode(...data));
+      // For thumbnails, use scaling approach
+      return this.processSvgForThumbnail(svgString);
+    } else {
+      // For exports, preserve natural size
+      return this.processSvgForExport(svgString);
     }
+  }
 
-    return finalSvg;
+  /**
+   * Process SVG for export - captures entire original SVG with border at natural size
+   * Preserves viewport, dimensions, and scale information for high-quality exports
+   * @param svgString The raw SVG string from X6
+   * @returns Processed SVG string with natural dimensions preserved
+   */
+  private processSvgForExport(svgString: string): string {
+    const cleanedSvg = this.cleanSvgContentForExport(svgString);
+    return cleanedSvg;
+  }
+
+  /**
+   * Process SVG for thumbnail display - scales to fit thumbnail container
+   * @param svgString The raw SVG string from X6
+   * @returns Base64 encoded SVG scaled for thumbnail display
+   */
+  private processSvgForThumbnail(svgString: string): string {
+    const cleanedSvg = this.cleanSvgContentForThumbnail(svgString);
+
+    // Convert to base64
+    const encoder = new TextEncoder();
+    const data = encoder.encode(cleanedSvg);
+    return btoa(String.fromCharCode(...data));
   }
 
   /**
@@ -308,7 +323,273 @@ export class DfdExportService {
   }
 
   /**
+   * Clean SVG for export - preserves natural dimensions and viewport information
+   * Removes X6-specific elements but keeps all size and scale information
+   * @param svgString The original SVG string from X6
+   * @returns Cleaned SVG string with natural dimensions preserved
+   */
+  private cleanSvgContentForExport(svgString: string): string {
+    try {
+      // Parse the SVG
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+
+      if (!svgElement) {
+        return svgString; // Return original if parsing fails
+      }
+
+      // PRESERVE width, height, and viewBox for exports - don't remove them!
+      // This maintains the natural size with border captured during generation
+
+      // Remove X6-specific classes and attributes but preserve viewport transforms
+      const elementsToClean = svgDoc.querySelectorAll('*');
+      elementsToClean.forEach(element => {
+        // Keep x6-graph-svg-viewport transform as-is for export
+        const classNames = (element.className as any)?.baseVal || element.className;
+
+        // Remove X6-specific classes except viewport
+        if (typeof classNames === 'string') {
+          const cleanedClasses = classNames
+            .split(' ')
+            .filter(cls => !cls.startsWith('x6-') || cls === 'x6-graph-svg-viewport')
+            .join(' ');
+          if (cleanedClasses) {
+            element.setAttribute('class', cleanedClasses);
+          } else {
+            element.removeAttribute('class');
+          }
+        }
+
+        // Remove X6-specific attributes
+        const attributesToRemove = [
+          'data-cell-id',
+          'data-shape',
+          'port',
+          'port-group',
+          'magnet',
+          'cursor',
+          'pointer-events',
+        ];
+        attributesToRemove.forEach(attr => {
+          element.removeAttribute(attr);
+        });
+
+        // Clean up style attributes - preserve visibility hidden
+        const style = element.getAttribute('style');
+        if (style) {
+          const cleanedStyle = style
+            .split(';')
+            .filter(prop => prop.trim() !== '') // Only remove empty properties
+            .join(';');
+          if (cleanedStyle) {
+            element.setAttribute('style', cleanedStyle);
+          } else {
+            element.removeAttribute('style');
+          }
+        }
+      });
+
+      // Remove specific X6 decorative elements
+      const decorativeSelectors = [
+        '.x6-graph-svg-primer',
+        '.x6-graph-svg-decorator',
+        '.x6-graph-svg-overlay',
+      ];
+      decorativeSelectors.forEach(selector => {
+        const elements = svgDoc.querySelectorAll(selector);
+        elements.forEach(el => el.remove());
+      });
+
+      // Remove circle elements with visibility: hidden (unused ports)
+      const hiddenCircles = svgDoc.querySelectorAll('circle');
+      hiddenCircles.forEach(circle => {
+        const style = circle.getAttribute('style');
+        if (style && style.includes('visibility: hidden')) {
+          circle.remove();
+        }
+      });
+
+      // Remove empty groups
+      const emptyGroups = svgDoc.querySelectorAll('g:empty');
+      emptyGroups.forEach(group => group.remove());
+
+      // Remove empty group elements that only contain a transform attribute
+      const groups = svgDoc.querySelectorAll('g');
+      groups.forEach(group => {
+        if (group.children.length === 0 && group.textContent?.trim() === '') {
+          const attributes = group.attributes;
+          if (attributes.length === 1 && attributes[0].name === 'transform') {
+            group.remove();
+          } else if (attributes.length === 0) {
+            group.remove();
+          }
+        }
+      });
+
+      // Serialize and clean invalid characters
+      const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
+      return this.cleanInvalidCharacters(serializedSvg);
+    } catch (error) {
+      this.logger.warn('Failed to clean SVG for export, returning original', { error });
+      return svgString;
+    }
+  }
+
+  /**
+   * Clean SVG for thumbnail display - scales to fit thumbnail container
+   * @param svgString The original SVG string from X6
+   * @returns Cleaned SVG string scaled for thumbnail display
+   */
+  private cleanSvgContentForThumbnail(svgString: string): string {
+    try {
+      // Parse the SVG
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+
+      if (!svgElement) {
+        return svgString; // Return original if parsing fails
+      }
+
+      // Get original dimensions
+      const originalWidth = parseFloat(svgElement.getAttribute('width') || '0');
+      const originalHeight = parseFloat(svgElement.getAttribute('height') || '0');
+
+      // Thumbnail container dimensions (from CSS)
+      const thumbnailWidth = 96;
+      const thumbnailHeight = 64;
+
+      // Calculate scale factor to fit thumbnail while maintaining aspect ratio
+      let scaleFactor = 1;
+      if (originalWidth > 0 && originalHeight > 0) {
+        const scaleX = thumbnailWidth / originalWidth;
+        const scaleY = thumbnailHeight / originalHeight;
+        scaleFactor = Math.min(scaleX, scaleY); // Use smaller scale to fit entirely
+      }
+
+      // Set scaled dimensions
+      const scaledWidth = originalWidth * scaleFactor;
+      const scaledHeight = originalHeight * scaleFactor;
+
+      svgElement.setAttribute('width', scaledWidth.toString());
+      svgElement.setAttribute('height', scaledHeight.toString());
+
+      // If there's a viewBox, preserve it but scale appropriately
+      const viewBox = svgElement.getAttribute('viewBox');
+      if (viewBox) {
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+
+      // Apply the same cleaning as export version
+      this.cleanSvgElements(svgDoc);
+
+      // Serialize and clean invalid characters
+      const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
+      return this.cleanInvalidCharacters(serializedSvg);
+    } catch (error) {
+      this.logger.warn('Failed to clean SVG for thumbnail, returning original', { error });
+      return svgString;
+    }
+  }
+
+  /**
+   * Common SVG element cleaning logic shared between export and thumbnail processing
+   * @param svgDoc The parsed SVG document
+   */
+  private cleanSvgElements(svgDoc: Document): void {
+    // Remove X6-specific classes and attributes
+    const elementsToClean = svgDoc.querySelectorAll('*');
+    elementsToClean.forEach(element => {
+      // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
+      const classNames = (element.className as any)?.baseVal || element.className;
+      if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
+        element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
+      }
+
+      // Remove X6-specific classes
+      if (typeof classNames === 'string') {
+        const cleanedClasses = classNames
+          .split(' ')
+          .filter(cls => !cls.startsWith('x6-') || cls === 'x6-graph-svg-viewport')
+          .join(' ');
+        if (cleanedClasses) {
+          element.setAttribute('class', cleanedClasses);
+        } else {
+          element.removeAttribute('class');
+        }
+      }
+
+      // Remove X6-specific attributes
+      const attributesToRemove = [
+        'data-cell-id',
+        'data-shape',
+        'port',
+        'port-group',
+        'magnet',
+        'cursor',
+        'pointer-events',
+      ];
+      attributesToRemove.forEach(attr => {
+        element.removeAttribute(attr);
+      });
+
+      // Clean up style attributes - preserve visibility hidden
+      const style = element.getAttribute('style');
+      if (style) {
+        const cleanedStyle = style
+          .split(';')
+          .filter(prop => prop.trim() !== '') // Only remove empty properties
+          .join(';');
+        if (cleanedStyle) {
+          element.setAttribute('style', cleanedStyle);
+        } else {
+          element.removeAttribute('style');
+        }
+      }
+    });
+
+    // Remove specific X6 decorative elements
+    const decorativeSelectors = [
+      '.x6-graph-svg-primer',
+      '.x6-graph-svg-decorator',
+      '.x6-graph-svg-overlay',
+    ];
+    decorativeSelectors.forEach(selector => {
+      const elements = svgDoc.querySelectorAll(selector);
+      elements.forEach(el => el.remove());
+    });
+
+    // Remove circle elements with visibility: hidden (unused ports)
+    const hiddenCircles = svgDoc.querySelectorAll('circle');
+    hiddenCircles.forEach(circle => {
+      const style = circle.getAttribute('style');
+      if (style && style.includes('visibility: hidden')) {
+        circle.remove();
+      }
+    });
+
+    // Remove empty groups
+    const emptyGroups = svgDoc.querySelectorAll('g:empty');
+    emptyGroups.forEach(group => group.remove());
+
+    // Remove empty group elements that only contain a transform attribute
+    const groups = svgDoc.querySelectorAll('g');
+    groups.forEach(group => {
+      if (group.children.length === 0 && group.textContent?.trim() === '') {
+        const attributes = group.attributes;
+        if (attributes.length === 1 && attributes[0].name === 'transform') {
+          group.remove();
+        } else if (attributes.length === 0) {
+          group.remove();
+        }
+      }
+    });
+  }
+
+  /**
    * Clean SVG by removing X6-specific classes and unnecessary styling attributes
+   * @deprecated Use cleanSvgContentForExport or cleanSvgContentForThumbnail instead
    * @param svgString The original SVG string from X6
    * @returns Cleaned SVG string
    */

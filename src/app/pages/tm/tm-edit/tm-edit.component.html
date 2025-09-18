@@ -234,7 +234,6 @@
             *ngFor="let diagram of diagrams"
             class="diagram-item"
             [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
-            (contextmenu)="openSvgPreviewDialog(diagram, $event)"
           >
             <mat-icon
               matListItemIcon
