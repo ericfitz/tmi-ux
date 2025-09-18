@@ -485,7 +485,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.x6GraphAdapter.nodeInfoChanged$.subscribe(({ nodeId, newData, oldData }) => {
         // Skip auto-save during initial diagram loading
         if (this._isInitialLoadInProgress) {
-          this.logger.debug('Skipping auto-save for cell metadata change during initial diagram loading');
+          this.logger.debug(
+            'Skipping auto-save for cell metadata change during initial diagram loading',
+          );
           return;
         }
 
