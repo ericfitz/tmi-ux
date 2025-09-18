@@ -256,7 +256,7 @@ export class DfdExportService {
    * @returns Processed SVG string with natural dimensions preserved
    */
   private processSvgForExport(svgString: string): string {
-    const cleanedSvg = this.cleanSvgContentForExport(svgString);
+    const cleanedSvg = this.cleanSvgContent(svgString);
     return cleanedSvg;
   }
 
@@ -266,7 +266,7 @@ export class DfdExportService {
    * @returns Base64 encoded SVG scaled for thumbnail display
    */
   private processSvgForThumbnail(svgString: string): string {
-    const cleanedSvg = this.cleanSvgContentForThumbnail(svgString);
+    const cleanedSvg = this.cleanSvgContent(svgString);
 
     // Convert to base64
     const encoder = new TextEncoder();
@@ -322,13 +322,14 @@ export class DfdExportService {
     return cleanedString.trim();
   }
 
+
   /**
-   * Clean SVG for export - preserves natural dimensions and viewport information
-   * Removes X6-specific elements but keeps all size and scale information
+   * Clean SVG content by removing X6-specific elements and attributes
+   * Preserves natural dimensions and viewport information for both exports and thumbnails
    * @param svgString The original SVG string from X6
-   * @returns Cleaned SVG string with natural dimensions preserved
+   * @returns Cleaned SVG string with X6 artifacts removed
    */
-  private cleanSvgContentForExport(svgString: string): string {
+  private cleanSvgContent(svgString: string): string {
     try {
       // Parse the SVG
       const parser = new DOMParser();
@@ -339,35 +340,7 @@ export class DfdExportService {
         return svgString; // Return original if parsing fails
       }
 
-      // Clean up litter that's not needed for svg rendering
-      this.cleanSvgElements(svgDoc);
-
-      // Serialize and clean invalid characters
-      const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
-      return this.cleanInvalidCharacters(serializedSvg);
-    } catch (error) {
-      this.logger.warn('Failed to clean SVG for export, returning original', { error });
-      return svgString;
-    }
-  }
-
-  /**
-   * Clean SVG for thumbnail display - scales to fit thumbnail container
-   * @param svgString The original SVG string from X6
-   * @returns Cleaned SVG string scaled for thumbnail display
-   */
-  private cleanSvgContentForThumbnail(svgString: string): string {
-    try {
-      // Parse the SVG
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-
-      if (!svgElement) {
-        return svgString; // Return original if parsing fails
-      }
-
-      // PRESERVE width, height, and viewBox for exports - don't remove them!
+      // PRESERVE width, height, and viewBox - don't remove them!
       // This maintains the natural size with border captured during generation
       // If there's a viewBox, make sure it stays centered on the content
       const viewBox = svgElement.getAttribute('viewBox');
@@ -375,20 +348,20 @@ export class DfdExportService {
         svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
 
-      // Apply the same cleaning as export version
+      // Clean up X6-specific elements and attributes
       this.cleanSvgElements(svgDoc);
 
       // Serialize and clean invalid characters
       const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
       return this.cleanInvalidCharacters(serializedSvg);
     } catch (error) {
-      this.logger.warn('Failed to clean SVG for thumbnail, returning original', { error });
+      this.logger.warn('Failed to clean SVG content, returning original', { error });
       return svgString;
     }
   }
 
   /**
-   * Common SVG element cleaning logic shared between export and thumbnail processing
+   * Common SVG element cleaning logic for removing X6-specific artifacts
    * @param svgDoc The parsed SVG document
    */
   private cleanSvgElements(svgDoc: Document): void {
