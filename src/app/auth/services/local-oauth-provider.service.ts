@@ -32,7 +32,10 @@ export class LocalOAuthProviderService {
    * Generate mock authorization code for local user by email
    */
   generateAuthCodeForEmail(email: string): string {
-    const code = btoa(`local:${email}`);
+    // Use UTF-8 safe encoding for email addresses (can contain Unicode)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(`local:${email}`);
+    const code = btoa(String.fromCharCode(...data));
     this.logger.info('LocalOAuthProviderService.generateAuthCodeForEmail:', {
       email,
       code,

@@ -243,6 +243,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private x6SelectionAdapter: X6SelectionAdapter,
     private diagramResyncService: DiagramResyncService,
     private diagramLoadingService: DiagramLoadingService,
+    private dfdExportService: DfdExportService,
   ) {
     this.logger.info('DfdComponent constructor called');
 
@@ -2363,21 +2364,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const graph = this.x6GraphAdapter.getGraph();
 
-      // Get the content area before zooming (for logging)
-      const contentAreaBefore = graph.getContentArea();
-
-      // Set zoom to 100% (1:1 scale) for thumbnail capture
-      this.logger.debug('Setting zoom to 100% before SVG export for thumbnail');
-      graph.zoomTo(1.0);
-
-      // Get the content area after zooming
-      const contentAreaAfter = graph.getContentArea();
-
-      this.logger.debug('Content area for SVG export', {
-        contentAreaBefore: contentAreaBefore,
-        contentAreaAfter: contentAreaAfter,
-        padding: 20,
-      });
+      const exportPrep = this.dfdExportService.prepareImageExport(graph);
+      if (!exportPrep) {
+        resolve(null);
+        return; // prepareImageExport handles logging
+      }
 
       // Cast graph to access export methods added by the plugin with options
       const exportGraph = graph as {
@@ -2393,203 +2384,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       try {
-        // Create export options to center on content with padding
-        const exportOptions: {
-          padding: number;
-          copyStyles: boolean;
-          preserveAspectRatio: string;
-          viewBox?: string;
-        } = {
-          padding: 20, // 20px padding around visible content
-          copyStyles: false, // Exclude CSS styles - experiment
-          preserveAspectRatio: 'xMidYMid meet', // Center content in viewBox
-        };
-
-        // Note: Keeping original viewport, not setting custom viewBox
-        this.logger.debug('Using original viewport for SVG export', {
-          contentAreaAfter: contentAreaAfter,
-          exportOptions: exportOptions,
-        });
-
         exportGraph.toSVG((svgString: string) => {
           try {
-            // Clean up the SVG by removing X6-specific classes and styling
-            const cleanedSvg = this.cleanSvgForThumbnail(svgString);
-
-            // Convert cleaned SVG string to base64
-            // Use modern approach to handle UTF-8 encoding properly
-            const encoder = new TextEncoder();
-            const data = encoder.encode(cleanedSvg);
-            const base64Svg = btoa(String.fromCharCode(...data));
+            const base64Svg = this.dfdExportService.processSvg(svgString, true);
             this.logger.debug('Successfully captured and cleaned diagram SVG', {
               originalLength: svgString.length,
-              cleanedLength: cleanedSvg.length,
               base64Length: base64Svg.length,
-              exportOptions: exportOptions,
+              exportOptions: exportPrep.exportOptions,
             });
             resolve(base64Svg);
           } catch (error) {
             this.logger.error('Error encoding SVG to base64', error);
             resolve(null);
           }
-        }, exportOptions);
+        }, exportPrep.exportOptions);
       } catch (error) {
         this.logger.error('Error capturing SVG from graph', error);
         resolve(null);
       }
     });
-  }
-
-  /**
-   * Remove invalid UTF-8, XML, and SVG characters
-   * @param svgString The SVG string to clean
-   * @returns SVG string with invalid characters removed
-   */
-  private cleanInvalidCharacters(svgString: string): string {
-    // Remove non-breaking spaces (0xa0) and other problematic characters
-    let cleanedString = svgString;
-
-    // Replace non-breaking spaces with regular spaces
-    cleanedString = cleanedString.replace(/\u00A0/g, ' ');
-
-    // Remove any remaining &nbsp; entities
-    cleanedString = cleanedString.replace(/&nbsp;/g, ' ');
-
-    // Remove control characters that can cause UTF-8/XML issues
-    // Filter out characters by checking their char codes
-    cleanedString = cleanedString
-      .split('')
-      .filter(char => {
-        const code = char.charCodeAt(0);
-        // Keep normal characters, but remove problematic control chars
-        // Allow: tab (9), line feed (10), carriage return (13), and printable chars (32+)
-        return code === 9 || code === 10 || code === 13 || code >= 32;
-      })
-      .join('');
-
-    // Normalize multiple spaces to single space
-    cleanedString = cleanedString.replace(/ +/g, ' ');
-
-    return cleanedString.trim();
-  }
-
-  /**
-   * Clean SVG by removing X6-specific classes and unnecessary styling attributes
-   * @param svgString The original SVG string from X6
-   * @returns Cleaned SVG string
-   */
-  private cleanSvgForThumbnail(svgString: string): string {
-    try {
-      // Parse the SVG
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-
-      if (!svgElement) {
-        return svgString; // Return original if parsing fails
-      }
-
-      // Set preserveAspectRatio on root SVG element
-      if (svgElement.hasAttribute('viewBox')) {
-        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      }
-
-      // Remove X6-specific classes and attributes
-      const elementsToClean = svgDoc.querySelectorAll('*');
-      elementsToClean.forEach(element => {
-        // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
-        const classNames = (element.className as any)?.baseVal || element.className;
-        if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
-          element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
-        }
-
-        // Remove X6-specific classes
-        if (typeof classNames === 'string') {
-          const cleanedClasses = classNames
-            .split(' ')
-            .filter(cls => !cls.startsWith('x6-'))
-            .join(' ');
-          if (cleanedClasses) {
-            element.setAttribute('class', cleanedClasses);
-          } else {
-            element.removeAttribute('class');
-          }
-        }
-
-        // Remove X6-specific attributes
-        const attributesToRemove = [
-          'data-cell-id',
-          'data-shape',
-          'port',
-          'port-group',
-          'magnet',
-          'cursor',
-          'pointer-events',
-        ];
-        attributesToRemove.forEach(attr => {
-          element.removeAttribute(attr);
-        });
-
-        // Clean up style attributes
-        const style = element.getAttribute('style');
-        if (style) {
-          const cleanedStyle = style
-            .split(';')
-            .filter(prop => prop.trim() !== '') // Only remove empty properties
-            .join(';');
-          if (cleanedStyle) {
-            element.setAttribute('style', cleanedStyle);
-          } else {
-            element.removeAttribute('style');
-          }
-        }
-      });
-
-      // Remove empty groups and decorative elements
-      const emptyGroups = svgDoc.querySelectorAll('g:empty');
-      emptyGroups.forEach(group => group.remove());
-
-      // Remove specific X6 decorative elements
-      const decorativeSelectors = [
-        '.x6-graph-svg-primer',
-        '.x6-graph-svg-decorator',
-        '.x6-graph-svg-overlay',
-      ];
-      decorativeSelectors.forEach(selector => {
-        const elements = svgDoc.querySelectorAll(selector);
-        elements.forEach(el => el.remove());
-      });
-
-      // Remove circle elements with visibility: hidden (eg hidden ports)
-      const hiddenCircles = svgDoc.querySelectorAll('circle');
-      hiddenCircles.forEach(circle => {
-        const style = circle.getAttribute('style');
-        if (style && style.includes('visibility: hidden')) {
-          circle.remove();
-        }
-      });
-
-      // Remove group elements that are empty or only contain a transform attribute
-      const groups = svgDoc.querySelectorAll('g');
-      groups.forEach(group => {
-        // Check if group has no children and only has a transform attribute
-        if (group.children.length === 0 && group.textContent?.trim() === '') {
-          const attributes = group.attributes;
-          if (attributes.length === 1 && attributes[0].name === 'transform') {
-            group.remove();
-          } else if (attributes.length === 0) {
-            // Also remove completely empty groups
-            group.remove();
-          }
-        }
-      });
-
-      // Serialize and clean invalid characters
-      const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
-      return this.cleanInvalidCharacters(serializedSvg);
-    } catch (error) {
-      this.logger.warn('Failed to clean SVG, returning original', { error });
-      return svgString;
-    }
   }
 }

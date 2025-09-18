@@ -249,11 +249,18 @@
               <div *ngIf="hasSvgImage(diagram)" class="diagram-thumbnail-container">
                 <div
                   class="diagram-thumbnail"
-                  [style.background-image]="'url(' + getSvgDataUrl(diagram) + ')'"
                   [matTooltip]="'threatModels.diagramPreview' | transloco"
                   matTooltipPosition="above"
                   [attr.aria-label]="'Thumbnail of ' + diagram.name"
-                ></div>
+                >
+                  <svg
+                    style="width: 100%; height: 100%"
+                    preserveAspectRatio="xMidYMid meet"
+                    [attr.viewBox]="getSvgViewBox(diagram)"
+                  >
+                    <image [attr.xlink:href]="getSvgDataUrl(diagram)" width="100%" height="100%" />
+                  </svg>
+                </div>
               </div>
             </div>
             <div matListItemMeta>

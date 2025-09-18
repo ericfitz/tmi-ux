@@ -577,8 +577,11 @@ export class AuthService {
         csrf: csrf,
         returnUrl: returnUrl,
       };
-      // Base64 encode the JSON object for URL safety
-      return btoa(JSON.stringify(stateObject));
+      // Base64 encode the JSON object for URL safety using UTF-8 safe encoding
+      const stateJson = JSON.stringify(stateObject);
+      const encoder = new TextEncoder();
+      const data = encoder.encode(stateJson);
+      return btoa(String.fromCharCode(...data));
     }
 
     // If no returnUrl, just return the CSRF token for backward compatibility
@@ -1088,11 +1091,14 @@ export class AuthService {
         providers: userInfo.providers || [{ provider: 'local', is_primary: true }],
       };
 
-      // Create a fake JWT (just for consistency, server not involved)
+      // Create a fake JWT (just for consistency, server not involved) using UTF-8 safe encoding
+      const encoder = new TextEncoder();
+      const headerData = encoder.encode(JSON.stringify(header));
+      const payloadData = encoder.encode(JSON.stringify(payload));
       const fakeJwt =
-        btoa(JSON.stringify(header)) +
+        btoa(String.fromCharCode(...headerData)) +
         '.' +
-        btoa(JSON.stringify(payload)) +
+        btoa(String.fromCharCode(...payloadData)) +
         '.' +
         'local-signature';
 
@@ -1154,9 +1160,16 @@ export class AuthService {
       providers: userInfo.providers || [{ provider: 'local', is_primary: true }],
     };
 
-    // Create a fake JWT (just for consistency, server not involved)
+    // Create a fake JWT (just for consistency, server not involved) using UTF-8 safe encoding
+    const encoder = new TextEncoder();
+    const headerData = encoder.encode(JSON.stringify(header));
+    const payloadData = encoder.encode(JSON.stringify(payload));
     const fakeJwt =
-      btoa(JSON.stringify(header)) + '.' + btoa(JSON.stringify(payload)) + '.' + 'local-signature';
+      btoa(String.fromCharCode(...headerData)) +
+      '.' +
+      btoa(String.fromCharCode(...payloadData)) +
+      '.' +
+      'local-signature';
 
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + environment.authTokenExpiryMinutes);

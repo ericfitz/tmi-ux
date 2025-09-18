@@ -98,24 +98,12 @@ export class DfdExportService {
         }
       };
 
-      // Get the content area before zooming (for logging)
-      const contentAreaBefore = graph.getContentArea();
-
-      // For SVG exports, zoom to fit content before export to center it in the viewport
-      if (format === 'svg') {
-        this.logger.debug('Zooming to fit content before SVG export');
-        // We need to get the graph adapter to call fitToContent
-        // For now, directly call the graph method
-        graph.zoomToFit({ padding: 20 });
-      }
-
-      // Get the content area after zooming (if zoomed)
-      const contentAreaAfter = graph.getContentArea();
+      // Get the content area (no zoom needed for vector export)
+      const contentArea = graph.getContentArea();
 
       this.logger.debug('Content area for export', {
         format,
-        contentAreaBefore: contentAreaBefore,
-        contentAreaAfter: contentAreaAfter,
+        contentArea: contentArea,
         padding: 20,
       });
 
@@ -135,28 +123,14 @@ export class DfdExportService {
       };
 
       if (format === 'svg') {
-        // Create export options to center on content with padding
-        const svgExportOptions: {
-          padding: number;
-          copyStyles: boolean;
-          preserveAspectRatio: string;
-          viewBox?: string;
-        } = {
-          padding: 20, // 20px padding around visible content
-          copyStyles: false, // Exclude CSS styles - experiment
-          preserveAspectRatio: 'xMidYMid meet', // Center content in viewBox
-        };
-
-        // Note: Keeping original viewport, not setting custom viewBox
-        this.logger.debug('Using original viewport for SVG export (CSS excluded - experiment)', {
-          contentAreaAfter: contentAreaAfter,
-          exportOptions: svgExportOptions,
-        });
+        const exportPrep = this.prepareImageExport(graph);
+        if (!exportPrep) {
+          return; // prepareImageExport handles logging
+        }
 
         exportGraph.toSVG((svgString: string) => {
-          // Clean up the SVG by removing X6-specific classes and styling
-          const cleanedSvg = this.cleanSvgForExport(svgString);
-          const blob = new Blob([cleanedSvg], { type: 'image/svg+xml' });
+          const finalSvg = this.processSvg(svgString);
+          const blob = new Blob([finalSvg], { type: 'image/svg+xml' });
 
           // Handle async operation without blocking the callback
           handleExport(blob, filename, 'image/svg+xml')
@@ -164,13 +138,13 @@ export class DfdExportService {
               this.logger.info('SVG export completed', {
                 filename,
                 originalLength: svgString.length,
-                cleanedLength: cleanedSvg.length,
+                finalLength: finalSvg.length,
               });
             })
             .catch(error => {
               this.logger.error('SVG export failed', error);
             });
-        }, svgExportOptions);
+        }, exportPrep.exportOptions);
       } else {
         const exportOptions = {
           backgroundColor: 'white',
@@ -207,6 +181,82 @@ export class DfdExportService {
     } catch (error) {
       this.logger.error('Error exporting diagram', error);
     }
+  }
+
+  /**
+   * Prepare image export by calculating bounding box and creating export options
+   * Used for SVG, PNG, and JPEG exports in file export path, and SVG strings in thumbnail path
+   * @param graph The X6 graph instance
+   * @param padding Padding around the content (default: 20)
+   * @returns Export preparation data or null if no cells to export
+   */
+  prepareImageExport(
+    graph: any,
+    padding: number = 20,
+  ): {
+    bbox: any;
+    viewBox: string;
+    exportOptions: {
+      padding: number;
+      copyStyles: boolean;
+      preserveAspectRatio: string;
+      viewBox: string;
+    };
+  } | null {
+    // Get tight bbox of all cells + padding (no zoom needed for vector export)
+    const cells = graph.getCells();
+    if (cells.length === 0) {
+      this.logger.warn('No cells to export');
+      return null;
+    }
+    const bbox = graph.getCellsBBox(cells);
+    if (!bbox) {
+      this.logger.warn('Could not get bounding box for cells');
+      return null;
+    }
+
+    const viewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
+
+    const exportOptions = {
+      padding, // Still apply if needed for internal
+      copyStyles: false,
+      preserveAspectRatio: 'xMidYMid meet',
+      viewBox, // Set explicit viewBox for tight fit
+    };
+
+    this.logger.debug('Using bounding box approach for SVG export', {
+      bbox,
+      viewBox,
+      exportOptions,
+    });
+
+    return { bbox, viewBox, exportOptions };
+  }
+
+  /**
+   * Process SVG string by cleaning X6-specific elements and removing width/height for scalability
+   * @param svgString The raw SVG string from X6
+   * @param encodeBase64 Whether to encode the result as base64 (for thumbnails)
+   * @returns Processed SVG string, optionally base64 encoded
+   */
+  processSvg(svgString: string, encodeBase64: boolean = false): string {
+    const cleanedSvg = this.cleanSvgContent(svgString);
+
+    // Post-process: remove width/height attrs for scalability
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(cleanedSvg, 'image/svg+xml');
+
+    const finalSvg = new XMLSerializer().serializeToString(doc);
+
+    if (encodeBase64) {
+      // Convert final SVG string to base64
+      // Use modern approach to handle UTF-8 encoding properly
+      const encoder = new TextEncoder();
+      const data = encoder.encode(finalSvg);
+      return btoa(String.fromCharCode(...data));
+    }
+
+    return finalSvg;
   }
 
   /**
@@ -262,7 +312,7 @@ export class DfdExportService {
    * @param svgString The original SVG string from X6
    * @returns Cleaned SVG string
    */
-  private cleanSvgForExport(svgString: string): string {
+  private cleanSvgContent(svgString: string): string {
     try {
       // Parse the SVG
       const parser = new DOMParser();
@@ -272,6 +322,9 @@ export class DfdExportService {
       if (!svgElement) {
         return svgString; // Return original if parsing fails
       }
+
+      svgElement.removeAttribute('width');
+      svgElement.removeAttribute('height');
 
       // Remove X6-specific classes and attributes
       const elementsToClean = svgDoc.querySelectorAll('*');
@@ -286,7 +339,7 @@ export class DfdExportService {
         if (typeof classNames === 'string') {
           const cleanedClasses = classNames
             .split(' ')
-            .filter(cls => !cls.startsWith('x6-'))
+            .filter(cls => !cls.startsWith('x6-') || cls === 'x6-graph-svg-viewport')
             .join(' ');
           if (cleanedClasses) {
             element.setAttribute('class', cleanedClasses);
@@ -324,10 +377,6 @@ export class DfdExportService {
         }
       });
 
-      // Remove empty groups and decorative elements
-      const emptyGroups = svgDoc.querySelectorAll('g:empty');
-      emptyGroups.forEach(group => group.remove());
-
       // Remove specific X6 decorative elements
       const decorativeSelectors = [
         '.x6-graph-svg-primer',
@@ -339,7 +388,7 @@ export class DfdExportService {
         elements.forEach(el => el.remove());
       });
 
-      // Remove circle elements with visibility: hidden
+      // Remove circle elements with visibility: hidden (unused ports)
       const hiddenCircles = svgDoc.querySelectorAll('circle');
       hiddenCircles.forEach(circle => {
         const style = circle.getAttribute('style');
@@ -347,6 +396,10 @@ export class DfdExportService {
           circle.remove();
         }
       });
+
+      // Remove empty groups
+      const emptyGroups = svgDoc.querySelectorAll('g:empty');
+      emptyGroups.forEach(group => group.remove());
 
       // Remove empty group elements that only contain a transform attribute
       const groups = svgDoc.querySelectorAll('g');
@@ -365,7 +418,7 @@ export class DfdExportService {
 
       // Set preserveAspectRatio on root SVG element
       if (svgElement.hasAttribute('viewBox')) {
-        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        // svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
 
       // Serialize and clean invalid characters

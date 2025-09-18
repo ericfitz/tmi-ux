@@ -217,7 +217,11 @@ export class SvgPreviewDialogComponent {
     try {
       this.decodedSvg = atob(this.base64Data);
       this.processedSvg = this.processSvgForBetterDisplay(this.decodedSvg);
-      this.processedDataUrl = `data:image/svg+xml;base64,${btoa(this.processedSvg)}`;
+      // Use modern UTF-8 safe encoding for SVG content
+      const encoder = new TextEncoder();
+      const data = encoder.encode(this.processedSvg);
+      const base64Svg = btoa(String.fromCharCode(...data));
+      this.processedDataUrl = `data:image/svg+xml;base64,${base64Svg}`;
     } catch (error) {
       this.decodedSvg = `Error decoding base64: ${String(error)}`;
       this.processedSvg = this.decodedSvg;
