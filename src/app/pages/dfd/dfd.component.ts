@@ -191,6 +191,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _webSocketHandlersInitialized = false;
   isReadOnlyMode = false;
 
+  // Initial diagram loading state
+  private _isInitialLoadInProgress = false;
+
   // Route parameters
   threatModelId: string | null = null;
   dfdId: string | null = null;
@@ -436,6 +439,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         next: () => {
           this.logger.info('DFD Component received history modification event');
 
+          // Skip auto-save during initial diagram loading
+          if (this._isInitialLoadInProgress) {
+            this.logger.debug('Skipping auto-save during initial diagram loading');
+            return;
+          }
+
           // Auto-save diagram when history is actually modified
           if (this.x6GraphAdapter.isInitialized() && this.dfdId && this.threatModelId) {
             this.logger.info('Triggering auto-save after history modification', {
@@ -474,6 +483,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Subscribe to cell data changes (metadata changes) for auto-save
     this._subscriptions.add(
       this.x6GraphAdapter.nodeInfoChanged$.subscribe(({ nodeId, newData, oldData }) => {
+        // Skip auto-save during initial diagram loading
+        if (this._isInitialLoadInProgress) {
+          this.logger.debug('Skipping auto-save for cell metadata change during initial diagram loading');
+          return;
+        }
+
         this.logger.info('Cell metadata changed, auto-saving diagram', {
           nodeId,
           hasNewData: !!newData,
@@ -486,6 +501,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Subscribe to threat changes for auto-save
     this._subscriptions.add(
       this.facade.threatChanged$.subscribe(({ action, threatId, diagramId }) => {
+        // Skip auto-save during initial diagram loading
+        if (this._isInitialLoadInProgress) {
+          this.logger.debug('Skipping auto-save for threat change during initial diagram loading');
+          return;
+        }
+
         this.logger.info('Threat changed, auto-saving diagram', {
           action,
           threatId,
@@ -943,6 +964,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
+      // Set flag to prevent auto-save during initial loading
+      this._isInitialLoadInProgress = true;
+      this.logger.debug('Setting initial load flag to prevent premature auto-save');
+
       const graph = this.x6GraphAdapter.getGraph();
 
       // Use the shared diagram loading service for consistent cell loading
@@ -962,6 +987,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);
+    } finally {
+      // Clear the flag after loading is complete
+      this._isInitialLoadInProgress = false;
+      this.logger.debug('Cleared initial load flag - auto-save now allowed');
     }
   }
 
