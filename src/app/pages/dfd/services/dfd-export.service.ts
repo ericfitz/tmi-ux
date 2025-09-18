@@ -225,6 +225,39 @@ export class DfdExportService {
   }
 
   /**
+   * Remove invalid UTF-8, XML, and SVG characters
+   * @param svgString The SVG string to clean
+   * @returns SVG string with invalid characters removed
+   */
+  private cleanInvalidCharacters(svgString: string): string {
+    // Remove non-breaking spaces (0xa0) and other problematic characters
+    let cleanedString = svgString;
+
+    // Replace non-breaking spaces with regular spaces
+    cleanedString = cleanedString.replace(/\u00A0/g, ' ');
+
+    // Remove any remaining &nbsp; entities
+    cleanedString = cleanedString.replace(/&nbsp;/g, ' ');
+
+    // Remove control characters that can cause UTF-8/XML issues
+    // Filter out characters by checking their char codes
+    cleanedString = cleanedString
+      .split('')
+      .filter(char => {
+        const code = char.charCodeAt(0);
+        // Keep normal characters, but remove problematic control chars
+        // Allow: tab (9), line feed (10), carriage return (13), and printable chars (32+)
+        return code === 9 || code === 10 || code === 13 || code >= 32;
+      })
+      .join('');
+
+    // Normalize multiple spaces to single space
+    cleanedString = cleanedString.replace(/ +/g, ' ');
+
+    return cleanedString.trim();
+  }
+
+  /**
    * Clean SVG by removing X6-specific classes and unnecessary styling attributes
    * @param svgString The original SVG string from X6
    * @returns Cleaned SVG string
@@ -335,7 +368,9 @@ export class DfdExportService {
         svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
 
-      return new XMLSerializer().serializeToString(svgDoc);
+      // Serialize and clean invalid characters
+      const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
+      return this.cleanInvalidCharacters(serializedSvg);
     } catch (error) {
       this.logger.warn('Failed to clean SVG, returning original', { error });
       return svgString;
