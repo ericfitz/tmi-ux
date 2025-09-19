@@ -129,7 +129,7 @@ export class DfdExportService {
         }
 
         exportGraph.toSVG((svgString: string) => {
-          const finalSvg = this.processSvg(svgString);
+          const finalSvg = this.processSvg(svgString, false, exportPrep.viewBox);
           const blob = new Blob([finalSvg], { type: 'image/svg+xml' });
 
           // Handle async operation without blocking the callback
@@ -200,7 +200,7 @@ export class DfdExportService {
       padding: number;
       copyStyles: boolean;
       preserveAspectRatio: string;
-      viewBox: string;
+      viewBox?: string;
     };
   } | null {
     // Get tight bbox of all cells + padding (no zoom needed for vector export)
@@ -217,11 +217,27 @@ export class DfdExportService {
 
     const viewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
 
+    // Validate viewBox calculation
+    if (viewBox.includes('NaN') || viewBox.includes('undefined') || viewBox.includes('null')) {
+      this.logger.warn('Invalid viewBox calculated, falling back without explicit viewBox', {
+        bbox,
+        padding,
+        viewBox,
+      });
+      // Return export options without explicit viewBox to avoid corruption
+      const exportOptions = {
+        padding,
+        copyStyles: false,
+        preserveAspectRatio: 'xMidYMid meet',
+      };
+      return { bbox, viewBox: '', exportOptions };
+    }
+
     const exportOptions = {
       padding, // Still apply if needed for internal
       copyStyles: false,
       preserveAspectRatio: 'xMidYMid meet',
-      viewBox, // Set explicit viewBox for tight fit
+      // Don't set viewBox here to avoid duplicates - we'll apply it during SVG processing
     };
 
     this.logger.debug('Using bounding box approach for SVG export', {
@@ -239,13 +255,13 @@ export class DfdExportService {
    * @param encodeBase64 Whether to encode the result as base64 (for thumbnails)
    * @returns Processed SVG string, optionally base64 encoded
    */
-  processSvg(svgString: string, encodeBase64: boolean = false): string {
+  processSvg(svgString: string, encodeBase64: boolean = false, optimalViewBox?: string): string {
     if (encodeBase64) {
       // For thumbnails, use scaling approach
-      return this.processSvgForThumbnail(svgString);
+      return this.processSvgForThumbnail(svgString, optimalViewBox);
     } else {
       // For exports, preserve natural size
-      return this.processSvgForExport(svgString);
+      return this.processSvgForExport(svgString, optimalViewBox);
     }
   }
 
@@ -253,20 +269,22 @@ export class DfdExportService {
    * Process SVG for export - captures entire original SVG with border at natural size
    * Preserves viewport, dimensions, and scale information for high-quality exports
    * @param svgString The raw SVG string from X6
+   * @param optimalViewBox Optional optimal viewBox calculated from graph bounding box
    * @returns Processed SVG string with natural dimensions preserved
    */
-  private processSvgForExport(svgString: string): string {
-    const cleanedSvg = this.cleanSvgContent(svgString);
+  private processSvgForExport(svgString: string, optimalViewBox?: string): string {
+    const cleanedSvg = this.cleanSvgContent(svgString, optimalViewBox);
     return cleanedSvg;
   }
 
   /**
    * Process SVG for thumbnail display - scales to fit thumbnail container
    * @param svgString The raw SVG string from X6
+   * @param optimalViewBox Optional optimal viewBox calculated from graph bounding box
    * @returns Base64 encoded SVG scaled for thumbnail display
    */
-  private processSvgForThumbnail(svgString: string): string {
-    const cleanedSvg = this.cleanSvgContent(svgString);
+  private processSvgForThumbnail(svgString: string, optimalViewBox?: string): string {
+    const cleanedSvg = this.cleanSvgContent(svgString, optimalViewBox);
 
     // Convert to base64
     const encoder = new TextEncoder();
@@ -322,14 +340,14 @@ export class DfdExportService {
     return cleanedString.trim();
   }
 
-
   /**
    * Clean SVG content by removing X6-specific elements and attributes
    * Preserves natural dimensions and viewport information for both exports and thumbnails
    * @param svgString The original SVG string from X6
+   * @param optimalViewBox Optional optimal viewBox calculated from graph bounding box
    * @returns Cleaned SVG string with X6 artifacts removed
    */
-  private cleanSvgContent(svgString: string): string {
+  private cleanSvgContent(svgString: string, optimalViewBox?: string): string {
     try {
       // Parse the SVG
       const parser = new DOMParser();
@@ -342,11 +360,30 @@ export class DfdExportService {
 
       // PRESERVE width, height, and viewBox - don't remove them!
       // This maintains the natural size with border captured during generation
-      // If there's a viewBox, make sure it stays centered on the content
-      const viewBox = svgElement.getAttribute('viewBox');
-      if (viewBox) {
+
+      // Use optimal viewBox if provided, otherwise keep the existing one
+      let finalViewBox = svgElement.getAttribute('viewBox');
+      if (optimalViewBox && this.isValidViewBox(optimalViewBox)) {
+        finalViewBox = optimalViewBox;
+        this.logger.debug('Using optimal viewBox calculated from graph bounding box', {
+          originalViewBox: svgElement.getAttribute('viewBox'),
+          optimalViewBox,
+        });
+      } else if (optimalViewBox) {
+        this.logger.warn('Optimal viewBox is invalid, keeping original', {
+          optimalViewBox,
+          originalViewBox: svgElement.getAttribute('viewBox'),
+        });
+      }
+
+      // Apply the final viewBox and set preserveAspectRatio
+      if (finalViewBox) {
+        svgElement.setAttribute('viewBox', finalViewBox);
         svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
+
+      // Fix duplicate viewBox attributes issue
+      this.cleanDuplicateViewBoxAttributes(svgDoc);
 
       // Clean up X6-specific elements and attributes
       this.cleanSvgElements(svgDoc);
@@ -506,5 +543,93 @@ export class DfdExportService {
     });
 
     return filename;
+  }
+
+  /**
+   * Clean duplicate viewBox attributes from SVG document
+   * Removes empty, invalid, or duplicate viewBox attributes, keeping only the first valid one
+   * @param svgDoc The parsed SVG document
+   */
+  private cleanDuplicateViewBoxAttributes(svgDoc: Document): void {
+    // Find all elements with viewBox attributes
+    const elementsWithViewBox = svgDoc.querySelectorAll('[viewBox]');
+
+    if (elementsWithViewBox.length <= 1) {
+      // No duplicates to clean
+      return;
+    }
+
+    let validViewBox: string | null = null;
+    let validElement: Element | null = null;
+
+    // Find the first valid viewBox
+    for (const element of elementsWithViewBox) {
+      const viewBox = element.getAttribute('viewBox');
+      if (this.isValidViewBox(viewBox)) {
+        validViewBox = viewBox;
+        validElement = element;
+        break;
+      }
+    }
+
+    // Remove viewBox from all elements
+    elementsWithViewBox.forEach(element => {
+      element.removeAttribute('viewBox');
+    });
+
+    // Restore the valid viewBox to the appropriate element (usually the root SVG)
+    if (validViewBox && validElement) {
+      const rootSvg = svgDoc.querySelector('svg');
+      if (rootSvg) {
+        rootSvg.setAttribute('viewBox', validViewBox);
+        this.logger.debug('Cleaned duplicate viewBox attributes', {
+          duplicateCount: elementsWithViewBox.length,
+          validViewBox,
+          restoredToRoot: true,
+        });
+      } else {
+        // Fallback: restore to the original valid element
+        validElement.setAttribute('viewBox', validViewBox);
+        this.logger.debug('Cleaned duplicate viewBox attributes', {
+          duplicateCount: elementsWithViewBox.length,
+          validViewBox,
+          restoredToOriginal: true,
+        });
+      }
+    } else {
+      this.logger.debug('No valid viewBox found among duplicates', {
+        duplicateCount: elementsWithViewBox.length,
+      });
+    }
+  }
+
+  /**
+   * Validate if a viewBox string is valid
+   * @param viewBox The viewBox attribute value
+   * @returns True if the viewBox is valid
+   */
+  private isValidViewBox(viewBox: string | null): boolean {
+    if (!viewBox || !viewBox.trim()) {
+      return false;
+    }
+
+    // Check for invalid values
+    if (
+      viewBox.includes('NaN') ||
+      viewBox.includes('undefined') ||
+      viewBox.includes('null') ||
+      viewBox.trim() === ''
+    ) {
+      return false;
+    }
+
+    // Check if it has the correct format (4 numbers)
+    const parts = viewBox.trim().split(/\s+/);
+    if (parts.length !== 4) {
+      return false;
+    }
+
+    // Check if all parts are valid numbers
+    return parts.every(part => !isNaN(parseFloat(part)) && isFinite(parseFloat(part)));
   }
 }

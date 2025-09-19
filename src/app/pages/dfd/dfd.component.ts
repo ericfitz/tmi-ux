@@ -2417,7 +2417,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       try {
         exportGraph.toSVG((svgString: string) => {
           try {
-            const base64Svg = this.dfdExportService.processSvg(svgString, true);
+            const base64Svg = this.dfdExportService.processSvg(svgString, true, exportPrep.viewBox);
             this.logger.debug('Successfully captured and cleaned diagram SVG', {
               originalLength: svgString.length,
               base64Length: base64Svg.length,

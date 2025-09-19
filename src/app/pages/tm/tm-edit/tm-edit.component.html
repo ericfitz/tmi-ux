@@ -252,11 +252,7 @@
                   matTooltipPosition="above"
                   [attr.aria-label]="'Thumbnail of ' + diagram.name"
                 >
-                  <svg
-                    style="width: 100%; height: 100%"
-                    preserveAspectRatio="xMidYMid meet"
-                    [attr.viewBox]="getSvgViewBox(diagram) || undefined"
-                  >
+                  <svg style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">
                     <image [attr.xlink:href]="getSvgDataUrl(diagram)" width="100%" height="100%" />
                   </svg>
                 </div>

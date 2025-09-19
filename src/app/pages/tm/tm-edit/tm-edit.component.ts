@@ -1869,6 +1869,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * @returns SVG viewBox attribute or null
    */
   getSvgViewBox(diagram: Diagram): string | null {
+    // Extract viewBox from the SVG content - the DFD export service now handles optimal viewBox calculation
+    return this.extractViewBoxFromSvg(diagram);
+  }
+
+  /**
+   * Fallback method to extract viewBox from SVG content
+   * @param diagram The diagram object
+   * @returns SVG viewBox attribute or null
+   */
+  private extractViewBoxFromSvg(diagram: Diagram): string | null {
     if (!diagram.image?.svg) {
       return null;
     }
