@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
+import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ThreatModel, Threat, Document, Source } from '../models/threat-model.model';
 
 interface DiagramImage {
   diagramId: string;
   diagramName: string;
+  diagramType: string;
   imageData: string;
 }
 
@@ -16,7 +18,10 @@ interface DiagramImage {
   providedIn: 'root',
 })
 export class ThreatModelReportService {
-  constructor(private logger: LoggerService) {}
+  constructor(
+    private logger: LoggerService,
+    private transloco: TranslocoService,
+  ) {}
 
   /**
    * Generate a PDF report for the given threat model
@@ -35,7 +40,7 @@ export class ThreatModelReportService {
       const diagramImages = this.renderDiagrams(threatModel);
 
       // Generate PDF content
-      this.createPdfContent(doc, threatModel, diagramImages);
+      await this.createPdfContent(doc, threatModel, diagramImages);
 
       // Save the PDF file
       await this.savePdfFile(doc, threatModel.name);
@@ -50,52 +55,42 @@ export class ThreatModelReportService {
   }
 
   /**
-   * Get diagram metadata for placeholder rendering in PDF
-   * Note: Actual diagram rendering will be implemented in future iteration
+   * Get diagram data for SVG rendering in PDF
    */
   private renderDiagrams(threatModel: ThreatModel): DiagramImage[] {
-    const diagramPlaceholders: DiagramImage[] = [];
+    const diagramImages: DiagramImage[] = [];
 
     if (!threatModel.diagrams || threatModel.diagrams.length === 0) {
-      return diagramPlaceholders;
+      return diagramImages;
     }
 
-    // For now, we'll create placeholders for each diagram
-    // Future implementation will include pre-rendered diagram images
+    // Extract actual SVG data from diagrams
     for (const diagram of threatModel.diagrams) {
-      diagramPlaceholders.push({
+      diagramImages.push({
         diagramId: diagram.id,
-        diagramName: diagram.name || 'Untitled Diagram',
-        imageData: '', // No actual image data in placeholder implementation
+        diagramName: diagram.name || this.transloco.translate('threatModels.diagramName'),
+        diagramType: diagram.type || 'Unknown',
+        imageData: diagram.image?.svg || '', // Base64 encoded SVG
       });
     }
 
-    this.logger.info('Using diagram placeholders in PDF report', {
-      diagramCount: diagramPlaceholders.length,
+    this.logger.info('Extracted diagram SVG data for PDF report', {
+      diagramCount: diagramImages.length,
+      diagramsWithImages: diagramImages.filter(d => d.imageData).length,
     });
 
-    return diagramPlaceholders;
+    return diagramImages;
   }
 
-  /**
-   * Export diagram as base64 PNG image
-   * Currently not implemented - using placeholder approach
-   * TODO: Remove this method when implementing pre-rendered diagram storage
-   */
-  private exportDiagramAsBase64(_graph: unknown, _diagramName: string): Promise<string> {
-    // This method is not used in the current placeholder implementation
-    // but kept for future reference when implementing actual diagram rendering
-    return Promise.resolve('');
-  }
 
   /**
    * Create PDF content using jsPDF
    */
-  private createPdfContent(
+  private async createPdfContent(
     doc: jsPDF,
     threatModel: ThreatModel,
     diagramImages: DiagramImage[],
-  ): void {
+  ): Promise<void> {
     let yPosition = 20;
     const pageHeight = doc.internal.pageSize.height;
     const margin = 20;
@@ -124,17 +119,17 @@ export class ThreatModelReportService {
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
 
-    doc.text(`Framework: ${threatModel.threat_model_framework}`, margin, yPosition);
-    doc.text(`Owner: ${threatModel.owner}`, margin + contentWidth / 2, yPosition);
+    doc.text(`${this.transloco.translate('threatModels.threatModelFramework')}: ${threatModel.threat_model_framework}`, margin, yPosition);
+    doc.text(`${this.transloco.translate('common.roles.owner')}: ${threatModel.owner}`, margin + contentWidth / 2, yPosition);
     yPosition += 8;
 
     doc.text(
-      `Created: ${new Date(threatModel.created_at).toLocaleDateString()}`,
+      `${this.transloco.translate('common.created')}: ${new Date(threatModel.created_at).toLocaleDateString()}`,
       margin,
       yPosition,
     );
     doc.text(
-      `Last Modified: ${new Date(threatModel.modified_at).toLocaleDateString()}`,
+      `${this.transloco.translate('common.lastModified')}: ${new Date(threatModel.modified_at).toLocaleDateString()}`,
       margin + contentWidth / 2,
       yPosition,
     );
@@ -150,51 +145,85 @@ export class ThreatModelReportService {
     if (diagramImages.length > 0) {
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text('Diagrams', margin, yPosition);
+      doc.text(this.transloco.translate('threatModels.diagrams'), margin, yPosition);
       yPosition += 12;
 
       for (const diagram of diagramImages) {
         // Check if we need a new page for the diagram
-        if (yPosition > pageHeight - 120) {
+        if (yPosition > pageHeight - 200) {
           doc.addPage();
           yPosition = 20;
         }
 
-        doc.setFontSize(12);
+        // Diagram name and type
+        doc.setFontSize(14);
+        doc.setTextColor(51, 51, 51);
         doc.text(diagram.diagramName, margin, yPosition);
         yPosition += 8;
 
-        // Show diagram placeholder since we don't have pre-rendered images yet
         doc.setFontSize(10);
         doc.setTextColor(102, 102, 102);
-        doc.text('📊 Diagram available in DFD Editor', margin, yPosition);
-        yPosition += 6;
-        doc.text(`Diagram ID: ${diagram.diagramId}`, margin, yPosition);
-        yPosition += 6;
-        doc.text(
-          'Note: Full diagram rendering will be available in a future update',
-          margin,
-          yPosition,
-        );
-        yPosition += 15;
+        doc.text(`${this.transloco.translate('threatModels.diagramType')}: ${diagram.diagramType}`, margin, yPosition);
+        yPosition += 10;
+
+        // Render actual SVG if available
+        if (diagram.imageData) {
+          try {
+            // Calculate display dimensions for PDF (what will be shown in the PDF)
+            const maxDisplayWidth = contentWidth * 0.8; // Use 80% of content width
+            const maxDisplayHeight = 200; // Increased for better visibility
+            
+            // Get original SVG dimensions to calculate aspect ratio
+            const svgDimensions = await this.extractSvgDimensions(diagram.imageData);
+            const aspectRatio = svgDimensions.width / svgDimensions.height;
+            
+            let displayWidth = maxDisplayWidth;
+            let displayHeight = maxDisplayWidth / aspectRatio;
+            
+            // If height exceeds max, constrain by height
+            if (displayHeight > maxDisplayHeight) {
+              displayHeight = maxDisplayHeight;
+              displayWidth = maxDisplayHeight * aspectRatio;
+            }
+            
+            // Render at ultra-high resolution (5K width) for maximum quality
+            const targetRenderWidth = 5120; // 5K width
+            const renderWidth = targetRenderWidth;
+            const renderHeight = Math.round(targetRenderWidth / aspectRatio);
+
+            this.logger.info('Rendering diagram at ultra-high resolution', {
+              diagramId: diagram.diagramId,
+              originalDimensions: svgDimensions,
+              displayDimensions: { width: displayWidth, height: displayHeight },
+              renderDimensions: { width: renderWidth, height: renderHeight },
+              scaleFactor: renderWidth / displayWidth,
+            });
+
+            // Convert SVG to ultra-high-resolution PNG
+            const pngDataUrl = await this.convertSvgToPng(diagram.imageData, renderWidth, renderHeight);
+            
+            // Add the PNG image to the PDF at display size
+            doc.addImage(pngDataUrl, 'PNG', margin, yPosition, displayWidth, displayHeight);
+            yPosition += displayHeight + 15;
+          } catch (error) {
+            this.logger.warn('Failed to render SVG diagram in PDF', {
+              diagramId: diagram.diagramId,
+              error,
+            });
+            // Fallback to placeholder text
+            doc.setFontSize(10);
+            doc.setTextColor(102, 102, 102);
+            doc.text('📊 Diagram rendering failed - view in DFD Editor', margin, yPosition);
+            yPosition += 15;
+          }
+        } else {
+          // No image data available
+          doc.setFontSize(10);
+          doc.setTextColor(102, 102, 102);
+          doc.text('📊 No diagram image available - view in DFD Editor', margin, yPosition);
+          yPosition += 15;
+        }
       }
-    }
-
-    // Threats Section
-    if (threatModel.threats && threatModel.threats.length > 0) {
-      // Check if we need a new page
-      if (yPosition > pageHeight - 100) {
-        doc.addPage();
-        yPosition = 20;
-      }
-
-      doc.setFontSize(16);
-      doc.setTextColor(51, 51, 51);
-      doc.text(`Threats (${threatModel.threats.length})`, margin, yPosition);
-      yPosition += 12;
-
-      this.addThreatsTable(doc, threatModel.threats, margin, yPosition, contentWidth);
-      yPosition = this.getNextYPosition(doc, yPosition, threatModel.threats.length * 15);
     }
 
     // Documents Section
@@ -207,7 +236,7 @@ export class ThreatModelReportService {
 
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text(`Documents (${threatModel.documents.length})`, margin, yPosition);
+      doc.text(`${this.transloco.translate('common.objectTypes.documents')} (${threatModel.documents.length})`, margin, yPosition);
       yPosition += 12;
 
       this.addDocumentsTable(doc, threatModel.documents, margin, yPosition, contentWidth);
@@ -224,10 +253,28 @@ export class ThreatModelReportService {
 
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text(`Source Code (${threatModel.sourceCode.length})`, margin, yPosition);
+      doc.text(`${this.transloco.translate('common.objectTypes.sourceCode')} (${threatModel.sourceCode.length})`, margin, yPosition);
       yPosition += 12;
 
       this.addSourceCodeTable(doc, threatModel.sourceCode, margin, yPosition, contentWidth);
+      yPosition = this.getNextYPosition(doc, yPosition, threatModel.sourceCode.length * 12);
+    }
+
+    // Threats Section
+    if (threatModel.threats && threatModel.threats.length > 0) {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 100) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      doc.setFontSize(16);
+      doc.setTextColor(51, 51, 51);
+      doc.text(`${this.transloco.translate('common.objectTypes.threats')} (${threatModel.threats.length})`, margin, yPosition);
+      yPosition += 12;
+
+      this.addThreatsTable(doc, threatModel.threats, margin, yPosition, contentWidth);
+      yPosition = this.getNextYPosition(doc, yPosition, threatModel.threats.length * 15);
     }
   }
 
@@ -248,10 +295,12 @@ export class ThreatModelReportService {
 
     // Table header
     doc.setFont('helvetica', 'bold');
-    doc.text('Name', x, currentY);
-    doc.text('Severity', x + width * 0.3, currentY);
-    doc.text('Status', x + width * 0.5, currentY);
-    doc.text('Type', x + width * 0.7, currentY);
+    doc.text(this.transloco.translate('threatModels.name'), x, currentY);
+    doc.text(this.transloco.translate('common.severity'), x + width * 0.25, currentY);
+    doc.text(this.transloco.translate('common.status'), x + width * 0.4, currentY);
+    doc.text(this.transloco.translate('common.threatType'), x + width * 0.55, currentY);
+    doc.text(this.transloco.translate('common.priority'), x + width * 0.7, currentY);
+    doc.text(this.transloco.translate('common.score'), x + width * 0.85, currentY);
     currentY += 8;
 
     // Separator line
@@ -265,7 +314,7 @@ export class ThreatModelReportService {
         currentY = 20;
       }
 
-      const nameLines = doc.splitTextToSize(threat.name, width * 0.28) as string | string[];
+      const nameLines = doc.splitTextToSize(threat.name, width * 0.22) as string | string[];
       const descLines = doc.splitTextToSize(threat.description || '', width * 0.9) as
         | string
         | string[];
@@ -273,9 +322,11 @@ export class ThreatModelReportService {
       const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
 
       doc.text(nameLines, x, currentY);
-      doc.text(threat.severity, x + width * 0.3, currentY);
-      doc.text(threat.status || 'Unknown', x + width * 0.5, currentY);
-      doc.text(threat.threat_type, x + width * 0.7, currentY);
+      doc.text(threat.severity, x + width * 0.25, currentY);
+      doc.text(threat.status || this.transloco.translate('common.severityUnknown'), x + width * 0.4, currentY);
+      doc.text(threat.threat_type, x + width * 0.55, currentY);
+      doc.text(threat.priority || '', x + width * 0.7, currentY);
+      doc.text(threat.score ? threat.score.toString() : '', x + width * 0.85, currentY);
 
       currentY += Math.max(nameLinesArray.length * 4, 8);
 
@@ -307,8 +358,9 @@ export class ThreatModelReportService {
 
     // Table header
     doc.setFont('helvetica', 'bold');
-    doc.text('Name', x, currentY);
-    doc.text('URL', x + width * 0.4, currentY);
+    doc.text(this.transloco.translate('threatModels.name'), x, currentY);
+    doc.text(this.transloco.translate('common.objectTypes.document'), x + width * 0.25, currentY);
+    doc.text(this.transloco.translate('common.description'), x + width * 0.5, currentY);
     currentY += 8;
 
     // Separator line
@@ -322,28 +374,22 @@ export class ThreatModelReportService {
         currentY = 20;
       }
 
-      const nameLines = doc.splitTextToSize(document.name, width * 0.35) as string | string[];
-      const urlLines = doc.splitTextToSize(document.url, width * 0.55) as string | string[];
+      const nameLines = doc.splitTextToSize(document.name, width * 0.22) as string | string[];
+      const typeText = document.metadata?.find(m => m.key === 'document_type')?.value || this.transloco.translate('common.other');
+      const typeLines = doc.splitTextToSize(typeText || '', width * 0.22) as string | string[];
+      const descLines = doc.splitTextToSize(document.description || '', width * 0.45) as string | string[];
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
-      const urlLinesArray = Array.isArray(urlLines) ? urlLines : [urlLines];
+      const typeLinesArray = Array.isArray(typeLines) ? typeLines : [typeLines];
+      const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
 
       doc.text(nameLines, x, currentY);
-      doc.text(urlLines, x + width * 0.4, currentY);
+      doc.text(typeLines, x + width * 0.25, currentY);
+      doc.text(descLines, x + width * 0.5, currentY);
 
-      currentY += Math.max(nameLinesArray.length * 4, urlLinesArray.length * 4, 8);
+      currentY += Math.max(nameLinesArray.length * 4, typeLinesArray.length * 4, descLinesArray.length * 4, 8);
 
-      if (document.description) {
-        doc.setFontSize(8);
-        doc.setTextColor(102, 102, 102);
-        const descLines = doc.splitTextToSize(document.description, width * 0.9) as
-          | string
-          | string[];
-        const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
-        doc.text(descLinesArray.slice(0, 2), x, currentY); // Limit to 2 lines
-        currentY += Math.min(descLinesArray.length, 2) * 4 + 4;
-        doc.setFontSize(9);
-        doc.setTextColor(0, 0, 0);
-      }
+      // Add a small gap between entries
+      currentY += 4;
     });
   }
 
@@ -364,10 +410,11 @@ export class ThreatModelReportService {
 
     // Table header
     doc.setFont('helvetica', 'bold');
-    doc.text('Name', x, currentY);
-    doc.text('Type', x + width * 0.25, currentY);
-    doc.text('URL', x + width * 0.4, currentY);
-    doc.text('Ref', x + width * 0.7, currentY);
+    doc.text(this.transloco.translate('threatModels.name'), x, currentY);
+    doc.text(this.transloco.translate('threatModels.sourceCodeType'), x + width * 0.2, currentY);
+    doc.text(this.transloco.translate('common.description'), x + width * 0.35, currentY);
+    doc.text(this.transloco.translate('threatModels.sourceCodeRefType'), x + width * 0.6, currentY);
+    doc.text(this.transloco.translate('threatModels.sourceCodeRefValue'), x + width * 0.8, currentY);
     currentY += 8;
 
     // Separator line
@@ -381,31 +428,23 @@ export class ThreatModelReportService {
         currentY = 20;
       }
 
-      const nameLines = doc.splitTextToSize(source.name, width * 0.22) as string | string[];
-      const urlLines = doc.splitTextToSize(source.url, width * 0.25) as string | string[];
+      const nameLines = doc.splitTextToSize(source.name, width * 0.18) as string | string[];
+      const descLines = doc.splitTextToSize(source.description || '', width * 0.22) as string | string[];
+      const refType = source.parameters?.refType || '';
+      const refValue = source.parameters?.refValue || '';
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
-      const urlLinesArray = Array.isArray(urlLines) ? urlLines : [urlLines];
-      const ref = source.parameters
-        ? `${source.parameters.refType}:${source.parameters.refValue}`
-        : '';
+      const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
 
       doc.text(nameLines, x, currentY);
-      doc.text(source.type, x + width * 0.25, currentY);
-      doc.text(urlLines, x + width * 0.4, currentY);
-      doc.text(ref, x + width * 0.7, currentY);
+      doc.text(source.type, x + width * 0.2, currentY);
+      doc.text(descLines, x + width * 0.35, currentY);
+      doc.text(refType, x + width * 0.6, currentY);
+      doc.text(refValue, x + width * 0.8, currentY);
 
-      currentY += Math.max(nameLinesArray.length * 4, urlLinesArray.length * 4, 8);
+      currentY += Math.max(nameLinesArray.length * 4, descLinesArray.length * 4, 8);
 
-      if (source.description) {
-        doc.setFontSize(8);
-        doc.setTextColor(102, 102, 102);
-        const descLines = doc.splitTextToSize(source.description, width * 0.9) as string | string[];
-        const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
-        doc.text(descLinesArray.slice(0, 1), x, currentY); // Limit to 1 line
-        currentY += Math.min(descLinesArray.length, 1) * 4 + 4;
-        doc.setFontSize(9);
-        doc.setTextColor(0, 0, 0);
-      }
+      // Add a small gap between entries
+      currentY += 4;
     });
   }
 
@@ -502,6 +541,130 @@ export class ThreatModelReportService {
       );
       throw fallbackError;
     }
+  }
+
+  /**
+   * Extract dimensions from SVG content
+   * @param base64Svg Base64 encoded SVG string
+   * @returns Promise resolving to SVG dimensions
+   */
+  private extractSvgDimensions(base64Svg: string): Promise<{ width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Decode the base64 SVG
+        const svgString = atob(base64Svg);
+        
+        // Parse SVG to extract viewBox or width/height
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        const svgElement = svgDoc.querySelector('svg');
+        
+        if (!svgElement) {
+          reject(new Error('Invalid SVG content'));
+          return;
+        }
+        
+        let width = 800; // Default fallback
+        let height = 600; // Default fallback
+        
+        // Try to get dimensions from viewBox first
+        const viewBox = svgElement.getAttribute('viewBox');
+        if (viewBox) {
+          const [, , vbWidth, vbHeight] = viewBox.split(' ').map(Number);
+          if (vbWidth && vbHeight) {
+            width = vbWidth;
+            height = vbHeight;
+          }
+        } else {
+          // Fall back to width/height attributes
+          const widthAttr = svgElement.getAttribute('width');
+          const heightAttr = svgElement.getAttribute('height');
+          
+          if (widthAttr && heightAttr) {
+            width = parseFloat(widthAttr);
+            height = parseFloat(heightAttr);
+          }
+        }
+        
+        resolve({ width, height });
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    });
+  }
+
+  /**
+   * Convert base64 SVG to ultra-high-resolution PNG data URL for PDF rendering
+   * Renders at 5K resolution (5120px width) and scales down for maximum quality
+   * @param base64Svg Base64 encoded SVG string
+   * @param width Target render width (ultra-high resolution, typically 5120px)
+   * @param height Target render height (ultra-high resolution, proportional)
+   * @returns Promise resolving to PNG data URL
+   */
+  private convertSvgToPng(base64Svg: string, width: number, height: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Decode the base64 SVG
+        const svgString = atob(base64Svg);
+        
+        // Create a blob from the SVG string
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        
+        // Create an image element
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = () => {
+          try {
+            // Create a canvas element
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (!ctx) {
+              reject(new Error('Failed to get canvas context'));
+              return;
+            }
+            
+            // Set canvas dimensions to exact target size
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Enable high-quality rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Fill with white background (important for PDF)
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw the image to fill the entire canvas (already sized correctly)
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert canvas to PNG data URL with high quality
+            const pngDataUrl = canvas.toDataURL('image/png', 1.0); // Maximum quality
+            
+            // Clean up
+            URL.revokeObjectURL(svgUrl);
+            
+            resolve(pngDataUrl);
+          } catch (error) {
+            URL.revokeObjectURL(svgUrl);
+            reject(error instanceof Error ? error : new Error(String(error)));
+          }
+        };
+        
+        img.onerror = () => {
+          URL.revokeObjectURL(svgUrl);
+          reject(new Error('Failed to load SVG image'));
+        };
+        
+        // Load the SVG
+        img.src = svgUrl;
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    });
   }
 
   /**
