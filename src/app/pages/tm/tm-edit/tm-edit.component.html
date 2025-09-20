@@ -248,9 +248,12 @@
               <div *ngIf="hasSvgImage(diagram)" class="diagram-thumbnail-container">
                 <div
                   class="diagram-thumbnail"
-                  [matTooltip]="'threatModels.diagramPreview' | transloco"
+                  [matTooltip]="hoveredDiagramId === diagram.id ? '' : ('threatModels.diagramPreview' | transloco)"
                   matTooltipPosition="above"
+                  [matTooltipDisabled]="hoveredDiagramId === diagram.id"
                   [attr.aria-label]="'Thumbnail of ' + diagram.name"
+                  (mouseenter)="onThumbnailHover(diagram.id)"
+                  (mouseleave)="onThumbnailLeave()"
                 >
                   <svg style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">
                     <image [attr.xlink:href]="getSvgDataUrl(diagram)" width="100%" height="100%" />
@@ -510,5 +513,12 @@
         </div>
       </mat-card-content>
     </mat-card>
+  </div>
+
+  <!-- Global Hover Preview Overlay (rendered outside all containers) -->
+  <div *ngIf="hoveredDiagramId" class="diagram-hover-preview-global" [attr.aria-hidden]="true">
+    <svg style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">
+      <image [attr.xlink:href]="getHoveredDiagramSvgUrl()" width="100%" height="100%" />
+    </svg>
   </div>
 </div>

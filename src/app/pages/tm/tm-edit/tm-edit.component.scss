@@ -594,3 +594,45 @@ mat-card-header {
     margin-left: 8px;
   }
 }
+
+// Global diagram hover preview (rendered outside all containers)
+.diagram-hover-preview-global {
+  position: fixed; // Use fixed positioning to float above everything
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); // Center on viewport
+  width: 640px;
+  height: 400px;
+  background-color: white;
+  border: 2px solid rgb(0 0 0 / 20%);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 24%);
+  z-index: 1000;
+  pointer-events: none; // Prevent interference with mouse events
+  opacity: 0;
+  animation: fade-in-global 200ms ease-out forwards;
+
+  // Responsive adjustments for smaller screens
+  @media (width <= 700px) {
+    width: 480px;
+    height: 300px;
+  }
+
+  @media (width <= 500px) {
+    width: 320px;
+    height: 200px;
+  }
+
+  // Fade in animation for global preview
+  @keyframes fade-in-global {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+}

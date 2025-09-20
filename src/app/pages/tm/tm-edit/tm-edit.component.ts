@@ -122,6 +122,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
   diagramSvgValidation = new Map<string, boolean>();
   diagramSvgDataUrls = new Map<string, string>();
 
+  // Hover preview state
+  hoveredDiagramId: string | null = null;
+  private hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
   get diagrams(): Diagram[] {
     return this._diagrams;
   }
@@ -361,6 +365,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Clean up subscriptions
     this._subscriptions.unsubscribe();
+
+    // Clear hover timeout
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+    }
 
     // Clear SVG caches to prevent memory leaks
     this.clearSvgCaches();
@@ -2287,5 +2296,48 @@ export class TmEditComponent implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  /**
+   * Handle mouse enter on diagram thumbnail to show hover preview
+   * @param diagramId The ID of the diagram to preview
+   */
+  onThumbnailHover(diagramId: string): void {
+    // Clear any existing timeout
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+    }
+
+    // Set hover with delay
+    this.hoverTimeout = setTimeout(() => {
+      this.hoveredDiagramId = diagramId;
+    }, 300);
+  }
+
+  /**
+   * Handle mouse leave on diagram thumbnail to hide hover preview
+   */
+  onThumbnailLeave(): void {
+    // Clear timeout if hover hasn't triggered yet
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+      this.hoverTimeout = null;
+    }
+
+    // Hide preview immediately
+    this.hoveredDiagramId = null;
+  }
+
+  /**
+   * Get the SVG data URL for the currently hovered diagram
+   * @returns SVG data URL or empty string if no diagram is hovered
+   */
+  getHoveredDiagramSvgUrl(): string {
+    if (!this.hoveredDiagramId) {
+      return '';
+    }
+
+    const diagram = this.diagrams.find(d => d.id === this.hoveredDiagramId);
+    return diagram ? this.getSvgDataUrl(diagram) : '';
   }
 }
