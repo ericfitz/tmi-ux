@@ -150,7 +150,7 @@ describe('X6KeyboardHandler', () => {
       expect(graphOnSpy).toHaveBeenCalledWith('node:mouseup', expect.any(Function));
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Shift key handling for snap to grid control initialized',
+        'Shift key handling for snap to grid control and cursor changes initialized',
       );
     });
 

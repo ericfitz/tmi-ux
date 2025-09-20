@@ -248,7 +248,11 @@
               <div *ngIf="hasSvgImage(diagram)" class="diagram-thumbnail-container">
                 <div
                   class="diagram-thumbnail"
-                  [matTooltip]="hoveredDiagramId === diagram.id ? '' : ('threatModels.diagramPreview' | transloco)"
+                  [matTooltip]="
+                    hoveredDiagramId === diagram.id
+                      ? ''
+                      : ('threatModels.diagramPreview' | transloco)
+                  "
                   matTooltipPosition="above"
                   [matTooltipDisabled]="hoveredDiagramId === diagram.id"
                   [attr.aria-label]="'Thumbnail of ' + diagram.name"

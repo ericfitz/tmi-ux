@@ -5,7 +5,7 @@ import { Point } from '../../domain/value-objects/point';
 
 /**
  * X6 Keyboard Handler
- * Handles keyboard events for snap to grid control and other keyboard interactions
+ * Handles keyboard events for snap to grid control, cursor changes, and other keyboard interactions
  */
 @Injectable()
 export class X6KeyboardHandler {
@@ -17,16 +17,18 @@ export class X6KeyboardHandler {
   // Store initial position of node when drag starts
   private _initialNodePositions = new Map<string, Point>();
 
-  // Graph reference for grid updates
+  // Graph reference for grid updates and cursor management
   private _graph: Graph | null = null;
+  private _graphContainer: HTMLElement | null = null;
 
   constructor(private logger: LoggerService) {}
 
   /**
-   * Setup shift key handling for temporary snap to grid disable
+   * Setup shift key handling for temporary snap to grid disable and cursor changes
    */
   setupKeyboardHandling(graph: Graph): void {
     this._graph = graph;
+    this._graphContainer = graph.container;
 
     // Listen for shift key events on the document
     document.addEventListener('keydown', this._handleKeyDown);
@@ -40,7 +42,10 @@ export class X6KeyboardHandler {
     // Handle window blur to reset state if user switches windows while dragging
     window.addEventListener('blur', this._handleWindowBlur);
 
-    this.logger.info('Shift key handling for snap to grid control initialized');
+    // Set initial cursor state (default when not pressing shift)
+    this._updateCursor();
+
+    this.logger.info('Shift key handling for snap to grid control and cursor changes initialized');
   }
 
   /**
@@ -50,6 +55,10 @@ export class X6KeyboardHandler {
     document.removeEventListener('keydown', this._handleKeyDown);
     document.removeEventListener('keyup', this._handleKeyUp);
     window.removeEventListener('blur', this._handleWindowBlur);
+
+    // Reset shift state and cursor when cleaning up
+    this._isShiftPressed = false;
+    this._clearCursorStyles();
   }
 
   /**
@@ -73,6 +82,7 @@ export class X6KeyboardHandler {
     if (event.key === 'Shift' && !this._isShiftPressed) {
       this._isShiftPressed = true;
       this._updateSnapToGrid();
+      this._updateCursor();
     }
   };
 
@@ -83,6 +93,7 @@ export class X6KeyboardHandler {
     if (event.key === 'Shift' && this._isShiftPressed) {
       this._isShiftPressed = false;
       this._updateSnapToGrid();
+      this._updateCursor();
     }
   };
 
@@ -176,6 +187,7 @@ export class X6KeyboardHandler {
     }
     this._isDragging = false;
     this._updateSnapToGrid();
+    this._updateCursor();
     this._initialNodePositions.clear();
   };
 
@@ -200,5 +212,58 @@ export class X6KeyboardHandler {
       // Redraw the grid with the new size
       this._graph.drawGrid();
     }
+  }
+
+  /**
+   * Update cursor based on shift key state
+   */
+  private _updateCursor(): void {
+    if (!this._graphContainer) return;
+
+    if (this._isShiftPressed) {
+      // Show grab cursor when shift is held - apply to container and X6 elements
+      this._applyCursorToGraphElements('grab');
+    } else {
+      // Show default pointer cursor when shift is not held - apply to container and X6 elements
+      this._applyCursorToGraphElements('default');
+    }
+  }
+
+  /**
+   * Apply cursor style to the graph container and all X6 child elements
+   */
+  private _applyCursorToGraphElements(cursor: string): void {
+    if (!this._graphContainer) return;
+
+    // Apply to the main container
+    this._graphContainer.style.setProperty('cursor', cursor, 'important');
+
+    // Apply to all X6 graph elements that might override the cursor
+    const x6Elements = this._graphContainer.querySelectorAll(
+      '.x6-graph, .x6-graph-view, .x6-graph-scroller, .x6-graph-svg, .x6-graph-svg-container, svg',
+    );
+
+    x6Elements.forEach(element => {
+      (element as HTMLElement).style.setProperty('cursor', cursor, 'important');
+    });
+  }
+
+  /**
+   * Clear all cursor styles from graph elements
+   */
+  private _clearCursorStyles(): void {
+    if (!this._graphContainer) return;
+
+    // Remove cursor style from the main container
+    this._graphContainer.style.removeProperty('cursor');
+
+    // Remove cursor styles from all X6 graph elements
+    const x6Elements = this._graphContainer.querySelectorAll(
+      '.x6-graph, .x6-graph-view, .x6-graph-scroller, .x6-graph-svg, .x6-graph-svg-container, svg',
+    );
+
+    x6Elements.forEach(element => {
+      (element as HTMLElement).style.removeProperty('cursor');
+    });
   }
 }

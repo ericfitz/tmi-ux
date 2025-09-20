@@ -82,7 +82,6 @@ export class ThreatModelReportService {
     return diagramImages;
   }
 
-
   /**
    * Create PDF content using jsPDF
    */
@@ -119,8 +118,16 @@ export class ThreatModelReportService {
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
 
-    doc.text(`${this.transloco.translate('threatModels.threatModelFramework')}: ${threatModel.threat_model_framework}`, margin, yPosition);
-    doc.text(`${this.transloco.translate('common.roles.owner')}: ${threatModel.owner}`, margin + contentWidth / 2, yPosition);
+    doc.text(
+      `${this.transloco.translate('threatModels.threatModelFramework')}: ${threatModel.threat_model_framework}`,
+      margin,
+      yPosition,
+    );
+    doc.text(
+      `${this.transloco.translate('common.roles.owner')}: ${threatModel.owner}`,
+      margin + contentWidth / 2,
+      yPosition,
+    );
     yPosition += 8;
 
     doc.text(
@@ -163,7 +170,11 @@ export class ThreatModelReportService {
 
         doc.setFontSize(10);
         doc.setTextColor(102, 102, 102);
-        doc.text(`${this.transloco.translate('threatModels.diagramType')}: ${diagram.diagramType}`, margin, yPosition);
+        doc.text(
+          `${this.transloco.translate('threatModels.diagramType')}: ${diagram.diagramType}`,
+          margin,
+          yPosition,
+        );
         yPosition += 10;
 
         // Render actual SVG if available
@@ -172,20 +183,20 @@ export class ThreatModelReportService {
             // Calculate display dimensions for PDF (what will be shown in the PDF)
             const maxDisplayWidth = contentWidth * 0.8; // Use 80% of content width
             const maxDisplayHeight = 200; // Increased for better visibility
-            
+
             // Get original SVG dimensions to calculate aspect ratio
             const svgDimensions = await this.extractSvgDimensions(diagram.imageData);
             const aspectRatio = svgDimensions.width / svgDimensions.height;
-            
+
             let displayWidth = maxDisplayWidth;
             let displayHeight = maxDisplayWidth / aspectRatio;
-            
+
             // If height exceeds max, constrain by height
             if (displayHeight > maxDisplayHeight) {
               displayHeight = maxDisplayHeight;
               displayWidth = maxDisplayHeight * aspectRatio;
             }
-            
+
             // Render at ultra-high resolution (5K width) for maximum quality
             const targetRenderWidth = 5120; // 5K width
             const renderWidth = targetRenderWidth;
@@ -200,8 +211,12 @@ export class ThreatModelReportService {
             });
 
             // Convert SVG to ultra-high-resolution PNG
-            const pngDataUrl = await this.convertSvgToPng(diagram.imageData, renderWidth, renderHeight);
-            
+            const pngDataUrl = await this.convertSvgToPng(
+              diagram.imageData,
+              renderWidth,
+              renderHeight,
+            );
+
             // Add the PNG image to the PDF at display size
             doc.addImage(pngDataUrl, 'PNG', margin, yPosition, displayWidth, displayHeight);
             yPosition += displayHeight + 15;
@@ -236,7 +251,11 @@ export class ThreatModelReportService {
 
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text(`${this.transloco.translate('common.objectTypes.documents')} (${threatModel.documents.length})`, margin, yPosition);
+      doc.text(
+        `${this.transloco.translate('common.objectTypes.documents')} (${threatModel.documents.length})`,
+        margin,
+        yPosition,
+      );
       yPosition += 12;
 
       this.addDocumentsTable(doc, threatModel.documents, margin, yPosition, contentWidth);
@@ -253,7 +272,11 @@ export class ThreatModelReportService {
 
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text(`${this.transloco.translate('common.objectTypes.sourceCode')} (${threatModel.sourceCode.length})`, margin, yPosition);
+      doc.text(
+        `${this.transloco.translate('common.objectTypes.sourceCode')} (${threatModel.sourceCode.length})`,
+        margin,
+        yPosition,
+      );
       yPosition += 12;
 
       this.addSourceCodeTable(doc, threatModel.sourceCode, margin, yPosition, contentWidth);
@@ -270,7 +293,11 @@ export class ThreatModelReportService {
 
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text(`${this.transloco.translate('common.objectTypes.threats')} (${threatModel.threats.length})`, margin, yPosition);
+      doc.text(
+        `${this.transloco.translate('common.objectTypes.threats')} (${threatModel.threats.length})`,
+        margin,
+        yPosition,
+      );
       yPosition += 12;
 
       this.addThreatsTable(doc, threatModel.threats, margin, yPosition, contentWidth);
@@ -323,7 +350,11 @@ export class ThreatModelReportService {
 
       doc.text(nameLines, x, currentY);
       doc.text(threat.severity, x + width * 0.25, currentY);
-      doc.text(threat.status || this.transloco.translate('common.severityUnknown'), x + width * 0.4, currentY);
+      doc.text(
+        threat.status || this.transloco.translate('common.severityUnknown'),
+        x + width * 0.4,
+        currentY,
+      );
       doc.text(threat.threat_type, x + width * 0.55, currentY);
       doc.text(threat.priority || '', x + width * 0.7, currentY);
       doc.text(threat.score ? threat.score.toString() : '', x + width * 0.85, currentY);
@@ -375,9 +406,13 @@ export class ThreatModelReportService {
       }
 
       const nameLines = doc.splitTextToSize(document.name, width * 0.22) as string | string[];
-      const typeText = document.metadata?.find(m => m.key === 'document_type')?.value || this.transloco.translate('common.other');
+      const typeText =
+        document.metadata?.find(m => m.key === 'document_type')?.value ||
+        this.transloco.translate('common.other');
       const typeLines = doc.splitTextToSize(typeText || '', width * 0.22) as string | string[];
-      const descLines = doc.splitTextToSize(document.description || '', width * 0.45) as string | string[];
+      const descLines = doc.splitTextToSize(document.description || '', width * 0.45) as
+        | string
+        | string[];
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
       const typeLinesArray = Array.isArray(typeLines) ? typeLines : [typeLines];
       const descLinesArray = Array.isArray(descLines) ? descLines : [descLines];
@@ -386,7 +421,12 @@ export class ThreatModelReportService {
       doc.text(typeLines, x + width * 0.25, currentY);
       doc.text(descLines, x + width * 0.5, currentY);
 
-      currentY += Math.max(nameLinesArray.length * 4, typeLinesArray.length * 4, descLinesArray.length * 4, 8);
+      currentY += Math.max(
+        nameLinesArray.length * 4,
+        typeLinesArray.length * 4,
+        descLinesArray.length * 4,
+        8,
+      );
 
       // Add a small gap between entries
       currentY += 4;
@@ -414,7 +454,11 @@ export class ThreatModelReportService {
     doc.text(this.transloco.translate('threatModels.sourceCodeType'), x + width * 0.2, currentY);
     doc.text(this.transloco.translate('common.description'), x + width * 0.35, currentY);
     doc.text(this.transloco.translate('threatModels.sourceCodeRefType'), x + width * 0.6, currentY);
-    doc.text(this.transloco.translate('threatModels.sourceCodeRefValue'), x + width * 0.8, currentY);
+    doc.text(
+      this.transloco.translate('threatModels.sourceCodeRefValue'),
+      x + width * 0.8,
+      currentY,
+    );
     currentY += 8;
 
     // Separator line
@@ -429,7 +473,9 @@ export class ThreatModelReportService {
       }
 
       const nameLines = doc.splitTextToSize(source.name, width * 0.18) as string | string[];
-      const descLines = doc.splitTextToSize(source.description || '', width * 0.22) as string | string[];
+      const descLines = doc.splitTextToSize(source.description || '', width * 0.22) as
+        | string
+        | string[];
       const refType = source.parameters?.refType || '';
       const refValue = source.parameters?.refValue || '';
       const nameLinesArray = Array.isArray(nameLines) ? nameLines : [nameLines];
@@ -553,20 +599,20 @@ export class ThreatModelReportService {
       try {
         // Decode the base64 SVG
         const svgString = atob(base64Svg);
-        
+
         // Parse SVG to extract viewBox or width/height
         const parser = new DOMParser();
         const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
         const svgElement = svgDoc.querySelector('svg');
-        
+
         if (!svgElement) {
           reject(new Error('Invalid SVG content'));
           return;
         }
-        
+
         let width = 800; // Default fallback
         let height = 600; // Default fallback
-        
+
         // Try to get dimensions from viewBox first
         const viewBox = svgElement.getAttribute('viewBox');
         if (viewBox) {
@@ -579,13 +625,13 @@ export class ThreatModelReportService {
           // Fall back to width/height attributes
           const widthAttr = svgElement.getAttribute('width');
           const heightAttr = svgElement.getAttribute('height');
-          
+
           if (widthAttr && heightAttr) {
             width = parseFloat(widthAttr);
             height = parseFloat(heightAttr);
           }
         }
-        
+
         resolve({ width, height });
       } catch (error) {
         reject(error instanceof Error ? error : new Error(String(error)));
@@ -606,59 +652,59 @@ export class ThreatModelReportService {
       try {
         // Decode the base64 SVG
         const svgString = atob(base64Svg);
-        
+
         // Create a blob from the SVG string
         const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         const svgUrl = URL.createObjectURL(svgBlob);
-        
+
         // Create an image element
         const img = new Image();
         img.crossOrigin = 'anonymous';
-        
+
         img.onload = () => {
           try {
             // Create a canvas element
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            
+
             if (!ctx) {
               reject(new Error('Failed to get canvas context'));
               return;
             }
-            
+
             // Set canvas dimensions to exact target size
             canvas.width = width;
             canvas.height = height;
-            
+
             // Enable high-quality rendering
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            
+
             // Fill with white background (important for PDF)
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, width, height);
-            
+
             // Draw the image to fill the entire canvas (already sized correctly)
             ctx.drawImage(img, 0, 0, width, height);
-            
+
             // Convert canvas to PNG data URL with high quality
             const pngDataUrl = canvas.toDataURL('image/png', 1.0); // Maximum quality
-            
+
             // Clean up
             URL.revokeObjectURL(svgUrl);
-            
+
             resolve(pngDataUrl);
           } catch (error) {
             URL.revokeObjectURL(svgUrl);
             reject(error instanceof Error ? error : new Error(String(error)));
           }
         };
-        
+
         img.onerror = () => {
           URL.revokeObjectURL(svgUrl);
           reject(new Error('Failed to load SVG image'));
         };
-        
+
         // Load the SVG
         img.src = svgUrl;
       } catch (error) {
