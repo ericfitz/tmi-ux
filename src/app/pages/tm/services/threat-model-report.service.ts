@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { PDFDocument, PDFPage, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, PDFPage, rgb, StandardFonts, PDFFont } from 'pdf-lib';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { LanguageService } from '../../../i18n/language.service';
 import { ThreatModel, Threat, Document, Source } from '../models/threat-model.model';
+import * as fontkit from 'fontkit';
 
 interface FontConfig {
   name: string;
   fontPath: string;
+  italicFontPath?: string;
   fallbacks: string[];
   rtl?: boolean;
 }
@@ -25,6 +27,7 @@ export class ThreatModelReportService {
       {
         name: 'NotoSans',
         fontPath: 'assets/fonts/ttf/NotoSans-VariableFont_wdth,wght.ttf',
+        italicFontPath: 'assets/fonts/ttf/NotoSans-Italic-VariableFont_wdth,wght.ttf',
         fallbacks: ['Helvetica', 'Arial'],
       },
     ],
@@ -33,6 +36,7 @@ export class ThreatModelReportService {
       {
         name: 'NotoSans',
         fontPath: 'assets/fonts/ttf/NotoSans-VariableFont_wdth,wght.ttf',
+        italicFontPath: 'assets/fonts/ttf/NotoSans-Italic-VariableFont_wdth,wght.ttf',
         fallbacks: ['Helvetica', 'Arial'],
       },
     ],
@@ -89,7 +93,8 @@ export class ThreatModelReportService {
   ]);
 
   private loadedFonts: Map<string, Uint8Array> = new Map();
-  private currentFont: any = StandardFonts.Helvetica;
+  private currentFont: PDFFont | undefined = undefined;
+  private currentItalicFont: PDFFont | undefined = undefined;
 
   constructor(
     private logger: LoggerService,
@@ -109,7 +114,10 @@ export class ThreatModelReportService {
 
       // Create pdf-lib document
       const doc = await PDFDocument.create();
-      
+
+      // Register fontkit with pdf-lib for variable font support
+      doc.registerFontkit(fontkit as any);
+
       // Set document metadata
       doc.setTitle(`Threat Model Report - ${threatModel.name}`);
       doc.setAuthor('TMI Application');
@@ -121,7 +129,7 @@ export class ThreatModelReportService {
       await this.loadFonts(doc);
 
       // Generate report content
-      await this.generateReportContent(doc, threatModel);
+      this.generateReportContent(doc, threatModel);
 
       // Save the PDF
       await this.savePdf(doc, threatModel.name);
@@ -146,16 +154,42 @@ export class ThreatModelReportService {
       this.logger.info('Loading fonts for language', {
         language: currentLang,
         fontConfig: fontConfig.name,
+        fontPath: fontConfig.fontPath,
       });
 
-      // Use standard fonts for now to avoid font loading issues
-      this.logger.info(`Using standard Helvetica font for language: ${currentLang}`);
-      this.currentFont = await doc.embedFont(StandardFonts.Helvetica);
+      // Load the main font
+      try {
+        const fontData = await this.fetchFont(fontConfig.fontPath);
+        this.currentFont = await doc.embedFont(fontData);
+        this.logger.info(`Successfully embedded custom font: ${fontConfig.name}`);
+      } catch (fontError) {
+        this.logger.warn(`Failed to load custom font ${fontConfig.name}, using fallback`, {
+          error: fontError instanceof Error ? fontError.message : String(fontError),
+        });
+        this.currentFont = await doc.embedFont(StandardFonts.Helvetica);
+      }
+
+      // Load the italic font if available
+      if (fontConfig.italicFontPath) {
+        try {
+          const italicFontData = await this.fetchFont(fontConfig.italicFontPath);
+          this.currentItalicFont = await doc.embedFont(italicFontData);
+          this.logger.info(`Successfully embedded italic font: ${fontConfig.name}-Italic`);
+        } catch (italicError) {
+          this.logger.warn(`Failed to load italic font, using standard italic fallback`, {
+            error: italicError instanceof Error ? italicError.message : String(italicError),
+          });
+          this.currentItalicFont = await doc.embedFont(StandardFonts.HelveticaOblique);
+        }
+      } else {
+        this.currentItalicFont = await doc.embedFont(StandardFonts.HelveticaOblique);
+      }
     } catch (error) {
-      this.logger.error('Error loading fonts, using Helvetica fallback', {
+      this.logger.error('Error loading fonts, using standard fallbacks', {
         error: error instanceof Error ? error.message : String(error),
       });
       this.currentFont = await doc.embedFont(StandardFonts.Helvetica);
+      this.currentItalicFont = await doc.embedFont(StandardFonts.HelveticaOblique);
     }
   }
 
@@ -164,7 +198,7 @@ export class ThreatModelReportService {
    */
   private async fetchFont(fontPath: string): Promise<Uint8Array> {
     const cacheKey = fontPath;
-    
+
     if (this.loadedFonts.has(cacheKey)) {
       return this.loadedFonts.get(cacheKey)!;
     }
@@ -182,7 +216,7 @@ export class ThreatModelReportService {
   /**
    * Generate the complete report content
    */
-  private async generateReportContent(doc: PDFDocument, threatModel: ThreatModel): Promise<void> {
+  private generateReportContent(doc: PDFDocument, threatModel: ThreatModel): void {
     let page = doc.addPage();
     let yPosition = page.getHeight() - 50;
 
@@ -223,10 +257,14 @@ export class ThreatModelReportService {
    * Add report title
    */
   private addTitle(page: PDFPage, title: string, yPosition: number): number {
+    if (!this.currentFont) {
+      throw new Error('No font loaded for PDF generation');
+    }
+
     const fontSize = 24;
     const textWidth = this.currentFont.widthOfTextAtSize(title, fontSize);
     const x = (page.getWidth() - textWidth) / 2;
-    
+
     page.drawText(title, {
       x,
       y: yPosition,
@@ -234,16 +272,24 @@ export class ThreatModelReportService {
       font: this.currentFont,
       color: rgb(0, 0, 0),
     });
-    
+
     return yPosition - 50;
   }
 
   /**
    * Add threat model summary section
    */
-  private addThreatModelSummary(page: PDFPage, threatModel: ThreatModel, yPosition: number): number {
+  private addThreatModelSummary(
+    page: PDFPage,
+    threatModel: ThreatModel,
+    yPosition: number,
+  ): number {
+    if (!this.currentFont) {
+      throw new Error('No font loaded for PDF generation');
+    }
+
     const sectionTitle = this.transloco.translate('threatModels.summary');
-    
+
     page.drawText(sectionTitle, {
       x: 50,
       y: yPosition,
@@ -251,29 +297,30 @@ export class ThreatModelReportService {
       font: this.currentFont,
       color: rgb(0, 0, 0),
     });
-    
+
     yPosition -= 30;
 
     const summaryItems = [
-      { 
-        label: this.transloco.translate('threatModels.description'), 
-        value: threatModel.description || this.transloco.translate('common.noDataAvailable')
+      {
+        label: this.transloco.translate('threatModels.description'),
+        value: threatModel.description || this.transloco.translate('common.noDataAvailable'),
       },
-      { 
-        label: this.transloco.translate('common.owner'), 
-        value: threatModel.owner || this.transloco.translate('common.noDataAvailable')
+      {
+        label: this.transloco.translate('common.owner'),
+        value: threatModel.owner || this.transloco.translate('common.noDataAvailable'),
       },
-      { 
-        label: this.transloco.translate('common.createdAt'), 
-        value: this.formatDate(threatModel.created_at) 
+      {
+        label: this.transloco.translate('common.createdAt'),
+        value: this.formatDate(threatModel.created_at),
       },
-      { 
-        label: this.transloco.translate('common.updatedAt'), 
-        value: this.formatDate(threatModel.modified_at) 
+      {
+        label: this.transloco.translate('common.updatedAt'),
+        value: this.formatDate(threatModel.modified_at),
       },
-      { 
-        label: this.transloco.translate('threatModels.framework'), 
-        value: threatModel.threat_model_framework || this.transloco.translate('common.noDataAvailable')
+      {
+        label: this.transloco.translate('threatModels.framework'),
+        value:
+          threatModel.threat_model_framework || this.transloco.translate('common.noDataAvailable'),
       },
     ];
 
@@ -282,7 +329,7 @@ export class ThreatModelReportService {
         x: 50,
         y: yPosition,
         size: 12,
-        font: this.currentFont,
+        font: this.currentFont!,
         color: rgb(0, 0, 0),
       });
       yPosition -= 20;
@@ -294,14 +341,19 @@ export class ThreatModelReportService {
   /**
    * Add diagrams section
    */
-  private addDiagramsSection(doc: PDFDocument, page: PDFPage, threatModel: ThreatModel, yPosition: number): { page: PDFPage; yPosition: number } {
+  private addDiagramsSection(
+    doc: PDFDocument,
+    page: PDFPage,
+    threatModel: ThreatModel,
+    yPosition: number,
+  ): { page: PDFPage; yPosition: number } {
     if (yPosition < 200) {
       page = doc.addPage();
       yPosition = page.getHeight() - 50;
     }
 
     const sectionTitle = this.transloco.translate('threatModels.diagrams');
-    
+
     page.drawText(sectionTitle, {
       x: 50,
       y: yPosition,
@@ -309,7 +361,7 @@ export class ThreatModelReportService {
       font: this.currentFont,
       color: rgb(0, 0, 0),
     });
-    
+
     yPosition -= 30;
 
     if (!threatModel.diagrams || threatModel.diagrams.length === 0) {
@@ -317,7 +369,7 @@ export class ThreatModelReportService {
         x: 50,
         y: yPosition,
         size: 12,
-        font: this.currentFont,
+        font: this.currentFont!,
         color: rgb(0.4, 0.4, 0.4),
       });
       return { page, yPosition: yPosition - 20 };
@@ -333,10 +385,10 @@ export class ThreatModelReportService {
         x: 50,
         y: yPosition,
         size: 14,
-        font: this.currentFont,
+        font: this.currentFont!,
         color: rgb(0, 0, 0),
       });
-      
+
       yPosition -= 30;
 
       // Add SVG placeholder - pdf-lib doesn't support SVG directly
@@ -351,15 +403,15 @@ export class ThreatModelReportService {
             borderColor: rgb(0.8, 0.8, 0.8),
             borderWidth: 1,
           });
-          
+
           page.drawText(`Diagram: ${diagram.name}`, {
-            x: 250 - (this.currentFont.widthOfTextAtSize(`Diagram: ${diagram.name}`, 10) / 2),
+            x: 250 - this.currentFont!.widthOfTextAtSize(`Diagram: ${diagram.name}`, 10) / 2,
             y: yPosition - 100,
             size: 10,
-            font: this.currentFont,
+            font: this.currentFont!,
             color: rgb(0.4, 0.4, 0.4),
           });
-          
+
           yPosition -= 220;
         } catch (error) {
           this.logger.warn('Failed to render SVG diagram', { diagramId: diagram.id, error });
@@ -367,7 +419,7 @@ export class ThreatModelReportService {
             x: 50,
             y: yPosition,
             size: 10,
-            font: this.currentFont,
+            font: this.currentFont!,
             color: rgb(0.4, 0.4, 0.4),
           });
           yPosition -= 20;
@@ -381,14 +433,23 @@ export class ThreatModelReportService {
   /**
    * Add documents section with table
    */
-  private addDocumentsSection(doc: PDFDocument, page: PDFPage, documents: Document[], yPosition: number): { page: PDFPage; yPosition: number } {
+  private addDocumentsSection(
+    doc: PDFDocument,
+    page: PDFPage,
+    documents: Document[],
+    yPosition: number,
+  ): { page: PDFPage; yPosition: number } {
+    if (!this.currentFont) {
+      throw new Error('No font loaded for PDF generation');
+    }
+
     if (yPosition < 200) {
       page = doc.addPage();
       yPosition = page.getHeight() - 50;
     }
 
     const sectionTitle = this.transloco.translate('threatModels.documents');
-    
+
     page.drawText(sectionTitle, {
       x: 50,
       y: yPosition,
@@ -396,7 +457,7 @@ export class ThreatModelReportService {
       font: this.currentFont,
       color: rgb(0, 0, 0),
     });
-    
+
     yPosition -= 30;
 
     if (documents.length === 0) {
@@ -421,7 +482,7 @@ export class ThreatModelReportService {
     yPosition -= 10;
 
     // Table rows
-    documents.forEach((document) => {
+    documents.forEach(document => {
       if (yPosition < 50) {
         page = doc.addPage();
         yPosition = page.getHeight() - 50;
@@ -442,14 +503,23 @@ export class ThreatModelReportService {
   /**
    * Add source code section with table
    */
-  private addSourceCodeSection(doc: PDFDocument, page: PDFPage, sources: Source[], yPosition: number): { page: PDFPage; yPosition: number } {
+  private addSourceCodeSection(
+    doc: PDFDocument,
+    page: PDFPage,
+    sources: Source[],
+    yPosition: number,
+  ): { page: PDFPage; yPosition: number } {
+    if (!this.currentFont) {
+      throw new Error('No font loaded for PDF generation');
+    }
+
     if (yPosition < 200) {
       page = doc.addPage();
       yPosition = page.getHeight() - 50;
     }
 
     const sectionTitle = this.transloco.translate('threatModels.sourceCode');
-    
+
     page.drawText(sectionTitle, {
       x: 50,
       y: yPosition,
@@ -457,7 +527,7 @@ export class ThreatModelReportService {
       font: this.currentFont,
       color: rgb(0, 0, 0),
     });
-    
+
     yPosition -= 30;
 
     if (sources.length === 0) {
@@ -483,7 +553,7 @@ export class ThreatModelReportService {
     yPosition -= 10;
 
     // Table rows
-    sources.forEach((source) => {
+    sources.forEach(source => {
       if (yPosition < 50) {
         page = doc.addPage();
         yPosition = page.getHeight() - 50;
@@ -505,14 +575,23 @@ export class ThreatModelReportService {
   /**
    * Add threats section with table
    */
-  private addThreatsSection(doc: PDFDocument, page: PDFPage, threats: Threat[], yPosition: number): { page: PDFPage; yPosition: number } {
+  private addThreatsSection(
+    doc: PDFDocument,
+    page: PDFPage,
+    threats: Threat[],
+    yPosition: number,
+  ): { page: PDFPage; yPosition: number } {
+    if (!this.currentFont) {
+      throw new Error('No font loaded for PDF generation');
+    }
+
     if (yPosition < 200) {
       page = doc.addPage();
       yPosition = page.getHeight() - 50;
     }
 
     const sectionTitle = this.transloco.translate('threatModels.threats');
-    
+
     page.drawText(sectionTitle, {
       x: 50,
       y: yPosition,
@@ -520,7 +599,7 @@ export class ThreatModelReportService {
       font: this.currentFont,
       color: rgb(0, 0, 0),
     });
-    
+
     yPosition -= 30;
 
     if (threats.length === 0) {
@@ -546,7 +625,7 @@ export class ThreatModelReportService {
     yPosition -= 10;
 
     // Table rows
-    threats.forEach((threat) => {
+    threats.forEach(threat => {
       if (yPosition < 50) {
         page = doc.addPage();
         yPosition = page.getHeight() - 50;
@@ -568,7 +647,16 @@ export class ThreatModelReportService {
   /**
    * Draw a table row
    */
-  private drawTableRow(page: PDFPage, data: string[], yPosition: number, isHeader: boolean): number {
+  private drawTableRow(
+    page: PDFPage,
+    data: string[],
+    yPosition: number,
+    isHeader: boolean,
+  ): number {
+    if (!this.currentFont) {
+      throw new Error('No font loaded for PDF generation');
+    }
+
     const columnWidths = [120, 120, 120, 120];
     const startX = 50;
     let currentX = startX;
@@ -579,9 +667,9 @@ export class ThreatModelReportService {
       if (index < columnWidths.length) {
         // Truncate text if too long
         const maxWidth = columnWidths[index] - 10;
-        const textWidth = this.currentFont.widthOfTextAtSize(text, fontSize);
+        const textWidth = this.currentFont!.widthOfTextAtSize(text, fontSize);
         let displayText = text;
-        
+
         if (textWidth > maxWidth) {
           // Estimate characters that fit
           const avgCharWidth = textWidth / text.length;
@@ -593,7 +681,7 @@ export class ThreatModelReportService {
           x: currentX,
           y: yPosition,
           size: fontSize,
-          font: this.currentFont,
+          font: this.currentFont!,
           color,
         });
         currentX += columnWidths[index];
@@ -618,7 +706,7 @@ export class ThreatModelReportService {
    */
   private formatDate(date: string | Date | undefined): string {
     if (!date) return this.transloco.translate('common.noDataAvailable');
-    
+
     try {
       const dateObj = typeof date === 'string' ? new Date(date) : date;
       return dateObj.toLocaleDateString(this.transloco.getActiveLang(), {
@@ -641,14 +729,14 @@ export class ThreatModelReportService {
       const pdfBytes = await doc.save();
       const blob = new Blob([pdfBytes] as BlobPart[], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `${filename}-report.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       URL.revokeObjectURL(url);
     } catch (error) {
       this.logger.error('Error saving PDF', error);
