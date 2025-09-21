@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../../../core/services/logger.service';
 import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { SvgOptimizationService } from './svg-optimization.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -14,6 +15,7 @@ export class DfdExportService {
   constructor(
     private logger: LoggerService,
     private x6GraphAdapter: X6GraphAdapter,
+    private svgOptimizationService: SvgOptimizationService,
   ) {}
 
   /**
@@ -129,7 +131,10 @@ export class DfdExportService {
         }
 
         exportGraph.toSVG((svgString: string) => {
-          const finalSvg = this.processSvg(svgString, false, exportPrep.viewBox);
+          const finalSvg = this.svgOptimizationService.optimizeForExport(
+            svgString,
+            exportPrep.viewBox,
+          );
           const blob = new Blob([finalSvg], { type: 'image/svg+xml' });
 
           // Handle async operation without blocking the callback
@@ -257,39 +262,12 @@ export class DfdExportService {
    */
   processSvg(svgString: string, encodeBase64: boolean = false, optimalViewBox?: string): string {
     if (encodeBase64) {
-      // For thumbnails, use scaling approach
-      return this.processSvgForThumbnail(svgString, optimalViewBox);
+      // For thumbnails, use SVGO optimization with base64 encoding
+      return this.svgOptimizationService.optimizeForThumbnail(svgString, optimalViewBox);
     } else {
-      // For exports, preserve natural size
-      return this.processSvgForExport(svgString, optimalViewBox);
+      // For exports, use SVGO optimization
+      return this.svgOptimizationService.optimizeForExport(svgString, optimalViewBox);
     }
-  }
-
-  /**
-   * Process SVG for export - captures entire original SVG with border at natural size
-   * Preserves viewport, dimensions, and scale information for high-quality exports
-   * @param svgString The raw SVG string from X6
-   * @param optimalViewBox Optional optimal viewBox calculated from graph bounding box
-   * @returns Processed SVG string with natural dimensions preserved
-   */
-  private processSvgForExport(svgString: string, optimalViewBox?: string): string {
-    const cleanedSvg = this.cleanSvgContent(svgString, optimalViewBox);
-    return cleanedSvg;
-  }
-
-  /**
-   * Process SVG for thumbnail display - scales to fit thumbnail container
-   * @param svgString The raw SVG string from X6
-   * @param optimalViewBox Optional optimal viewBox calculated from graph bounding box
-   * @returns Base64 encoded SVG scaled for thumbnail display
-   */
-  private processSvgForThumbnail(svgString: string, optimalViewBox?: string): string {
-    const cleanedSvg = this.cleanSvgContent(svgString, optimalViewBox);
-
-    // Convert to base64
-    const encoder = new TextEncoder();
-    const data = encoder.encode(cleanedSvg);
-    return btoa(String.fromCharCode(...data));
   }
 
   /**
@@ -305,186 +283,6 @@ export class DfdExportService {
     }
 
     return new Blob([arrayBuffer], { type: mimeType });
-  }
-
-  /**
-   * Remove invalid UTF-8, XML, and SVG characters
-   * @param svgString The SVG string to clean
-   * @returns SVG string with invalid characters removed
-   */
-  private cleanInvalidCharacters(svgString: string): string {
-    // Remove non-breaking spaces (0xa0) and other problematic characters
-    let cleanedString = svgString;
-
-    // Replace non-breaking spaces with regular spaces
-    cleanedString = cleanedString.replace(/\u00A0/g, ' ');
-
-    // Remove any remaining &nbsp; entities
-    cleanedString = cleanedString.replace(/&nbsp;/g, ' ');
-
-    // Remove control characters that can cause UTF-8/XML issues
-    // Filter out characters by checking their char codes
-    cleanedString = cleanedString
-      .split('')
-      .filter(char => {
-        const code = char.charCodeAt(0);
-        // Keep normal characters, but remove problematic control chars
-        // Allow: tab (9), line feed (10), carriage return (13), and printable chars (32+)
-        return code === 9 || code === 10 || code === 13 || code >= 32;
-      })
-      .join('');
-
-    // Normalize multiple spaces to single space
-    cleanedString = cleanedString.replace(/ +/g, ' ');
-
-    return cleanedString.trim();
-  }
-
-  /**
-   * Clean SVG content by removing X6-specific elements and attributes
-   * Preserves natural dimensions and viewport information for both exports and thumbnails
-   * @param svgString The original SVG string from X6
-   * @param optimalViewBox Optional optimal viewBox calculated from graph bounding box
-   * @returns Cleaned SVG string with X6 artifacts removed
-   */
-  private cleanSvgContent(svgString: string, optimalViewBox?: string): string {
-    try {
-      // Parse the SVG
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-
-      if (!svgElement) {
-        return svgString; // Return original if parsing fails
-      }
-
-      // PRESERVE width, height, and viewBox - don't remove them!
-      // This maintains the natural size with border captured during generation
-
-      // Use optimal viewBox if provided, otherwise keep the existing one
-      let finalViewBox = svgElement.getAttribute('viewBox');
-      if (optimalViewBox && this.isValidViewBox(optimalViewBox)) {
-        finalViewBox = optimalViewBox;
-        this.logger.debug('Using optimal viewBox calculated from graph bounding box', {
-          originalViewBox: svgElement.getAttribute('viewBox'),
-          optimalViewBox,
-        });
-      } else if (optimalViewBox) {
-        this.logger.warn('Optimal viewBox is invalid, keeping original', {
-          optimalViewBox,
-          originalViewBox: svgElement.getAttribute('viewBox'),
-        });
-      }
-
-      // Apply the final viewBox and set preserveAspectRatio
-      if (finalViewBox) {
-        svgElement.setAttribute('viewBox', finalViewBox);
-        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      }
-
-      // Fix duplicate viewBox attributes issue
-      this.cleanDuplicateViewBoxAttributes(svgDoc);
-
-      // Clean up X6-specific elements and attributes
-      this.cleanSvgElements(svgDoc);
-
-      // Serialize and clean invalid characters
-      const serializedSvg = new XMLSerializer().serializeToString(svgDoc);
-      return this.cleanInvalidCharacters(serializedSvg);
-    } catch (error) {
-      this.logger.warn('Failed to clean SVG content, returning original', { error });
-      return svgString;
-    }
-  }
-
-  /**
-   * Common SVG element cleaning logic for removing X6-specific artifacts
-   * @param svgDoc The parsed SVG document
-   */
-  private cleanSvgElements(svgDoc: Document): void {
-    // Remove X6-specific classes and attributes
-    const elementsToClean = svgDoc.querySelectorAll('*');
-    elementsToClean.forEach(element => {
-      // Special handling for x6-graph-svg-viewport - reset transform to identity matrix
-      const classNames = (element.className as any)?.baseVal || element.className;
-      if (typeof classNames === 'string' && classNames.includes('x6-graph-svg-viewport')) {
-        element.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
-      }
-
-      // Remove X6-specific classes except viewport
-      if (typeof classNames === 'string') {
-        const cleanedClasses = classNames
-          .split(' ')
-          .filter(cls => !cls.startsWith('x6-') || cls === 'x6-graph-svg-viewport')
-          .join(' ');
-        if (cleanedClasses) {
-          element.setAttribute('class', cleanedClasses);
-        } else {
-          element.removeAttribute('class');
-        }
-      }
-
-      // Remove X6-specific attributes
-      const attributesToRemove = [
-        'data-cell-id',
-        'data-shape',
-        'port',
-        'port-group',
-        'magnet',
-        'cursor',
-        'pointer-events',
-      ];
-      attributesToRemove.forEach(attr => {
-        element.removeAttribute(attr);
-      });
-
-      // Clean up style attributes
-      const style = element.getAttribute('style');
-      if (style) {
-        const cleanedStyle = style
-          .split(';')
-          .filter(prop => prop.trim() !== '') // Only remove empty properties
-          .join(';');
-        if (cleanedStyle) {
-          element.setAttribute('style', cleanedStyle);
-        } else {
-          element.removeAttribute('style');
-        }
-      }
-    });
-
-    // Remove specific X6 decorative elements
-    const decorativeSelectors = [
-      '.x6-graph-svg-primer',
-      '.x6-graph-svg-decorator',
-      '.x6-graph-svg-overlay',
-    ];
-    decorativeSelectors.forEach(selector => {
-      const elements = svgDoc.querySelectorAll(selector);
-      elements.forEach(el => el.remove());
-    });
-
-    // Remove unused (hidden) port (circle) elements
-    const hiddenCircles = svgDoc.querySelectorAll('circle');
-    hiddenCircles.forEach(circle => {
-      const style = circle.getAttribute('style');
-      if (style && style.includes('visibility: hidden')) {
-        circle.remove();
-      }
-    });
-
-    // Remove empty group elements that only contain a transform attribute
-    const groups = svgDoc.querySelectorAll('g');
-    groups.forEach(group => {
-      if (group.children.length === 0 && group.textContent?.trim() === '') {
-        const attributes = group.attributes;
-        if (attributes.length === 1 && attributes[0].name === 'transform') {
-          group.remove();
-        } else if (attributes.length === 0) {
-          group.remove();
-        }
-      }
-    });
   }
 
   /**
@@ -543,93 +341,5 @@ export class DfdExportService {
     });
 
     return filename;
-  }
-
-  /**
-   * Clean duplicate viewBox attributes from SVG document
-   * Removes empty, invalid, or duplicate viewBox attributes, keeping only the first valid one
-   * @param svgDoc The parsed SVG document
-   */
-  private cleanDuplicateViewBoxAttributes(svgDoc: Document): void {
-    // Find all elements with viewBox attributes
-    const elementsWithViewBox = svgDoc.querySelectorAll('[viewBox]');
-
-    if (elementsWithViewBox.length <= 1) {
-      // No duplicates to clean
-      return;
-    }
-
-    let validViewBox: string | null = null;
-    let validElement: Element | null = null;
-
-    // Find the first valid viewBox
-    for (const element of elementsWithViewBox) {
-      const viewBox = element.getAttribute('viewBox');
-      if (this.isValidViewBox(viewBox)) {
-        validViewBox = viewBox;
-        validElement = element;
-        break;
-      }
-    }
-
-    // Remove viewBox from all elements
-    elementsWithViewBox.forEach(element => {
-      element.removeAttribute('viewBox');
-    });
-
-    // Restore the valid viewBox to the appropriate element (usually the root SVG)
-    if (validViewBox && validElement) {
-      const rootSvg = svgDoc.querySelector('svg');
-      if (rootSvg) {
-        rootSvg.setAttribute('viewBox', validViewBox);
-        this.logger.debug('Cleaned duplicate viewBox attributes', {
-          duplicateCount: elementsWithViewBox.length,
-          validViewBox,
-          restoredToRoot: true,
-        });
-      } else {
-        // Fallback: restore to the original valid element
-        validElement.setAttribute('viewBox', validViewBox);
-        this.logger.debug('Cleaned duplicate viewBox attributes', {
-          duplicateCount: elementsWithViewBox.length,
-          validViewBox,
-          restoredToOriginal: true,
-        });
-      }
-    } else {
-      this.logger.debug('No valid viewBox found among duplicates', {
-        duplicateCount: elementsWithViewBox.length,
-      });
-    }
-  }
-
-  /**
-   * Validate if a viewBox string is valid
-   * @param viewBox The viewBox attribute value
-   * @returns True if the viewBox is valid
-   */
-  private isValidViewBox(viewBox: string | null): boolean {
-    if (!viewBox || !viewBox.trim()) {
-      return false;
-    }
-
-    // Check for invalid values
-    if (
-      viewBox.includes('NaN') ||
-      viewBox.includes('undefined') ||
-      viewBox.includes('null') ||
-      viewBox.trim() === ''
-    ) {
-      return false;
-    }
-
-    // Check if it has the correct format (4 numbers)
-    const parts = viewBox.trim().split(/\s+/);
-    if (parts.length !== 4) {
-      return false;
-    }
-
-    // Check if all parts are valid numbers
-    return parts.every(part => !isNaN(parseFloat(part)) && isFinite(parseFloat(part)));
   }
 }
