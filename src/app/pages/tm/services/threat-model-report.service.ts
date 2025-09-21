@@ -288,7 +288,7 @@ export class ThreatModelReportService {
       throw new Error('No font loaded for PDF generation');
     }
 
-    const sectionTitle = this.transloco.translate('threatModels.summary');
+    const sectionTitle = this.transloco.translate('threatModels.details');
 
     page.drawText(sectionTitle, {
       x: 50,
@@ -302,23 +302,23 @@ export class ThreatModelReportService {
 
     const summaryItems = [
       {
-        label: this.transloco.translate('threatModels.description'),
+        label: this.transloco.translate('common.description'),
         value: threatModel.description || this.transloco.translate('common.noDataAvailable'),
       },
       {
-        label: this.transloco.translate('common.owner'),
+        label: this.transloco.translate('common.roles.owner'),
         value: threatModel.owner || this.transloco.translate('common.noDataAvailable'),
       },
       {
-        label: this.transloco.translate('common.createdAt'),
+        label: this.transloco.translate('common.created'),
         value: this.formatDate(threatModel.created_at),
       },
       {
-        label: this.transloco.translate('common.updatedAt'),
+        label: this.transloco.translate('common.lastModified'),
         value: this.formatDate(threatModel.modified_at),
       },
       {
-        label: this.transloco.translate('threatModels.framework'),
+        label: this.transloco.translate('threatModels.threatModelFramework'),
         value:
           threatModel.threat_model_framework || this.transloco.translate('common.noDataAvailable'),
       },
@@ -448,7 +448,7 @@ export class ThreatModelReportService {
       yPosition = page.getHeight() - 50;
     }
 
-    const sectionTitle = this.transloco.translate('threatModels.documents');
+    const sectionTitle = this.transloco.translate('common.objectTypes.documents');
 
     page.drawText(sectionTitle, {
       x: 50,
@@ -474,7 +474,7 @@ export class ThreatModelReportService {
     // Table headers
     const headers = [
       this.transloco.translate('threatModels.name'),
-      this.transloco.translate('common.url'),
+      this.transloco.translate('threatModels.documentUrl'),
       this.transloco.translate('common.description'),
     ];
 
@@ -518,7 +518,7 @@ export class ThreatModelReportService {
       yPosition = page.getHeight() - 50;
     }
 
-    const sectionTitle = this.transloco.translate('threatModels.sourceCode');
+    const sectionTitle = this.transloco.translate('common.objectTypes.sourceCode');
 
     page.drawText(sectionTitle, {
       x: 50,
@@ -545,7 +545,7 @@ export class ThreatModelReportService {
     const headers = [
       this.transloco.translate('threatModels.name'),
       this.transloco.translate('threatModels.sourceCodeType'),
-      this.transloco.translate('common.url'),
+      this.transloco.translate('threatModels.sourceCodeUrl'),
       this.transloco.translate('common.description'),
     ];
 
