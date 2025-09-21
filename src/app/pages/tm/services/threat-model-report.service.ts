@@ -5,6 +5,8 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { LanguageService } from '../../../i18n/language.service';
 import { ThreatModel, Threat, Document, Source } from '../models/threat-model.model';
 
+// Font loading will be done dynamically to avoid build issues with large font files
+
 interface DiagramImage {
   diagramId: string;
   diagramName: string;
@@ -14,15 +16,9 @@ interface DiagramImage {
 
 interface FontConfig {
   name: string;
+  jsPDFName: string;
   fallbacks: string[];
   rtl?: boolean;
-  googleFontUrl?: string;
-}
-
-interface LoadedFont {
-  fontName: string;
-  fontData: string;
-  loaded: boolean;
 }
 
 /**
@@ -37,51 +33,72 @@ export class ThreatModelReportService {
       'en-US',
       {
         name: 'Noto Sans',
+        jsPDFName: 'NotoSans-VariableFont_wdth,wght',
         fallbacks: ['helvetica', 'arial'],
-        googleFontUrl:
-          'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap',
       },
     ],
     [
       'de',
       {
         name: 'Noto Sans',
+        jsPDFName: 'NotoSans-VariableFont_wdth,wght',
         fallbacks: ['helvetica', 'arial'],
-        googleFontUrl:
-          'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap',
       },
     ],
     [
       'zh',
       {
         name: 'Noto Sans SC',
+        jsPDFName: 'NotoSansSC-VariableFont_wght',
         fallbacks: ['NotoSansSC', 'simhei', 'simsun'],
-        googleFontUrl:
-          'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap',
       },
     ],
     [
       'ar',
       {
         name: 'Noto Sans Arabic',
+        jsPDFName: 'NotoSansArabic-VariableFont_wdth,wght',
         fallbacks: ['NotoSansArabic', 'tahoma'],
         rtl: true,
-        googleFontUrl:
-          'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap',
       },
     ],
     [
       'th',
       {
         name: 'Noto Sans Thai',
+        jsPDFName: 'NotoSansThai-VariableFont_wdth,wght',
         fallbacks: ['NotoSansThai', 'cordiaupc'],
-        googleFontUrl:
-          'https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap',
+      },
+    ],
+    [
+      'ja',
+      {
+        name: 'Noto Sans JP',
+        jsPDFName: 'NotoSansJP-VariableFont_wght',
+        fallbacks: ['NotoSansJP'],
+      },
+    ],
+    [
+      'ko',
+      {
+        name: 'Noto Sans KR',
+        jsPDFName: 'NotoSansKR-VariableFont_wght',
+        fallbacks: ['NotoSansKR'],
+      },
+    ],
+    [
+      'he',
+      {
+        name: 'Noto Sans Hebrew',
+        jsPDFName: 'NotoSansHebrew-VariableFont_wdth,wght',
+        fallbacks: ['NotoSansHebrew'],
+        rtl: true,
       },
     ],
   ]);
 
-  private loadedFonts: Map<string, LoadedFont> = new Map();
+
+  private loadedFontNames: Set<string> = new Set();
 
   constructor(
     private logger: LoggerService,
@@ -142,8 +159,8 @@ export class ThreatModelReportService {
         creator: 'TMI Application',
       });
 
-      // Load Google Fonts and configure fonts
-      await this.loadGoogleFontsAndConfigure(doc, fontConfig, currentLang);
+      // Set the embedded font for the document
+      await this.setEmbeddedFont(doc, fontConfig, currentLang);
 
       // Set text direction for RTL languages
       if (fontConfig.rtl) {
@@ -161,99 +178,82 @@ export class ThreatModelReportService {
   }
 
   /**
-   * Load Google Fonts and configure PDF document fonts
+   * Load font script dynamically and set the embedded font for the PDF document
    */
-  private async loadGoogleFontsAndConfigure(
-    doc: jsPDF,
-    fontConfig: FontConfig,
-    langCode: string,
-  ): Promise<void> {
+  private async setEmbeddedFont(doc: jsPDF, fontConfig: FontConfig, langCode: string): Promise<void> {
     try {
-      // Load Google Font CSS if specified
-      if (fontConfig.googleFontUrl) {
-        await this.loadGoogleFont(fontConfig.googleFontUrl, fontConfig.name);
-      }
-
-      // Wait for font to be available and set it
-      this.setDocumentFont(doc, fontConfig, langCode);
+      // Load the font if not already loaded
+      await this.loadFontScript(fontConfig, langCode);
+      
+      // Set the embedded font for the current language
+      doc.setFont(fontConfig.jsPDFName, 'normal');
+      this.logger.debugComponent(
+        'ThreatModelReport',
+        `Using embedded font: ${fontConfig.jsPDFName} for language: ${langCode}`,
+      );
     } catch (error) {
-      this.logger.warn('Failed to load Google Font, using fallback', {
+      this.logger.warn(`Failed to set embedded font ${fontConfig.jsPDFName}, using fallback`, {
         error: error instanceof Error ? error.message : String(error),
       });
-      this.setFontWithFallback(doc, fontConfig);
+      // Use first fallback font
+      doc.setFont(fontConfig.fallbacks[0] || 'helvetica', 'normal');
     }
   }
 
   /**
-   * Load Google Font CSS and ensure font is available
+   * Dynamically load font script if not already loaded
    */
-  private async loadGoogleFont(fontUrl: string, fontName: string): Promise<void> {
+  private async loadFontScript(fontConfig: FontConfig, langCode: string): Promise<void> {
+    const fontKey = `${langCode}-${fontConfig.jsPDFName}`;
+    
+    if (this.loadedFontNames.has(fontKey)) {
+      return; // Already loaded
+    }
+
     return new Promise((resolve, reject) => {
       try {
-        // Check if font is already loaded
-        const fontKey = `google-${fontName}`;
-        if (this.loadedFonts.has(fontKey) && this.loadedFonts.get(fontKey)?.loaded) {
+        // Map language codes to font file names
+        const fontFileMap: Record<string, string> = {
+          'en-US': 'NotoSans-VariableFont_wdth,wght-normal.js',
+          'de': 'NotoSans-VariableFont_wdth,wght-normal.js', 
+          'zh': 'NotoSansSC-VariableFont_wght-normal.js',
+          'ar': 'NotoSansArabic-VariableFont_wdth,wght-normal.js',
+          'th': 'NotoSansThai-VariableFont_wdth,wght-normal.js',
+          'ja': 'NotoSansJP-VariableFont_wght-normal.js',
+          'ko': 'NotoSansKR-VariableFont_wght-normal.js',
+          'he': 'NotoSansHebrew-VariableFont_wdth,wght-normal.js'
+        };
+
+        const fontFileName = fontFileMap[langCode];
+        if (!fontFileName) {
+          this.logger.warn(`No font file mapping for language: ${langCode}`);
           resolve();
           return;
         }
 
-        // Check if font link already exists
-        const existingLink = document.querySelector(`link[href="${fontUrl}"]`);
-        if (!existingLink) {
-          // Create and append font link
-          const link = document.createElement('link');
-          link.href = fontUrl;
-          link.rel = 'stylesheet';
-          link.onload = () => {
-            this.logger.debugComponent('ThreatModelReport', `Google Font CSS loaded: ${fontName}`);
-          };
-          link.onerror = () => {
-            this.logger.warn('Failed to load Google Font CSS', { fontUrl });
-          };
-          document.head.appendChild(link);
+        // Check if script already exists
+        const scriptId = `font-${fontKey}`;
+        if (document.getElementById(scriptId)) {
+          this.loadedFontNames.add(fontKey);
+          resolve();
+          return;
         }
 
-        // Wait for font to be available using Font Loading API
-        if ('fonts' in document) {
-          document.fonts
-            .load(`12px ${fontName}`)
-            .then(() => {
-              this.loadedFonts.set(fontKey, {
-                fontName,
-                fontData: '',
-                loaded: true,
-              });
-              this.logger.debugComponent('ThreatModelReport', `Font loaded and ready: ${fontName}`);
-              resolve();
-            })
-            .catch(error => {
-              const errorMsg = error instanceof Error ? error.message : String(error);
-              this.logger.warn('Font loading failed', { fontName, error: errorMsg });
-              reject(new Error(`Font loading failed: ${errorMsg}`));
-            });
-
-          // Fallback timeout in case font loading takes too long
-          setTimeout(() => {
-            if (!this.loadedFonts.get(fontKey)?.loaded) {
-              this.logger.warn('Font loading timeout, proceeding anyway', { fontName });
-              resolve();
-            }
-          }, 3000); // 3 second timeout
-        } else {
-          // Fallback for older browsers without Font Loading API
-          setTimeout(() => {
-            this.loadedFonts.set(fontKey, {
-              fontName,
-              fontData: '',
-              loaded: true,
-            });
-            this.logger.debugComponent(
-              'ThreatModelReport',
-              `Font assumed loaded (no API): ${fontName}`,
-            );
-            resolve();
-          }, 1000);
-        }
+        // Create and load script
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = `assets/fonts/${fontFileName}`;
+        script.onload = () => {
+          this.loadedFontNames.add(fontKey);
+          this.logger.debugComponent('ThreatModelReport', `Font script loaded: ${fontFileName}`);
+          resolve();
+        };
+        script.onerror = () => {
+          this.logger.warn(`Failed to load font script: ${fontFileName}`);
+          reject(new Error(`Failed to load font script: ${fontFileName}`));
+        };
+        
+        document.head.appendChild(script);
       } catch (error) {
         reject(error instanceof Error ? error : new Error(String(error)));
       }
@@ -261,54 +261,7 @@ export class ThreatModelReportService {
   }
 
   /**
-   * Set the document font after ensuring it's loaded
-   */
-  private setDocumentFont(doc: jsPDF, fontConfig: FontConfig, _langCode: string): void {
-    try {
-      const fontKey = `google-${fontConfig.name}`;
-      const loadedFont = this.loadedFonts.get(fontKey);
-
-      if (loadedFont?.loaded) {
-        // For jsPDF, we still need to use built-in fonts, but we can apply the loaded font
-        // when rendering text to canvas for enhanced rendering
-        doc.setFont('helvetica');
-        this.logger.debugComponent(
-          'ThreatModelReport',
-          `Using helvetica with ${fontConfig.name} loaded for enhanced rendering`,
-        );
-      } else {
-        // Fallback to standard fonts
-        this.setFontWithFallback(doc, fontConfig);
-      }
-    } catch (error) {
-      this.logger.warn('Error setting document font', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      this.setFontWithFallback(doc, fontConfig);
-    }
-  }
-
-  /**
-   * Set font with fallback support for Unicode characters
-   */
-  private setFontWithFallback(doc: jsPDF, fontConfig: FontConfig): void {
-    try {
-      // Use helvetica as fallback when Noto Sans fonts aren't loaded
-      doc.setFont('helvetica');
-      this.logger.debugComponent(
-        'ThreatModelReport',
-        `Using helvetica fallback for ${fontConfig.name}`,
-      );
-    } catch (error) {
-      this.logger.warn('Font fallback failed, using default', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      doc.setFont('helvetica');
-    }
-  }
-
-  /**
-   * Add text with proper language and RTL support using loaded fonts
+   * Add text with proper language and RTL support using embedded fonts
    */
   private addTextWithLanguageSupport(
     doc: jsPDF,
@@ -329,120 +282,34 @@ export class ThreatModelReportService {
       } = options;
       const currentLang = this.transloco.getActiveLang();
       const fontConfig = this.fontConfigs.get(currentLang) || this.fontConfigs.get('en-US')!;
-      const fontKey = `google-${fontConfig.name}`;
-      const loadedFont = this.loadedFonts.get(fontKey);
 
-      // Check if we should use enhanced text rendering with loaded fonts
-      if (loadedFont?.loaded && this.shouldUseEnhancedTextRendering(currentLang)) {
-        this.addEnhancedText(doc, text, x, y, {
-          fontName: fontConfig.name,
-          fontSize: 12,
-          fontWeight: 'normal',
-          isRTL,
-          contentWidth,
-          maxWidth,
+      // Set the embedded font for the current language
+      try {
+        doc.setFont(fontConfig.jsPDFName, 'normal');
+        this.logger.debugComponent(
+          'ThreatModelReport',
+          `Using embedded font: ${fontConfig.jsPDFName} for language: ${currentLang}`,
+        );
+      } catch (fontError) {
+        this.logger.warn(`Failed to set embedded font ${fontConfig.jsPDFName}, using fallback`, {
+          error: fontError instanceof Error ? fontError.message : String(fontError),
         });
-        return;
+        // Use first fallback font
+        doc.setFont(fontConfig.fallbacks[0] || 'helvetica', 'normal');
       }
 
-      // Fallback to standard jsPDF text rendering
+      // Use standard jsPDF text rendering with the embedded font
       this.addStandardText(doc, text, x, y, { isRTL, contentWidth, maxWidth });
     } catch (error) {
       this.logger.warn('Error adding text with language support, using fallback', {
         error: error instanceof Error ? error.message : String(error),
       });
       // Fallback to basic text rendering
+      doc.setFont('helvetica', 'normal');
       doc.text(text, x, y);
     }
   }
 
-  /**
-   * Determine if enhanced text rendering should be used
-   */
-  private shouldUseEnhancedTextRendering(_langCode: string): boolean {
-    // Only use enhanced rendering for specific cases where it's needed
-    // For now, disable enhanced rendering to fix positioning issues
-    return false;
-  }
-
-  /**
-   * Add enhanced text using canvas rendering with loaded fonts
-   */
-  private addEnhancedText(
-    doc: jsPDF,
-    text: string,
-    x: number,
-    y: number,
-    options: {
-      fontName: string;
-      fontSize: number;
-      fontWeight: string;
-      isRTL?: boolean;
-      contentWidth?: number;
-      maxWidth?: number;
-    },
-  ): void {
-    try {
-      const { fontName, fontSize, fontWeight, isRTL = false, contentWidth, maxWidth } = options;
-
-      // For short, simple text, render as canvas and add as image
-      if (text.length < 100 && !maxWidth) {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          this.addStandardText(doc, text, x, y, { isRTL, contentWidth });
-          return;
-        }
-
-        // Set font and measure text
-        ctx.font = `${fontWeight} ${fontSize}px ${fontName}, helvetica, sans-serif`;
-        const metrics = ctx.measureText(text);
-        const textWidth = metrics.width;
-        const textHeight = fontSize * 1.2; // Approximate height with line spacing
-
-        // Set canvas size with some padding
-        canvas.width = Math.ceil(textWidth + 4);
-        canvas.height = Math.ceil(textHeight + 4);
-
-        // Re-set font after canvas resize (canvas clears context)
-        ctx.font = `${fontWeight} ${fontSize}px ${fontName}, helvetica, sans-serif`;
-        ctx.fillStyle = '#000000';
-        ctx.textBaseline = 'top';
-        ctx.textAlign = 'left';
-
-        // Render text to canvas
-        ctx.fillText(text, 2, 2);
-
-        // Convert canvas to image and add to PDF
-        const imageData = canvas.toDataURL('image/png');
-        const adjustedX = isRTL && contentWidth ? x + contentWidth - textWidth : x;
-
-        // Add image to PDF at the same scale as text
-        doc.addImage(imageData, 'PNG', adjustedX, y - fontSize, textWidth, textHeight);
-
-        this.logger.debugComponent(
-          'ThreatModelReport',
-          `Enhanced text rendered: ${text.substring(0, 20)}...`,
-        );
-      } else {
-        // For longer text or text with wrapping, fall back to standard rendering
-        this.addStandardText(doc, text, x, y, {
-          isRTL: options.isRTL,
-          contentWidth: options.contentWidth,
-          maxWidth: options.maxWidth,
-        });
-      }
-    } catch (error) {
-      this.logger.warn('Enhanced text rendering failed, using standard', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      this.addStandardText(doc, text, x, y, {
-        isRTL: options.isRTL,
-        contentWidth: options.contentWidth,
-        maxWidth: options.maxWidth,
-      });
-    }
-  }
 
   /**
    * Add text using standard jsPDF text rendering
