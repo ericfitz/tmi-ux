@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
+import { LanguageService } from '../../../i18n/language.service';
 import { ThreatModel, Threat, Document, Source } from '../models/threat-model.model';
 
 interface DiagramImage {
@@ -11,6 +12,19 @@ interface DiagramImage {
   imageData: string;
 }
 
+interface FontConfig {
+  name: string;
+  fallbacks: string[];
+  rtl?: boolean;
+  googleFontUrl?: string;
+}
+
+interface LoadedFont {
+  fontName: string;
+  fontData: string;
+  loaded: boolean;
+}
+
 /**
  * Service responsible for generating PDF reports from threat models
  */
@@ -18,9 +32,61 @@ interface DiagramImage {
   providedIn: 'root',
 })
 export class ThreatModelReportService {
+  private fontConfigs: Map<string, FontConfig> = new Map([
+    [
+      'en-US',
+      {
+        name: 'Noto Sans',
+        fallbacks: ['helvetica', 'arial'],
+        googleFontUrl:
+          'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap',
+      },
+    ],
+    [
+      'de',
+      {
+        name: 'Noto Sans',
+        fallbacks: ['helvetica', 'arial'],
+        googleFontUrl:
+          'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap',
+      },
+    ],
+    [
+      'zh',
+      {
+        name: 'Noto Sans SC',
+        fallbacks: ['NotoSansSC', 'simhei', 'simsun'],
+        googleFontUrl:
+          'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap',
+      },
+    ],
+    [
+      'ar',
+      {
+        name: 'Noto Sans Arabic',
+        fallbacks: ['NotoSansArabic', 'tahoma'],
+        rtl: true,
+        googleFontUrl:
+          'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap',
+      },
+    ],
+    [
+      'th',
+      {
+        name: 'Noto Sans Thai',
+        fallbacks: ['NotoSansThai', 'cordiaupc'],
+        googleFontUrl:
+          'https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap',
+      },
+    ],
+  ]);
+
+  private loadedFonts: Map<string, LoadedFont> = new Map();
+
   constructor(
     private logger: LoggerService,
     private transloco: TranslocoService,
+    private languageService: LanguageService,
   ) {}
 
   /**
@@ -35,6 +101,9 @@ export class ThreatModelReportService {
 
       // Create new PDF document
       const doc = new jsPDF();
+
+      // Configure fonts and encoding for current language
+      await this.configurePdfForLanguage(doc);
 
       // Render diagrams as images
       const diagramImages = this.renderDiagrams(threatModel);
@@ -51,6 +120,355 @@ export class ThreatModelReportService {
     } catch (error) {
       this.logger.error('Error generating PDF report', error);
       throw error;
+    }
+  }
+
+  /**
+   * Configure PDF document for proper font support based on current language
+   */
+  private async configurePdfForLanguage(doc: jsPDF): Promise<void> {
+    const currentLang = this.transloco.getActiveLang();
+    const fontConfig = this.fontConfigs.get(currentLang) || this.fontConfigs.get('en-US')!;
+
+    this.logger.info('Configuring PDF fonts for language', {
+      language: currentLang,
+      fontConfig,
+    });
+
+    try {
+      // Set document properties for proper handling
+      doc.setProperties({
+        title: 'Threat Model Report',
+        creator: 'TMI Application',
+      });
+
+      // Load Google Fonts and configure fonts
+      await this.loadGoogleFontsAndConfigure(doc, fontConfig, currentLang);
+
+      // Set text direction for RTL languages
+      if (fontConfig.rtl) {
+        // Note: jsPDF has limited RTL support, we'll handle RTL in our text positioning
+        // The setR2L method exists but we'll use our custom RTL handling instead
+        this.logger.debugComponent('ThreatModelReport', 'Configuring RTL text handling');
+      }
+    } catch (error) {
+      this.logger.warn('Error configuring PDF fonts, using defaults', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // Fallback to helvetica with UTF-8 support
+      doc.setFont('helvetica');
+    }
+  }
+
+  /**
+   * Load Google Fonts and configure PDF document fonts
+   */
+  private async loadGoogleFontsAndConfigure(
+    doc: jsPDF,
+    fontConfig: FontConfig,
+    langCode: string,
+  ): Promise<void> {
+    try {
+      // Load Google Font CSS if specified
+      if (fontConfig.googleFontUrl) {
+        await this.loadGoogleFont(fontConfig.googleFontUrl, fontConfig.name);
+      }
+
+      // Wait for font to be available and set it
+      this.setDocumentFont(doc, fontConfig, langCode);
+    } catch (error) {
+      this.logger.warn('Failed to load Google Font, using fallback', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      this.setFontWithFallback(doc, fontConfig);
+    }
+  }
+
+  /**
+   * Load Google Font CSS and ensure font is available
+   */
+  private async loadGoogleFont(fontUrl: string, fontName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Check if font is already loaded
+        const fontKey = `google-${fontName}`;
+        if (this.loadedFonts.has(fontKey) && this.loadedFonts.get(fontKey)?.loaded) {
+          resolve();
+          return;
+        }
+
+        // Check if font link already exists
+        const existingLink = document.querySelector(`link[href="${fontUrl}"]`);
+        if (!existingLink) {
+          // Create and append font link
+          const link = document.createElement('link');
+          link.href = fontUrl;
+          link.rel = 'stylesheet';
+          link.onload = () => {
+            this.logger.debugComponent('ThreatModelReport', `Google Font CSS loaded: ${fontName}`);
+          };
+          link.onerror = () => {
+            this.logger.warn('Failed to load Google Font CSS', { fontUrl });
+          };
+          document.head.appendChild(link);
+        }
+
+        // Wait for font to be available using Font Loading API
+        if ('fonts' in document) {
+          document.fonts
+            .load(`12px ${fontName}`)
+            .then(() => {
+              this.loadedFonts.set(fontKey, {
+                fontName,
+                fontData: '',
+                loaded: true,
+              });
+              this.logger.debugComponent('ThreatModelReport', `Font loaded and ready: ${fontName}`);
+              resolve();
+            })
+            .catch(error => {
+              const errorMsg = error instanceof Error ? error.message : String(error);
+              this.logger.warn('Font loading failed', { fontName, error: errorMsg });
+              reject(new Error(`Font loading failed: ${errorMsg}`));
+            });
+
+          // Fallback timeout in case font loading takes too long
+          setTimeout(() => {
+            if (!this.loadedFonts.get(fontKey)?.loaded) {
+              this.logger.warn('Font loading timeout, proceeding anyway', { fontName });
+              resolve();
+            }
+          }, 3000); // 3 second timeout
+        } else {
+          // Fallback for older browsers without Font Loading API
+          setTimeout(() => {
+            this.loadedFonts.set(fontKey, {
+              fontName,
+              fontData: '',
+              loaded: true,
+            });
+            this.logger.debugComponent(
+              'ThreatModelReport',
+              `Font assumed loaded (no API): ${fontName}`,
+            );
+            resolve();
+          }, 1000);
+        }
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    });
+  }
+
+  /**
+   * Set the document font after ensuring it's loaded
+   */
+  private setDocumentFont(doc: jsPDF, fontConfig: FontConfig, _langCode: string): void {
+    try {
+      const fontKey = `google-${fontConfig.name}`;
+      const loadedFont = this.loadedFonts.get(fontKey);
+
+      if (loadedFont?.loaded) {
+        // For jsPDF, we still need to use built-in fonts, but we can apply the loaded font
+        // when rendering text to canvas for enhanced rendering
+        doc.setFont('helvetica');
+        this.logger.debugComponent(
+          'ThreatModelReport',
+          `Using helvetica with ${fontConfig.name} loaded for enhanced rendering`,
+        );
+      } else {
+        // Fallback to standard fonts
+        this.setFontWithFallback(doc, fontConfig);
+      }
+    } catch (error) {
+      this.logger.warn('Error setting document font', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      this.setFontWithFallback(doc, fontConfig);
+    }
+  }
+
+  /**
+   * Set font with fallback support for Unicode characters
+   */
+  private setFontWithFallback(doc: jsPDF, fontConfig: FontConfig): void {
+    try {
+      // Use helvetica as fallback when Noto Sans fonts aren't loaded
+      doc.setFont('helvetica');
+      this.logger.debugComponent(
+        'ThreatModelReport',
+        `Using helvetica fallback for ${fontConfig.name}`,
+      );
+    } catch (error) {
+      this.logger.warn('Font fallback failed, using default', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      doc.setFont('helvetica');
+    }
+  }
+
+  /**
+   * Add text with proper language and RTL support using loaded fonts
+   */
+  private addTextWithLanguageSupport(
+    doc: jsPDF,
+    text: string,
+    x: number,
+    y: number,
+    options: {
+      isRTL?: boolean;
+      contentWidth?: number;
+      maxWidth?: number;
+    } = {},
+  ): void {
+    try {
+      const {
+        isRTL = false,
+        contentWidth,
+        maxWidth,
+      } = options;
+      const currentLang = this.transloco.getActiveLang();
+      const fontConfig = this.fontConfigs.get(currentLang) || this.fontConfigs.get('en-US')!;
+      const fontKey = `google-${fontConfig.name}`;
+      const loadedFont = this.loadedFonts.get(fontKey);
+
+      // Check if we should use enhanced text rendering with loaded fonts
+      if (loadedFont?.loaded && this.shouldUseEnhancedTextRendering(currentLang)) {
+        this.addEnhancedText(doc, text, x, y, {
+          fontName: fontConfig.name,
+          fontSize: 12,
+          fontWeight: 'normal',
+          isRTL,
+          contentWidth,
+          maxWidth,
+        });
+        return;
+      }
+
+      // Fallback to standard jsPDF text rendering
+      this.addStandardText(doc, text, x, y, { isRTL, contentWidth, maxWidth });
+    } catch (error) {
+      this.logger.warn('Error adding text with language support, using fallback', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // Fallback to basic text rendering
+      doc.text(text, x, y);
+    }
+  }
+
+  /**
+   * Determine if enhanced text rendering should be used
+   */
+  private shouldUseEnhancedTextRendering(_langCode: string): boolean {
+    // Only use enhanced rendering for specific cases where it's needed
+    // For now, disable enhanced rendering to fix positioning issues
+    return false;
+  }
+
+  /**
+   * Add enhanced text using canvas rendering with loaded fonts
+   */
+  private addEnhancedText(
+    doc: jsPDF,
+    text: string,
+    x: number,
+    y: number,
+    options: {
+      fontName: string;
+      fontSize: number;
+      fontWeight: string;
+      isRTL?: boolean;
+      contentWidth?: number;
+      maxWidth?: number;
+    },
+  ): void {
+    try {
+      const { fontName, fontSize, fontWeight, isRTL = false, contentWidth, maxWidth } = options;
+
+      // For short, simple text, render as canvas and add as image
+      if (text.length < 100 && !maxWidth) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          this.addStandardText(doc, text, x, y, { isRTL, contentWidth });
+          return;
+        }
+
+        // Set font and measure text
+        ctx.font = `${fontWeight} ${fontSize}px ${fontName}, helvetica, sans-serif`;
+        const metrics = ctx.measureText(text);
+        const textWidth = metrics.width;
+        const textHeight = fontSize * 1.2; // Approximate height with line spacing
+
+        // Set canvas size with some padding
+        canvas.width = Math.ceil(textWidth + 4);
+        canvas.height = Math.ceil(textHeight + 4);
+
+        // Re-set font after canvas resize (canvas clears context)
+        ctx.font = `${fontWeight} ${fontSize}px ${fontName}, helvetica, sans-serif`;
+        ctx.fillStyle = '#000000';
+        ctx.textBaseline = 'top';
+        ctx.textAlign = 'left';
+
+        // Render text to canvas
+        ctx.fillText(text, 2, 2);
+
+        // Convert canvas to image and add to PDF
+        const imageData = canvas.toDataURL('image/png');
+        const adjustedX = isRTL && contentWidth ? x + contentWidth - textWidth : x;
+
+        // Add image to PDF at the same scale as text
+        doc.addImage(imageData, 'PNG', adjustedX, y - fontSize, textWidth, textHeight);
+
+        this.logger.debugComponent(
+          'ThreatModelReport',
+          `Enhanced text rendered: ${text.substring(0, 20)}...`,
+        );
+      } else {
+        // For longer text or text with wrapping, fall back to standard rendering
+        this.addStandardText(doc, text, x, y, {
+          isRTL: options.isRTL,
+          contentWidth: options.contentWidth,
+          maxWidth: options.maxWidth,
+        });
+      }
+    } catch (error) {
+      this.logger.warn('Enhanced text rendering failed, using standard', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      this.addStandardText(doc, text, x, y, {
+        isRTL: options.isRTL,
+        contentWidth: options.contentWidth,
+        maxWidth: options.maxWidth,
+      });
+    }
+  }
+
+  /**
+   * Add text using standard jsPDF text rendering
+   */
+  private addStandardText(
+    doc: jsPDF,
+    text: string,
+    x: number,
+    y: number,
+    options: { isRTL?: boolean; contentWidth?: number; maxWidth?: number } = {},
+  ): void {
+    const { isRTL = false, contentWidth, maxWidth } = options;
+
+    // For RTL languages, adjust text positioning
+    if (isRTL && contentWidth) {
+      // Measure text width and position from right
+      const textWidth = doc.getTextWidth(text);
+      const adjustedX = x + contentWidth - textWidth;
+      doc.text(text, adjustedX, y);
+    } else if (maxWidth) {
+      // Handle text wrapping
+      const lines = doc.splitTextToSize(text, maxWidth) as string | string[];
+      doc.text(lines, x, y);
+    } else {
+      // Standard left-to-right text
+      doc.text(text, x, y);
     }
   }
 
@@ -95,11 +513,16 @@ export class ThreatModelReportService {
     const margin = 20;
     const pageWidth = doc.internal.pageSize.width;
     const contentWidth = pageWidth - 2 * margin;
+    const currentLang = this.transloco.getActiveLang();
+    const isRTL = this.fontConfigs.get(currentLang)?.rtl || false;
 
     // Title
     doc.setFontSize(24);
     doc.setTextColor(51, 51, 51);
-    doc.text(threatModel.name, margin, yPosition);
+    this.addTextWithLanguageSupport(doc, threatModel.name, margin, yPosition, {
+      isRTL,
+      contentWidth,
+    });
     yPosition += 15;
 
     // Description
@@ -110,7 +533,20 @@ export class ThreatModelReportService {
         | string
         | string[];
       const linesArray = Array.isArray(descriptionLines) ? descriptionLines : [descriptionLines];
-      doc.text(descriptionLines, margin, yPosition);
+
+      if (Array.isArray(descriptionLines)) {
+        descriptionLines.forEach((line, index) => {
+          this.addTextWithLanguageSupport(doc, line, margin, yPosition + index * 5, {
+            isRTL,
+            contentWidth,
+          });
+        });
+      } else {
+        this.addTextWithLanguageSupport(doc, descriptionLines, margin, yPosition, {
+          isRTL,
+          contentWidth,
+        });
+      }
       yPosition += linesArray.length * 5 + 10;
     }
 
@@ -118,28 +554,40 @@ export class ThreatModelReportService {
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
 
-    doc.text(
-      `${this.transloco.translate('threatModels.threatModelFramework')}: ${threatModel.threat_model_framework}`,
-      margin,
-      yPosition,
-    );
-    doc.text(
-      `${this.transloco.translate('common.roles.owner')}: ${threatModel.owner}`,
-      margin + contentWidth / 2,
-      yPosition,
-    );
+    const frameworkText = `${this.transloco.translate('threatModels.threatModelFramework')}: ${threatModel.threat_model_framework}`;
+    const ownerText = `${this.transloco.translate('common.roles.owner')}: ${threatModel.owner}`;
+
+    if (isRTL) {
+      this.addTextWithLanguageSupport(doc, frameworkText, margin, yPosition, {
+        isRTL,
+        contentWidth: contentWidth / 2,
+      });
+      this.addTextWithLanguageSupport(doc, ownerText, margin + contentWidth / 2, yPosition, {
+        isRTL,
+        contentWidth: contentWidth / 2,
+      });
+    } else {
+      this.addTextWithLanguageSupport(doc, frameworkText, margin, yPosition);
+      this.addTextWithLanguageSupport(doc, ownerText, margin + contentWidth / 2, yPosition);
+    }
     yPosition += 8;
 
-    doc.text(
-      `${this.transloco.translate('common.created')}: ${new Date(threatModel.created_at).toLocaleDateString()}`,
-      margin,
-      yPosition,
-    );
-    doc.text(
-      `${this.transloco.translate('common.lastModified')}: ${new Date(threatModel.modified_at).toLocaleDateString()}`,
-      margin + contentWidth / 2,
-      yPosition,
-    );
+    const createdText = `${this.transloco.translate('common.created')}: ${new Date(threatModel.created_at).toLocaleDateString()}`;
+    const modifiedText = `${this.transloco.translate('common.lastModified')}: ${new Date(threatModel.modified_at).toLocaleDateString()}`;
+
+    if (isRTL) {
+      this.addTextWithLanguageSupport(doc, createdText, margin, yPosition, {
+        isRTL,
+        contentWidth: contentWidth / 2,
+      });
+      this.addTextWithLanguageSupport(doc, modifiedText, margin + contentWidth / 2, yPosition, {
+        isRTL,
+        contentWidth: contentWidth / 2,
+      });
+    } else {
+      this.addTextWithLanguageSupport(doc, createdText, margin, yPosition);
+      this.addTextWithLanguageSupport(doc, modifiedText, margin + contentWidth / 2, yPosition);
+    }
     yPosition += 15;
 
     // Check if we need a new page
@@ -152,7 +600,13 @@ export class ThreatModelReportService {
     if (diagramImages.length > 0) {
       doc.setFontSize(16);
       doc.setTextColor(51, 51, 51);
-      doc.text(this.transloco.translate('threatModels.diagrams'), margin, yPosition);
+      this.addTextWithLanguageSupport(
+        doc,
+        this.transloco.translate('threatModels.diagrams'),
+        margin,
+        yPosition,
+        { isRTL, contentWidth },
+      );
       yPosition += 12;
 
       for (const diagram of diagramImages) {
@@ -165,16 +619,19 @@ export class ThreatModelReportService {
         // Diagram name and type
         doc.setFontSize(14);
         doc.setTextColor(51, 51, 51);
-        doc.text(diagram.diagramName, margin, yPosition);
+        this.addTextWithLanguageSupport(doc, diagram.diagramName, margin, yPosition, {
+          isRTL,
+          contentWidth,
+        });
         yPosition += 8;
 
         doc.setFontSize(10);
         doc.setTextColor(102, 102, 102);
-        doc.text(
-          `${this.transloco.translate('threatModels.diagramType')}: ${diagram.diagramType}`,
-          margin,
-          yPosition,
-        );
+        const diagramTypeText = `${this.transloco.translate('threatModels.diagramType')}: ${diagram.diagramType}`;
+        this.addTextWithLanguageSupport(doc, diagramTypeText, margin, yPosition, {
+          isRTL,
+          contentWidth,
+        });
         yPosition += 10;
 
         // Render actual SVG if available
@@ -328,10 +785,11 @@ export class ThreatModelReportService {
     doc.text(this.transloco.translate('common.threatType'), x + width * 0.55, currentY);
     doc.text(this.transloco.translate('common.priority'), x + width * 0.7, currentY);
     doc.text(this.transloco.translate('common.score'), x + width * 0.85, currentY);
-    currentY += 8;
+    currentY += 6;
 
-    // Separator line
-    doc.line(x, currentY - 2, x + width, currentY - 2);
+    // Separator line - positioned below text with proper spacing
+    doc.line(x, currentY, x + width, currentY);
+    currentY += 4;
 
     // Threat data
     doc.setFont('helvetica', 'normal');
@@ -392,10 +850,11 @@ export class ThreatModelReportService {
     doc.text(this.transloco.translate('threatModels.name'), x, currentY);
     doc.text(this.transloco.translate('common.objectTypes.document'), x + width * 0.25, currentY);
     doc.text(this.transloco.translate('common.description'), x + width * 0.5, currentY);
-    currentY += 8;
+    currentY += 6;
 
-    // Separator line
-    doc.line(x, currentY - 2, x + width, currentY - 2);
+    // Separator line - positioned below text with proper spacing
+    doc.line(x, currentY, x + width, currentY);
+    currentY += 4;
 
     // Document data
     doc.setFont('helvetica', 'normal');
@@ -459,10 +918,11 @@ export class ThreatModelReportService {
       x + width * 0.8,
       currentY,
     );
-    currentY += 8;
+    currentY += 6;
 
-    // Separator line
-    doc.line(x, currentY - 2, x + width, currentY - 2);
+    // Separator line - positioned below text with proper spacing
+    doc.line(x, currentY, x + width, currentY);
+    currentY += 4;
 
     // Source data
     doc.setFont('helvetica', 'normal');
