@@ -67,7 +67,14 @@
               "raf",
               "rgbcolor",
               "html2canvas",
-              "pako"
+              "pako",
+              "fast-deep-equal",
+              "unicode-trie",
+              "dfa",
+              "clone",
+              "tiny-inflate",
+              "brotli/decompress.js",
+              "base64-js"
             ],
             "assets": [
               {
