@@ -466,8 +466,8 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
 
-    // Initialize collaborative operation broadcasting
-    this._diagramOperationBroadcaster.initializeListeners(this._graph);
+    // Note: DiagramOperationBroadcaster is initialized when collaboration starts,
+    // not at graph creation time, since it only works when isCollaborating() is true
 
     // Trigger an initial resize to ensure the graph fits the container properly
     this._scheduleInitialResize(container);
