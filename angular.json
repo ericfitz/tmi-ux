@@ -66,7 +66,8 @@
               "core-js/modules/es.regexp.to-string.js",
               "raf",
               "rgbcolor",
-              "html2canvas"
+              "html2canvas",
+              "pako"
             ],
             "assets": [
               {
