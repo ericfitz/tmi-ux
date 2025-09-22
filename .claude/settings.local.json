@@ -33,7 +33,14 @@
       "Bash(jq:*)",
       "WebSearch",
       "WebFetch(domain:devblogs.microsoft.com)",
-      "WebFetch(domain:angular.dev)"
+      "WebFetch(domain:angular.dev)",
+      "Bash(npm audit:*)",
+      "Bash(unset GITHUB_TOKEN)",
+      "Bash(gh pr list:*)",
+      "Bash(gh auth:*)",
+      "Bash(env)",
+      "Bash(export GITHUB_TOKEN=\"\")",
+      "WebFetch(domain:github.com)"
     ]
   },
   "enableAllProjectMcpServers": false
