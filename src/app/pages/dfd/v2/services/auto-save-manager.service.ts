@@ -56,6 +56,7 @@ export interface AutoSaveStats {
   readonly autoSaves: number;
   readonly manualSaves: number;
   readonly failedSaves: number;
+  readonly successfulSaves: number;
   readonly totalSaves: number;
   readonly averageSaveTimeMs: number;
   readonly lastResetTime: Date;
@@ -99,6 +100,8 @@ export class AutoSaveManager {
   private readonly _saveCompleted$ = new Subject<SaveResult>();
   private readonly _triggerEvent$ = new Subject<AutoSaveTriggerEvent>();
   private readonly _stateChanged$: BehaviorSubject<AutoSaveState>;
+  private readonly _events$ = new Subject<any>();
+  private readonly _saveFailed$ = new Subject<any>();
 
   private _enabled = true;
   private _currentPolicy: AutoSavePolicy = DEFAULT_POLICIES['normal'];
@@ -106,12 +109,19 @@ export class AutoSaveManager {
   private _changesSinceLastSave = 0;
   private _pendingSaveTimeout: any = null;
   private _isPendingSave = false;
+  private _nextScheduledSave: Date | null = null;
+  
+  // Extension points
+  private _analyzers: any[] = [];
+  private _decisionMakers: any[] = [];
+  private _eventHandlers: any[] = [];
 
   // Statistics tracking
   private _stats: AutoSaveStats = {
     autoSaves: 0,
     manualSaves: 0,
     failedSaves: 0,
+    successfulSaves: 0,
     totalSaves: 0,
     averageSaveTimeMs: 0,
     lastResetTime: new Date(),
@@ -276,6 +286,18 @@ export class AutoSaveManager {
     return this._stateChanged$.asObservable();
   }
 
+  get events$(): Observable<any> {
+    return this._events$.asObservable();
+  }
+
+  get saveFailed$(): Observable<any> {
+    return this._saveFailed$.asObservable();
+  }
+
+  get state$(): Observable<AutoSaveState> {
+    return this._stateChanged$.asObservable();
+  }
+
   /**
    * Statistics
    */
@@ -288,12 +310,98 @@ export class AutoSaveManager {
       autoSaves: 0,
       manualSaves: 0,
       failedSaves: 0,
+      successfulSaves: 0,
       totalSaves: 0,
       averageSaveTimeMs: 0,
       lastResetTime: new Date(),
     };
     this._totalSaveTimeMs = 0;
     this.logger.debug('AutoSave statistics reset');
+  }
+
+  /**
+   * Force Save
+   */
+  forceSave(context: AutoSaveContext): Observable<SaveResult> {
+    this.logger.debug('Force save triggered', { diagramId: context.diagramId });
+    
+    // Cancel any pending save
+    this._cancelPendingSave();
+    
+    // Execute immediate save
+    return this.triggerManualSave(context);
+  }
+
+  /**
+   * Pending Save Management
+   */
+  getNextScheduledSave(): Date | null {
+    return this._nextScheduledSave;
+  }
+
+  cancelPendingSave(): boolean {
+    if (this._isPendingSave) {
+      this._cancelPendingSave();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Component Extension
+   */
+  addAnalyzer(analyzer: any): void {
+    this._analyzers.push(analyzer);
+    this.logger.debug('Change analyzer added');
+  }
+
+  removeAnalyzer(analyzer: any): void {
+    const index = this._analyzers.indexOf(analyzer);
+    if (index > -1) {
+      this._analyzers.splice(index, 1);
+      this.logger.debug('Change analyzer removed');
+    }
+  }
+
+  addDecisionMaker(decisionMaker: any): void {
+    this._decisionMakers.push(decisionMaker);
+    this.logger.debug('Decision maker added');
+  }
+
+  addEventListener(handler: any): void {
+    this._eventHandlers.push(handler);
+    this.logger.debug('Event handler added');
+  }
+
+  removeEventListener(handler: any): void {
+    const index = this._eventHandlers.indexOf(handler);
+    if (index > -1) {
+      this._eventHandlers.splice(index, 1);
+      this.logger.debug('Event handler removed');
+    }
+  }
+
+  /**
+   * Configuration Management
+   */
+  configure(config: any): void {
+    // Update policy if provided
+    if (config.mode) {
+      this.setPolicyMode(config.mode);
+    }
+    
+    // Update other config options
+    Object.assign(this._currentPolicy, config);
+    this.logger.debug('AutoSaveManager configuration updated', { config });
+    this._emitStateChange();
+  }
+
+  getConfiguration(): any {
+    return {
+      mode: this._currentPolicy.mode,
+      enabled: this._enabled,
+      policy: { ...this._currentPolicy },
+    };
   }
 
   /**
@@ -304,6 +412,8 @@ export class AutoSaveManager {
     this._saveCompleted$.complete();
     this._triggerEvent$.complete();
     this._stateChanged$.complete();
+    this._events$.complete();
+    this._saveFailed$.complete();
     this.logger.debug('AutoSaveManager disposed');
   }
 
@@ -424,6 +534,11 @@ export class AutoSaveManager {
   private _updateSaveStats(result: SaveResult, saveTimeMs: number): void {
     this._totalSaveTimeMs += saveTimeMs;
     this._stats.averageSaveTimeMs = this._totalSaveTimeMs / this._stats.totalSaves;
+    
+    // Track successful saves
+    if (result.success) {
+      this._stats.successfulSaves++;
+    }
   }
 
   private _createInitialState(): AutoSaveState {

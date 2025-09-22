@@ -9,7 +9,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, of, throwError, forkJoin } from 'rxjs';
 import { map, catchError, timeout, tap, finalize, switchMap } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -443,6 +443,82 @@ export class PersistenceCoordinator {
       failedLoads: 0,
     };
     this.logger.debug('Persistence statistics reset');
+  }
+
+  /**
+   * Batch Operations
+   */
+  loadBatch(operations: LoadOperation[]): Observable<LoadResult[]> {
+    if (operations.length === 0) {
+      return of([]);
+    }
+
+    this.logger.debug('Executing batch load operations', { count: operations.length });
+
+    // Execute all load operations in parallel
+    const executions = operations.map(operation => this.load(operation));
+
+    return forkJoin(executions).pipe(
+      catchError(error => {
+        this.logger.error('Batch load failed', { error, operationCount: operations.length });
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  /**
+   * Cache Management
+   */
+  getCacheStatus(diagramId: string): Observable<CacheStatus> {
+    const cacheKey = this._getCacheKey(diagramId);
+    const entry = this._cache.get(cacheKey);
+    
+    const status: CacheStatus = {
+      diagramId,
+      cached: !!entry,
+      lastCached: entry?.timestamp || null,
+      size: entry ? JSON.stringify(entry.data).length : 0,
+    };
+
+    return of(status);
+  }
+
+  clearCache(diagramId?: string): Observable<void> {
+    if (diagramId) {
+      const cacheKey = this._getCacheKey(diagramId);
+      this._cache.delete(cacheKey);
+      this.logger.debug('Cache cleared for diagram', { diagramId });
+    } else {
+      this._cache.clear();
+      this.logger.debug('All cache cleared');
+    }
+    
+    return of(undefined);
+  }
+
+  invalidateCache(diagramId: string): void {
+    const cacheKey = this._getCacheKey(diagramId);
+    this._cache.delete(cacheKey);
+    this.logger.debug('Cache invalidated for diagram', { diagramId });
+  }
+
+  getCacheEntry(diagramId: string): any {
+    const cacheKey = this._getCacheKey(diagramId);
+    const entry = this._cache.get(cacheKey);
+    return entry ? entry.data : null;
+  }
+
+  /**
+   * Health Status
+   */
+  getHealthStatus(): any {
+    return {
+      online: this._online,
+      strategiesCount: this._strategies.size,
+      cacheSize: this._cache.size,
+      stats: this.getStats(),
+      lastActivity: new Date(),
+    };
   }
 
   /**
