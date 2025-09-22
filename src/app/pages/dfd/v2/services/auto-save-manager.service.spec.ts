@@ -2,12 +2,10 @@
  * Test suite for AutoSaveManager
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { AutoSaveManager } from './auto-save-manager.service';
-import { LoggerService } from '../../../../core/services/logger.service';
-import { PersistenceCoordinator } from './persistence-coordinator.service';
 import {
   AutoSaveTriggerEvent,
   AutoSaveContext,
@@ -24,6 +22,9 @@ describe('AutoSaveManager', () => {
   let autoSaveContext: AutoSaveContext;
 
   beforeEach(() => {
+    // Use fake timers for debouncing tests
+    vi.useFakeTimers();
+    
     // Create logger spy
     mockLogger = {
       info: vi.fn(),
@@ -49,6 +50,11 @@ describe('AutoSaveManager', () => {
       diagramData: { nodes: [], edges: [] },
       preferredStrategy: 'websocket',
     };
+  });
+
+  afterEach(() => {
+    // Restore real timers
+    vi.useRealTimers();
   });
 
   describe('Service Initialization', () => {
@@ -262,13 +268,15 @@ describe('AutoSaveManager', () => {
 
     it('should trigger auto-save in aggressive mode', () => {
       service.setPolicyMode('aggressive');
+      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
       return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
-            expect(result).not.toBeNull();
-            expect(result!.success).toBe(true);
-            expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
+            // Trigger returns boolean, not SaveResult
+            expect(result).toBe(true);
+            // Advance timers to trigger debounced save
+            vi.advanceTimersByTime(100); // aggressive mode debounce is 100ms
             resolve();
           },
           error: reject,

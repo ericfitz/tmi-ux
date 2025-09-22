@@ -6,7 +6,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { PersistenceCoordinator } from './persistence-coordinator.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import {
   SaveOperation,
   SaveResult,
@@ -14,7 +13,6 @@ import {
   LoadResult,
   SyncOperation,
   SyncResult,
-  PersistenceStrategy,
   CacheStatus,
 } from '../types/persistence.types';
 

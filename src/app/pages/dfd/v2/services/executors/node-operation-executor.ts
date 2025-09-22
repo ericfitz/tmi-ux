@@ -8,8 +8,7 @@
  * - Providing undo/redo data for history tracking
  */
 
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
 
 import { LoggerService } from '../../../../../core/services/logger.service';
 import {
@@ -71,6 +70,14 @@ export class NodeOperationExecutor implements OperationExecutor {
       const { nodeData } = operation;
       const { graph } = context;
 
+      // Validate required fields (before applying defaults)
+      if (!context.suppressValidation) {
+        const validationError = this._validateNodeData(nodeData);
+        if (validationError) {
+          return throwError(() => new Error(`Node validation failed: ${validationError}`));
+        }
+      }
+
       // Generate node ID if not provided
       const nodeId = nodeData.id || this._generateNodeId();
 
@@ -83,13 +90,16 @@ export class NodeOperationExecutor implements OperationExecutor {
       // Add node to graph
       const addedNode = graph.addNode(nodeConfig);
 
+      // Use the actual node ID from the added node (in case the graph modifies it)
+      const actualNodeId = addedNode.id || nodeId;
+
       // Apply CSS classes if specified
       if (finalNodeData.style?.cssClass) {
         addedNode.addCssClass(finalNodeData.style.cssClass);
       }
 
       this.logger.debug('Node created successfully', {
-        nodeId,
+        nodeId: actualNodeId,
         nodeType: finalNodeData.nodeType,
         position: finalNodeData.position,
       });
@@ -97,10 +107,10 @@ export class NodeOperationExecutor implements OperationExecutor {
       return of({
         success: true,
         operationType: 'create-node',
-        affectedCellIds: [nodeId],
+        affectedCellIds: [actualNodeId],
         timestamp: Date.now(),
         metadata: {
-          nodeId,
+          nodeId: actualNodeId,
           nodeType: finalNodeData.nodeType,
           position: finalNodeData.position,
           size: finalNodeData.size,
@@ -376,5 +386,29 @@ export class NodeOperationExecutor implements OperationExecutor {
       default:
         return 'rect';
     }
+  }
+
+  /**
+   * Validate node data for required fields
+   */
+  private _validateNodeData(nodeData: NodeData): string | null {
+    if (!nodeData.nodeType) {
+      return 'nodeType is required';
+    }
+    
+    // Check if position was explicitly set to undefined (invalid) vs not provided at all (valid, use defaults)
+    if (nodeData.hasOwnProperty('position') && nodeData.position === undefined) {
+      return 'position is required';
+    }
+    
+    if (nodeData.position && (nodeData.position.x === undefined || nodeData.position.y === undefined)) {
+      return 'position must have x and y coordinates';
+    }
+    
+    if (nodeData.size && (nodeData.size.width <= 0 || nodeData.size.height <= 0)) {
+      return 'size must have positive width and height';
+    }
+
+    return null; // No validation errors
   }
 }

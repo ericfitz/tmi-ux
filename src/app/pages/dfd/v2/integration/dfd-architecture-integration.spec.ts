@@ -7,11 +7,48 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
+// Mock X6 Graph before importing any services that use it
+vi.mock('@antv/x6', () => {
+  const createMockGraph = () => ({
+    // Core graph methods
+    dispose: vi.fn(),
+    resize: vi.fn(),
+    clearCells: vi.fn(),
+    addNode: vi.fn(),
+    addEdge: vi.fn(),
+    getCells: vi.fn().mockReturnValue([]),
+    getNodes: vi.fn().mockReturnValue([]),
+    getEdges: vi.fn().mockReturnValue([]),
+    getCellById: vi.fn(),
+    
+    // Selection methods
+    select: vi.fn(),
+    unselect: vi.fn(),
+    getSelectedCells: vi.fn().mockReturnValue([]),
+    
+    // Export methods
+    toSVG: vi.fn().mockReturnValue('<svg></svg>'),
+    toPNG: vi.fn().mockReturnValue(new Blob()),
+    
+    // Mock properties that integration tests expect
+    selectAll: vi.fn(),
+    cleanSelection: vi.fn(),
+    
+    // Event system for integration
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: vi.fn(),
+  });
+
+  return {
+    Graph: vi.fn().mockImplementation(() => createMockGraph()),
+  };
+});
+
 import { GraphOperationManager } from '../services/graph-operation-manager.service';
 import { PersistenceCoordinator } from '../services/persistence-coordinator.service';
 import { AutoSaveManager } from '../services/auto-save-manager.service';
 import { DfdOrchestrator } from '../services/dfd-orchestrator.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import {
   CreateNodeOperation,
   UpdateNodeOperation,
@@ -289,7 +326,7 @@ describe('DFD Architecture Integration', () => {
         autoSaveManager.trigger(triggerEvent, context).subscribe({
           next: result => {
             expect(result).not.toBeNull();
-            expect(result!.success).toBe(true);
+            expect(result.success).toBe(true);
             expect(mockStrategy.save).toHaveBeenCalled();
             resolve();
           },

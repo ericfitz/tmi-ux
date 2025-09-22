@@ -10,8 +10,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, of, throwError, timer } from 'rxjs';
-import { map, catchError, timeout, tap, finalize, switchMap, debounceTime } from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
+import { catchError, tap, debounceTime } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import {

@@ -5,7 +5,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { NodeOperationExecutor } from './node-operation-executor';
-import { LoggerService } from '../../../../../core/services/logger.service';
 import {
   CreateNodeOperation,
   UpdateNodeOperation,
@@ -99,19 +98,23 @@ describe('NodeOperationExecutor', () => {
       return new Promise<void>((resolve, reject) => {
         executor.execute(createNodeOperation, operationContext).subscribe({
           next: result => {
-            expect(result.success).toBe(true);
-            expect(result.operationType).toBe('create-node');
-            expect(result.affectedCellIds).toContain('generated-node-id');
-            expect(mockGraph.addNode).toHaveBeenCalled();
+            try {
+              expect(result.success).toBe(true);
+              expect(result.operationType).toBe('create-node');
+              expect(result.affectedCellIds).toContain('generated-node-id');
+              expect(mockGraph.addNode).toHaveBeenCalled();
 
-            const nodeConfig = mockGraph.addNode.mock.calls[0][0];
-            expect(nodeConfig.x).toBe(100);
-            expect(nodeConfig.y).toBe(100);
-            expect(nodeConfig.width).toBe(120);
-            expect(nodeConfig.height).toBe(60);
-            expect(nodeConfig.attrs.label.text).toBe('Test Node');
+              const nodeConfig = mockGraph.addNode.mock.calls[0][0];
+              expect(nodeConfig.x).toBe(100);
+              expect(nodeConfig.y).toBe(100);
+              expect(nodeConfig.width).toBe(120);
+              expect(nodeConfig.height).toBe(60);
+              expect(nodeConfig.attrs.label.text).toBe('Test Node');
 
-            resolve();
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
           },
           error: reject,
         });

@@ -11,7 +11,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from 'rxjs';
-import { map, catchError, timeout, tap, finalize } from 'rxjs/operators';
+import { catchError, timeout, tap, finalize } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeOperationExecutor } from './executors/node-operation-executor';
@@ -199,7 +199,7 @@ export class GraphOperationManager implements IGraphOperationManager {
     }
   }
 
-  canExecute(operation: GraphOperation, context: OperationContext): boolean {
+  canExecute(operation: GraphOperation, _context: OperationContext): boolean {
     const executor = this._findExecutor(operation);
     return executor !== null;
   }
@@ -235,12 +235,12 @@ export class GraphOperationManager implements IGraphOperationManager {
     }
   }
 
-  addInterceptor(interceptor: any): void {
+  addInterceptor(_interceptor: any): void {
     // For now, just log that interceptor was added
     this.logger.debug('Interceptor added');
   }
 
-  removeInterceptor(interceptor: any): void {
+  removeInterceptor(_interceptor: any): void {
     // For now, just log that interceptor was removed
     this.logger.debug('Interceptor removed');
   }

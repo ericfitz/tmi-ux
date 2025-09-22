@@ -4,7 +4,6 @@
 
 import { Graph } from '@antv/x6';
 import { Observable } from 'rxjs';
-import { NodeInfo } from '../domain/value-objects/node-info';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
 
 /**

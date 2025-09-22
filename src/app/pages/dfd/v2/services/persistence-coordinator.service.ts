@@ -10,7 +10,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError, forkJoin } from 'rxjs';
-import { map, catchError, timeout, tap, finalize, switchMap } from 'rxjs/operators';
+import { catchError, timeout, tap } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -511,14 +511,14 @@ export class PersistenceCoordinator {
   /**
    * Health Status
    */
-  getHealthStatus(): any {
-    return {
+  getHealthStatus(): Observable<any> {
+    return of({
       online: this._online,
       strategiesCount: this._strategies.size,
       cacheSize: this._cache.size,
       stats: this.getStats(),
       lastActivity: new Date(),
-    };
+    });
   }
 
   /**
@@ -561,5 +561,12 @@ export class PersistenceCoordinator {
     // Otherwise use first strategy that supports sync
     const strategies = this.getStrategies();
     return strategies.find(s => s.sync) || null;
+  }
+
+  /**
+   * Generate cache key for diagram
+   */
+  private _getCacheKey(diagramId: string): string {
+    return `diagram-${diagramId}`;
   }
 }

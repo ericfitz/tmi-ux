@@ -10,8 +10,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, of, throwError, merge } from 'rxjs';
-import { map, catchError, timeout, tap, finalize, switchMap, filter } from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
+import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -385,6 +385,10 @@ export class DfdOrchestrator {
     this.logger.debug('Read-only mode changed', { readOnly });
   }
 
+  setReadOnly(readOnly: boolean): void {
+    this.setReadOnlyMode(readOnly);
+  }
+
   getState(): DfdState {
     return this._state$.value;
   }
@@ -392,6 +396,20 @@ export class DfdOrchestrator {
   get stateChanged$(): Observable<DfdState> {
     return this._stateChanged$.asObservable();
   }
+
+  get state$(): Observable<DfdState> {
+    return this._state$.asObservable();
+  }
+
+  get collaborationStateChanged$(): Observable<boolean> {
+    return this._state$.pipe(
+      map(state => state.collaborating),
+      filter((value, index) => index === 0 || value !== this._previousCollaborationState),
+      tap(value => this._previousCollaborationState = value)
+    );
+  }
+
+  private _previousCollaborationState = false;
 
   /**
    * Event handling
@@ -413,6 +431,92 @@ export class DfdOrchestrator {
     this.logger.debug('Context menu handled', { x: event.clientX, y: event.clientY });
     // Implementation would show context menu
     return true;
+  }
+
+  /**
+   * Graph access
+   */
+  getGraph(): any {
+    return this._graph;
+  }
+
+  /**
+   * High-level user actions
+   */
+  addNode(nodeData: NodeData): Observable<OperationResult> {
+    const operation: CreateNodeOperation = {
+      id: `create-node-${Date.now()}`,
+      type: 'create-node',
+      timestamp: Date.now(),
+      nodeData,
+    };
+    return this.executeOperation(operation);
+  }
+
+  deleteSelectedCells(): Observable<OperationResult[]> {
+    const selectedCells = this.getSelectedCells();
+    if (selectedCells.length === 0) {
+      return of([]);
+    }
+
+    const deleteOperations = selectedCells.map(cell => ({
+      id: `delete-${cell.id}-${Date.now()}`,
+      type: 'delete-node' as const,
+      timestamp: Date.now(),
+      cellId: cell.id,
+    }));
+
+    return this.executeBatch(deleteOperations);
+  }
+
+  /**
+   * Save/Load aliases
+   */
+  saveManually(): Observable<boolean> {
+    return this.save();
+  }
+
+  loadDiagram(diagramId?: string, forceLoad = false): Observable<boolean> {
+    if (!forceLoad && this._state$.value.hasUnsavedChanges) {
+      return throwError(() => new Error('Cannot load diagram with unsaved changes'));
+    }
+    return this.load(diagramId);
+  }
+
+  get _hasUnsavedChanges(): boolean {
+    return this._state$.value.hasUnsavedChanges;
+  }
+
+  /**
+   * Export aliases
+   */
+  exportDiagram(format: string): Observable<string | Blob> {
+    return this.export({ format: format as any });
+  }
+
+  /**
+   * Event handling aliases
+   */
+  onWindowResize(): void {
+    this.handleWindowResize();
+  }
+
+  onKeyDown(event: KeyboardEvent): boolean {
+    const shortcut = this._getKeyboardShortcut(event);
+    return this.handleKeyboardShortcut(shortcut);
+  }
+
+  onContextMenu(event: MouseEvent): boolean {
+    return this.handleContextMenu(event);
+  }
+
+  private _getKeyboardShortcut(event: KeyboardEvent): string {
+    const parts = [];
+    if (event.ctrlKey) parts.push('ctrl');
+    if (event.shiftKey) parts.push('shift');
+    if (event.altKey) parts.push('alt');
+    parts.push(event.key.toLowerCase());
+    return parts.join('+');
   }
 
   /**

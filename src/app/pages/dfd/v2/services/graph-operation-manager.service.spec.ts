@@ -4,10 +4,8 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
-import { Graph } from '@antv/x6';
 
 import { GraphOperationManager } from './graph-operation-manager.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import {
   GraphOperation,
   OperationContext,
