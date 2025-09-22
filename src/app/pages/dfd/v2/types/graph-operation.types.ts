@@ -10,9 +10,9 @@ import { EdgeInfo } from '../domain/value-objects/edge-info';
 /**
  * Types of operations that can be performed on the graph
  */
-export type GraphOperationType = 
+export type GraphOperationType =
   | 'create-node'
-  | 'update-node' 
+  | 'update-node'
   | 'delete-node'
   | 'create-edge'
   | 'update-edge'
@@ -23,12 +23,13 @@ export type GraphOperationType =
 /**
  * Source/context of the operation
  */
-export type OperationSource = 
-  | 'user-action'        // Direct user interaction
+export type OperationSource =
+  | 'user-interaction' // Direct user interaction
   | 'remote-collaboration' // WebSocket from other user
-  | 'diagram-load'       // Loading saved diagram
-  | 'undo-redo'         // History operation
-  | 'auto-correction';   // System correction
+  | 'diagram-load' // Loading saved diagram
+  | 'undo-redo' // History operation
+  | 'auto-correction' // System correction
+  | 'test'; // Test operations
 
 /**
  * Priority level for operations
@@ -49,13 +50,24 @@ export interface GraphOperation {
 }
 
 /**
+ * Node data for creation operations
+ */
+export interface NodeData {
+  readonly id?: string;
+  readonly nodeType: string;
+  readonly position?: { x: number; y: number };
+  readonly size?: { width: number; height: number };
+  readonly label?: string;
+  readonly style?: Record<string, any>;
+  readonly properties?: Record<string, any>;
+}
+
+/**
  * Node creation operation
  */
 export interface CreateNodeOperation extends GraphOperation {
   readonly type: 'create-node';
-  readonly nodeInfo: NodeInfo;
-  readonly position?: { x: number; y: number };
-  readonly parentNodeId?: string;
+  readonly nodeData: NodeData;
 }
 
 /**
@@ -64,8 +76,8 @@ export interface CreateNodeOperation extends GraphOperation {
 export interface UpdateNodeOperation extends GraphOperation {
   readonly type: 'update-node';
   readonly nodeId: string;
-  readonly updates: Partial<NodeInfo>;
-  readonly previousState?: Partial<NodeInfo>;
+  readonly updates: Partial<NodeData>;
+  readonly previousState?: Partial<NodeData>;
 }
 
 /**
@@ -74,7 +86,7 @@ export interface UpdateNodeOperation extends GraphOperation {
 export interface DeleteNodeOperation extends GraphOperation {
   readonly type: 'delete-node';
   readonly nodeId: string;
-  readonly nodeInfo?: NodeInfo; // For undo purposes
+  readonly nodeData?: NodeData; // For undo purposes
   readonly cascadeDeletes?: string[]; // IDs of edges that will be deleted
 }
 
@@ -131,9 +143,9 @@ export interface LoadDiagramOperation extends GraphOperation {
 /**
  * Union type of all specific operation types
  */
-export type SpecificGraphOperation = 
+export type SpecificGraphOperation =
   | CreateNodeOperation
-  | UpdateNodeOperation  
+  | UpdateNodeOperation
   | DeleteNodeOperation
   | CreateEdgeOperation
   | UpdateEdgeOperation
@@ -146,10 +158,13 @@ export type SpecificGraphOperation =
  */
 export interface OperationResult {
   readonly success: boolean;
-  readonly operationId: string;
+  readonly operationId?: string;
+  readonly operationType: GraphOperationType;
   readonly affectedCellIds: string[];
+  readonly timestamp: number;
   readonly error?: string;
   readonly warnings?: string[];
+  readonly metadata?: Record<string, any>;
   readonly undoOperation?: GraphOperation;
 }
 
@@ -160,11 +175,14 @@ export interface OperationContext {
   readonly graph: Graph;
   readonly diagramId: string;
   readonly threatModelId: string;
+  readonly userId: string;
   readonly isCollaborating: boolean;
+  readonly permissions: string[];
   readonly suppressHistory?: boolean;
   readonly suppressAutoSave?: boolean;
   readonly suppressVisualEffects?: boolean;
   readonly suppressValidation?: boolean;
+  readonly suppressBroadcast?: boolean;
 }
 
 /**
@@ -257,4 +275,39 @@ export interface OperationCompletedEvent {
   readonly result: OperationResult;
   readonly context: OperationContext;
   readonly executionTimeMs: number;
+}
+
+/**
+ * Graph operation manager interface
+ */
+export interface IGraphOperationManager {
+  // Configuration
+  getConfiguration(): Partial<OperationConfig>;
+  configure(config: Partial<OperationConfig>): void;
+
+  // Operation execution
+  execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult>;
+  executeBatch(
+    operations: GraphOperation[],
+    context: OperationContext,
+  ): Observable<OperationResult[]>;
+  validate(operation: GraphOperation, context: OperationContext): Observable<boolean>;
+  canExecute(operation: GraphOperation, context: OperationContext): boolean;
+
+  // Executor management
+  addExecutor(executor: OperationExecutor): void;
+  removeExecutor(executor: OperationExecutor): void;
+
+  // Statistics and monitoring
+  getStats(): OperationStats;
+  resetStats(): void;
+  readonly operationCompleted$: Observable<OperationCompletedEvent>;
+
+  // Pending operations
+  isPending(operationId: string): boolean;
+  getPendingOperations(): GraphOperation[];
+  cancelOperation(operationId: string): boolean;
+
+  // Cleanup
+  dispose(): void;
 }

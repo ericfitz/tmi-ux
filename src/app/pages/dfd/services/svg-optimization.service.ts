@@ -135,7 +135,7 @@ export class SvgOptimizationService {
 
       // Run SVGO optimization
       const result = optimize(processedSvg, this.getX6OptimizationConfig());
-      
+
       // SVGO throws errors rather than returning them in the result
       const optimizedSvg = result.data;
 
@@ -181,7 +181,7 @@ export class SvgOptimizationService {
 
       // Run SVGO optimization with thumbnail config
       const result = optimize(processedSvg, this.getThumbnailOptimizationConfig());
-      
+
       // SVGO throws errors rather than returning them in the result
       processedSvg = this.postProcessX6Svg(result.data);
 

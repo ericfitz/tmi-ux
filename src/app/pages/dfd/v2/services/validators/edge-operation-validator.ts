@@ -12,7 +12,7 @@ import {
   ValidationResult,
   CreateEdgeOperation,
   UpdateEdgeOperation,
-  DeleteEdgeOperation
+  DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
 
 @Injectable()
@@ -55,7 +55,10 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     return result;
   }
 
-  private validateCreateEdge(operation: CreateEdgeOperation, context: OperationContext): ValidationResult {
+  private validateCreateEdge(
+    operation: CreateEdgeOperation,
+    context: OperationContext,
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -114,7 +117,8 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     }
 
     // Check for duplicate edges
-    if (errors.length === 0) { // Only check if nodes exist
+    if (errors.length === 0) {
+      // Only check if nodes exist
       const existingEdges = context.graph.getEdges();
       const duplicateEdge = existingEdges.find(edge => {
         const source = edge.getSource();
@@ -135,7 +139,9 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     } else {
       const validEdgeTypes = ['dataflow', 'control-flow', 'trust-boundary'];
       if (!validEdgeTypes.includes(edgeData.edgeType)) {
-        warnings.push(`Unusual edge type '${edgeData.edgeType}', expected one of: ${validEdgeTypes.join(', ')}`);
+        warnings.push(
+          `Unusual edge type '${edgeData.edgeType}', expected one of: ${validEdgeTypes.join(', ')}`,
+        );
       }
     }
 
@@ -153,10 +159,15 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       this.validateEdgeStyle(edgeData.style, errors, warnings);
     }
 
-    return errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    return errors.length > 0
+      ? this.createInvalidResult(errors, warnings)
+      : this.createValidResult(warnings);
   }
 
-  private validateUpdateEdge(operation: UpdateEdgeOperation, context: OperationContext): ValidationResult {
+  private validateUpdateEdge(
+    operation: UpdateEdgeOperation,
+    context: OperationContext,
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -234,10 +245,15 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       this.validateEdgeStyle(updates.style, errors, warnings);
     }
 
-    return errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    return errors.length > 0
+      ? this.createInvalidResult(errors, warnings)
+      : this.createValidResult(warnings);
   }
 
-  private validateDeleteEdge(operation: DeleteEdgeOperation, context: OperationContext): ValidationResult {
+  private validateDeleteEdge(
+    operation: DeleteEdgeOperation,
+    context: OperationContext,
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -265,7 +281,9 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       warnings.push(`Edge with ID '${operation.edgeId}' not found - deletion will be skipped`);
     }
 
-    return errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    return errors.length > 0
+      ? this.createInvalidResult(errors, warnings)
+      : this.createValidResult(warnings);
   }
 
   private validateEdgeStyle(style: any, errors: string[], warnings: string[]): void {
@@ -323,8 +341,21 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
       return true; // Hex color
     }
-    
-    const namedColors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink', 'brown', 'black', 'white', 'gray', 'grey'];
+
+    const namedColors = [
+      'red',
+      'green',
+      'blue',
+      'yellow',
+      'orange',
+      'purple',
+      'pink',
+      'brown',
+      'black',
+      'white',
+      'gray',
+      'grey',
+    ];
     if (namedColors.includes(color.toLowerCase())) {
       return true; // Named color
     }

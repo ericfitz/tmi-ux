@@ -2,7 +2,7 @@
  * Test suite for GraphOperationManager
  */
 
-import { TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 import { Graph } from '@antv/x6';
 
@@ -12,35 +12,37 @@ import {
   GraphOperation,
   OperationContext,
   OperationResult,
-  CreateNodeOperation
+  CreateNodeOperation,
 } from '../types/graph-operation.types';
 
 describe('GraphOperationManager', () => {
   let service: GraphOperationManager;
-  let mockLogger: jasmine.SpyObj<LoggerService>;
-  let mockGraph: jasmine.SpyObj<Graph>;
+  let mockLogger: any;
+  let mockGraph: any;
   let operationContext: OperationContext;
 
   beforeEach(() => {
     // Create logger spy
-    mockLogger = jasmine.createSpyObj('LoggerService', [
-      'info', 'debug', 'warn', 'error'
-    ]);
+    mockLogger = {
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
 
     // Create graph spy
-    mockGraph = jasmine.createSpyObj('Graph', [
-      'addNode', 'addEdge', 'getCellById', 'removeNode', 'removeEdge',
-      'getConnectedEdges', 'clearCells'
-    ]);
+    mockGraph = {
+      addNode: vi.fn(),
+      addEdge: vi.fn(),
+      getCellById: vi.fn(),
+      removeNode: vi.fn(),
+      removeEdge: vi.fn(),
+      getConnectedEdges: vi.fn(),
+      clearCells: vi.fn(),
+    };
 
-    TestBed.configureTestingModule({
-      providers: [
-        GraphOperationManager,
-        { provide: LoggerService, useValue: mockLogger }
-      ]
-    });
-
-    service = TestBed.inject(GraphOperationManager);
+    // Create service directly without TestBed
+    service = new GraphOperationManager(mockLogger);
 
     // Create operation context
     operationContext = {
@@ -52,7 +54,7 @@ describe('GraphOperationManager', () => {
       permissions: ['read', 'write'],
       suppressValidation: false,
       suppressHistory: false,
-      suppressBroadcast: false
+      suppressBroadcast: false,
     };
   });
 
@@ -89,99 +91,173 @@ describe('GraphOperationManager', () => {
           size: { width: 120, height: 60 },
           label: 'Test Node',
           style: {},
-          properties: {}
-        }
-      };
-    });
-
-    it('should execute create node operation successfully', (done) => {
-      // Mock successful node creation
-      const mockNode = { id: 'node-123' };
-      mockGraph.addNode.and.returnValue(mockNode as any);
-
-      service.execute(createNodeOperation, operationContext).subscribe({
-        next: (result: OperationResult) => {
-          expect(result.success).toBe(true);
-          expect(result.operationType).toBe('create-node');
-          expect(result.affectedCellIds).toContain('node-123');
-          expect(mockGraph.addNode).toHaveBeenCalled();
-          done();
+          properties: {},
         },
-        error: done.fail
-      });
-    });
-
-    it('should handle operation validation', (done) => {
-      // Create invalid operation (missing required data)
-      const invalidOperation: CreateNodeOperation = {
-        ...createNodeOperation,
-        nodeData: {
-          ...createNodeOperation.nodeData,
-          position: undefined as any
-        }
       };
+    });
 
-      service.execute(invalidOperation, operationContext).subscribe({
-        next: () => done.fail('Should have failed validation'),
-        error: (error) => {
-          expect(error.message).toContain('validation failed');
-          done();
-        }
+    it('should execute create node operation successfully', () => {
+      return new Promise<void>((resolve, reject) => {
+        // Mock successful node creation
+        const mockNode = { id: 'node-123' };
+        mockGraph.addNode.mockReturnValue(mockNode as any);
+
+        service.execute(createNodeOperation, operationContext).subscribe({
+          next: (result: OperationResult) => {
+            expect(result.success).toBe(true);
+            expect(result.operationType).toBe('create-node');
+            expect(result.affectedCellIds).toContain('node-123');
+            expect(mockGraph.addNode).toHaveBeenCalled();
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle operation timeout', (done) => {
-      // Configure short timeout
-      service.configure({ operationTimeoutMs: 100 });
+    it('should handle operation validation', () => {
+      return new Promise<void>((resolve, reject) => {
+        // Create invalid operation (missing required data)
+        const invalidOperation: CreateNodeOperation = {
+          ...createNodeOperation,
+          nodeData: {
+            ...createNodeOperation.nodeData,
+            position: undefined as any,
+          },
+        };
 
-      // Mock slow operation
-      const slowOperation: CreateNodeOperation = {
-        ...createNodeOperation,
-        id: 'slow-op'
-      };
-
-      service.execute(slowOperation, operationContext).subscribe({
-        next: () => done.fail('Should have timed out'),
-        error: (error) => {
-          expect(error.name).toBe('TimeoutError');
-          done();
-        }
+        service.execute(invalidOperation, operationContext).subscribe({
+          next: () => reject(new Error('Should have failed validation')),
+          error: error => {
+            expect(error.message).toContain('validation failed');
+            resolve();
+          },
+        });
       });
     });
 
-    it('should track operation statistics', (done) => {
-      mockGraph.addNode.and.returnValue({ id: 'node-123' } as any);
+    it('should handle operation timeout', () => {
+      return new Promise<void>((resolve, reject) => {
+        // Configure short timeout
+        service.configure({ operationTimeoutMs: 100 });
 
-      service.execute(createNodeOperation, operationContext).subscribe({
-        next: () => {
-          const stats = service.getStats();
-          expect(stats.totalOperations).toBe(1);
-          expect(stats.successfulOperations).toBe(1);
-          expect(stats.operationsByType['create-node']).toBe(1);
-          done();
-        },
-        error: done.fail
+        // Mock slow operation
+        const slowOperation: CreateNodeOperation = {
+          ...createNodeOperation,
+          id: 'slow-op',
+        };
+
+        service.execute(slowOperation, operationContext).subscribe({
+          next: () => reject(new Error('Should have timed out')),
+          error: error => {
+            expect(error.name).toBe('TimeoutError');
+            resolve();
+          },
+        });
       });
     });
 
-    it('should emit operation completed event', (done) => {
-      mockGraph.addNode.and.returnValue({ id: 'node-123' } as any);
+    it('should track operation statistics', () => {
+      return new Promise<void>((resolve, reject) => {
+        mockGraph.addNode.mockReturnValue({ id: 'node-123' } as any);
 
-      // Subscribe to events
-      service.operationCompleted$.subscribe(event => {
-        expect(event.operation.id).toBe(createNodeOperation.id);
-        expect(event.result.success).toBe(true);
-        done();
+        service.execute(createNodeOperation, operationContext).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.totalOperations).toBe(1);
+            expect(stats.successfulOperations).toBe(1);
+            expect(stats.operationsByType['create-node']).toBe(1);
+            resolve();
+          },
+          error: reject,
+        });
       });
+    });
 
-      service.execute(createNodeOperation, operationContext).subscribe();
+    it('should emit operation completed event', () => {
+      return new Promise<void>(resolve => {
+        mockGraph.addNode.mockReturnValue({ id: 'node-123' } as any);
+
+        // Subscribe to events
+        service.operationCompleted$.subscribe(event => {
+          expect(event.operation.id).toBe(createNodeOperation.id);
+          expect(event.result.success).toBe(true);
+          resolve();
+        });
+
+        service.execute(createNodeOperation, operationContext).subscribe();
+      });
     });
   });
 
   describe('Batch Operations', () => {
-    it('should execute multiple operations as batch', (done) => {
-      const operations: GraphOperation[] = [
-        {
+    it('should execute multiple operations as batch', () => {
+      return new Promise<void>((resolve, reject) => {
+        const operations: GraphOperation[] = [
+          {
+            id: 'op-1',
+            type: 'create-node',
+            source: 'user-interaction',
+            priority: 'normal',
+            timestamp: Date.now(),
+            nodeData: {
+              nodeType: 'process',
+              position: { x: 100, y: 100 },
+              size: { width: 120, height: 60 },
+              label: 'Node 1',
+              style: {},
+              properties: {},
+            },
+          } as CreateNodeOperation,
+          {
+            id: 'op-2',
+            type: 'create-node',
+            source: 'user-interaction',
+            priority: 'normal',
+            timestamp: Date.now(),
+            nodeData: {
+              nodeType: 'process',
+              position: { x: 200, y: 200 },
+              size: { width: 120, height: 60 },
+              label: 'Node 2',
+              style: {},
+              properties: {},
+            },
+          } as CreateNodeOperation,
+        ];
+
+        mockGraph.addNode
+          .mockReturnValueOnce({ id: 'node-1' } as any)
+          .mockReturnValueOnce({ id: 'node-2' } as any);
+
+        service.executeBatch(operations, operationContext).subscribe({
+          next: (results: OperationResult[]) => {
+            expect(results).toHaveLength(2);
+            expect(results[0].success).toBe(true);
+            expect(results[1].success).toBe(true);
+            expect(mockGraph.addNode).toHaveBeenCalledTimes(2);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should handle empty batch operations', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.executeBatch([], operationContext).subscribe({
+          next: (results: OperationResult[]) => {
+            expect(results).toHaveLength(0);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should handle batch with single operation', () => {
+      return new Promise<void>((resolve, reject) => {
+        const operation: CreateNodeOperation = {
           id: 'op-1',
           type: 'create-node',
           source: 'user-interaction',
@@ -193,131 +269,76 @@ describe('GraphOperationManager', () => {
             size: { width: 120, height: 60 },
             label: 'Node 1',
             style: {},
-            properties: {}
-          }
-        } as CreateNodeOperation,
-        {
-          id: 'op-2',
+            properties: {},
+          },
+        };
+
+        mockGraph.addNode.mockReturnValue({ id: 'node-1' } as any);
+
+        service.executeBatch([operation], operationContext).subscribe({
+          next: (results: OperationResult[]) => {
+            expect(results).toHaveLength(1);
+            expect(results[0].success).toBe(true);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+  });
+
+  describe('Operation Validation', () => {
+    it('should validate operations when enabled', () => {
+      return new Promise<void>((resolve, reject) => {
+        const operation: CreateNodeOperation = {
+          id: 'op-123',
           type: 'create-node',
           source: 'user-interaction',
           priority: 'normal',
           timestamp: Date.now(),
           nodeData: {
             nodeType: 'process',
-            position: { x: 200, y: 200 },
+            position: { x: 100, y: 100 },
             size: { width: 120, height: 60 },
-            label: 'Node 2',
+            label: 'Test Node',
             style: {},
-            properties: {}
-          }
-        } as CreateNodeOperation
-      ];
+            properties: {},
+          },
+        };
 
-      mockGraph.addNode.and.returnValues(
-        { id: 'node-1' } as any,
-        { id: 'node-2' } as any
-      );
-
-      service.executeBatch(operations, operationContext).subscribe({
-        next: (results: OperationResult[]) => {
-          expect(results).toHaveSize(2);
-          expect(results[0].success).toBe(true);
-          expect(results[1].success).toBe(true);
-          expect(mockGraph.addNode).toHaveBeenCalledTimes(2);
-          done();
-        },
-        error: done.fail
+        service.validate(operation, operationContext).subscribe({
+          next: (isValid: boolean) => {
+            expect(isValid).toBe(true);
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle empty batch operations', (done) => {
-      service.executeBatch([], operationContext).subscribe({
-        next: (results: OperationResult[]) => {
-          expect(results).toHaveSize(0);
-          done();
-        },
-        error: done.fail
-      });
-    });
+    it('should skip validation when disabled', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.configure({ enableValidation: false });
 
-    it('should handle batch with single operation', (done) => {
-      const operation: CreateNodeOperation = {
-        id: 'op-1',
-        type: 'create-node',
-        source: 'user-interaction',
-        priority: 'normal',
-        timestamp: Date.now(),
-        nodeData: {
-          nodeType: 'process',
-          position: { x: 100, y: 100 },
-          size: { width: 120, height: 60 },
-          label: 'Node 1',
-          style: {},
-          properties: {}
-        }
-      };
+        const operation: CreateNodeOperation = {
+          id: 'op-123',
+          type: 'create-node',
+          source: 'user-interaction',
+          priority: 'normal',
+          timestamp: Date.now(),
+          nodeData: {
+            // Invalid data
+            position: undefined as any,
+          } as any,
+        };
 
-      mockGraph.addNode.and.returnValue({ id: 'node-1' } as any);
-
-      service.executeBatch([operation], operationContext).subscribe({
-        next: (results: OperationResult[]) => {
-          expect(results).toHaveSize(1);
-          expect(results[0].success).toBe(true);
-          done();
-        },
-        error: done.fail
-      });
-    });
-  });
-
-  describe('Operation Validation', () => {
-    it('should validate operations when enabled', (done) => {
-      const operation: CreateNodeOperation = {
-        id: 'op-123',
-        type: 'create-node',
-        source: 'user-interaction',
-        priority: 'normal',
-        timestamp: Date.now(),
-        nodeData: {
-          nodeType: 'process',
-          position: { x: 100, y: 100 },
-          size: { width: 120, height: 60 },
-          label: 'Test Node',
-          style: {},
-          properties: {}
-        }
-      };
-
-      service.validate(operation, operationContext).subscribe({
-        next: (isValid: boolean) => {
-          expect(isValid).toBe(true);
-          done();
-        },
-        error: done.fail
-      });
-    });
-
-    it('should skip validation when disabled', (done) => {
-      service.configure({ enableValidation: false });
-
-      const operation: CreateNodeOperation = {
-        id: 'op-123',
-        type: 'create-node',
-        source: 'user-interaction',
-        priority: 'normal',
-        timestamp: Date.now(),
-        nodeData: {
-          // Invalid data
-          position: undefined as any
-        } as any
-      };
-
-      service.validate(operation, operationContext).subscribe({
-        next: (isValid: boolean) => {
-          expect(isValid).toBe(true); // Should be true when validation disabled
-          done();
-        },
-        error: done.fail
+        service.validate(operation, operationContext).subscribe({
+          next: (isValid: boolean) => {
+            expect(isValid).toBe(true); // Should be true when validation disabled
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
   });
@@ -326,7 +347,7 @@ describe('GraphOperationManager', () => {
     it('should allow configuration updates', () => {
       const newConfig = {
         enableValidation: false,
-        operationTimeoutMs: 60000
+        operationTimeoutMs: 60000,
       };
 
       service.configure(newConfig);
@@ -338,7 +359,7 @@ describe('GraphOperationManager', () => {
 
     it('should maintain other config values when partially updating', () => {
       const originalConfig = service.getConfiguration();
-      
+
       service.configure({ operationTimeoutMs: 45000 });
       const updatedConfig = service.getConfiguration();
 
@@ -349,108 +370,123 @@ describe('GraphOperationManager', () => {
 
   describe('Executor Management', () => {
     it('should support adding custom executors', () => {
-      const mockExecutor = jasmine.createSpyObj('MockExecutor', [
-        'canExecute', 'execute'
-      ], { priority: 200 });
-
-      mockExecutor.canExecute.and.returnValue(true);
-      mockExecutor.execute.and.returnValue(of({
-        success: true,
-        operationId: 'test',
-        operationType: 'custom',
-        affectedCellIds: [],
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      const mockExecutor: any = {
+        priority: 200,
+        canExecute: vi.fn().mockReturnValue(true),
+        execute: vi.fn().mockReturnValue(
+          of({
+            success: true,
+            operationId: 'test',
+            operationType: 'custom',
+            affectedCellIds: [],
+            timestamp: Date.now(),
+            metadata: {},
+          }),
+        ),
+      };
 
       service.addExecutor(mockExecutor);
 
       // The executor should be available for operations
-      expect(service.canExecute({
-        id: 'test',
-        type: 'custom' as any,
-        source: 'test',
-        priority: 'normal',
-        timestamp: Date.now()
-      }, operationContext)).toBe(true);
+      expect(
+        service.canExecute(
+          {
+            id: 'test',
+            type: 'custom' as any,
+            source: 'test',
+            priority: 'normal',
+            timestamp: Date.now(),
+          },
+          operationContext,
+        ),
+      ).toBe(true);
     });
 
     it('should support removing executors', () => {
-      const mockExecutor = jasmine.createSpyObj('MockExecutor', [
-        'canExecute', 'execute'
-      ], { priority: 200 });
+      const mockExecutor: any = {
+        priority: 200,
+        canExecute: vi.fn(),
+        execute: vi.fn(),
+      };
 
       service.addExecutor(mockExecutor);
       service.removeExecutor(mockExecutor);
 
       // Executor should no longer be available
-      expect(service.canExecute({
-        id: 'test',
-        type: 'custom' as any,
-        source: 'test',
-        priority: 'normal',
-        timestamp: Date.now()
-      }, operationContext)).toBe(false);
+      expect(
+        service.canExecute(
+          {
+            id: 'test',
+            type: 'custom' as any,
+            source: 'test',
+            priority: 'normal',
+            timestamp: Date.now(),
+          },
+          operationContext,
+        ),
+      ).toBe(false);
     });
   });
 
   describe('Statistics and Monitoring', () => {
-    it('should track operation statistics correctly', (done) => {
-      const operation: CreateNodeOperation = {
-        id: 'op-123',
-        type: 'create-node',
-        source: 'user-interaction',
-        priority: 'normal',
-        timestamp: Date.now(),
-        nodeData: {
-          nodeType: 'process',
-          position: { x: 100, y: 100 },
-          size: { width: 120, height: 60 },
-          label: 'Test Node',
-          style: {},
-          properties: {}
-        }
-      };
+    it('should track operation statistics correctly', () => {
+      return new Promise<void>((resolve, reject) => {
+        const operation: CreateNodeOperation = {
+          id: 'op-123',
+          type: 'create-node',
+          source: 'user-interaction',
+          priority: 'normal',
+          timestamp: Date.now(),
+          nodeData: {
+            nodeType: 'process',
+            position: { x: 100, y: 100 },
+            size: { width: 120, height: 60 },
+            label: 'Test Node',
+            style: {},
+            properties: {},
+          },
+        };
 
-      mockGraph.addNode.and.returnValue({ id: 'node-123' } as any);
+        mockGraph.addNode.mockReturnValue({ id: 'node-123' } as any);
 
-      service.execute(operation, operationContext).subscribe({
-        next: () => {
-          const stats = service.getStats();
-          expect(stats.totalOperations).toBe(1);
-          expect(stats.successfulOperations).toBe(1);
-          expect(stats.failedOperations).toBe(0);
-          expect(stats.operationsByType['create-node']).toBe(1);
-          expect(stats.operationsBySource['user-interaction']).toBe(1);
-          done();
-        },
-        error: done.fail
+        service.execute(operation, operationContext).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.totalOperations).toBe(1);
+            expect(stats.successfulOperations).toBe(1);
+            expect(stats.failedOperations).toBe(0);
+            expect(stats.operationsByType['create-node']).toBe(1);
+            expect(stats.operationsBySource['user-interaction']).toBe(1);
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
     it('should reset statistics', () => {
       service.resetStats();
       const stats = service.getStats();
-      
+
       expect(stats.totalOperations).toBe(0);
       expect(stats.successfulOperations).toBe(0);
       expect(stats.failedOperations).toBe(0);
-      expect(Object.keys(stats.operationsByType)).toHaveSize(0);
-      expect(Object.keys(stats.operationsBySource)).toHaveSize(0);
+      expect(Object.keys(stats.operationsByType)).toHaveLength(0);
+      expect(Object.keys(stats.operationsBySource)).toHaveLength(0);
     });
   });
 
   describe('Pending Operations', () => {
     it('should track pending operations', () => {
       const operationId = 'pending-op';
-      
+
       expect(service.isPending(operationId)).toBe(false);
-      expect(service.getPendingOperations()).toHaveSize(0);
+      expect(service.getPendingOperations()).toHaveLength(0);
     });
 
     it('should allow cancelling pending operations', () => {
       const operationId = 'cancelled-op';
-      
+
       // Try to cancel non-existent operation
       expect(service.cancelOperation(operationId)).toBe(false);
     });
@@ -459,7 +495,7 @@ describe('GraphOperationManager', () => {
   describe('Cleanup', () => {
     it('should dispose cleanly', () => {
       expect(() => service.dispose()).not.toThrow();
-      
+
       // Should not be able to execute operations after disposal
       const operation: CreateNodeOperation = {
         id: 'op-123',
@@ -473,8 +509,8 @@ describe('GraphOperationManager', () => {
           size: { width: 120, height: 60 },
           label: 'Test Node',
           style: {},
-          properties: {}
-        }
+          properties: {},
+        },
       };
 
       // This should not cause errors, but operations won't work

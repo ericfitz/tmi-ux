@@ -12,7 +12,7 @@ import {
   GraphOperation,
   OperationResult,
   OperationContext,
-  OperationExecutor
+  OperationExecutor,
 } from '../../types/graph-operation.types';
 
 /**
@@ -25,7 +25,10 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
   constructor(protected logger: LoggerService) {}
 
   abstract canExecute(operation: GraphOperation): boolean;
-  abstract execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult>;
+  abstract execute(
+    operation: GraphOperation,
+    context: OperationContext,
+  ): Observable<OperationResult>;
 
   /**
    * Create a successful operation result
@@ -33,7 +36,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
   protected createSuccessResult(
     operation: GraphOperation,
     affectedCellIds: string[],
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): OperationResult {
     return {
       success: true,
@@ -41,7 +44,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
       operationType: operation.type,
       affectedCellIds,
       timestamp: Date.now(),
-      metadata: metadata || {}
+      metadata: metadata || {},
     };
   }
 
@@ -51,7 +54,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
   protected createFailureResult(
     operation: GraphOperation,
     error: string,
-    affectedCellIds: string[] = []
+    affectedCellIds: string[] = [],
   ): OperationResult {
     return {
       success: false,
@@ -60,7 +63,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
       affectedCellIds,
       timestamp: Date.now(),
       error,
-      metadata: {}
+      metadata: {},
     };
   }
 
@@ -116,7 +119,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
     this.logger.debug(`Starting ${operation.type} operation`, {
       operationId: operation.id,
       source: operation.source,
-      priority: operation.priority
+      priority: operation.priority,
     });
   }
 
@@ -128,7 +131,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
       operationId: operation.id,
       success: result.success,
       affectedCells: result.affectedCellIds.length,
-      error: result.error
+      error: result.error,
     });
   }
 }

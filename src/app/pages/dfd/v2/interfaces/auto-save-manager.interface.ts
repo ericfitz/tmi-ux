@@ -14,7 +14,7 @@ import {
   AutoSaveContext,
   ChangeAnalyzer,
   SaveDecisionMaker,
-  AutoSaveEventHandler
+  AutoSaveEventHandler,
 } from '../types/auto-save.types';
 import { SaveResult } from '../types/persistence.types';
 
@@ -26,22 +26,22 @@ export interface IAutoSaveManager {
   // Core auto-save functionality
   trigger(event: AutoSaveTriggerEvent, context: AutoSaveContext): Observable<SaveResult | null>;
   triggerManualSave(context: AutoSaveContext): Observable<SaveResult>;
-  
+
   // Policy management
   setPolicy(policy: AutoSavePolicy): void;
   setPolicyMode(mode: AutoSaveMode): void;
   getPolicy(): AutoSavePolicy;
-  
+
   // State management
   enable(): void;
   disable(): void;
   isEnabled(): boolean;
   getState(): AutoSaveState;
-  
+
   // Configuration
   configure(config: Partial<AutoSaveConfig>): void;
   getConfiguration(): AutoSaveConfig;
-  
+
   // Extensibility
   addAnalyzer(analyzer: ChangeAnalyzer): void;
   removeAnalyzer(analyzer: ChangeAnalyzer): void;
@@ -49,23 +49,23 @@ export interface IAutoSaveManager {
   removeDecisionMaker(decisionMaker: SaveDecisionMaker): void;
   addEventListener(handler: AutoSaveEventHandler): void;
   removeEventListener(handler: AutoSaveEventHandler): void;
-  
+
   // Observables for monitoring
   readonly state$: Observable<AutoSaveState>;
   readonly events$: Observable<AutoSaveEvent>;
   readonly saveCompleted$: Observable<SaveResult>;
   readonly saveFailed$: Observable<{ error: string; context: AutoSaveContext }>;
-  
+
   // Statistics and monitoring
   getStats(): AutoSaveStats;
   resetStats(): void;
-  
+
   // Control and debugging
   forceSave(context: AutoSaveContext): Observable<SaveResult>;
   cancelPendingSave(): boolean;
   isPendingSave(): boolean;
   getNextScheduledSave(): Date | null;
-  
+
   // Cleanup
   dispose(): void;
 }

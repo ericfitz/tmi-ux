@@ -2,7 +2,7 @@
  * Test suite for NodeOperationExecutor
  */
 
-import { TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { NodeOperationExecutor } from './node-operation-executor';
 import { LoggerService } from '../../../../../core/services/logger.service';
@@ -10,32 +10,31 @@ import {
   CreateNodeOperation,
   UpdateNodeOperation,
   DeleteNodeOperation,
-  OperationContext
+  OperationContext,
 } from '../../types/graph-operation.types';
 
 describe('NodeOperationExecutor', () => {
   let executor: NodeOperationExecutor;
-  let mockLogger: jasmine.SpyObj<LoggerService>;
-  let mockGraph: jasmine.SpyObj<any>;
+  let mockLogger: any;
+  let mockGraph: any;
   let operationContext: OperationContext;
 
   beforeEach(() => {
-    mockLogger = jasmine.createSpyObj('LoggerService', [
-      'debug', 'warn', 'error'
-    ]);
+    mockLogger = {
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
 
-    mockGraph = jasmine.createSpyObj('Graph', [
-      'addNode', 'getCellById', 'removeNode', 'getConnectedEdges'
-    ]);
+    mockGraph = {
+      addNode: vi.fn(),
+      getCellById: vi.fn(),
+      removeNode: vi.fn(),
+      getConnectedEdges: vi.fn(),
+    };
 
-    TestBed.configureTestingModule({
-      providers: [
-        NodeOperationExecutor,
-        { provide: LoggerService, useValue: mockLogger }
-      ]
-    });
-
-    executor = TestBed.inject(NodeOperationExecutor);
+    // Create executor directly without TestBed
+    executor = new NodeOperationExecutor(mockLogger);
 
     operationContext = {
       graph: mockGraph,
@@ -46,7 +45,7 @@ describe('NodeOperationExecutor', () => {
       permissions: ['read', 'write'],
       suppressValidation: false,
       suppressHistory: false,
-      suppressBroadcast: false
+      suppressBroadcast: false,
     };
   });
 
@@ -81,135 +80,147 @@ describe('NodeOperationExecutor', () => {
           style: {
             fill: '#ffffff',
             stroke: '#000000',
-            strokeWidth: 1
+            strokeWidth: 1,
           },
           properties: {
-            description: 'Test node description'
-          }
-        }
+            description: 'Test node description',
+          },
+        },
       };
     });
 
-    it('should create node successfully', (done) => {
-      const mockNode = { 
+    it('should create node successfully', () => {
+      const mockNode = {
         id: 'generated-node-id',
-        addCssClass: jasmine.createSpy('addCssClass')
+        addCssClass: vi.fn(),
       };
-      mockGraph.addNode.and.returnValue(mockNode);
+      mockGraph.addNode.mockReturnValue(mockNode);
 
-      executor.execute(createNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.operationType).toBe('create-node');
-          expect(result.affectedCellIds).toContain('generated-node-id');
-          expect(mockGraph.addNode).toHaveBeenCalled();
-          
-          const nodeConfig = mockGraph.addNode.calls.argsFor(0)[0];
-          expect(nodeConfig.x).toBe(100);
-          expect(nodeConfig.y).toBe(100);
-          expect(nodeConfig.width).toBe(120);
-          expect(nodeConfig.height).toBe(60);
-          expect(nodeConfig.attrs.label.text).toBe('Test Node');
-          
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(createNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.operationType).toBe('create-node');
+            expect(result.affectedCellIds).toContain('generated-node-id');
+            expect(mockGraph.addNode).toHaveBeenCalled();
+
+            const nodeConfig = mockGraph.addNode.mock.calls[0][0];
+            expect(nodeConfig.x).toBe(100);
+            expect(nodeConfig.y).toBe(100);
+            expect(nodeConfig.width).toBe(120);
+            expect(nodeConfig.height).toBe(60);
+            expect(nodeConfig.attrs.label.text).toBe('Test Node');
+
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should generate ID when not provided', (done) => {
+    it('should generate ID when not provided', () => {
       createNodeOperation.nodeData.id = undefined;
-      
-      const mockNode = { id: 'auto-generated-id' };
-      mockGraph.addNode.and.returnValue(mockNode);
 
-      executor.execute(createNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.affectedCellIds).toContain('auto-generated-id');
-          done();
-        },
-        error: done.fail
+      const mockNode = { id: 'auto-generated-id' };
+      mockGraph.addNode.mockReturnValue(mockNode);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(createNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.affectedCellIds).toContain('auto-generated-id');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should apply custom styling', (done) => {
+    it('should apply custom styling', () => {
       createNodeOperation.nodeData.style = {
         fill: '#ff0000',
         stroke: '#00ff00',
         strokeWidth: 3,
         fontSize: 16,
         textColor: '#0000ff',
-        cssClass: 'custom-node-class'
+        cssClass: 'custom-node-class',
       };
 
-      const mockNode = { 
+      const mockNode = {
         id: 'styled-node',
-        addCssClass: jasmine.createSpy('addCssClass')
+        addCssClass: vi.fn(),
       };
-      mockGraph.addNode.and.returnValue(mockNode);
+      mockGraph.addNode.mockReturnValue(mockNode);
 
-      executor.execute(createNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          
-          const nodeConfig = mockGraph.addNode.calls.argsFor(0)[0];
-          expect(nodeConfig.attrs.body.fill).toBe('#ff0000');
-          expect(nodeConfig.attrs.body.stroke).toBe('#00ff00');
-          expect(nodeConfig.attrs.body.strokeWidth).toBe(3);
-          expect(nodeConfig.attrs.label.fontSize).toBe(16);
-          expect(nodeConfig.attrs.label.fill).toBe('#0000ff');
-          
-          expect(mockNode.addCssClass).toHaveBeenCalledWith('custom-node-class');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(createNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+
+            const nodeConfig = mockGraph.addNode.mock.calls[0][0];
+            expect(nodeConfig.attrs.body.fill).toBe('#ff0000');
+            expect(nodeConfig.attrs.body.stroke).toBe('#00ff00');
+            expect(nodeConfig.attrs.body.strokeWidth).toBe(3);
+            expect(nodeConfig.attrs.label.fontSize).toBe(16);
+            expect(nodeConfig.attrs.label.fill).toBe('#0000ff');
+
+            expect(mockNode.addCssClass).toHaveBeenCalledWith('custom-node-class');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle creation errors', (done) => {
-      mockGraph.addNode.and.throwError('Node creation failed');
+    it('should handle creation errors', () => {
+      mockGraph.addNode.mockImplementation(() => {
+        throw new Error('Node creation failed');
+      });
 
-      executor.execute(createNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(false);
-          expect(result.error).toContain('Failed to create node');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(createNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('Failed to create node');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should use default values for missing properties', (done) => {
+    it('should use default values for missing properties', () => {
       createNodeOperation.nodeData = {
-        nodeType: 'process'
+        nodeType: 'process',
         // Missing position, size, label, style, properties
       };
 
       const mockNode = { id: 'default-node' };
-      mockGraph.addNode.and.returnValue(mockNode);
+      mockGraph.addNode.mockReturnValue(mockNode);
 
-      executor.execute(createNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          
-          const nodeConfig = mockGraph.addNode.calls.argsFor(0)[0];
-          expect(nodeConfig.x).toBe(100); // Default position
-          expect(nodeConfig.y).toBe(100);
-          expect(nodeConfig.width).toBe(120); // Default size
-          expect(nodeConfig.height).toBe(60);
-          expect(nodeConfig.attrs.label.text).toBe('New Node'); // Default label
-          
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(createNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+
+            const nodeConfig = mockGraph.addNode.mock.calls[0][0];
+            expect(nodeConfig.x).toBe(100); // Default position
+            expect(nodeConfig.y).toBe(100);
+            expect(nodeConfig.width).toBe(120); // Default size
+            expect(nodeConfig.height).toBe(60);
+            expect(nodeConfig.attrs.label.text).toBe('New Node'); // Default label
+
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
   });
 
   describe('Update Node Operations', () => {
     let updateNodeOperation: UpdateNodeOperation;
-    let mockNode: jasmine.SpyObj<any>;
+    let mockNode: any;
 
     beforeEach(() => {
       updateNodeOperation = {
@@ -224,110 +235,125 @@ describe('NodeOperationExecutor', () => {
           position: { x: 200, y: 200 },
           size: { width: 150, height: 80 },
           style: {
-            fill: '#ffff00'
+            fill: '#ffff00',
           },
           properties: {
-            updated: true
-          }
-        }
+            updated: true,
+          },
+        },
       };
 
-      mockNode = jasmine.createSpyObj('Node', [
-        'setPosition', 'setSize', 'setAttrByPath', 'getData', 'setData'
-      ]);
-      mockNode.getData.and.returnValue({ existing: 'data' });
+      mockNode = {
+        setPosition: vi.fn(),
+        setSize: vi.fn(),
+        setAttrByPath: vi.fn(),
+        getData: vi.fn().mockReturnValue({ existing: 'data' }),
+        setData: vi.fn(),
+      };
     });
 
-    it('should update node successfully', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
+    it('should update node successfully', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
 
-      executor.execute(updateNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.operationType).toBe('update-node');
-          expect(result.affectedCellIds).toContain('existing-node-id');
-          
-          expect(mockNode.setPosition).toHaveBeenCalledWith(200, 200);
-          expect(mockNode.setSize).toHaveBeenCalledWith(150, 80);
-          expect(mockNode.setAttrByPath).toHaveBeenCalledWith('label/text', 'Updated Label');
-          expect(mockNode.setAttrByPath).toHaveBeenCalledWith('body/fill', '#ffff00');
-          expect(mockNode.setData).toHaveBeenCalledWith({ existing: 'data', updated: true });
-          
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.operationType).toBe('update-node');
+            expect(result.affectedCellIds).toContain('existing-node-id');
+
+            expect(mockNode.setPosition).toHaveBeenCalledWith(200, 200);
+            expect(mockNode.setSize).toHaveBeenCalledWith(150, 80);
+            expect(mockNode.setAttrByPath).toHaveBeenCalledWith('label/text', 'Updated Label');
+            expect(mockNode.setAttrByPath).toHaveBeenCalledWith('body/fill', '#ffff00');
+            expect(mockNode.setData).toHaveBeenCalledWith({ existing: 'data', updated: true });
+
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle node not found', (done) => {
-      mockGraph.getCellById.and.returnValue(null);
+    it('should handle node not found', () => {
+      mockGraph.getCellById.mockReturnValue(null);
 
-      executor.execute(updateNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(false);
-          expect(result.error).toContain('Node not found');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('Node not found');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle partial updates', (done) => {
+    it('should handle partial updates', () => {
       updateNodeOperation.updates = {
-        label: 'Only Label Update'
+        label: 'Only Label Update',
       };
 
-      mockGraph.getCellById.and.returnValue(mockNode);
+      mockGraph.getCellById.mockReturnValue(mockNode);
 
-      executor.execute(updateNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          
-          expect(mockNode.setAttrByPath).toHaveBeenCalledWith('label/text', 'Only Label Update');
-          expect(mockNode.setPosition).not.toHaveBeenCalled();
-          expect(mockNode.setSize).not.toHaveBeenCalled();
-          
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+
+            expect(mockNode.setAttrByPath).toHaveBeenCalledWith('label/text', 'Only Label Update');
+            expect(mockNode.setPosition).not.toHaveBeenCalled();
+            expect(mockNode.setSize).not.toHaveBeenCalled();
+
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle update errors', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
-      mockNode.setPosition.and.throwError('Update failed');
+    it('should handle update errors', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockNode.setPosition.mockImplementation(() => {
+        throw new Error('Update failed');
+      });
 
-      executor.execute(updateNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(false);
-          expect(result.error).toContain('Failed to update node');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('Failed to update node');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should track which properties were changed', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
+    it('should track which properties were changed', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
 
-      executor.execute(updateNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.metadata?.changedProperties).toContain('position');
-          expect(result.metadata?.changedProperties).toContain('size');
-          expect(result.metadata?.changedProperties).toContain('label');
-          expect(result.metadata?.changedProperties).toContain('fill');
-          expect(result.metadata?.changedProperties).toContain('properties');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.metadata?.changedProperties).toContain('position');
+            expect(result.metadata?.changedProperties).toContain('size');
+            expect(result.metadata?.changedProperties).toContain('label');
+            expect(result.metadata?.changedProperties).toContain('fill');
+            expect(result.metadata?.changedProperties).toContain('properties');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
   });
 
   describe('Delete Node Operations', () => {
     let deleteNodeOperation: DeleteNodeOperation;
-    let mockNode: jasmine.SpyObj<any>;
+    let mockNode: any;
     let mockConnectedEdges: any[];
 
     beforeEach(() => {
@@ -337,112 +363,118 @@ describe('NodeOperationExecutor', () => {
         source: 'user-interaction',
         priority: 'normal',
         timestamp: Date.now(),
-        nodeId: 'node-to-delete'
+        nodeId: 'node-to-delete',
       };
 
-      mockNode = jasmine.createSpyObj('Node', [
-        'getPosition', 'getSize', 'getAttrs', 'getData'
-      ], {
+      mockNode = {
+        getPosition: vi.fn().mockReturnValue({ x: 100, y: 100 }),
+        getSize: vi.fn().mockReturnValue({ width: 120, height: 60 }),
+        getAttrs: vi.fn().mockReturnValue({ label: { text: 'Test Node' } }),
+        getData: vi.fn().mockReturnValue({ nodeType: 'process' }),
         id: 'node-to-delete',
-        shape: 'rect'
-      });
+        shape: 'rect',
+      };
 
-      mockNode.getPosition.and.returnValue({ x: 100, y: 100 });
-      mockNode.getSize.and.returnValue({ width: 120, height: 60 });
-      mockNode.getAttrs.and.returnValue({ label: { text: 'Test Node' } });
-      mockNode.getData.and.returnValue({ nodeType: 'process' });
-
-      mockConnectedEdges = [
-        { id: 'edge-1' },
-        { id: 'edge-2' }
-      ];
+      mockConnectedEdges = [{ id: 'edge-1' }, { id: 'edge-2' }];
     });
 
-    it('should delete node successfully', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
-      mockGraph.getConnectedEdges.and.returnValue(mockConnectedEdges);
+    it('should delete node successfully', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue(mockConnectedEdges);
 
-      executor.execute(deleteNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.operationType).toBe('delete-node');
-          expect(result.affectedCellIds).toContain('node-to-delete');
-          expect(result.affectedCellIds).toContain('edge-1');
-          expect(result.affectedCellIds).toContain('edge-2');
-          
-          expect(mockGraph.removeNode).toHaveBeenCalledWith(mockNode);
-          expect(result.metadata?.connectedEdgesCount).toBe(2);
-          
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.operationType).toBe('delete-node');
+            expect(result.affectedCellIds).toContain('node-to-delete');
+            expect(result.affectedCellIds).toContain('edge-1');
+            expect(result.affectedCellIds).toContain('edge-2');
+
+            expect(mockGraph.removeNode).toHaveBeenCalledWith(mockNode);
+            expect(result.metadata?.connectedEdgesCount).toBe(2);
+
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle node not found gracefully', (done) => {
-      mockGraph.getCellById.and.returnValue(null);
+    it('should handle node not found gracefully', () => {
+      mockGraph.getCellById.mockReturnValue(null);
 
-      executor.execute(deleteNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.affectedCellIds).toHaveSize(0);
-          expect(mockGraph.removeNode).not.toHaveBeenCalled();
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.affectedCellIds).toHaveLength(0);
+            expect(mockGraph.removeNode).not.toHaveBeenCalled();
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle deletion errors', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
-      mockGraph.getConnectedEdges.and.returnValue([]);
-      mockGraph.removeNode.and.throwError('Deletion failed');
+    it('should handle deletion errors', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue([]);
+      mockGraph.removeNode.mockImplementation(() => {
+        throw new Error('Deletion failed');
+      });
 
-      executor.execute(deleteNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(false);
-          expect(result.error).toContain('Failed to delete node');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('Failed to delete node');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should store node data for undo functionality', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
-      mockGraph.getConnectedEdges.and.returnValue(mockConnectedEdges);
+    it('should store node data for undo functionality', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue(mockConnectedEdges);
 
-      executor.execute(deleteNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.metadata?.deletedNodeData).toBeDefined();
-          expect(result.metadata?.deletedNodeData.id).toBe('node-to-delete');
-          expect(result.metadata?.deletedNodeData.shape).toBe('rect');
-          expect(result.metadata?.deletedEdgeIds).toEqual(['edge-1', 'edge-2']);
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.metadata?.deletedNodeData).toBeDefined();
+            expect(result.metadata?.deletedNodeData.id).toBe('node-to-delete');
+            expect(result.metadata?.deletedNodeData.shape).toBe('rect');
+            expect(result.metadata?.deletedEdgeIds).toEqual(['edge-1', 'edge-2']);
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle nodes with no connected edges', (done) => {
-      mockGraph.getCellById.and.returnValue(mockNode);
-      mockGraph.getConnectedEdges.and.returnValue([]);
+    it('should handle nodes with no connected edges', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue([]);
 
-      executor.execute(deleteNodeOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(true);
-          expect(result.affectedCellIds).toEqual(['node-to-delete']);
-          expect(result.metadata?.connectedEdgesCount).toBe(0);
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.affectedCellIds).toEqual(['node-to-delete']);
+            expect(result.metadata?.connectedEdgesCount).toBe(0);
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
   });
 
   describe('Operation Validation', () => {
-    it('should validate graph availability', (done) => {
+    it('should validate graph availability', () => {
       const operation: CreateNodeOperation = {
         id: 'test-op',
         type: 'create-node',
@@ -455,37 +487,41 @@ describe('NodeOperationExecutor', () => {
           size: { width: 120, height: 60 },
           label: 'Test',
           style: {},
-          properties: {}
-        }
+          properties: {},
+        },
       };
 
       const contextWithoutGraph = { ...operationContext, graph: null };
 
-      executor.execute(operation, contextWithoutGraph).subscribe({
-        next: () => done.fail('Should have failed'),
-        error: (error) => {
-          expect(error.message).toContain('Graph not available');
-          done();
-        }
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(operation, contextWithoutGraph).subscribe({
+          next: () => reject(new Error('Should have failed')),
+          error: error => {
+            expect(error.message).toContain('Graph not available');
+            resolve();
+          },
+        });
       });
     });
 
-    it('should handle unsupported operation types', (done) => {
+    it('should handle unsupported operation types', () => {
       const unsupportedOperation = {
         id: 'unsupported',
         type: 'unsupported-type',
         source: 'test',
         priority: 'normal',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       } as any;
 
-      executor.execute(unsupportedOperation, operationContext).subscribe({
-        next: (result) => {
-          expect(result.success).toBe(false);
-          expect(result.error).toContain('Unsupported operation type');
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(unsupportedOperation, operationContext).subscribe({
+          next: result => {
+            expect(result.success).toBe(false);
+            expect(result.error).toContain('Unsupported operation type');
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
   });

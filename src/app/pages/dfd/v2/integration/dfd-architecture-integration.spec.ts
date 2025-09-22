@@ -3,7 +3,7 @@
  * Tests how all components work together
  */
 
-import { TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -16,7 +16,7 @@ import {
   CreateNodeOperation,
   UpdateNodeOperation,
   DeleteNodeOperation,
-  OperationResult
+  OperationResult,
 } from '../types/graph-operation.types';
 import { SaveResult, LoadResult } from '../types/persistence.types';
 import { AutoSaveTriggerEvent, AutoSaveContext } from '../types/auto-save.types';
@@ -26,14 +26,17 @@ describe('DFD Architecture Integration', () => {
   let persistenceCoordinator: PersistenceCoordinator;
   let autoSaveManager: AutoSaveManager;
   let dfdOrchestrator: DfdOrchestrator;
-  let mockLogger: jasmine.SpyObj<LoggerService>;
+  let mockLogger: any;
   let mockContainerElement: HTMLElement;
 
   beforeEach(() => {
     // Create logger spy
-    mockLogger = jasmine.createSpyObj('LoggerService', [
-      'info', 'debug', 'warn', 'error'
-    ]);
+    mockLogger = {
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
 
     // Create mock container element
     mockContainerElement = document.createElement('div');
@@ -41,20 +44,16 @@ describe('DFD Architecture Integration', () => {
     mockContainerElement.style.height = '600px';
     document.body.appendChild(mockContainerElement);
 
-    TestBed.configureTestingModule({
-      providers: [
-        GraphOperationManager,
-        PersistenceCoordinator,
-        AutoSaveManager,
-        DfdOrchestrator,
-        { provide: LoggerService, useValue: mockLogger }
-      ]
-    });
-
-    graphOperationManager = TestBed.inject(GraphOperationManager);
-    persistenceCoordinator = TestBed.inject(PersistenceCoordinator);
-    autoSaveManager = TestBed.inject(AutoSaveManager);
-    dfdOrchestrator = TestBed.inject(DfdOrchestrator);
+    // Create services directly without TestBed
+    graphOperationManager = new GraphOperationManager(mockLogger);
+    persistenceCoordinator = new PersistenceCoordinator(mockLogger);
+    autoSaveManager = new AutoSaveManager(mockLogger, persistenceCoordinator);
+    dfdOrchestrator = new DfdOrchestrator(
+      mockLogger,
+      graphOperationManager,
+      persistenceCoordinator,
+      autoSaveManager
+    );
   });
 
   afterEach(() => {
@@ -62,21 +61,21 @@ describe('DFD Architecture Integration', () => {
   });
 
   describe('End-to-End Operation Flow', () => {
-    it('should complete full operation cycle: create node → auto-save → persistence', (done) => {
+    it('should complete full operation cycle: create node → auto-save → persistence', () => {
       // Mock persistence strategy
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', [
-        'save', 'load'
-      ], {
+      const mockStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'test-strategy',
-        priority: 100
-      });
+        priority: 100,
+      };
 
       const saveResult: SaveResult = {
         success: true,
         operationId: 'save-123',
         diagramId: 'test-diagram',
         timestamp: Date.now(),
-        metadata: {}
+        metadata: {},
       };
 
       const loadResult: LoadResult = {
@@ -85,11 +84,11 @@ describe('DFD Architecture Integration', () => {
         diagramId: 'test-diagram',
         data: { nodes: [], edges: [] },
         timestamp: Date.now(),
-        metadata: {}
+        metadata: {},
       };
 
-      mockStrategy.save.and.returnValue(of(saveResult));
-      mockStrategy.load.and.returnValue(of(loadResult));
+      mockStrategy.save.mockReturnValue(of(saveResult));
+      mockStrategy.load.mockReturnValue(of(loadResult));
       persistenceCoordinator.addStrategy(mockStrategy);
 
       // Initialize DFD system
@@ -97,146 +96,156 @@ describe('DFD Architecture Integration', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
-        autoSaveMode: 'aggressive' as any
+        autoSaveMode: 'aggressive' as any,
       };
 
-      dfdOrchestrator.initialize(initParams).subscribe({
-        next: () => {
-          // Create a node operation
-          const createNodeOp: CreateNodeOperation = {
-            id: 'create-node-123',
-            type: 'create-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeData: {
-              nodeType: 'process',
-              position: { x: 100, y: 100 },
-              size: { width: 120, height: 60 },
-              label: 'Integration Test Node',
-              style: {},
-              properties: {}
-            }
-          };
+      return new Promise<void>((resolve, reject) => {
+        dfdOrchestrator.initialize(initParams).subscribe({
+          next: () => {
+            // Create a node operation
+            const createNodeOp: CreateNodeOperation = {
+              id: 'create-node-123',
+              type: 'create-node',
+              source: 'user-interaction',
+              priority: 'normal',
+              timestamp: Date.now(),
+              nodeData: {
+                nodeType: 'process',
+                position: { x: 100, y: 100 },
+                size: { width: 120, height: 60 },
+                label: 'Integration Test Node',
+                style: {},
+                properties: {},
+              },
+            };
 
-          // Execute through orchestrator
-          dfdOrchestrator.executeOperation(createNodeOp).subscribe({
-            next: (result: OperationResult) => {
-              expect(result.success).toBe(true);
-              
-              // Verify auto-save was triggered (in aggressive mode)
-              setTimeout(() => {
-                expect(mockStrategy.save).toHaveBeenCalled();
-                done();
-              }, 100);
-            },
-            error: done.fail
-          });
-        },
-        error: done.fail
+            // Execute through orchestrator
+            dfdOrchestrator.executeOperation(createNodeOp).subscribe({
+              next: (result: OperationResult) => {
+                expect(result.success).toBe(true);
+
+                // Verify auto-save was triggered (in aggressive mode)
+                setTimeout(() => {
+                  expect(mockStrategy.save).toHaveBeenCalled();
+                  resolve();
+                }, 100);
+              },
+              error: reject,
+            });
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should handle complex operation sequences with proper state management', (done) => {
+    it('should handle complex operation sequences with proper state management', () => {
       // Setup persistence
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', [
-        'save', 'load'
-      ], {
+      const mockStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'test-strategy',
-        priority: 100
-      });
+        priority: 100,
+      };
 
-      mockStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'save-batch',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'save-batch',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
-      mockStrategy.load.and.returnValue(of({
-        success: true,
-        operationId: 'load-123',
-        diagramId: 'test-diagram',
-        data: { nodes: [], edges: [] },
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.load.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'load-123',
+          diagramId: 'test-diagram',
+          data: { nodes: [], edges: [] },
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(mockStrategy);
 
-      // Initialize
-      dfdOrchestrator.initialize({
-        diagramId: 'test-diagram',
-        threatModelId: 'test-tm',
-        containerElement: mockContainerElement,
-        autoSaveMode: 'normal' as any
-      }).subscribe({
-        next: () => {
-          // Sequence: Create node → Update node → Delete node
-          const nodeId = 'test-node-sequence';
+      return new Promise<void>((resolve, reject) => {
+        // Initialize
+        dfdOrchestrator
+          .initialize({
+            diagramId: 'test-diagram',
+            threatModelId: 'test-tm',
+            containerElement: mockContainerElement,
+            autoSaveMode: 'normal' as any,
+          })
+          .subscribe({
+            next: () => {
+              // Sequence: Create node → Update node → Delete node
+              const nodeId = 'test-node-sequence';
 
-          const createOp: CreateNodeOperation = {
-            id: 'create-1',
-            type: 'create-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeData: {
-              id: nodeId,
-              nodeType: 'process',
-              position: { x: 100, y: 100 },
-              size: { width: 120, height: 60 },
-              label: 'Sequence Node',
-              style: {},
-              properties: {}
-            }
-          };
+              const createOp: CreateNodeOperation = {
+                id: 'create-1',
+                type: 'create-node',
+                source: 'user-interaction',
+                priority: 'normal',
+                timestamp: Date.now(),
+                nodeData: {
+                  id: nodeId,
+                  nodeType: 'process',
+                  position: { x: 100, y: 100 },
+                  size: { width: 120, height: 60 },
+                  label: 'Sequence Node',
+                  style: {},
+                  properties: {},
+                },
+              };
 
-          const updateOp: UpdateNodeOperation = {
-            id: 'update-1',
-            type: 'update-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeId,
-            updates: {
-              label: 'Updated Sequence Node',
-              position: { x: 200, y: 200 }
-            }
-          };
+              const updateOp: UpdateNodeOperation = {
+                id: 'update-1',
+                type: 'update-node',
+                source: 'user-interaction',
+                priority: 'normal',
+                timestamp: Date.now(),
+                nodeId,
+                updates: {
+                  label: 'Updated Sequence Node',
+                  position: { x: 200, y: 200 },
+                },
+              };
 
-          const deleteOp: DeleteNodeOperation = {
-            id: 'delete-1',
-            type: 'delete-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeId
-          };
+              const deleteOp: DeleteNodeOperation = {
+                id: 'delete-1',
+                type: 'delete-node',
+                source: 'user-interaction',
+                priority: 'normal',
+                timestamp: Date.now(),
+                nodeId,
+              };
 
-          // Execute sequence
-          dfdOrchestrator.executeBatch([createOp, updateOp, deleteOp]).subscribe({
-            next: (results: OperationResult[]) => {
-              expect(results).toHaveSize(3);
-              expect(results.every(r => r.success)).toBe(true);
-              
-              // Verify state is properly managed
-              const stats = dfdOrchestrator.getStats();
-              expect(stats.totalOperations).toBe(3);
-              
-              done();
+              // Execute sequence
+              dfdOrchestrator.executeBatch([createOp, updateOp, deleteOp]).subscribe({
+                next: (results: OperationResult[]) => {
+                  expect(results).toHaveLength(3);
+                  expect(results.every(r => r.success)).toBe(true);
+
+                  // Verify state is properly managed
+                  const stats = dfdOrchestrator.getStats();
+                  expect(stats.totalOperations).toBe(3);
+
+                  resolve();
+                },
+                error: reject,
+              });
             },
-            error: done.fail
+            error: reject,
           });
-        },
-        error: done.fail
       });
     });
   });
 
   describe('Component Interaction', () => {
-    it('should coordinate GraphOperationManager and AutoSaveManager', (done) => {
+    it('should coordinate GraphOperationManager and AutoSaveManager', () => {
       // Set up auto-save in aggressive mode
       autoSaveManager.setPolicyMode('aggressive');
 
@@ -245,22 +254,25 @@ describe('DFD Architecture Integration', () => {
         diagramId: 'test-diagram',
         userId: 'test-user',
         diagramData: { nodes: [], edges: [] },
-        preferredStrategy: 'test-strategy'
+        preferredStrategy: 'test-strategy',
       };
 
       // Mock persistence
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', ['save'], {
+      const mockStrategy = {
+        save: vi.fn(),
         type: 'test-strategy',
-        priority: 100
-      });
+        priority: 100,
+      };
 
-      mockStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'coordinated-save',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'coordinated-save',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(mockStrategy);
 
@@ -269,301 +281,341 @@ describe('DFD Architecture Integration', () => {
         type: 'operation-completed',
         operationType: 'create-node',
         affectedCellIds: ['node-1'],
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
-      // Trigger auto-save
-      autoSaveManager.trigger(triggerEvent, context).subscribe({
-        next: (result) => {
-          expect(result).not.toBeNull();
-          expect(result!.success).toBe(true);
-          expect(mockStrategy.save).toHaveBeenCalled();
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        // Trigger auto-save
+        autoSaveManager.trigger(triggerEvent, context).subscribe({
+          next: result => {
+            expect(result).not.toBeNull();
+            expect(result!.success).toBe(true);
+            expect(mockStrategy.save).toHaveBeenCalled();
+            resolve();
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should coordinate PersistenceCoordinator caching with AutoSaveManager', (done) => {
+    it('should coordinate PersistenceCoordinator caching with AutoSaveManager', () => {
       // Setup strategy
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', [
-        'save', 'load'
-      ], {
+      const mockStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'cache-test-strategy',
-        priority: 100
-      });
+        priority: 100,
+      };
 
       const testData = { nodes: ['node1'], edges: ['edge1'] };
 
-      mockStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'cache-save',
-        diagramId: 'cache-test',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'cache-save',
+          diagramId: 'cache-test',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
-      mockStrategy.load.and.returnValue(of({
-        success: true,
-        operationId: 'cache-load',
-        diagramId: 'cache-test',
-        data: testData,
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.load.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'cache-load',
+          diagramId: 'cache-test',
+          data: testData,
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(mockStrategy);
 
-      // First save to populate cache
-      persistenceCoordinator.save({
-        diagramId: 'cache-test',
-        data: testData,
-        strategyType: 'cache-test-strategy'
-      }).subscribe({
-        next: () => {
-          // Now load with cache enabled
-          persistenceCoordinator.load({
+      return new Promise<void>((resolve, reject) => {
+        // First save to populate cache
+        persistenceCoordinator
+          .save({
             diagramId: 'cache-test',
+            data: testData,
             strategyType: 'cache-test-strategy',
-            useCache: true
-          }).subscribe({
-            next: (loadResult: LoadResult) => {
-              expect(loadResult.success).toBe(true);
-              expect(loadResult.fromCache).toBe(true);
-              expect(loadResult.data).toEqual(testData);
-              
-              // Strategy load should not be called due to cache hit
-              expect(mockStrategy.load).not.toHaveBeenCalled();
-              done();
+          })
+          .subscribe({
+            next: () => {
+              // Now load with cache enabled
+              persistenceCoordinator
+                .load({
+                  diagramId: 'cache-test',
+                  strategyType: 'cache-test-strategy',
+                  useCache: true,
+                })
+                .subscribe({
+                  next: (loadResult: LoadResult) => {
+                    expect(loadResult.success).toBe(true);
+                    expect(loadResult.fromCache).toBe(true);
+                    expect(loadResult.data).toEqual(testData);
+
+                    // Strategy load should not be called due to cache hit
+                    expect(mockStrategy.load).not.toHaveBeenCalled();
+                    resolve();
+                  },
+                  error: reject,
+                });
             },
-            error: done.fail
+            error: reject,
           });
-        },
-        error: done.fail
       });
     });
   });
 
   describe('Error Recovery and Resilience', () => {
-    it('should handle operation failures gracefully', (done) => {
+    it('should handle operation failures gracefully', () => {
       // Mock failing strategy
-      const failingStrategy = jasmine.createSpyObj('FailingStrategy', [
-        'save', 'load'
-      ], {
+      const failingStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'failing-strategy',
-        priority: 100
-      });
+        priority: 100,
+      };
 
-      const fallbackStrategy = jasmine.createSpyObj('FallbackStrategy', [
-        'save', 'load'
-      ], {
+      const fallbackStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'fallback-strategy',
-        priority: 50
-      });
+        priority: 50,
+      };
 
       // Primary fails, fallback succeeds
-      failingStrategy.save.and.returnValue(of({
-        success: false,
-        operationId: 'failed-save',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        error: 'Primary strategy failed',
-        metadata: {}
-      }));
+      failingStrategy.save.mockReturnValue(
+        of({
+          success: false,
+          operationId: 'failed-save',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+          error: 'Primary strategy failed',
+          metadata: {},
+        }),
+      );
 
-      fallbackStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'fallback-save',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      fallbackStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'fallback-save',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(failingStrategy);
       persistenceCoordinator.addStrategy(fallbackStrategy);
       persistenceCoordinator.setFallbackStrategy('fallback-strategy');
 
-      // Attempt save with failing primary
-      persistenceCoordinator.save({
-        diagramId: 'test-diagram',
-        data: { nodes: [], edges: [] },
-        strategyType: 'failing-strategy'
-      }).subscribe({
-        next: (result: SaveResult) => {
-          // Should succeed due to fallback
-          expect(result.success).toBe(true);
-          expect(fallbackStrategy.save).toHaveBeenCalled();
-          done();
-        },
-        error: done.fail
+      return new Promise<void>((resolve, reject) => {
+        // Attempt save with failing primary
+        persistenceCoordinator
+          .save({
+            diagramId: 'test-diagram',
+            data: { nodes: [], edges: [] },
+            strategyType: 'failing-strategy',
+          })
+          .subscribe({
+            next: (result: SaveResult) => {
+              // Should succeed due to fallback
+              expect(result.success).toBe(true);
+              expect(fallbackStrategy.save).toHaveBeenCalled();
+              resolve();
+            },
+            error: reject,
+          });
       });
     });
 
-    it('should maintain consistency during complex operation failures', (done) => {
+    it('should maintain consistency during complex operation failures', () => {
       // Initialize system
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', [
-        'save', 'load'
-      ], {
+      const mockStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'consistency-test',
-        priority: 100
-      });
+        priority: 100,
+      };
 
-      mockStrategy.load.and.returnValue(of({
-        success: true,
-        operationId: 'init-load',
-        diagramId: 'consistency-test',
-        data: { nodes: [], edges: [] },
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.load.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'init-load',
+          diagramId: 'consistency-test',
+          data: { nodes: [], edges: [] },
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       // Save will fail
-      mockStrategy.save.and.returnValue(of({
-        success: false,
-        operationId: 'failed-consistency-save',
-        diagramId: 'consistency-test',
-        timestamp: Date.now(),
-        error: 'Consistency test failure',
-        metadata: {}
-      }));
+      mockStrategy.save.mockReturnValue(
+        of({
+          success: false,
+          operationId: 'failed-consistency-save',
+          diagramId: 'consistency-test',
+          timestamp: Date.now(),
+          error: 'Consistency test failure',
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(mockStrategy);
 
-      dfdOrchestrator.initialize({
-        diagramId: 'consistency-test',
-        threatModelId: 'test-tm',
-        containerElement: mockContainerElement,
-        autoSaveMode: 'disabled' as any
-      }).subscribe({
-        next: () => {
-          // Create operation that should succeed
-          const createOp: CreateNodeOperation = {
-            id: 'consistency-create',
-            type: 'create-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeData: {
-              nodeType: 'process',
-              position: { x: 100, y: 100 },
-              size: { width: 120, height: 60 },
-              label: 'Consistency Node',
-              style: {},
-              properties: {}
-            }
-          };
+      return new Promise<void>((resolve, reject) => {
+        dfdOrchestrator
+          .initialize({
+            diagramId: 'consistency-test',
+            threatModelId: 'test-tm',
+            containerElement: mockContainerElement,
+            autoSaveMode: 'disabled' as any,
+          })
+          .subscribe({
+            next: () => {
+              // Create operation that should succeed
+              const createOp: CreateNodeOperation = {
+                id: 'consistency-create',
+                type: 'create-node',
+                source: 'user-interaction',
+                priority: 'normal',
+                timestamp: Date.now(),
+                nodeData: {
+                  nodeType: 'process',
+                  position: { x: 100, y: 100 },
+                  size: { width: 120, height: 60 },
+                  label: 'Consistency Node',
+                  style: {},
+                  properties: {},
+                },
+              };
 
-          dfdOrchestrator.executeOperation(createOp).subscribe({
-            next: (result: OperationResult) => {
-              expect(result.success).toBe(true);
-              
-              // Now try manual save which will fail
-              dfdOrchestrator.saveManually().subscribe({
-                next: () => done.fail('Save should have failed'),
-                error: () => {
-                  // Verify system state is still consistent
-                  const state = dfdOrchestrator.getState();
-                  expect(state.initialized).toBe(true);
-                  expect(state.hasUnsavedChanges).toBe(true); // Should still show unsaved changes
-                  
-                  const stats = dfdOrchestrator.getStats();
-                  expect(stats.totalOperations).toBe(1); // Operation count should be accurate
-                  
-                  done();
-                }
+              dfdOrchestrator.executeOperation(createOp).subscribe({
+                next: (result: OperationResult) => {
+                  expect(result.success).toBe(true);
+
+                  // Now try manual save which will fail
+                  dfdOrchestrator.saveManually().subscribe({
+                    next: () => reject(new Error('Save should have failed')),
+                    error: () => {
+                      // Verify system state is still consistent
+                      const state = dfdOrchestrator.getState();
+                      expect(state.initialized).toBe(true);
+                      expect(state.hasUnsavedChanges).toBe(true); // Should still show unsaved changes
+
+                      const stats = dfdOrchestrator.getStats();
+                      expect(stats.totalOperations).toBe(1); // Operation count should be accurate
+
+                      resolve();
+                    },
+                  });
+                },
+                error: reject,
               });
             },
-            error: done.fail
+            error: reject,
           });
-        },
-        error: done.fail
       });
     });
   });
 
   describe('Performance and Concurrency', () => {
-    it('should handle concurrent operations correctly', (done) => {
+    it('should handle concurrent operations correctly', () => {
       // Setup
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', [
-        'save', 'load'
-      ], {
+      const mockStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'concurrent-test',
-        priority: 100
-      });
+        priority: 100,
+      };
 
-      mockStrategy.load.and.returnValue(of({
-        success: true,
-        operationId: 'concurrent-load',
-        diagramId: 'concurrent-test',
-        data: { nodes: [], edges: [] },
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.load.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'concurrent-load',
+          diagramId: 'concurrent-test',
+          data: { nodes: [], edges: [] },
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
-      mockStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'concurrent-save',
-        diagramId: 'concurrent-test',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'concurrent-save',
+          diagramId: 'concurrent-test',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(mockStrategy);
 
-      dfdOrchestrator.initialize({
-        diagramId: 'concurrent-test',
-        threatModelId: 'test-tm',
-        containerElement: mockContainerElement,
-        autoSaveMode: 'disabled' as any
-      }).subscribe({
-        next: () => {
-          // Create multiple concurrent operations
-          const operations: CreateNodeOperation[] = Array.from({ length: 5 }, (_, i) => ({
-            id: `concurrent-op-${i}`,
-            type: 'create-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeData: {
-              nodeType: 'process',
-              position: { x: 100 + i * 50, y: 100 },
-              size: { width: 120, height: 60 },
-              label: `Concurrent Node ${i}`,
-              style: {},
-              properties: {}
-            }
-          }));
+      return new Promise<void>((resolve, reject) => {
+        dfdOrchestrator
+          .initialize({
+            diagramId: 'concurrent-test',
+            threatModelId: 'test-tm',
+            containerElement: mockContainerElement,
+            autoSaveMode: 'disabled' as any,
+          })
+          .subscribe({
+            next: () => {
+              // Create multiple concurrent operations
+              const operations: CreateNodeOperation[] = Array.from({ length: 5 }, (_, i) => ({
+                id: `concurrent-op-${i}`,
+                type: 'create-node',
+                source: 'user-interaction',
+                priority: 'normal',
+                timestamp: Date.now(),
+                nodeData: {
+                  nodeType: 'process',
+                  position: { x: 100 + i * 50, y: 100 },
+                  size: { width: 120, height: 60 },
+                  label: `Concurrent Node ${i}`,
+                  style: {},
+                  properties: {},
+                },
+              }));
 
-          // Execute all operations concurrently
-          const results$ = operations.map(op => dfdOrchestrator.executeOperation(op));
+              // Execute all operations concurrently
+              const results$ = operations.map(op => dfdOrchestrator.executeOperation(op));
 
-          // Wait for all to complete
-          Promise.all(results$.map(obs => obs.toPromise())).then(results => {
-            expect(results).toHaveSize(5);
-            expect(results.every(r => r.success)).toBe(true);
-            
-            const stats = dfdOrchestrator.getStats();
-            expect(stats.totalOperations).toBe(5);
-            
-            done();
-          }).catch(done.fail);
-        },
-        error: done.fail
+              // Wait for all to complete
+              Promise.all(results$.map(obs => obs.toPromise()))
+                .then(results => {
+                  expect(results).toHaveLength(5);
+                  expect(results.every(r => r.success)).toBe(true);
+
+                  const stats = dfdOrchestrator.getStats();
+                  expect(stats.totalOperations).toBe(5);
+
+                  resolve();
+                })
+                .catch(reject);
+            },
+            error: reject,
+          });
       });
     });
 
-    it('should manage operation timeouts appropriately', (done) => {
+    it('should manage operation timeouts appropriately', () => {
       // Configure short timeout
       graphOperationManager.configure({ operationTimeoutMs: 100 });
 
       // Create a slow mock that would exceed timeout
-      const slowMockGraph = jasmine.createSpyObj('Graph', ['addNode']);
-      
+      const slowMockGraph = {
+        addNode: vi.fn(),
+      };
+
       // Simulate slow operation by never resolving
       const neverEndingPromise = new Promise(() => {
         // Never resolves to simulate timeout
       });
-      slowMockGraph.addNode.and.returnValue(neverEndingPromise);
+      slowMockGraph.addNode.mockReturnValue(neverEndingPromise);
 
       const operation: CreateNodeOperation = {
         id: 'timeout-test',
@@ -577,8 +629,8 @@ describe('DFD Architecture Integration', () => {
           size: { width: 120, height: 60 },
           label: 'Timeout Node',
           style: {},
-          properties: {}
-        }
+          properties: {},
+        },
       };
 
       const context = {
@@ -590,15 +642,17 @@ describe('DFD Architecture Integration', () => {
         permissions: ['read', 'write'],
         suppressValidation: false,
         suppressHistory: false,
-        suppressBroadcast: false
+        suppressBroadcast: false,
       };
 
-      graphOperationManager.execute(operation, context).subscribe({
-        next: () => done.fail('Should have timed out'),
-        error: (error) => {
-          expect(error.name).toBe('TimeoutError');
-          done();
-        }
+      return new Promise<void>((resolve, reject) => {
+        graphOperationManager.execute(operation, context).subscribe({
+          next: () => reject(new Error('Should have timed out')),
+          error: error => {
+            expect(error.name).toBe('TimeoutError');
+            resolve();
+          },
+        });
       });
     });
   });
@@ -608,13 +662,13 @@ describe('DFD Architecture Integration', () => {
       // Configure each component
       graphOperationManager.configure({
         enableValidation: false,
-        operationTimeoutMs: 45000
+        operationTimeoutMs: 45000,
       });
 
       persistenceCoordinator.configure({
         enableCaching: false,
         operationTimeoutMs: 60000,
-        maxCacheEntries: 200
+        maxCacheEntries: 200,
       });
 
       autoSaveManager.configure({
@@ -637,34 +691,35 @@ describe('DFD Architecture Integration', () => {
 
     it('should support extending functionality with custom components', () => {
       // Add custom validator
-      const customValidator = jasmine.createSpyObj('CustomValidator', [
-        'canValidate', 'validate'
-      ], { priority: 200 });
-
-      customValidator.canValidate.and.returnValue(true);
-      customValidator.validate.and.returnValue({
-        valid: true,
-        errors: [],
-        warnings: ['Custom validation warning']
-      });
+      const customValidator = {
+        canValidate: vi.fn().mockReturnValue(true),
+        validate: vi.fn().mockReturnValue({
+          valid: true,
+          errors: [],
+          warnings: ['Custom validation warning'],
+        }),
+        priority: 200,
+      };
 
       graphOperationManager.addValidator(customValidator);
 
       // Add custom persistence strategy
-      const customStrategy = jasmine.createSpyObj('CustomStrategy', [
-        'save', 'load'
-      ], {
+      const customStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'custom-strategy',
-        priority: 200
-      });
+        priority: 200,
+      };
 
-      customStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'custom-save',
-        diagramId: 'test',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      customStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'custom-save',
+          diagramId: 'test',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(customStrategy);
 
@@ -675,82 +730,90 @@ describe('DFD Architecture Integration', () => {
   });
 
   describe('Monitoring and Observability', () => {
-    it('should provide comprehensive monitoring across all components', (done) => {
+    it('should provide comprehensive monitoring across all components', () => {
       // Setup basic persistence
-      const mockStrategy = jasmine.createSpyObj('PersistenceStrategy', [
-        'save', 'load'
-      ], {
+      const mockStrategy = {
+        save: vi.fn(),
+        load: vi.fn(),
         type: 'monitoring-test',
-        priority: 100
-      });
+        priority: 100,
+      };
 
-      mockStrategy.save.and.returnValue(of({
-        success: true,
-        operationId: 'monitoring-save',
-        diagramId: 'monitoring-test',
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.save.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'monitoring-save',
+          diagramId: 'monitoring-test',
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
-      mockStrategy.load.and.returnValue(of({
-        success: true,
-        operationId: 'monitoring-load',
-        diagramId: 'monitoring-test',
-        data: { nodes: [], edges: [] },
-        timestamp: Date.now(),
-        metadata: {}
-      }));
+      mockStrategy.load.mockReturnValue(
+        of({
+          success: true,
+          operationId: 'monitoring-load',
+          diagramId: 'monitoring-test',
+          data: { nodes: [], edges: [] },
+          timestamp: Date.now(),
+          metadata: {},
+        }),
+      );
 
       persistenceCoordinator.addStrategy(mockStrategy);
 
-      // Initialize and perform operations
-      dfdOrchestrator.initialize({
-        diagramId: 'monitoring-test',
-        threatModelId: 'test-tm',
-        containerElement: mockContainerElement,
-        autoSaveMode: 'aggressive' as any
-      }).subscribe({
-        next: () => {
-          // Execute operation and monitor events
-          const operation: CreateNodeOperation = {
-            id: 'monitoring-op',
-            type: 'create-node',
-            source: 'user-interaction',
-            priority: 'normal',
-            timestamp: Date.now(),
-            nodeData: {
-              nodeType: 'process',
-              position: { x: 100, y: 100 },
-              size: { width: 120, height: 60 },
-              label: 'Monitoring Node',
-              style: {},
-              properties: {}
-            }
-          };
+      return new Promise<void>((resolve, reject) => {
+        // Initialize and perform operations
+        dfdOrchestrator
+          .initialize({
+            diagramId: 'monitoring-test',
+            threatModelId: 'test-tm',
+            containerElement: mockContainerElement,
+            autoSaveMode: 'aggressive' as any,
+          })
+          .subscribe({
+            next: () => {
+              // Execute operation and monitor events
+              const operation: CreateNodeOperation = {
+                id: 'monitoring-op',
+                type: 'create-node',
+                source: 'user-interaction',
+                priority: 'normal',
+                timestamp: Date.now(),
+                nodeData: {
+                  nodeType: 'process',
+                  position: { x: 100, y: 100 },
+                  size: { width: 120, height: 60 },
+                  label: 'Monitoring Node',
+                  style: {},
+                  properties: {},
+                },
+              };
 
-          // Monitor operation completion
-          dfdOrchestrator.operationCompleted$.pipe(take(1)).subscribe(result => {
-            expect(result.success).toBe(true);
+              // Monitor operation completion
+              dfdOrchestrator.operationCompleted$.pipe(take(1)).subscribe(result => {
+                expect(result.success).toBe(true);
 
-            // Check all component statistics
-            const graphStats = graphOperationManager.getStats();
-            expect(graphStats.totalOperations).toBeGreaterThan(0);
+                // Check all component statistics
+                const graphStats = graphOperationManager.getStats();
+                expect(graphStats.totalOperations).toBeGreaterThan(0);
 
-            const persistenceStats = persistenceCoordinator.getStats();
-            expect(persistenceStats.totalOperations).toBeGreaterThan(0);
+                const persistenceStats = persistenceCoordinator.getStats();
+                expect(persistenceStats.totalOperations).toBeGreaterThan(0);
 
-            const autoSaveStats = autoSaveManager.getStats();
-            expect(autoSaveStats).toBeDefined();
+                const autoSaveStats = autoSaveManager.getStats();
+                expect(autoSaveStats).toBeDefined();
 
-            const orchestratorStats = dfdOrchestrator.getStats();
-            expect(orchestratorStats.totalOperations).toBeGreaterThan(0);
+                const orchestratorStats = dfdOrchestrator.getStats();
+                expect(orchestratorStats.totalOperations).toBeGreaterThan(0);
 
-            done();
+                resolve();
+              });
+
+              dfdOrchestrator.executeOperation(operation).subscribe();
+            },
+            error: reject,
           });
-
-          dfdOrchestrator.executeOperation(operation).subscribe();
-        },
-        error: done.fail
       });
     });
   });

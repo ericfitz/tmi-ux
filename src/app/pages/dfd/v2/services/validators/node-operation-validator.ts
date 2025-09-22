@@ -12,7 +12,7 @@ import {
   ValidationResult,
   CreateNodeOperation,
   UpdateNodeOperation,
-  DeleteNodeOperation
+  DeleteNodeOperation,
 } from '../../types/graph-operation.types';
 
 @Injectable()
@@ -55,7 +55,10 @@ export class NodeOperationValidator extends BaseOperationValidator {
     return result;
   }
 
-  private validateCreateNode(operation: CreateNodeOperation, context: OperationContext): ValidationResult {
+  private validateCreateNode(
+    operation: CreateNodeOperation,
+    context: OperationContext,
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -92,7 +95,9 @@ export class NodeOperationValidator extends BaseOperationValidator {
     } else {
       const validNodeTypes = ['process', 'external-entity', 'data-store', 'trust-boundary'];
       if (!validNodeTypes.includes(nodeData.nodeType)) {
-        warnings.push(`Unusual node type '${nodeData.nodeType}', expected one of: ${validNodeTypes.join(', ')}`);
+        warnings.push(
+          `Unusual node type '${nodeData.nodeType}', expected one of: ${validNodeTypes.join(', ')}`,
+        );
       }
     }
 
@@ -115,10 +120,14 @@ export class NodeOperationValidator extends BaseOperationValidator {
       const maxSize = 1000;
       const minSize = 10;
       if (nodeData.size.width > maxSize || nodeData.size.height > maxSize) {
-        warnings.push(`Node size is very large (${nodeData.size.width}x${nodeData.size.height}), maximum recommended is ${maxSize}x${maxSize}`);
+        warnings.push(
+          `Node size is very large (${nodeData.size.width}x${nodeData.size.height}), maximum recommended is ${maxSize}x${maxSize}`,
+        );
       }
       if (nodeData.size.width < minSize || nodeData.size.height < minSize) {
-        warnings.push(`Node size is very small (${nodeData.size.width}x${nodeData.size.height}), minimum recommended is ${minSize}x${minSize}`);
+        warnings.push(
+          `Node size is very small (${nodeData.size.width}x${nodeData.size.height}), minimum recommended is ${minSize}x${minSize}`,
+        );
       }
     }
 
@@ -136,10 +145,15 @@ export class NodeOperationValidator extends BaseOperationValidator {
       this.validateNodeStyle(nodeData.style, errors, warnings);
     }
 
-    return errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    return errors.length > 0
+      ? this.createInvalidResult(errors, warnings)
+      : this.createValidResult(warnings);
   }
 
-  private validateUpdateNode(operation: UpdateNodeOperation, context: OperationContext): ValidationResult {
+  private validateUpdateNode(
+    operation: UpdateNodeOperation,
+    context: OperationContext,
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -200,10 +214,15 @@ export class NodeOperationValidator extends BaseOperationValidator {
       this.validateNodeStyle(updates.style, errors, warnings);
     }
 
-    return errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    return errors.length > 0
+      ? this.createInvalidResult(errors, warnings)
+      : this.createValidResult(warnings);
   }
 
-  private validateDeleteNode(operation: DeleteNodeOperation, context: OperationContext): ValidationResult {
+  private validateDeleteNode(
+    operation: DeleteNodeOperation,
+    context: OperationContext,
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -237,7 +256,9 @@ export class NodeOperationValidator extends BaseOperationValidator {
       }
     }
 
-    return errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    return errors.length > 0
+      ? this.createInvalidResult(errors, warnings)
+      : this.createValidResult(warnings);
   }
 
   private validateNodeStyle(style: any, errors: string[], warnings: string[]): void {
@@ -280,8 +301,21 @@ export class NodeOperationValidator extends BaseOperationValidator {
     if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
       return true; // Hex color
     }
-    
-    const namedColors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink', 'brown', 'black', 'white', 'gray', 'grey'];
+
+    const namedColors = [
+      'red',
+      'green',
+      'blue',
+      'yellow',
+      'orange',
+      'purple',
+      'pink',
+      'brown',
+      'black',
+      'white',
+      'gray',
+      'grey',
+    ];
     if (namedColors.includes(color.toLowerCase())) {
       return true; // Named color
     }

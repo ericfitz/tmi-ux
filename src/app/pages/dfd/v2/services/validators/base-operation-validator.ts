@@ -11,7 +11,7 @@ import {
   GraphOperation,
   OperationContext,
   OperationValidator,
-  ValidationResult
+  ValidationResult,
 } from '../../types/graph-operation.types';
 
 /**
@@ -33,7 +33,7 @@ export abstract class BaseOperationValidator implements OperationValidator {
     return {
       valid: true,
       errors: [],
-      warnings
+      warnings,
     };
   }
 
@@ -44,7 +44,7 @@ export abstract class BaseOperationValidator implements OperationValidator {
     return {
       valid: false,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -105,8 +105,8 @@ export abstract class BaseOperationValidator implements OperationValidator {
    * Validate that coordinates are valid
    */
   protected validateCoordinates(
-    x: number | undefined | null, 
-    y: number | undefined | null
+    x: number | undefined | null,
+    y: number | undefined | null,
   ): string | null {
     if (x === undefined || x === null || y === undefined || y === null) {
       return 'Position coordinates (x, y) are required';
@@ -124,8 +124,8 @@ export abstract class BaseOperationValidator implements OperationValidator {
    * Validate that size dimensions are valid
    */
   protected validateSize(
-    width: number | undefined | null, 
-    height: number | undefined | null
+    width: number | undefined | null,
+    height: number | undefined | null,
   ): string | null {
     if (width === undefined || width === null || height === undefined || height === null) {
       return 'Size dimensions (width, height) are required';
@@ -159,7 +159,10 @@ export abstract class BaseOperationValidator implements OperationValidator {
   /**
    * Validate operation permissions
    */
-  protected validatePermissions(operation: GraphOperation, context: OperationContext): string | null {
+  protected validatePermissions(
+    operation: GraphOperation,
+    context: OperationContext,
+  ): string | null {
     // If no permissions provided, assume allowed
     if (!context.permissions || context.permissions.length === 0) {
       return null;
@@ -199,7 +202,7 @@ export abstract class BaseOperationValidator implements OperationValidator {
   protected logValidationStart(operation: GraphOperation): void {
     this.logger.debug(`Validating ${operation.type} operation`, {
       operationId: operation.id,
-      source: operation.source
+      source: operation.source,
     });
   }
 
@@ -210,13 +213,13 @@ export abstract class BaseOperationValidator implements OperationValidator {
     if (result.valid) {
       this.logger.debug(`Validation passed for ${operation.type}`, {
         operationId: operation.id,
-        warnings: result.warnings
+        warnings: result.warnings,
       });
     } else {
       this.logger.warn(`Validation failed for ${operation.type}`, {
         operationId: operation.id,
         errors: result.errors,
-        warnings: result.warnings
+        warnings: result.warnings,
       });
     }
   }

@@ -9,11 +9,7 @@ import { CellOperation } from '../../../core/types/websocket-message.types';
 /**
  * Types of persistence strategies
  */
-export type PersistenceStrategyType = 
-  | 'websocket'
-  | 'rest'
-  | 'cache-only'
-  | 'hybrid';
+export type PersistenceStrategyType = 'websocket' | 'rest' | 'cache-only' | 'hybrid';
 
 /**
  * Priority levels for save operations
@@ -23,17 +19,12 @@ export type SavePriority = 'low' | 'normal' | 'high' | 'critical';
 /**
  * Context for save operations
  */
-export type SaveContext = 
-  | 'auto-save'
-  | 'manual-save'
-  | 'collaboration'
-  | 'export'
-  | 'backup';
+export type SaveContext = 'auto-save' | 'manual-save' | 'collaboration' | 'export' | 'backup';
 
 /**
  * Status of save operations
  */
-export type SaveStatus = 
+export type SaveStatus =
   | 'idle'
   | 'pending'
   | 'saving'
@@ -45,12 +36,7 @@ export type SaveStatus =
 /**
  * Cache synchronization status
  */
-export type CacheStatus = 
-  | 'synced'
-  | 'pending'
-  | 'conflict'
-  | 'error'
-  | 'offline';
+export type CacheStatus = 'synced' | 'pending' | 'conflict' | 'error' | 'offline';
 
 /**
  * Base interface for save operations
@@ -89,7 +75,7 @@ export interface SaveResult {
 /**
  * Actions that can result from save operations
  */
-export type SaveAction = 
+export type SaveAction =
   | 'saved'
   | 'queued'
   | 'cached'
@@ -137,12 +123,12 @@ export interface CacheEntry {
 export interface PersistenceStrategy {
   readonly type: PersistenceStrategyType;
   readonly priority: number;
-  
+
   save(operation: SaveOperation): Observable<SaveResult>;
   load(operation: LoadOperation): Observable<LoadResult>;
   canHandle(operation: SaveOperation | LoadOperation): boolean;
   isAvailable(): boolean;
-  
+
   // Optional methods for advanced strategies
   sync?(diagramId: string): Observable<SaveResult>;
   clear?(diagramId: string): Observable<void>;
@@ -219,7 +205,7 @@ export interface PersistenceEvent {
   readonly data: any;
 }
 
-export type PersistenceEventType = 
+export type PersistenceEventType =
   | 'save-started'
   | 'save-completed'
   | 'save-failed'
@@ -242,7 +228,7 @@ export interface PersistenceEventHandler {
 /**
  * Conflict resolution strategies
  */
-export type ConflictResolutionStrategy = 
+export type ConflictResolutionStrategy =
   | 'server-wins'
   | 'client-wins'
   | 'manual-resolution'

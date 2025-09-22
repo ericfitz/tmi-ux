@@ -10,7 +10,7 @@ import { BaseOperationValidator } from './base-operation-validator';
 import {
   GraphOperation,
   OperationContext,
-  ValidationResult
+  ValidationResult,
 } from '../../types/graph-operation.types';
 
 @Injectable()
@@ -44,18 +44,24 @@ export class GeneralOperationValidator extends BaseOperationValidator {
 
       // Validate collaboration constraints
       this.validateCollaboration(_operation, context, errors, warnings);
-
     } catch (error) {
       this.logger.error('General validation error', { operationId: _operation.id, error });
       errors.push(`General validation error: ${String(error)}`);
     }
 
-    const result = errors.length > 0 ? this.createInvalidResult(errors, warnings) : this.createValidResult(warnings);
+    const result =
+      errors.length > 0
+        ? this.createInvalidResult(errors, warnings)
+        : this.createValidResult(warnings);
     this.logValidationResult(_operation, result);
     return result;
   }
 
-  private validateOperationStructure(operation: GraphOperation, errors: string[], warnings: string[]): void {
+  private validateOperationStructure(
+    operation: GraphOperation,
+    errors: string[],
+    warnings: string[],
+  ): void {
     // Validate required fields
     if (!operation.id) {
       errors.push('Operation ID is required');
@@ -96,7 +102,8 @@ export class GeneralOperationValidator extends BaseOperationValidator {
           warnings.push(`Operation is ${Math.round(ageMs / 1000)}s old, may be stale`);
         }
 
-        if (operation.timestamp > now + 1000) { // 1 second tolerance for clock skew
+        if (operation.timestamp > now + 1000) {
+          // 1 second tolerance for clock skew
           warnings.push('Operation timestamp is in the future');
         }
       }
@@ -152,28 +159,41 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
   }
 
-  private validateTiming(operation: GraphOperation, context: OperationContext, errors: string[], warnings: string[]): void {
+  private validateTiming(
+    operation: GraphOperation,
+    context: OperationContext,
+    errors: string[],
+    warnings: string[],
+  ): void {
     // Check for operation conflicts based on timing
     if (context.lastOperationTime) {
       const timeSinceLastOp = operation.timestamp - context.lastOperationTime;
-      
+
       if (timeSinceLastOp < 0) {
         warnings.push('Operation timestamp is before the last operation');
-      } else if (timeSinceLastOp < 10) { // Less than 10ms
-        warnings.push('Operation follows very quickly after previous operation, possible duplicate');
+      } else if (timeSinceLastOp < 10) {
+        // Less than 10ms
+        warnings.push(
+          'Operation follows very quickly after previous operation, possible duplicate',
+        );
       }
     }
 
     // Check operation timeout
     const operationAge = Date.now() - operation.timestamp;
     const timeoutMs = 30000; // 30 seconds
-    
+
     if (operationAge > timeoutMs) {
       warnings.push(`Operation is ${Math.round(operationAge / 1000)}s old and may have timed out`);
     }
   }
 
-  private validateCollaboration(operation: GraphOperation, context: OperationContext, errors: string[], warnings: string[]): void {
+  private validateCollaboration(
+    operation: GraphOperation,
+    context: OperationContext,
+    errors: string[],
+    warnings: string[],
+  ): void {
     if (!context.isCollaborating) {
       return; // No collaboration constraints in solo mode
     }

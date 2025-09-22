@@ -3,7 +3,7 @@
  */
 
 import { Observable } from 'rxjs';
-import { 
+import {
   SaveOperation,
   SaveResult,
   LoadOperation,
@@ -17,7 +17,7 @@ import {
   CacheStatus,
   SaveStatus,
   CacheEntry,
-  PersistenceConflict
+  PersistenceConflict,
 } from '../types/persistence.types';
 
 /**
@@ -29,41 +29,41 @@ export interface IPersistenceCoordinator {
   save(operation: SaveOperation): Observable<SaveResult>;
   load(operation: LoadOperation): Observable<LoadResult>;
   sync(operation: SyncOperation): Observable<SyncResult>;
-  
+
   // Batch operations
   saveBatch(operations: SaveOperation[]): Observable<SaveResult[]>;
   loadBatch(operations: LoadOperation[]): Observable<LoadResult[]>;
-  
+
   // Cache management
   clearCache(diagramId?: string): Observable<void>;
   getCacheStatus(diagramId: string): Observable<CacheStatus>;
   getCacheEntry(diagramId: string): Observable<CacheEntry | null>;
   invalidateCache(diagramId: string): Observable<void>;
-  
+
   // Strategy management
   addStrategy(strategy: PersistenceStrategy): void;
   removeStrategy(strategyType: string): void;
   getStrategies(): PersistenceStrategy[];
   setFallbackStrategy(strategyType: string): void;
-  
+
   // Configuration
   configure(config: Partial<PersistenceConfig>): void;
   getConfiguration(): PersistenceConfig;
-  
+
   // Status observables
   readonly saveStatus$: Observable<SaveStatus>;
   readonly cacheStatus$: Observable<Map<string, CacheStatus>>;
   readonly events$: Observable<PersistenceEvent>;
   readonly conflicts$: Observable<PersistenceConflict>;
-  
+
   // Statistics and monitoring
   getStats(): PersistenceStats;
   resetStats(): void;
-  
+
   // Connection and health
   isOnline(): boolean;
   getHealthStatus(): Observable<PersistenceHealthStatus>;
-  
+
   // Cleanup
   dispose(): void;
 }

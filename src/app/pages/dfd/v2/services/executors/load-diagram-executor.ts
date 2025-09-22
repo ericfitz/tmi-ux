@@ -13,7 +13,7 @@ import {
   GraphOperation,
   OperationResult,
   OperationContext,
-  LoadDiagramOperation
+  LoadDiagramOperation,
 } from '../../types/graph-operation.types';
 
 @Injectable()
@@ -42,13 +42,13 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
         const errorMessage = `Failed to load diagram: ${error}`;
         this.logger.error(errorMessage, { operationId: operation.id, error });
         return of(this.createFailureResult(operation, errorMessage));
-      })
+      }),
     );
   }
 
   private executeLoadDiagram(
-    operation: LoadDiagramOperation, 
-    context: OperationContext
+    operation: LoadDiagramOperation,
+    context: OperationContext,
   ): Observable<OperationResult> {
     try {
       const graph = context.graph;
@@ -58,7 +58,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
         operationId: operation.id,
         clearExisting,
         nodeCount: diagramData.nodes?.length || 0,
-        edgeCount: diagramData.edges?.length || 0
+        edgeCount: diagramData.edges?.length || 0,
       });
 
       // Clear existing diagram if requested
@@ -73,13 +73,13 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       // Load nodes first
       if (diagramData.nodes && diagramData.nodes.length > 0) {
         this.logger.debug('Loading nodes', { count: diagramData.nodes.length });
-        
+
         diagramData.nodes.forEach(nodeData => {
           try {
             const nodeConfig = this.createNodeConfig(nodeData);
             const node = graph.addNode(nodeConfig);
             loadedCellIds.push(node.id);
-            
+
             // Apply additional styling if present
             if (nodeData.cssClass) {
               node.addCssClass(nodeData.cssClass);
@@ -95,7 +95,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       // Load edges after nodes
       if (diagramData.edges && diagramData.edges.length > 0) {
         this.logger.debug('Loading edges', { count: diagramData.edges.length });
-        
+
         diagramData.edges.forEach(edgeData => {
           try {
             // Verify source and target nodes exist
@@ -109,7 +109,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
             const edgeConfig = this.createEdgeConfig(edgeData);
             const edge = graph.addEdge(edgeConfig);
             loadedCellIds.push(edge.id);
-            
+
             // Apply additional styling if present
             if (edgeData.cssClass) {
               edge.addCssClass(edgeData.cssClass);
@@ -125,8 +125,8 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       // Apply diagram-level properties
       if (diagramData.properties) {
         // Could store diagram properties in graph metadata
-        this.logger.debug('Applied diagram properties', { 
-          properties: Object.keys(diagramData.properties) 
+        this.logger.debug('Applied diagram properties', {
+          properties: Object.keys(diagramData.properties),
         });
       }
 
@@ -137,7 +137,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
         requestedEdgeCount: diagramData.edges?.length || 0,
         loadErrors: loadErrors,
         clearExisting,
-        diagramProperties: diagramData.properties || {}
+        diagramProperties: diagramData.properties || {},
       };
 
       if (success) {
@@ -145,7 +145,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
           operationId: operation.id,
           loadedCellCount: loadedCellIds.length,
           nodeCount: diagramData.nodes?.length || 0,
-          edgeCount: diagramData.edges?.length || 0
+          edgeCount: diagramData.edges?.length || 0,
         });
 
         return of(this.createSuccessResult(operation, loadedCellIds, metadata));
@@ -154,7 +154,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
         this.logger.warn('Diagram loaded with errors', {
           operationId: operation.id,
           errorCount: loadErrors.length,
-          loadedCellCount: loadedCellIds.length
+          loadedCellCount: loadedCellIds.length,
         });
 
         return of({
@@ -164,10 +164,9 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
           affectedCellIds: loadedCellIds,
           timestamp: Date.now(),
           error,
-          metadata
+          metadata,
         });
       }
-
     } catch (error) {
       const errorMessage = `Critical error during diagram load: ${String(error)}`;
       this.logger.error(errorMessage, { operationId: operation.id, error });
@@ -187,16 +186,16 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
         body: {
           fill: '#ffffff',
           stroke: '#000000',
-          strokeWidth: 1
+          strokeWidth: 1,
         },
         label: {
           text: nodeData.label || nodeData.attrs?.label?.text || 'Node',
           fontSize: 14,
-          fill: '#000000'
-        }
+          fill: '#000000',
+        },
       },
       data: nodeData.data || {},
-      zIndex: nodeData.zIndex || 1
+      zIndex: nodeData.zIndex || 1,
     };
   }
 
@@ -209,12 +208,12 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       attrs: edgeData.attrs || {
         line: {
           stroke: '#000000',
-          strokeWidth: 1
-        }
+          strokeWidth: 1,
+        },
       },
       labels: edgeData.labels || [],
       data: edgeData.data || {},
-      zIndex: edgeData.zIndex || 0
+      zIndex: edgeData.zIndex || 0,
     };
   }
 }

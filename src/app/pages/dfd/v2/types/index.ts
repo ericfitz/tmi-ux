@@ -5,7 +5,7 @@
 // Graph operation types
 export * from './graph-operation.types';
 
-// Persistence types  
+// Persistence types
 export * from './persistence.types';
 
 // Auto-save types

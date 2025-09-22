@@ -14,7 +14,7 @@ import {
   OperationContext,
   CreateEdgeOperation,
   UpdateEdgeOperation,
-  DeleteEdgeOperation
+  DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
 
 @Injectable()
@@ -54,13 +54,13 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       map(result => {
         this.logOperationComplete(operation, result);
         return result;
-      })
+      }),
     );
   }
 
   private executeCreateEdge(
-    operation: CreateEdgeOperation, 
-    context: OperationContext
+    operation: CreateEdgeOperation,
+    context: OperationContext,
   ): Observable<OperationResult> {
     try {
       const graph = context.graph;
@@ -89,46 +89,53 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         shape: edgeData.shape || 'edge',
         source: {
           cell: edgeData.sourceNodeId,
-          port: edgeData.sourcePort || undefined
+          port: edgeData.sourcePort || undefined,
         },
         target: {
           cell: edgeData.targetNodeId,
-          port: edgeData.targetPort || undefined
+          port: edgeData.targetPort || undefined,
         },
         attrs: {
           line: {
             stroke: edgeData.style?.stroke || '#000000',
             strokeWidth: edgeData.style?.strokeWidth || 1,
-            strokeDasharray: edgeData.style?.strokeDasharray || undefined
-          }
+            strokeDasharray: edgeData.style?.strokeDasharray || undefined,
+          },
         },
-        labels: edgeData.label ? [{
-          markup: [{
-            tagName: 'rect',
-            selector: 'body'
-          }, {
-            tagName: 'text',
-            selector: 'label'
-          }],
-          attrs: {
-            label: {
-              text: edgeData.label,
-              fontSize: edgeData.style?.fontSize || 12,
-              fill: edgeData.style?.textColor || '#000000'
-            },
-            body: {
-              fill: edgeData.style?.labelBackground || '#ffffff',
-              stroke: edgeData.style?.labelBorder || '#000000',
-              strokeWidth: 1,
-              rx: 3,
-              ry: 3
-            }
-          }
-        }] : [],
+        labels: edgeData.label
+          ? [
+              {
+                markup: [
+                  {
+                    tagName: 'rect',
+                    selector: 'body',
+                  },
+                  {
+                    tagName: 'text',
+                    selector: 'label',
+                  },
+                ],
+                attrs: {
+                  label: {
+                    text: edgeData.label,
+                    fontSize: edgeData.style?.fontSize || 12,
+                    fill: edgeData.style?.textColor || '#000000',
+                  },
+                  body: {
+                    fill: edgeData.style?.labelBackground || '#ffffff',
+                    stroke: edgeData.style?.labelBorder || '#000000',
+                    strokeWidth: 1,
+                    rx: 3,
+                    ry: 3,
+                  },
+                },
+              },
+            ]
+          : [],
         data: {
           ...edgeData.properties,
-          edgeType: edgeData.edgeType || 'dataflow'
-        }
+          edgeType: edgeData.edgeType || 'dataflow',
+        },
       };
 
       // Add edge to graph
@@ -143,21 +150,18 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         edgeId,
         edgeType: edgeData.edgeType,
         sourceNodeId: edgeData.sourceNodeId,
-        targetNodeId: edgeData.targetNodeId
+        targetNodeId: edgeData.targetNodeId,
       });
 
-      return [this.createSuccessResult(
-        operation,
-        [edgeId],
-        {
+      return [
+        this.createSuccessResult(operation, [edgeId], {
           edgeId,
           edgeType: edgeData.edgeType,
           sourceNodeId: edgeData.sourceNodeId,
           targetNodeId: edgeData.targetNodeId,
-          hasLabel: !!edgeData.label
-        }
-      )];
-
+          hasLabel: !!edgeData.label,
+        }),
+      ];
     } catch (error) {
       const errorMessage = `Failed to create edge: ${String(error)}`;
       this.logger.error(errorMessage, { operationId: operation.id, error });
@@ -166,8 +170,8 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
   }
 
   private executeUpdateEdge(
-    operation: UpdateEdgeOperation, 
-    context: OperationContext
+    operation: UpdateEdgeOperation,
+    context: OperationContext,
   ): Observable<OperationResult> {
     try {
       const graph = context.graph;
@@ -185,29 +189,34 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       if (updates.label !== undefined) {
         if (updates.label) {
           // Add or update label
-          edge.setLabels([{
-            markup: [{
-              tagName: 'rect',
-              selector: 'body'
-            }, {
-              tagName: 'text',
-              selector: 'label'
-            }],
-            attrs: {
-              label: {
-                text: updates.label,
-                fontSize: updates.style?.fontSize || 12,
-                fill: updates.style?.textColor || '#000000'
+          edge.setLabels([
+            {
+              markup: [
+                {
+                  tagName: 'rect',
+                  selector: 'body',
+                },
+                {
+                  tagName: 'text',
+                  selector: 'label',
+                },
+              ],
+              attrs: {
+                label: {
+                  text: updates.label,
+                  fontSize: updates.style?.fontSize || 12,
+                  fill: updates.style?.textColor || '#000000',
+                },
+                body: {
+                  fill: updates.style?.labelBackground || '#ffffff',
+                  stroke: updates.style?.labelBorder || '#000000',
+                  strokeWidth: 1,
+                  rx: 3,
+                  ry: 3,
+                },
               },
-              body: {
-                fill: updates.style?.labelBackground || '#ffffff',
-                stroke: updates.style?.labelBorder || '#000000',
-                strokeWidth: 1,
-                rx: 3,
-                ry: 3
-              }
-            }
-          }]);
+            },
+          ]);
         } else {
           // Remove label
           edge.setLabels([]);
@@ -241,9 +250,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
             const error = `New source node not found: ${updates.sourceNodeId}`;
             return [this.createFailureResult(operation, error)];
           }
-          edge.setSource({ 
-            cell: updates.sourceNodeId, 
-            port: updates.sourcePort || source.port 
+          edge.setSource({
+            cell: updates.sourceNodeId,
+            port: updates.sourcePort || source.port,
           });
           changedProperties.push('source');
         }
@@ -254,9 +263,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
             const error = `New target node not found: ${updates.targetNodeId}`;
             return [this.createFailureResult(operation, error)];
           }
-          edge.setTarget({ 
-            cell: updates.targetNodeId, 
-            port: updates.targetPort || target.port 
+          edge.setTarget({
+            cell: updates.targetNodeId,
+            port: updates.targetPort || target.port,
           });
           changedProperties.push('target');
         }
@@ -270,29 +279,30 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
       this.logger.debug('Edge updated successfully', {
         edgeId,
-        changedProperties
+        changedProperties,
       });
 
-      return [this.createSuccessResult(
-        operation,
-        [edgeId],
-        {
+      return [
+        this.createSuccessResult(operation, [edgeId], {
           edgeId,
           changedProperties,
-          updates
-        }
-      )];
-
+          updates,
+        }),
+      ];
     } catch (error) {
       const errorMessage = `Failed to update edge: ${String(error)}`;
-      this.logger.error(errorMessage, { operationId: operation.id, edgeId: operation.edgeId, error });
+      this.logger.error(errorMessage, {
+        operationId: operation.id,
+        edgeId: operation.edgeId,
+        error,
+      });
       return [this.createFailureResult(operation, errorMessage, [operation.edgeId])];
     }
   }
 
   private executeDeleteEdge(
-    operation: DeleteEdgeOperation, 
-    context: OperationContext
+    operation: DeleteEdgeOperation,
+    context: OperationContext,
   ): Observable<OperationResult> {
     try {
       const graph = context.graph;
@@ -313,7 +323,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         target: edge.getTarget(),
         attrs: edge.getAttrs(),
         labels: edge.getLabels(),
-        data: edge.getData()
+        data: edge.getData(),
       };
 
       // Remove the edge
@@ -321,20 +331,23 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
       this.logger.debug('Edge deleted successfully', { edgeId });
 
-      return [this.createSuccessResult(
-        operation,
-        [edgeId],
-        {
+      return [
+        this.createSuccessResult(operation, [edgeId], {
           edgeId,
           deletedEdgeData: edgeData,
-          sourceNodeId: typeof edgeData.source === 'object' ? edgeData.source.cell : edgeData.source,
-          targetNodeId: typeof edgeData.target === 'object' ? edgeData.target.cell : edgeData.target
-        }
-      )];
-
+          sourceNodeId:
+            typeof edgeData.source === 'object' ? edgeData.source.cell : edgeData.source,
+          targetNodeId:
+            typeof edgeData.target === 'object' ? edgeData.target.cell : edgeData.target,
+        }),
+      ];
     } catch (error) {
       const errorMessage = `Failed to delete edge: ${String(error)}`;
-      this.logger.error(errorMessage, { operationId: operation.id, edgeId: operation.edgeId, error });
+      this.logger.error(errorMessage, {
+        operationId: operation.id,
+        edgeId: operation.edgeId,
+        error,
+      });
       return [this.createFailureResult(operation, errorMessage, [operation.edgeId])];
     }
   }

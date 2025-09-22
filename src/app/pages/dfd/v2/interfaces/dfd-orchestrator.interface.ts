@@ -66,50 +66,50 @@ export interface IDfdOrchestrator {
   initialize(params: DfdInitializationParams): Observable<boolean>;
   destroy(): Observable<void>;
   reset(): Observable<void>;
-  
+
   // Core operations - unified interface for all graph operations
   executeOperation(operation: GraphOperation): Observable<OperationResult>;
   executeBatch(operations: GraphOperation[]): Observable<OperationResult[]>;
-  
+
   // High-level user actions
   addNode(nodeType: string, position?: { x: number; y: number }): Observable<OperationResult>;
   deleteSelectedCells(): Observable<OperationResult>;
   duplicateSelectedCells(): Observable<OperationResult>;
-  
+
   // Persistence operations
   saveManually(): Observable<SaveResult>;
   loadDiagram(force?: boolean): Observable<LoadResult>;
   exportDiagram(format: 'png' | 'jpeg' | 'svg'): Observable<Blob>;
-  
+
   // History operations
   undo(): Observable<OperationResult>;
   redo(): Observable<OperationResult>;
   canUndo(): boolean;
   canRedo(): boolean;
-  
+
   // Selection operations
   selectAll(): void;
   clearSelection(): void;
   getSelectedCells(): string[];
-  
+
   // Collaboration operations
   startCollaboration(): Observable<boolean>;
   stopCollaboration(): Observable<boolean>;
   requestPresenterRole(): Observable<boolean>;
-  
+
   // State management
   getState(): DfdState;
   readonly state$: Observable<DfdState>;
-  
-  // Auto-save management  
+
+  // Auto-save management
   getAutoSaveState(): AutoSaveState;
   enableAutoSave(): void;
   disableAutoSave(): void;
-  
+
   // Configuration
   setReadOnly(readOnly: boolean): void;
   setCollaborationEnabled(enabled: boolean): Observable<void>;
-  
+
   // Observables for monitoring
   readonly operationCompleted$: Observable<OperationResult>;
   readonly saveCompleted$: Observable<SaveResult>;
@@ -117,14 +117,14 @@ export interface IDfdOrchestrator {
   readonly collaborationStateChanged$: Observable<boolean>;
   readonly selectionChanged$: Observable<string[]>;
   readonly error$: Observable<string>;
-  
+
   // Statistics and monitoring
   getStats(): DfdOperationStats;
   resetStats(): void;
-  
+
   // Graph access (for advanced use cases)
   getGraph(): Graph | null;
-  
+
   // Event handling
   onWindowResize(): void;
   onKeyDown(event: KeyboardEvent): void;

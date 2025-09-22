@@ -13,7 +13,7 @@ import {
   GraphOperation,
   OperationResult,
   OperationContext,
-  BatchOperation
+  BatchOperation,
 } from '../../types/graph-operation.types';
 
 @Injectable()
@@ -52,27 +52,29 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
         const errorMessage = `Batch operation failed: ${error}`;
         this.logger.error(errorMessage, { operationId: operation.id, error });
         return of(this.createFailureResult(operation, errorMessage));
-      })
+      }),
     );
   }
 
   private executeBatchOperations(
-    batchOperation: BatchOperation, 
-    context: OperationContext
+    batchOperation: BatchOperation,
+    context: OperationContext,
   ): Observable<OperationResult> {
     const { operations } = batchOperation;
 
     if (operations.length === 0) {
-      return of(this.createSuccessResult(batchOperation, [], { 
-        individualResults: [],
-        operationCount: 0 
-      }));
+      return of(
+        this.createSuccessResult(batchOperation, [], {
+          individualResults: [],
+          operationCount: 0,
+        }),
+      );
     }
 
     this.logger.debug('Executing batch operation', {
       batchId: batchOperation.id,
       operationCount: operations.length,
-      operationTypes: operations.map(op => op.type)
+      operationTypes: operations.map(op => op.type),
     });
 
     // Execute all operations in parallel
@@ -84,19 +86,19 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
         // If any operation fails, we need to handle rollback
         this.logger.error('Batch operation failed, may need rollback', {
           batchId: batchOperation.id,
-          error: error.message || String(error)
+          error: error.message || String(error),
         });
         throw error;
-      })
+      }),
     );
   }
 
   private executeIndividualOperation(
-    operation: GraphOperation, 
-    context: OperationContext
+    operation: GraphOperation,
+    context: OperationContext,
   ): Observable<OperationResult> {
     const executor = this._individualExecutors.get(operation.type);
-    
+
     if (!executor) {
       const error = `No executor found for operation type: ${operation.type}`;
       this.logger.warn(error, { operationId: operation.id, operationType: operation.type });
@@ -106,23 +108,23 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
     return executor.execute(operation, context).pipe(
       catchError(error => {
         const errorMessage = `Individual operation failed in batch: ${error}`;
-        this.logger.error(errorMessage, { 
-          operationId: operation.id, 
+        this.logger.error(errorMessage, {
+          operationId: operation.id,
           operationType: operation.type,
-          error 
+          error,
         });
         return of(this.createFailureResult(operation, errorMessage));
-      })
+      }),
     );
   }
 
   private createBatchResult(
-    batchOperation: BatchOperation, 
-    individualResults: OperationResult[]
+    batchOperation: BatchOperation,
+    individualResults: OperationResult[],
   ): OperationResult {
     const successfulResults = individualResults.filter(r => r.success);
     const failedResults = individualResults.filter(r => !r.success);
-    
+
     const allAffectedCellIds = new Set<string>();
     individualResults.forEach(result => {
       result.affectedCellIds.forEach(id => allAffectedCellIds.add(id));
@@ -138,30 +140,26 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
       failedOperations: failedResults.map(r => ({
         operationId: r.operationId,
         operationType: r.operationType,
-        error: r.error
-      }))
+        error: r.error,
+      })),
     };
 
     if (success) {
       this.logger.debug('Batch operation completed successfully', {
         batchId: batchOperation.id,
         operationCount: batchOperation.operations.length,
-        affectedCellsCount: allAffectedCellIds.size
+        affectedCellsCount: allAffectedCellIds.size,
       });
 
-      return this.createSuccessResult(
-        batchOperation,
-        Array.from(allAffectedCellIds),
-        metadata
-      );
+      return this.createSuccessResult(batchOperation, Array.from(allAffectedCellIds), metadata);
     } else {
       const error = `Batch operation partially failed: ${failedResults.length}/${batchOperation.operations.length} operations failed`;
-      
+
       this.logger.warn('Batch operation completed with failures', {
         batchId: batchOperation.id,
         operationCount: batchOperation.operations.length,
         failedCount: failedResults.length,
-        failedOperationTypes: failedResults.map(r => r.operationType)
+        failedOperationTypes: failedResults.map(r => r.operationType),
       });
 
       return {
@@ -171,7 +169,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
         affectedCellIds: Array.from(allAffectedCellIds),
         timestamp: Date.now(),
         error,
-        metadata
+        metadata,
       };
     }
   }

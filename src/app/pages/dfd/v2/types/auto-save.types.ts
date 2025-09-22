@@ -8,7 +8,7 @@ import { GraphOperation } from './graph-operation.types';
 /**
  * Auto-save trigger types
  */
-export type AutoSaveTrigger = 
+export type AutoSaveTrigger =
   | 'history-modified'
   | 'metadata-changed'
   | 'threat-changed'
@@ -19,17 +19,17 @@ export type AutoSaveTrigger =
 /**
  * Auto-save policy modes
  */
-export type AutoSaveMode = 
-  | 'aggressive'     // Save immediately on any change
-  | 'normal'         // Save after debounce period
-  | 'conservative'   // Save only on significant changes
-  | 'manual'         // Disable auto-save
+export type AutoSaveMode =
+  | 'aggressive' // Save immediately on any change
+  | 'normal' // Save after debounce period
+  | 'conservative' // Save only on significant changes
+  | 'manual' // Disable auto-save
   | 'collaboration'; // Optimized for collaborative editing
 
 /**
  * Auto-save evaluation result
  */
-export type AutoSaveDecision = 
+export type AutoSaveDecision =
   | 'save-immediately'
   | 'save-debounced'
   | 'save-batched'
@@ -41,11 +41,11 @@ export type AutoSaveDecision =
 /**
  * Change significance levels
  */
-export type ChangeSignificance = 
-  | 'critical'      // Data loss prevention (should always save)
-  | 'significant'   // Important changes (should save with debounce)
-  | 'minor'         // Small changes (batch with others)
-  | 'cosmetic';     // Visual only (usually skip)
+export type ChangeSignificance =
+  | 'critical' // Data loss prevention (should always save)
+  | 'significant' // Important changes (should save with debounce)
+  | 'minor' // Small changes (batch with others)
+  | 'cosmetic'; // Visual only (usually skip)
 
 /**
  * Auto-save trigger event
@@ -200,7 +200,11 @@ export interface ChangeAnalysis {
  * Interface for auto-save decision makers
  */
 export interface SaveDecisionMaker {
-  decide(event: AutoSaveTriggerEvent, analysis: ChangeAnalysis, policy: AutoSavePolicy): AutoSaveDecision;
+  decide(
+    event: AutoSaveTriggerEvent,
+    analysis: ChangeAnalysis,
+    policy: AutoSavePolicy,
+  ): AutoSaveDecision;
   readonly priority: number;
 }
 
@@ -220,7 +224,7 @@ export interface AutoSaveContext {
 /**
  * Auto-save event types
  */
-export type AutoSaveEventType = 
+export type AutoSaveEventType =
   | 'trigger-received'
   | 'analysis-completed'
   | 'decision-made'
