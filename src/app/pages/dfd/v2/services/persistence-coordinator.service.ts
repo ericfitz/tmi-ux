@@ -13,6 +13,8 @@ import { Observable, Subject, BehaviorSubject, of, throwError, forkJoin } from '
 import { catchError, timeout, tap } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { ServerConnectionService } from '../../../../core/services/server-connection.service';
+import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 
 // Simple interfaces that match what the tests expect
 export interface SaveOperation {
@@ -56,6 +58,12 @@ export interface SyncResult {
   readonly conflicts: number;
   readonly timestamp: number;
   readonly error?: string;
+}
+
+export interface StrategySelectionContext {
+  readonly collaborationIntent: boolean;  // from joinCollaboration=true query param
+  readonly allowOfflineMode: boolean;     // user preference  
+  readonly fastTimeout?: boolean;         // for quick failure detection
 }
 
 export interface PersistenceStrategy {
@@ -122,7 +130,11 @@ export class PersistenceCoordinator {
     cacheMisses: 0,
   };
 
-  constructor(private readonly logger: LoggerService) {
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly serverConnection: ServerConnectionService,
+    private readonly webSocketAdapter: WebSocketAdapter,
+  ) {
     this.logger.debug('PersistenceCoordinator initialized');
   }
 
@@ -176,7 +188,7 @@ export class PersistenceCoordinator {
   /**
    * Save Operations
    */
-  save(operation: SaveOperation): Observable<SaveResult> {
+  save(operation: SaveOperation, context?: StrategySelectionContext): Observable<SaveResult> {
     this.logger.debug('Starting save operation', {
       diagramId: operation.diagramId,
       strategyType: operation.strategyType,
@@ -193,7 +205,7 @@ export class PersistenceCoordinator {
     });
 
     // Find appropriate strategy
-    const strategy = this._findSaveStrategy(operation);
+    const strategy = this._findSaveStrategy(operation, context);
     if (!strategy) {
       const error = `Persistence strategy '${operation.strategyType || 'default'}' not found`;
       this.logger.error(error, { operation });
@@ -330,7 +342,7 @@ export class PersistenceCoordinator {
   /**
    * Load Operations
    */
-  load(operation: LoadOperation): Observable<LoadResult> {
+  load(operation: LoadOperation, context?: StrategySelectionContext): Observable<LoadResult> {
     this.logger.debug('Starting load operation', {
       diagramId: operation.diagramId,
       forceRefresh: operation.forceRefresh,
@@ -362,7 +374,7 @@ export class PersistenceCoordinator {
     }
 
     // Find appropriate strategy for loading
-    const strategy = this._findLoadStrategy();
+    const strategy = this._findLoadStrategy(context);
     if (!strategy) {
       const error = 'No suitable persistence strategy found for loading';
       this.logger.error(error, { operation });
@@ -624,25 +636,118 @@ export class PersistenceCoordinator {
   /**
    * Private helper methods
    */
-  private _findSaveStrategy(operation: SaveOperation): PersistenceStrategy | null {
+  private _findSaveStrategy(operation: SaveOperation, context: StrategySelectionContext = { collaborationIntent: false, allowOfflineMode: true }): PersistenceStrategy | null {
     // If specific strategy requested, try to use it
     if (operation.strategyType) {
       if (this._strategies.has(operation.strategyType)) {
-        return this._strategies.get(operation.strategyType)!;
+        const strategy = this._strategies.get(operation.strategyType)!;
+        // Check if the requested strategy is available
+        if (this._isStrategyAvailable(strategy, context)) {
+          return strategy;
+        }
+        // Requested strategy is not available, fall back to automatic selection
+        this.logger.warn('Requested strategy not available, falling back', {
+          requestedStrategy: operation.strategyType,
+          context
+        });
       } else {
         // Specific strategy was requested but not found
+        this.logger.error('Requested strategy not found', { 
+          requestedStrategy: operation.strategyType 
+        });
         return null;
       }
     }
 
-    // Otherwise use highest priority strategy
+    // Special handling for collaboration intent
+    if (context.collaborationIntent) {
+      const strategies = this.getStrategies();
+      const wsStrategy = strategies.find(s => s.type === 'websocket');
+      if (wsStrategy && this._isStrategyAvailable(wsStrategy, context)) {
+        this.logger.debug('Using WebSocket strategy for collaboration save', { context });
+        return wsStrategy;
+      }
+      // For collaboration intent, don't fall back to local strategies
+      this.logger.warn('Collaboration save requires WebSocket connection', { 
+        webSocketAvailable: wsStrategy ? this._isStrategyAvailable(wsStrategy, context) : false,
+        context 
+      });
+      return null;
+    }
+
+    // Find the first available strategy by priority
     const strategies = this.getStrategies();
-    return strategies[0] || null;
+    for (const strategy of strategies) {
+      if (this._isStrategyAvailable(strategy, context)) {
+        this.logger.debug('Selected available strategy for save', { 
+          strategyType: strategy.type, 
+          priority: strategy.priority,
+          context 
+        });
+        return strategy;
+      }
+    }
+
+    // Final fallback to cache-only if allowed
+    if (context.allowOfflineMode) {
+      const cacheStrategy = strategies.find(s => s.type === 'cache-only');
+      if (cacheStrategy) {
+        this.logger.info('Falling back to cache-only strategy for save', { context });
+        return cacheStrategy;
+      }
+    }
+
+    this.logger.error('No suitable persistence strategy found for save', { 
+      availableStrategies: strategies.map(s => s.type),
+      context 
+    });
+    return null;
   }
 
-  private _findLoadStrategy(): PersistenceStrategy | null {
+  private _findLoadStrategy(context: StrategySelectionContext = { collaborationIntent: false, allowOfflineMode: true }): PersistenceStrategy | null {
     const strategies = this.getStrategies();
-    return strategies[0] || null;
+    
+    // Special handling for collaboration intent
+    if (context.collaborationIntent) {
+      const wsStrategy = strategies.find(s => s.type === 'websocket');
+      if (wsStrategy && this._isStrategyAvailable(wsStrategy, context)) {
+        this.logger.debug('Using WebSocket strategy for collaboration', { context });
+        return wsStrategy;
+      }
+      // For collaboration intent, don't fall back to local strategies
+      this.logger.warn('Collaboration requires WebSocket connection', { 
+        webSocketAvailable: wsStrategy ? this._isStrategyAvailable(wsStrategy, context) : false,
+        context 
+      });
+      return null;
+    }
+    
+    // Normal priority-based selection with availability check
+    for (const strategy of strategies) {
+      if (this._isStrategyAvailable(strategy, context)) {
+        this.logger.debug('Selected available strategy', { 
+          strategyType: strategy.type, 
+          priority: strategy.priority,
+          context 
+        });
+        return strategy;
+      }
+    }
+    
+    // Final fallback to cache-only if allowed
+    if (context.allowOfflineMode) {
+      const cacheStrategy = strategies.find(s => s.type === 'cache-only');
+      if (cacheStrategy) {
+        this.logger.info('Falling back to cache-only strategy', { context });
+        return cacheStrategy;
+      }
+    }
+    
+    this.logger.error('No suitable persistence strategy found', { 
+      availableStrategies: strategies.map(s => s.type),
+      context 
+    });
+    return null;
   }
 
   private _findSyncStrategy(_operation: SyncOperation): PersistenceStrategy | null {
@@ -654,6 +759,37 @@ export class PersistenceCoordinator {
     // Otherwise use first available strategy (sync support will be checked later)
     const strategies = this.getStrategies();
     return strategies[0] || null;
+  }
+
+  /**
+   * Check if a strategy is available for use
+   */
+  private _isStrategyAvailable(strategy: PersistenceStrategy, context: StrategySelectionContext): boolean {
+    try {
+      switch (strategy.type) {
+        case 'websocket':
+          // Use existing WebSocketAdapter status
+          return this.webSocketAdapter.isConnected;
+        
+        case 'rest':
+          // Use existing cached server status from ServerConnectionService
+          return this.serverConnection.currentDetailedStatus.isServerReachable;
+        
+        case 'cache-only':
+          // Always available for offline mode
+          return true;
+        
+        default:
+          this.logger.warn('Unknown strategy type', { strategyType: strategy.type });
+          return false;
+      }
+    } catch (error) {
+      this.logger.warn('Error checking strategy availability', {
+        strategyType: strategy.type,
+        error,
+      });
+      return false;
+    }
   }
 
   /**

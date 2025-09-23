@@ -102,36 +102,37 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
             strokeDasharray: (edgeInfo as any).style?.strokeDasharray || undefined,
           },
         },
-        labels: (edgeInfo as any).label || edgeInfo.labels
-          ? [
-              {
-                markup: [
-                  {
-                    tagName: 'rect',
-                    selector: 'body',
-                  },
-                  {
-                    tagName: 'text',
-                    selector: 'label',
-                  },
-                ],
-                attrs: {
-                  label: {
-                    text: (edgeInfo as any).label || '',
-                    fontSize: (edgeInfo as any).style?.fontSize || 12,
-                    fill: (edgeInfo as any).style?.textColor || '#000000',
-                  },
-                  body: {
-                    fill: (edgeInfo as any).style?.labelBackground || '#ffffff',
-                    stroke: (edgeInfo as any).style?.labelBorder || '#000000',
-                    strokeWidth: 1,
-                    rx: 3,
-                    ry: 3,
+        labels:
+          (edgeInfo as any).label || edgeInfo.labels
+            ? [
+                {
+                  markup: [
+                    {
+                      tagName: 'rect',
+                      selector: 'body',
+                    },
+                    {
+                      tagName: 'text',
+                      selector: 'label',
+                    },
+                  ],
+                  attrs: {
+                    label: {
+                      text: (edgeInfo as any).label || '',
+                      fontSize: (edgeInfo as any).style?.fontSize || 12,
+                      fill: (edgeInfo as any).style?.textColor || '#000000',
+                    },
+                    body: {
+                      fill: (edgeInfo as any).style?.labelBackground || '#ffffff',
+                      stroke: (edgeInfo as any).style?.labelBorder || '#000000',
+                      strokeWidth: 1,
+                      rx: 3,
+                      ry: 3,
+                    },
                   },
                 },
-              },
-            ]
-          : [],
+              ]
+            : [],
         data: {
           ...(edgeInfo as any).properties,
           edgeType: (edgeInfo as any).edgeType || 'dataflow',

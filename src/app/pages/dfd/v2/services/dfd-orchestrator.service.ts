@@ -16,8 +16,11 @@ import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { GraphOperationManager } from './graph-operation-manager.service';
-import { PersistenceCoordinator } from './persistence-coordinator.service';
+import { PersistenceCoordinator, StrategySelectionContext } from './persistence-coordinator.service';
 import { AutoSaveManager } from './auto-save-manager.service';
+import { RestPersistenceStrategy } from './strategies/rest-persistence-strategy.service';
+import { WebSocketPersistenceStrategy } from './strategies/websocket-persistence-strategy.service';
+import { CacheOnlyPersistenceStrategy } from './strategies/cache-only-persistence-strategy.service';
 import {
   GraphOperation,
   OperationContext,
@@ -34,6 +37,7 @@ export interface DfdInitializationParams {
   readonly collaborationEnabled: boolean;
   readonly readOnly: boolean;
   readonly autoSaveMode: 'aggressive' | 'normal' | 'conservative' | 'manual';
+  readonly joinCollaboration?: boolean;
 }
 
 export interface DfdState {
@@ -74,6 +78,7 @@ export class DfdOrchestrator {
   private _initParams: DfdInitializationParams | null = null;
   private _operationContext: OperationContext | null = null;
   private _startTime = Date.now();
+  private _collaborationIntent = false;
 
   // Statistics tracking
   private _stats: DfdStats = {
@@ -93,9 +98,13 @@ export class DfdOrchestrator {
     private readonly graphOperationManager: GraphOperationManager,
     private readonly persistenceCoordinator: PersistenceCoordinator,
     private readonly autoSaveManager: AutoSaveManager,
+    private readonly restStrategy: RestPersistenceStrategy,
+    private readonly webSocketStrategy: WebSocketPersistenceStrategy,
+    private readonly cacheOnlyStrategy: CacheOnlyPersistenceStrategy,
   ) {
     this.logger.debug('DfdOrchestrator initialized');
     this._setupEventIntegration();
+    this._setupPersistenceStrategies();
   }
 
   /**
@@ -120,6 +129,7 @@ export class DfdOrchestrator {
     });
 
     this._initParams = params;
+    this._collaborationIntent = params.joinCollaboration || false;
 
     return this._performInitialization(params).pipe(
       tap(() => {
@@ -284,7 +294,7 @@ export class DfdOrchestrator {
       forceRefresh: false,
     };
 
-    return this.persistenceCoordinator.load(loadOperation).pipe(
+    return this.persistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       map(result => {
         if (result.success && result.data) {
           this._loadGraphData(result.data);
@@ -649,7 +659,7 @@ export class DfdOrchestrator {
       forceRefresh: false,
     };
 
-    return this.persistenceCoordinator.load(loadOperation).pipe(
+    return this.persistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       tap(result => {
         if (result.success && result.data) {
           this._loadGraphData(result.data);
@@ -822,6 +832,23 @@ export class DfdOrchestrator {
     });
   }
 
+  private _setupPersistenceStrategies(): void {
+    this.logger.debug('Setting up persistence strategies');
+
+    // Register all available persistence strategies
+    this.persistenceCoordinator.addStrategy(this.restStrategy);
+    this.persistenceCoordinator.addStrategy(this.webSocketStrategy);
+    this.persistenceCoordinator.addStrategy(this.cacheOnlyStrategy);
+
+    // Set fallback strategy to REST API
+    this.persistenceCoordinator.setFallbackStrategy('rest');
+
+    this.logger.debug('Persistence strategies registered', {
+      strategies: this.persistenceCoordinator.getStrategies().map(s => s.type),
+      fallbackStrategy: 'rest',
+    });
+  }
+
   private _triggerAutoSave(operation: GraphOperation, result: OperationResult): void {
     if (!this._initParams || !this._graph) {
       return;
@@ -958,6 +985,17 @@ export class DfdOrchestrator {
       hasUnsavedChanges: false,
       lastSaved: null,
       error: null,
+    };
+  }
+
+  /**
+   * Create strategy selection context based on current state
+   */
+  private _createStrategyContext(): StrategySelectionContext {
+    return {
+      collaborationIntent: this._collaborationIntent,
+      allowOfflineMode: true, // Allow offline fallback unless explicitly disabled
+      fastTimeout: this._collaborationIntent, // Use faster timeouts for collaboration
     };
   }
 }

@@ -105,6 +105,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Route parameters
   threatModelId: string | null = null;
   dfdId: string | null = null;
+  joinCollaboration = false;
 
   // Diagram data
   diagramName: string | null = null;
@@ -150,10 +151,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
     this.dfdId = this.route.snapshot.paramMap.get('dfdId');
+    
+    // Get query parameters for collaboration intent
+    this.joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration') === 'true';
 
     this.logger.info('DFD Component v2 route parameters extracted', {
       threatModelId: this.threatModelId,
       dfdId: this.dfdId,
+      joinCollaboration: this.joinCollaboration,
     });
 
     // Set collaboration context if we have the required parameters
@@ -187,13 +192,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.logger.info('DfdComponent v2 ngAfterViewInit called');
 
-    // Initialize the DFD Orchestrator with the graph container
-    this.dfdOrchestrator.initialize(this.graphContainer.nativeElement);
+    // Initialize the DFD Orchestrator with proper initialization parameters
+    const initParams = {
+      diagramId: this.dfdId || 'new-diagram',
+      threatModelId: this.threatModelId || 'unknown',
+      containerElement: this.graphContainer.nativeElement,
+      collaborationEnabled: true,
+      readOnly: this.isReadOnlyMode,
+      autoSaveMode: this.isReadOnlyMode ? ('manual' as const) : ('normal' as const),
+      joinCollaboration: this.joinCollaboration,
+    };
 
-    // Load diagram data if we have a dfdId
-    if (this.dfdId) {
-      this.loadDiagramData(this.dfdId);
-    }
+    this.dfdOrchestrator.initialize(initParams).subscribe({
+      next: success => {
+        if (success) {
+          this.logger.info('DFD Orchestrator initialized successfully');
+
+          // Load diagram data if we have a dfdId
+          if (this.dfdId) {
+            this.loadDiagramData(this.dfdId);
+          }
+        } else {
+          this.logger.error('Failed to initialize DFD Orchestrator');
+        }
+      },
+      error: error => {
+        this.logger.error('Error initializing DFD Orchestrator', { error });
+      },
+    });
 
     // Subscribe to DFD Orchestrator events
     this.setupOrchestratorSubscriptions();
