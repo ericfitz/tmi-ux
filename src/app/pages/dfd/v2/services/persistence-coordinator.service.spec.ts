@@ -137,7 +137,7 @@ describe('PersistenceCoordinator', () => {
     it('should execute save operation successfully', () => {
       mockStrategy.save.mockReturnValue(of(expectedResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(saveOperation).subscribe({
           next: (result: SaveResult) => {
             expect(result.success).toBe(true);
@@ -162,7 +162,7 @@ describe('PersistenceCoordinator', () => {
 
       mockStrategy.save.mockReturnValue(of(errorResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(saveOperation).subscribe({
           next: (result: SaveResult) => {
             expect(result.success).toBe(false);
@@ -177,7 +177,7 @@ describe('PersistenceCoordinator', () => {
     it('should emit save status events', () => {
       mockStrategy.save.mockReturnValue(of(expectedResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         // Subscribe to save status
         service.saveStatus$.subscribe(status => {
           if (status.status === 'saving') {
@@ -196,7 +196,7 @@ describe('PersistenceCoordinator', () => {
         strategyType: 'nonexistent-strategy',
       };
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(invalidOperation).subscribe({
           next: () => reject(new Error('Should have failed')),
           error: error => {
@@ -210,7 +210,7 @@ describe('PersistenceCoordinator', () => {
     it('should update cache on successful save', () => {
       mockStrategy.save.mockReturnValue(of(expectedResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(saveOperation).subscribe({
           next: () => {
             // Check cache was updated
@@ -251,7 +251,7 @@ describe('PersistenceCoordinator', () => {
     it('should execute load operation successfully', () => {
       mockStrategy.load.mockReturnValue(of(expectedResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.load(loadOperation).subscribe({
           next: (result: LoadResult) => {
             expect(result.success).toBe(true);
@@ -282,7 +282,7 @@ describe('PersistenceCoordinator', () => {
         }),
       );
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(saveOp).subscribe(() => {
           // Now try to load with cache enabled
           const cachedLoadOp: LoadOperation = {
@@ -313,7 +313,7 @@ describe('PersistenceCoordinator', () => {
         useCache: false,
       };
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.load(noCacheLoadOp).subscribe({
           next: (result: LoadResult) => {
             expect(result.success).toBe(true);
@@ -338,7 +338,7 @@ describe('PersistenceCoordinator', () => {
 
       mockStrategy.load.mockReturnValue(of(errorResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.load(loadOperation).subscribe({
           next: (result: LoadResult) => {
             expect(result.success).toBe(false);
@@ -377,7 +377,7 @@ describe('PersistenceCoordinator', () => {
     it('should execute sync operation successfully', () => {
       mockStrategy.sync.mockReturnValue(of(expectedResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.sync(syncOperation).subscribe({
           next: (result: SyncResult) => {
             expect(result.success).toBe(true);
@@ -403,7 +403,7 @@ describe('PersistenceCoordinator', () => {
 
       mockStrategy.sync.mockReturnValue(of(errorResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.sync(syncOperation).subscribe({
           next: (result: SyncResult) => {
             expect(result.success).toBe(false);
@@ -418,7 +418,7 @@ describe('PersistenceCoordinator', () => {
     it('should handle strategy without sync support', () => {
       mockStrategy.sync = undefined as any;
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.sync(syncOperation).subscribe({
           next: () => reject(new Error('Should have failed')),
           error: error => {
@@ -469,7 +469,7 @@ describe('PersistenceCoordinator', () => {
           }),
         );
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.saveBatch(operations).subscribe({
           next: (results: SaveResult[]) => {
             expect(results).toHaveLength(2);
@@ -519,7 +519,7 @@ describe('PersistenceCoordinator', () => {
           }),
         );
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.loadBatch(operations).subscribe({
           next: (results: LoadResult[]) => {
             expect(results).toHaveLength(2);
@@ -534,7 +534,7 @@ describe('PersistenceCoordinator', () => {
     });
 
     it('should handle empty batch operations', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.saveBatch([]).subscribe({
           next: (results: SaveResult[]) => {
             expect(results).toHaveLength(0);
@@ -548,7 +548,7 @@ describe('PersistenceCoordinator', () => {
 
   describe('Cache Management', () => {
     it('should return empty cache status for non-existent diagram', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.getCacheStatus('nonexistent-diagram').subscribe({
           next: (status: CacheStatus) => {
             expect(status.status).toBe('empty');
@@ -561,7 +561,7 @@ describe('PersistenceCoordinator', () => {
     });
 
     it('should clear cache for specific diagram', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.clearCache('test-diagram').subscribe({
           next: () => {
             // Should complete without error
@@ -573,7 +573,7 @@ describe('PersistenceCoordinator', () => {
     });
 
     it('should clear all cache entries', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.clearCache().subscribe({
           next: () => {
             // Should complete without error
@@ -585,7 +585,7 @@ describe('PersistenceCoordinator', () => {
     });
 
     it('should invalidate cache entries', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.invalidateCache('test-diagram').subscribe({
           next: () => {
             // Should complete without error
@@ -597,7 +597,7 @@ describe('PersistenceCoordinator', () => {
     });
 
     it('should return null for non-existent cache entry', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.getCacheEntry('nonexistent-diagram').subscribe({
           next: entry => {
             expect(entry).toBeNull();
@@ -656,7 +656,7 @@ describe('PersistenceCoordinator', () => {
         }),
       );
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(saveOperation).subscribe({
           next: () => {
             const stats = service.getStats();
@@ -682,7 +682,7 @@ describe('PersistenceCoordinator', () => {
     });
 
     it('should provide health status', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.getHealthStatus().subscribe({
           next: health => {
             expect(health.overall).toBeDefined();
@@ -729,7 +729,7 @@ describe('PersistenceCoordinator', () => {
       // Fallback succeeds
       fallbackStrategy.save.mockReturnValue(of(successResult));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.save(saveOperation).subscribe({
           next: (result: SaveResult) => {
             expect(result.success).toBe(true);

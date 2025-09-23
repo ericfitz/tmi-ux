@@ -15,6 +15,9 @@ import { catchError, timeout, tap, finalize } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeOperationExecutor } from './executors/node-operation-executor';
+import { EdgeOperationExecutor } from './executors/edge-operation-executor';
+import { BatchOperationExecutor } from './executors/batch-operation-executor';
+import { LoadDiagramExecutor } from './executors/load-diagram-executor';
 import {
   GraphOperation,
   OperationContext,
@@ -68,12 +71,29 @@ export class GraphOperationManager implements IGraphOperationManager {
    * Initialize built-in executors
    */
   private _initializeBuiltInExecutors(): void {
-    // Register the NodeOperationExecutor
+    // Register all built-in executors
     const nodeExecutor = new NodeOperationExecutor(this.logger);
+    const edgeExecutor = new EdgeOperationExecutor(this.logger);
+    const batchExecutor = new BatchOperationExecutor(this.logger);
+    const loadDiagramExecutor = new LoadDiagramExecutor(this.logger);
+
     this.addExecutor(nodeExecutor);
+    this.addExecutor(edgeExecutor);
+    this.addExecutor(batchExecutor);
+    this.addExecutor(loadDiagramExecutor);
+
+    // Register individual executors with the batch executor for delegation
+    batchExecutor.registerExecutor('create-node', nodeExecutor);
+    batchExecutor.registerExecutor('update-node', nodeExecutor);
+    batchExecutor.registerExecutor('delete-node', nodeExecutor);
+    batchExecutor.registerExecutor('create-edge', edgeExecutor);
+    batchExecutor.registerExecutor('update-edge', edgeExecutor);
+    batchExecutor.registerExecutor('delete-edge', edgeExecutor);
+    batchExecutor.registerExecutor('load-diagram', loadDiagramExecutor);
 
     this.logger.debug('Built-in executors initialized', {
       executorCount: this._executors.size,
+      executorTypes: ['node', 'edge', 'batch', 'load-diagram'],
     });
   }
 

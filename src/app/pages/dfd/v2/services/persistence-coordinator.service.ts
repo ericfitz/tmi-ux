@@ -661,7 +661,7 @@ export class PersistenceCoordinator {
     return strategies[0] || null;
   }
 
-  private _findSyncStrategy(operation: SyncOperation): PersistenceStrategy | null {
+  private _findSyncStrategy(_operation: SyncOperation): PersistenceStrategy | null {
     // Use fallback strategy if set
     if (this._fallbackStrategy && this._strategies.has(this._fallbackStrategy)) {
       return this._strategies.get(this._fallbackStrategy)!;

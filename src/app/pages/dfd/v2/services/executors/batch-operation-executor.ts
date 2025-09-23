@@ -13,6 +13,7 @@ import {
   GraphOperation,
   OperationResult,
   OperationContext,
+  OperationExecutor,
   BatchOperation,
 } from '../../types/graph-operation.types';
 
@@ -20,7 +21,7 @@ import {
 export class BatchOperationExecutor extends BaseOperationExecutor {
   readonly priority = 50; // Lower priority to ensure individual executors are tried first
 
-  private _individualExecutors: Map<string, BaseOperationExecutor> = new Map();
+  private _individualExecutors: Map<string, OperationExecutor> = new Map();
 
   constructor(logger: LoggerService) {
     super(logger);
@@ -33,7 +34,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
   /**
    * Register individual executors for use in batch processing
    */
-  registerExecutor(operationType: string, executor: BaseOperationExecutor): void {
+  registerExecutor(operationType: string, executor: OperationExecutor): void {
     this._individualExecutors.set(operationType, executor);
     this.logger.debug('Registered executor for batch operations', { operationType });
   }

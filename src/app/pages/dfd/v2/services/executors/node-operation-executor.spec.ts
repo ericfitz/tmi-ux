@@ -113,7 +113,7 @@ describe('NodeOperationExecutor', () => {
 
               resolve();
             } catch (error) {
-              reject(error);
+              reject(new Error(String(error)));
             }
           },
           error: reject,

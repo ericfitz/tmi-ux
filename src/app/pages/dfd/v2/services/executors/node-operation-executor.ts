@@ -397,7 +397,7 @@ export class NodeOperationExecutor implements OperationExecutor {
     }
 
     // Check if position was explicitly set to undefined (invalid) vs not provided at all (valid, use defaults)
-    if (nodeData.hasOwnProperty('position') && nodeData.position === undefined) {
+    if (Object.prototype.hasOwnProperty.call(nodeData, 'position') && nodeData.position === undefined) {
       return 'position is required';
     }
 
