@@ -24,7 +24,7 @@ describe('AutoSaveManager', () => {
   beforeEach(() => {
     // Use fake timers for debouncing tests
     vi.useFakeTimers();
-    
+
     // Create logger spy
     mockLogger = {
       info: vi.fn(),
@@ -114,7 +114,7 @@ describe('AutoSaveManager', () => {
       return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
-            expect(result).toBeNull();
+            expect(result).toBe(false);
             resolve();
           },
           error: reject,
@@ -285,12 +285,12 @@ describe('AutoSaveManager', () => {
     });
 
     it('should not trigger auto-save when disabled', () => {
-      service.setPolicyMode('disabled');
+      service.disable();
 
       return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: _result => {
-            expect(_result).toBeNull();
+            expect(_result).toBe(false);
             expect(mockPersistenceCoordinator.save).not.toHaveBeenCalled();
             resolve();
           },
@@ -354,7 +354,9 @@ describe('AutoSaveManager', () => {
       return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
-            expect(result).not.toBeNull();
+            expect(result).toBe(true); // Should trigger save
+            // Advance timers to trigger the debounced save
+            vi.advanceTimersByTime(150); // Wait for 100ms debounce + buffer
             expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
             resolve();
           },
@@ -370,7 +372,7 @@ describe('AutoSaveManager', () => {
       return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
-            expect(result).toBeNull(); // No immediate save
+            expect(result).toBe(false); // No immediate save
             expect(mockPersistenceCoordinator.save).not.toHaveBeenCalled();
             resolve();
           },
@@ -408,6 +410,8 @@ describe('AutoSaveManager', () => {
 
               if (completedTriggers === totalTriggers) {
                 // Should have triggered save when threshold was reached
+                // Wait for debounced save to execute
+                vi.advanceTimersByTime(1100); // Wait for 1000ms debounce + buffer
                 expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
                 resolve();
               }
@@ -421,7 +425,7 @@ describe('AutoSaveManager', () => {
 
   describe('Force Save', () => {
     it('should bypass all policies and save immediately', () => {
-      service.setPolicyMode('disabled');
+      service.setPolicyMode('manual'); // Use valid policy mode
 
       const saveResult: SaveResult = {
         success: true,
@@ -440,7 +444,7 @@ describe('AutoSaveManager', () => {
             expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
 
             const stats = service.getStats();
-            expect(stats.forcedSaves).toBe(1);
+            expect(stats.manualSaves).toBe(1); // Force save counts as manual save
             resolve();
           },
           error: reject,

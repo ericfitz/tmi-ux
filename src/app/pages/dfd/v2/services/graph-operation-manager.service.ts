@@ -37,7 +37,10 @@ export class GraphOperationManager implements IGraphOperationManager {
   private readonly _config$ = new BehaviorSubject<OperationConfig>(DEFAULT_OPERATION_CONFIG);
   private readonly _operationCompleted$ = new Subject<OperationCompletedEvent>();
   private readonly _operationFailed$ = new Subject<{ operation: GraphOperation; error: string }>();
-  private readonly _operationValidated$ = new Subject<{ operation: GraphOperation; valid: boolean }>();
+  private readonly _operationValidated$ = new Subject<{
+    operation: GraphOperation;
+    valid: boolean;
+  }>();
   private readonly _disposed$ = new Subject<void>();
 
   private readonly _executors = new Map<string, OperationExecutor>();
@@ -132,13 +135,13 @@ export class GraphOperationManager implements IGraphOperationManager {
         };
         this._updateStats(operation, failureResult, executionTime);
         this._emitOperationCompleted(operation, failureResult, context, executionTime);
-        
+
         // Emit operation failed event
-        this._operationFailed$.next({ 
-          operation, 
-          error: error.message || 'Operation execution failed' 
+        this._operationFailed$.next({
+          operation,
+          error: error.message || 'Operation execution failed',
         });
-        
+
         return throwError(() => error);
       }),
       finalize(() => {
@@ -184,17 +187,17 @@ export class GraphOperationManager implements IGraphOperationManager {
 
     try {
       const result = validator.validate(operation, context);
-      
+
       // Emit validation event
       this._operationValidated$.next({ operation, valid: result.valid });
-      
+
       return of(result.valid);
     } catch (error) {
       this.logger.error('Validation failed', { operation, error });
-      
-      // Emit validation failed event  
+
+      // Emit validation failed event
       this._operationValidated$.next({ operation, valid: false });
-      
+
       return throwError(() => error);
     }
   }

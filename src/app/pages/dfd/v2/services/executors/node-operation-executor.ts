@@ -395,16 +395,19 @@ export class NodeOperationExecutor implements OperationExecutor {
     if (!nodeData.nodeType) {
       return 'nodeType is required';
     }
-    
+
     // Check if position was explicitly set to undefined (invalid) vs not provided at all (valid, use defaults)
     if (nodeData.hasOwnProperty('position') && nodeData.position === undefined) {
       return 'position is required';
     }
-    
-    if (nodeData.position && (nodeData.position.x === undefined || nodeData.position.y === undefined)) {
+
+    if (
+      nodeData.position &&
+      (nodeData.position.x === undefined || nodeData.position.y === undefined)
+    ) {
       return 'position must have x and y coordinates';
     }
-    
+
     if (nodeData.size && (nodeData.size.width <= 0 || nodeData.size.height <= 0)) {
       return 'size must have positive width and height';
     }

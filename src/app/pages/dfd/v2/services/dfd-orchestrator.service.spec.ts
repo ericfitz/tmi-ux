@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Subject } from 'rxjs';
 
 // Mock X6 Graph before importing DfdOrchestrator
 vi.mock('@antv/x6', () => {
@@ -18,20 +18,20 @@ vi.mock('@antv/x6', () => {
     getNodes: vi.fn().mockReturnValue([]),
     getEdges: vi.fn().mockReturnValue([]),
     getCellById: vi.fn(),
-    
+
     // Selection methods
     select: vi.fn(),
     unselect: vi.fn(),
     getSelectedCells: vi.fn().mockReturnValue([]),
-    
+
     // Export methods
     toSVG: vi.fn().mockReturnValue('<svg></svg>'),
     toPNG: vi.fn().mockReturnValue(new Blob()),
-    
+
     // Mock properties that don't exist
     selectAll: vi.fn(),
     cleanSelection: vi.fn(),
-    
+
     // Event system for integration
     on: vi.fn(),
     off: vi.fn(),
@@ -44,11 +44,7 @@ vi.mock('@antv/x6', () => {
 });
 
 import { DfdOrchestrator, DfdInitializationParams } from './dfd-orchestrator.service';
-import {
-  GraphOperation,
-  OperationResult,
-  CreateNodeOperation,
-} from '../types/graph-operation.types';
+import { OperationResult, CreateNodeOperation } from '../types/graph-operation.types';
 import { SaveResult, LoadResult } from '../types/persistence.types';
 import { AutoSaveState } from '../types/auto-save.types';
 
@@ -74,12 +70,7 @@ describe('DfdOrchestrator', () => {
       executeBatch: vi.fn(),
       validate: vi.fn(),
       canExecute: vi.fn(),
-      operationCompleted$: of({
-        operation: {} as GraphOperation,
-        result: {} as OperationResult,
-        context: {} as any,
-        executionTimeMs: 100,
-      }),
+      operationCompleted$: new Subject(),
     };
 
     mockPersistenceCoordinator = {
@@ -95,7 +86,7 @@ describe('DfdOrchestrator', () => {
       disable: vi.fn(),
       getState: vi.fn(),
       setPolicyMode: vi.fn(),
-      saveCompleted$: of({} as SaveResult),
+      saveCompleted$: new Subject(),
     };
 
     // Create mock container element
@@ -109,7 +100,7 @@ describe('DfdOrchestrator', () => {
       mockLogger,
       mockGraphOperationManager,
       mockPersistenceCoordinator,
-      mockAutoSaveManager
+      mockAutoSaveManager,
     );
   });
 
@@ -815,7 +806,7 @@ describe('DfdOrchestrator', () => {
     });
 
     it('should emit collaboration state changes', () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.collaborationStateChanged$.subscribe(collaborating => {
           expect(typeof collaborating).toBe('boolean');
           resolve();
@@ -902,7 +893,7 @@ describe('DfdOrchestrator', () => {
     it('should emit state changes', () => {
       let stateEmissions = 0;
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         service.state$.subscribe(state => {
           stateEmissions++;
 

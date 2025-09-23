@@ -20,20 +20,20 @@ vi.mock('@antv/x6', () => {
     getNodes: vi.fn().mockReturnValue([]),
     getEdges: vi.fn().mockReturnValue([]),
     getCellById: vi.fn(),
-    
+
     // Selection methods
     select: vi.fn(),
     unselect: vi.fn(),
     getSelectedCells: vi.fn().mockReturnValue([]),
-    
+
     // Export methods
     toSVG: vi.fn().mockReturnValue('<svg></svg>'),
     toPNG: vi.fn().mockReturnValue(new Blob()),
-    
+
     // Mock properties that integration tests expect
     selectAll: vi.fn(),
     cleanSelection: vi.fn(),
-    
+
     // Event system for integration
     on: vi.fn(),
     off: vi.fn(),
@@ -89,7 +89,7 @@ describe('DFD Architecture Integration', () => {
       mockLogger,
       graphOperationManager,
       persistenceCoordinator,
-      autoSaveManager
+      autoSaveManager,
     );
   });
 

@@ -110,7 +110,7 @@ export class AutoSaveManager {
   private _pendingSaveTimeout: any = null;
   private _isPendingSave = false;
   private _nextScheduledSave: Date | null = null;
-  
+
   // Extension points
   private _analyzers: any[] = [];
   private _decisionMakers: any[] = [];
@@ -135,7 +135,7 @@ export class AutoSaveManager {
   ) {
     // Initialize the state subject after all properties are set
     this._stateChanged$ = new BehaviorSubject<AutoSaveState>(this._createInitialState());
-    
+
     this.logger.debug('AutoSaveManager initialized');
     this._setupTriggerProcessing();
   }
@@ -244,6 +244,14 @@ export class AutoSaveManager {
       catchError(error => {
         this._stats.failedSaves++;
         this.logger.error('Manual save failed', { error, context });
+        
+        // Emit save failed event
+        this._saveFailed$.next({
+          error: error.message || 'Save failed',
+          context: context,
+          timestamp: Date.now(),
+        });
+        
         return throwError(() => error);
       }),
     );
@@ -269,6 +277,14 @@ export class AutoSaveManager {
 
     // Send to trigger processing pipeline
     this._triggerEvent$.next(event);
+
+    // Emit trigger event for monitoring
+    this._events$.next({
+      type: 'trigger-received',
+      triggerEvent: event,
+      context: context,
+      timestamp: Date.now(),
+    });
 
     // Return whether save will be triggered
     const decision = this._shouldTriggerSave(event, context);
@@ -324,10 +340,10 @@ export class AutoSaveManager {
    */
   forceSave(context: AutoSaveContext): Observable<SaveResult> {
     this.logger.debug('Force save triggered', { diagramId: context.diagramId });
-    
+
     // Cancel any pending save
     this._cancelPendingSave();
-    
+
     // Execute immediate save
     return this.triggerManualSave(context);
   }
@@ -389,7 +405,7 @@ export class AutoSaveManager {
     if (config.mode) {
       this.setPolicyMode(config.mode);
     }
-    
+
     // Update other config options
     Object.assign(this._currentPolicy, config);
     this.logger.debug('AutoSaveManager configuration updated', { config });
@@ -515,6 +531,13 @@ export class AutoSaveManager {
         this._isPendingSave = false;
         this._emitStateChange();
         this.logger.error('Auto-save failed', { error, context });
+        
+        // Emit save failed event
+        this._saveFailed$.next({
+          error: error.message || 'Auto-save failed',
+          context: context,
+          timestamp: Date.now(),
+        });
       },
     });
   }
@@ -534,7 +557,7 @@ export class AutoSaveManager {
   private _updateSaveStats(result: SaveResult, saveTimeMs: number): void {
     this._totalSaveTimeMs += saveTimeMs;
     this._stats.averageSaveTimeMs = this._totalSaveTimeMs / this._stats.totalSaves;
-    
+
     // Track successful saves
     if (result.success) {
       this._stats.successfulSaves++;

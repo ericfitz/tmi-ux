@@ -54,6 +54,8 @@ export interface DfdStats {
   readonly errorRate: number;
   readonly uptime: number;
   readonly lastActivity: Date | null;
+  readonly collaborativeOperations: number;
+  readonly autoSaves: number;
 }
 
 export interface ExportFormat {
@@ -80,6 +82,8 @@ export class DfdOrchestrator {
     errorRate: 0,
     uptime: 0,
     lastActivity: null,
+    collaborativeOperations: 0,
+    autoSaves: 0,
   };
 
   private _totalErrors = 0;
@@ -302,20 +306,30 @@ export class DfdOrchestrator {
    * Export diagram in various formats
    */
   export(format: ExportFormat): Observable<string | Blob> {
-    if (!this._graph) {
+    const graph = this.getGraph;
+    if (!graph) {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
     this.logger.debug('DfdOrchestrator: Exporting diagram', { format: format.format });
 
     switch (format.format) {
-      case 'svg':
-        return of(this._graph.toSVG());
-      case 'json':
-        return of(JSON.stringify(this._getGraphData(), null, 2));
-      case 'png':
+      case 'svg': {
+        const svgString = graph.toSVG();
+        return of(new Blob([svgString], { type: 'image/svg+xml' }));
+      }
+      case 'png': {
+        if (graph.toPNG) {
+          return of(graph.toPNG());
+        }
+        return throwError(() => new Error('PNG export not supported by graph library'));
+      }
+      case 'json': {
+        const jsonString = JSON.stringify(this._getGraphData(), null, 2);
+        return of(new Blob([jsonString], { type: 'application/json' }));
+      }
       case 'pdf':
-        return throwError(() => new Error(`Export format '${format.format}' not yet implemented`));
+        return throwError(() => new Error(`Unsupported export format: ${format.format}`));
       default:
         return throwError(() => new Error(`Unsupported export format: ${format.format}`));
     }
@@ -357,24 +371,35 @@ export class DfdOrchestrator {
    * Selection management
    */
   selectAll(): void {
-    if (this._graph) {
-      this._graph.select(this._graph.getCells());
+    const graph = this.getGraph;
+    if (graph) {
+      if (typeof graph.selectAll === 'function') {
+        graph.selectAll();
+      } else {
+        graph.select(graph.getCells());
+      }
       this.logger.debug('All cells selected');
     }
   }
 
   clearSelection(): void {
-    if (this._graph) {
-      this._graph.unselect(this._graph.getSelectedCells());
+    const graph = this.getGraph;
+    if (graph) {
+      if (typeof graph.cleanSelection === 'function') {
+        graph.cleanSelection();
+      } else {
+        graph.unselect(graph.getSelectedCells());
+      }
       this.logger.debug('Selection cleared');
     }
   }
 
-  getSelectedCells(): any[] {
-    if (!this._graph) {
+  getSelectedCells(): string[] {
+    const graph = this.getGraph;
+    if (!graph) {
       return [];
     }
-    return this._graph.getSelectedCells();
+    return graph.getSelectedCells().map(cell => cell.id);
   }
 
   /**
@@ -405,7 +430,7 @@ export class DfdOrchestrator {
     return this._state$.pipe(
       map(state => state.collaborating),
       filter((value, index) => index === 0 || value !== this._previousCollaborationState),
-      tap(value => this._previousCollaborationState = value)
+      tap(value => (this._previousCollaborationState = value)),
     );
   }
 
@@ -415,20 +440,58 @@ export class DfdOrchestrator {
    * Event handling
    */
   handleWindowResize(): void {
-    if (this._graph) {
-      this._graph.resize();
+    const graph = this.getGraph;
+    if (graph) {
+      graph.resize();
       this.logger.debug('Graph resized for window resize');
     }
   }
 
   handleKeyboardShortcut(shortcut: string): boolean {
     this.logger.debug('Keyboard shortcut handled', { shortcut });
-    // Implementation would handle various shortcuts
-    return true;
+
+    switch (shortcut) {
+      case 'ctrl+s':
+        // Trigger manual save
+        if (this._initParams && this._graph) {
+          this.saveManually().subscribe({
+            next: () => this.logger.debug('Manual save triggered via keyboard shortcut'),
+            error: error => this.logger.error('Manual save failed', { error }),
+          });
+        }
+        return true;
+
+      case 'ctrl+a': {
+        // Select all
+        const graph = this.getGraph;
+        if (graph?.selectAll) {
+          graph.selectAll();
+        } else {
+          this.selectAll();
+        }
+        return true;
+      }
+
+      case 'escape': {
+        // Clear selection
+        const clearGraph = this.getGraph;
+        if (clearGraph?.cleanSelection) {
+          clearGraph.cleanSelection();
+        } else {
+          this.clearSelection();
+        }
+        return true;
+      }
+
+      default:
+        // Unhandled shortcut
+        return false;
+    }
   }
 
   handleContextMenu(event: MouseEvent): boolean {
     this.logger.debug('Context menu handled', { x: event.clientX, y: event.clientY });
+    event.preventDefault();
     // Implementation would show context menu
     return true;
   }
@@ -436,14 +499,39 @@ export class DfdOrchestrator {
   /**
    * Graph access
    */
-  getGraph(): any {
+  get getGraph(): any {
     return this._graph;
   }
 
   /**
    * High-level user actions
    */
-  addNode(nodeData: NodeData): Observable<OperationResult> {
+  addNode(nodeData: NodeData): Observable<OperationResult>;
+  addNode(nodeType: string, position: { x: number; y: number }): Observable<OperationResult>;
+  addNode(
+    nodeDataOrType: NodeData | string,
+    position?: { x: number; y: number },
+  ): Observable<OperationResult> {
+    let nodeData: NodeData;
+
+    if (typeof nodeDataOrType === 'string') {
+      // Handle the (nodeType, position) signature
+      if (!position) {
+        throw new Error('Position is required when nodeType is provided as string');
+      }
+      nodeData = {
+        nodeType: nodeDataOrType as any,
+        position,
+        size: { width: 120, height: 60 },
+        label: nodeDataOrType,
+        style: {},
+        properties: {},
+      };
+    } else {
+      // Handle the NodeData signature
+      nodeData = nodeDataOrType;
+    }
+
     const operation: CreateNodeOperation = {
       id: `create-node-${Date.now()}`,
       type: 'create-node',
@@ -453,38 +541,132 @@ export class DfdOrchestrator {
     return this.executeOperation(operation);
   }
 
-  deleteSelectedCells(): Observable<OperationResult[]> {
+  deleteSelectedCells(): Observable<OperationResult> {
     const selectedCells = this.getSelectedCells();
     if (selectedCells.length === 0) {
-      return of([]);
+      return of({
+        success: true,
+        operationId: `delete-none-${Date.now()}`,
+        operationType: 'delete-node',
+        affectedCellIds: [],
+        timestamp: Date.now(),
+        metadata: { message: 'No cells selected for deletion' },
+      });
     }
 
-    const deleteOperations = selectedCells.map(cell => ({
-      id: `delete-${cell.id}-${Date.now()}`,
+    const deleteOperations = selectedCells.map(cellId => ({
+      id: `delete-${cellId}-${Date.now()}`,
       type: 'delete-node' as const,
       timestamp: Date.now(),
-      cellId: cell.id,
+      cellId,
     }));
 
-    return this.executeBatch(deleteOperations);
+    return this.executeBatch(deleteOperations).pipe(
+      map(results => ({
+        success: results.every(r => r.success),
+        operationId: `batch-delete-${Date.now()}`,
+        operationType: 'delete-node' as const,
+        affectedCellIds: results.flatMap(r => r.affectedCellIds),
+        timestamp: Date.now(),
+        metadata: { deletedCount: results.length },
+      })),
+    );
   }
 
   /**
    * Save/Load aliases
    */
-  saveManually(): Observable<boolean> {
-    return this.save();
+  saveManually(): Observable<any> {
+    if (!this._initParams || !this._graph) {
+      return throwError(() => new Error('DFD system not initialized'));
+    }
+
+    this.logger.debug('DfdOrchestrator: Manual save triggered');
+
+    const autoSaveContext = {
+      diagramId: this._initParams.diagramId,
+      userId: 'current-user',
+      diagramData: this._getGraphData(),
+      preferredStrategy: 'websocket',
+    };
+
+    return this.autoSaveManager.triggerManualSave(autoSaveContext).pipe(
+      tap(result => {
+        if (result.success) {
+          this._updateState({
+            hasUnsavedChanges: false,
+            lastSaved: new Date(),
+          });
+        }
+      }),
+      catchError(error => {
+        this.logger.error('Manual save failed', { error });
+        return throwError(() => error);
+      }),
+    );
   }
 
-  loadDiagram(diagramId?: string, forceLoad = false): Observable<boolean> {
-    if (!forceLoad && this._state$.value.hasUnsavedChanges) {
-      return throwError(() => new Error('Cannot load diagram with unsaved changes'));
+  loadDiagram(forceLoad?: boolean): Observable<any>;
+  loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<any>;
+  loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<any> {
+    let targetDiagramId: string | undefined;
+    let shouldForceLoad = false;
+
+    if (typeof diagramIdOrForceLoad === 'boolean') {
+      // Called as loadDiagram(forceLoad)
+      shouldForceLoad = diagramIdOrForceLoad;
+      targetDiagramId = this._initParams?.diagramId;
+    } else {
+      // Called as loadDiagram(diagramId, forceLoad)
+      targetDiagramId = diagramIdOrForceLoad || this._initParams?.diagramId;
+      shouldForceLoad = forceLoad;
     }
-    return this.load(diagramId);
+
+    if (!shouldForceLoad && this._state$.value.hasUnsavedChanges) {
+      return throwError(() => new Error('Unsaved changes exist. Use forceLoad=true to override.'));
+    }
+
+    if (!targetDiagramId) {
+      return throwError(() => new Error('No diagram ID provided'));
+    }
+
+    this.logger.debug('DfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
+
+    this._updateState({ loading: true });
+
+    const loadOperation = {
+      diagramId: targetDiagramId,
+      forceRefresh: false,
+    };
+
+    return this.persistenceCoordinator.load(loadOperation).pipe(
+      tap(result => {
+        if (result.success && result.data) {
+          this._loadGraphData(result.data);
+          this._updateState({
+            loading: false,
+            hasUnsavedChanges: false,
+            lastSaved: new Date(),
+          });
+        }
+      }),
+      catchError(error => {
+        this._updateState({
+          loading: false,
+          error: error.message || 'Load failed',
+        });
+        this.logger.error('Diagram load failed', { error });
+        return throwError(() => error);
+      }),
+    );
   }
 
   get _hasUnsavedChanges(): boolean {
     return this._state$.value.hasUnsavedChanges;
+  }
+
+  set _hasUnsavedChanges(value: boolean) {
+    this._updateState({ hasUnsavedChanges: value });
   }
 
   /**
@@ -533,6 +715,8 @@ export class DfdOrchestrator {
       errorRate: 0,
       uptime: 0,
       lastActivity: null,
+      collaborativeOperations: 0,
+      autoSaves: 0,
     };
     this._totalErrors = 0;
     this._startTime = Date.now();
@@ -647,7 +831,9 @@ export class DfdOrchestrator {
       preferredStrategy: 'websocket',
     };
 
-    this.autoSaveManager.trigger(triggerEvent, autoSaveContext).subscribe();
+    if (this.autoSaveManager.trigger) {
+      this.autoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
+    }
   }
 
   private _triggerAutoSaveForBatch(operations: GraphOperation[], results: OperationResult[]): void {
@@ -669,7 +855,9 @@ export class DfdOrchestrator {
       preferredStrategy: 'websocket',
     };
 
-    this.autoSaveManager.trigger(triggerEvent, autoSaveContext).subscribe();
+    if (this.autoSaveManager.trigger) {
+      this.autoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
+    }
   }
 
   private _getGraphData(): any {

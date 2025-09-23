@@ -115,6 +115,11 @@ export class PersistenceCoordinator {
     totalLoads: 0,
     successfulLoads: 0,
     failedLoads: 0,
+    totalOperations: 0,
+    successfulOperations: 0,
+    failedOperations: 0,
+    cacheHits: 0,
+    cacheMisses: 0,
   };
 
   constructor(private readonly logger: LoggerService) {
@@ -178,6 +183,7 @@ export class PersistenceCoordinator {
     });
 
     this._stats.totalSaves++;
+    this._stats.totalOperations++;
 
     // Emit saving status
     this._saveStatus$.next({
@@ -189,10 +195,11 @@ export class PersistenceCoordinator {
     // Find appropriate strategy
     const strategy = this._findSaveStrategy(operation);
     if (!strategy) {
-      const error = 'No suitable persistence strategy found';
+      const error = `Persistence strategy '${operation.strategyType || 'default'}' not found`;
       this.logger.error(error, { operation });
 
       this._stats.failedSaves++;
+      this._stats.failedOperations++;
       this._saveStatus$.next({
         diagramId: operation.diagramId,
         status: 'error',
@@ -209,10 +216,11 @@ export class PersistenceCoordinator {
       tap(result => {
         if (result.success) {
           this._stats.successfulSaves++;
+          this._stats.successfulOperations++;
 
           // Update cache if enabled
           if (config.enableCaching) {
-            this._cache.set(operation.diagramId, {
+            this._cache.set(this._getCacheKey(operation.diagramId), {
               data: operation.data,
               timestamp: Date.now(),
               source: strategy.type,
@@ -226,6 +234,8 @@ export class PersistenceCoordinator {
           });
         } else {
           this._stats.failedSaves++;
+          this._stats.failedOperations++;
+      this._stats.failedOperations++;
           this._saveStatus$.next({
             diagramId: operation.diagramId,
             status: 'error',
@@ -235,7 +245,72 @@ export class PersistenceCoordinator {
         }
       }),
       catchError(error => {
+        // Try fallback strategy if configured and this wasn't already a fallback attempt
+        if (this._fallbackStrategy && 
+            this._strategies.has(this._fallbackStrategy) && 
+            operation.strategyType !== this._fallbackStrategy) {
+          
+          this.logger.warn('Primary strategy failed, trying fallback', {
+            primaryStrategy: operation.strategyType,
+            fallbackStrategy: this._fallbackStrategy,
+            error: error.message
+          });
+          
+          const fallbackStrategy = this._strategies.get(this._fallbackStrategy)!;
+          const fallbackOperation = {
+            ...operation,
+            strategyType: this._fallbackStrategy
+          };
+          
+          return fallbackStrategy.save(fallbackOperation).pipe(
+            tap(result => {
+              if (result.success) {
+                this._stats.successfulSaves++;
+                this._stats.successfulOperations++;
+                
+                // Update cache if enabled
+                const config = this._config$.value;
+                if (config.enableCaching) {
+                  this._cache.set(this._getCacheKey(operation.diagramId), {
+                    data: operation.data,
+                    timestamp: Date.now(),
+                    source: this._fallbackStrategy!,
+                  });
+                }
+                
+                this._saveStatus$.next({
+                  diagramId: operation.diagramId,
+                  status: 'saved',
+                  timestamp: Date.now(),
+                });
+              }
+            }),
+            catchError(fallbackError => {
+              this._stats.failedSaves++;
+              this._stats.failedOperations++;
+              
+              const errorMessage = `Both primary and fallback strategies failed: ${error.message}, ${fallbackError.message}`;
+              this._saveStatus$.next({
+                diagramId: operation.diagramId,
+                status: 'error',
+                timestamp: Date.now(),
+                error: errorMessage,
+              });
+              
+              this.logger.error('Both primary and fallback save strategies failed', {
+                primaryError: error,
+                fallbackError,
+                operation
+              });
+              
+              return throwError(() => new Error(errorMessage));
+            })
+          );
+        }
+        
+        // No fallback available or this was already a fallback attempt
         this._stats.failedSaves++;
+        this._stats.failedOperations++;
         const errorMessage = error.message || 'Save operation failed';
 
         this._saveStatus$.next({
@@ -261,18 +336,22 @@ export class PersistenceCoordinator {
     });
 
     this._stats.totalLoads++;
+    this._stats.totalOperations++;
 
     // Check cache first if not forcing refresh
     const config = this._config$.value;
-    if (config.enableCaching && !operation.forceRefresh && this._cache.has(operation.diagramId)) {
-      const cachedData = this._cache.get(operation.diagramId);
+    if (config.enableCaching && !operation.forceRefresh && this._cache.has(this._getCacheKey(operation.diagramId))) {
+      const cachedData = this._cache.get(this._getCacheKey(operation.diagramId));
       this._stats.successfulLoads++;
+      this._stats.successfulOperations++;
+      this._stats.cacheHits++;
 
       return of({
         success: true,
         diagramId: operation.diagramId,
         data: cachedData.data,
         source: 'cache' as const,
+        fromCache: true,
         timestamp: Date.now(),
       });
     }
@@ -283,6 +362,7 @@ export class PersistenceCoordinator {
       const error = 'No suitable persistence strategy found for loading';
       this.logger.error(error, { operation });
       this._stats.failedLoads++;
+      this._stats.failedOperations++;
       return throwError(() => new Error(error));
     }
 
@@ -291,10 +371,12 @@ export class PersistenceCoordinator {
       tap(result => {
         if (result.success) {
           this._stats.successfulLoads++;
+      this._stats.successfulOperations++;
+      this._stats.cacheHits++;
 
           // Update cache
           if (config.enableCaching && result.data) {
-            this._cache.set(operation.diagramId, {
+            this._cache.set(this._getCacheKey(operation.diagramId), {
               data: result.data,
               timestamp: Date.now(),
               source: strategy.type,
@@ -302,10 +384,13 @@ export class PersistenceCoordinator {
           }
         } else {
           this._stats.failedLoads++;
+          this._stats.failedOperations++;
+      this._stats.failedOperations++;
         }
       }),
       catchError(error => {
         this._stats.failedLoads++;
+      this._stats.failedOperations++;
         this.logger.error('Load operation failed', { error, operation });
         return throwError(() => error);
       }),
@@ -319,8 +404,13 @@ export class PersistenceCoordinator {
     this.logger.debug('Starting sync operation', { diagramId: operation.diagramId });
 
     const strategy = this._findSyncStrategy(operation);
-    if (!strategy || !strategy.sync) {
+    if (!strategy) {
       const error = 'No suitable sync strategy found';
+      this.logger.error(error, { operation });
+      return throwError(() => new Error(error));
+    }
+    if (!strategy.sync) {
+      const error = `Strategy '${strategy.type}' does not support sync operations`;
       this.logger.error(error, { operation });
       return throwError(() => new Error(error));
     }
@@ -399,7 +489,7 @@ export class PersistenceCoordinator {
 
   clearCache(diagramId?: string): void {
     if (diagramId) {
-      this._cache.delete(diagramId);
+      this._cache.delete(this._getCacheKey(diagramId));
       this.logger.debug('Cache cleared for diagram', { diagramId });
     } else {
       this._cache.clear();
@@ -441,6 +531,11 @@ export class PersistenceCoordinator {
       totalLoads: 0,
       successfulLoads: 0,
       failedLoads: 0,
+      totalOperations: 0,
+      successfulOperations: 0,
+      failedOperations: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
     };
     this.logger.debug('Persistence statistics reset');
   }
@@ -472,9 +567,10 @@ export class PersistenceCoordinator {
   getCacheStatus(diagramId: string): Observable<CacheStatus> {
     const cacheKey = this._getCacheKey(diagramId);
     const entry = this._cache.get(cacheKey);
-    
+
     const status: CacheStatus = {
       diagramId,
+      status: entry ? 'valid' : 'empty',
       cached: !!entry,
       lastCached: entry?.timestamp || null,
       size: entry ? JSON.stringify(entry.data).length : 0,
@@ -492,20 +588,21 @@ export class PersistenceCoordinator {
       this._cache.clear();
       this.logger.debug('All cache cleared');
     }
-    
+
     return of(undefined);
   }
 
-  invalidateCache(diagramId: string): void {
+  invalidateCache(diagramId: string): Observable<void> {
     const cacheKey = this._getCacheKey(diagramId);
     this._cache.delete(cacheKey);
     this.logger.debug('Cache invalidated for diagram', { diagramId });
+    return of(undefined);
   }
 
-  getCacheEntry(diagramId: string): any {
+  getCacheEntry(diagramId: string): Observable<any> {
     const cacheKey = this._getCacheKey(diagramId);
     const entry = this._cache.get(cacheKey);
-    return entry ? entry.data : null;
+    return of(entry ? entry.data : null);
   }
 
   /**
@@ -513,9 +610,16 @@ export class PersistenceCoordinator {
    */
   getHealthStatus(): Observable<any> {
     return of({
-      online: this._online,
-      strategiesCount: this._strategies.size,
-      cacheSize: this._cache.size,
+      overall: this._online ? 'healthy' : 'offline',
+      strategies: {
+        count: this._strategies.size,
+        available: Array.from(this._strategies.keys()),
+      },
+      cacheHealth: {
+        size: this._cache.size,
+        enabled: this._config$.value.enableCaching,
+      },
+      pendingOperations: 0, // Track this if needed
       stats: this.getStats(),
       lastActivity: new Date(),
     });
@@ -538,8 +642,13 @@ export class PersistenceCoordinator {
    */
   private _findSaveStrategy(operation: SaveOperation): PersistenceStrategy | null {
     // If specific strategy requested, try to use it
-    if (operation.strategyType && this._strategies.has(operation.strategyType)) {
-      return this._strategies.get(operation.strategyType)!;
+    if (operation.strategyType) {
+      if (this._strategies.has(operation.strategyType)) {
+        return this._strategies.get(operation.strategyType)!;
+      } else {
+        // Specific strategy was requested but not found
+        return null;
+      }
     }
 
     // Otherwise use highest priority strategy
@@ -558,9 +667,9 @@ export class PersistenceCoordinator {
       return this._strategies.get(this._fallbackStrategy)!;
     }
 
-    // Otherwise use first strategy that supports sync
+    // Otherwise use first available strategy (sync support will be checked later)
     const strategies = this.getStrategies();
-    return strategies.find(s => s.sync) || null;
+    return strategies[0] || null;
   }
 
   /**
