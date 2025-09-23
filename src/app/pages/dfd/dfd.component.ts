@@ -192,6 +192,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.logger.info('DfdComponent v2 ngAfterViewInit called');
 
+    // Get current permission synchronously to avoid race condition
+    const currentPermission = this.authorizationService.getCurrentUserPermission();
+    this.threatModelPermission = currentPermission === 'owner' ? 'writer' : currentPermission;
+    this.isReadOnlyMode = currentPermission === 'reader' || currentPermission === null;
+
+    this.logger.info('DFD permission determined for orchestrator initialization', {
+      currentPermission,
+      threatModelPermission: this.threatModelPermission,
+      isReadOnlyMode: this.isReadOnlyMode,
+    });
+
     // Initialize the DFD Orchestrator with proper initialization parameters
     const initParams = {
       diagramId: this.dfdId || 'new-diagram',
@@ -569,20 +580,4 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private getDefaultNodeLabel(nodeType: NodeType): string {
-    switch (nodeType) {
-      case 'process':
-        return 'New Process';
-      case 'store':
-        return 'New Data Store';
-      case 'actor':
-        return 'New External Entity';
-      case 'security-boundary':
-        return 'Security Boundary';
-      case 'text-box':
-        return 'Text Box';
-      default:
-        return 'New Node';
-    }
-  }
 }
