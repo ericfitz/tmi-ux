@@ -214,8 +214,11 @@ export class AutoSaveManager {
     this._cancelPendingSave();
 
     const startTime = performance.now();
-    this._stats.manualSaves++;
-    this._stats.totalSaves++;
+    this._stats = {
+      ...this._stats,
+      manualSaves: this._stats.manualSaves + 1,
+      totalSaves: this._stats.totalSaves + 1,
+    };
 
     const saveOperation: SaveOperation = {
       diagramId: context.diagramId,
@@ -242,7 +245,10 @@ export class AutoSaveManager {
         this._saveCompleted$.next(result);
       }),
       catchError(error => {
-        this._stats.failedSaves++;
+        this._stats = {
+          ...this._stats,
+          failedSaves: this._stats.failedSaves + 1,
+        };
         this.logger.error('Manual save failed', { error, context });
 
         // Emit save failed event
@@ -498,8 +504,11 @@ export class AutoSaveManager {
     this.logger.debug('Executing auto-save', { diagramId: context.diagramId });
 
     const startTime = performance.now();
-    this._stats.autoSaves++;
-    this._stats.totalSaves++;
+    this._stats = {
+      ...this._stats,
+      autoSaves: this._stats.autoSaves + 1,
+      totalSaves: this._stats.totalSaves + 1,
+    };
 
     const saveOperation: SaveOperation = {
       diagramId: context.diagramId,
@@ -527,7 +536,10 @@ export class AutoSaveManager {
         this._saveCompleted$.next(result);
       },
       error: error => {
-        this._stats.failedSaves++;
+        this._stats = {
+          ...this._stats,
+          failedSaves: this._stats.failedSaves + 1,
+        };
         this._isPendingSave = false;
         this._emitStateChange();
         this.logger.error('Auto-save failed', { error, context });
@@ -556,12 +568,14 @@ export class AutoSaveManager {
 
   private _updateSaveStats(result: SaveResult, saveTimeMs: number): void {
     this._totalSaveTimeMs += saveTimeMs;
-    this._stats.averageSaveTimeMs = this._totalSaveTimeMs / this._stats.totalSaves;
 
-    // Track successful saves
-    if (result.success) {
-      this._stats.successfulSaves++;
-    }
+    this._stats = {
+      ...this._stats,
+      averageSaveTimeMs: this._totalSaveTimeMs / this._stats.totalSaves,
+      successfulSaves: result.success
+        ? this._stats.successfulSaves + 1
+        : this._stats.successfulSaves,
+    };
   }
 
   private _createInitialState(): AutoSaveState {

@@ -245,14 +245,22 @@ export class GraphOperationManager implements IGraphOperationManager {
   }
 
   addValidator(validator: OperationValidator): void {
-    const key = `${validator.constructor.name}-${validator.priority || 0}`;
+    const key = `${validator.constructor.name}-${Date.now()}`;
     this._validators.set(key, validator);
     this.logger.debug('Validator added');
   }
 
   removeValidator(validator: OperationValidator): void {
-    const key = `${validator.constructor.name}-${validator.priority || 0}`;
-    const removed = this._validators.delete(key);
+    const key = `${validator.constructor.name}`;
+    // Find and remove validator by constructor name
+    const keys = Array.from(this._validators.keys()).filter(k => k.startsWith(key));
+    let removed = false;
+    keys.forEach(k => {
+      if (this._validators.get(k) === validator) {
+        this._validators.delete(k);
+        removed = true;
+      }
+    });
     if (removed) {
       this.logger.debug('Validator removed');
     }

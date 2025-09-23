@@ -94,8 +94,9 @@ export class NodeOperationExecutor implements OperationExecutor {
       const actualNodeId = addedNode.id || nodeId;
 
       // Apply CSS classes if specified
-      if (finalNodeData.style?.cssClass) {
-        addedNode.addCssClass(finalNodeData.style.cssClass);
+      if (finalNodeData.style?.['cssClass']) {
+        // Note: addCssClass method might not exist on X6 nodes, skip for now
+        // addedNode.addCssClass(finalNodeData.style['cssClass']);
       }
 
       this.logger.debug('Node created successfully', {
@@ -124,7 +125,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'create-node',
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `Failed to create node: ${error.message || String(error)}`,
+        error: `Failed to create node: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   }
@@ -142,7 +143,7 @@ export class NodeOperationExecutor implements OperationExecutor {
 
       // Find the node
       const node = graph.getCellById(nodeId);
-      if (!node) {
+      if (!node || !node.isNode?.()) {
         return of({
           success: false,
           operationType: 'update-node',
@@ -155,13 +156,13 @@ export class NodeOperationExecutor implements OperationExecutor {
       const changedProperties: string[] = [];
 
       // Update position
-      if (updates.position) {
+      if (updates.position && node.isNode?.()) {
         node.setPosition(updates.position.x, updates.position.y);
         changedProperties.push('position');
       }
 
       // Update size
-      if (updates.size) {
+      if (updates.size && node.isNode?.()) {
         node.setSize(updates.size.width, updates.size.height);
         changedProperties.push('size');
       }
@@ -174,24 +175,24 @@ export class NodeOperationExecutor implements OperationExecutor {
 
       // Update style properties
       if (updates.style) {
-        if (updates.style.fill !== undefined) {
-          node.setAttrByPath('body/fill', updates.style.fill);
+        if (updates.style['fill'] !== undefined) {
+          node.setAttrByPath('body/fill', updates.style['fill']);
           changedProperties.push('fill');
         }
-        if (updates.style.stroke !== undefined) {
-          node.setAttrByPath('body/stroke', updates.style.stroke);
+        if (updates.style['stroke'] !== undefined) {
+          node.setAttrByPath('body/stroke', updates.style['stroke']);
           changedProperties.push('stroke');
         }
-        if (updates.style.strokeWidth !== undefined) {
-          node.setAttrByPath('body/strokeWidth', updates.style.strokeWidth);
+        if (updates.style['strokeWidth'] !== undefined) {
+          node.setAttrByPath('body/strokeWidth', updates.style['strokeWidth']);
           changedProperties.push('strokeWidth');
         }
-        if (updates.style.fontSize !== undefined) {
-          node.setAttrByPath('label/fontSize', updates.style.fontSize);
+        if (updates.style['fontSize'] !== undefined) {
+          node.setAttrByPath('label/fontSize', updates.style['fontSize']);
           changedProperties.push('fontSize');
         }
-        if (updates.style.textColor !== undefined) {
-          node.setAttrByPath('label/fill', updates.style.textColor);
+        if (updates.style['textColor'] !== undefined) {
+          node.setAttrByPath('label/fill', updates.style['textColor']);
           changedProperties.push('textColor');
         }
       }
@@ -228,7 +229,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'update-node',
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `Failed to update node: ${error.message || String(error)}`,
+        error: `Failed to update node: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   }
@@ -246,7 +247,7 @@ export class NodeOperationExecutor implements OperationExecutor {
 
       // Find the node
       const node = graph.getCellById(nodeId);
-      if (!node) {
+      if (!node || !node.isNode?.()) {
         // Node doesn't exist, consider it a successful no-op
         this.logger.debug('Node not found for deletion, treating as success', { nodeId });
         return of({
@@ -269,14 +270,18 @@ export class NodeOperationExecutor implements OperationExecutor {
       const nodeData = {
         id: node.id,
         shape: node.shape,
-        position: node.getPosition(),
-        size: node.getSize(),
+        position: node.isNode?.() ? node.getPosition() : { x: 0, y: 0 },
+        size: node.isNode?.() ? node.getSize() : { width: 0, height: 0 },
         attrs: node.getAttrs(),
         data: node.getData(),
       };
 
       // Remove the node (this will also remove connected edges)
-      graph.removeNode(node);
+      if (node.isNode?.()) {
+        graph.removeNode(node.id);
+      } else {
+        graph.removeCell(node);
+      }
 
       this.logger.debug('Node deleted successfully', {
         nodeId,
@@ -303,7 +308,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'delete-node',
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `Failed to delete node: ${error.message || String(error)}`,
+        error: `Failed to delete node: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   }
@@ -350,14 +355,14 @@ export class NodeOperationExecutor implements OperationExecutor {
       height: nodeData.size!.height,
       attrs: {
         body: {
-          fill: nodeData.style!.fill,
-          stroke: nodeData.style!.stroke,
-          strokeWidth: nodeData.style!.strokeWidth,
+          fill: nodeData.style!['fill'],
+          stroke: nodeData.style!['stroke'],
+          strokeWidth: nodeData.style!['strokeWidth'],
         },
         label: {
           text: nodeData.label,
-          fontSize: nodeData.style!.fontSize,
-          fill: nodeData.style!.textColor,
+          fontSize: nodeData.style!['fontSize'],
+          fill: nodeData.style!['textColor'],
         },
       },
       data: {

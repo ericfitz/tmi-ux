@@ -287,11 +287,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isReadOnlyMode) return;
 
     this.dfdOrchestrator
-      .addNode({
-        nodeType,
-        position: { x: 100, y: 100 }, // Default position, user can drag
-        label: this.getDefaultNodeLabel(nodeType),
-      })
+      .addNode(nodeType, { x: 100, y: 100 }) // Default position, user can drag
       .subscribe({
         next: result => {
           if (result.success) {
@@ -373,7 +369,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dfdOrchestrator.exportDiagram(format).subscribe({
       next: blob => {
         // Create download link
-        const url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob as Blob);
         const link = document.createElement('a');
         link.href = url;
         link.download = `${this.diagramName || 'diagram'}.${format}`;
@@ -461,8 +457,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onEditMetadata(): void {
     if (!this.hasExactlyOneSelectedCell) return;
 
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
-    const cell = selectedCells[0];
+    const selectedCellIds = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCellIds.length === 0) return;
+
+    // Get the actual cell object from the graph
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) return;
+
+    const cell = graph.getCellById(selectedCellIds[0]);
+    if (!cell) return;
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
       width: '600px',
@@ -470,6 +473,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         threatModelId: this.threatModelId,
         cellId: cell.id,
         currentMetadata: cell.getData()?.metadata || {},
+        metadata: [], // Required by MetadataDialogData interface
       } as MetadataDialogData,
     });
 
@@ -480,13 +484,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           .executeOperation({
             id: `update-metadata-${Date.now()}`,
             type: 'update-node',
-            source: 'user',
-            priority: 100,
+            source: 'user-interaction' as const,
+            priority: 'high' as const,
+            timestamp: Date.now(),
             nodeId: cell.id,
             updates: {
               properties: { metadata: result },
             },
-          })
+          } as any)
           .subscribe({
             next: operationResult => {
               if (operationResult.success) {
@@ -514,9 +519,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
-  onWindowResize(event: Event): void {
+  onWindowResize(_event: Event): void {
     // Delegate to orchestrator for centralized resize handling
-    this.dfdOrchestrator.onWindowResize(event);
+    this.dfdOrchestrator.onWindowResize();
   }
 
   // Helper Methods
@@ -524,13 +529,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private mapStringToNodeType(nodeType: string): NodeType {
     switch (nodeType) {
       case 'actor':
-        return 'external-entity';
+        return 'actor';
       case 'process':
         return 'process';
       case 'store':
-        return 'datastore';
+        return 'store';
       case 'security-boundary':
-        return 'trust-boundary';
+        return 'security-boundary';
       case 'text-box':
         return 'process'; // Default to process for text boxes
       default:
@@ -542,12 +547,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (nodeType) {
       case 'process':
         return 'New Process';
-      case 'datastore':
+      case 'store':
         return 'New Data Store';
-      case 'external-entity':
+      case 'actor':
         return 'New External Entity';
-      case 'trust-boundary':
-        return 'Trust Boundary';
+      case 'security-boundary':
+        return 'Security Boundary';
+      case 'text-box':
+        return 'Text Box';
       default:
         return 'New Node';
     }

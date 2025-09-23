@@ -87,7 +87,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
         // If any operation fails, we need to handle rollback
         this.logger.error('Batch operation failed, may need rollback', {
           batchId: batchOperation.id,
-          error: error.message || String(error),
+          error: error instanceof Error ? error.message : String(error),
         });
         throw error;
       }),

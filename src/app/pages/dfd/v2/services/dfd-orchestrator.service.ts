@@ -160,8 +160,11 @@ export class DfdOrchestrator {
       operationId: operation.id,
     });
 
-    this._stats.totalOperations++;
-    this._stats.lastActivity = new Date();
+    this._stats = {
+      ...this._stats,
+      totalOperations: this._stats.totalOperations + 1,
+      lastActivity: new Date(),
+    };
     this._updateStats();
 
     return this.graphOperationManager.execute(operation, this._operationContext).pipe(
@@ -199,8 +202,11 @@ export class DfdOrchestrator {
       operationCount: operations.length,
     });
 
-    this._stats.totalOperations += operations.length;
-    this._stats.lastActivity = new Date();
+    this._stats = {
+      ...this._stats,
+      totalOperations: this._stats.totalOperations + operations.length,
+      lastActivity: new Date(),
+    };
     this._updateStats();
 
     return this.graphOperationManager.executeBatch(operations, this._operationContext).pipe(
@@ -399,7 +405,7 @@ export class DfdOrchestrator {
     if (!graph) {
       return [];
     }
-    return graph.getSelectedCells().map(cell => cell.id);
+    return graph.getSelectedCells().map((cell: any) => cell.id);
   }
 
   /**
@@ -535,6 +541,8 @@ export class DfdOrchestrator {
     const operation: CreateNodeOperation = {
       id: `create-node-${Date.now()}`,
       type: 'create-node',
+      source: 'user-interaction',
+      priority: 'normal',
       timestamp: Date.now(),
       nodeData,
     };
@@ -557,8 +565,10 @@ export class DfdOrchestrator {
     const deleteOperations = selectedCells.map(cellId => ({
       id: `delete-${cellId}-${Date.now()}`,
       type: 'delete-node' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
       timestamp: Date.now(),
-      cellId,
+      nodeId: cellId,
     }));
 
     return this.executeBatch(deleteOperations).pipe(
