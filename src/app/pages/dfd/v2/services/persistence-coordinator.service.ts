@@ -235,7 +235,7 @@ export class PersistenceCoordinator {
         } else {
           this._stats.failedSaves++;
           this._stats.failedOperations++;
-      this._stats.failedOperations++;
+          this._stats.failedOperations++;
           this._saveStatus$.next({
             diagramId: operation.diagramId,
             status: 'error',
@@ -246,28 +246,29 @@ export class PersistenceCoordinator {
       }),
       catchError(error => {
         // Try fallback strategy if configured and this wasn't already a fallback attempt
-        if (this._fallbackStrategy && 
-            this._strategies.has(this._fallbackStrategy) && 
-            operation.strategyType !== this._fallbackStrategy) {
-          
+        if (
+          this._fallbackStrategy &&
+          this._strategies.has(this._fallbackStrategy) &&
+          operation.strategyType !== this._fallbackStrategy
+        ) {
           this.logger.warn('Primary strategy failed, trying fallback', {
             primaryStrategy: operation.strategyType,
             fallbackStrategy: this._fallbackStrategy,
-            error: error.message
+            error: error.message,
           });
-          
+
           const fallbackStrategy = this._strategies.get(this._fallbackStrategy)!;
           const fallbackOperation = {
             ...operation,
-            strategyType: this._fallbackStrategy
+            strategyType: this._fallbackStrategy,
           };
-          
+
           return fallbackStrategy.save(fallbackOperation).pipe(
             tap(result => {
               if (result.success) {
                 this._stats.successfulSaves++;
                 this._stats.successfulOperations++;
-                
+
                 // Update cache if enabled
                 const config = this._config$.value;
                 if (config.enableCaching) {
@@ -277,7 +278,7 @@ export class PersistenceCoordinator {
                     source: this._fallbackStrategy!,
                   });
                 }
-                
+
                 this._saveStatus$.next({
                   diagramId: operation.diagramId,
                   status: 'saved',
@@ -288,7 +289,7 @@ export class PersistenceCoordinator {
             catchError(fallbackError => {
               this._stats.failedSaves++;
               this._stats.failedOperations++;
-              
+
               const errorMessage = `Both primary and fallback strategies failed: ${error.message}, ${fallbackError.message}`;
               this._saveStatus$.next({
                 diagramId: operation.diagramId,
@@ -296,18 +297,18 @@ export class PersistenceCoordinator {
                 timestamp: Date.now(),
                 error: errorMessage,
               });
-              
+
               this.logger.error('Both primary and fallback save strategies failed', {
                 primaryError: error,
                 fallbackError,
-                operation
+                operation,
               });
-              
+
               return throwError(() => new Error(errorMessage));
-            })
+            }),
           );
         }
-        
+
         // No fallback available or this was already a fallback attempt
         this._stats.failedSaves++;
         this._stats.failedOperations++;
@@ -340,7 +341,11 @@ export class PersistenceCoordinator {
 
     // Check cache first if not forcing refresh
     const config = this._config$.value;
-    if (config.enableCaching && !operation.forceRefresh && this._cache.has(this._getCacheKey(operation.diagramId))) {
+    if (
+      config.enableCaching &&
+      !operation.forceRefresh &&
+      this._cache.has(this._getCacheKey(operation.diagramId))
+    ) {
       const cachedData = this._cache.get(this._getCacheKey(operation.diagramId));
       this._stats.successfulLoads++;
       this._stats.successfulOperations++;
@@ -371,8 +376,8 @@ export class PersistenceCoordinator {
       tap(result => {
         if (result.success) {
           this._stats.successfulLoads++;
-      this._stats.successfulOperations++;
-      this._stats.cacheHits++;
+          this._stats.successfulOperations++;
+          this._stats.cacheHits++;
 
           // Update cache
           if (config.enableCaching && result.data) {
@@ -385,12 +390,12 @@ export class PersistenceCoordinator {
         } else {
           this._stats.failedLoads++;
           this._stats.failedOperations++;
-      this._stats.failedOperations++;
+          this._stats.failedOperations++;
         }
       }),
       catchError(error => {
         this._stats.failedLoads++;
-      this._stats.failedOperations++;
+        this._stats.failedOperations++;
         this.logger.error('Load operation failed', { error, operation });
         return throwError(() => error);
       }),
@@ -477,25 +482,6 @@ export class PersistenceCoordinator {
   /**
    * Cache Management
    */
-  getCacheStatus(diagramId: string): CacheStatus {
-    const cached = this._cache.get(diagramId);
-
-    return {
-      diagramId,
-      status: cached ? 'synced' : 'pending',
-      lastSync: cached ? cached.timestamp : 0,
-    };
-  }
-
-  clearCache(diagramId?: string): void {
-    if (diagramId) {
-      this._cache.delete(this._getCacheKey(diagramId));
-      this.logger.debug('Cache cleared for diagram', { diagramId });
-    } else {
-      this._cache.clear();
-      this.logger.debug('All cache cleared');
-    }
-  }
 
   /**
    * Status and Monitoring
@@ -570,10 +556,8 @@ export class PersistenceCoordinator {
 
     const status: CacheStatus = {
       diagramId,
-      status: entry ? 'valid' : 'empty',
-      cached: !!entry,
-      lastCached: entry?.timestamp || null,
-      size: entry ? JSON.stringify(entry.data).length : 0,
+      status: entry ? 'synced' : 'error',
+      lastSync: entry?.timestamp || 0,
     };
 
     return of(status);
@@ -610,7 +594,7 @@ export class PersistenceCoordinator {
    */
   getHealthStatus(): Observable<any> {
     return of({
-      overall: this._online ? 'healthy' : 'offline',
+      overall: this._isOnline ? 'healthy' : 'offline',
       strategies: {
         count: this._strategies.size,
         available: Array.from(this._strategies.keys()),

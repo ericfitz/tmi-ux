@@ -183,13 +183,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const threatModel = this.route.snapshot.data['threatModel'];
     if (threatModel) {
       this.threatModelName = threatModel.name;
-      
+
       // Subscribe to authorization updates
       this._subscriptions.add(
         this.authorizationService.currentUserPermission$.subscribe(permission => {
           this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
           this.isReadOnlyMode = permission === 'reader' || permission === null;
-          
+
           this.cdr.markForCheck();
         }),
       );
@@ -217,7 +217,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private configureAutoSave(): void {
     // Configure auto-save based on user permission
     const autoSavePolicy = this.isReadOnlyMode ? 'manual' : 'normal';
-    
+
     this.autoSaveManager.configure({
       enabled: !this.isReadOnlyMode,
       policy: autoSavePolicy,

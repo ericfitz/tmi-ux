@@ -365,27 +365,38 @@ export class GraphOperationManager implements IGraphOperationManager {
     result: OperationResult,
     executionTimeMs: number,
   ): void {
-    this._stats.totalOperations++;
     this._totalExecutionTimeMs += executionTimeMs;
-    this._stats.averageExecutionTimeMs = this._totalExecutionTimeMs / this._stats.totalOperations;
 
-    if (result.success) {
-      this._stats.successfulOperations++;
-    } else {
-      this._stats.failedOperations++;
+    // Create new stats object with updated values
+    const newOperationsByType = { ...this._stats.operationsByType };
+    if (!newOperationsByType[operation.type]) {
+      newOperationsByType[operation.type] = 0;
     }
+    newOperationsByType[operation.type]++;
 
-    // Update by type
-    if (!this._stats.operationsByType[operation.type]) {
-      this._stats.operationsByType[operation.type] = 0;
+    const newOperationsBySource = { ...this._stats.operationsBySource };
+    if (!newOperationsBySource[operation.source]) {
+      newOperationsBySource[operation.source] = 0;
     }
-    this._stats.operationsByType[operation.type]++;
+    newOperationsBySource[operation.source]++;
 
-    // Update by source
-    if (!this._stats.operationsBySource[operation.source]) {
-      this._stats.operationsBySource[operation.source] = 0;
-    }
-    this._stats.operationsBySource[operation.source]++;
+    const newTotalOperations = this._stats.totalOperations + 1;
+    const newSuccessfulOperations = result.success
+      ? this._stats.successfulOperations + 1
+      : this._stats.successfulOperations;
+    const newFailedOperations = !result.success
+      ? this._stats.failedOperations + 1
+      : this._stats.failedOperations;
+
+    this._stats = {
+      totalOperations: newTotalOperations,
+      successfulOperations: newSuccessfulOperations,
+      failedOperations: newFailedOperations,
+      averageExecutionTimeMs: this._totalExecutionTimeMs / newTotalOperations,
+      operationsByType: newOperationsByType,
+      operationsBySource: newOperationsBySource,
+      lastResetTime: this._stats.lastResetTime,
+    };
   }
 
   private _emitOperationCompleted(

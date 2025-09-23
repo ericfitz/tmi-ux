@@ -244,14 +244,14 @@ export class AutoSaveManager {
       catchError(error => {
         this._stats.failedSaves++;
         this.logger.error('Manual save failed', { error, context });
-        
+
         // Emit save failed event
         this._saveFailed$.next({
           error: error.message || 'Save failed',
           context: context,
           timestamp: Date.now(),
         });
-        
+
         return throwError(() => error);
       }),
     );
@@ -531,7 +531,7 @@ export class AutoSaveManager {
         this._isPendingSave = false;
         this._emitStateChange();
         this.logger.error('Auto-save failed', { error, context });
-        
+
         // Emit save failed event
         this._saveFailed$.next({
           error: error.message || 'Auto-save failed',

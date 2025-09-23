@@ -4,7 +4,7 @@
 
 import { Graph } from '@antv/x6';
 import { Observable } from 'rxjs';
-import { EdgeInfo } from '../domain/value-objects/edge-info';
+import { EdgeInfo } from '../../domain/value-objects/edge-info';
 
 /**
  * Types of operations that can be performed on the graph

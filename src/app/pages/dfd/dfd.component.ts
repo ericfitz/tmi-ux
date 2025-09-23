@@ -58,12 +58,8 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from '../tm/components/metadata-dialog/metadata-dialog.component';
-import {
-  ThreatsDialogComponent,
-  ThreatsDialogData,
-} from '../tm/components/threats-dialog/threats-dialog.component';
+
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
-import { Metadata } from '../tm/models/threat-model.model';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -169,16 +165,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const threatModel = this.route.snapshot.data['threatModel'];
     if (threatModel) {
       this.threatModelName = threatModel.name;
-      
+
       // Subscribe to authorization updates
       this._subscriptions.add(
         this.authorizationService.currentUserPermission$.subscribe(permission => {
           this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
           this.isReadOnlyMode = permission === 'reader' || permission === null;
-          
+
           // Reconfigure auto-save when permissions change
           this.configureAutoSave();
-          
+
           this.cdr.markForCheck();
         }),
       );
@@ -205,19 +201,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.logger.info('DfdComponent v2 ngOnDestroy called');
-    
+
     this._destroy$.next();
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
-    
-    // Dispose orchestrator
-    this.dfdOrchestrator.dispose();
+
+    // Clean up orchestrator
+    // DfdOrchestrator doesn't have dispose method, handle cleanup via subscriptions
   }
 
   private configureAutoSave(): void {
     // Configure auto-save based on user permission
     const autoSavePolicy = this.isReadOnlyMode ? 'manual' : 'normal';
-    
+
     this.autoSaveManager.configure({
       enabled: !this.isReadOnlyMode,
       policy: autoSavePolicy,
@@ -231,17 +227,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupOrchestratorSubscriptions(): void {
-    // Subscribe to orchestrator state changes
-    this._subscriptions.add(
-      this.dfdOrchestrator.selectedCells$.pipe(takeUntil(this._destroy$)).subscribe(cells => {
-        this.hasSelectedCells = cells.length > 0;
-        this.hasExactlyOneSelectedCell = cells.length === 1;
-        this.selectedCellIsTextBox = cells.some(cell => cell.shape === 'text-box');
-        this.selectedCellIsSecurityBoundary = cells.some(cell => cell.shape === 'security-boundary');
-        this.cdr.markForCheck();
-      }),
-    );
-
     // Subscribe to auto-save events
     this._subscriptions.add(
       this.autoSaveManager.saveCompleted$.pipe(takeUntil(this._destroy$)).subscribe(result => {
@@ -253,14 +238,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     );
 
-    // Subscribe to undo/redo state changes
+    // Subscribe to orchestrator state changes
     this._subscriptions.add(
-      this.dfdOrchestrator.historyChanged$.pipe(takeUntil(this._destroy$)).subscribe(({ canUndo, canRedo }) => {
-        this.canUndo = canUndo;
-        this.canRedo = canRedo;
+      this.dfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(_state => {
+        // Update component state based on orchestrator state
         this.cdr.markForCheck();
       }),
     );
+
+    // Note: selectedCells$ and historyChanged$ observables need to be implemented in DfdOrchestrator
+    // For now, we'll use placeholder logic and implement these features later
   }
 
   private loadDiagramData(dfdId: string): void {
@@ -280,46 +267,48 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Toolbar Methods - Using DfdOrchestrator
-  
+
   addGraphNode(nodeType: string): void {
     // Map string nodeType to NodeType enum
     const mappedNodeType = this.mapStringToNodeType(nodeType);
     this.onAddNode(mappedNodeType);
   }
-  
+
   deleteSelected(): void {
     this.onDeleteSelected();
   }
-  
+
   showHistory(): void {
     // Placeholder for history dialog
     this.logger.info('Show history requested - feature to be implemented');
   }
-  
+
   onAddNode(nodeType: NodeType): void {
     if (this.isReadOnlyMode) return;
-    
-    this.dfdOrchestrator.addNode({
-      nodeType,
-      position: { x: 100, y: 100 }, // Default position, user can drag
-      label: this.getDefaultNodeLabel(nodeType),
-    }).subscribe({
-      next: result => {
-        if (result.success) {
-          this.logger.debug('Node added successfully', { nodeType });
-        } else {
-          this.logger.error('Failed to add node', { error: result.error });
-        }
-      },
-      error: error => {
-        this.logger.error('Error adding node', { error });
-      },
-    });
+
+    this.dfdOrchestrator
+      .addNode({
+        nodeType,
+        position: { x: 100, y: 100 }, // Default position, user can drag
+        label: this.getDefaultNodeLabel(nodeType),
+      })
+      .subscribe({
+        next: result => {
+          if (result.success) {
+            this.logger.debug('Node added successfully', { nodeType });
+          } else {
+            this.logger.error('Failed to add node', { error: result.error });
+          }
+        },
+        error: error => {
+          this.logger.error('Error adding node', { error });
+        },
+      });
   }
 
   onDeleteSelected(): void {
     if (this.isReadOnlyMode || !this.hasSelectedCells) return;
-    
+
     this.dfdOrchestrator.deleteSelectedCells().subscribe({
       next: result => {
         if (result.success) {
@@ -336,12 +325,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUndo(): void {
     if (!this.canUndo || this.isReadOnlyMode) return;
-    this.dfdOrchestrator.undo();
+    // TODO: Implement undo functionality when DfdOrchestrator supports it
+    this.logger.info('Undo requested - feature to be implemented');
   }
 
   onRedo(): void {
     if (!this.canRedo || this.isReadOnlyMode) return;
-    this.dfdOrchestrator.redo();
+    // TODO: Implement redo functionality when DfdOrchestrator supports it
+    this.logger.info('Redo requested - feature to be implemented');
+  }
+
+  // Template compatibility methods
+  undo(): void {
+    this.onUndo();
+  }
+
+  redo(): void {
+    this.onRedo();
   }
 
   onSelectAll(): void {
@@ -354,7 +354,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSaveManually(): void {
     if (this.isReadOnlyMode) return;
-    
+
     this.dfdOrchestrator.saveManually().subscribe({
       next: result => {
         if (result.success) {
@@ -379,13 +379,72 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         link.download = `${this.diagramName || 'diagram'}.${format}`;
         link.click();
         URL.revokeObjectURL(url);
-        
+
         this.logger.info('Diagram exported successfully', { format });
       },
       error: error => {
         this.logger.error('Error exporting diagram', { error, format });
       },
     });
+  }
+
+  // Template compatibility methods
+  exportDiagram(format: ExportFormat): void {
+    this.onExport(format);
+  }
+
+  manageMetadata(): void {
+    this.onEditMetadata();
+  }
+
+  openThreatEditor(): void {
+    // Placeholder for threat editor
+    this.logger.info('Threat editor requested - feature to be implemented');
+  }
+
+  manageThreats(): void {
+    // Placeholder for threat management
+    this.logger.info('Threat management requested - feature to be implemented');
+  }
+
+  closeDiagram(): void {
+    // Placeholder for close diagram
+    this.logger.info('Close diagram requested - feature to be implemented');
+  }
+
+  editCellText(): void {
+    // Placeholder for inline text editing
+    this.logger.info('Edit cell text requested - feature to be implemented');
+  }
+
+  // Z-order methods
+  moveForward(): void {
+    this.logger.info('Move forward requested - feature to be implemented');
+  }
+
+  moveBackward(): void {
+    this.logger.info('Move backward requested - feature to be implemented');
+  }
+
+  moveToFront(): void {
+    this.logger.info('Move to front requested - feature to be implemented');
+  }
+
+  moveToBack(): void {
+    this.logger.info('Move to back requested - feature to be implemented');
+  }
+
+  // Edge methods
+  addInverseConnection(): void {
+    this.logger.info('Add inverse connection requested - feature to be implemented');
+  }
+
+  isRightClickedCellEdge(): boolean {
+    return false; // Placeholder
+  }
+
+  showCellProperties(): void {
+    this.logger.info('Show cell properties requested - feature to be implemented');
   }
 
   // Context Menu Methods
@@ -401,10 +460,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onEditMetadata(): void {
     if (!this.hasExactlyOneSelectedCell) return;
-    
+
     const selectedCells = this.dfdOrchestrator.getSelectedCells();
     const cell = selectedCells[0];
-    
+
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
       width: '600px',
       data: {
@@ -417,27 +476,31 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Update cell metadata through orchestrator
-        this.dfdOrchestrator.executeOperation({
-          id: `update-metadata-${Date.now()}`,
-          type: 'update-node',
-          source: 'user',
-          priority: 100,
-          nodeId: cell.id,
-          updates: {
-            properties: { metadata: result },
-          },
-        }).subscribe({
-          next: operationResult => {
-            if (operationResult.success) {
-              this.logger.debug('Cell metadata updated successfully');
-            } else {
-              this.logger.error('Failed to update cell metadata', { error: operationResult.error });
-            }
-          },
-          error: error => {
-            this.logger.error('Error updating cell metadata', { error });
-          },
-        });
+        this.dfdOrchestrator
+          .executeOperation({
+            id: `update-metadata-${Date.now()}`,
+            type: 'update-node',
+            source: 'user',
+            priority: 100,
+            nodeId: cell.id,
+            updates: {
+              properties: { metadata: result },
+            },
+          })
+          .subscribe({
+            next: operationResult => {
+              if (operationResult.success) {
+                this.logger.debug('Cell metadata updated successfully');
+              } else {
+                this.logger.error('Failed to update cell metadata', {
+                  error: operationResult.error,
+                });
+              }
+            },
+            error: error => {
+              this.logger.error('Error updating cell metadata', { error });
+            },
+          });
       }
     });
   }
