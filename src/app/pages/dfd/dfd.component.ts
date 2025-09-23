@@ -151,7 +151,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
     this.dfdId = this.route.snapshot.paramMap.get('dfdId');
-    
+
     // Get query parameters for collaboration intent
     this.joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration') === 'true';
 

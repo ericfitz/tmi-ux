@@ -16,7 +16,10 @@ import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { GraphOperationManager } from './graph-operation-manager.service';
-import { PersistenceCoordinator, StrategySelectionContext } from './persistence-coordinator.service';
+import {
+  PersistenceCoordinator,
+  StrategySelectionContext,
+} from './persistence-coordinator.service';
 import { AutoSaveManager } from './auto-save-manager.service';
 import { RestPersistenceStrategy } from './strategies/rest-persistence-strategy.service';
 import { WebSocketPersistenceStrategy } from './strategies/websocket-persistence-strategy.service';

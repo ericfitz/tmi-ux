@@ -33,7 +33,6 @@ export class RestPersistenceStrategy implements PersistenceStrategy {
     this.logger.debug('RestPersistenceStrategy initialized');
   }
 
-
   save(operation: SaveOperation): Observable<SaveResult> {
     this.logger.debug('REST save operation started', {
       diagramId: operation.diagramId,

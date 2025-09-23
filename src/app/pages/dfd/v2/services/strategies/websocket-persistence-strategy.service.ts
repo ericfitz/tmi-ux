@@ -33,7 +33,6 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
     this.logger.debug('WebSocketPersistenceStrategy initialized');
   }
 
-
   save(operation: SaveOperation): Observable<SaveResult> {
     this.logger.debug('WebSocket save operation started', {
       diagramId: operation.diagramId,

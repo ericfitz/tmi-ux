@@ -30,7 +30,6 @@ export class CacheOnlyPersistenceStrategy implements PersistenceStrategy {
     this.logger.debug('CacheOnlyPersistenceStrategy initialized');
   }
 
-
   save(operation: SaveOperation): Observable<SaveResult> {
     this.logger.debug('Cache-only save operation started', {
       diagramId: operation.diagramId,
@@ -159,5 +158,4 @@ export class CacheOnlyPersistenceStrategy implements PersistenceStrategy {
     const existing = this._cache.get(cacheKey);
     return existing ? (existing.version || 1) + 1 : 1;
   }
-
 }

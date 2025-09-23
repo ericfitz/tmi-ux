@@ -61,9 +61,9 @@ export interface SyncResult {
 }
 
 export interface StrategySelectionContext {
-  readonly collaborationIntent: boolean;  // from joinCollaboration=true query param
-  readonly allowOfflineMode: boolean;     // user preference  
-  readonly fastTimeout?: boolean;         // for quick failure detection
+  readonly collaborationIntent: boolean; // from joinCollaboration=true query param
+  readonly allowOfflineMode: boolean; // user preference
+  readonly fastTimeout?: boolean; // for quick failure detection
 }
 
 export interface PersistenceStrategy {
@@ -636,7 +636,10 @@ export class PersistenceCoordinator {
   /**
    * Private helper methods
    */
-  private _findSaveStrategy(operation: SaveOperation, context: StrategySelectionContext = { collaborationIntent: false, allowOfflineMode: true }): PersistenceStrategy | null {
+  private _findSaveStrategy(
+    operation: SaveOperation,
+    context: StrategySelectionContext = { collaborationIntent: false, allowOfflineMode: true },
+  ): PersistenceStrategy | null {
     // If specific strategy requested, try to use it
     if (operation.strategyType) {
       if (this._strategies.has(operation.strategyType)) {
@@ -648,12 +651,12 @@ export class PersistenceCoordinator {
         // Requested strategy is not available, fall back to automatic selection
         this.logger.warn('Requested strategy not available, falling back', {
           requestedStrategy: operation.strategyType,
-          context
+          context,
         });
       } else {
         // Specific strategy was requested but not found
-        this.logger.error('Requested strategy not found', { 
-          requestedStrategy: operation.strategyType 
+        this.logger.error('Requested strategy not found', {
+          requestedStrategy: operation.strategyType,
         });
         return null;
       }
@@ -668,9 +671,9 @@ export class PersistenceCoordinator {
         return wsStrategy;
       }
       // For collaboration intent, don't fall back to local strategies
-      this.logger.warn('Collaboration save requires WebSocket connection', { 
+      this.logger.warn('Collaboration save requires WebSocket connection', {
         webSocketAvailable: wsStrategy ? this._isStrategyAvailable(wsStrategy, context) : false,
-        context 
+        context,
       });
       return null;
     }
@@ -679,10 +682,10 @@ export class PersistenceCoordinator {
     const strategies = this.getStrategies();
     for (const strategy of strategies) {
       if (this._isStrategyAvailable(strategy, context)) {
-        this.logger.debug('Selected available strategy for save', { 
-          strategyType: strategy.type, 
+        this.logger.debug('Selected available strategy for save', {
+          strategyType: strategy.type,
           priority: strategy.priority,
-          context 
+          context,
         });
         return strategy;
       }
@@ -697,16 +700,18 @@ export class PersistenceCoordinator {
       }
     }
 
-    this.logger.error('No suitable persistence strategy found for save', { 
+    this.logger.error('No suitable persistence strategy found for save', {
       availableStrategies: strategies.map(s => s.type),
-      context 
+      context,
     });
     return null;
   }
 
-  private _findLoadStrategy(context: StrategySelectionContext = { collaborationIntent: false, allowOfflineMode: true }): PersistenceStrategy | null {
+  private _findLoadStrategy(
+    context: StrategySelectionContext = { collaborationIntent: false, allowOfflineMode: true },
+  ): PersistenceStrategy | null {
     const strategies = this.getStrategies();
-    
+
     // Special handling for collaboration intent
     if (context.collaborationIntent) {
       const wsStrategy = strategies.find(s => s.type === 'websocket');
@@ -715,25 +720,25 @@ export class PersistenceCoordinator {
         return wsStrategy;
       }
       // For collaboration intent, don't fall back to local strategies
-      this.logger.warn('Collaboration requires WebSocket connection', { 
+      this.logger.warn('Collaboration requires WebSocket connection', {
         webSocketAvailable: wsStrategy ? this._isStrategyAvailable(wsStrategy, context) : false,
-        context 
+        context,
       });
       return null;
     }
-    
+
     // Normal priority-based selection with availability check
     for (const strategy of strategies) {
       if (this._isStrategyAvailable(strategy, context)) {
-        this.logger.debug('Selected available strategy', { 
-          strategyType: strategy.type, 
+        this.logger.debug('Selected available strategy', {
+          strategyType: strategy.type,
           priority: strategy.priority,
-          context 
+          context,
         });
         return strategy;
       }
     }
-    
+
     // Final fallback to cache-only if allowed
     if (context.allowOfflineMode) {
       const cacheStrategy = strategies.find(s => s.type === 'cache-only');
@@ -742,10 +747,10 @@ export class PersistenceCoordinator {
         return cacheStrategy;
       }
     }
-    
-    this.logger.error('No suitable persistence strategy found', { 
+
+    this.logger.error('No suitable persistence strategy found', {
       availableStrategies: strategies.map(s => s.type),
-      context 
+      context,
     });
     return null;
   }
@@ -764,21 +769,24 @@ export class PersistenceCoordinator {
   /**
    * Check if a strategy is available for use
    */
-  private _isStrategyAvailable(strategy: PersistenceStrategy, context: StrategySelectionContext): boolean {
+  private _isStrategyAvailable(
+    strategy: PersistenceStrategy,
+    _context: StrategySelectionContext,
+  ): boolean {
     try {
       switch (strategy.type) {
         case 'websocket':
           // Use existing WebSocketAdapter status
           return this.webSocketAdapter.isConnected;
-        
+
         case 'rest':
           // Use existing cached server status from ServerConnectionService
           return this.serverConnection.currentDetailedStatus.isServerReachable;
-        
+
         case 'cache-only':
           // Always available for offline mode
           return true;
-        
+
         default:
           this.logger.warn('Unknown strategy type', { strategyType: strategy.type });
           return false;
