@@ -345,13 +345,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Load source code separately
     this.loadSourceCode(id);
 
-
     // Re-enable auto-save after initial population is complete
     setTimeout(() => {
       this._isLoadingInitialData = false;
     }, 100);
   }
-
 
   /**
    * Update form editability based on permissions

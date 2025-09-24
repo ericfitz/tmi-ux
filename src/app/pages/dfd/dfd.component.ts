@@ -441,11 +441,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.logger.info('Opening threat editor dialog for new threat creation on DFD page');
-    
+
     // Get selected cell information for context
     const selectedCells = this.dfdOrchestrator.getSelectedCells();
     const cellId = selectedCells.length === 1 ? selectedCells[0] : null;
-    
+
     if (cellId) {
       const graph = this.dfdOrchestrator.getGraph();
       if (graph) {
@@ -458,7 +458,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    
+
     // TODO: Implement threat editor dialog integration with DFD v2
     // This should open the threat editor dialog directly on the DFD page
     // and pass the threat model ID and selected cell context
@@ -485,7 +485,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cellId,
       threatModelId: this.threatModelId,
     });
-    
+
     // Get the actual cell object from the graph to extract cell data
     const graph = this.dfdOrchestrator.getGraph();
     if (!graph) {
@@ -505,7 +505,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cellId,
       cellType: cell.isNode() ? 'node' : 'edge',
     });
-    
+
     // TODO: Implement threat management dialog integration with DFD v2
     // This should open the existing threats management dialog and populate it with threats for this cell
     // The dialog should be filtered to show only threats associated with this specific cell
