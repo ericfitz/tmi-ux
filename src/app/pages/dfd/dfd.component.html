@@ -18,7 +18,7 @@
         mat-icon-button
         color="primary"
         (click)="addGraphNode('actor')"
-        [disabled]="isReadOnlyMode"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addActor' | transloco"
       >
         <mat-icon
@@ -32,7 +32,7 @@
         mat-icon-button
         color="accent"
         (click)="addGraphNode('process')"
-        [disabled]="isReadOnlyMode"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addProcess' | transloco"
       >
         <mat-icon
@@ -46,7 +46,7 @@
         mat-icon-button
         color="warn"
         (click)="addGraphNode('store')"
-        [disabled]="isReadOnlyMode"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addStore' | transloco"
       >
         <mat-icon
@@ -60,7 +60,7 @@
         mat-icon-button
         color="basic"
         (click)="addGraphNode('security-boundary')"
-        [disabled]="isReadOnlyMode"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addSecurityBoundary' | transloco"
       >
         <mat-icon fontSet="material-symbols-outlined">select</mat-icon>
@@ -69,7 +69,7 @@
         mat-icon-button
         color="basic"
         (click)="addGraphNode('text-box')"
-        [disabled]="isReadOnlyMode"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addTextbox' | transloco"
       >
         <mat-icon
@@ -251,7 +251,7 @@
         mat-menu-item
         (click)="addInverseConnection()"
         *ngIf="isRightClickedCellEdge()"
-        [disabled]="isReadOnlyMode"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
       >
         <mat-icon>swap_horiz</mat-icon>
         <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>

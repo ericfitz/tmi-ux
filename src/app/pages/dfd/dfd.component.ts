@@ -31,7 +31,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../core/services/logger.service';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
@@ -109,6 +109,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   hasExactlyOneSelectedCell = false;
   selectedCellIsTextBox = false;
   selectedCellIsSecurityBoundary = false;
+  isSystemInitialized = false;
 
   // Undo/redo state properties
   canUndo = false;
@@ -214,8 +215,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           joinCollaboration: this.joinCollaboration,
         };
 
+        this.logger.debug('Attempting to initialize DFD Orchestrator', initParams);
         this.dfdOrchestrator.initialize(initParams).subscribe({
           next: success => {
+            this.logger.info('DFD Orchestrator initialization result', { success });
             if (success) {
               this.logger.info('DFD Orchestrator initialized successfully');
 
@@ -281,14 +284,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to orchestrator state changes
     this._subscriptions.add(
-      this.dfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(_state => {
+      this.dfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
         // Update component state based on orchestrator state
+        this.logger.debug('DFD orchestrator state changed', { 
+          initialized: state.initialized, 
+          loading: state.loading,
+          error: state.error 
+        });
+        this.isSystemInitialized = state.initialized;
         this.cdr.markForCheck();
       }),
     );
 
-    // Note: selectedCells$ and historyChanged$ observables need to be implemented in DfdOrchestrator
-    // For now, we'll use placeholder logic and implement these features later
+    // Set up interval to update selection and history state
+    // TODO: Replace with proper observables when available from DfdOrchestrator
+    this._subscriptions.add(
+      // Poll selection state every 100ms
+      new Observable(_observer => {
+        const interval = setInterval(() => {
+          this.updateSelectionState();
+          this.updateHistoryState();
+        }, 100);
+        return () => clearInterval(interval);
+      }).pipe(takeUntil(this._destroy$)).subscribe()
+    );
   }
 
   private loadDiagramData(dfdId: string): void {
@@ -320,12 +339,43 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showHistory(): void {
-    // Placeholder for history dialog
-    this.logger.info('Show history requested - feature to be implemented');
+    const graph = this.dfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.warn('Cannot show history: Graph not available');
+      return;
+    }
+
+    // Get the X6 history information
+    const history = (graph).history;
+    if (!history) {
+      this.logger.warn('Cannot show history: History not available on graph');
+      return;
+    }
+
+    // Create a simple alert dialog showing history info
+    const undoStackLength = history.undoStack ? history.undoStack.length : 0;
+    const redoStackLength = history.redoStack ? history.redoStack.length : 0;
+    
+    const message = `History Information:\n\nUndo Stack: ${undoStackLength} operations\nRedo Stack: ${redoStackLength} operations\n\nTotal History Length: ${undoStackLength + redoStackLength}`;
+    
+    // Use simple alert for now - can be replaced with a proper dialog later
+    alert(message);
+    
+    this.logger.info('Showed X6 history information', {
+      undoStackLength,
+      redoStackLength,
+      totalHistory: undoStackLength + redoStackLength
+    });
   }
 
   onAddNode(nodeType: NodeType): void {
     if (this.isReadOnlyMode) return;
+
+    // Check if DFD system is initialized before attempting to add node
+    if (!this.dfdOrchestrator.getState().initialized) {
+      this.logger.warn('Cannot add node: DFD system not yet initialized');
+      return;
+    }
 
     this.dfdOrchestrator
       .addNode(nodeType, { x: 100, y: 100 }) // Default position, user can drag
@@ -346,6 +396,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onDeleteSelected(): void {
     if (this.isReadOnlyMode || !this.hasSelectedCells) return;
 
+    // Check if DFD system is initialized before attempting to delete
+    if (!this.dfdOrchestrator.getState().initialized) {
+      this.logger.warn('Cannot delete cells: DFD system not yet initialized');
+      return;
+    }
+
     this.dfdOrchestrator.deleteSelectedCells().subscribe({
       next: result => {
         if (result.success) {
@@ -362,14 +418,42 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUndo(): void {
     if (!this.canUndo || this.isReadOnlyMode) return;
-    // TODO: Implement undo functionality when DfdOrchestrator supports it
-    this.logger.info('Undo requested - feature to be implemented');
+    
+    const graph = this.dfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.warn('Cannot undo: Graph not available');
+      return;
+    }
+
+    // Use X6's built-in undo functionality
+    const history = (graph).history;
+    if (history && history.undo) {
+      history.undo();
+      this.logger.debug('Undo operation completed');
+      this.updateHistoryState();
+    } else {
+      this.logger.warn('Undo not available: History plugin not found');
+    }
   }
 
   onRedo(): void {
     if (!this.canRedo || this.isReadOnlyMode) return;
-    // TODO: Implement redo functionality when DfdOrchestrator supports it
-    this.logger.info('Redo requested - feature to be implemented');
+    
+    const graph = this.dfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.warn('Cannot redo: Graph not available');
+      return;
+    }
+
+    // Use X6's built-in redo functionality
+    const history = (graph).history;
+    if (history && history.redo) {
+      history.redo();
+      this.logger.debug('Redo operation completed');
+      this.updateHistoryState();
+    } else {
+      this.logger.warn('Redo not available: History plugin not found');
+    }
   }
 
   // Template compatibility methods
@@ -392,6 +476,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onSaveManually(): void {
     if (this.isReadOnlyMode) return;
 
+    // Check if DFD system is initialized before attempting to save
+    if (!this.dfdOrchestrator.getState().initialized) {
+      this.logger.warn('Cannot save manually: DFD system not yet initialized');
+      return;
+    }
+
     this.dfdOrchestrator.saveManually().subscribe({
       next: result => {
         if (result.success) {
@@ -407,6 +497,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onExport(format: ExportFormat): void {
+    // Check if DFD system is initialized before attempting to export
+    if (!this.dfdOrchestrator.getState().initialized) {
+      this.logger.warn('Cannot export diagram: DFD system not yet initialized');
+      return;
+    }
+
     this.dfdOrchestrator.exportDiagram(format).subscribe({
       next: blob => {
         // Create download link
@@ -447,7 +543,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const cellId = selectedCells.length === 1 ? selectedCells[0] : null;
 
     if (cellId) {
-      const graph = this.dfdOrchestrator.getGraph();
+      const graph = this.dfdOrchestrator.getGraph;
       if (graph) {
         const cell = graph.getCellById(cellId);
         if (cell) {
@@ -487,7 +583,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Get the actual cell object from the graph to extract cell data
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for threat management');
       return;
@@ -553,7 +649,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move forward operation');
       return;
@@ -575,7 +671,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move backward operation');
       return;
@@ -597,7 +693,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move to front operation');
       return;
@@ -619,7 +715,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move to back operation');
       return;
@@ -642,7 +738,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for add inverse connection');
       return;
@@ -684,7 +780,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for show cell properties');
       return;
@@ -724,11 +820,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onEditMetadata(): void {
     if (!this.hasExactlyOneSelectedCell) return;
 
+    // Check if DFD system is initialized before attempting to edit metadata
+    if (!this.dfdOrchestrator.getState().initialized) {
+      this.logger.warn('Cannot edit metadata: DFD system not yet initialized');
+      return;
+    }
+
     const selectedCellIds = this.dfdOrchestrator.getSelectedCells();
     if (selectedCellIds.length === 0) return;
 
     // Get the actual cell object from the graph
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.dfdOrchestrator.getGraph;
     if (!graph) return;
 
     const cell = graph.getCellById(selectedCellIds[0]);
@@ -792,6 +894,81 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Helper Methods
+
+  private updateSelectionState(): void {
+    if (!this.dfdOrchestrator.getState().initialized) {
+      return;
+    }
+
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const oldHasSelectedCells = this.hasSelectedCells;
+    const oldHasExactlyOneSelectedCell = this.hasExactlyOneSelectedCell;
+    const oldSelectedCellIsTextBox = this.selectedCellIsTextBox;
+    const oldSelectedCellIsSecurityBoundary = this.selectedCellIsSecurityBoundary;
+
+    this.hasSelectedCells = selectedCells.length > 0;
+    this.hasExactlyOneSelectedCell = selectedCells.length === 1;
+
+    if (this.hasExactlyOneSelectedCell) {
+      const graph = this.dfdOrchestrator.getGraph;
+      if (graph) {
+        const cell = graph.getCellById(selectedCells[0]);
+        if (cell) {
+          const cellData = cell.getData();
+          this.selectedCellIsTextBox = cellData?.nodeType === 'text-box' || cell.shape === 'text-box';
+          this.selectedCellIsSecurityBoundary = cellData?.nodeType === 'security-boundary' || cell.shape === 'security-boundary';
+        } else {
+          this.selectedCellIsTextBox = false;
+          this.selectedCellIsSecurityBoundary = false;
+        }
+      }
+    } else {
+      this.selectedCellIsTextBox = false;
+      this.selectedCellIsSecurityBoundary = false;
+    }
+
+    // Only trigger change detection if state actually changed
+    if (
+      oldHasSelectedCells !== this.hasSelectedCells ||
+      oldHasExactlyOneSelectedCell !== this.hasExactlyOneSelectedCell ||
+      oldSelectedCellIsTextBox !== this.selectedCellIsTextBox ||
+      oldSelectedCellIsSecurityBoundary !== this.selectedCellIsSecurityBoundary
+    ) {
+      this.cdr.markForCheck();
+    }
+  }
+
+  private updateHistoryState(): void {
+    if (!this.dfdOrchestrator.getState().initialized) {
+      this.canUndo = false;
+      this.canRedo = false;
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph;
+    if (!graph) {
+      this.canUndo = false;
+      this.canRedo = false;
+      return;
+    }
+
+    const history = (graph).history;
+    const oldCanUndo = this.canUndo;
+    const oldCanRedo = this.canRedo;
+
+    if (history) {
+      this.canUndo = history.canUndo ? history.canUndo() : false;
+      this.canRedo = history.canRedo ? history.canRedo() : false;
+    } else {
+      this.canUndo = false;
+      this.canRedo = false;
+    }
+
+    // Only trigger change detection if state actually changed
+    if (oldCanUndo !== this.canUndo || oldCanRedo !== this.canRedo) {
+      this.cdr.markForCheck();
+    }
+  }
 
   private mapStringToNodeType(nodeType: string): NodeType {
     switch (nodeType) {

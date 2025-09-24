@@ -803,7 +803,7 @@ export class DfdOrchestrator {
         ],
       },
       background: {
-        color: '#ffffff', // White background
+        color: '#f8f9fa', // Light gray background to match DFD styling
       },
       panning: {
         enabled: true,
