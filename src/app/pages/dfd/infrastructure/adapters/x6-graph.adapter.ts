@@ -35,7 +35,7 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';

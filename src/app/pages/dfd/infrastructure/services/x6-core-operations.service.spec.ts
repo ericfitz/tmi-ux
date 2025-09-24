@@ -12,7 +12,7 @@ import {
   NodeCreationConfig,
   EdgeCreationConfig,
 } from './x6-core-operations.service';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 

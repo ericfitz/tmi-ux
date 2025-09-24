@@ -17,7 +17,7 @@
 
 import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 
 /**
  * Configuration for node creation

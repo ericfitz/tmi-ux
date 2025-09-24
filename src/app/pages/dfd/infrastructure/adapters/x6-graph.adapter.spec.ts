@@ -13,7 +13,7 @@ import { JSDOM } from 'jsdom';
 import { X6GraphAdapter } from './x6-graph.adapter';
 import { X6SelectionAdapter } from './x6-selection.adapter';
 import { SelectionService } from '../services/selection.service';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { EdgeQueryService } from '../services/edge-query.service';
 import { NodeConfigurationService } from '../services/node-configuration.service';
 import { EmbeddingService } from '../services/embedding.service';

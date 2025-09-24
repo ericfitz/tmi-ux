@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Graph, Cell } from '@antv/x6';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**

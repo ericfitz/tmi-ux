@@ -14,7 +14,7 @@ import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { GraphOperationManager } from './graph-operation-manager.service';
 import {
   PersistenceCoordinator,

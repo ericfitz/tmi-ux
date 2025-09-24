@@ -42,10 +42,8 @@ import {
 } from '@app/shared/imports';
 
 // DFD v2 Architecture
-import { DfdOrchestrator } from './v2/services/dfd-orchestrator.service';
-import { AutoSaveManager } from './v2/services/auto-save-manager.service';
-import { PersistenceCoordinator } from './v2/services/persistence-coordinator.service';
-import { GraphOperationManager } from './v2/services/graph-operation-manager.service';
+import { DfdOrchestrator } from './services/dfd-orchestrator.service';
+import { AutoSaveManager } from './services/auto-save-manager.service';
 
 // Essential v1 components still needed
 import { NodeType } from './domain/value-objects/node-info';
@@ -76,12 +74,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdCollaborationComponent,
   ],
   providers: [
-    // DFD v2 Architecture - Core Services
-    DfdOrchestrator,
-    GraphOperationManager,
-    AutoSaveManager,
-    PersistenceCoordinator,
-
     // Essential services still needed
     ThreatModelService,
     ThreatModelAuthorizationService,
@@ -442,53 +434,234 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openThreatEditor(): void {
-    // Placeholder for threat editor
-    this.logger.info('Threat editor requested - feature to be implemented');
+    if (!this.threatModelId) {
+      this.logger.warn('Cannot open threat editor: No threat model ID available');
+      return;
+    }
+
+    this.logger.info('Opening threat editor for new threat creation');
+    // TODO: Implement threat editor dialog integration with DFD v2
+    // For now, just log that the feature is requested
+    this.logger.info('Threat editor integration needed for v2 architecture');
   }
 
   manageThreats(): void {
-    // Placeholder for threat management
-    this.logger.info('Threat management requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      this.logger.warn('Manage threats requires exactly one selected cell');
+      return;
+    }
+
+    if (!this.threatModelId) {
+      this.logger.warn('Cannot manage threats: No threat model ID available');
+      return;
+    }
+
+    this.logger.info('Managing threats for selected cell', { 
+      cellId: selectedCells[0],
+      threatModelId: this.threatModelId 
+    });
+    // TODO: Implement threats management dialog integration with DFD v2
+    this.logger.info('Threats management integration needed for v2 architecture');
   }
 
   closeDiagram(): void {
-    // Placeholder for close diagram
-    this.logger.info('Close diagram requested - feature to be implemented');
+    this.logger.info('Closing diagram');
+    
+    // Save any pending changes before closing
+    if (this.dfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
+      this.dfdOrchestrator.saveManually().subscribe({
+        next: () => {
+          this.logger.info('Diagram saved before closing');
+          this._navigateAway();
+        },
+        error: (error) => {
+          this.logger.error('Failed to save diagram before closing', { error });
+          // Navigate away even if save failed
+          this._navigateAway();
+        }
+      });
+    } else {
+      this._navigateAway();
+    }
   }
 
   editCellText(): void {
-    // Placeholder for inline text editing
-    this.logger.info('Edit cell text requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      this.logger.info('Edit cell text requires exactly one selected cell');
+      return;
+    }
+
+    this.logger.info('Edit cell text requested', { cellId: selectedCells[0] });
+    // TODO: Implement inline text editing for DFD v2
+    // This would involve getting the cell from the graph and enabling text editing
+    this.logger.info('Text editing integration needed for v2 architecture');
   }
 
   // Z-order methods
   moveForward(): void {
-    this.logger.info('Move forward requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move forward');
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for move forward operation');
+      return;
+    }
+
+    selectedCells.forEach(cellId => {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        cell.toFront();
+        this.logger.debug('Moved cell forward', { cellId });
+      }
+    });
   }
 
   moveBackward(): void {
-    this.logger.info('Move backward requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move backward');
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for move backward operation');
+      return;
+    }
+
+    selectedCells.forEach(cellId => {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        cell.toBack();
+        this.logger.debug('Moved cell backward', { cellId });
+      }
+    });
   }
 
   moveToFront(): void {
-    this.logger.info('Move to front requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move to front');
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for move to front operation');
+      return;
+    }
+
+    selectedCells.forEach(cellId => {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        cell.toFront();
+        this.logger.debug('Moved cell to front', { cellId });
+      }
+    });
   }
 
   moveToBack(): void {
-    this.logger.info('Move to back requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length === 0) {
+      this.logger.info('No cells selected for move to back');
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for move to back operation');
+      return;
+    }
+
+    selectedCells.forEach(cellId => {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        cell.toBack();
+        this.logger.debug('Moved cell to back', { cellId });
+      }
+    });
   }
 
   // Edge methods
   addInverseConnection(): void {
-    this.logger.info('Add inverse connection requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      this.logger.info('Add inverse connection requires exactly one selected edge');
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for add inverse connection');
+      return;
+    }
+
+    const cell = graph.getCellById(selectedCells[0]);
+    if (!cell || !cell.isEdge()) {
+      this.logger.info('Selected cell is not an edge');
+      return;
+    }
+
+    const edge = cell;
+    const source = edge.getSource();
+    const target = edge.getTarget();
+
+    // Create inverse edge
+    const inverseEdge = graph.addEdge({
+      source: target,
+      target: source,
+      attrs: edge.getAttrs(),
+    });
+
+    this.logger.info('Added inverse connection', { 
+      originalEdge: edge.id, 
+      inverseEdge: inverseEdge.id 
+    });
   }
 
   isRightClickedCellEdge(): boolean {
-    return false; // Placeholder
+    // For now, we don't have a context menu system in v2, so return false
+    // TODO: Implement context menu tracking for v2 architecture
+    return false;
   }
 
   showCellProperties(): void {
-    this.logger.info('Show cell properties requested - feature to be implemented');
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    if (selectedCells.length !== 1) {
+      this.logger.info('Show cell properties requires exactly one selected cell');
+      return;
+    }
+
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for show cell properties');
+      return;
+    }
+
+    const cell = graph.getCellById(selectedCells[0]);
+    if (!cell) {
+      this.logger.error('Selected cell not found in graph');
+      return;
+    }
+
+    // Log cell properties for debugging
+    this.logger.info('Cell properties', {
+      id: cell.id,
+      shape: cell.shape,
+      position: cell.getPosition?.() || 'N/A',
+      size: cell.getSize?.() || 'N/A',
+      attrs: cell.getAttrs(),
+      data: cell.getData(),
+    });
+
+    // TODO: Implement cell properties dialog for v2 architecture
+    this.logger.info('Cell properties dialog integration needed for v2 architecture');
   }
 
   // Context Menu Methods
@@ -588,6 +761,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'process'; // Default to process for text boxes
       default:
         return 'process';
+    }
+  }
+
+  private _navigateAway(): void {
+    if (this.threatModelId) {
+      this.logger.info('Navigating back to threat model', { threatModelId: this.threatModelId });
+      // TODO: Implement navigation back to threat model
+      // This would typically use Angular Router to navigate back
+      this.logger.info('Navigation integration needed for v2 architecture');
+    } else {
+      this.logger.warn('Cannot navigate: No threat model ID available');
     }
   }
 

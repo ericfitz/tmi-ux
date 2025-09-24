@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { X6LabelEditorAdapter } from './x6-label-editor.adapter';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { createMockLoggerService } from '../../../../../testing/mocks';
 

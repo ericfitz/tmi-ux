@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { DfdTooltipService } from '../../services/dfd-tooltip.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 

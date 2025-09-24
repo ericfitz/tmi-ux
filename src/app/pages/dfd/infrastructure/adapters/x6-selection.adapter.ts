@@ -3,7 +3,7 @@ import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Transform } from '@antv/x6-plugin-transform';
 import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { SelectionService } from '../services/selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';

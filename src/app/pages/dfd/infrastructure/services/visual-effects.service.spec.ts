@@ -8,7 +8,7 @@
 
 import { Cell, Node, Edge } from '@antv/x6';
 import { vi, Mock, beforeEach, afterEach, describe, it, expect } from 'vitest';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { VisualEffectsService } from './visual-effects.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';

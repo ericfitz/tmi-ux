@@ -25,7 +25,7 @@ import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Graph } from '@antv/x6';
 import { TranslocoService } from '@jsverse/transloco';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
 import { X6GraphAdapter } from '../adapters/x6-graph.adapter';
 import { X6ZOrderAdapter } from '../adapters/x6-z-order.adapter';

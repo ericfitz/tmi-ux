@@ -7,8 +7,8 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
-import { LoggerService } from '../../../../../core/services/logger.service';
-import { WebSocketAdapter } from '../../../../../core/services/websocket.adapter';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { WebSocketAdapter } from '../../../core/services/websocket.adapter';
 import {
   PersistenceStrategy,
   SaveOperation,
