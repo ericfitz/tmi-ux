@@ -30,7 +30,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../core/services/logger.service';
@@ -121,6 +121,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
+    private router: Router,
     private dfdOrchestrator: DfdOrchestrator,
     private autoSaveManager: AutoSaveManager,
     private threatModelService: ThreatModelService,
@@ -233,7 +234,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Subscribe to DFD Orchestrator events
         this.setupOrchestratorSubscriptions();
-      })
+      }),
     );
   }
 
@@ -439,10 +440,32 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.info('Opening threat editor for new threat creation');
+    this.logger.info('Opening threat editor dialog for new threat creation on DFD page');
+    
+    // Get selected cell information for context
+    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const cellId = selectedCells.length === 1 ? selectedCells[0] : null;
+    
+    if (cellId) {
+      const graph = this.dfdOrchestrator.getGraph();
+      if (graph) {
+        const cell = graph.getCellById(cellId);
+        if (cell) {
+          this.logger.info('Opening threat editor with cell context', {
+            cellId,
+            cellType: cell.isNode() ? 'node' : 'edge',
+          });
+        }
+      }
+    }
+    
     // TODO: Implement threat editor dialog integration with DFD v2
-    // For now, just log that the feature is requested
-    this.logger.info('Threat editor integration needed for v2 architecture');
+    // This should open the threat editor dialog directly on the DFD page
+    // and pass the threat model ID and selected cell context
+    this.logger.info('Threat editor dialog integration needed for v2 architecture', {
+      threatModelId: this.threatModelId,
+      selectedCellId: cellId,
+    });
   }
 
   manageThreats(): void {
@@ -457,17 +480,40 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.info('Managing threats for selected cell', { 
-      cellId: selectedCells[0],
-      threatModelId: this.threatModelId 
+    const cellId = selectedCells[0];
+    this.logger.info('Managing threats for selected cell', {
+      cellId,
+      threatModelId: this.threatModelId,
     });
-    // TODO: Implement threats management dialog integration with DFD v2
-    this.logger.info('Threats management integration needed for v2 architecture');
+    
+    // Get the actual cell object from the graph to extract cell data
+    const graph = this.dfdOrchestrator.getGraph();
+    if (!graph) {
+      this.logger.error('Graph not available for threat management');
+      return;
+    }
+
+    const cell = graph.getCellById(cellId);
+    if (!cell) {
+      this.logger.error('Selected cell not found in graph');
+      return;
+    }
+
+    // For now, just log the cell information - the threat management dialog integration
+    // will be implemented when the v2 architecture is complete
+    this.logger.info('Opening threat management dialog for cell', {
+      cellId,
+      cellType: cell.isNode() ? 'node' : 'edge',
+    });
+    
+    // TODO: Implement threat management dialog integration with DFD v2
+    // This should open the existing threats management dialog and populate it with threats for this cell
+    // The dialog should be filtered to show only threats associated with this specific cell
   }
 
   closeDiagram(): void {
     this.logger.info('Closing diagram');
-    
+
     // Save any pending changes before closing
     if (this.dfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
       this.dfdOrchestrator.saveManually().subscribe({
@@ -475,11 +521,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.info('Diagram saved before closing');
           this._navigateAway();
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Failed to save diagram before closing', { error });
           // Navigate away even if save failed
           this._navigateAway();
-        }
+        },
       });
     } else {
       this._navigateAway();
@@ -619,9 +665,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       attrs: edge.getAttrs(),
     });
 
-    this.logger.info('Added inverse connection', { 
-      originalEdge: edge.id, 
-      inverseEdge: inverseEdge.id 
+    this.logger.info('Added inverse connection', {
+      originalEdge: edge.id,
+      inverseEdge: inverseEdge.id,
     });
   }
 
@@ -767,12 +813,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _navigateAway(): void {
     if (this.threatModelId) {
       this.logger.info('Navigating back to threat model', { threatModelId: this.threatModelId });
-      // TODO: Implement navigation back to threat model
-      // This would typically use Angular Router to navigate back
-      this.logger.info('Navigation integration needed for v2 architecture');
+      this.router.navigate(['/tm', this.threatModelId]).catch(error => {
+        this.logger.error('Failed to navigate back to threat model', { error });
+        // Fallback: navigate to TM list
+        this.router.navigate(['/tm']).catch(fallbackError => {
+          this.logger.error('Failed to navigate to TM list as fallback', { fallbackError });
+        });
+      });
     } else {
-      this.logger.warn('Cannot navigate: No threat model ID available');
+      this.logger.warn('Cannot navigate: No threat model ID available, navigating to TM list');
+      this.router.navigate(['/tm']).catch(error => {
+        this.logger.error('Failed to navigate to TM list', { error });
+      });
     }
   }
-
 }
