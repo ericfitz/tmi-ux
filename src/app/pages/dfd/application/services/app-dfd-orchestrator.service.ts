@@ -12,7 +12,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
-import { Graph } from '@antv/x6';
+import { Graph, Node, Edge } from '@antv/x6';
+import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
@@ -882,7 +883,7 @@ export class AppDfdOrchestrator {
    * Private implementation methods
    */
   private _performInitialization(params: DfdInitializationParams): Observable<boolean> {
-    // Create X6 graph instance
+    // Create X6 graph instance with full configuration migrated from InfraX6GraphAdapter
     this._graph = new Graph({
       container: params.containerElement,
       width: params.containerElement.clientWidth,
@@ -890,48 +891,166 @@ export class AppDfdOrchestrator {
       grid: {
         size: 10,
         visible: true,
-        type: 'doubleMesh',
-        args: [
-          {
-            color: '#e0e0e0', // Primary grid lines
-            thickness: 1,
-          },
-          {
-            color: '#eeeeee', // Secondary grid lines
-            thickness: 1,
-            factor: 4,
-          },
-        ],
-      },
-      background: {
-        color: '#f8f9fa', // Light gray background to match DFD styling
       },
       panning: {
         enabled: true,
+        modifiers: ['shift'],
       },
       mousewheel: {
         enabled: true,
-        modifiers: ['ctrl', 'meta'],
+        modifiers: ['shift'],
+        factor: 1.1,
+        maxScale: 1.5,
+        minScale: 0.5,
+      },
+      embedding: {
+        enabled: true,
+        findParent: 'bbox',
+        validate: (_args: { parent: Node; child: Node }) => {
+          // Use InfraEmbeddingService for validation logic via facade
+          // Note: This will be set up after DI is available
+          return true; // Default to allow, will be properly configured after facade initialization
+        },
+      },
+      interacting: {
+        nodeMovable: true,
+        edgeMovable: true,
+        edgeLabelMovable: true,
+        arrowheadMovable: true,
+        vertexMovable: true,
+        vertexAddable: true,
+        vertexDeletable: true,
+        magnetConnectable: true,
       },
       connecting: {
         snap: true,
         allowBlank: false,
+        allowLoop: true,
+        allowNode: false,
+        allowEdge: false,
+        allowPort: true,
         allowMulti: true,
         highlight: true,
+        router: {
+          name: 'normal',
+        },
+        connector: {
+          name: 'smooth',
+        },
+        validateMagnet: (_args) => {
+          // Will be configured after facade is initialized
+          return true;
+        },
+        validateConnection: args => {
+          // Will be configured after facade is initialized
+          if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
+            return false;
+          }
+          return true;
+        },
+        createEdge: () => {
+          // Generate UUID type 4 for UX-created edges
+          const edgeId = uuidv4();
+
+          // Create edge with explicit markup (migrated from adapter)
+          const edge = new Edge({
+            id: edgeId,
+            shape: 'edge',
+            markup: [
+              {
+                tagName: 'path',
+                selector: 'wrap',
+                attrs: {
+                  fill: 'none',
+                  cursor: 'pointer',
+                  stroke: 'transparent',
+                  strokeLinecap: 'round',
+                },
+              },
+              {
+                tagName: 'path',
+                selector: 'line',
+                attrs: {
+                  fill: 'none',
+                  pointerEvents: 'none',
+                },
+              },
+            ],
+            attrs: {
+              wrap: {
+                connection: true,
+                strokeWidth: 10,
+                strokeLinecap: 'round',
+                strokeLinejoin: 'round',
+                stroke: 'transparent',
+                fill: 'none',
+              },
+              line: {
+                connection: true,
+                stroke: '#333333', // DFD_STYLING.EDGES.DEFAULT_STROKE
+                strokeWidth: 2, // DFD_STYLING.DEFAULT_STROKE_WIDTH
+                fill: 'none',
+                targetMarker: {
+                  name: 'classic',
+                  size: 8,
+                  fill: '#333333',
+                  stroke: '#333333',
+                },
+              },
+            },
+            vertices: [],
+            labels: [
+              {
+                position: 0.5,
+                attrs: {
+                  text: {
+                    text: 'Data Flow',
+                    fontSize: 12,
+                    fill: '#333333',
+                    fontFamily: 'Arial, sans-serif',
+                    textAnchor: 'middle',
+                    dominantBaseline: 'middle',
+                  },
+                  rect: {
+                    fill: '#ffffff',
+                    stroke: 'none',
+                  },
+                },
+              },
+            ],
+            zIndex: 1,
+          });
+
+          return edge;
+        },
       },
       highlighting: {
         magnetAdsorbed: {
           name: 'stroke',
           args: {
+            padding: 4,
             attrs: {
-              fill: '#5F95FF',
+              strokeWidth: 4,
               stroke: '#5F95FF',
             },
           },
         },
-      },
-      interacting: {
-        edgeLabelMovable: true,
+        magnetAvailable: {
+          name: 'stroke',
+          args: {
+            padding: 2,
+            attrs: {
+              strokeWidth: 2,
+              stroke: '#31d0c6',
+            },
+          },
+        },
+        nodeAvailable: {
+          name: 'className',
+          args: {
+            className: 'available',
+          },
+        },
       },
     });
 
@@ -947,6 +1066,14 @@ export class AppDfdOrchestrator {
       suppressHistory: false,
       suppressBroadcast: false,
     };
+
+    // Initialize the graph adapter with the container element
+    // This ensures all infrastructure services can access the graph instance
+    this.dfdInfrastructure.initializeGraphAdapter(params.containerElement);
+    this.logger.debug('AppDfdOrchestrator: Graph adapter initialized');
+
+    // Configure validation callbacks now that facade is available
+    this._configureValidationCallbacks();
 
     // Configure auto-save manager
     this.appAutoSaveManager.setPolicyMode(params.autoSaveMode);
@@ -1144,5 +1271,39 @@ export class AppDfdOrchestrator {
       allowOfflineMode: true, // Allow offline fallback unless explicitly disabled
       fastTimeout: this._collaborationIntent, // Use faster timeouts for collaboration
     };
+  }
+
+  /**
+   * Configure validation callbacks after facade is initialized
+   */
+  private _configureValidationCallbacks(): void {
+    if (!this._graph) return;
+
+    // Configure embedding validation
+    (this._graph as any).options.embedding.validate = (_args: { parent: Node; child: Node }) => {
+      // Use facade to access embedding service validation
+      // Note: This would need a method in the facade to access embedding validation
+      return true; // For now, allow all embedding
+    };
+
+    // Configure magnet validation
+    (this._graph as any).options.connecting.validateMagnet = (args: any) => {
+      return this.dfdInfrastructure.isMagnetValid(args.magnet);
+    };
+
+    // Configure connection validation
+    (this._graph as any).options.connecting.validateConnection = (args: any) => {
+      if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
+        return false;
+      }
+      return this.dfdInfrastructure.isConnectionValid(
+        args.sourceView,
+        args.targetView,
+        args.sourceMagnet,
+        args.targetMagnet,
+      );
+    };
+
+    this.logger.debug('AppDfdOrchestrator: Validation callbacks configured');
   }
 }

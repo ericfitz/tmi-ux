@@ -28,7 +28,6 @@ import { Export } from '@antv/x6-plugin-export';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
 import { History } from '@antv/x6-plugin-history';
-import { v4 as uuidv4 } from 'uuid';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -258,197 +257,17 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this.dispose();
     }
 
-    this.logger.info('[DFD] Initializing X6 graph');
+    this.logger.info('[DFD] Initializing X6 graph adapter');
 
+    // Create a new graph instance that will be used by infrastructure services
+    // Note: The main graph configuration is now handled by AppDfdOrchestrator
     this._graph = new Graph({
       container,
       width: container.clientWidth,
       height: container.clientHeight,
-      grid: {
-        size: 10,
-        visible: true,
-      },
-      panning: {
-        enabled: true,
-        modifiers: ['shift'],
-      },
-      mousewheel: {
-        enabled: true,
-        modifiers: ['shift'],
-        factor: 1.1,
-        maxScale: 1.5,
-        minScale: 0.5,
-      },
-      embedding: {
-        enabled: true,
-        findParent: 'bbox',
-        validate: (args: { parent: Node; child: Node }) => {
-          // Use InfraEmbeddingService for validation logic
-          const validation = this._embeddingService.validateEmbedding(args.parent, args.child);
-          return validation.isValid;
-        },
-      },
-      interacting: {
-        nodeMovable: true,
-        edgeMovable: true,
-        edgeLabelMovable: true,
-        arrowheadMovable: true,
-        vertexMovable: true,
-        vertexAddable: true,
-        vertexDeletable: true,
-        magnetConnectable: true,
-      },
-      connecting: {
-        snap: true,
-        allowBlank: false,
-        allowLoop: true,
-        allowNode: false,
-        allowEdge: false,
-        allowPort: true,
-        allowMulti: true,
-        highlight: true,
-        router: {
-          name: 'normal',
-        },
-        connector: {
-          name: 'smooth',
-        },
-        validateMagnet: args => {
-          // Delegate to validation service
-          return this._edgeService.isMagnetValid(args);
-        },
-        validateConnection: args => {
-          // Ensure all required properties exist before delegating to validation service
-          if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
-            return false;
-          }
-
-          // Delegate to validation service with properly typed args
-          return this._edgeService.isConnectionValid({
-            sourceView: args.sourceView,
-            targetView: args.targetView,
-            sourceMagnet: args.sourceMagnet,
-            targetMagnet: args.targetMagnet,
-          });
-        },
-        createEdge: () => {
-          this.logger.debugComponent('X6Graph', 'createEdge called');
-
-          // Generate UUID type 4 for UX-created edges
-          const edgeId = uuidv4();
-
-          // Create edge with explicit markup to control both path elements
-          const edge = new Edge({
-            id: edgeId, // Use UUID type 4 for UX-created edges
-            shape: 'edge',
-            markup: [
-              {
-                tagName: 'path',
-                selector: 'wrap',
-                attrs: {
-                  fill: 'none',
-                  cursor: 'pointer',
-                  stroke: 'transparent',
-                  strokeLinecap: 'round',
-                },
-              },
-              {
-                tagName: 'path',
-                selector: 'line',
-                attrs: {
-                  fill: 'none',
-                  pointerEvents: 'none',
-                },
-              },
-            ],
-            attrs: {
-              wrap: {
-                connection: true,
-                strokeWidth: 10,
-                strokeLinecap: 'round',
-                strokeLinejoin: 'round',
-                stroke: 'transparent',
-                fill: 'none',
-              },
-              line: {
-                connection: true,
-                stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                strokeWidth: DFD_STYLING.DEFAULT_STROKE_WIDTH,
-                fill: 'none',
-                targetMarker: {
-                  name: 'classic',
-                  size: 8,
-                  fill: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                  stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                },
-              },
-            },
-            // Enable vertices for edge manipulation
-            vertices: [],
-            labels: [
-              {
-                position: 0.5,
-                attrs: {
-                  text: {
-                    text: DFD_STYLING.EDGES.DEFAULT_LABEL,
-                    fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                    fill: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                    fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                    textAnchor: 'middle',
-                    dominantBaseline: 'middle',
-                  },
-                  rect: {
-                    fill: DFD_STYLING.DEFAULT_FILL,
-                    stroke: 'none',
-                  },
-                },
-              },
-            ],
-            zIndex: 1, // Temporary z-index, will be set properly when connected
-          });
-
-          this.logger.debugComponent('X6Graph', 'createEdge - Initial labels config:', {
-            labels: edge.labels,
-          });
-          this.logger.debugComponent(
-            'DFD',
-            '[Edge Creation] Edge created with UUID type 4 and explicit dual-path markup',
-            { edgeId, labels: edge.getLabels() },
-          );
-          return edge;
-        },
-      },
-      highlighting: {
-        magnetAdsorbed: {
-          name: 'stroke',
-          args: {
-            padding: 4,
-            attrs: {
-              strokeWidth: 4,
-              stroke: '#5F95FF',
-            },
-          },
-        },
-        magnetAvailable: {
-          name: 'stroke',
-          args: {
-            padding: 2,
-            attrs: {
-              strokeWidth: 2,
-              stroke: '#31d0c6',
-            },
-          },
-        },
-        nodeAvailable: {
-          name: 'className',
-          args: {
-            className: 'available',
-          },
-        },
-      },
     });
 
-    // Enable plugins
+    // Enable plugins and setup services that depend on the graph instance
     this._setupPlugins();
     this._setupEventListeners();
 
@@ -457,20 +276,16 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this._x6EventLogger.initializeEventLogging(this._graph);
     }
 
-    // Port visibility is now handled by InfraX6SelectionAdapter with proper history suppression
-    // No need for duplicate port visibility event handlers here
-
     // Setup keyboard handling using dedicated handler
     this._keyboardHandler.setupKeyboardHandling(this._graph);
 
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
 
-    // Note: DiagramOperationBroadcaster is initialized when collaboration starts,
-    // not at graph creation time, since it only works when isCollaborating() is true
-
     // Trigger an initial resize to ensure the graph fits the container properly
     this._scheduleInitialResize(container);
+
+    this.logger.debug('[DFD] X6 graph adapter initialized with minimal configuration');
   }
 
   /**

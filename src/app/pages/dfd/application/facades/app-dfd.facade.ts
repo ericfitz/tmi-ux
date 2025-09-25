@@ -56,6 +56,19 @@ export class AppDfdFacade {
   }
 
   // ========================================
+  // Infrastructure Management
+  // ========================================
+
+  /**
+   * Initialize the graph adapter with the provided graph instance
+   * This must be called before any graph operations can be performed
+   */
+  initializeGraphAdapter(containerElement: HTMLElement): void {
+    this.logger.debug('AppDfdFacade: Initializing graph adapter');
+    this.infraX6GraphAdapter.initialize(containerElement);
+  }
+
+  // ========================================
   // Node Operations
   // ========================================
 

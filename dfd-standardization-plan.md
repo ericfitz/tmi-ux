@@ -77,17 +77,19 @@ src/app/pages/dfd/
 
 ### Key Renames by Layer
 
-#### Domain Layer (→ `domain/services/`)
-- `DfdEdgeService` → `DomainEdgeService`
-- Create `DomainNodeService` (extract from current node services)
-- Create `DomainValidationService` (consolidate validation logic)
+#### Domain Layer (→ `domain/`)
+- **IMPLEMENTED**: Removed all services from domain layer for architectural purity
+- Domain layer now contains only pure objects: value objects, entities, events
+- No framework dependencies (Angular, RxJS) in domain layer
 
 #### Application Layer (→ `application/services/`)
-- `DfdOrchestrator` → `AppDfdOrchestrator`
-- `GraphOperationManager` → `AppGraphOperationManager`  
-- `AutoSaveManager` → `AppAutoSaveManager`
-- `PersistenceCoordinator` → `AppPersistenceCoordinator`
-- `DfdInfrastructureFacade` → `AppDfdFacade`
+- **IMPLEMENTED**: `DomainEdgeService` → `AppEdgeService` (moved and renamed)
+- **IMPLEMENTED**: `DomainStateService` → `AppStateService` (moved and renamed)
+- `DfdOrchestrator` → `AppDfdOrchestrator` (existing)
+- `GraphOperationManager` → `AppGraphOperationManager` (existing) 
+- `AutoSaveManager` → `AppAutoSaveManager` (existing)
+- `PersistenceCoordinator` → `AppPersistenceCoordinator` (existing)
+- `DfdInfrastructureFacade` → `AppDfdFacade` (existing)
 
 #### Infrastructure Layer
 **Adapters** (→ `infrastructure/adapters/`)

@@ -29,9 +29,13 @@ pnpm run lint:all --fix
    - Solution: Use interfaces in `core/interfaces/` instead
 
 2. **Domain Layer Purity**
-   - Domain objects cannot depend on Angular or infrastructure
-   - Violation example: Domain object importing `@angular/core`
-   - Solution: Keep domain objects framework-agnostic
+   - Domain objects cannot depend on Angular, RxJS, or any framework
+   - No dependencies on infrastructure, application, or service layers
+   - Violation examples: 
+     - Domain service importing `@angular/core`
+     - Domain object importing `rxjs` 
+     - Domain layer importing from `../infrastructure/*`
+   - Solution: Keep domain objects as pure TypeScript classes with business logic only
 
 3. **Import Restrictions**
    - No imports from `*.module` files (use standalone components)
@@ -125,22 +129,43 @@ constructor(@Optional() private dfdHandler?: DfdHandler) {}
 ```
 
 ### 2. Domain Depending on Framework
-**Violation:**
+**Violations:**
 ```typescript
-// In domain/value-objects/node.ts
+// In domain/services/domain-edge.service.ts
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { X6GraphAdapter } from '../../infrastructure/adapters/x6-graph.adapter';
 
 @Injectable()
-export class Node {
-  // ...
+export class DomainEdgeService {
+  // Domain services should not use Angular or RxJS
 }
 ```
 
 **Fix:**
 ```typescript
-// In domain/value-objects/node.ts
-export class Node {
-  // Pure TypeScript class, no Angular dependencies
+// Move to application/services/app-edge.service.ts
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class AppEdgeService {
+  // Application services can use Angular and RxJS
+}
+
+// Keep domain/value-objects/edge-info.ts pure
+export class EdgeInfo {
+  // Pure TypeScript class with business logic only
+  private constructor(
+    public readonly id: string,
+    public readonly sourceNodeId: string,
+    public readonly targetNodeId: string
+  ) {}
+
+  static create(data: EdgeData): EdgeInfo {
+    // Pure domain logic
+    return new EdgeInfo(data.id, data.sourceNodeId, data.targetNodeId);
+  }
 }
 ```
 
@@ -213,8 +238,22 @@ jobs:
 1. **Circular Dependencies**: Should be 0
 2. **Core → Feature imports**: Should be 0
 3. **Domain → Framework imports**: Should be 0
-4. **Module files**: Should be 0 (except third-party)
-5. **Duplicate service providers**: Should be minimized
+4. **Domain → Application/Infrastructure imports**: Should be 0
+5. **Domain services with Angular/RxJS dependencies**: Should be 0
+6. **Module files**: Should be 0 (except third-party)
+7. **Duplicate service providers**: Should be minimized
+
+### Automated Checks
+```bash
+# Check for domain layer violations
+pnpm run lint:all | grep -i "domain.*should.*pure"
+
+# Verify domain directory only contains pure objects
+find src/app/**/domain -name "*.service.ts" | wc -l  # Should be 0
+
+# Check for framework imports in domain layer
+grep -r "@angular\|rxjs\|@antv" src/app/**/domain/ | grep -v ".spec.ts" | wc -l  # Should be 0
+```
 
 ### Regular Architecture Reviews
 
