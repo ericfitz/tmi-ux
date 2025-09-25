@@ -63,7 +63,7 @@ import { InfraPortStateService } from '../../infrastructure/services/infra-port-
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { AppEdgeService } from '../../application/services/app-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 
@@ -117,7 +117,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     InfraNodeService,
     InfraX6CoreOperationsService,
     InfraEdgeService,
-    DomainEdgeService,
+    AppEdgeService,
     GraphHistoryCoordinator,
     DiagramOperationBroadcaster,
     // Essential services still needed

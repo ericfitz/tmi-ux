@@ -15,7 +15,7 @@ import { GraphHistoryCoordinator } from '../../services/graph-history-coordinato
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
-import { InfraEdgeService } from '../../domain/services/domain-edge.service';
+import { InfraEdgeService } from '../services/infra-edge.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Helper to add getNodeTypeInfo extension mock to nodes

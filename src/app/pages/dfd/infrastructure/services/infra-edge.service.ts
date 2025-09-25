@@ -104,7 +104,7 @@ export class InfraEdgeService {
       this._portStateManager.ensureConnectedPortsVisible(graph, x6Edge);
     }
 
-    this._logger.debugComponent('DomainEdgeService', 'Edge created successfully', {
+    this._logger.debugComponent('InfraEdgeService', 'Edge created successfully', {
       edgeId: edgeInfo.id,
       edgeCreated: !!x6Edge,
       metadataSet: !!(edgeInfo.data && (x6Edge as any).setMetadata),
@@ -200,7 +200,7 @@ export class InfraEdgeService {
       }
     }
 
-    this._logger.debugComponent('DomainEdgeService', 'Edge updated successfully', {
+    this._logger.debugComponent('InfraEdgeService', 'Edge updated successfully', {
       edgeId: edge.id,
       updatedProperties: Object.keys(updates),
     });
@@ -236,7 +236,7 @@ export class InfraEdgeService {
         }
       }
 
-      this._logger.debugComponent('DomainEdgeService', 'Edge removed successfully', { edgeId });
+      this._logger.debugComponent('InfraEdgeService', 'Edge removed successfully', { edgeId });
       return true;
     }
 
@@ -269,7 +269,7 @@ export class InfraEdgeService {
 
     if (!hasWrapAttrs || !hasLineAttrs) {
       this._logger.debugComponent(
-        'DomainEdgeService',
+        'InfraEdgeService',
         'Adding missing edge attrs for visual rendering',
         {
           hasWrapAttrs,
@@ -348,7 +348,7 @@ export class InfraEdgeService {
       if (sourceNode && sourceNode.isNode()) {
         const sourcePorts = sourceNode.getPorts();
         const sourcePortExists = sourcePorts.some((port: any) => port.id === sourcePortId);
-        this._logger.debugComponent('DomainEdgeService', 'Source node verification', {
+        this._logger.debugComponent('InfraEdgeService', 'Source node verification', {
           edgeId: edgeInfo.id,
           sourceNodeId,
           sourcePortId,
@@ -371,7 +371,7 @@ export class InfraEdgeService {
       if (targetNode && targetNode.isNode()) {
         const targetPorts = targetNode.getPorts();
         const targetPortExists = targetPorts.some((port: any) => port.id === targetPortId);
-        this._logger.debugComponent('DomainEdgeService', 'Target node verification', {
+        this._logger.debugComponent('InfraEdgeService', 'Target node verification', {
           edgeId: edgeInfo.id,
           targetNodeId,
           targetPortId,

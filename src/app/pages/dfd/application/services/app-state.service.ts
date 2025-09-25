@@ -1,9 +1,9 @@
 /**
- * DFD State Service
+ * Application State Service
  *
- * Manages the state of the DFD diagram including cells, operations,
- * synchronization status, and conflict resolution. Processes domain
- * events from the WebSocket service and coordinates state updates.
+ * Orchestrates the state management of the DFD diagram including cells, operations,
+ * synchronization status, and conflict resolution. Coordinates between domain events
+ * from the WebSocket service and application state updates.
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
@@ -62,7 +62,7 @@ export interface DfdDiagramState {
 @Injectable({
   providedIn: 'root',
 })
-export class DomainStateService implements OnDestroy {
+export class AppStateService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
 
@@ -111,7 +111,7 @@ export class DomainStateService implements OnDestroy {
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
   ) {
-    this._logger.info('DomainStateService initialized');
+    this._logger.info('AppStateService initialized');
   }
 
   /**
@@ -392,7 +392,7 @@ export class DomainStateService implements OnDestroy {
    * Clean up
    */
   ngOnDestroy(): void {
-    this._logger.info('Destroying DomainStateService');
+    this._logger.info('Destroying AppStateService');
     this._destroy$.next();
     this._destroy$.complete();
     this._subscriptions.unsubscribe();

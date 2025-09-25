@@ -47,7 +47,7 @@ import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
 import { InfraX6HistoryAdapter } from './infra-x6-history.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
-import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { AppEdgeService } from '../../application/services/app-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
@@ -125,7 +125,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _historyManager: InfraX6HistoryAdapter,
     private readonly _selectionAdapter: InfraX6SelectionAdapter,
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
-    private readonly _edgeService: DomainEdgeService,
+    private readonly _edgeService: AppEdgeService,
     private readonly _historyCoordinator: GraphHistoryCoordinator,
     private readonly _diagramOperationBroadcaster: DiagramOperationBroadcaster,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,

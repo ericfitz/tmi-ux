@@ -1,24 +1,20 @@
 /**
- * DFD Edge Service
+ * Application Edge Service
  *
- * This service provides comprehensive edge management functionality for DFD diagrams.
- * It handles edge creation, validation, and operations with connection rule enforcement.
+ * This application service orchestrates edge management functionality for DFD diagrams.
+ * It coordinates between domain business rules and infrastructure implementations.
  *
  * Key functionality:
- * - Manages edge creation and validation according to DFD rules
- * - Provides connection validation for different node type combinations
- * - Handles edge routing and automatic path calculation
- * - Manages edge styling and visual properties
- * - Coordinates with InfraX6GraphAdapter for graph-specific edge operations
- * - Implements DFD-specific connection rules and constraints
- * - Provides edge manipulation operations (vertices, labels, styling)
- * - Handles inverse connection creation for bi-directional flows
- * - Manages edge metadata and custom properties
- * - Provides edge validation and business rule enforcement
- * - Supports edge templates and styling configurations
- * - Integrates with visual effects service for edge animations
- * - Handles magnet and port validation for connection endpoints
- * - Manages edge lifecycle events and state changes
+ * - Orchestrates edge creation and validation workflows
+ * - Coordinates between domain rules and infrastructure adapters
+ * - Manages edge lifecycle operations and state transitions
+ * - Handles DFD-specific connection validation logic
+ * - Coordinates with infrastructure services for X6 graph operations
+ * - Manages edge styling, labels, and visual effects
+ * - Orchestrates inverse connection creation workflows
+ * - Integrates domain validation with infrastructure execution
+ * - Handles remote operation coordination via WebSocket
+ * - Manages edge operation history and state consistency
  */
 
 import { Injectable } from '@angular/core';
@@ -30,7 +26,7 @@ import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-o
 import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { EdgeInfo } from '../value-objects/edge-info';
+import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
@@ -56,7 +52,7 @@ export interface MagnetValidationArgs {
  * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
 @Injectable()
-export class DomainEdgeService {
+export class AppEdgeService {
   /**
    * Valid DFD node shape types
    */

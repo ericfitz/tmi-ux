@@ -7,20 +7,16 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Graph, Node, Edge } from '@antv/x6';
-import {
-  DomainEdgeService,
-  ConnectionValidationArgs,
-  MagnetValidationArgs,
-} from './domain-edge.service';
+import { AppEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './app-edge.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
-import { InfraX6HistoryAdapter } from '../infrastructure/adapters/x6-history-manager';
+import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
-import { InfraEdgeService } from './domain-edge.service';
+import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
-import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interfaces for complex dependencies
@@ -46,8 +42,8 @@ interface MockEdgeService {
   removeEdge: ReturnType<typeof vi.fn>;
 }
 
-describe('DomainEdgeService - Comprehensive Tests', () => {
-  let service: DomainEdgeService;
+describe('AppEdgeService - Comprehensive Tests', () => {
+  let service: AppEdgeService;
   let graph: Graph;
   let mockLogger: MockLoggerService;
   let mockX6ZOrderAdapter: MockX6ZOrderAdapter;
@@ -92,7 +88,7 @@ describe('DomainEdgeService - Comprehensive Tests', () => {
     };
 
     // Create service instance
-    service = new DomainEdgeService(
+    service = new AppEdgeService(
       mockLogger as unknown as LoggerService,
       mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
       mockX6HistoryManager as unknown as InfraX6HistoryAdapter,

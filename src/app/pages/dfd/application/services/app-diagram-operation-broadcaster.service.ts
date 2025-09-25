@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Graph, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
-import { DomainStateService } from '../../domain/services/domain-state.service';
+import { AppStateService } from './app-state.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
@@ -26,7 +26,7 @@ export class DiagramOperationBroadcaster {
 
   constructor(
     private collaborativeOperationService: CollaborativeOperationService,
-    private domainStateService: DomainStateService,
+    private appStateService: AppStateService,
     private collaborationService: DfdCollaborationService,
     private historyCoordinator: GraphHistoryCoordinator,
     private logger: LoggerService,
@@ -214,7 +214,7 @@ export class DiagramOperationBroadcaster {
    */
   private _shouldBroadcastChange(event: string, args: any): boolean {
     // Skip if applying remote changes (prevents echo)
-    if (this.domainStateService.getCurrentState().isApplyingRemoteChange) {
+    if (this.appStateService.getCurrentState().isApplyingRemoteChange) {
       this.logger.debug('Skipping broadcast - applying remote change');
       return false;
     }

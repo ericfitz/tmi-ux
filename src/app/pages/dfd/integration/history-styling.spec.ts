@@ -36,7 +36,7 @@ import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-orde
 import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
 import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.service';
 // Removed imports to avoid Angular Material dependencies during integration tests
-// import { DomainEdgeService } from '../domain/services/domain-edge.service';
+// import { AppEdgeService } from '../application/services/app-edge.service';
 // import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
 import { GraphHistoryCoordinator } from '../services/graph-history-coordinator.service';
 import { LoggerService } from '../../../../core/services/logger.service';

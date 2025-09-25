@@ -28,7 +28,7 @@ import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { NodeInfo } from '../../domain/value-objects/node-info';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { InfraX6EventLoggerAdapter } from '../infrastructure/adapters/infra-x6-event-logger.adapter';
-import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { AppEdgeService } from '../../application/services/app-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 // Mock LoggerService for integration testing
@@ -117,7 +117,7 @@ describe.skip('InfraX6GraphAdapter', () => {
   let selectionService: SelectionService;
   let historyManager: InfraX6HistoryAdapter;
   let x6EventLogger: InfraX6EventLoggerAdapter;
-  let infraEdgeService: DomainEdgeService;
+  let appEdgeService: AppEdgeService;
   let historyCoordinator: GraphHistoryCoordinator;
   let infraVisualEffectsService: any;
   let coreEdgeService: any;
@@ -156,7 +156,7 @@ describe.skip('InfraX6GraphAdapter', () => {
     );
     historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
     x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
-    infraEdgeService = new DomainEdgeService(
+    appEdgeService = new AppEdgeService(
       mockLogger as unknown as LoggerService,
       zOrderAdapter,
       historyManager,
@@ -188,7 +188,7 @@ describe.skip('InfraX6GraphAdapter', () => {
       historyManager,
       selectionAdapter,
       x6EventLogger,
-      infraEdgeService,
+      appEdgeService,
       historyCoordinator,
       x6CoreOps,
     );

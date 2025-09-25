@@ -14,7 +14,7 @@ import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { DomainStateService } from '../../domain/services/domain-state.service';
+import { AppStateService } from './app-state.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 
@@ -65,7 +65,7 @@ export class AppDiagramResyncService implements OnDestroy {
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
-    private domainStateService: DomainStateService,
+    private appStateService: AppStateService,
     private appDiagramLoadingService: AppDiagramLoadingService,
   ) {
     this._setupDebouncedResync();
@@ -241,7 +241,7 @@ export class AppDiagramResyncService implements OnDestroy {
         }),
         tap(() => {
           // Mark resync as complete in the state service
-          this.domainStateService.resyncComplete();
+          this.appStateService.resyncComplete();
         }),
         catchError(error => {
           this.logger.error('Resync operation failed', error);
@@ -272,7 +272,7 @@ export class AppDiagramResyncService implements OnDestroy {
         });
 
         // Set flag to prevent triggering outbound operations
-        this.domainStateService.setApplyingRemoteChange(true);
+        this.appStateService.setApplyingRemoteChange(true);
 
         try {
           // Use the shared diagram loading service with resync-specific options
@@ -303,7 +303,7 @@ export class AppDiagramResyncService implements OnDestroy {
           observer.error(updateError);
         } finally {
           // Always clear the flag
-          this.domainStateService.setApplyingRemoteChange(false);
+          this.appStateService.setApplyingRemoteChange(false);
         }
       } catch (error) {
         this.logger.error('Error in updateLocalDiagram', error);

@@ -7,7 +7,7 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Graph, Node, Edge } from '@antv/x6';
-import { InfraEdgeService } from '../../domain/services/domain-edge.service';
+import { InfraEdgeService } from './infra-edge.service';
 import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraPortStateService } from './infra-port-state.service';

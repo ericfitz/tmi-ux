@@ -27,7 +27,7 @@ import { NodeType } from '../../domain/value-objects/node-info';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
-import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { AppEdgeService } from '../services/app-edge.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
@@ -46,7 +46,7 @@ export class AppDfdFacade {
     private readonly infraX6GraphAdapter: InfraX6GraphAdapter,
     private readonly infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
     private readonly infraNodeService: InfraNodeService,
-    private readonly domainEdgeService: DomainEdgeService,
+    private readonly appEdgeService: AppEdgeService,
     private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
     private readonly infraVisualEffectsService: InfraVisualEffectsService,
     private readonly infraX6CoreOperationsService: InfraX6CoreOperationsService,
@@ -95,7 +95,7 @@ export class AppDfdFacade {
    */
   handleEdgeAdded(edge: any, diagramId: string, isInitialized: boolean): Observable<void> {
     const graph = this.infraX6GraphAdapter.getGraph();
-    return this.domainEdgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
+    return this.appEdgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
   }
 
   /**
@@ -108,7 +108,7 @@ export class AppDfdFacade {
     isInitialized: boolean,
   ): Observable<void> {
     const graph = this.infraX6GraphAdapter.getGraph();
-    return this.domainEdgeService.handleEdgeVerticesChanged(
+    return this.appEdgeService.handleEdgeVerticesChanged(
       edgeId,
       vertices,
       graph,
@@ -122,21 +122,21 @@ export class AppDfdFacade {
    */
   addInverseConnection(edge: any, diagramId: string): Observable<void> {
     const graph = this.infraX6GraphAdapter.getGraph();
-    return this.domainEdgeService.addInverseConnection(edge, graph, diagramId);
+    return this.appEdgeService.addInverseConnection(edge, graph, diagramId);
   }
 
   /**
    * Validate if a connection is allowed between nodes
    */
   validateConnection(sourceNode: any, targetNode: any): boolean {
-    return this.domainEdgeService.validateConnection(sourceNode, targetNode);
+    return this.appEdgeService.validateConnection(sourceNode, targetNode);
   }
 
   /**
    * Check if a magnet is valid for connections
    */
   isMagnetValid(magnet: Element): boolean {
-    return this.domainEdgeService.isMagnetValid({ magnet });
+    return this.appEdgeService.isMagnetValid({ magnet });
   }
 
   /**
@@ -148,7 +148,7 @@ export class AppDfdFacade {
     sourceMagnet: Element,
     targetMagnet: Element,
   ): boolean {
-    return this.domainEdgeService.isConnectionValid({
+    return this.appEdgeService.isConnectionValid({
       sourceView,
       targetView,
       sourceMagnet,
@@ -160,28 +160,28 @@ export class AppDfdFacade {
    * Check if node connection is valid based on DFD rules
    */
   isNodeConnectionValid(sourceNode: any, targetNode: any): boolean {
-    return this.domainEdgeService.isNodeConnectionValid(sourceNode, targetNode);
+    return this.appEdgeService.isNodeConnectionValid(sourceNode, targetNode);
   }
 
   /**
    * Update edge label
    */
   updateEdgeLabel(edge: any, label: string): void {
-    this.domainEdgeService.updateEdgeLabel(edge, label);
+    this.appEdgeService.updateEdgeLabel(edge, label);
   }
 
   /**
    * Remove edge label
    */
   removeEdgeLabel(edge: any): void {
-    this.domainEdgeService.removeEdgeLabel(edge);
+    this.appEdgeService.removeEdgeLabel(edge);
   }
 
   /**
    * Check if edge is connected to a specific node
    */
   isEdgeConnectedToNode(edge: any, nodeId: string): boolean {
-    return this.domainEdgeService.isEdgeConnectedToNode(edge, nodeId);
+    return this.appEdgeService.isEdgeConnectedToNode(edge, nodeId);
   }
 
   /**
@@ -189,7 +189,7 @@ export class AppDfdFacade {
    */
   removeNodeEdges(nodeId: string): void {
     const graph = this.infraX6GraphAdapter.getGraph();
-    this.domainEdgeService.removeNodeEdges(graph, nodeId);
+    this.appEdgeService.removeNodeEdges(graph, nodeId);
   }
 
   /**
