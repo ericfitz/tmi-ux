@@ -3,13 +3,13 @@
  *
  * This facade encapsulates all the infrastructure services and adapters needed
  * for DFD operations, providing a simplified interface for high-level components.
- * 
+ *
  * Key benefits:
  * - Hides complex infrastructure dependencies from components
  * - Provides a single point of access for DFD operations
  * - Simplifies dependency injection and testing
  * - Encapsulates the orchestration between different infrastructure layers
- * 
+ *
  * This facade manages:
  * - Node creation, deletion, and manipulation operations
  * - X6 graph adapter and core operations
@@ -81,10 +81,7 @@ export class DfdInfrastructureFacade {
   /**
    * Create a node at a specific position
    */
-  createNodeAtPosition(
-    nodeType: NodeType,
-    position: { x: number; y: number },
-  ): Observable<void> {
+  createNodeAtPosition(nodeType: NodeType, position: { x: number; y: number }): Observable<void> {
     // Use the DfdNodeService's createNode method directly
     return (this.dfdNodeService as any).createNode(nodeType, position);
   }
@@ -111,7 +108,13 @@ export class DfdInfrastructureFacade {
     isInitialized: boolean,
   ): Observable<void> {
     const graph = this.x6GraphAdapter.getGraph();
-    return this.dfdEdgeService.handleEdgeVerticesChanged(edgeId, vertices, graph, diagramId, isInitialized);
+    return this.dfdEdgeService.handleEdgeVerticesChanged(
+      edgeId,
+      vertices,
+      graph,
+      diagramId,
+      isInitialized,
+    );
   }
 
   /**
@@ -139,7 +142,12 @@ export class DfdInfrastructureFacade {
   /**
    * Check if a connection between ports is valid
    */
-  isConnectionValid(sourceView: any, targetView: any, sourceMagnet: Element, targetMagnet: Element): boolean {
+  isConnectionValid(
+    sourceView: any,
+    targetView: any,
+    sourceMagnet: Element,
+    targetMagnet: Element,
+  ): boolean {
     return this.dfdEdgeService.isConnectionValid({
       sourceView,
       targetView,
@@ -191,7 +199,7 @@ export class DfdInfrastructureFacade {
     try {
       const graph = this.x6GraphAdapter.getGraph();
       const selectedCells = graph.getSelectedCells();
-      
+
       if (selectedCells.length === 0) {
         return new Observable(observer => {
           observer.next({ success: true, deletedCount: 0 });
@@ -214,8 +222,8 @@ export class DfdInfrastructureFacade {
         }
       });
 
-      this.logger.debug('Deleted selected cells via facade', { 
-        deletedCount: selectedCells.length 
+      this.logger.debug('Deleted selected cells via facade', {
+        deletedCount: selectedCells.length,
       });
 
       return new Observable(observer => {
@@ -354,7 +362,7 @@ export class DfdInfrastructureFacade {
   isSelectedCellTextBox(): boolean {
     const selectedCells = this.getSelectedCells();
     if (selectedCells.length !== 1) return false;
-    
+
     const cell = selectedCells[0];
     return cell.isNode() && (cell.shape === 'text-box' || cell.getData()?.nodeType === 'text-box');
   }
@@ -365,9 +373,12 @@ export class DfdInfrastructureFacade {
   isSelectedCellSecurityBoundary(): boolean {
     const selectedCells = this.getSelectedCells();
     if (selectedCells.length !== 1) return false;
-    
+
     const cell = selectedCells[0];
-    return cell.isNode() && (cell.shape === 'security-boundary' || cell.getData()?.nodeType === 'security-boundary');
+    return (
+      cell.isNode() &&
+      (cell.shape === 'security-boundary' || cell.getData()?.nodeType === 'security-boundary')
+    );
   }
 
   /**

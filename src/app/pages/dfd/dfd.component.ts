@@ -327,7 +327,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupOrchestratorSubscriptions();
   }
 
-
   ngOnDestroy(): void {
     this.logger.info('DfdComponent v2 ngOnDestroy called');
 
@@ -425,16 +424,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.logger.debug('Handling edge added', { edgeId: edge.id });
 
-    this.dfdInfrastructure
-      .handleEdgeAdded(edge, this.dfdId, this.isSystemInitialized)
-      .subscribe({
-        next: () => {
-          this.logger.debug('Edge added successfully', { edgeId: edge.id });
-        },
-        error: (error) => {
-          this.logger.error('Error handling edge added', { error, edgeId: edge.id });
-        },
-      });
+    this.dfdInfrastructure.handleEdgeAdded(edge, this.dfdId, this.isSystemInitialized).subscribe({
+      next: () => {
+        this.logger.debug('Edge added successfully', { edgeId: edge.id });
+      },
+      error: error => {
+        this.logger.error('Error handling edge added', { error, edgeId: edge.id });
+      },
+    });
   }
 
   private handleEdgeVerticesChanged(edge: any): void {
@@ -452,7 +449,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         next: () => {
           this.logger.debug('Edge vertices changed successfully', { edgeId: edge.id });
         },
-        error: (error) => {
+        error: error => {
           this.logger.error('Error handling edge vertices changed', { error, edgeId: edge.id });
         },
       });
@@ -913,7 +910,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           diagramId,
         });
       },
-      error: (error) => {
+      error: error => {
         this.logger.error('Failed to add inverse connection', {
           error,
           originalEdgeId: edge.id,

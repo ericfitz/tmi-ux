@@ -592,7 +592,10 @@ export class DfdOrchestrator {
                 },
               })),
               catchError(error => {
-                this.logger.error('DfdInfrastructureFacade node creation failed', { error, nodeType });
+                this.logger.error('DfdInfrastructureFacade node creation failed', {
+                  error,
+                  nodeType,
+                });
                 return of({
                   success: false,
                   operationId: `create-node-${Date.now()}`,
