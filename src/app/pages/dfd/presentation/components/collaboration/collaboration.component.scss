@@ -2,13 +2,13 @@
 .collaboration-container {
   display: inline-flex;
   align-items: center;
-  margin-right: 8px; // Shift left to align with close button below
+  margin-right: 0; // Align with toolbar right edge
   position: relative; // Add relative positioning for absolute children
   background-color: #f5f5f5; // Light gray background
   border-radius: 8px; // Rounded corners
   padding: 4px 8px; // Padding around buttons
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%); // Subtle shadow for depth
-  border: 1px solid #e0e0e0; // Light border
+  border: 1px solid #e0e0e0; // Dark border for proper contrast
   gap: 4px; // Space between buttons
 }
 
@@ -22,8 +22,8 @@ button {
     vertical-align: middle;
 
     &.icon-default {
-      // Default state - use theme default color
-      color: inherit;
+      // Default state - dark color for contrast
+      color: #333;
     }
 
     &.icon-active {

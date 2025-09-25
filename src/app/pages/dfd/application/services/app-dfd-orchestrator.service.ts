@@ -891,6 +891,13 @@ export class AppDfdOrchestrator {
       grid: {
         size: 10,
         visible: true,
+        type: 'dot',
+        args: {
+          color: '#000000', // Black grid dots
+        },
+      },
+      background: {
+        color: '#f5f5f5', // Light gray background to match toolbar and collaboration bar
       },
       panning: {
         enabled: true,
