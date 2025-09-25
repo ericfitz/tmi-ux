@@ -173,7 +173,15 @@ export class X6SelectionAdapter {
    * Get currently selected cells
    */
   getSelectedCells(graph: Graph): Cell[] {
-    return graph.getSelectedCells();
+    // Use our internal selectedCells set to get the actual selected cells
+    const cells: Cell[] = [];
+    this.selectedCells.forEach(cellId => {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        cells.push(cell);
+      }
+    });
+    return cells;
   }
 
   /**
@@ -211,7 +219,11 @@ export class X6SelectionAdapter {
    * Clear current selection
    */
   clearSelection(graph: Graph): void {
-    graph.unselect(graph.getSelectedCells());
+    // Get selected cells using our helper method and unselect them
+    const selectedCells = this.getSelectedCells(graph);
+    if (selectedCells.length > 0) {
+      graph.unselect(selectedCells);
+    }
     this.logger.info('Selection cleared');
   }
 

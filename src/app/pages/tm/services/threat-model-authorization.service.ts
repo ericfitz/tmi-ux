@@ -84,9 +84,9 @@ export class ThreatModelAuthorizationService implements OnDestroy {
       threatModelId,
       authorizationCount: authorization.length,
       previousThreatModelId: this._currentThreatModelId,
-      stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n')
+      stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
     });
-    
+
     this._currentThreatModelId = threatModelId;
     this._authorizationSubject.next(authorization);
 
@@ -124,9 +124,9 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   clearAuthorization(): void {
     this.logger.debug('clearAuthorization called', {
       previousThreatModelId: this._currentThreatModelId,
-      stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n')
+      stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
     });
-    
+
     this._currentThreatModelId = null;
     this._authorizationSubject.next(null);
     this.logger.debug('Authorization cleared');

@@ -163,14 +163,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Get threat model from route resolver
     const threatModel = this.route.snapshot.data['threatModel'];
     this.logger.debug('Threat model data from route resolver', {
-      threatModel: threatModel ? {
-        id: threatModel.id,
-        name: threatModel.name,
-        authorizationCount: threatModel.authorization?.length || 0
-      } : null,
-      routeData: this.route.snapshot.data
+      threatModel: threatModel
+        ? {
+            id: threatModel.id,
+            name: threatModel.name,
+            authorizationCount: threatModel.authorization?.length || 0,
+          }
+        : null,
+      routeData: this.route.snapshot.data,
     });
-    
+
     if (threatModel) {
       this.threatModelName = threatModel.name;
 
@@ -189,13 +191,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // First check if authorization is already loaded synchronously
     const currentPermission = this.authorizationService.getCurrentUserPermission();
     const currentThreatModelId = this.authorizationService.currentThreatModelId;
-    
+
     this.logger.debug('Authorization service state check', {
       currentPermission,
       currentThreatModelId,
-      expectedThreatModelId: this.threatModelId
+      expectedThreatModelId: this.threatModelId,
     });
-    
+
     if (currentPermission !== null) {
       // Authorization is already loaded, initialize immediately
       this.logger.info('Authorization already loaded, initializing immediately', {
@@ -204,22 +206,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.initializeWithPermission(currentPermission);
     } else {
       // Authorization not yet loaded - check if we need to manually load the threat model
-      this.logger.debug('Authorization not yet loaded, checking if we need to load threat model manually');
-      
+      this.logger.debug(
+        'Authorization not yet loaded, checking if we need to load threat model manually',
+      );
+
       if (this.threatModelId && !this.authorizationService.currentThreatModelId) {
         // No authorization and threat model ID doesn't match - manually load threat model
         this.logger.info('Manually loading threat model due to missing authorization', {
           threatModelId: this.threatModelId,
-          currentAuthThreatModelId: this.authorizationService.currentThreatModelId
+          currentAuthThreatModelId: this.authorizationService.currentThreatModelId,
         });
-        
+
         this._subscriptions.add(
           this.threatModelService.getThreatModelById(this.threatModelId, true).subscribe({
             next: threatModel => {
               if (threatModel) {
                 this.logger.info('Manually loaded threat model successfully', {
                   id: threatModel.id,
-                  name: threatModel.name
+                  name: threatModel.name,
                 });
                 // The service should have called setAuthorization, check again
                 const permission = this.authorizationService.getCurrentUserPermission();
@@ -234,8 +238,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             error: error => {
               this.logger.error('Error manually loading threat model', { error });
-            }
-          })
+            },
+          }),
         );
       } else {
         // Wait for authorization updates via subscription
@@ -358,10 +362,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.dfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
         // Update component state based on orchestrator state
-        this.logger.debug('DFD orchestrator state changed', { 
-          initialized: state.initialized, 
+        this.logger.debug('DFD orchestrator state changed', {
+          initialized: state.initialized,
           loading: state.loading,
-          error: state.error 
+          error: state.error,
         });
         this.isSystemInitialized = state.initialized;
         this.cdr.markForCheck();
@@ -378,7 +382,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.updateHistoryState();
         }, 100);
         return () => clearInterval(interval);
-      }).pipe(takeUntil(this._destroy$)).subscribe()
+      })
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(),
     );
   }
 
@@ -418,7 +424,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Get the X6 history information
-    const history = (graph).history;
+    const history = graph.history;
     if (!history) {
       this.logger.warn('Cannot show history: History not available on graph');
       return;
@@ -427,16 +433,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Create a simple alert dialog showing history info
     const undoStackLength = history.undoStack ? history.undoStack.length : 0;
     const redoStackLength = history.redoStack ? history.redoStack.length : 0;
-    
+
     const message = `History Information:\n\nUndo Stack: ${undoStackLength} operations\nRedo Stack: ${redoStackLength} operations\n\nTotal History Length: ${undoStackLength + redoStackLength}`;
-    
+
     // Use simple alert for now - can be replaced with a proper dialog later
     alert(message);
-    
+
     this.logger.info('Showed X6 history information', {
       undoStackLength,
       redoStackLength,
-      totalHistory: undoStackLength + redoStackLength
+      totalHistory: undoStackLength + redoStackLength,
     });
   }
 
@@ -490,7 +496,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUndo(): void {
     if (!this.canUndo || this.isReadOnlyMode) return;
-    
+
     const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.warn('Cannot undo: Graph not available');
@@ -498,7 +504,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Use X6's built-in undo functionality
-    const history = (graph).history;
+    const history = graph.history;
     if (history && history.undo) {
       history.undo();
       this.logger.debug('Undo operation completed');
@@ -510,7 +516,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onRedo(): void {
     if (!this.canRedo || this.isReadOnlyMode) return;
-    
+
     const graph = this.dfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.warn('Cannot redo: Graph not available');
@@ -518,7 +524,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Use X6's built-in redo functionality
-    const history = (graph).history;
+    const history = graph.history;
     if (history && history.redo) {
       history.redo();
       this.logger.debug('Redo operation completed');
@@ -987,8 +993,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         const cell = graph.getCellById(selectedCells[0]);
         if (cell) {
           const cellData = cell.getData();
-          this.selectedCellIsTextBox = cellData?.nodeType === 'text-box' || cell.shape === 'text-box';
-          this.selectedCellIsSecurityBoundary = cellData?.nodeType === 'security-boundary' || cell.shape === 'security-boundary';
+          this.selectedCellIsTextBox =
+            cellData?.nodeType === 'text-box' || cell.shape === 'text-box';
+          this.selectedCellIsSecurityBoundary =
+            cellData?.nodeType === 'security-boundary' || cell.shape === 'security-boundary';
         } else {
           this.selectedCellIsTextBox = false;
           this.selectedCellIsSecurityBoundary = false;
@@ -1024,7 +1032,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const history = (graph).history;
+    const history = graph.history;
     const oldCanUndo = this.canUndo;
     const oldCanRedo = this.canRedo;
 

@@ -404,11 +404,14 @@ export class DfdOrchestrator {
   clearSelection(): void {
     const graph = this.getGraph;
     if (graph) {
-      if (typeof graph.cleanSelection === 'function') {
-        graph.cleanSelection();
-      } else {
-        graph.unselect(graph.getSelectedCells());
-      }
+      // Use known working X6 API: get selected cells and unselect them
+      const selectedCells = this.getSelectedCells();
+      selectedCells.forEach(cellId => {
+        const cell = graph.getCellById(cellId);
+        if (cell) {
+          graph.unselect(cell);
+        }
+      });
       this.logger.debug('Selection cleared');
     }
   }
@@ -418,7 +421,11 @@ export class DfdOrchestrator {
     if (!graph) {
       return [];
     }
-    return graph.getSelectedCells().map((cell: any) => cell.id);
+    
+    // Use the known working X6 API: filter all cells for selected ones
+    const cells = graph.getCells();
+    const selectedCells = cells.filter((cell: any) => cell.isSelected && cell.isSelected());
+    return selectedCells.map((cell: any) => cell.id);
   }
 
   /**
