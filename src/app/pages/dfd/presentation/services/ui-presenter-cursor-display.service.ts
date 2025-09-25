@@ -3,7 +3,10 @@ import { Subscription } from 'rxjs';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
-import { PRESENTER_CURSOR_CONFIG, PRESENTER_CURSOR_STYLES } from '../../constants/presenter-constants';
+import {
+  PRESENTER_CURSOR_CONFIG,
+  PRESENTER_CURSOR_STYLES,
+} from '../../constants/presenter-constants';
 
 export interface CursorPosition {
   x: number;

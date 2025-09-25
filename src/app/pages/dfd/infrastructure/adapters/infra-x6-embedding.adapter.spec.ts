@@ -109,7 +109,11 @@ describe('InfraX6EmbeddingAdapter', () => {
     infraEmbeddingService = new InfraEmbeddingService(mockLogger as any);
     zOrderService = new ZOrderService(mockLogger as any);
     infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService);
-    adapter = new InfraX6EmbeddingAdapter(mockLogger as any, infraEmbeddingService, infraX6ZOrderAdapter);
+    adapter = new InfraX6EmbeddingAdapter(
+      mockLogger as any,
+      infraEmbeddingService,
+      infraX6ZOrderAdapter,
+    );
 
     // Initialize embedding functionality
     adapter.initializeEmbedding(graph);

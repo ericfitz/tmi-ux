@@ -44,7 +44,11 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
     );
     x6CoreOps = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
     // Create InfraEdgeService with real port management services
-    service = new InfraEdgeService(mockLogger as unknown as LoggerService, portStateManager, x6CoreOps);
+    service = new InfraEdgeService(
+      mockLogger as unknown as LoggerService,
+      portStateManager,
+      x6CoreOps,
+    );
 
     // Create real X6 graph instance
     const container = document.createElement('div');

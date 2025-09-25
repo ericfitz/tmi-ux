@@ -7,7 +7,11 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Graph, Node, Edge } from '@antv/x6';
-import { DomainEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './domain-edge.service';
+import {
+  DomainEdgeService,
+  ConnectionValidationArgs,
+  MagnetValidationArgs,
+} from './domain-edge.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraX6HistoryAdapter } from '../infrastructure/adapters/x6-history-manager';

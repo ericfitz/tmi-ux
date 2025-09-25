@@ -171,7 +171,9 @@ describe.skip('DFD Integration - Visual Effects', () => {
       historyCoordinator,
     );
 
-    infraVisualEffectsService = new InfraVisualEffectsService(mockLogger as unknown as LoggerService);
+    infraVisualEffectsService = new InfraVisualEffectsService(
+      mockLogger as unknown as LoggerService,
+    );
 
     // Initialize graph
     adapter.initialize(container);
