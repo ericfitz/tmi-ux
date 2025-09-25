@@ -21,7 +21,7 @@
 
 import { Injectable } from '@angular/core';
 import { Graph, Node, Cell } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { EmbeddingService } from '../services/embedding.service';
 import { X6ZOrderAdapter } from './x6-z-order.adapter';
 

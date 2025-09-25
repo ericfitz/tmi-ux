@@ -23,7 +23,7 @@ import { Injectable } from '@angular/core';
 import { Node, Edge, Graph } from '@antv/x6';
 import { PortConnectionState } from '../../utils/x6-cell-extensions';
 import { EdgeQueryService } from './edge-query.service';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 /**

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { Subject } from 'rxjs';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { X6CoreOperationsService } from '../services/x6-core-operations.service';
 import { EdgeService } from '../services/edge.service';
 

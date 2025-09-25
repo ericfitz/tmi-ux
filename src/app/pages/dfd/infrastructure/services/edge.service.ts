@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Edge, Node } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { PortStateManagerService } from './port-state-manager.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';

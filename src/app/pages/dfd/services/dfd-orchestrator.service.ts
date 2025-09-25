@@ -559,7 +559,7 @@ export class DfdOrchestrator {
       if (typeof nodeDataOrType === 'string') {
         // Handle the (nodeType, position) signature - use DfdNodeService for intelligent positioning
         const nodeType = nodeDataOrType as NodeType;
-        
+
         // Use DfdNodeService's intelligent positioning algorithm if no position provided
         if (!position) {
           this.logger.debug('Using DfdNodeService intelligent positioning for node creation', {
@@ -570,37 +570,39 @@ export class DfdOrchestrator {
             },
           });
 
-          return this.dfdNodeService.addGraphNode(
-            nodeType,
-            this._containerElement.clientWidth,
-            this._containerElement.clientHeight,
-            this._initParams?.diagramId || 'unknown',
-            true, // isInitialized
-          ).pipe(
-            map(() => ({
-              success: true,
-              operationId: `create-node-${Date.now()}`,
-              operationType: 'create-node' as const,
-              affectedCellIds: [], // DfdNodeService doesn't return the node ID, but creation will succeed
-              timestamp: Date.now(),
-              metadata: {
-                nodeType,
-                usedIntelligentPositioning: true,
-                method: 'DfdNodeService.addGraphNode',
-              },
-            })),
-            catchError(error => {
-              this.logger.error('DfdNodeService node creation failed', { error, nodeType });
-              return of({
-                success: false,
+          return this.dfdNodeService
+            .addGraphNode(
+              nodeType,
+              this._containerElement.clientWidth,
+              this._containerElement.clientHeight,
+              this._initParams?.diagramId || 'unknown',
+              true, // isInitialized
+            )
+            .pipe(
+              map(() => ({
+                success: true,
                 operationId: `create-node-${Date.now()}`,
                 operationType: 'create-node' as const,
-                affectedCellIds: [],
+                affectedCellIds: [], // DfdNodeService doesn't return the node ID, but creation will succeed
                 timestamp: Date.now(),
-                error: `DfdNodeService creation failed: ${error.message}`,
-              });
-            }),
-          );
+                metadata: {
+                  nodeType,
+                  usedIntelligentPositioning: true,
+                  method: 'DfdNodeService.addGraphNode',
+                },
+              })),
+              catchError(error => {
+                this.logger.error('DfdNodeService node creation failed', { error, nodeType });
+                return of({
+                  success: false,
+                  operationId: `create-node-${Date.now()}`,
+                  operationType: 'create-node' as const,
+                  affectedCellIds: [],
+                  timestamp: Date.now(),
+                  error: `DfdNodeService creation failed: ${error.message}`,
+                });
+              }),
+            );
         } else {
           // Position provided - fall back to operation manager for explicit positioning
           const nodeData: NodeData = {

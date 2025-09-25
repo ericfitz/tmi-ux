@@ -460,7 +460,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: result => {
           if (result.success) {
-            this.logger.debug('Node added successfully using intelligent positioning', { 
+            this.logger.debug('Node added successfully using intelligent positioning', {
               nodeType,
               usedIntelligentPositioning: result.metadata?.['usedIntelligentPositioning'],
               method: result.metadata?.['method'],

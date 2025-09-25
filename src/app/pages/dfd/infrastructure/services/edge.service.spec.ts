@@ -9,7 +9,7 @@
 import { Graph, Node, Edge } from '@antv/x6';
 import { EdgeService } from './edge.service';
 import { EdgeQueryService } from './edge-query.service';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { PortStateManagerService } from './port-state-manager.service';
 import { X6CoreOperationsService } from './x6-core-operations.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
