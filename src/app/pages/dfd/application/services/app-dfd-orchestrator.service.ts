@@ -937,7 +937,7 @@ export class AppDfdOrchestrator {
         connector: {
           name: 'smooth',
         },
-        validateMagnet: (_args) => {
+        validateMagnet: _args => {
           // Will be configured after facade is initialized
           return true;
         },
