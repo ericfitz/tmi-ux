@@ -162,10 +162,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Get threat model from route resolver
     const threatModel = this.route.snapshot.data['threatModel'];
+    this.logger.debug('Threat model data from route resolver', {
+      threatModel: threatModel ? {
+        id: threatModel.id,
+        name: threatModel.name,
+        authorizationCount: threatModel.authorization?.length || 0
+      } : null,
+      routeData: this.route.snapshot.data
+    });
+    
     if (threatModel) {
       this.threatModelName = threatModel.name;
 
       // Note: Permission handling moved to ngAfterViewInit to properly coordinate with orchestrator initialization
+    } else {
+      this.logger.warn('No threat model data available from route resolver');
     }
 
     // Configure auto-save policies based on user permission
@@ -175,70 +186,131 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.logger.info('DfdComponent v2 ngAfterViewInit called');
 
-    // Wait for authorization to be properly loaded before initializing orchestrator
-    // Use the subscription to ensure we get the correct permission
-    this._subscriptions.add(
-      this.authorizationService.currentUserPermission$.subscribe(permission => {
-        // Skip initialization if permission is null (not yet loaded)
-        if (permission === null) {
-          this.logger.debug('DFD waiting for authorization data to be loaded');
-          return;
-        }
-
-        // Update component state
-        this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
-        this.isReadOnlyMode = permission === 'reader';
-
-        this.logger.info('DFD permission determined for orchestrator initialization', {
-          permission,
-          threatModelPermission: this.threatModelPermission,
-          isReadOnlyMode: this.isReadOnlyMode,
+    // First check if authorization is already loaded synchronously
+    const currentPermission = this.authorizationService.getCurrentUserPermission();
+    const currentThreatModelId = this.authorizationService.currentThreatModelId;
+    
+    this.logger.debug('Authorization service state check', {
+      currentPermission,
+      currentThreatModelId,
+      expectedThreatModelId: this.threatModelId
+    });
+    
+    if (currentPermission !== null) {
+      // Authorization is already loaded, initialize immediately
+      this.logger.info('Authorization already loaded, initializing immediately', {
+        permission: currentPermission,
+      });
+      this.initializeWithPermission(currentPermission);
+    } else {
+      // Authorization not yet loaded - check if we need to manually load the threat model
+      this.logger.debug('Authorization not yet loaded, checking if we need to load threat model manually');
+      
+      if (this.threatModelId && !this.authorizationService.currentThreatModelId) {
+        // No authorization and threat model ID doesn't match - manually load threat model
+        this.logger.info('Manually loading threat model due to missing authorization', {
+          threatModelId: this.threatModelId,
+          currentAuthThreatModelId: this.authorizationService.currentThreatModelId
         });
-
-        // Check if orchestrator is already initialized to avoid re-initialization
-        if (this.dfdOrchestrator.getState().initialized) {
-          // Update existing orchestrator read-only mode
-          this.dfdOrchestrator.setReadOnlyMode(this.isReadOnlyMode);
-          this.configureAutoSave();
-          this.cdr.markForCheck();
-          return;
-        }
-
-        // Initialize the DFD Orchestrator with proper initialization parameters
-        const initParams = {
-          diagramId: this.dfdId || 'new-diagram',
-          threatModelId: this.threatModelId || 'unknown',
-          containerElement: this.graphContainer.nativeElement,
-          collaborationEnabled: true,
-          readOnly: this.isReadOnlyMode,
-          autoSaveMode: this.isReadOnlyMode ? ('manual' as const) : ('normal' as const),
-          joinCollaboration: this.joinCollaboration,
-        };
-
-        this.logger.debug('Attempting to initialize DFD Orchestrator', initParams);
-        this.dfdOrchestrator.initialize(initParams).subscribe({
-          next: success => {
-            this.logger.info('DFD Orchestrator initialization result', { success });
-            if (success) {
-              this.logger.info('DFD Orchestrator initialized successfully');
-
-              // Load diagram data if we have a dfdId
-              if (this.dfdId) {
-                this.loadDiagramData(this.dfdId);
+        
+        this._subscriptions.add(
+          this.threatModelService.getThreatModelById(this.threatModelId, true).subscribe({
+            next: threatModel => {
+              if (threatModel) {
+                this.logger.info('Manually loaded threat model successfully', {
+                  id: threatModel.id,
+                  name: threatModel.name
+                });
+                // The service should have called setAuthorization, check again
+                const permission = this.authorizationService.getCurrentUserPermission();
+                if (permission) {
+                  this.initializeWithPermission(permission);
+                } else {
+                  this.logger.error('Threat model loaded but authorization still null');
+                }
+              } else {
+                this.logger.error('Failed to manually load threat model - received null');
               }
-            } else {
-              this.logger.error('Failed to initialize DFD Orchestrator');
+            },
+            error: error => {
+              this.logger.error('Error manually loading threat model', { error });
             }
-          },
-          error: error => {
-            this.logger.error('Error initializing DFD Orchestrator', { error });
-          },
-        });
+          })
+        );
+      } else {
+        // Wait for authorization updates via subscription
+        this.logger.debug('Subscribing for authorization updates');
+        this._subscriptions.add(
+          this.authorizationService.currentUserPermission$.subscribe(permission => {
+            // Skip initialization if permission is null (not yet loaded)
+            if (permission === null) {
+              this.logger.debug('DFD still waiting for authorization data to be loaded');
+              return;
+            }
 
-        // Subscribe to DFD Orchestrator events
-        this.setupOrchestratorSubscriptions();
-      }),
-    );
+            this.logger.info('Authorization loaded via subscription', {
+              permission,
+            });
+            this.initializeWithPermission(permission);
+          }),
+        );
+      }
+    }
+  }
+
+  private initializeWithPermission(permission: 'reader' | 'writer' | 'owner'): void {
+    // Update component state
+    this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
+    this.isReadOnlyMode = permission === 'reader';
+
+    this.logger.info('DFD permission determined for orchestrator initialization', {
+      permission,
+      threatModelPermission: this.threatModelPermission,
+      isReadOnlyMode: this.isReadOnlyMode,
+    });
+
+    // Check if orchestrator is already initialized to avoid re-initialization
+    if (this.dfdOrchestrator.getState().initialized) {
+      // Update existing orchestrator read-only mode
+      this.dfdOrchestrator.setReadOnlyMode(this.isReadOnlyMode);
+      this.configureAutoSave();
+      this.cdr.markForCheck();
+      return;
+    }
+
+    // Initialize the DFD Orchestrator with proper initialization parameters
+    const initParams = {
+      diagramId: this.dfdId || 'new-diagram',
+      threatModelId: this.threatModelId || 'unknown',
+      containerElement: this.graphContainer.nativeElement,
+      collaborationEnabled: true,
+      readOnly: this.isReadOnlyMode,
+      autoSaveMode: this.isReadOnlyMode ? ('manual' as const) : ('normal' as const),
+      joinCollaboration: this.joinCollaboration,
+    };
+
+    this.logger.debug('Attempting to initialize DFD Orchestrator', initParams);
+    this.dfdOrchestrator.initialize(initParams).subscribe({
+      next: success => {
+        this.logger.info('DFD Orchestrator initialization result', { success });
+        if (success) {
+          this.logger.info('DFD Orchestrator initialized successfully');
+
+          // Load diagram data if we have a dfdId
+          if (this.dfdId) {
+            this.loadDiagramData(this.dfdId);
+          }
+        } else {
+          this.logger.error('Failed to initialize DFD Orchestrator');
+        }
+      },
+      error: error => {
+        this.logger.error('Error initializing DFD Orchestrator', { error });
+      },
+    });
+
+    // Subscribe to DFD Orchestrator events
+    this.setupOrchestratorSubscriptions();
   }
 
   ngOnDestroy(): void {
