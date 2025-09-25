@@ -99,6 +99,10 @@
 
     &:disabled {
       color: #ccc; // Light gray for disabled state
+      
+      .overlay-icon {
+        color: #ccc; // Match disabled state color
+      }
     }
   }
 
@@ -115,12 +119,13 @@
       font-size: 14px !important;
       width: 14px !important;
       height: 14px !important;
-      background-color: var(--color-background-lighter);
+      background-color: #f5f5f5; // Match toolbar background
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+      color: #333; // Match main button icon color
     }
   }
 }
