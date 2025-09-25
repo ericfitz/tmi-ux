@@ -11,6 +11,7 @@
 import { Observable, of, throwError } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { getX6ShapeForNodeType } from '../../infrastructure/adapters/x6-shape-definitions';
 import {
   GraphOperation,
   OperationResult,
@@ -324,12 +325,16 @@ export class NodeOperationExecutor implements OperationExecutor {
    * Apply default values to node data
    */
   private _applyNodeDefaults(nodeData: NodeData): NodeData {
+    // Get node-type-specific default dimensions
+    const defaultSize = this._getDefaultSizeForNodeType(nodeData.nodeType);
+    const defaultLabel = this._getDefaultLabelForNodeType(nodeData.nodeType);
+
     return {
       nodeType: nodeData.nodeType,
       id: nodeData.id,
       position: nodeData.position || { x: 100, y: 100 },
-      size: nodeData.size || { width: 120, height: 60 },
-      label: nodeData.label || 'New Node',
+      size: nodeData.size || defaultSize,
+      label: nodeData.label || defaultLabel,
       style: {
         fill: '#ffffff',
         stroke: '#000000',
@@ -378,18 +383,47 @@ export class NodeOperationExecutor implements OperationExecutor {
    * Get X6 shape name for node type
    */
   private _getShapeForNodeType(nodeType: string): string {
-    // Map threat model node types to X6 shapes
+    // Use the centralized shape mapping function that handles all custom shapes
+    return getX6ShapeForNodeType(nodeType);
+  }
+
+  /**
+   * Get default size for node type to match DfdNodeService dimensions
+   */
+  private _getDefaultSizeForNodeType(nodeType: string): { width: number; height: number } {
     switch (nodeType) {
       case 'process':
-        return 'rect';
-      case 'datastore':
-        return 'rect'; // Could be customized
-      case 'external-entity':
-        return 'rect'; // Could be customized
-      case 'trust-boundary':
-        return 'rect'; // Could be customized
+        return { width: 120, height: 60 };
+      case 'store':
+        return { width: 140, height: 40 };
+      case 'actor':
+        return { width: 100, height: 80 };
+      case 'security-boundary':
+        return { width: 200, height: 150 };
+      case 'text-box':
+        return { width: 100, height: 40 };
       default:
-        return 'rect';
+        return { width: 120, height: 60 };
+    }
+  }
+
+  /**
+   * Get default label for node type
+   */
+  private _getDefaultLabelForNodeType(nodeType: string): string {
+    switch (nodeType) {
+      case 'actor':
+        return 'Actor';
+      case 'process':
+        return 'Process';
+      case 'store':
+        return 'Store';
+      case 'security-boundary':
+        return 'Security Boundary';
+      case 'text-box':
+        return 'Text Box';
+      default:
+        return 'New Node';
     }
   }
 

@@ -24,6 +24,8 @@ import { AutoSaveManager } from './auto-save-manager.service';
 import { RestPersistenceStrategy } from './strategies/rest-persistence-strategy.service';
 import { WebSocketPersistenceStrategy } from './strategies/websocket-persistence-strategy.service';
 import { CacheOnlyPersistenceStrategy } from './strategies/cache-only-persistence-strategy.service';
+import { DfdNodeService } from '../infrastructure/services/node.service';
+import { NodeType } from '../domain/value-objects/node-info';
 import {
   GraphOperation,
   OperationContext,
@@ -80,6 +82,7 @@ export class DfdOrchestrator {
   private _graph: Graph | null = null;
   private _initParams: DfdInitializationParams | null = null;
   private _operationContext: OperationContext | null = null;
+  private _containerElement: HTMLElement | null = null;
   private _startTime = Date.now();
   private _collaborationIntent = false;
 
@@ -104,6 +107,7 @@ export class DfdOrchestrator {
     private readonly restStrategy: RestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
     private readonly cacheOnlyStrategy: CacheOnlyPersistenceStrategy,
+    private readonly dfdNodeService: DfdNodeService,
   ) {
     this.logger.debug('DfdOrchestrator initialized');
     this._setupEventIntegration();
@@ -132,6 +136,7 @@ export class DfdOrchestrator {
     });
 
     this._initParams = params;
+    this._containerElement = params.containerElement;
     this._collaborationIntent = params.joinCollaboration || false;
 
     return this._performInitialization(params).pipe(
@@ -421,7 +426,7 @@ export class DfdOrchestrator {
     if (!graph) {
       return [];
     }
-    
+
     // Use the known working X6 API: filter all cells for selected ones
     const cells = graph.getCells();
     const selectedCells = cells.filter((cell: any) => cell.isSelected && cell.isSelected());
@@ -533,40 +538,124 @@ export class DfdOrchestrator {
    * High-level user actions
    */
   addNode(nodeData: NodeData): Observable<OperationResult>;
-  addNode(nodeType: string, position: { x: number; y: number }): Observable<OperationResult>;
+  addNode(nodeType: string, position?: { x: number; y: number }): Observable<OperationResult>;
   addNode(
     nodeDataOrType: NodeData | string,
     position?: { x: number; y: number },
   ): Observable<OperationResult> {
-    let nodeData: NodeData;
-
-    if (typeof nodeDataOrType === 'string') {
-      // Handle the (nodeType, position) signature
-      if (!position) {
-        throw new Error('Position is required when nodeType is provided as string');
-      }
-      nodeData = {
-        nodeType: nodeDataOrType as any,
-        position,
-        size: { width: 120, height: 60 },
-        label: nodeDataOrType,
-        style: {},
-        properties: {},
-      };
-    } else {
-      // Handle the NodeData signature
-      nodeData = nodeDataOrType;
+    if (!this._operationContext) {
+      return throwError(() => new Error('DFD system not initialized'));
     }
 
-    const operation: CreateNodeOperation = {
-      id: `create-node-${Date.now()}`,
-      type: 'create-node',
-      source: 'user-interaction',
-      priority: 'normal',
-      timestamp: Date.now(),
-      nodeData,
-    };
-    return this.executeOperation(operation);
+    if (this._state$.value.readOnly) {
+      return throwError(() => new Error('Cannot add nodes in read-only mode'));
+    }
+
+    if (!this._containerElement) {
+      return throwError(() => new Error('Container element not available'));
+    }
+
+    try {
+      if (typeof nodeDataOrType === 'string') {
+        // Handle the (nodeType, position) signature - use DfdNodeService for intelligent positioning
+        const nodeType = nodeDataOrType as NodeType;
+        
+        // Use DfdNodeService's intelligent positioning algorithm if no position provided
+        if (!position) {
+          this.logger.debug('Using DfdNodeService intelligent positioning for node creation', {
+            nodeType,
+            containerSize: {
+              width: this._containerElement.clientWidth,
+              height: this._containerElement.clientHeight,
+            },
+          });
+
+          return this.dfdNodeService.addGraphNode(
+            nodeType,
+            this._containerElement.clientWidth,
+            this._containerElement.clientHeight,
+            this._initParams?.diagramId || 'unknown',
+            true, // isInitialized
+          ).pipe(
+            map(() => ({
+              success: true,
+              operationId: `create-node-${Date.now()}`,
+              operationType: 'create-node' as const,
+              affectedCellIds: [], // DfdNodeService doesn't return the node ID, but creation will succeed
+              timestamp: Date.now(),
+              metadata: {
+                nodeType,
+                usedIntelligentPositioning: true,
+                method: 'DfdNodeService.addGraphNode',
+              },
+            })),
+            catchError(error => {
+              this.logger.error('DfdNodeService node creation failed', { error, nodeType });
+              return of({
+                success: false,
+                operationId: `create-node-${Date.now()}`,
+                operationType: 'create-node' as const,
+                affectedCellIds: [],
+                timestamp: Date.now(),
+                error: `DfdNodeService creation failed: ${error.message}`,
+              });
+            }),
+          );
+        } else {
+          // Position provided - fall back to operation manager for explicit positioning
+          const nodeData: NodeData = {
+            nodeType: nodeType as any,
+            position,
+            size: { width: 120, height: 60 },
+            label: nodeType,
+            style: {},
+            properties: {},
+          };
+
+          const operation: CreateNodeOperation = {
+            id: `create-node-${Date.now()}`,
+            type: 'create-node',
+            source: 'user-interaction',
+            priority: 'normal',
+            timestamp: Date.now(),
+            nodeData,
+          };
+
+          this.logger.debug('Using GraphOperationManager for explicit positioning', {
+            nodeType,
+            position,
+          });
+
+          return this.executeOperation(operation);
+        }
+      } else {
+        // Handle the NodeData signature - fall back to operation manager
+        const operation: CreateNodeOperation = {
+          id: `create-node-${Date.now()}`,
+          type: 'create-node',
+          source: 'user-interaction',
+          priority: 'normal',
+          timestamp: Date.now(),
+          nodeData: nodeDataOrType,
+        };
+
+        this.logger.debug('Using GraphOperationManager for NodeData signature', {
+          nodeType: nodeDataOrType.nodeType,
+        });
+
+        return this.executeOperation(operation);
+      }
+    } catch (error) {
+      this.logger.error('Error in addNode method', { error });
+      return of({
+        success: false,
+        operationId: `create-node-${Date.now()}`,
+        operationType: 'create-node' as const,
+        affectedCellIds: [],
+        timestamp: Date.now(),
+        error: `addNode failed: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
   }
 
   deleteSelectedCells(): Observable<OperationResult> {

@@ -456,11 +456,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.dfdOrchestrator
-      .addNode(nodeType, { x: 100, y: 100 }) // Default position, user can drag
+      .addNode(nodeType) // Use DfdNodeService intelligent positioning algorithm
       .subscribe({
         next: result => {
           if (result.success) {
-            this.logger.debug('Node added successfully', { nodeType });
+            this.logger.debug('Node added successfully using intelligent positioning', { 
+              nodeType,
+              usedIntelligentPositioning: result.metadata?.['usedIntelligentPositioning'],
+              method: result.metadata?.['method'],
+            });
           } else {
             this.logger.error('Failed to add node', { error: result.error });
           }
@@ -1061,7 +1065,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'security-boundary':
         return 'security-boundary';
       case 'text-box':
-        return 'process'; // Default to process for text boxes
+        return 'text-box'; // Fix: Use correct text-box node type
       default:
         return 'process';
     }
