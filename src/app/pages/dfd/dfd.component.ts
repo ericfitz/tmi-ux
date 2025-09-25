@@ -44,6 +44,9 @@ import {
 // DFD v2 Architecture
 import { DfdOrchestrator } from './services/dfd-orchestrator.service';
 import { AutoSaveManager } from './services/auto-save-manager.service';
+import { GraphOperationManager } from './services/graph-operation-manager.service';
+import { PersistenceCoordinator } from './services/persistence-coordinator.service';
+import { DfdInfrastructureFacade } from './services/dfd-infrastructure.facade';
 
 // Essential v1 components still needed
 import { NodeType } from './domain/value-objects/node-info';
@@ -74,6 +77,12 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdCollaborationComponent,
   ],
   providers: [
+    // DFD v2 Architecture - Core Services with Facade
+    DfdInfrastructureFacade, // Facade encapsulates all infrastructure dependencies
+    DfdOrchestrator,
+    GraphOperationManager,
+    AutoSaveManager,
+    PersistenceCoordinator,
     // Essential services still needed
     ThreatModelService,
     ThreatModelAuthorizationService,
@@ -131,6 +140,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
+    private dfdInfrastructure: DfdInfrastructureFacade,
   ) {
     this.logger.info('DfdComponent v2 constructor called');
 
@@ -317,6 +327,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupOrchestratorSubscriptions();
   }
 
+
   ngOnDestroy(): void {
     this.logger.info('DfdComponent v2 ngOnDestroy called');
 
@@ -386,6 +397,65 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(takeUntil(this._destroy$))
         .subscribe(),
     );
+
+    // Set up edge event handlers for drag-and-drop edge creation
+    const graph = this.dfdOrchestrator.getGraph();
+    if (graph) {
+      // Handle edge added events (when user drags from port to port)
+      graph.on('edge:added', (data: { edge: any }) => {
+        this.handleEdgeAdded(data.edge);
+      });
+
+      // Handle edge vertices changed events (when user moves edge vertices)
+      graph.on('edge:change:vertices', (data: { edge: any }) => {
+        this.handleEdgeVerticesChanged(data.edge);
+      });
+
+      this.logger.debug('Edge event handlers registered');
+    } else {
+      this.logger.warn('Graph not available for setting up edge event handlers');
+    }
+  }
+
+  private handleEdgeAdded(edge: any): void {
+    if (!edge || !this.dfdId) {
+      this.logger.warn('Cannot handle edge added - missing edge or diagram ID');
+      return;
+    }
+
+    this.logger.debug('Handling edge added', { edgeId: edge.id });
+
+    this.dfdInfrastructure
+      .handleEdgeAdded(edge, this.dfdId, this.isSystemInitialized)
+      .subscribe({
+        next: () => {
+          this.logger.debug('Edge added successfully', { edgeId: edge.id });
+        },
+        error: (error) => {
+          this.logger.error('Error handling edge added', { error, edgeId: edge.id });
+        },
+      });
+  }
+
+  private handleEdgeVerticesChanged(edge: any): void {
+    if (!edge || !this.dfdId) {
+      this.logger.warn('Cannot handle edge vertices changed - missing edge or diagram ID');
+      return;
+    }
+
+    const vertices = edge.getVertices();
+    this.logger.debug('Handling edge vertices changed', { edgeId: edge.id, vertices });
+
+    this.dfdInfrastructure
+      .handleEdgeVerticesChanged(edge.id, vertices, this.dfdId, this.isSystemInitialized)
+      .subscribe({
+        next: () => {
+          this.logger.debug('Edge vertices changed successfully', { edgeId: edge.id });
+        },
+        error: (error) => {
+          this.logger.error('Error handling edge vertices changed', { error, edgeId: edge.id });
+        },
+      });
   }
 
   private loadDiagramData(dfdId: string): void {
@@ -820,7 +890,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.dfdOrchestrator.getGraph();
     if (!graph) {
       this.logger.error('Graph not available for add inverse connection');
       return;
@@ -833,19 +903,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const edge = cell;
-    const source = edge.getSource();
-    const target = edge.getTarget();
+    const diagramId = this.dfdId || 'default-diagram';
 
-    // Create inverse edge
-    const inverseEdge = graph.addEdge({
-      source: target,
-      target: source,
-      attrs: edge.getAttrs(),
-    });
-
-    this.logger.info('Added inverse connection', {
-      originalEdge: edge.id,
-      inverseEdge: inverseEdge.id,
+    // Use facade service for proper business logic and error handling
+    this.dfdInfrastructure.addInverseConnection(edge, diagramId).subscribe({
+      next: () => {
+        this.logger.info('Successfully added inverse connection', {
+          originalEdgeId: edge.id,
+          diagramId,
+        });
+      },
+      error: (error) => {
+        this.logger.error('Failed to add inverse connection', {
+          error,
+          originalEdgeId: edge.id,
+          diagramId,
+        });
+      },
     });
   }
 

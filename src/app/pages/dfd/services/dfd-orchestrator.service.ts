@@ -24,7 +24,7 @@ import { AutoSaveManager } from './auto-save-manager.service';
 import { RestPersistenceStrategy } from './strategies/rest-persistence-strategy.service';
 import { WebSocketPersistenceStrategy } from './strategies/websocket-persistence-strategy.service';
 import { CacheOnlyPersistenceStrategy } from './strategies/cache-only-persistence-strategy.service';
-import { DfdNodeService } from '../infrastructure/services/node.service';
+import { DfdInfrastructureFacade } from './dfd-infrastructure.facade';
 import { NodeType } from '../domain/value-objects/node-info';
 import {
   GraphOperation,
@@ -107,7 +107,7 @@ export class DfdOrchestrator {
     private readonly restStrategy: RestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
     private readonly cacheOnlyStrategy: CacheOnlyPersistenceStrategy,
-    private readonly dfdNodeService: DfdNodeService,
+    private readonly dfdInfrastructure: DfdInfrastructureFacade,
   ) {
     this.logger.debug('DfdOrchestrator initialized');
     this._setupEventIntegration();
@@ -570,8 +570,8 @@ export class DfdOrchestrator {
             },
           });
 
-          return this.dfdNodeService
-            .addGraphNode(
+          return this.dfdInfrastructure
+            .createNodeWithIntelligentPositioning(
               nodeType,
               this._containerElement.clientWidth,
               this._containerElement.clientHeight,
@@ -583,23 +583,23 @@ export class DfdOrchestrator {
                 success: true,
                 operationId: `create-node-${Date.now()}`,
                 operationType: 'create-node' as const,
-                affectedCellIds: [], // DfdNodeService doesn't return the node ID, but creation will succeed
+                affectedCellIds: [], // Facade doesn't return the node ID, but creation will succeed
                 timestamp: Date.now(),
                 metadata: {
                   nodeType,
                   usedIntelligentPositioning: true,
-                  method: 'DfdNodeService.addGraphNode',
+                  method: 'DfdInfrastructureFacade.createNodeWithIntelligentPositioning',
                 },
               })),
               catchError(error => {
-                this.logger.error('DfdNodeService node creation failed', { error, nodeType });
+                this.logger.error('DfdInfrastructureFacade node creation failed', { error, nodeType });
                 return of({
                   success: false,
                   operationId: `create-node-${Date.now()}`,
                   operationType: 'create-node' as const,
                   affectedCellIds: [],
                   timestamp: Date.now(),
-                  error: `DfdNodeService creation failed: ${error.message}`,
+                  error: `DfdInfrastructureFacade creation failed: ${error.message}`,
                 });
               }),
             );
