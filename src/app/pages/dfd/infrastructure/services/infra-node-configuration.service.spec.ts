@@ -6,14 +6,14 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
-import { NodeConfigurationService } from './node-configuration.service';
+import { InfraNodeConfigurationService } from './infra-node-configuration.service';
 import { expect, beforeEach, describe, it } from 'vitest';
 
-describe('NodeConfigurationService', () => {
-  let service: NodeConfigurationService;
+describe('InfraNodeConfigurationService', () => {
+  let service: InfraNodeConfigurationService;
 
   beforeEach(() => {
-    service = new NodeConfigurationService();
+    service = new InfraNodeConfigurationService();
   });
 
   it('should be created', () => {

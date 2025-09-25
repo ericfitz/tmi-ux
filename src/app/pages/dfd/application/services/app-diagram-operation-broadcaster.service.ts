@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Graph, Cell } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { CollaborativeOperationService } from './collaborative-operation.service';
-import { DfdStateService } from './dfd-state.service';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
-import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
-import { CellOperation } from '../../../core/types/websocket-message.types';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { DomainStateService } from '../../domain/services/domain-state.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { CellOperation } from '../../../../core/types/websocket-message.types';
 
 /**
  * DiagramOperationBroadcaster - Captures X6 graph events and broadcasts them as collaborative operations
@@ -26,7 +26,7 @@ export class DiagramOperationBroadcaster {
 
   constructor(
     private collaborativeOperationService: CollaborativeOperationService,
-    private dfdStateService: DfdStateService,
+    private domainStateService: DomainStateService,
     private collaborationService: DfdCollaborationService,
     private historyCoordinator: GraphHistoryCoordinator,
     private logger: LoggerService,
@@ -214,7 +214,7 @@ export class DiagramOperationBroadcaster {
    */
   private _shouldBroadcastChange(event: string, args: any): boolean {
     // Skip if applying remote changes (prevents echo)
-    if (this.dfdStateService.getCurrentState().isApplyingRemoteChange) {
+    if (this.domainStateService.getCurrentState().isApplyingRemoteChange) {
       this.logger.debug('Skipping broadcast - applying remote change');
       return false;
     }

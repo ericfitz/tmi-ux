@@ -37,30 +37,30 @@ import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
-import { EdgeQueryService } from '../services/edge-query.service';
-import { NodeConfigurationService } from '../services/node-configuration.service';
-import { EmbeddingService } from '../services/embedding.service';
-import { PortStateManagerService } from '../services/port-state-manager.service';
-import { X6KeyboardHandler } from './x6-keyboard-handler.service';
-import { X6ZOrderAdapter } from './x6-z-order.adapter';
-import { X6EmbeddingAdapter } from './x6-embedding.adapter';
-import { X6HistoryManager } from './x6-history-manager.service';
-import { X6SelectionAdapter } from './x6-selection.adapter';
-import { X6EventLoggerService } from './x6-event-logger.service';
-import { DfdEdgeService } from '../../services/dfd-edge.service';
+import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
+import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
+import { InfraEmbeddingService } from '../services/infra-embedding.service';
+import { InfraPortStateService } from '../services/infra-port-state.service';
+import { InfraX6KeyboardAdapter } from './infra-x6-keyboard.adapter';
+import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
+import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
+import { InfraX6HistoryAdapter } from './infra-x6-history.adapter';
+import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
+import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
+import { DomainEdgeService } from '../../domain/services/domain-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { DiagramOperationBroadcaster } from '../../services/diagram-operation-broadcaster.service';
-import { X6CoreOperationsService } from '../services/x6-core-operations.service';
+import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
+import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 
 // Import the extracted shape definitions
-import { registerCustomShapes } from './x6-shape-definitions';
+import { registerCustomShapes } from './infra-x6-shape-definitions';
 
 /**
  * X6 Graph Adapter that provides abstraction over X6 Graph operations
  * while maintaining direct access to X6's native capabilities.
  */
 @Injectable()
-export class X6GraphAdapter implements IGraphAdapter {
+export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Standard tool configurations for consistent behavior
    */
@@ -115,20 +115,20 @@ export class X6GraphAdapter implements IGraphAdapter {
 
   constructor(
     private logger: LoggerService,
-    private readonly _edgeQueryService: EdgeQueryService,
-    private readonly _nodeConfigurationService: NodeConfigurationService,
-    private readonly _embeddingService: EmbeddingService,
-    private readonly _portStateManager: PortStateManagerService,
-    private readonly _keyboardHandler: X6KeyboardHandler,
-    private readonly _zOrderAdapter: X6ZOrderAdapter,
-    private readonly _embeddingAdapter: X6EmbeddingAdapter,
-    private readonly _historyManager: X6HistoryManager,
-    private readonly _selectionAdapter: X6SelectionAdapter,
-    private readonly _x6EventLogger: X6EventLoggerService,
-    private readonly _edgeService: DfdEdgeService,
+    private readonly _edgeQueryService: InfraEdgeQueryService,
+    private readonly _nodeConfigurationService: InfraNodeConfigurationService,
+    private readonly _embeddingService: InfraEmbeddingService,
+    private readonly _portStateManager: InfraPortStateService,
+    private readonly _keyboardHandler: InfraX6KeyboardAdapter,
+    private readonly _zOrderAdapter: InfraX6ZOrderAdapter,
+    private readonly _embeddingAdapter: InfraX6EmbeddingAdapter,
+    private readonly _historyManager: InfraX6HistoryAdapter,
+    private readonly _selectionAdapter: InfraX6SelectionAdapter,
+    private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
+    private readonly _edgeService: DomainEdgeService,
     private readonly _historyCoordinator: GraphHistoryCoordinator,
     private readonly _diagramOperationBroadcaster: DiagramOperationBroadcaster,
-    private readonly _x6CoreOps: X6CoreOperationsService,
+    private readonly _x6CoreOps: InfraX6CoreOperationsService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -137,7 +137,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     registerCustomShapes();
 
     // Note: Label service events are now handled directly by the DFD component
-    // to avoid circular dependency between X6GraphAdapter and DfdEventHandlersService
+    // to avoid circular dependency between InfraX6GraphAdapter and AppEventHandlersService
   }
 
   /**
@@ -283,7 +283,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         enabled: true,
         findParent: 'bbox',
         validate: (args: { parent: Node; child: Node }) => {
-          // Use EmbeddingService for validation logic
+          // Use InfraEmbeddingService for validation logic
           const validation = this._embeddingService.validateEmbedding(args.parent, args.child);
           return validation.isValid;
         },
@@ -457,7 +457,7 @@ export class X6GraphAdapter implements IGraphAdapter {
       this._x6EventLogger.initializeEventLogging(this._graph);
     }
 
-    // Port visibility is now handled by X6SelectionAdapter with proper history suppression
+    // Port visibility is now handled by InfraX6SelectionAdapter with proper history suppression
     // No need for duplicate port visibility event handlers here
 
     // Setup keyboard handling using dedicated handler
@@ -493,7 +493,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   /**
    * Get the X6 History Manager for direct access to history operations
    */
-  getHistoryManager(): X6HistoryManager {
+  getHistoryManager(): InfraX6HistoryAdapter {
     return this._historyManager;
   }
 
@@ -514,7 +514,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     // Validate that shape property is set correctly
     this._edgeService.validateNodeShape(nodeType, node.id);
 
-    // Use NodeConfigurationService for node configuration (except z-index)
+    // Use InfraNodeConfigurationService for node configuration (except z-index)
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
     const nodePorts = this._nodeConfigurationService.getNodePorts(nodeType);
     const nodeShape = this._nodeConfigurationService.getNodeShape(nodeType);
@@ -637,7 +637,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     const edge = graph.getCellById(edgeId) as Edge;
 
     if (edge && edge.isEdge()) {
-      // Remove the edge - port visibility will be updated by the EdgeService
+      // Remove the edge - port visibility will be updated by the InfraEdgeService
       this._x6CoreOps.removeCellObject(graph, edge);
     }
   }
@@ -712,35 +712,35 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Undo the last action using X6 history plugin - delegates to X6HistoryManager
+   * Undo the last action using X6 history plugin - delegates to InfraX6HistoryAdapter
    */
   undo(): void {
     this._historyManager.undo(this._graph!);
   }
 
   /**
-   * Redo the last undone action using X6 history plugin - delegates to X6HistoryManager
+   * Redo the last undone action using X6 history plugin - delegates to InfraX6HistoryAdapter
    */
   redo(): void {
     this._historyManager.redo(this._graph!);
   }
 
   /**
-   * Check if undo is available - delegates to X6HistoryManager
+   * Check if undo is available - delegates to InfraX6HistoryAdapter
    */
   canUndo(): boolean {
     return this._historyManager.canUndo(this._graph!);
   }
 
   /**
-   * Check if redo is available - delegates to X6HistoryManager
+   * Check if redo is available - delegates to InfraX6HistoryAdapter
    */
   canRedo(): boolean {
     return this._historyManager.canRedo(this._graph!);
   }
 
   /**
-   * Clear the history stack - delegates to X6HistoryManager
+   * Clear the history stack - delegates to InfraX6HistoryAdapter
    */
   clearHistory(): void {
     this._historyManager.clearHistory(this._graph!);
@@ -1132,7 +1132,7 @@ export class X6GraphAdapter implements IGraphAdapter {
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {
       this._edgeRemoved$.next({ edgeId: edge.id, edge });
 
-      // Port visibility is now handled by the EdgeService or other calling services
+      // Port visibility is now handled by the InfraEdgeService or other calling services
       // to avoid duplicate updates and ensure proper history suppression
     });
 
@@ -1319,7 +1319,7 @@ export class X6GraphAdapter implements IGraphAdapter {
 
     // Check if the graph has the use method (not available in test mocks)
     if (typeof this._graph.use === 'function') {
-      // Selection plugin is initialized by X6SelectionAdapter to avoid duplication
+      // Selection plugin is initialized by InfraX6SelectionAdapter to avoid duplication
 
       // Enable snapline plugin with red color
       this._graph.use(
@@ -1379,7 +1379,7 @@ export class X6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Setup selection event handlers - delegates to X6SelectionAdapter
+   * Setup selection event handlers - delegates to InfraX6SelectionAdapter
    */
   private _setupSelectionEvents(): void {
     if (!this._graph) return;
@@ -1417,9 +1417,9 @@ export class X6GraphAdapter implements IGraphAdapter {
     return nodeTypeInfo?.type || 'unknown';
   }
 
-  // - _getEmbeddingDepth() → EmbeddingService.calculateEmbeddingDepth()
-  // - _getEmbeddingFillColor() → EmbeddingService.calculateEmbeddingFillColor()
-  // - _updateEmbeddedNodeColor() → X6EmbeddingAdapter.updateEmbeddingAppearance()
+  // - _getEmbeddingDepth() → InfraEmbeddingService.calculateEmbeddingDepth()
+  // - _getEmbeddingFillColor() → InfraEmbeddingService.calculateEmbeddingFillColor()
+  // - _updateEmbeddedNodeColor() → InfraX6EmbeddingAdapter.updateEmbeddingAppearance()
 
   /**
    * Centralized cell deletion handler - uses history coordinator for proper atomic deletion
@@ -1784,7 +1784,7 @@ export class X6GraphAdapter implements IGraphAdapter {
         const width = container.clientWidth;
         const height = container.clientHeight;
         this._graph.resize(width, height);
-        this.logger.info('[X6GraphAdapter] Initial graph resize completed', { width, height });
+        this.logger.info('[InfraX6GraphAdapter] Initial graph resize completed', { width, height });
       }
     }, 0);
   }

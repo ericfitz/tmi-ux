@@ -45,10 +45,10 @@ vi.mock('@antv/x6', () => {
   };
 });
 
-import { GraphOperationManager } from '../services/graph-operation-manager.service';
-import { PersistenceCoordinator } from '../services/persistence-coordinator.service';
-import { AutoSaveManager } from '../services/auto-save-manager.service';
-import { DfdOrchestrator } from '../services/dfd-orchestrator.service';
+import { AppGraphOperationManager } from '../application/services/app-graph-operation-manager.service';
+import { AppPersistenceCoordinator } from '../application/services/app-persistence-coordinator.service';
+import { AppAutoSaveManager } from '../application/services/app-auto-save-manager.service';
+import { AppDfdOrchestrator } from '../application/services/app-dfd-orchestrator.service';
 import {
   CreateNodeOperation,
   UpdateNodeOperation,
@@ -59,10 +59,10 @@ import { SaveResult, LoadResult } from '../types/persistence.types';
 import { AutoSaveTriggerEvent, AutoSaveContext } from '../types/auto-save.types';
 
 describe('DFD Architecture Integration', () => {
-  let graphOperationManager: GraphOperationManager;
-  let persistenceCoordinator: PersistenceCoordinator;
-  let autoSaveManager: AutoSaveManager;
-  let dfdOrchestrator: DfdOrchestrator;
+  let appGraphOperationManager: AppGraphOperationManager;
+  let appPersistenceCoordinator: AppPersistenceCoordinator;
+  let appAutoSaveManager: AppAutoSaveManager;
+  let appDfdOrchestrator: AppDfdOrchestrator;
   let mockLogger: any;
   let mockContainerElement: HTMLElement;
 
@@ -82,14 +82,14 @@ describe('DFD Architecture Integration', () => {
     document.body.appendChild(mockContainerElement);
 
     // Create services directly without TestBed
-    graphOperationManager = new GraphOperationManager(mockLogger);
-    persistenceCoordinator = new PersistenceCoordinator(mockLogger);
-    autoSaveManager = new AutoSaveManager(mockLogger, persistenceCoordinator);
-    dfdOrchestrator = new DfdOrchestrator(
+    appGraphOperationManager = new AppGraphOperationManager(mockLogger);
+    appPersistenceCoordinator = new AppPersistenceCoordinator(mockLogger);
+    appAutoSaveManager = new AppAutoSaveManager(mockLogger, appPersistenceCoordinator);
+    appDfdOrchestrator = new AppDfdOrchestrator(
       mockLogger,
-      graphOperationManager,
-      persistenceCoordinator,
-      autoSaveManager,
+      appGraphOperationManager,
+      appPersistenceCoordinator,
+      appAutoSaveManager,
     );
   });
 
@@ -126,7 +126,7 @@ describe('DFD Architecture Integration', () => {
 
       mockStrategy.save.mockReturnValue(of(saveResult));
       mockStrategy.load.mockReturnValue(of(loadResult));
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       // Initialize DFD system
       const initParams = {
@@ -137,7 +137,7 @@ describe('DFD Architecture Integration', () => {
       };
 
       return new Promise<void>((resolve, reject) => {
-        dfdOrchestrator.initialize(initParams).subscribe({
+        appDfdOrchestrator.initialize(initParams).subscribe({
           next: () => {
             // Create a node operation
             const createNodeOp: CreateNodeOperation = {
@@ -157,7 +157,7 @@ describe('DFD Architecture Integration', () => {
             };
 
             // Execute through orchestrator
-            dfdOrchestrator.executeOperation(createNodeOp).subscribe({
+            appDfdOrchestrator.executeOperation(createNodeOp).subscribe({
               next: (result: OperationResult) => {
                 expect(result.success).toBe(true);
 
@@ -205,11 +205,11 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       return new Promise<void>((resolve, reject) => {
         // Initialize
-        dfdOrchestrator
+        appDfdOrchestrator
           .initialize({
             diagramId: 'test-diagram',
             threatModelId: 'test-tm',
@@ -261,13 +261,13 @@ describe('DFD Architecture Integration', () => {
               };
 
               // Execute sequence
-              dfdOrchestrator.executeBatch([createOp, updateOp, deleteOp]).subscribe({
+              appDfdOrchestrator.executeBatch([createOp, updateOp, deleteOp]).subscribe({
                 next: (results: OperationResult[]) => {
                   expect(results).toHaveLength(3);
                   expect(results.every(r => r.success)).toBe(true);
 
                   // Verify state is properly managed
-                  const stats = dfdOrchestrator.getStats();
+                  const stats = appDfdOrchestrator.getStats();
                   expect(stats.totalOperations).toBe(3);
 
                   resolve();
@@ -282,9 +282,9 @@ describe('DFD Architecture Integration', () => {
   });
 
   describe('Component Interaction', () => {
-    it('should coordinate GraphOperationManager and AutoSaveManager', () => {
+    it('should coordinate AppGraphOperationManager and AppAutoSaveManager', () => {
       // Set up auto-save in aggressive mode
-      autoSaveManager.setPolicyMode('aggressive');
+      appAutoSaveManager.setPolicyMode('aggressive');
 
       // Create context
       const context: AutoSaveContext = {
@@ -311,7 +311,7 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       // Create trigger event
       const triggerEvent: AutoSaveTriggerEvent = {
@@ -323,7 +323,7 @@ describe('DFD Architecture Integration', () => {
 
       return new Promise<void>((resolve, reject) => {
         // Trigger auto-save
-        autoSaveManager.trigger(triggerEvent, context).subscribe({
+        appAutoSaveManager.trigger(triggerEvent, context).subscribe({
           next: result => {
             expect(result).not.toBeNull();
             expect(result.success).toBe(true);
@@ -335,7 +335,7 @@ describe('DFD Architecture Integration', () => {
       });
     });
 
-    it('should coordinate PersistenceCoordinator caching with AutoSaveManager', () => {
+    it('should coordinate AppPersistenceCoordinator caching with AppAutoSaveManager', () => {
       // Setup strategy
       const mockStrategy = {
         save: vi.fn(),
@@ -367,11 +367,11 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       return new Promise<void>((resolve, reject) => {
         // First save to populate cache
-        persistenceCoordinator
+        appPersistenceCoordinator
           .save({
             diagramId: 'cache-test',
             data: testData,
@@ -380,7 +380,7 @@ describe('DFD Architecture Integration', () => {
           .subscribe({
             next: () => {
               // Now load with cache enabled
-              persistenceCoordinator
+              appPersistenceCoordinator
                 .load({
                   diagramId: 'cache-test',
                   strategyType: 'cache-test-strategy',
@@ -444,13 +444,13 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(failingStrategy);
-      persistenceCoordinator.addStrategy(fallbackStrategy);
-      persistenceCoordinator.setFallbackStrategy('fallback-strategy');
+      appPersistenceCoordinator.addStrategy(failingStrategy);
+      appPersistenceCoordinator.addStrategy(fallbackStrategy);
+      appPersistenceCoordinator.setFallbackStrategy('fallback-strategy');
 
       return new Promise<void>((resolve, reject) => {
         // Attempt save with failing primary
-        persistenceCoordinator
+        appPersistenceCoordinator
           .save({
             diagramId: 'test-diagram',
             data: { nodes: [], edges: [] },
@@ -500,10 +500,10 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       return new Promise<void>((resolve, reject) => {
-        dfdOrchestrator
+        appDfdOrchestrator
           .initialize({
             diagramId: 'consistency-test',
             threatModelId: 'test-tm',
@@ -529,20 +529,20 @@ describe('DFD Architecture Integration', () => {
                 },
               };
 
-              dfdOrchestrator.executeOperation(createOp).subscribe({
+              appDfdOrchestrator.executeOperation(createOp).subscribe({
                 next: (result: OperationResult) => {
                   expect(result.success).toBe(true);
 
                   // Now try manual save which will fail
-                  dfdOrchestrator.saveManually().subscribe({
+                  appDfdOrchestrator.saveManually().subscribe({
                     next: () => reject(new Error('Save should have failed')),
                     error: () => {
                       // Verify system state is still consistent
-                      const state = dfdOrchestrator.getState();
+                      const state = appDfdOrchestrator.getState();
                       expect(state.initialized).toBe(true);
                       expect(state.hasUnsavedChanges).toBe(true); // Should still show unsaved changes
 
-                      const stats = dfdOrchestrator.getStats();
+                      const stats = appDfdOrchestrator.getStats();
                       expect(stats.totalOperations).toBe(1); // Operation count should be accurate
 
                       resolve();
@@ -589,10 +589,10 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       return new Promise<void>((resolve, reject) => {
-        dfdOrchestrator
+        appDfdOrchestrator
           .initialize({
             diagramId: 'concurrent-test',
             threatModelId: 'test-tm',
@@ -619,7 +619,7 @@ describe('DFD Architecture Integration', () => {
               }));
 
               // Execute all operations concurrently
-              const results$ = operations.map(op => dfdOrchestrator.executeOperation(op));
+              const results$ = operations.map(op => appDfdOrchestrator.executeOperation(op));
 
               // Wait for all to complete
               Promise.all(results$.map(obs => obs.toPromise()))
@@ -627,7 +627,7 @@ describe('DFD Architecture Integration', () => {
                   expect(results).toHaveLength(5);
                   expect(results.every(r => r.success)).toBe(true);
 
-                  const stats = dfdOrchestrator.getStats();
+                  const stats = appDfdOrchestrator.getStats();
                   expect(stats.totalOperations).toBe(5);
 
                   resolve();
@@ -641,7 +641,7 @@ describe('DFD Architecture Integration', () => {
 
     it('should manage operation timeouts appropriately', () => {
       // Configure short timeout
-      graphOperationManager.configure({ operationTimeoutMs: 100 });
+      appGraphOperationManager.configure({ operationTimeoutMs: 100 });
 
       // Create a slow mock that would exceed timeout
       const slowMockGraph = {
@@ -683,7 +683,7 @@ describe('DFD Architecture Integration', () => {
       };
 
       return new Promise<void>((resolve, reject) => {
-        graphOperationManager.execute(operation, context).subscribe({
+        appGraphOperationManager.execute(operation, context).subscribe({
           next: () => reject(new Error('Should have timed out')),
           error: error => {
             expect(error.name).toBe('TimeoutError');
@@ -697,32 +697,32 @@ describe('DFD Architecture Integration', () => {
   describe('Configuration and Customization', () => {
     it('should support custom configuration across all components', () => {
       // Configure each component
-      graphOperationManager.configure({
+      appGraphOperationManager.configure({
         enableValidation: false,
         operationTimeoutMs: 45000,
       });
 
-      persistenceCoordinator.configure({
+      appPersistenceCoordinator.configure({
         enableCaching: false,
         operationTimeoutMs: 60000,
         maxCacheEntries: 200,
       });
 
-      autoSaveManager.configure({
+      appAutoSaveManager.configure({
         // Custom config would go here
       });
 
       // Verify configurations
-      const graphConfig = graphOperationManager.getConfiguration();
+      const graphConfig = appGraphOperationManager.getConfiguration();
       expect(graphConfig.enableValidation).toBe(false);
       expect(graphConfig.operationTimeoutMs).toBe(45000);
 
-      const persistenceConfig = persistenceCoordinator.getConfiguration();
+      const persistenceConfig = appPersistenceCoordinator.getConfiguration();
       expect(persistenceConfig.enableCaching).toBe(false);
       expect(persistenceConfig.operationTimeoutMs).toBe(60000);
       expect(persistenceConfig.maxCacheEntries).toBe(200);
 
-      const autoSaveConfig = autoSaveManager.getConfiguration();
+      const autoSaveConfig = appAutoSaveManager.getConfiguration();
       expect(autoSaveConfig).toBeDefined();
     });
 
@@ -738,7 +738,7 @@ describe('DFD Architecture Integration', () => {
         priority: 200,
       };
 
-      graphOperationManager.addValidator(customValidator);
+      appGraphOperationManager.addValidator(customValidator);
 
       // Add custom persistence strategy
       const customStrategy = {
@@ -758,10 +758,10 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(customStrategy);
+      appPersistenceCoordinator.addStrategy(customStrategy);
 
       // Verify custom components are registered
-      const strategies = persistenceCoordinator.getStrategies();
+      const strategies = appPersistenceCoordinator.getStrategies();
       expect(strategies).toContain(customStrategy);
     });
   });
@@ -797,11 +797,11 @@ describe('DFD Architecture Integration', () => {
         }),
       );
 
-      persistenceCoordinator.addStrategy(mockStrategy);
+      appPersistenceCoordinator.addStrategy(mockStrategy);
 
       return new Promise<void>((resolve, reject) => {
         // Initialize and perform operations
-        dfdOrchestrator
+        appDfdOrchestrator
           .initialize({
             diagramId: 'monitoring-test',
             threatModelId: 'test-tm',
@@ -828,26 +828,26 @@ describe('DFD Architecture Integration', () => {
               };
 
               // Monitor operation completion
-              dfdOrchestrator.operationCompleted$.pipe(take(1)).subscribe(result => {
+              appDfdOrchestrator.operationCompleted$.pipe(take(1)).subscribe(result => {
                 expect(result.success).toBe(true);
 
                 // Check all component statistics
-                const graphStats = graphOperationManager.getStats();
+                const graphStats = appGraphOperationManager.getStats();
                 expect(graphStats.totalOperations).toBeGreaterThan(0);
 
-                const persistenceStats = persistenceCoordinator.getStats();
+                const persistenceStats = appPersistenceCoordinator.getStats();
                 expect(persistenceStats.totalOperations).toBeGreaterThan(0);
 
-                const autoSaveStats = autoSaveManager.getStats();
+                const autoSaveStats = appAutoSaveManager.getStats();
                 expect(autoSaveStats).toBeDefined();
 
-                const orchestratorStats = dfdOrchestrator.getStats();
+                const orchestratorStats = appDfdOrchestrator.getStats();
                 expect(orchestratorStats.totalOperations).toBeGreaterThan(0);
 
                 resolve();
               });
 
-              dfdOrchestrator.executeOperation(operation).subscribe();
+              appDfdOrchestrator.executeOperation(operation).subscribe();
             },
             error: reject,
           });

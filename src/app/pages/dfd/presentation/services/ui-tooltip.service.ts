@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Node } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
  * Interface for tooltip content data
@@ -23,7 +23,7 @@ interface PortObject {
  * Contains business logic for tooltip data extraction and formatting
  */
 @Injectable()
-export class DfdTooltipService {
+export class UiTooltipService {
   constructor(private logger: LoggerService) {}
 
   /**

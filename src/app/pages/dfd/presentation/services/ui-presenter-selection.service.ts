@@ -1,11 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Graph, Cell } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
-import { CollaborativeOperationService } from './collaborative-operation.service';
-import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
-import { PresenterCursorDisplayService } from './presenter-cursor-display.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
+import { UiPresenterCursorDisplayService } from './ui-presenter-cursor-display.service';
 
 /**
  * Service responsible for broadcasting presenter selection changes
@@ -15,17 +15,17 @@ import { PresenterCursorDisplayService } from './presenter-cursor-display.servic
 @Injectable({
   providedIn: 'root',
 })
-export class PresenterSelectionService implements OnDestroy {
+export class UiPresenterSelectionService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _graph: Graph | null = null;
-  private _selectionAdapter: X6SelectionAdapter | null = null;
+  private _selectionAdapter: InfraX6SelectionAdapter | null = null;
   private _isInitialized = false;
 
   constructor(
     private logger: LoggerService,
     private collaborationService: DfdCollaborationService,
     private collaborativeOperationService: CollaborativeOperationService,
-    private presenterCursorDisplayService: PresenterCursorDisplayService,
+    private uiPresenterCursorDisplayService: UiPresenterCursorDisplayService,
   ) {}
 
   /**
@@ -33,7 +33,7 @@ export class PresenterSelectionService implements OnDestroy {
    * @param graph The X6 graph instance
    * @param selectionAdapter The X6 selection adapter instance
    */
-  initialize(graph: Graph, selectionAdapter: X6SelectionAdapter): void {
+  initialize(graph: Graph, selectionAdapter: InfraX6SelectionAdapter): void {
     this._graph = graph;
     this._selectionAdapter = selectionAdapter;
 
@@ -41,7 +41,7 @@ export class PresenterSelectionService implements OnDestroy {
     this._setupSelectionListener();
 
     this._isInitialized = true;
-    this.logger.info('PresenterSelectionService initialized');
+    this.logger.info('UiPresenterSelectionService initialized');
   }
 
   /**
@@ -129,7 +129,7 @@ export class PresenterSelectionService implements OnDestroy {
       }
 
       // Also reset cursor timeout to keep presenter cursor active
-      this.presenterCursorDisplayService.handlePresenterSelectionUpdate();
+      this.uiPresenterCursorDisplayService.handlePresenterSelectionUpdate();
 
       this.logger.debug('Applied presenter selection update', {
         selectedCellIds,
@@ -179,7 +179,7 @@ export class PresenterSelectionService implements OnDestroy {
     this._graph = null;
     this._selectionAdapter = null;
     this._isInitialized = false;
-    this.logger.info('PresenterSelectionService destroyed');
+    this.logger.info('UiPresenterSelectionService destroyed');
   }
 
   /**

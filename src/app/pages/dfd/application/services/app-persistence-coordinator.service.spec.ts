@@ -1,11 +1,11 @@
 /**
- * Test suite for PersistenceCoordinator
+ * Test suite for AppPersistenceCoordinator
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { PersistenceCoordinator } from './persistence-coordinator.service';
+import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import {
   SaveOperation,
   SaveResult,
@@ -14,10 +14,10 @@ import {
   SyncOperation,
   SyncResult,
   CacheStatus,
-} from '../types/persistence.types';
+} from '../../types/persistence.types';
 
-describe('PersistenceCoordinator', () => {
-  let service: PersistenceCoordinator;
+describe('AppPersistenceCoordinator', () => {
+  let service: AppPersistenceCoordinator;
   let mockLogger: any;
   let mockStrategy: any;
 
@@ -40,7 +40,7 @@ describe('PersistenceCoordinator', () => {
     };
 
     // Create service directly without TestBed
-    service = new PersistenceCoordinator(mockLogger);
+    service = new AppPersistenceCoordinator(mockLogger);
   });
 
   describe('Service Initialization', () => {

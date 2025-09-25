@@ -9,13 +9,13 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { JSDOM } from 'jsdom';
-import { X6SelectionAdapter } from './x6-selection.adapter';
-import { SelectionService } from '../services/selection.service';
+import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
+import { SelectionService } from '../../presentation/services/ui-presenter-selection.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { registerCustomShapes } from './x6-shape-definitions';
+import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
-import { X6CoreOperationsService } from '../services/x6-core-operations.service';
-import { EdgeService } from '../services/edge.service';
+import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
+import { InfraEdgeService } from '../../domain/services/domain-edge.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Helper to add getNodeTypeInfo extension mock to nodes
@@ -94,14 +94,14 @@ global.window = dom.window as any;
 global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
-describe('X6SelectionAdapter', () => {
-  let adapter: X6SelectionAdapter;
+describe('InfraX6SelectionAdapter', () => {
+  let adapter: InfraX6SelectionAdapter;
   let graph: Graph;
   let mockLogger: MockLoggerService;
   let selectionService: SelectionService;
   let historyCoordinator: GraphHistoryCoordinator;
-  let x6CoreOps: X6CoreOperationsService;
-  let edgeService: EdgeService;
+  let x6CoreOps: InfraX6CoreOperationsService;
+  let infraEdgeService: InfraEdgeService;
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -127,19 +127,19 @@ describe('X6SelectionAdapter', () => {
     mockLogger = createTypedMockLoggerService();
     selectionService = new SelectionService(mockLogger as any);
     historyCoordinator = new GraphHistoryCoordinator();
-    x6CoreOps = new X6CoreOperationsService(mockLogger as any);
+    x6CoreOps = new InfraX6CoreOperationsService(mockLogger as any);
 
-    // Create mock services for EdgeService
-    edgeService = {
+    // Create mock services for InfraEdgeService
+    infraEdgeService = {
       removeEdge: vi.fn().mockReturnValue(true),
     } as any;
 
-    adapter = new X6SelectionAdapter(
+    adapter = new InfraX6SelectionAdapter(
       mockLogger as any,
       selectionService,
       historyCoordinator,
       x6CoreOps,
-      edgeService,
+      infraEdgeService,
     );
 
     // Initialize plugins
@@ -599,16 +599,16 @@ describe('X6SelectionAdapter', () => {
       // Select cells
       graph.select([node, edge]);
 
-      // Mock X6CoreOperationsService.removeCellObject for nodes
+      // Mock InfraX6CoreOperationsService.removeCellObject for nodes
       x6CoreOps.removeCellObject = vi.fn();
 
       // Delete selected
       adapter.deleteSelected(graph);
 
-      // Verify EdgeService.removeEdge called for edge
-      expect(edgeService.removeEdge).toHaveBeenCalledWith(graph, edge.id);
+      // Verify InfraEdgeService.removeEdge called for edge
+      expect(infraEdgeService.removeEdge).toHaveBeenCalledWith(graph, edge.id);
 
-      // Verify X6CoreOperationsService.removeCellObject called for node
+      // Verify InfraX6CoreOperationsService.removeCellObject called for node
       expect(x6CoreOps.removeCellObject).toHaveBeenCalledWith(graph, node);
 
       expect(mockLogger.info).toHaveBeenCalledWith('Deleted selected cells', { count: 2 });
@@ -627,7 +627,7 @@ describe('X6SelectionAdapter', () => {
 
       // Verify no cells removed
       expect(x6CoreOps.removeCellObject).not.toHaveBeenCalled();
-      expect(edgeService.removeEdge).not.toHaveBeenCalled();
+      expect(infraEdgeService.removeEdge).not.toHaveBeenCalled();
       expect(mockLogger.info).toHaveBeenCalledWith('No cells selected for deletion');
     });
   });

@@ -10,10 +10,10 @@
 import { Injectable } from '@angular/core';
 import { Graph } from '@antv/x6';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
-import { DfdDiagramService } from './dfd-diagram.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
+import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { AppDiagramService } from './app-diagram.service';
 
 /**
  * Options for cell loading operations
@@ -32,13 +32,13 @@ export interface CellLoadingOptions {
 @Injectable({
   providedIn: 'root',
 })
-export class DiagramLoadingService {
+export class AppDiagramLoadingService {
   constructor(
     private logger: LoggerService,
-    private nodeConfigurationService: NodeConfigurationService,
-    private diagramService: DfdDiagramService,
+    private infraNodeConfigurationService: InfraNodeConfigurationService,
+    private diagramService: AppDiagramService,
   ) {
-    this.logger.info('DiagramLoadingService initialized');
+    this.logger.info('AppDiagramLoadingService initialized');
   }
 
   /**
@@ -49,7 +49,7 @@ export class DiagramLoadingService {
     cells: any[],
     graph: Graph,
     diagramId: string,
-    x6GraphAdapter: X6GraphAdapter,
+    infraX6GraphAdapter: InfraX6GraphAdapter,
     options: CellLoadingOptions = {},
   ): void {
     const {
@@ -75,11 +75,11 @@ export class DiagramLoadingService {
       }
 
       // Handle history suppression
-      const historyManager = x6GraphAdapter.getHistoryManager();
+      const historyManager = infraX6GraphAdapter.getHistoryManager();
       let historyWasEnabled = false;
 
       if (suppressHistory && historyManager) {
-        // X6HistoryManager doesn't have isEnabled method, assume enabled by default for safety
+        // InfraX6HistoryAdapter doesn't have isEnabled method, assume enabled by default for safety
         historyWasEnabled = true;
         if (historyWasEnabled) {
           historyManager.disable(graph);
@@ -88,16 +88,16 @@ export class DiagramLoadingService {
       }
 
       try {
-        // Delegate to the existing DfdDiagramService which has all the proper logic
+        // Delegate to the existing AppDiagramService which has all the proper logic
         // for cell conversion, creation, and loading
         this.diagramService.loadDiagramCellsBatch(
           cells,
           graph,
           diagramId,
-          this.nodeConfigurationService,
+          this.infraNodeConfigurationService,
         );
 
-        this.logger.info('Successfully loaded cells into graph using DfdDiagramService', {
+        this.logger.info('Successfully loaded cells into graph using AppDiagramService', {
           cellCount: cells.length,
           source,
         });
@@ -119,7 +119,7 @@ export class DiagramLoadingService {
 
         // Update embedding appearances if requested
         if (updateEmbedding) {
-          x6GraphAdapter.updateAllEmbeddingAppearances();
+          infraX6GraphAdapter.updateAllEmbeddingAppearances();
           this.logger.debug('Updated embedding appearances after cell loading');
         }
       }

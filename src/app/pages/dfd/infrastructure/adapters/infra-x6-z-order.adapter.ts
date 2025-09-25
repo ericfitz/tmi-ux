@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { ZOrderService } from '../services/z-order.service';
+import { ZOrderService } from '../services/infra-z-order.service';
 
 /**
  * X6 Z-Order Adapter
@@ -11,7 +11,7 @@ import { ZOrderService } from '../services/z-order.service';
  * Uses X6's standard 'shape' property for node type determination.
  */
 @Injectable()
-export class X6ZOrderAdapter {
+export class InfraX6ZOrderAdapter {
   constructor(
     private logger: LoggerService,
     private zOrderService: ZOrderService,
@@ -310,7 +310,7 @@ export class X6ZOrderAdapter {
       (node as any).setApplicationMetadata('_originalZIndex', String(originalZIndex));
     }
 
-    // Use EmbeddingService to get temporary z-index
+    // Use InfraEmbeddingService to get temporary z-index
     const tempZIndex = this.zOrderService.getDefaultZIndex('security-boundary'); // This will be enhanced
     node.setZIndex(tempZIndex);
   }

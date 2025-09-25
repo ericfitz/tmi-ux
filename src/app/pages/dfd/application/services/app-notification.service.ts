@@ -6,18 +6,18 @@ import {
   SimpleSnackBar,
 } from '@angular/material/snack-bar';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { TranslocoService } from '@jsverse/transloco';
 import {
   WebSocketState,
   WebSocketError,
   WebSocketErrorType,
-} from '../../../core/services/websocket.adapter';
+} from '../../../../core/services/websocket.adapter';
 import {
   ICollaborationNotificationService,
   SessionEventType,
   PresenterEventType,
-} from '../../../core/interfaces/collaboration-notification.interface';
+} from '../../../../core/interfaces/collaboration-notification.interface';
 
 /**
  * Notification types for consistent styling and behavior
@@ -54,7 +54,7 @@ interface NotificationPresets {
 @Injectable({
   providedIn: 'root',
 })
-export class DfdNotificationService implements OnDestroy, ICollaborationNotificationService {
+export class AppNotificationService implements OnDestroy, ICollaborationNotificationService {
   private readonly _destroy$ = new Subject<void>();
   private _activeNotifications = new Map<string, MatSnackBarRef<SimpleSnackBar>>();
   private _subscriptions = new Subscription();
@@ -181,7 +181,7 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
     private _logger: LoggerService,
     private _transloco: TranslocoService,
   ) {
-    this._logger.info('DfdNotificationService initialized');
+    this._logger.info('AppNotificationService initialized');
   }
 
   /**
@@ -602,6 +602,6 @@ export class DfdNotificationService implements OnDestroy, ICollaborationNotifica
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
     this.dismissAll();
-    this._logger.debug('DfdNotificationService destroyed');
+    this._logger.debug('AppNotificationService destroyed');
   }
 }

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { Subject } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { X6CoreOperationsService } from '../services/x6-core-operations.service';
-import { EdgeService } from '../services/edge.service';
+import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
+import { InfraEdgeService } from '../services/infra-edge.service';
 
 /**
  * Event types for X6 graph operations
@@ -42,8 +42,8 @@ export class X6EventHandlers {
 
   constructor(
     private logger: LoggerService,
-    private x6CoreOps: X6CoreOperationsService,
-    private edgeService: EdgeService,
+    private x6CoreOps: InfraX6CoreOperationsService,
+    private infraEdgeService: InfraEdgeService,
   ) {}
 
   /**
@@ -148,8 +148,8 @@ export class X6EventHandlers {
           });
 
           if (!valid) {
-            // Remove invalid connection using EdgeService for business logic
-            this.edgeService.removeEdge(graph, edge.id);
+            // Remove invalid connection using InfraEdgeService for business logic
+            this.infraEdgeService.removeEdge(graph, edge.id);
             this.logger.warn('Invalid connection attempt blocked', {
               sourceShape: sourceNode.shape,
               targetShape: targetNode.shape,

@@ -11,7 +11,7 @@
 import { Observable, of, throwError } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { getX6ShapeForNodeType } from '../../infrastructure/adapters/x6-shape-definitions';
+import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import {
   GraphOperation,
   OperationResult,
@@ -388,7 +388,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   }
 
   /**
-   * Get default size for node type to match DfdNodeService dimensions
+   * Get default size for node type to match InfraNodeService dimensions
    */
   private _getDefaultSizeForNodeType(nodeType: string): { width: number; height: number } {
     switch (nodeType) {

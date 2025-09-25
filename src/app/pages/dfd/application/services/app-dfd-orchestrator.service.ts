@@ -1,5 +1,5 @@
 /**
- * DfdOrchestrator - Main coordination service for the new DFD architecture
+ * AppDfdOrchestrator - Main coordination service for the new DFD architecture
  *
  * This service orchestrates all DFD operations and serves as the main entry point:
  * - DFD system initialization and management
@@ -14,25 +14,25 @@ import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { GraphOperationManager } from './graph-operation-manager.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import {
-  PersistenceCoordinator,
+  AppPersistenceCoordinator,
   StrategySelectionContext,
-} from './persistence-coordinator.service';
-import { AutoSaveManager } from './auto-save-manager.service';
-import { RestPersistenceStrategy } from './strategies/rest-persistence-strategy.service';
-import { WebSocketPersistenceStrategy } from './strategies/websocket-persistence-strategy.service';
-import { CacheOnlyPersistenceStrategy } from './strategies/cache-only-persistence-strategy.service';
-import { DfdInfrastructureFacade } from './dfd-infrastructure.facade';
-import { NodeType } from '../domain/value-objects/node-info';
+} from './app-persistence-coordinator.service';
+import { AppAutoSaveManager } from './app-auto-save-manager.service';
+import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
+import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
+import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
+import { AppDfdFacade } from '../facades/app-dfd.facade';
+import { NodeType } from '../../domain/value-objects/node-info';
 import {
   GraphOperation,
   OperationContext,
   OperationResult,
   CreateNodeOperation,
   NodeData,
-} from '../types/graph-operation.types';
+} from '../../types/graph-operation.types';
 
 // Simple interfaces that match what the tests expect
 export interface DfdInitializationParams {
@@ -75,7 +75,7 @@ export interface ExportFormat {
 @Injectable({
   providedIn: 'root',
 })
-export class DfdOrchestrator {
+export class AppDfdOrchestrator {
   private readonly _state$ = new BehaviorSubject<DfdState>(this._createInitialState());
   private readonly _stateChanged$ = new Subject<DfdState>();
 
@@ -101,15 +101,15 @@ export class DfdOrchestrator {
 
   constructor(
     private readonly logger: LoggerService,
-    private readonly graphOperationManager: GraphOperationManager,
-    private readonly persistenceCoordinator: PersistenceCoordinator,
-    private readonly autoSaveManager: AutoSaveManager,
-    private readonly restStrategy: RestPersistenceStrategy,
+    private readonly appGraphOperationManager: AppGraphOperationManager,
+    private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
+    private readonly appAutoSaveManager: AppAutoSaveManager,
+    private readonly restStrategy: InfraRestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
-    private readonly cacheOnlyStrategy: CacheOnlyPersistenceStrategy,
-    private readonly dfdInfrastructure: DfdInfrastructureFacade,
+    private readonly cacheOnlyStrategy: InfraCacheOnlyPersistenceStrategy,
+    private readonly dfdInfrastructure: AppDfdFacade,
   ) {
-    this.logger.debug('DfdOrchestrator initialized');
+    this.logger.debug('AppDfdOrchestrator initialized');
     this._setupEventIntegration();
     this._setupPersistenceStrategies();
   }
@@ -118,7 +118,7 @@ export class DfdOrchestrator {
    * Initialize the DFD system
    */
   initialize(params: DfdInitializationParams): Observable<boolean> {
-    this.logger.debug('DfdOrchestrator: Initializing DFD system', {
+    this.logger.debug('AppDfdOrchestrator: Initializing DFD system', {
       diagramId: params.diagramId,
       collaborationEnabled: params.collaborationEnabled,
       readOnly: params.readOnly,
@@ -173,7 +173,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('Cannot execute operations in read-only mode'));
     }
 
-    this.logger.debug('DfdOrchestrator: Executing operation', {
+    this.logger.debug('AppDfdOrchestrator: Executing operation', {
       operationType: operation.type,
       operationId: operation.id,
     });
@@ -185,7 +185,7 @@ export class DfdOrchestrator {
     };
     this._updateStats();
 
-    return this.graphOperationManager.execute(operation, this._operationContext).pipe(
+    return this.appGraphOperationManager.execute(operation, this._operationContext).pipe(
       tap(result => {
         if (result.success) {
           this._markUnsavedChanges();
@@ -216,7 +216,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('Cannot execute operations in read-only mode'));
     }
 
-    this.logger.debug('DfdOrchestrator: Executing batch operations', {
+    this.logger.debug('AppDfdOrchestrator: Executing batch operations', {
       operationCount: operations.length,
     });
 
@@ -227,7 +227,7 @@ export class DfdOrchestrator {
     };
     this._updateStats();
 
-    return this.graphOperationManager.executeBatch(operations, this._operationContext).pipe(
+    return this.appGraphOperationManager.executeBatch(operations, this._operationContext).pipe(
       tap(results => {
         const successfulResults = results.filter(r => r.success);
         if (successfulResults.length > 0) {
@@ -257,7 +257,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
-    this.logger.debug('DfdOrchestrator: Manual save triggered');
+    this.logger.debug('AppDfdOrchestrator: Manual save triggered');
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
@@ -266,7 +266,7 @@ export class DfdOrchestrator {
       preferredStrategy: 'websocket',
     };
 
-    return this.autoSaveManager.triggerManualSave(autoSaveContext).pipe(
+    return this.appAutoSaveManager.triggerManualSave(autoSaveContext).pipe(
       map(result => {
         if (result.success) {
           this._updateState({
@@ -293,7 +293,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('No diagram ID provided'));
     }
 
-    this.logger.debug('DfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
+    this.logger.debug('AppDfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
 
     this._updateState({ loading: true });
 
@@ -302,7 +302,7 @@ export class DfdOrchestrator {
       forceRefresh: false,
     };
 
-    return this.persistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
+    return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       map(result => {
         if (result.success && result.data) {
           this._loadGraphData(result.data);
@@ -335,7 +335,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
-    this.logger.debug('DfdOrchestrator: Exporting diagram', { format: format.format });
+    this.logger.debug('AppDfdOrchestrator: Exporting diagram', { format: format.format });
 
     switch (format.format) {
       case 'svg': {
@@ -363,16 +363,16 @@ export class DfdOrchestrator {
    * Auto-save management
    */
   getAutoSaveState(): any {
-    return this.autoSaveManager.getState();
+    return this.appAutoSaveManager.getState();
   }
 
   enableAutoSave(): void {
-    this.autoSaveManager.enable();
+    this.appAutoSaveManager.enable();
     this.logger.debug('Auto-save enabled');
   }
 
   disableAutoSave(): void {
-    this.autoSaveManager.disable();
+    this.appAutoSaveManager.disable();
     this.logger.debug('Auto-save disabled');
   }
 
@@ -380,13 +380,13 @@ export class DfdOrchestrator {
    * Collaboration management
    */
   startCollaboration(): Observable<boolean> {
-    this.logger.debug('DfdOrchestrator: Starting collaboration');
+    this.logger.debug('AppDfdOrchestrator: Starting collaboration');
     this._updateState({ collaborating: true });
     return of(true);
   }
 
   stopCollaboration(): Observable<boolean> {
-    this.logger.debug('DfdOrchestrator: Stopping collaboration');
+    this.logger.debug('AppDfdOrchestrator: Stopping collaboration');
     this._updateState({ collaborating: false });
     return of(true);
   }
@@ -557,12 +557,12 @@ export class DfdOrchestrator {
 
     try {
       if (typeof nodeDataOrType === 'string') {
-        // Handle the (nodeType, position) signature - use DfdNodeService for intelligent positioning
+        // Handle the (nodeType, position) signature - use InfraNodeService for intelligent positioning
         const nodeType = nodeDataOrType as NodeType;
 
-        // Use DfdNodeService's intelligent positioning algorithm if no position provided
+        // Use InfraNodeService's intelligent positioning algorithm if no position provided
         if (!position) {
-          this.logger.debug('Using DfdNodeService intelligent positioning for node creation', {
+          this.logger.debug('Using InfraNodeService intelligent positioning for node creation', {
             nodeType,
             containerSize: {
               width: this._containerElement.clientWidth,
@@ -588,11 +588,11 @@ export class DfdOrchestrator {
                 metadata: {
                   nodeType,
                   usedIntelligentPositioning: true,
-                  method: 'DfdInfrastructureFacade.createNodeWithIntelligentPositioning',
+                  method: 'AppDfdFacade.createNodeWithIntelligentPositioning',
                 },
               })),
               catchError(error => {
-                this.logger.error('DfdInfrastructureFacade node creation failed', {
+                this.logger.error('AppDfdFacade node creation failed', {
                   error,
                   nodeType,
                 });
@@ -602,7 +602,7 @@ export class DfdOrchestrator {
                   operationType: 'create-node' as const,
                   affectedCellIds: [],
                   timestamp: Date.now(),
-                  error: `DfdInfrastructureFacade creation failed: ${error.message}`,
+                  error: `AppDfdFacade creation failed: ${error.message}`,
                 });
               }),
             );
@@ -626,7 +626,7 @@ export class DfdOrchestrator {
             nodeData,
           };
 
-          this.logger.debug('Using GraphOperationManager for explicit positioning', {
+          this.logger.debug('Using AppGraphOperationManager for explicit positioning', {
             nodeType,
             position,
           });
@@ -644,7 +644,7 @@ export class DfdOrchestrator {
           nodeData: nodeDataOrType,
         };
 
-        this.logger.debug('Using GraphOperationManager for NodeData signature', {
+        this.logger.debug('Using AppGraphOperationManager for NodeData signature', {
           nodeType: nodeDataOrType.nodeType,
         });
 
@@ -705,7 +705,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
-    this.logger.debug('DfdOrchestrator: Manual save triggered');
+    this.logger.debug('AppDfdOrchestrator: Manual save triggered');
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
@@ -714,7 +714,7 @@ export class DfdOrchestrator {
       preferredStrategy: 'websocket',
     };
 
-    return this.autoSaveManager.triggerManualSave(autoSaveContext).pipe(
+    return this.appAutoSaveManager.triggerManualSave(autoSaveContext).pipe(
       tap(result => {
         if (result.success) {
           this._updateState({
@@ -754,7 +754,7 @@ export class DfdOrchestrator {
       return throwError(() => new Error('No diagram ID provided'));
     }
 
-    this.logger.debug('DfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
+    this.logger.debug('AppDfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
 
     this._updateState({ loading: true });
 
@@ -763,7 +763,7 @@ export class DfdOrchestrator {
       forceRefresh: false,
     };
 
-    return this.persistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
+    return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       tap(result => {
         if (result.success && result.data) {
           this._loadGraphData(result.data);
@@ -851,7 +851,7 @@ export class DfdOrchestrator {
    * Cleanup and destruction
    */
   destroy(): Observable<boolean> {
-    this.logger.debug('DfdOrchestrator: Destroying DFD system');
+    this.logger.debug('AppDfdOrchestrator: Destroying DFD system');
 
     if (this._graph) {
       this._graph.dispose();
@@ -866,7 +866,7 @@ export class DfdOrchestrator {
   }
 
   reset(): Observable<boolean> {
-    this.logger.debug('DfdOrchestrator: Resetting DFD system');
+    this.logger.debug('AppDfdOrchestrator: Resetting DFD system');
 
     return this.destroy().pipe(
       switchMap(() => {
@@ -949,7 +949,7 @@ export class DfdOrchestrator {
     };
 
     // Configure auto-save manager
-    this.autoSaveManager.setPolicyMode(params.autoSaveMode);
+    this.appAutoSaveManager.setPolicyMode(params.autoSaveMode);
 
     // Load existing diagram data if available
     return this.load(params.diagramId).pipe(
@@ -963,13 +963,13 @@ export class DfdOrchestrator {
 
   private _setupEventIntegration(): void {
     // Listen to operation completed events and trigger auto-save
-    this.graphOperationManager.operationCompleted$.subscribe(event => {
+    this.appGraphOperationManager.operationCompleted$.subscribe(event => {
       this._markUnsavedChanges();
       this._triggerAutoSave(event.operation, event.result);
     });
 
     // Listen to auto-save completed events
-    this.autoSaveManager.saveCompleted$.subscribe(result => {
+    this.appAutoSaveManager.saveCompleted$.subscribe(result => {
       if (result.success) {
         this._updateState({
           hasUnsavedChanges: false,
@@ -983,15 +983,15 @@ export class DfdOrchestrator {
     this.logger.debug('Setting up persistence strategies');
 
     // Register all available persistence strategies
-    this.persistenceCoordinator.addStrategy(this.restStrategy);
-    this.persistenceCoordinator.addStrategy(this.webSocketStrategy);
-    this.persistenceCoordinator.addStrategy(this.cacheOnlyStrategy);
+    this.appPersistenceCoordinator.addStrategy(this.restStrategy);
+    this.appPersistenceCoordinator.addStrategy(this.webSocketStrategy);
+    this.appPersistenceCoordinator.addStrategy(this.cacheOnlyStrategy);
 
     // Set fallback strategy to REST API
-    this.persistenceCoordinator.setFallbackStrategy('rest');
+    this.appPersistenceCoordinator.setFallbackStrategy('rest');
 
     this.logger.debug('Persistence strategies registered', {
-      strategies: this.persistenceCoordinator.getStrategies().map(s => s.type),
+      strategies: this.appPersistenceCoordinator.getStrategies().map(s => s.type),
       fallbackStrategy: 'rest',
     });
   }
@@ -1015,8 +1015,8 @@ export class DfdOrchestrator {
       preferredStrategy: 'websocket',
     };
 
-    if (this.autoSaveManager.trigger) {
-      this.autoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
+    if (this.appAutoSaveManager.trigger) {
+      this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
     }
   }
 
@@ -1039,8 +1039,8 @@ export class DfdOrchestrator {
       preferredStrategy: 'websocket',
     };
 
-    if (this.autoSaveManager.trigger) {
-      this.autoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
+    if (this.appAutoSaveManager.trigger) {
+      this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
     }
   }
 

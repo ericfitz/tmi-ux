@@ -8,7 +8,7 @@ import { Point } from '../../domain/value-objects/point';
  * Handles keyboard events for snap to grid control, cursor changes, and other keyboard interactions
  */
 @Injectable()
-export class X6KeyboardHandler {
+export class InfraX6KeyboardAdapter {
   // Shift key and drag state tracking for snap to grid control
   private _isShiftPressed = false;
   private _isDragging = false;

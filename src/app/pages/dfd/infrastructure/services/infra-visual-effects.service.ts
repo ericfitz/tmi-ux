@@ -22,7 +22,7 @@ interface ActiveEffect {
 @Injectable({
   providedIn: 'root',
 })
-export class VisualEffectsService {
+export class InfraVisualEffectsService {
   private readonly FADE_DURATION_MS = DFD_STYLING.CREATION.FADE_DURATION_MS;
   private readonly ANIMATION_FRAME_INTERVAL = DFD_STYLING.CREATION.ANIMATION_FRAME_INTERVAL;
 

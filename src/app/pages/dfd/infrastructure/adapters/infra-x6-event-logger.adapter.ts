@@ -10,7 +10,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
  * to a dedicated x6-events.log file, separate from the main application logger.
  */
 @Injectable()
-export class X6EventLoggerService {
+export class InfraX6EventLoggerAdapter {
   private _logEntries: string[] = [];
   private _isEnabled = false;
   private _maxLogEntries = 1000; // Prevent memory issues

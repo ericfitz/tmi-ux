@@ -17,7 +17,7 @@ import {
   LoadResult,
   SyncOperation,
   SyncResult,
-} from '../persistence-coordinator.service';
+} from '../../application/services/app-persistence-coordinator.service';
 
 @Injectable({
   providedIn: 'root',

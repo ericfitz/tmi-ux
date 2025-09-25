@@ -5,7 +5,7 @@
  * It provides a comprehensive diagram editing environment with centralized operation management.
  *
  * Key functionality:
- * - Centralized operation management via DfdOrchestrator
+ * - Centralized operation management via AppDfdOrchestrator
  * - Intelligent auto-save with configurable policies
  * - Unified persistence coordination
  * - Complete graph operation support (nodes, edges, batches, diagram loading)
@@ -33,8 +33,8 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { LoggerService } from '../../core/services/logger.service';
-import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -42,25 +42,44 @@ import {
 } from '@app/shared/imports';
 
 // DFD v2 Architecture
-import { DfdOrchestrator } from './services/dfd-orchestrator.service';
-import { AutoSaveManager } from './services/auto-save-manager.service';
-import { GraphOperationManager } from './services/graph-operation-manager.service';
-import { PersistenceCoordinator } from './services/persistence-coordinator.service';
-import { DfdInfrastructureFacade } from './services/dfd-infrastructure.facade';
+import { AppDfdOrchestrator } from '../../application/services/app-dfd-orchestrator.service';
+import { AppAutoSaveManager } from '../../application/services/app-auto-save-manager.service';
+import { AppGraphOperationManager } from '../../application/services/app-graph-operation-manager.service';
+import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
+import { AppDfdFacade } from '../../application/facades/app-dfd.facade';
+
+// Infrastructure adapters and services
+import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
+import { InfraX6EmbeddingAdapter } from '../../infrastructure/adapters/infra-x6-embedding.adapter';
+import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
+import { InfraX6KeyboardAdapter } from '../../infrastructure/adapters/infra-x6-keyboard.adapter';
+import { InfraX6EventLoggerAdapter } from '../../infrastructure/adapters/infra-x6-event-logger.adapter';
+import { InfraEdgeQueryService } from '../../infrastructure/services/infra-edge-query.service';
+import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
+import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
+import { InfraPortStateService } from '../../infrastructure/services/infra-port-state.service';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
+import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
+import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
+import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 
 // Essential v1 components still needed
-import { NodeType } from './domain/value-objects/node-info';
-import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
-import { ThreatModelService } from '../tm/services/threat-model.service';
+import { NodeType } from '../../domain/value-objects/node-info';
+import { DfdCollaborationComponent } from './collaboration/collaboration.component';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
-import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { ThreatModelAuthorizationService } from '../../../tm/services/threat-model-authorization.service';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
-} from '../tm/components/metadata-dialog/metadata-dialog.component';
+} from '../../../tm/components/metadata-dialog/metadata-dialog.component';
 
-import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
+import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -78,11 +97,29 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
   ],
   providers: [
     // DFD v2 Architecture - Core Services with Facade
-    DfdInfrastructureFacade, // Facade encapsulates all infrastructure dependencies
-    DfdOrchestrator,
-    GraphOperationManager,
-    AutoSaveManager,
-    PersistenceCoordinator,
+    AppDfdFacade, // Facade encapsulates all infrastructure dependencies
+    AppDfdOrchestrator,
+    AppGraphOperationManager,
+    AppAutoSaveManager,
+    AppPersistenceCoordinator,
+    // Infrastructure adapters and services required by InfraX6GraphAdapter
+    InfraX6GraphAdapter,
+    InfraX6ZOrderAdapter,
+    InfraX6SelectionAdapter,
+    InfraX6EmbeddingAdapter,
+    InfraX6HistoryAdapter,
+    InfraX6KeyboardAdapter,
+    InfraX6EventLoggerAdapter,
+    InfraEdgeQueryService,
+    InfraNodeConfigurationService,
+    InfraEmbeddingService,
+    InfraPortStateService,
+    InfraNodeService,
+    InfraX6CoreOperationsService,
+    InfraEdgeService,
+    DomainEdgeService,
+    GraphHistoryCoordinator,
+    DiagramOperationBroadcaster,
     // Essential services still needed
     ThreatModelService,
     ThreatModelAuthorizationService,
@@ -132,15 +169,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private router: Router,
-    private dfdOrchestrator: DfdOrchestrator,
-    private autoSaveManager: AutoSaveManager,
+    private appDfdOrchestrator: AppDfdOrchestrator,
+    private appAutoSaveManager: AppAutoSaveManager,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
     private translocoService: TranslocoService,
     private collaborationService: DfdCollaborationService,
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
-    private dfdInfrastructure: DfdInfrastructureFacade,
+    private dfdInfrastructure: AppDfdFacade,
   ) {
     this.logger.info('DfdComponent v2 constructor called');
 
@@ -284,9 +321,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Check if orchestrator is already initialized to avoid re-initialization
-    if (this.dfdOrchestrator.getState().initialized) {
+    if (this.appDfdOrchestrator.getState().initialized) {
       // Update existing orchestrator read-only mode
-      this.dfdOrchestrator.setReadOnlyMode(this.isReadOnlyMode);
+      this.appDfdOrchestrator.setReadOnlyMode(this.isReadOnlyMode);
       this.configureAutoSave();
       this.cdr.markForCheck();
       return;
@@ -304,7 +341,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.logger.debug('Attempting to initialize DFD Orchestrator', initParams);
-    this.dfdOrchestrator.initialize(initParams).subscribe({
+    this.appDfdOrchestrator.initialize(initParams).subscribe({
       next: success => {
         this.logger.info('DFD Orchestrator initialization result', { success });
         if (success) {
@@ -335,14 +372,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.unsubscribe();
 
     // Clean up orchestrator
-    // DfdOrchestrator doesn't have dispose method, handle cleanup via subscriptions
+    // AppDfdOrchestrator doesn't have dispose method, handle cleanup via subscriptions
   }
 
   private configureAutoSave(): void {
     // Configure auto-save based on user permission
     const autoSavePolicy = this.isReadOnlyMode ? 'manual' : 'normal';
 
-    this.autoSaveManager.configure({
+    this.appAutoSaveManager.configure({
       enabled: !this.isReadOnlyMode,
       policy: autoSavePolicy,
       debounceMs: autoSavePolicy === 'normal' ? 5000 : 30000,
@@ -359,7 +396,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private setupOrchestratorSubscriptions(): void {
     // Subscribe to auto-save events
     this._subscriptions.add(
-      this.autoSaveManager.saveCompleted$.pipe(takeUntil(this._destroy$)).subscribe(result => {
+      this.appAutoSaveManager.saveCompleted$.pipe(takeUntil(this._destroy$)).subscribe(result => {
         if (result.success) {
           this.logger.debug('Auto-save completed successfully');
         } else {
@@ -370,7 +407,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to orchestrator state changes
     this._subscriptions.add(
-      this.dfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
+      this.appDfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
         // Update component state based on orchestrator state
         this.logger.debug('DFD orchestrator state changed', {
           initialized: state.initialized,
@@ -383,7 +420,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     // Set up interval to update selection and history state
-    // TODO: Replace with proper observables when available from DfdOrchestrator
+    // TODO: Replace with proper observables when available from AppDfdOrchestrator
     this._subscriptions.add(
       // Poll selection state every 100ms
       new Observable(_observer => {
@@ -398,7 +435,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     // Set up edge event handlers for drag-and-drop edge creation
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.appDfdOrchestrator.getGraph;
     if (graph) {
       // Handle edge added events (when user drags from port to port)
       graph.on('edge:added', (data: { edge: any }) => {
@@ -456,11 +493,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadDiagramData(dfdId: string): void {
-    // Use DfdOrchestrator to load diagram
-    this.dfdOrchestrator.loadDiagram(dfdId).subscribe({
+    // Use AppDfdOrchestrator to load diagram
+    this.appDfdOrchestrator.loadDiagram(dfdId).subscribe({
       next: result => {
         if (result.success) {
-          this.logger.info('Diagram loaded successfully via DfdOrchestrator');
+          this.logger.info('Diagram loaded successfully via AppDfdOrchestrator');
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
         }
@@ -471,7 +508,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Toolbar Methods - Using DfdOrchestrator
+  // Toolbar Methods - Using AppDfdOrchestrator
 
   addGraphNode(nodeType: string): void {
     // Map string nodeType to NodeType enum
@@ -484,7 +521,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showHistory(): void {
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.warn('Cannot show history: Graph not available');
       return;
@@ -517,13 +554,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isReadOnlyMode) return;
 
     // Check if DFD system is initialized before attempting to add node
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       this.logger.warn('Cannot add node: DFD system not yet initialized');
       return;
     }
 
-    this.dfdOrchestrator
-      .addNode(nodeType) // Use DfdNodeService intelligent positioning algorithm
+    this.appDfdOrchestrator
+      .addNode(nodeType) // Use InfraNodeService intelligent positioning algorithm
       .subscribe({
         next: result => {
           if (result.success) {
@@ -546,12 +583,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isReadOnlyMode || !this.hasSelectedCells) return;
 
     // Check if DFD system is initialized before attempting to delete
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       this.logger.warn('Cannot delete cells: DFD system not yet initialized');
       return;
     }
 
-    this.dfdOrchestrator.deleteSelectedCells().subscribe({
+    this.appDfdOrchestrator.deleteSelectedCells().subscribe({
       next: result => {
         if (result.success) {
           this.logger.debug('Selected cells deleted successfully');
@@ -568,7 +605,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onUndo(): void {
     if (!this.canUndo || this.isReadOnlyMode) return;
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.warn('Cannot undo: Graph not available');
       return;
@@ -588,7 +625,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onRedo(): void {
     if (!this.canRedo || this.isReadOnlyMode) return;
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.warn('Cannot redo: Graph not available');
       return;
@@ -615,23 +652,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSelectAll(): void {
-    this.dfdOrchestrator.selectAll();
+    this.appDfdOrchestrator.selectAll();
   }
 
   onClearSelection(): void {
-    this.dfdOrchestrator.clearSelection();
+    this.appDfdOrchestrator.clearSelection();
   }
 
   onSaveManually(): void {
     if (this.isReadOnlyMode) return;
 
     // Check if DFD system is initialized before attempting to save
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       this.logger.warn('Cannot save manually: DFD system not yet initialized');
       return;
     }
 
-    this.dfdOrchestrator.saveManually().subscribe({
+    this.appDfdOrchestrator.saveManually().subscribe({
       next: result => {
         if (result.success) {
           this.logger.info('Manual save completed successfully');
@@ -647,12 +684,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onExport(format: ExportFormat): void {
     // Check if DFD system is initialized before attempting to export
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       this.logger.warn('Cannot export diagram: DFD system not yet initialized');
       return;
     }
 
-    this.dfdOrchestrator.exportDiagram(format).subscribe({
+    this.appDfdOrchestrator.exportDiagram(format).subscribe({
       next: blob => {
         // Create download link
         const url = URL.createObjectURL(blob as Blob);
@@ -688,11 +725,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Opening threat editor dialog for new threat creation on DFD page');
 
     // Get selected cell information for context
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     const cellId = selectedCells.length === 1 ? selectedCells[0] : null;
 
     if (cellId) {
-      const graph = this.dfdOrchestrator.getGraph;
+      const graph = this.appDfdOrchestrator.getGraph;
       if (graph) {
         const cell = graph.getCellById(cellId);
         if (cell) {
@@ -714,7 +751,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   manageThreats(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length !== 1) {
       this.logger.warn('Manage threats requires exactly one selected cell');
       return;
@@ -732,7 +769,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Get the actual cell object from the graph to extract cell data
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for threat management');
       return;
@@ -760,8 +797,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Closing diagram');
 
     // Save any pending changes before closing
-    if (this.dfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
-      this.dfdOrchestrator.saveManually().subscribe({
+    if (this.appDfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
+      this.appDfdOrchestrator.saveManually().subscribe({
         next: () => {
           this.logger.info('Diagram saved before closing');
           this._navigateAway();
@@ -778,7 +815,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   editCellText(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length !== 1) {
       this.logger.info('Edit cell text requires exactly one selected cell');
       return;
@@ -792,13 +829,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Z-order methods
   moveForward(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length === 0) {
       this.logger.info('No cells selected for move forward');
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move forward operation');
       return;
@@ -814,13 +851,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   moveBackward(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length === 0) {
       this.logger.info('No cells selected for move backward');
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move backward operation');
       return;
@@ -836,13 +873,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   moveToFront(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length === 0) {
       this.logger.info('No cells selected for move to front');
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move to front operation');
       return;
@@ -858,13 +895,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   moveToBack(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length === 0) {
       this.logger.info('No cells selected for move to back');
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for move to back operation');
       return;
@@ -881,13 +918,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Edge methods
   addInverseConnection(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length !== 1) {
       this.logger.info('Add inverse connection requires exactly one selected edge');
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph();
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for add inverse connection');
       return;
@@ -927,13 +964,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showCellProperties(): void {
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length !== 1) {
       this.logger.info('Show cell properties requires exactly one selected cell');
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.logger.error('Graph not available for show cell properties');
       return;
@@ -974,16 +1011,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.hasExactlyOneSelectedCell) return;
 
     // Check if DFD system is initialized before attempting to edit metadata
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       this.logger.warn('Cannot edit metadata: DFD system not yet initialized');
       return;
     }
 
-    const selectedCellIds = this.dfdOrchestrator.getSelectedCells();
+    const selectedCellIds = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCellIds.length === 0) return;
 
     // Get the actual cell object from the graph
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
 
     const cell = graph.getCellById(selectedCellIds[0]);
@@ -1002,7 +1039,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Update cell metadata through orchestrator
-        this.dfdOrchestrator
+        this.appDfdOrchestrator
           .executeOperation({
             id: `update-metadata-${Date.now()}`,
             type: 'update-node',
@@ -1037,23 +1074,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
     // Delegate to orchestrator for centralized keyboard handling
-    this.dfdOrchestrator.onKeyDown(event);
+    this.appDfdOrchestrator.onKeyDown(event);
   }
 
   @HostListener('window:resize', ['$event'])
   onWindowResize(_event: Event): void {
     // Delegate to orchestrator for centralized resize handling
-    this.dfdOrchestrator.onWindowResize();
+    this.appDfdOrchestrator.onWindowResize();
   }
 
   // Helper Methods
 
   private updateSelectionState(): void {
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       return;
     }
 
-    const selectedCells = this.dfdOrchestrator.getSelectedCells();
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     const oldHasSelectedCells = this.hasSelectedCells;
     const oldHasExactlyOneSelectedCell = this.hasExactlyOneSelectedCell;
     const oldSelectedCellIsTextBox = this.selectedCellIsTextBox;
@@ -1063,7 +1100,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasExactlyOneSelectedCell = selectedCells.length === 1;
 
     if (this.hasExactlyOneSelectedCell) {
-      const graph = this.dfdOrchestrator.getGraph;
+      const graph = this.appDfdOrchestrator.getGraph;
       if (graph) {
         const cell = graph.getCellById(selectedCells[0]);
         if (cell) {
@@ -1094,13 +1131,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateHistoryState(): void {
-    if (!this.dfdOrchestrator.getState().initialized) {
+    if (!this.appDfdOrchestrator.getState().initialized) {
       this.canUndo = false;
       this.canRedo = false;
       return;
     }
 
-    const graph = this.dfdOrchestrator.getGraph;
+    const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
       this.canUndo = false;
       this.canRedo = false;

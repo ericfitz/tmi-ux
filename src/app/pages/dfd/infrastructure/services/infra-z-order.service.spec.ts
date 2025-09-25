@@ -7,7 +7,7 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Node, Edge } from '@antv/x6';
-import { ZOrderService } from './z-order.service';
+import { ZOrderService } from './infra-z-order.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, describe, it } from 'vitest';

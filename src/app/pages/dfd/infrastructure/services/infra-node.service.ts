@@ -8,7 +8,7 @@
  * - Provides node creation operations with different node types (actor, process, store, etc.)
  * - Manages node positioning and automatic layout algorithms
  * - Handles node configuration and default properties setup
- * - Coordinates with X6GraphAdapter for graph-specific node operations
+ * - Coordinates with InfraX6GraphAdapter for graph-specific node operations
  * - Integrates with GraphHistoryCoordinator for proper undo/redo support
  * - Manages node visual effects and styling operations
  * - Provides node validation and business rule enforcement
@@ -27,13 +27,13 @@ import { Graph } from '@antv/x6';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
-import { X6GraphAdapter } from '../adapters/x6-graph.adapter';
-import { X6ZOrderAdapter } from '../adapters/x6-z-order.adapter';
-import { NodeConfigurationService } from './node-configuration.service';
-import { VisualEffectsService } from './visual-effects.service';
-import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
+import { InfraX6GraphAdapter } from '../adapters/infra-x6-graph.adapter';
+import { InfraX6ZOrderAdapter } from '../adapters/infra-x6-z-order.adapter';
+import { InfraNodeConfigurationService } from './infra-node-configuration.service';
+import { InfraVisualEffectsService } from './infra-visual-effects.service';
+import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { X6CoreOperationsService } from './x6-core-operations.service';
+import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 
 /**
  * Consolidated service for node creation, management, and operations in DFD diagrams
@@ -42,16 +42,16 @@ import { X6CoreOperationsService } from './x6-core-operations.service';
 @Injectable({
   providedIn: 'root',
 })
-export class DfdNodeService {
+export class InfraNodeService {
   constructor(
     private logger: LoggerService,
     private transloco: TranslocoService,
-    private x6GraphAdapter: X6GraphAdapter,
-    private x6ZOrderAdapter: X6ZOrderAdapter,
-    private nodeConfigurationService: NodeConfigurationService,
-    private visualEffectsService: VisualEffectsService,
+    private infraX6GraphAdapter: InfraX6GraphAdapter,
+    private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
+    private infraNodeConfigurationService: InfraNodeConfigurationService,
+    private infraVisualEffectsService: InfraVisualEffectsService,
     private historyCoordinator: GraphHistoryCoordinator,
-    private x6CoreOps: X6CoreOperationsService,
+    private x6CoreOps: InfraX6CoreOperationsService,
   ) {}
 
   // ========================================
@@ -102,7 +102,7 @@ export class DfdNodeService {
     const totalGridPositions = maxColumns * maxRows;
 
     // Get existing nodes to determine occupied positions
-    const existingNodes = this.x6GraphAdapter.getNodes();
+    const existingNodes = this.infraX6GraphAdapter.getNodes();
 
     // Calculate which layer we're on based on existing node count
     const currentLayer = Math.floor(existingNodes.length / totalGridPositions);
@@ -149,7 +149,7 @@ export class DfdNodeService {
 
     try {
       // Add node directly to X6 graph using the graph instance
-      const graph = this.x6GraphAdapter.getGraph();
+      const graph = this.infraX6GraphAdapter.getGraph();
 
       // Get node-specific configuration
       const nodeConfig = this.getNodeConfigForType(shapeType, nodeId, position);
@@ -158,7 +158,7 @@ export class DfdNodeService {
       let createdNode: any;
 
       // Start atomic operation for collaborative broadcasting
-      const broadcaster = this.x6GraphAdapter.getDiagramOperationBroadcaster();
+      const broadcaster = this.infraX6GraphAdapter.getDiagramOperationBroadcaster();
       broadcaster.startAtomicOperation();
 
       try {
@@ -168,7 +168,7 @@ export class DfdNodeService {
             throw new Error(`Failed to create node with ID: ${nodeId}`);
           }
           // Apply proper z-index using ZOrderService after node creation
-          this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+          this.infraX6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
           createdNode = node; // Capture the created node for visual effects
 
           return node;
@@ -185,7 +185,7 @@ export class DfdNodeService {
       // Apply visual effects AFTER the batched operation (outside of history)
       if (createdNode) {
         this.historyCoordinator.executeVisualEffect(graph, () => {
-          this.visualEffectsService.applyCreationHighlight(createdNode, graph);
+          this.infraVisualEffectsService.applyCreationHighlight(createdNode, graph);
         });
       }
 
@@ -224,8 +224,8 @@ export class DfdNodeService {
       zIndex: 1, // Temporary z-index, will be set properly after node creation
     };
 
-    // Use NodeConfigurationService to get the correct port configuration for this node type
-    const portConfig = this.nodeConfigurationService.getNodePorts(shapeType);
+    // Use InfraNodeConfigurationService to get the correct port configuration for this node type
+    const portConfig = this.infraNodeConfigurationService.getNodePorts(shapeType);
 
     // Adjust dimensions based on node type to match original styling
     switch (shapeType) {
@@ -342,15 +342,15 @@ export class DfdNodeService {
 
       // Apply proper z-index using ZOrderService after node creation
       if (!suppressHistory) {
-        this.x6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
+        this.infraX6ZOrderAdapter.applyNodeCreationZIndex(graph, node);
       }
 
       // Apply visual effects if not suppressed
       if (ensureVisualRendering && !suppressHistory) {
-        this.visualEffectsService.applyCreationHighlight(node, graph);
+        this.infraVisualEffectsService.applyCreationHighlight(node, graph);
       }
 
-      this.logger.debugComponent('DfdNodeService', 'Node created successfully from NodeInfo', {
+      this.logger.debugComponent('InfraNodeService', 'Node created successfully from NodeInfo', {
         nodeId: nodeInfo.id,
         nodeCreated: !!node,
         suppressHistory,
@@ -379,11 +379,11 @@ export class DfdNodeService {
       width: nodeInfo.width,
       height: nodeInfo.height,
       label: nodeInfo.attrs?.text?.text || '',
-      zIndex: nodeInfo.zIndex || this.nodeConfigurationService.getNodeZIndex(nodeInfo.type),
+      zIndex: nodeInfo.zIndex || this.infraNodeConfigurationService.getNodeZIndex(nodeInfo.type),
     };
 
-    // Use NodeConfigurationService to get the correct port configuration for this node type
-    const portConfig = this.nodeConfigurationService.getNodePorts(nodeInfo.type);
+    // Use InfraNodeConfigurationService to get the correct port configuration for this node type
+    const portConfig = this.infraNodeConfigurationService.getNodePorts(nodeInfo.type);
     nodeConfig.ports = portConfig;
 
     // Add hybrid data (metadata + custom data) if present
@@ -417,7 +417,7 @@ export class DfdNodeService {
     // Apply visual effects for remote operations (different color to distinguish)
     if (options?.applyVisualEffects && node) {
       // TODO: Apply creation highlight with green color for remote operations
-      // this.visualEffectsService.applyCreationHighlight(node, graph, '#00ff00');
+      // this.infraVisualEffectsService.applyCreationHighlight(node, graph, '#00ff00');
     }
   }
 

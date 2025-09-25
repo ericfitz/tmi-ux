@@ -1,16 +1,16 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Graph } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { WebSocketAdapter } from '../../../core/services/websocket.adapter';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import {
   PresenterCursorMessage,
   PresenterSelectionMessage,
-} from '../../../core/types/websocket-message.types';
-import { PresenterCursorService } from './presenter-cursor.service';
-import { PresenterCursorDisplayService } from './presenter-cursor-display.service';
-import { PresenterSelectionService } from './presenter-selection.service';
-import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
+} from '../../../../core/types/websocket-message.types';
+import { UiPresenterCursorService } from './ui-presenter-cursor.service';
+import { UiPresenterCursorDisplayService } from './ui-presenter-cursor-display.service';
+import { UiPresenterSelectionService } from './ui-presenter-selection.service';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 
 /**
  * Coordinator service for all presenter mode functionality
@@ -20,16 +20,16 @@ import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adap
 @Injectable({
   providedIn: 'root',
 })
-export class PresenterCoordinatorService implements OnDestroy {
+export class UiPresenterCoordinatorService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _isInitialized = false;
 
   constructor(
     private logger: LoggerService,
     private webSocketAdapter: WebSocketAdapter,
-    private presenterCursorService: PresenterCursorService,
-    private presenterCursorDisplayService: PresenterCursorDisplayService,
-    private presenterSelectionService: PresenterSelectionService,
+    private uiPresenterCursorService: UiPresenterCursorService,
+    private uiPresenterCursorDisplayService: UiPresenterCursorDisplayService,
+    private uiPresenterSelectionService: UiPresenterSelectionService,
   ) {}
 
   /**
@@ -41,18 +41,18 @@ export class PresenterCoordinatorService implements OnDestroy {
   initialize(
     graphContainer: HTMLElement,
     graph: Graph,
-    selectionAdapter: X6SelectionAdapter,
+    selectionAdapter: InfraX6SelectionAdapter,
   ): void {
     // Initialize all presenter services
-    this.presenterCursorService.initialize(graphContainer, graph);
-    this.presenterCursorDisplayService.initialize(graphContainer, graph);
-    this.presenterSelectionService.initialize(graph, selectionAdapter);
+    this.uiPresenterCursorService.initialize(graphContainer, graph);
+    this.uiPresenterCursorDisplayService.initialize(graphContainer, graph);
+    this.uiPresenterSelectionService.initialize(graph, selectionAdapter);
 
     // Subscribe to WebSocket messages
     this._subscribeToPresenterMessages();
 
     this._isInitialized = true;
-    this.logger.info('PresenterCoordinatorService initialized');
+    this.logger.info('UiPresenterCoordinatorService initialized');
   }
 
   /**
@@ -111,7 +111,7 @@ export class PresenterCoordinatorService implements OnDestroy {
     });
 
     // Delegate to cursor display service
-    this.presenterCursorDisplayService.handlePresenterCursorUpdate(message.cursor_position);
+    this.uiPresenterCursorDisplayService.handlePresenterCursorUpdate(message.cursor_position);
   }
 
   /**
@@ -144,7 +144,7 @@ export class PresenterCoordinatorService implements OnDestroy {
     });
 
     // Delegate to selection service
-    this.presenterSelectionService.handlePresenterSelectionUpdate(message.selected_cells);
+    this.uiPresenterSelectionService.handlePresenterSelectionUpdate(message.selected_cells);
   }
 
   /**
@@ -152,8 +152,8 @@ export class PresenterCoordinatorService implements OnDestroy {
    * Called when presenter mode is disabled or presenter changes
    */
   cleanupPresenterDisplay(): void {
-    this.presenterCursorDisplayService.forceRemovePresenterCursor();
-    this.presenterSelectionService.clearSelectionForNonPresenters();
+    this.uiPresenterCursorDisplayService.forceRemovePresenterCursor();
+    this.uiPresenterSelectionService.clearSelectionForNonPresenters();
     this.logger.debug('Cleaned up presenter display');
   }
 
@@ -168,9 +168,9 @@ export class PresenterCoordinatorService implements OnDestroy {
   } {
     return {
       coordinatorInitialized: this._isInitialized,
-      cursorTracking: this.presenterCursorService.isTracking,
-      showingPresenterCursor: this.presenterCursorDisplayService.isShowingPresenterCursor,
-      selectionInitialized: this.presenterSelectionService.isInitialized,
+      cursorTracking: this.uiPresenterCursorService.isTracking,
+      showingPresenterCursor: this.uiPresenterCursorDisplayService.isShowingPresenterCursor,
+      selectionInitialized: this.uiPresenterSelectionService.isInitialized,
     };
   }
 
@@ -180,7 +180,7 @@ export class PresenterCoordinatorService implements OnDestroy {
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
     this._isInitialized = false;
-    this.logger.info('PresenterCoordinatorService destroyed');
+    this.logger.info('UiPresenterCoordinatorService destroyed');
   }
 
   /**

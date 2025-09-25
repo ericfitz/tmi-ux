@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NodeTypeInfo } from '../../utils/x6-cell-extensions';
-import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
+import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
@@ -24,12 +24,12 @@ export interface PortConfiguration {
 /**
  * Service responsible for providing node configuration based on node types.
  * Centralizes all node-specific configuration logic that was previously scattered
- * across the X6GraphAdapter.
+ * across the InfraX6GraphAdapter.
  */
 @Injectable({
   providedIn: 'root',
 })
-export class NodeConfigurationService {
+export class InfraNodeConfigurationService {
   /**
    * Get node attributes configuration for a specific node type
    */

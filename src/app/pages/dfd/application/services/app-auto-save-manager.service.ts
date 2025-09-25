@@ -1,24 +1,24 @@
 /**
- * AutoSaveManager - Intelligent auto-save management for DFD diagrams
+ * AppAutoSaveManager - Intelligent auto-save management for DFD diagrams
  *
  * This service provides smart auto-save functionality with:
  * - Policy-based saving decisions (aggressive, normal, conservative)
  * - Event-triggered saves based on operations
  * - Manual save capability
  * - Statistics tracking and monitoring
- * - Integration with PersistenceCoordinator
+ * - Integration with AppPersistenceCoordinator
  */
 
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { catchError, tap, debounceTime } from 'rxjs/operators';
 
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import {
-  PersistenceCoordinator,
+  AppPersistenceCoordinator,
   SaveOperation,
   SaveResult,
-} from './persistence-coordinator.service';
+} from './app-persistence-coordinator.service';
 
 // Simple interfaces that match what the tests expect
 export interface AutoSaveContext {
@@ -96,7 +96,7 @@ const DEFAULT_POLICIES: Record<string, AutoSavePolicy> = {
 @Injectable({
   providedIn: 'root',
 })
-export class AutoSaveManager {
+export class AppAutoSaveManager {
   private readonly _saveCompleted$ = new Subject<SaveResult>();
   private readonly _triggerEvent$ = new Subject<AutoSaveTriggerEvent>();
   private readonly _stateChanged$: BehaviorSubject<AutoSaveState>;
@@ -131,12 +131,12 @@ export class AutoSaveManager {
 
   constructor(
     private readonly logger: LoggerService,
-    private readonly persistenceCoordinator: PersistenceCoordinator,
+    private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
   ) {
     // Initialize the state subject after all properties are set
     this._stateChanged$ = new BehaviorSubject<AutoSaveState>(this._createInitialState());
 
-    this.logger.debug('AutoSaveManager initialized');
+    this.logger.debug('AppAutoSaveManager initialized');
     this._setupTriggerProcessing();
   }
 
@@ -146,7 +146,7 @@ export class AutoSaveManager {
   enable(): void {
     if (!this._enabled) {
       this._enabled = true;
-      this.logger.debug('AutoSaveManager enabled');
+      this.logger.debug('AppAutoSaveManager enabled');
       this._emitStateChange();
     }
   }
@@ -155,7 +155,7 @@ export class AutoSaveManager {
     if (this._enabled) {
       this._enabled = false;
       this._cancelPendingSave();
-      this.logger.debug('AutoSaveManager disabled');
+      this.logger.debug('AppAutoSaveManager disabled');
       this._emitStateChange();
     }
   }
@@ -231,7 +231,7 @@ export class AutoSaveManager {
       },
     };
 
-    return this.persistenceCoordinator.save(saveOperation).pipe(
+    return this.appPersistenceCoordinator.save(saveOperation).pipe(
       tap(result => {
         const saveTime = performance.now() - startTime;
         this._updateSaveStats(result, saveTime);
@@ -414,7 +414,7 @@ export class AutoSaveManager {
 
     // Update other config options
     Object.assign(this._currentPolicy, config);
-    this.logger.debug('AutoSaveManager configuration updated', { config });
+    this.logger.debug('AppAutoSaveManager configuration updated', { config });
     this._emitStateChange();
   }
 
@@ -436,7 +436,7 @@ export class AutoSaveManager {
     this._stateChanged$.complete();
     this._events$.complete();
     this._saveFailed$.complete();
-    this.logger.debug('AutoSaveManager disposed');
+    this.logger.debug('AppAutoSaveManager disposed');
   }
 
   /**
@@ -521,7 +521,7 @@ export class AutoSaveManager {
       },
     };
 
-    this.persistenceCoordinator.save(saveOperation).subscribe({
+    this.appPersistenceCoordinator.save(saveOperation).subscribe({
       next: result => {
         const saveTime = performance.now() - startTime;
         this._updateSaveStats(result, saveTime);

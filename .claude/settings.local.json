@@ -33,7 +33,11 @@
       "Bash(jq:*)",
       "WebSearch",
       "WebFetch(domain:devblogs.microsoft.com)",
-      "WebFetch(domain:angular.dev)"
+      "WebFetch(domain:angular.dev)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(./scripts/dfd-refactor-setup.sh:*)",
+      "Bash(./scripts/dfd-file-mover.sh:*)"
     ]
   },
   "enableAllProjectMcpServers": false

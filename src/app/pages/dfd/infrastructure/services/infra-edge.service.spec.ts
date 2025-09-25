@@ -7,11 +7,11 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Graph, Node, Edge } from '@antv/x6';
-import { EdgeService } from './edge.service';
-import { EdgeQueryService } from './edge-query.service';
+import { InfraEdgeService } from '../../domain/services/domain-edge.service';
+import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { PortStateManagerService } from './port-state-manager.service';
-import { X6CoreOperationsService } from './x6-core-operations.service';
+import { InfraPortStateService } from './infra-port-state.service';
+import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
@@ -19,11 +19,11 @@ import { expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService only (cross-cutting concern)
 
-describe('EdgeService - X6 Integration Tests', () => {
-  let service: EdgeService;
-  let queryService: EdgeQueryService;
-  let portStateManager: PortStateManagerService;
-  let x6CoreOps: X6CoreOperationsService;
+describe('InfraEdgeService - X6 Integration Tests', () => {
+  let service: InfraEdgeService;
+  let queryService: InfraEdgeQueryService;
+  let portStateManager: InfraPortStateService;
+  let x6CoreOps: InfraX6CoreOperationsService;
   let graph: Graph;
   let sourceNode: Node;
   let targetNode: Node;
@@ -37,14 +37,14 @@ describe('EdgeService - X6 Integration Tests', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create real service instances for integration testing
-    queryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
-    portStateManager = new PortStateManagerService(
+    queryService = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
+    portStateManager = new InfraPortStateService(
       queryService,
       mockLogger as unknown as LoggerService,
     );
-    x6CoreOps = new X6CoreOperationsService(mockLogger as unknown as LoggerService);
-    // Create EdgeService with real port management services
-    service = new EdgeService(mockLogger as unknown as LoggerService, portStateManager, x6CoreOps);
+    x6CoreOps = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
+    // Create InfraEdgeService with real port management services
+    service = new InfraEdgeService(mockLogger as unknown as LoggerService, portStateManager, x6CoreOps);
 
     // Create real X6 graph instance
     const container = document.createElement('div');

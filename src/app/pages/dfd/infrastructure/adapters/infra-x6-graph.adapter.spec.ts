@@ -10,25 +10,25 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph } from '@antv/x6';
 import { JSDOM } from 'jsdom';
 
-import { X6GraphAdapter } from './x6-graph.adapter';
-import { X6SelectionAdapter } from './x6-selection.adapter';
-import { SelectionService } from '../services/selection.service';
+import { InfraX6GraphAdapter } from './infra-x6-graph.adapter';
+import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
+import { SelectionService } from '../../presentation/services/ui-presenter-selection.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { EdgeQueryService } from '../services/edge-query.service';
-import { NodeConfigurationService } from '../services/node-configuration.service';
-import { EmbeddingService } from '../services/embedding.service';
-import { PortStateManagerService } from '../services/port-state-manager.service';
-import { X6KeyboardHandler } from './x6-keyboard-handler.service';
-import { ZOrderService } from '../services/z-order.service';
-import { X6ZOrderAdapter } from './x6-z-order.adapter';
-import { X6EmbeddingAdapter } from './x6-embedding.adapter';
-import { X6HistoryManager } from './x6-history-manager';
+import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
+import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
+import { InfraEmbeddingService } from '../services/infra-embedding.service';
+import { InfraPortStateService } from '../services/infra-port-state.service';
+import { InfraX6KeyboardAdapter } from './infra-x6-keyboard.adapter';
+import { ZOrderService } from '../services/infra-z-order.service';
+import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
+import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
+import { InfraX6HistoryAdapter } from './x6-history-manager';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { NodeInfo } from '../../domain/value-objects/node-info';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { X6EventLoggerService } from './x6-event-logger.service';
-import { DfdEdgeService } from '../../services/dfd-edge.service';
+import { InfraX6EventLoggerAdapter } from '../infrastructure/adapters/infra-x6-event-logger.adapter';
+import { DomainEdgeService } from '../../domain/services/domain-edge.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 // Mock LoggerService for integration testing
@@ -101,25 +101,25 @@ global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
 // TODO: Convert to Cypress due to Angular CDK JIT compilation issues in vitest environment
-describe.skip('X6GraphAdapter', () => {
-  let adapter: X6GraphAdapter;
-  let selectionAdapter: X6SelectionAdapter;
+describe.skip('InfraX6GraphAdapter', () => {
+  let adapter: InfraX6GraphAdapter;
+  let selectionAdapter: InfraX6SelectionAdapter;
   let container: HTMLElement;
   let mockLogger: MockLoggerService;
-  let edgeQueryService: EdgeQueryService;
-  let nodeConfigurationService: NodeConfigurationService;
-  let embeddingService: EmbeddingService;
-  let portStateManager: PortStateManagerService;
-  let keyboardHandler: X6KeyboardHandler;
+  let infraEdgeQueryService: InfraEdgeQueryService;
+  let infraNodeConfigurationService: InfraNodeConfigurationService;
+  let infraEmbeddingService: InfraEmbeddingService;
+  let portStateManager: InfraPortStateService;
+  let keyboardHandler: InfraX6KeyboardAdapter;
   let zOrderService: ZOrderService;
-  let zOrderAdapter: X6ZOrderAdapter;
-  let embeddingAdapter: X6EmbeddingAdapter;
+  let zOrderAdapter: InfraX6ZOrderAdapter;
+  let embeddingAdapter: InfraX6EmbeddingAdapter;
   let selectionService: SelectionService;
-  let historyManager: X6HistoryManager;
-  let x6EventLogger: X6EventLoggerService;
-  let edgeService: DfdEdgeService;
+  let historyManager: InfraX6HistoryAdapter;
+  let x6EventLogger: InfraX6EventLoggerAdapter;
+  let infraEdgeService: DomainEdgeService;
   let historyCoordinator: GraphHistoryCoordinator;
-  let visualEffectsService: any;
+  let infraVisualEffectsService: any;
   let coreEdgeService: any;
   let x6CoreOps: any;
 
@@ -134,40 +134,40 @@ describe.skip('X6GraphAdapter', () => {
     mockLogger = new MockLoggerService();
 
     // Create mock services for dependencies
-    visualEffectsService = { applyEffect: vi.fn(), removeEffect: vi.fn() };
+    infraVisualEffectsService = { applyEffect: vi.fn(), removeEffect: vi.fn() };
     coreEdgeService = { addEdge: vi.fn(), removeEdge: vi.fn(), updateEdge: vi.fn() };
     x6CoreOps = { addNode: vi.fn(), removeNode: vi.fn() };
 
     // Create real service instances for integration testing
-    edgeQueryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
-    nodeConfigurationService = new NodeConfigurationService();
-    embeddingService = new EmbeddingService(mockLogger as unknown as LoggerService);
-    portStateManager = new PortStateManagerService(
-      edgeQueryService,
+    infraEdgeQueryService = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
+    infraNodeConfigurationService = new InfraNodeConfigurationService();
+    infraEmbeddingService = new InfraEmbeddingService(mockLogger as unknown as LoggerService);
+    portStateManager = new InfraPortStateService(
+      infraEdgeQueryService,
       mockLogger as unknown as LoggerService,
     );
-    keyboardHandler = new X6KeyboardHandler(mockLogger as unknown as LoggerService);
+    keyboardHandler = new InfraX6KeyboardAdapter(mockLogger as unknown as LoggerService);
     zOrderService = new ZOrderService(mockLogger as unknown as LoggerService);
-    zOrderAdapter = new X6ZOrderAdapter(mockLogger as unknown as LoggerService, zOrderService);
-    embeddingAdapter = new X6EmbeddingAdapter(
+    zOrderAdapter = new InfraX6ZOrderAdapter(mockLogger as unknown as LoggerService, zOrderService);
+    embeddingAdapter = new InfraX6EmbeddingAdapter(
       mockLogger as unknown as LoggerService,
-      embeddingService,
+      infraEmbeddingService,
       zOrderAdapter,
     );
-    historyManager = new X6HistoryManager(mockLogger as unknown as LoggerService);
-    x6EventLogger = new X6EventLoggerService(mockLogger as unknown as LoggerService);
-    edgeService = new DfdEdgeService(
+    historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
+    x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
+    infraEdgeService = new DomainEdgeService(
       mockLogger as unknown as LoggerService,
       zOrderAdapter,
       historyManager,
-      visualEffectsService,
+      infraVisualEffectsService,
       coreEdgeService,
     );
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new GraphHistoryCoordinator();
 
-    // Initialize selection adapter first (required by X6GraphAdapter)
-    selectionAdapter = new X6SelectionAdapter(
+    // Initialize selection adapter first (required by InfraX6GraphAdapter)
+    selectionAdapter = new InfraX6SelectionAdapter(
       mockLogger as unknown as LoggerService,
       selectionService,
       historyCoordinator,
@@ -175,12 +175,12 @@ describe.skip('X6GraphAdapter', () => {
       coreEdgeService,
     );
 
-    // Create X6GraphAdapter with real dependencies
-    adapter = new X6GraphAdapter(
+    // Create InfraX6GraphAdapter with real dependencies
+    adapter = new InfraX6GraphAdapter(
       mockLogger as unknown as LoggerService,
-      edgeQueryService,
-      nodeConfigurationService,
-      embeddingService,
+      infraEdgeQueryService,
+      infraNodeConfigurationService,
+      infraEmbeddingService,
       portStateManager,
       keyboardHandler,
       zOrderAdapter,
@@ -188,7 +188,7 @@ describe.skip('X6GraphAdapter', () => {
       historyManager,
       selectionAdapter,
       x6EventLogger,
-      edgeService,
+      infraEdgeService,
       historyCoordinator,
       x6CoreOps,
     );

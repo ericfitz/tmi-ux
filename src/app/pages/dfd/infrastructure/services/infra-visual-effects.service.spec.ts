@@ -9,7 +9,7 @@
 import { Cell, Node, Edge } from '@antv/x6';
 import { vi, Mock, beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { VisualEffectsService } from './visual-effects.service';
+import { InfraVisualEffectsService } from './infra-visual-effects.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
@@ -29,8 +29,8 @@ interface MockNode extends MockCell {
 // MockEdge uses the same interface as MockCell
 type MockEdge = MockCell;
 
-describe('VisualEffectsService', () => {
-  let service: VisualEffectsService;
+describe('InfraVisualEffectsService', () => {
+  let service: InfraVisualEffectsService;
   let mockLogger: MockLoggerService;
 
   // Test helper to create mock cells
@@ -62,7 +62,7 @@ describe('VisualEffectsService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service directly with mock logger
-    service = new VisualEffectsService(mockLogger as unknown as LoggerService);
+    service = new InfraVisualEffectsService(mockLogger as unknown as LoggerService);
   });
 
   afterEach(() => {

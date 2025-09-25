@@ -9,9 +9,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { JSDOM } from 'jsdom';
-import { X6ZOrderAdapter } from './x6-z-order.adapter';
-import { ZOrderService } from '../services/z-order.service';
-import { registerCustomShapes } from './x6-shape-definitions';
+import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
+import { ZOrderService } from '../services/infra-z-order.service';
+import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Helper to add getNodeTypeInfo extension mock to nodes
@@ -90,8 +90,8 @@ global.window = dom.window as any;
 global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
-describe('X6ZOrderAdapter', () => {
-  let adapter: X6ZOrderAdapter;
+describe('InfraX6ZOrderAdapter', () => {
+  let adapter: InfraX6ZOrderAdapter;
   let mockLogger: MockLoggerService;
   let zOrderService: ZOrderService;
   let graph: Graph;
@@ -124,7 +124,7 @@ describe('X6ZOrderAdapter', () => {
     // Create mock logger and real services
     mockLogger = createTypedMockLoggerService();
     zOrderService = new ZOrderService(mockLogger as any);
-    adapter = new X6ZOrderAdapter(mockLogger as any, zOrderService);
+    adapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService);
   });
 
   afterEach(() => {

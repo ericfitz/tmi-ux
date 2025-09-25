@@ -2,10 +2,10 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { fromEvent, interval, Subscription, combineLatest } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
-import { CollaborativeOperationService } from './collaborative-operation.service';
-import { PRESENTER_CURSOR_CONFIG } from '../constants/presenter-constants';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { PRESENTER_CURSOR_CONFIG } from '../../constants/presenter-constants';
 
 export interface CursorPosition {
   x: number;
@@ -20,7 +20,7 @@ export interface CursorPosition {
 @Injectable({
   providedIn: 'root',
 })
-export class PresenterCursorService implements OnDestroy {
+export class UiPresenterCursorService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _isTracking = false;
   private _graphContainer: HTMLElement | null = null;
@@ -59,7 +59,7 @@ export class PresenterCursorService implements OnDestroy {
       }),
     );
 
-    this.logger.info('PresenterCursorService initialized');
+    this.logger.info('UiPresenterCursorService initialized');
   }
 
   /**
@@ -277,7 +277,7 @@ export class PresenterCursorService implements OnDestroy {
     this._subscriptions.unsubscribe();
     this._graphContainer = null;
     this._graph = null;
-    this.logger.info('PresenterCursorService destroyed');
+    this.logger.info('UiPresenterCursorService destroyed');
   }
 
   /**

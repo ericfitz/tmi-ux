@@ -20,18 +20,18 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { LoggerService } from '../../../core/services/logger.service';
-import { NodeType } from '../domain/value-objects/node-info';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { NodeType } from '../../domain/value-objects/node-info';
 
 // Infrastructure services
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
-import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { DfdNodeService } from '../infrastructure/services/node.service';
-import { DfdEdgeService } from './dfd-edge.service';
-import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
-import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
-import { X6CoreOperationsService } from '../infrastructure/services/x6-core-operations.service';
-import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
+import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
+import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
+import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
+import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 /**
  * Facade for DFD infrastructure services
@@ -40,19 +40,19 @@ import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
 @Injectable({
   providedIn: 'root',
 })
-export class DfdInfrastructureFacade {
+export class AppDfdFacade {
   constructor(
     private readonly logger: LoggerService,
-    private readonly x6GraphAdapter: X6GraphAdapter,
-    private readonly x6ZOrderAdapter: X6ZOrderAdapter,
-    private readonly dfdNodeService: DfdNodeService,
-    private readonly dfdEdgeService: DfdEdgeService,
-    private readonly nodeConfigurationService: NodeConfigurationService,
-    private readonly visualEffectsService: VisualEffectsService,
-    private readonly x6CoreOperationsService: X6CoreOperationsService,
+    private readonly infraX6GraphAdapter: InfraX6GraphAdapter,
+    private readonly infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
+    private readonly infraNodeService: InfraNodeService,
+    private readonly domainEdgeService: DomainEdgeService,
+    private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
+    private readonly infraVisualEffectsService: InfraVisualEffectsService,
+    private readonly infraX6CoreOperationsService: InfraX6CoreOperationsService,
     private readonly historyCoordinator: GraphHistoryCoordinator,
   ) {
-    this.logger.debug('DfdInfrastructureFacade initialized');
+    this.logger.debug('AppDfdFacade initialized');
   }
 
   // ========================================
@@ -69,7 +69,7 @@ export class DfdInfrastructureFacade {
     diagramId: string,
     isInitialized: boolean,
   ): Observable<void> {
-    return this.dfdNodeService.addGraphNode(
+    return this.infraNodeService.addGraphNode(
       nodeType,
       containerWidth,
       containerHeight,
@@ -82,8 +82,8 @@ export class DfdInfrastructureFacade {
    * Create a node at a specific position
    */
   createNodeAtPosition(nodeType: NodeType, position: { x: number; y: number }): Observable<void> {
-    // Use the DfdNodeService's createNode method directly
-    return (this.dfdNodeService as any).createNode(nodeType, position);
+    // Use the InfraNodeService's createNode method directly
+    return (this.infraNodeService as any).createNode(nodeType, position);
   }
 
   // ========================================
@@ -94,8 +94,8 @@ export class DfdInfrastructureFacade {
    * Handle edge added to the graph (validation and setup)
    */
   handleEdgeAdded(edge: any, diagramId: string, isInitialized: boolean): Observable<void> {
-    const graph = this.x6GraphAdapter.getGraph();
-    return this.dfdEdgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    return this.domainEdgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
   }
 
   /**
@@ -107,8 +107,8 @@ export class DfdInfrastructureFacade {
     diagramId: string,
     isInitialized: boolean,
   ): Observable<void> {
-    const graph = this.x6GraphAdapter.getGraph();
-    return this.dfdEdgeService.handleEdgeVerticesChanged(
+    const graph = this.infraX6GraphAdapter.getGraph();
+    return this.domainEdgeService.handleEdgeVerticesChanged(
       edgeId,
       vertices,
       graph,
@@ -121,22 +121,22 @@ export class DfdInfrastructureFacade {
    * Add an inverse connection for the specified edge
    */
   addInverseConnection(edge: any, diagramId: string): Observable<void> {
-    const graph = this.x6GraphAdapter.getGraph();
-    return this.dfdEdgeService.addInverseConnection(edge, graph, diagramId);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    return this.domainEdgeService.addInverseConnection(edge, graph, diagramId);
   }
 
   /**
    * Validate if a connection is allowed between nodes
    */
   validateConnection(sourceNode: any, targetNode: any): boolean {
-    return this.dfdEdgeService.validateConnection(sourceNode, targetNode);
+    return this.domainEdgeService.validateConnection(sourceNode, targetNode);
   }
 
   /**
    * Check if a magnet is valid for connections
    */
   isMagnetValid(magnet: Element): boolean {
-    return this.dfdEdgeService.isMagnetValid({ magnet });
+    return this.domainEdgeService.isMagnetValid({ magnet });
   }
 
   /**
@@ -148,7 +148,7 @@ export class DfdInfrastructureFacade {
     sourceMagnet: Element,
     targetMagnet: Element,
   ): boolean {
-    return this.dfdEdgeService.isConnectionValid({
+    return this.domainEdgeService.isConnectionValid({
       sourceView,
       targetView,
       sourceMagnet,
@@ -160,36 +160,36 @@ export class DfdInfrastructureFacade {
    * Check if node connection is valid based on DFD rules
    */
   isNodeConnectionValid(sourceNode: any, targetNode: any): boolean {
-    return this.dfdEdgeService.isNodeConnectionValid(sourceNode, targetNode);
+    return this.domainEdgeService.isNodeConnectionValid(sourceNode, targetNode);
   }
 
   /**
    * Update edge label
    */
   updateEdgeLabel(edge: any, label: string): void {
-    this.dfdEdgeService.updateEdgeLabel(edge, label);
+    this.domainEdgeService.updateEdgeLabel(edge, label);
   }
 
   /**
    * Remove edge label
    */
   removeEdgeLabel(edge: any): void {
-    this.dfdEdgeService.removeEdgeLabel(edge);
+    this.domainEdgeService.removeEdgeLabel(edge);
   }
 
   /**
    * Check if edge is connected to a specific node
    */
   isEdgeConnectedToNode(edge: any, nodeId: string): boolean {
-    return this.dfdEdgeService.isEdgeConnectedToNode(edge, nodeId);
+    return this.domainEdgeService.isEdgeConnectedToNode(edge, nodeId);
   }
 
   /**
    * Remove all edges connected to a node
    */
   removeNodeEdges(nodeId: string): void {
-    const graph = this.x6GraphAdapter.getGraph();
-    this.dfdEdgeService.removeNodeEdges(graph, nodeId);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    this.domainEdgeService.removeNodeEdges(graph, nodeId);
   }
 
   /**
@@ -197,7 +197,7 @@ export class DfdInfrastructureFacade {
    */
   deleteSelectedCells(): Observable<{ success: boolean; deletedCount: number }> {
     try {
-      const graph = this.x6GraphAdapter.getGraph();
+      const graph = this.infraX6GraphAdapter.getGraph();
       const selectedCells = graph.getSelectedCells();
 
       if (selectedCells.length === 0) {
@@ -210,12 +210,12 @@ export class DfdInfrastructureFacade {
       // Delete each selected cell
       selectedCells.forEach(cell => {
         if (cell.isNode()) {
-          this.x6CoreOperationsService.removeNode(graph, cell.id, {
+          this.infraX6CoreOperationsService.removeNode(graph, cell.id, {
             suppressErrors: false,
             logOperation: true,
           });
         } else if (cell.isEdge()) {
-          this.x6CoreOperationsService.removeEdge(graph, cell.id, {
+          this.infraX6CoreOperationsService.removeEdge(graph, cell.id, {
             suppressErrors: false,
             logOperation: true,
           });
@@ -247,7 +247,7 @@ export class DfdInfrastructureFacade {
    * Get current selected cells
    */
   getSelectedCells(): any[] {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     return graph.getSelectedCells();
   }
 
@@ -269,7 +269,7 @@ export class DfdInfrastructureFacade {
    * Get the current graph instance
    */
   getGraph(): any {
-    return this.x6GraphAdapter.getGraph();
+    return this.infraX6GraphAdapter.getGraph();
   }
 
   // ========================================
@@ -280,7 +280,7 @@ export class DfdInfrastructureFacade {
    * Check if undo is available
    */
   canUndo(): boolean {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     const history = (graph as any).history;
     return history && typeof history.canUndo === 'function' ? history.canUndo() : false;
   }
@@ -289,7 +289,7 @@ export class DfdInfrastructureFacade {
    * Check if redo is available
    */
   canRedo(): boolean {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     const history = (graph as any).history;
     return history && typeof history.canRedo === 'function' ? history.canRedo() : false;
   }
@@ -298,7 +298,7 @@ export class DfdInfrastructureFacade {
    * Perform undo operation
    */
   undo(): void {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     const history = (graph as any).history;
     if (history && typeof history.undo === 'function') {
       history.undo();
@@ -309,7 +309,7 @@ export class DfdInfrastructureFacade {
    * Perform redo operation
    */
   redo(): void {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     const history = (graph as any).history;
     if (history && typeof history.redo === 'function') {
       history.redo();
@@ -324,32 +324,32 @@ export class DfdInfrastructureFacade {
    * Move selected cell forward in z-order
    */
   moveSelectedForward(): void {
-    const graph = this.x6GraphAdapter.getGraph();
-    this.x6ZOrderAdapter.moveSelectedCellsForward(graph);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    this.infraX6ZOrderAdapter.moveSelectedCellsForward(graph);
   }
 
   /**
    * Move selected cell backward in z-order
    */
   moveSelectedBackward(): void {
-    const graph = this.x6GraphAdapter.getGraph();
-    this.x6ZOrderAdapter.moveSelectedCellsBackward(graph);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    this.infraX6ZOrderAdapter.moveSelectedCellsBackward(graph);
   }
 
   /**
    * Move selected cell to front
    */
   moveSelectedToFront(): void {
-    const graph = this.x6GraphAdapter.getGraph();
-    this.x6ZOrderAdapter.moveSelectedCellsToFront(graph);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    this.infraX6ZOrderAdapter.moveSelectedCellsToFront(graph);
   }
 
   /**
    * Move selected cell to back
    */
   moveSelectedToBack(): void {
-    const graph = this.x6GraphAdapter.getGraph();
-    this.x6ZOrderAdapter.moveSelectedCellsToBack(graph);
+    const graph = this.infraX6GraphAdapter.getGraph();
+    this.infraX6ZOrderAdapter.moveSelectedCellsToBack(graph);
   }
 
   // ========================================
@@ -393,14 +393,14 @@ export class DfdInfrastructureFacade {
    * Initialize graph with container element
    */
   initializeGraph(containerElement: HTMLElement): void {
-    this.x6GraphAdapter.initialize(containerElement);
+    this.infraX6GraphAdapter.initialize(containerElement);
   }
 
   /**
    * Dispose of facade resources
    */
   dispose(): void {
-    this.logger.debug('DfdInfrastructureFacade disposing resources');
+    this.logger.debug('AppDfdFacade disposing resources');
     // The individual services will handle their own cleanup
     // This facade doesn't maintain any additional state that needs cleanup
   }

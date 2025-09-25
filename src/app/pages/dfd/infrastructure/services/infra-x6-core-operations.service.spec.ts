@@ -8,18 +8,18 @@
 
 import { Graph, Node, Edge } from '@antv/x6';
 import {
-  X6CoreOperationsService,
+  InfraX6CoreOperationsService,
   NodeCreationConfig,
   EdgeCreationConfig,
-} from './x6-core-operations.service';
+} from './infra-x6-core-operations.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock interface for LoggerService
 
-describe('X6CoreOperationsService', () => {
-  let service: X6CoreOperationsService;
+describe('InfraX6CoreOperationsService', () => {
+  let service: InfraX6CoreOperationsService;
   let graph: Graph;
   let mockLogger: MockLoggerService;
 
@@ -28,7 +28,7 @@ describe('X6CoreOperationsService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new X6CoreOperationsService(mockLogger as unknown as LoggerService);
+    service = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
 
     // Create real X6 graph instance
     const container = document.createElement('div');

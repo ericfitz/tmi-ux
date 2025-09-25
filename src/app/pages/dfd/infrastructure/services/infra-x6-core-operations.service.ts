@@ -2,7 +2,7 @@
  * X6 Core Operations Service
  *
  * This service provides low-level X6 graph operations that can be used by both
- * the X6GraphAdapter and domain services (NodeService, EdgeService) without
+ * the InfraX6GraphAdapter and domain services (InfraNodeService, InfraEdgeService) without
  * creating circular dependencies.
  *
  * Key functionality:
@@ -69,7 +69,7 @@ export interface CoreOperationOptions {
 @Injectable({
   providedIn: 'root',
 })
-export class X6CoreOperationsService {
+export class InfraX6CoreOperationsService {
   constructor(private logger: LoggerService) {}
 
   // ===============================

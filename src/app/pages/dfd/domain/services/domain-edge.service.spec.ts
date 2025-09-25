@@ -7,15 +7,15 @@
 // Do not disable or skip failing tests, ask the user what to do
 
 import { Graph, Node, Edge } from '@antv/x6';
-import { DfdEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './dfd-edge.service';
-import { LoggerService } from '../../../core/services/logger.service';
-import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
-import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
-import { EdgeService } from '../infrastructure/services/edge.service';
-import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
-import { initializeX6CellExtensions } from '../utils/x6-cell-extensions';
-import { registerCustomShapes } from '../infrastructure/adapters/x6-shape-definitions';
+import { DomainEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './domain-edge.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
+import { InfraX6HistoryAdapter } from '../infrastructure/adapters/x6-history-manager';
+import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
+import { InfraEdgeService } from './domain-edge.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
@@ -42,8 +42,8 @@ interface MockEdgeService {
   removeEdge: ReturnType<typeof vi.fn>;
 }
 
-describe('DfdEdgeService - Comprehensive Tests', () => {
-  let service: DfdEdgeService;
+describe('DomainEdgeService - Comprehensive Tests', () => {
+  let service: DomainEdgeService;
   let graph: Graph;
   let mockLogger: MockLoggerService;
   let mockX6ZOrderAdapter: MockX6ZOrderAdapter;
@@ -88,12 +88,12 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
     };
 
     // Create service instance
-    service = new DfdEdgeService(
+    service = new DomainEdgeService(
       mockLogger as unknown as LoggerService,
-      mockX6ZOrderAdapter as unknown as X6ZOrderAdapter,
-      mockX6HistoryManager as unknown as X6HistoryManager,
-      mockVisualEffectsService as unknown as VisualEffectsService,
-      mockEdgeService as unknown as EdgeService,
+      mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
+      mockX6HistoryManager as unknown as InfraX6HistoryAdapter,
+      mockVisualEffectsService as unknown as InfraVisualEffectsService,
+      mockEdgeService as unknown as InfraEdgeService,
       mockGraphHistoryCoordinator as unknown as GraphHistoryCoordinator,
     );
   });
@@ -1014,7 +1014,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle EdgeService failures gracefully in createEdge', () => {
+    it('should handle InfraEdgeService failures gracefully in createEdge', () => {
       const sourceNode = graph.addNode({
         id: 'source-node',
         shape: 'process',
@@ -1030,7 +1030,7 @@ describe('DfdEdgeService - Comprehensive Tests', () => {
       });
 
       mockEdgeService.createEdge.mockImplementation(() => {
-        throw new Error('EdgeService failed');
+        throw new Error('InfraEdgeService failed');
       });
 
       const result = service.createEdge(graph, sourceNode.id, targetNode.id);

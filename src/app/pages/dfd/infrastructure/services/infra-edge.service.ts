@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { PortStateManagerService } from './port-state-manager.service';
-import { X6CoreOperationsService } from './x6-core-operations.service';
+import { InfraPortStateService } from './infra-port-state.service';
+import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 /**
@@ -18,11 +18,11 @@ import { GraphHistoryCoordinator } from '../../services/graph-history-coordinato
  * - Provide consistent edge attribute handling
  */
 @Injectable()
-export class EdgeService {
+export class InfraEdgeService {
   constructor(
     private readonly _logger: LoggerService,
-    private readonly _portStateManager: PortStateManagerService,
-    private readonly _x6CoreOps: X6CoreOperationsService,
+    private readonly _portStateManager: InfraPortStateService,
+    private readonly _x6CoreOps: InfraX6CoreOperationsService,
     private readonly _historyCoordinator: GraphHistoryCoordinator,
   ) {}
 
@@ -104,7 +104,7 @@ export class EdgeService {
       this._portStateManager.ensureConnectedPortsVisible(graph, x6Edge);
     }
 
-    this._logger.debugComponent('DfdEdgeService', 'Edge created successfully', {
+    this._logger.debugComponent('DomainEdgeService', 'Edge created successfully', {
       edgeId: edgeInfo.id,
       edgeCreated: !!x6Edge,
       metadataSet: !!(edgeInfo.data && (x6Edge as any).setMetadata),
@@ -200,7 +200,7 @@ export class EdgeService {
       }
     }
 
-    this._logger.debugComponent('DfdEdgeService', 'Edge updated successfully', {
+    this._logger.debugComponent('DomainEdgeService', 'Edge updated successfully', {
       edgeId: edge.id,
       updatedProperties: Object.keys(updates),
     });
@@ -236,7 +236,7 @@ export class EdgeService {
         }
       }
 
-      this._logger.debugComponent('DfdEdgeService', 'Edge removed successfully', { edgeId });
+      this._logger.debugComponent('DomainEdgeService', 'Edge removed successfully', { edgeId });
       return true;
     }
 
@@ -269,7 +269,7 @@ export class EdgeService {
 
     if (!hasWrapAttrs || !hasLineAttrs) {
       this._logger.debugComponent(
-        'DfdEdgeService',
+        'DomainEdgeService',
         'Adding missing edge attrs for visual rendering',
         {
           hasWrapAttrs,
@@ -348,7 +348,7 @@ export class EdgeService {
       if (sourceNode && sourceNode.isNode()) {
         const sourcePorts = sourceNode.getPorts();
         const sourcePortExists = sourcePorts.some((port: any) => port.id === sourcePortId);
-        this._logger.debugComponent('DfdEdgeService', 'Source node verification', {
+        this._logger.debugComponent('DomainEdgeService', 'Source node verification', {
           edgeId: edgeInfo.id,
           sourceNodeId,
           sourcePortId,
@@ -371,7 +371,7 @@ export class EdgeService {
       if (targetNode && targetNode.isNode()) {
         const targetPorts = targetNode.getPorts();
         const targetPortExists = targetPorts.some((port: any) => port.id === targetPortId);
-        this._logger.debugComponent('DfdEdgeService', 'Target node verification', {
+        this._logger.debugComponent('DomainEdgeService', 'Target node verification', {
           edgeId: edgeInfo.id,
           targetNodeId,
           targetPortId,

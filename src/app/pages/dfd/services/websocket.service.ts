@@ -15,7 +15,7 @@ import { WebSocketAdapter } from '../../../core/services/websocket.adapter';
 import {
   ICollaborationNotificationService,
   COLLABORATION_NOTIFICATION_SERVICE,
-} from '../../../core/interfaces';
+} from '../../../core/interfaces/index';
 import { DfdStateStore } from '../state/dfd.state';
 import {
   DiagramOperationMessage,

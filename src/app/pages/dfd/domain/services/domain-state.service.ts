@@ -10,15 +10,15 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
-import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import {
   CellOperation,
   CellPatchOperation,
   Cell as WSCell,
   DiagramOperationMessage,
-} from '../../../core/types/websocket-message.types';
+} from '../../../../core/types/websocket-message.types';
 import {
   WebSocketService,
   WebSocketDomainEvent,
@@ -26,7 +26,7 @@ import {
   HistoryOperationEvent,
   ResyncRequestedEvent,
   ParticipantsUpdatedEvent,
-} from './websocket.service';
+} from '../../services/websocket.service';
 
 /**
  * Represents the synchronization state of the diagram
@@ -62,7 +62,7 @@ export interface DfdDiagramState {
 @Injectable({
   providedIn: 'root',
 })
-export class DfdStateService implements OnDestroy {
+export class DomainStateService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
 
@@ -111,7 +111,7 @@ export class DfdStateService implements OnDestroy {
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
   ) {
-    this._logger.info('DfdStateService initialized');
+    this._logger.info('DomainStateService initialized');
   }
 
   /**
@@ -392,7 +392,7 @@ export class DfdStateService implements OnDestroy {
    * Clean up
    */
   ngOnDestroy(): void {
-    this._logger.info('Destroying DfdStateService');
+    this._logger.info('Destroying DomainStateService');
     this._destroy$.next();
     this._destroy$.complete();
     this._subscriptions.unsubscribe();

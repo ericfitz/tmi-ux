@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
-import { EdgeQueryService } from './edge-query.service';
+import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
@@ -57,8 +57,8 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   value: vi.fn().mockReturnValue(mockMatrix),
 });
 
-describe('EdgeQueryService', () => {
-  let service: EdgeQueryService;
+describe('InfraEdgeQueryService', () => {
+  let service: InfraEdgeQueryService;
   let mockLogger: MockLoggerService;
   let graph: Graph;
   let container: HTMLElement;
@@ -68,7 +68,7 @@ describe('EdgeQueryService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new EdgeQueryService(mockLogger as unknown as LoggerService);
+    service = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
 
     // Create container
     container = document.createElement('div');

@@ -7,7 +7,7 @@
  * Key functionality:
  * - Manages port visibility state for all nodes in the graph
  * - Tracks port connection states and updates visibility accordingly
- * - Coordinates with EdgeQueryService to determine port connectivity
+ * - Coordinates with InfraEdgeQueryService to determine port connectivity
  * - Provides history suppression for port visibility changes
  * - Implements port state caching for performance optimization
  * - Handles mouse enter/leave events for dynamic port visibility
@@ -22,23 +22,23 @@
 import { Injectable } from '@angular/core';
 import { Node, Edge, Graph } from '@antv/x6';
 import { PortConnectionState } from '../../utils/x6-cell-extensions';
-import { EdgeQueryService } from './edge-query.service';
+import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 /**
  * Service responsible for managing port visibility state and connection tracking.
- * Centralizes all port-related logic that was previously scattered across the X6GraphAdapter.
+ * Centralizes all port-related logic that was previously scattered across the InfraX6GraphAdapter.
  */
 @Injectable({
   providedIn: 'root',
 })
-export class PortStateManagerService {
+export class InfraPortStateService {
   private readonly _portStates = new Map<string, PortConnectionState>();
   private _historyCoordinator: GraphHistoryCoordinator | null = null;
 
   constructor(
-    private readonly _edgeQueryService: EdgeQueryService,
+    private readonly _edgeQueryService: InfraEdgeQueryService,
     private readonly _logger: LoggerService,
   ) {}
 
@@ -367,7 +367,7 @@ export class PortStateManagerService {
   }
 
   /**
-   * Show all ports for a specific node (called by X6SelectionAdapter during hover)
+   * Show all ports for a specific node (called by InfraX6SelectionAdapter during hover)
    * Now properly wrapped with history suppression for consistency
    */
   showNodePorts(graph: Graph, node: any): void {
@@ -384,7 +384,7 @@ export class PortStateManagerService {
   }
 
   /**
-   * Hide unconnected ports for a specific node (called by X6SelectionAdapter during hover leave)
+   * Hide unconnected ports for a specific node (called by InfraX6SelectionAdapter during hover leave)
    * Now properly wrapped with history suppression for consistency
    */
   hideUnconnectedNodePorts(graph: Graph, node: any): void {

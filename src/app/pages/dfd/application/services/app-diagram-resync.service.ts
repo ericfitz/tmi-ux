@@ -12,11 +12,11 @@ import { Observable, Subject, timer, of, throwError } from 'rxjs';
 import { debounceTime, switchMap, catchError, tap, takeUntil, finalize } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { DfdStateService } from './dfd-state.service';
-import { DiagramLoadingService } from './diagram-loading.service';
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
+import { DomainStateService } from '../../domain/services/domain-state.service';
+import { AppDiagramLoadingService } from './app-diagram-loading.service';
+import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 
 /**
  * Configuration for resynchronization behavior
@@ -40,14 +40,14 @@ export interface ResyncResult {
 @Injectable({
   providedIn: 'root',
 })
-export class DiagramResyncService implements OnDestroy {
+export class AppDiagramResyncService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _resyncTrigger$ = new Subject<void>();
   private _isResyncInProgress = false;
   private _currentDiagramId: string | null = null;
   private _currentThreatModelId: string | null = null;
   private _currentGraph: Graph | null = null;
-  private _currentX6GraphAdapter: X6GraphAdapter | null = null;
+  private _currentX6GraphAdapter: InfraX6GraphAdapter | null = null;
 
   private readonly _config: ResyncConfig = {
     debounceMs: 1000, // 1 second debounce
@@ -65,11 +65,11 @@ export class DiagramResyncService implements OnDestroy {
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
-    private dfdStateService: DfdStateService,
-    private diagramLoadingService: DiagramLoadingService,
+    private domainStateService: DomainStateService,
+    private appDiagramLoadingService: AppDiagramLoadingService,
   ) {
     this._setupDebouncedResync();
-    this.logger.info('DiagramResyncService initialized');
+    this.logger.info('AppDiagramResyncService initialized');
   }
 
   /**
@@ -79,14 +79,14 @@ export class DiagramResyncService implements OnDestroy {
     diagramId: string,
     threatModelId: string,
     graph: Graph,
-    x6GraphAdapter: X6GraphAdapter,
+    infraX6GraphAdapter: InfraX6GraphAdapter,
   ): void {
     this._currentDiagramId = diagramId;
     this._currentThreatModelId = threatModelId;
     this._currentGraph = graph;
-    this._currentX6GraphAdapter = x6GraphAdapter;
+    this._currentX6GraphAdapter = infraX6GraphAdapter;
 
-    this.logger.info('DiagramResyncService initialized with context', {
+    this.logger.info('AppDiagramResyncService initialized with context', {
       diagramId,
       threatModelId,
     });
@@ -241,7 +241,7 @@ export class DiagramResyncService implements OnDestroy {
         }),
         tap(() => {
           // Mark resync as complete in the state service
-          this.dfdStateService.resyncComplete();
+          this.domainStateService.resyncComplete();
         }),
         catchError(error => {
           this.logger.error('Resync operation failed', error);
@@ -272,11 +272,11 @@ export class DiagramResyncService implements OnDestroy {
         });
 
         // Set flag to prevent triggering outbound operations
-        this.dfdStateService.setApplyingRemoteChange(true);
+        this.domainStateService.setApplyingRemoteChange(true);
 
         try {
           // Use the shared diagram loading service with resync-specific options
-          this.diagramLoadingService.loadCellsIntoGraph(
+          this.appDiagramLoadingService.loadCellsIntoGraph(
             cells,
             graph,
             this._currentDiagramId!,
@@ -303,7 +303,7 @@ export class DiagramResyncService implements OnDestroy {
           observer.error(updateError);
         } finally {
           // Always clear the flag
-          this.dfdStateService.setApplyingRemoteChange(false);
+          this.domainStateService.setApplyingRemoteChange(false);
         }
       } catch (error) {
         this.logger.error('Error in updateLocalDiagram', error);
@@ -321,14 +321,14 @@ export class DiagramResyncService implements OnDestroy {
     this._currentGraph = null;
     this._currentX6GraphAdapter = null;
     this._isResyncInProgress = false;
-    this.logger.debug('DiagramResyncService reset');
+    this.logger.debug('AppDiagramResyncService reset');
   }
 
   /**
    * Cleanup
    */
   ngOnDestroy(): void {
-    this.logger.info('Destroying DiagramResyncService');
+    this.logger.info('Destroying AppDiagramResyncService');
     this._destroy$.next();
     this._destroy$.complete();
   }

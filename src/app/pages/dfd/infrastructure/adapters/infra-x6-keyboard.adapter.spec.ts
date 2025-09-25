@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node } from '@antv/x6';
-import { X6KeyboardHandler } from './x6-keyboard-handler.service';
+import { InfraX6KeyboardAdapter } from './infra-x6-keyboard.adapter';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Point } from '../../domain/value-objects/point';
 import { createMockLoggerService } from '../../../../../testing/mocks/mock-logger.service';
@@ -79,8 +79,8 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   }),
 });
 
-describe('X6KeyboardHandler', () => {
-  let handler: X6KeyboardHandler;
+describe('InfraX6KeyboardAdapter', () => {
+  let handler: InfraX6KeyboardAdapter;
   let mockLogger: LoggerService;
   let graph: Graph;
   let container: HTMLElement;
@@ -90,7 +90,7 @@ describe('X6KeyboardHandler', () => {
     mockLogger = createMockLoggerService() as any;
 
     // Create handler
-    handler = new X6KeyboardHandler(mockLogger);
+    handler = new InfraX6KeyboardAdapter(mockLogger);
 
     // Create container
     container = document.createElement('div');

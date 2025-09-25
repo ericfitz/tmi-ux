@@ -9,7 +9,7 @@
  * - Provides connection validation for different node type combinations
  * - Handles edge routing and automatic path calculation
  * - Manages edge styling and visual properties
- * - Coordinates with X6GraphAdapter for graph-specific edge operations
+ * - Coordinates with InfraX6GraphAdapter for graph-specific edge operations
  * - Implements DFD-specific connection rules and constraints
  * - Provides edge manipulation operations (vertices, labels, styling)
  * - Handles inverse connection creation for bi-directional flows
@@ -25,14 +25,14 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager.service';
-import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
-import { EdgeService } from '../infrastructure/services/edge.service';
-import { EdgeInfo } from '../domain/value-objects/edge-info';
-import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
-import { DFD_STYLING } from '../constants/styling-constants';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
+import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
+import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
+import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
+import { EdgeInfo } from '../value-objects/edge-info';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Interface for connection validation arguments from X6
@@ -56,7 +56,7 @@ export interface MagnetValidationArgs {
  * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
 @Injectable()
-export class DfdEdgeService {
+export class DomainEdgeService {
   /**
    * Valid DFD node shape types
    */
@@ -73,10 +73,10 @@ export class DfdEdgeService {
 
   constructor(
     private logger: LoggerService,
-    private x6ZOrderAdapter: X6ZOrderAdapter,
-    private x6HistoryManager: X6HistoryManager,
-    private visualEffectsService: VisualEffectsService,
-    private edgeService: EdgeService,
+    private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
+    private infraX6HistoryAdapter: InfraX6HistoryAdapter,
+    private infraVisualEffectsService: InfraVisualEffectsService,
+    private infraEdgeService: InfraEdgeService,
     private historyCoordinator: GraphHistoryCoordinator,
   ) {}
 
@@ -109,8 +109,8 @@ export class DfdEdgeService {
         sourceNodeId,
         targetNodeId,
       });
-      // Remove the invalid edge from the graph using EdgeService
-      this.edgeService.removeEdge(graph, edge.id);
+      // Remove the invalid edge from the graph using InfraEdgeService
+      this.infraEdgeService.removeEdge(graph, edge.id);
       throw new Error('Edge added without valid source or target nodes');
     }
 
@@ -126,8 +126,8 @@ export class DfdEdgeService {
         sourceNodeExists: !!(sourceNode && sourceNode.isNode()),
         targetNodeExists: !!(targetNode && targetNode.isNode()),
       });
-      // Remove the invalid edge from the graph using EdgeService
-      this.edgeService.removeEdge(graph, edge.id);
+      // Remove the invalid edge from the graph using InfraEdgeService
+      this.infraEdgeService.removeEdge(graph, edge.id);
       throw new Error('Edge references non-existent nodes');
     }
 
@@ -243,8 +243,8 @@ export class DfdEdgeService {
           vertices: inverseVertices,
         });
 
-        // Step 4: Create the inverse edge via EdgeService (suppress history since we're in atomic operation)
-        const createdInverseEdge = this.edgeService.createEdge(graph, inverseEdgeInfo, {
+        // Step 4: Create the inverse edge via InfraEdgeService (suppress history since we're in atomic operation)
+        const createdInverseEdge = this.infraEdgeService.createEdge(graph, inverseEdgeInfo, {
           ensureVisualRendering: true,
           updatePortVisibility: true,
         });
@@ -258,10 +258,10 @@ export class DfdEdgeService {
       // Apply visual effects (z-order and highlighting) outside of history
       this.historyCoordinator.executeVisualEffect(graph, () => {
         // Apply proper zIndex using the same logic as normal edge creation
-        this.x6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
+        this.infraX6ZOrderAdapter.setEdgeZOrderFromConnectedNodes(graph, inverseEdge);
 
         // Apply creation highlight effect for programmatically created inverse edges
-        this.visualEffectsService.applyCreationHighlight(inverseEdge, graph);
+        this.infraVisualEffectsService.applyCreationHighlight(inverseEdge, graph);
       });
 
       this.logger.info(
@@ -453,16 +453,16 @@ export class DfdEdgeService {
         label: label || DFD_STYLING.EDGES.DEFAULT_LABEL,
       });
 
-      // Delegate to EdgeService for X6 operations (proper layered architecture)
-      const createdEdge = this.edgeService.createEdge(graph, edgeInfo, {
+      // Delegate to InfraEdgeService for X6 operations (proper layered architecture)
+      const createdEdge = this.infraEdgeService.createEdge(graph, edgeInfo, {
         ensureVisualRendering: true,
         updatePortVisibility: true,
       });
 
       // Apply DFD-specific visual effects (application layer responsibility)
-      this.visualEffectsService.applyCreationHighlight(createdEdge, graph);
+      this.infraVisualEffectsService.applyCreationHighlight(createdEdge, graph);
 
-      this.logger.info('Edge created successfully via EdgeService', {
+      this.logger.info('Edge created successfully via InfraEdgeService', {
         edgeId: createdEdge.id,
         sourceNodeId,
         targetNodeId,
@@ -612,9 +612,9 @@ export class DfdEdgeService {
   removeNodeEdges(graph: Graph, nodeId: string): void {
     const connectedEdges = this.getNodeEdges(graph, nodeId);
 
-    // Remove all connected edges using EdgeService for proper layered architecture
+    // Remove all connected edges using InfraEdgeService for proper layered architecture
     connectedEdges.forEach(edge => {
-      this.edgeService.removeEdge(graph, edge.id);
+      this.infraEdgeService.removeEdge(graph, edge.id);
     });
 
     this.logger.info('Removed edges connected to node', {
@@ -851,8 +851,8 @@ export class DfdEdgeService {
     // Convert WebSocket cell data to EdgeInfo format
     const edgeInfo = this.convertWebSocketCellToEdgeInfo(cellData);
 
-    // Create edge using infrastructure EdgeService
-    this.edgeService.createEdge(graph, edgeInfo, {
+    // Create edge using infrastructure InfraEdgeService
+    this.infraEdgeService.createEdge(graph, edgeInfo, {
       ensureVisualRendering: options?.ensureVisualRendering ?? true,
       updatePortVisibility: options?.updatePortVisibility ?? true,
       suppressHistory: options?.suppressHistory ?? true,
@@ -867,8 +867,8 @@ export class DfdEdgeService {
     if (cell && cell.isEdge()) {
       // Execute without history for remote operations
       this.historyCoordinator.executeRemoteOperation(graph, () => {
-        // Use infrastructure EdgeService (doesn't take options parameter)
-        this.edgeService.removeEdge(graph, cellId);
+        // Use infrastructure InfraEdgeService (doesn't take options parameter)
+        this.infraEdgeService.removeEdge(graph, cellId);
       });
     }
   }

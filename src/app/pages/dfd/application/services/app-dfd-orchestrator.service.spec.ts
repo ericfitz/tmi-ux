@@ -1,11 +1,11 @@
 /**
- * Test suite for DfdOrchestrator
+ * Test suite for AppDfdOrchestrator
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError, Subject } from 'rxjs';
 
-// Mock X6 Graph before importing DfdOrchestrator
+// Mock X6 Graph before importing AppDfdOrchestrator
 vi.mock('@antv/x6', () => {
   const createMockGraph = () => ({
     // Core graph methods
@@ -43,13 +43,13 @@ vi.mock('@antv/x6', () => {
   };
 });
 
-import { DfdOrchestrator, DfdInitializationParams } from './dfd-orchestrator.service';
-import { OperationResult, CreateNodeOperation } from '../types/graph-operation.types';
-import { SaveResult, LoadResult } from '../types/persistence.types';
-import { AutoSaveState } from '../types/auto-save.types';
+import { AppDfdOrchestrator, DfdInitializationParams } from './app-dfd-orchestrator.service';
+import { OperationResult, CreateNodeOperation } from '../../types/graph-operation.types';
+import { SaveResult, LoadResult } from '../../types/persistence.types';
+import { AutoSaveState } from '../../types/auto-save.types';
 
-describe('DfdOrchestrator', () => {
-  let service: DfdOrchestrator;
+describe('AppDfdOrchestrator', () => {
+  let service: AppDfdOrchestrator;
   let mockLogger: any;
   let mockGraphOperationManager: any;
   let mockPersistenceCoordinator: any;
@@ -96,7 +96,7 @@ describe('DfdOrchestrator', () => {
     document.body.appendChild(mockContainerElement);
 
     // Create service directly without TestBed
-    service = new DfdOrchestrator(
+    service = new AppDfdOrchestrator(
       mockLogger,
       mockGraphOperationManager,
       mockPersistenceCoordinator,
@@ -331,7 +331,7 @@ describe('DfdOrchestrator', () => {
 
     it('should prevent operations when not initialized', () => {
       // Create a new service instance that's not initialized
-      const uninitializedService = new DfdOrchestrator(
+      const uninitializedService = new AppDfdOrchestrator(
         mockLogger,
         mockGraphOperationManager,
         mockPersistenceCoordinator,

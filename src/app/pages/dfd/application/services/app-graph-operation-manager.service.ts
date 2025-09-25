@@ -1,5 +1,5 @@
 /**
- * GraphOperationManager - Central orchestrator for all graph operations
+ * AppGraphOperationManager - Central orchestrator for all graph operations
  *
  * This service coordinates the execution of all graph operations, including:
  * - Operation validation and execution
@@ -13,11 +13,11 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from 'rxjs';
 import { catchError, timeout, tap, finalize } from 'rxjs/operators';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { NodeOperationExecutor } from './executors/node-operation-executor';
-import { EdgeOperationExecutor } from './executors/edge-operation-executor';
-import { BatchOperationExecutor } from './executors/batch-operation-executor';
-import { LoadDiagramExecutor } from './executors/load-diagram-executor';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { NodeOperationExecutor } from '../../services/executors/node-operation-executor';
+import { EdgeOperationExecutor } from '../../services/executors/edge-operation-executor';
+import { BatchOperationExecutor } from '../../services/executors/batch-operation-executor';
+import { LoadDiagramExecutor } from '../../services/executors/load-diagram-executor';
 import {
   GraphOperation,
   OperationContext,
@@ -31,12 +31,12 @@ import {
   DEFAULT_OPERATION_CONFIG,
   GraphOperationType,
   OperationSource,
-} from '../types/graph-operation.types';
+} from '../../types/graph-operation.types';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GraphOperationManager implements IGraphOperationManager {
+export class AppGraphOperationManager implements IGraphOperationManager {
   private readonly _config$ = new BehaviorSubject<OperationConfig>(DEFAULT_OPERATION_CONFIG);
   private readonly _operationCompleted$ = new Subject<OperationCompletedEvent>();
   private readonly _operationFailed$ = new Subject<{ operation: GraphOperation; error: string }>();
@@ -63,7 +63,7 @@ export class GraphOperationManager implements IGraphOperationManager {
   private _totalExecutionTimeMs = 0;
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.debug('GraphOperationManager initialized');
+    this.logger.debug('AppGraphOperationManager initialized');
     this._initializeBuiltInExecutors();
   }
 
@@ -108,7 +108,7 @@ export class GraphOperationManager implements IGraphOperationManager {
     const currentConfig = this._config$.value;
     const newConfig = { ...currentConfig, ...config };
     this._config$.next(newConfig);
-    this.logger.debug('GraphOperationManager configuration updated', { config: newConfig });
+    this.logger.debug('AppGraphOperationManager configuration updated', { config: newConfig });
   }
 
   /**
@@ -342,7 +342,7 @@ export class GraphOperationManager implements IGraphOperationManager {
     this._executors.clear();
     this._validators.clear();
     this._pendingOperations.clear();
-    this.logger.debug('GraphOperationManager disposed');
+    this.logger.debug('AppGraphOperationManager disposed');
   }
 
   /**

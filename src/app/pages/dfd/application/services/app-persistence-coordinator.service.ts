@@ -1,5 +1,5 @@
 /**
- * PersistenceCoordinator - Unified storage management for DFD diagrams
+ * AppPersistenceCoordinator - Unified storage management for DFD diagrams
  *
  * This service coordinates data persistence across multiple strategies:
  * - WebSocket for real-time collaboration
@@ -12,9 +12,9 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError, forkJoin } from 'rxjs';
 import { catchError, timeout, tap } from 'rxjs/operators';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { ServerConnectionService } from '../../../core/services/server-connection.service';
-import { WebSocketAdapter } from '../../../core/services/websocket.adapter';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { ServerConnectionService } from '../../../../core/services/server-connection.service';
+import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 
 // Simple interfaces that match what the tests expect
 export interface SaveOperation {
@@ -106,7 +106,7 @@ const DEFAULT_CONFIG: PersistenceConfig = {
 @Injectable({
   providedIn: 'root',
 })
-export class PersistenceCoordinator {
+export class AppPersistenceCoordinator {
   private readonly _config$ = new BehaviorSubject<PersistenceConfig>(DEFAULT_CONFIG);
   private readonly _saveStatus$ = new Subject<SaveStatusEvent>();
   private readonly _loadStatus$ = new Subject<SaveStatusEvent>();
@@ -135,7 +135,7 @@ export class PersistenceCoordinator {
     private readonly serverConnection: ServerConnectionService,
     private readonly webSocketAdapter: WebSocketAdapter,
   ) {
-    this.logger.debug('PersistenceCoordinator initialized');
+    this.logger.debug('AppPersistenceCoordinator initialized');
   }
 
   /**
@@ -149,7 +149,7 @@ export class PersistenceCoordinator {
     const currentConfig = this._config$.value;
     const newConfig = { ...currentConfig, ...config };
     this._config$.next(newConfig);
-    this.logger.debug('PersistenceCoordinator configuration updated', { config: newConfig });
+    this.logger.debug('AppPersistenceCoordinator configuration updated', { config: newConfig });
   }
 
   /**
@@ -630,7 +630,7 @@ export class PersistenceCoordinator {
     this._config$.complete();
     this._strategies.clear();
     this._cache.clear();
-    this.logger.debug('PersistenceCoordinator disposed');
+    this.logger.debug('AppPersistenceCoordinator disposed');
   }
 
   /**

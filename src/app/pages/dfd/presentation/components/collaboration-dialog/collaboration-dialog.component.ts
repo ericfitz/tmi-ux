@@ -23,14 +23,14 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../../../core/services/logger.service';
 import {
   DfdCollaborationService,
   CollaborationUser,
   CollaborationSession,
-} from '../../../../core/services/dfd-collaboration.service';
-import { DfdNotificationService } from '../../services/dfd-notification.service';
-import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
+} from '../../../../../core/services/dfd-collaboration.service';
+import { AppNotificationService } from '../../../application/services/app-notification.service';
+import { WebSocketAdapter } from '../../../../../core/services/websocket.adapter';
 
 export type CollaborationDialogData = object;
 
@@ -78,7 +78,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
     private _logger: LoggerService,
     private _cdr: ChangeDetectorRef,
     private _collaborationService: DfdCollaborationService,
-    private _notificationService: DfdNotificationService,
+    private _notificationService: AppNotificationService,
     private _webSocketAdapter: WebSocketAdapter,
     private _translocoService: TranslocoService,
     @Inject(DOCUMENT) private _document: Document,

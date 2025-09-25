@@ -1,20 +1,20 @@
 /**
- * Test suite for GraphOperationManager
+ * Test suite for AppGraphOperationManager
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 
-import { GraphOperationManager } from './graph-operation-manager.service';
+import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import {
   GraphOperation,
   OperationContext,
   OperationResult,
   CreateNodeOperation,
-} from '../types/graph-operation.types';
+} from '../../types/graph-operation.types';
 
-describe('GraphOperationManager', () => {
-  let service: GraphOperationManager;
+describe('AppGraphOperationManager', () => {
+  let service: AppGraphOperationManager;
   let mockLogger: any;
   let mockGraph: any;
   let operationContext: OperationContext;
@@ -40,7 +40,7 @@ describe('GraphOperationManager', () => {
     };
 
     // Create service directly without TestBed
-    service = new GraphOperationManager(mockLogger);
+    service = new AppGraphOperationManager(mockLogger);
 
     // Create operation context
     operationContext = {

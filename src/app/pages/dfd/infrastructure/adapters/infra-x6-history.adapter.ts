@@ -9,7 +9,7 @@ import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-consta
  * Handles undo/redo operations and history state management
  */
 @Injectable()
-export class X6HistoryManager {
+export class InfraX6HistoryAdapter {
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
   private readonly _historyModified$ = new Subject<void>();
   private portStateManager: any = null;
@@ -147,7 +147,7 @@ export class X6HistoryManager {
    * Temporarily disable history tracking
    */
   disable(graph: Graph): void {
-    // this.logger.debug('[X6HistoryManager] Attempting to disable history', {
+    // this.logger.debug('[InfraX6HistoryAdapter] Attempting to disable history', {
     //   hasGraph: !!graph,
     //   hasHistory: !!(graph && (graph as any).history),
     //   hasDisableMethod: !!(

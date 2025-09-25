@@ -9,11 +9,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { JSDOM } from 'jsdom';
-import { X6EmbeddingAdapter } from './x6-embedding.adapter';
-import { EmbeddingService } from '../services/embedding.service';
-import { X6ZOrderAdapter } from './x6-z-order.adapter';
-import { ZOrderService } from '../services/z-order.service';
-import { registerCustomShapes } from './x6-shape-definitions';
+import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
+import { InfraEmbeddingService } from '../services/infra-embedding.service';
+import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
+import { ZOrderService } from '../services/infra-z-order.service';
+import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods that X6 expects
@@ -76,12 +76,12 @@ global.window = dom.window as any;
 global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
-describe('X6EmbeddingAdapter', () => {
-  let adapter: X6EmbeddingAdapter;
+describe('InfraX6EmbeddingAdapter', () => {
+  let adapter: InfraX6EmbeddingAdapter;
   let graph: Graph;
   let mockLogger: MockLoggerService;
-  let embeddingService: EmbeddingService;
-  let x6ZOrderAdapter: X6ZOrderAdapter;
+  let infraEmbeddingService: InfraEmbeddingService;
+  let infraX6ZOrderAdapter: InfraX6ZOrderAdapter;
   let zOrderService: ZOrderService;
   let container: HTMLElement;
 
@@ -106,10 +106,10 @@ describe('X6EmbeddingAdapter', () => {
 
     // Create services
     mockLogger = createTypedMockLoggerService();
-    embeddingService = new EmbeddingService(mockLogger as any);
+    infraEmbeddingService = new InfraEmbeddingService(mockLogger as any);
     zOrderService = new ZOrderService(mockLogger as any);
-    x6ZOrderAdapter = new X6ZOrderAdapter(mockLogger as any, zOrderService);
-    adapter = new X6EmbeddingAdapter(mockLogger as any, embeddingService, x6ZOrderAdapter);
+    infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService);
+    adapter = new InfraX6EmbeddingAdapter(mockLogger as any, infraEmbeddingService, infraX6ZOrderAdapter);
 
     // Initialize embedding functionality
     adapter.initializeEmbedding(graph);
@@ -236,7 +236,7 @@ describe('X6EmbeddingAdapter', () => {
       // Verify visual effects were applied
       expect(childNode.setAttrs).toHaveBeenCalled();
       const setAttrsCall = (childNode.setAttrs as any).mock.calls[0][0];
-      expect(setAttrsCall.body.fill).toBe('rgb(230, 240, 255)'); // Depth 1 color from EmbeddingService
+      expect(setAttrsCall.body.fill).toBe('rgb(230, 240, 255)'); // Depth 1 color from InfraEmbeddingService
     });
 
     it('should update z-order on embedding', () => {
@@ -499,12 +499,12 @@ describe('X6EmbeddingAdapter', () => {
       grandchildNode.setParent(childNode);
       adapter.embedNode(graph, grandchildNode, childNode);
 
-      // Verify depth 1 color (light bluish) - actual EmbeddingService calculation
+      // Verify depth 1 color (light bluish) - actual InfraEmbeddingService calculation
       const childSetAttrsCall = (childNode.setAttrs as any).mock.calls[0][0];
       expect(childSetAttrsCall.body.fill).toBe('rgb(230, 240, 255)'); // Depth 1: 240-10, 250-10, 255
       expect(childSetAttrsCall.body.fillOpacity).toBe(0.9);
 
-      // Verify depth 2 color (darker bluish) - actual EmbeddingService calculation
+      // Verify depth 2 color (darker bluish) - actual InfraEmbeddingService calculation
       // Check if grandchildNode.setAttrs was called
       if ((grandchildNode.setAttrs as any).mock.calls.length > 0) {
         const grandchildSetAttrsCall = (grandchildNode.setAttrs as any).mock.calls[0][0];
@@ -528,7 +528,7 @@ describe('X6EmbeddingAdapter', () => {
       textBoxNode.setAttrs = vi.fn();
 
       // Text-box nodes cannot be embedded, but test the visual effect logic
-      const config = embeddingService.getEmbeddingConfiguration(textBoxNode);
+      const config = infraEmbeddingService.getEmbeddingConfiguration(textBoxNode);
       expect(config.shouldUpdateColor).toBe(false);
     });
 
@@ -868,7 +868,7 @@ describe('X6EmbeddingAdapter', () => {
       });
 
       // Mock z-order adapter to throw error
-      vi.spyOn(x6ZOrderAdapter, 'handleNodeMovedZOrderRestoration').mockImplementation(() => {
+      vi.spyOn(infraX6ZOrderAdapter, 'handleNodeMovedZOrderRestoration').mockImplementation(() => {
         throw new Error('Test error');
       });
 

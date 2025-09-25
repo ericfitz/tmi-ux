@@ -6,11 +6,11 @@ import '@angular/compiler';
 import { of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-import { DfdNotificationService } from './dfd-notification.service';
-import { WebSocketState } from '../../../core/services/websocket.adapter';
+import { AppNotificationService } from './app-notification.service';
+import { WebSocketState } from '../../../../core/services/websocket.adapter';
 
-describe('DfdNotificationService', () => {
-  let service: DfdNotificationService;
+describe('AppNotificationService', () => {
+  let service: AppNotificationService;
   let mockSnackBar: any;
   let mockLogger: any;
   let mockTransloco: any;
@@ -49,7 +49,7 @@ describe('DfdNotificationService', () => {
     mockSnackBar.open.mockReturnValue(mockSnackBarRef);
 
     // Create service instance directly with mocks
-    service = new DfdNotificationService(mockSnackBar, mockLogger, mockTransloco);
+    service = new AppNotificationService(mockSnackBar, mockLogger, mockTransloco);
   });
 
   it('should be created', () => {

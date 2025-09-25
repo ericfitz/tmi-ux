@@ -10,7 +10,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
-export class EmbeddingService {
+export class InfraEmbeddingService {
   constructor(private logger: LoggerService) {}
 
   /**

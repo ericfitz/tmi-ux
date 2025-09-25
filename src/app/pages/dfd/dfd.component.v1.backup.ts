@@ -5,7 +5,7 @@
  * It provides a comprehensive diagram editing environment with centralized operation management.
  *
  * Key functionality:
- * - Centralized operation management via DfdOrchestrator
+ * - Centralized operation management via AppDfdOrchestrator
  * - Intelligent auto-save with configurable policies
  * - Unified persistence coordination
  * - Complete graph operation support (nodes, edges, batches, diagram loading)
@@ -33,7 +33,7 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { LoggerService } from '../../core/services/logger.service';
+import { LoggerService } from '../../../core/services';
 import { initializeX6CellExtensions } from './utils/x6-cell-extensions';
 import {
   COMMON_IMPORTS,
@@ -42,16 +42,16 @@ import {
 } from '@app/shared/imports';
 
 // DFD v2 Architecture
-import { DfdOrchestrator } from './v2/services/dfd-orchestrator.service';
-import { AutoSaveManager } from './v2/services/auto-save-manager.service';
-import { PersistenceCoordinator } from './v2/services/persistence-coordinator.service';
-import { GraphOperationManager } from './v2/services/graph-operation-manager.service';
+import { AppDfdOrchestrator } from './application/services/app-dfd-orchestrator.service';
+import { AppAutoSaveManager } from './application/services/app-auto-save-manager.service';
+import { AppPersistenceCoordinator } from './application/services/app-persistence-coordinator.service';
+import { AppGraphOperationManager } from './application/services/app-graph-operation-manager.service';
 // Essential v1 components still needed
 import { NodeType } from './domain/value-objects/node-info';
-import { DfdCollaborationComponent } from './components/collaboration/collaboration.component';
+import { DfdCollaborationComponent } from './presentation/components/collaboration/collaboration.component';
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
+import { DfdCollaborationService } from '../../../core/services';
 import { ThreatModelAuthorizationService } from '../tm/services/threat-model-authorization.service';
 import {
   MetadataDialogComponent,
@@ -80,10 +80,10 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
   ],
   providers: [
     // DFD v2 Architecture - Core Services
-    DfdOrchestrator,
-    GraphOperationManager,
-    AutoSaveManager,
-    PersistenceCoordinator,
+    AppDfdOrchestrator,
+    AppGraphOperationManager,
+    AppAutoSaveManager,
+    AppPersistenceCoordinator,
 
     // Essential services still needed
     ThreatModelService,
@@ -102,7 +102,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private _observer: MutationObserver | null = null;
   private _subscriptions = new Subscription();
   private _resizeTimeout: number | null = null;
-  // Graph initialization is now tracked in x6GraphAdapter via isInitialized()
+  // Graph initialization is now tracked in infraX6GraphAdapter via isInitialized()
   private _isDestroying = false;
 
   // Collaborative editing state
@@ -146,8 +146,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private dfdOrchestrator: DfdOrchestrator,
-    private autoSaveManager: AutoSaveManager,
+    private appDfdOrchestrator: AppDfdOrchestrator,
+    private appAutoSaveManager: AppAutoSaveManager,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
     private translocoService: TranslocoService,
@@ -203,7 +203,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('DfdComponent v2 ngAfterViewInit called');
 
     // Initialize the DFD Orchestrator with the graph container
-    this.dfdOrchestrator.initialize(this.graphContainer.nativeElement);
+    this.appDfdOrchestrator.initialize(this.graphContainer.nativeElement);
 
     // Load diagram data if we have a dfdId
     if (this.dfdId) {
@@ -218,7 +218,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Configure auto-save based on user permission
     const autoSavePolicy = this.isReadOnlyMode ? 'manual' : 'normal';
 
-    this.autoSaveManager.configure({
+    this.appAutoSaveManager.configure({
       enabled: !this.isReadOnlyMode,
       policy: autoSavePolicy,
       debounceMs: autoSavePolicy === 'normal' ? 5000 : 30000,
@@ -233,7 +233,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private setupOrchestratorSubscriptions(): void {
     // Subscribe to orchestrator state changes
     this._subscriptions.add(
-      this.dfdOrchestrator.selectedCells$.subscribe(cells => {
+      this.appDfdOrchestrator.selectedCells$.subscribe(cells => {
         this.hasSelectedCells = cells.length > 0;
         this.hasExactlyOneSelectedCell = cells.length === 1;
         this.cdr.markForCheck();
@@ -242,7 +242,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to auto-save events
     this._subscriptions.add(
-      this.autoSaveManager.saveCompleted$.subscribe(result => {
+      this.appAutoSaveManager.saveCompleted$.subscribe(result => {
         if (result.success) {
           this.logger.debug('Auto-save completed successfully');
         } else {
@@ -253,11 +253,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadDiagramData(dfdId: string): void {
-    // Use DfdOrchestrator to load diagram
-    this.dfdOrchestrator.loadDiagram(dfdId).subscribe({
+    // Use AppDfdOrchestrator to load diagram
+    this.appDfdOrchestrator.loadDiagram(dfdId).subscribe({
       next: result => {
         if (result.success) {
-          this.logger.info('Diagram loaded successfully via DfdOrchestrator');
+          this.logger.info('Diagram loaded successfully via AppDfdOrchestrator');
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
         }
@@ -267,9 +267,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     });
 
-    // Subscribe to context menu events from X6GraphAdapter
+    // Subscribe to context menu events from InfraX6GraphAdapter
     this._subscriptions.add(
-      this.x6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }) => {
+      this.infraX6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }) => {
         // Direct call to event handlers for component-specific UI operations
         // This is acceptable since it involves component-specific parameters (MatMenuTrigger, ChangeDetectorRef)
         // that shouldn't be exposed through the facade
@@ -292,7 +292,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to history state changes for undo/redo button states
     this._subscriptions.add(
-      this.x6GraphAdapter.historyChanged$.subscribe(({ canUndo, canRedo }) => {
+      this.infraX6GraphAdapter.historyChanged$.subscribe(({ canUndo, canRedo }) => {
         // Only emit and log if the state has actually changed
         if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
           this.canUndo = canUndo;
@@ -313,8 +313,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         // Update history tracking based on collaboration state
         // In collaboration mode, history is managed by the server
         // Only set history state if graph is initialized
-        if (this.x6GraphAdapter.isInitialized()) {
-          this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
+        if (this.infraX6GraphAdapter.isInitialized()) {
+          this.infraX6GraphAdapter.setHistoryEnabled(!isCollaborating);
         }
 
         if (isCollaborating && this.threatModelId && this.dfdId) {
@@ -341,9 +341,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Re-initialize diagram operation broadcaster for collaborative editing
-          if (this.x6GraphAdapter.isInitialized()) {
-            const broadcaster = this.x6GraphAdapter.getDiagramOperationBroadcaster();
-            broadcaster.initializeListeners(this.x6GraphAdapter.getGraph());
+          if (this.infraX6GraphAdapter.isInitialized()) {
+            const broadcaster = this.infraX6GraphAdapter.getDiagramOperationBroadcaster();
+            broadcaster.initializeListeners(this.infraX6GraphAdapter.getGraph());
             this.logger.info('Re-initialized DiagramOperationBroadcaster for collaboration');
           }
         }
@@ -352,7 +352,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to actual history modifications for auto-save
     this._subscriptions.add(
-      this.x6GraphAdapter.historyModified$.subscribe({
+      this.infraX6GraphAdapter.historyModified$.subscribe({
         next: () => {
           this.logger.info('DFD Component received history modification event');
 
@@ -363,7 +363,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Auto-save diagram when history is actually modified
-          if (this.x6GraphAdapter.isInitialized() && this.dfdId && this.threatModelId) {
+          if (this.infraX6GraphAdapter.isInitialized() && this.dfdId && this.threatModelId) {
             this.logger.info('Triggering auto-save after history modification', {
               dfdId: this.dfdId,
               threatModelId: this.threatModelId,
@@ -371,7 +371,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.autoSaveDiagram('History modified');
           } else {
             this.logger.warn('Cannot auto-save: missing requirements', {
-              isInitialized: this.x6GraphAdapter.isInitialized(),
+              isInitialized: this.infraX6GraphAdapter.isInitialized(),
               dfdId: this.dfdId,
               threatModelId: this.threatModelId,
             });
@@ -385,21 +385,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to edge creation events
     this._subscriptions.add(
-      this.x6GraphAdapter.edgeAdded$.subscribe(edge => {
+      this.infraX6GraphAdapter.edgeAdded$.subscribe(edge => {
         this.handleEdgeAdded(edge);
       }),
     );
 
     // Subscribe to edge vertices changes
     this._subscriptions.add(
-      this.x6GraphAdapter.edgeVerticesChanged$.subscribe(({ edgeId, vertices }) => {
+      this.infraX6GraphAdapter.edgeVerticesChanged$.subscribe(({ edgeId, vertices }) => {
         this.handleEdgeVerticesChanged(edgeId, vertices);
       }),
     );
 
     // Subscribe to cell data changes (metadata changes) for auto-save
     this._subscriptions.add(
-      this.x6GraphAdapter.nodeInfoChanged$.subscribe(({ nodeId, newData, oldData }) => {
+      this.infraX6GraphAdapter.nodeInfoChanged$.subscribe(({ nodeId, newData, oldData }) => {
         // Skip auto-save during initial diagram loading
         if (this._isInitialLoadInProgress) {
           this.logger.debug(
@@ -449,25 +449,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Initialize WebSocket and state services
     this.webSocketService.initialize();
-    this.dfdStateService.initialize();
+    this.domainStateService.initialize();
 
     // Subscribe to state service events for operations that need to be applied to the graph
     this._subscriptions.add(
-      this.dfdStateService.applyOperationEvents$.subscribe({
+      this.domainStateService.applyOperationEvents$.subscribe({
         next: event => this.applyRemoteOperation(event.operation, event.userId, event.operationId),
         error: error => this.logger.error('Error handling apply operation event', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdStateService.applyCorrectionEvents$.subscribe({
+      this.domainStateService.applyCorrectionEvents$.subscribe({
         next: cells => this.applyCorrectedState(cells),
         error: error => this.logger.error('Error handling apply correction event', error),
       }),
     );
 
     this._subscriptions.add(
-      this.dfdStateService.requestResyncEvents$.subscribe({
+      this.domainStateService.requestResyncEvents$.subscribe({
         next: event => {
           if (event.method === 'rest_api') {
             void this.performRESTResync();
@@ -478,9 +478,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this._subscriptions.add(
-      this.dfdStateService.triggerResyncEvents$.subscribe({
+      this.domainStateService.triggerResyncEvents$.subscribe({
         next: () => {
-          this.diagramResyncService.triggerResync();
+          this.appDiagramResyncService.triggerResync();
         },
         error: error => this.logger.error('Error handling trigger resync event', error),
       }),
@@ -561,7 +561,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to state changes for UI updates
     this._subscriptions.add(
-      this.dfdStateService.isApplyingRemoteChange$.subscribe({
+      this.domainStateService.isApplyingRemoteChange$.subscribe({
         next: isApplying => {
           this.isApplyingRemoteChange = isApplying;
         },
@@ -600,8 +600,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Apply read-only mode to graph if initialized
-    if (this.x6GraphAdapter.isInitialized()) {
-      this.x6GraphAdapter.setReadOnlyMode(this.isReadOnlyMode);
+    if (this.infraX6GraphAdapter.isInitialized()) {
+      this.infraX6GraphAdapter.setReadOnlyMode(this.isReadOnlyMode);
     }
 
     this.logger.info('Read-only mode updated', {
@@ -647,24 +647,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.diagramName = result.diagram.name;
 
             // Initialize the resync service with diagram context
-            if (this.x6GraphAdapter.isInitialized()) {
-              this.diagramResyncService.initialize(
+            if (this.infraX6GraphAdapter.isInitialized()) {
+              this.appDiagramResyncService.initialize(
                 this.dfdId || 'default-diagram',
                 this.threatModelId || '',
-                this.x6GraphAdapter.getGraph(),
-                this.x6GraphAdapter,
+                this.infraX6GraphAdapter.getGraph(),
+                this.infraX6GraphAdapter,
               );
-              this.logger.info('DiagramResyncService initialized with context');
+              this.logger.info('AppDiagramResyncService initialized with context');
             }
 
             // Load the diagram cells into the graph if available
             if (result.diagram.cells && result.diagram.cells.length > 0) {
               this.logger.info('Found diagram cells to load', {
                 cellCount: result.diagram.cells.length,
-                isInitialized: this.x6GraphAdapter.isInitialized(),
+                isInitialized: this.infraX6GraphAdapter.isInitialized(),
               });
 
-              if (this.x6GraphAdapter.isInitialized()) {
+              if (this.infraX6GraphAdapter.isInitialized()) {
                 this.logger.info('Graph is initialized - loading cells immediately');
                 this.loadDiagramCells(result.diagram.cells);
               } else {
@@ -735,13 +735,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tooltipAdapter.dispose();
 
     // Cleanup presenter coordinator
-    this.presenterCoordinatorService.cleanupPresenterDisplay();
+    this.uiPresenterCoordinatorService.cleanupPresenterDisplay();
 
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
 
     // Dispose the graph adapter
-    this.x6GraphAdapter.dispose();
+    this.infraX6GraphAdapter.dispose();
   }
 
   /**
@@ -781,7 +781,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._resizeTimeout = this.facade.onWindowResize(
       this.graphContainer,
       this._resizeTimeout,
-      this.x6GraphAdapter,
+      this.infraX6GraphAdapter,
     );
   }
 
@@ -793,8 +793,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.facade.onKeyDown(
       event,
       this.dfdId || 'default-diagram',
-      this.x6GraphAdapter.isInitialized(),
-      this.x6GraphAdapter,
+      this.infraX6GraphAdapter.isInitialized(),
+      this.infraX6GraphAdapter,
     );
   }
 
@@ -812,7 +812,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         width,
         height,
         this.dfdId || 'default-diagram',
-        this.x6GraphAdapter.isInitialized(),
+        this.infraX6GraphAdapter.isInitialized(),
       )
       .pipe(take(1))
       .subscribe({
@@ -834,24 +834,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const container = this.graphContainer.nativeElement as HTMLElement;
 
-      // Initialize the graph using X6GraphAdapter (delegates all X6-specific setup)
-      this.x6GraphAdapter.initialize(container);
+      // Initialize the graph using InfraX6GraphAdapter (delegates all X6-specific setup)
+      this.infraX6GraphAdapter.initialize(container);
 
       // Get the initialized graph for other adapters
-      const graph = this.x6GraphAdapter.getGraph();
+      const graph = this.infraX6GraphAdapter.getGraph();
 
       // Set up additional systems that depend on the graph
       this.setupDomObservation();
       this.tooltipAdapter.initialize(graph);
 
       // Initialize presenter coordinator for presenter mode functionality
-      this.presenterCoordinatorService.initialize(container, graph, this.x6SelectionAdapter);
+      this.uiPresenterCoordinatorService.initialize(container, graph, this.infraX6SelectionAdapter);
 
       this.logger.info('Graph initialization complete');
 
       // Initialize history tracking based on current collaboration state
       const isCollaborating = this.collaborationService.isCollaborating();
-      this.x6GraphAdapter.setHistoryEnabled(!isCollaborating);
+      this.infraX6GraphAdapter.setHistoryEnabled(!isCollaborating);
 
       // Apply read-only mode if user lacks edit permissions
       this.initializePermissions();
@@ -877,7 +877,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Load diagram cells into the graph with proper history suppression and port visibility management
    */
   private loadDiagramCells(cells: any[]): void {
-    if (!this.x6GraphAdapter.isInitialized()) {
+    if (!this.infraX6GraphAdapter.isInitialized()) {
       this.logger.error('Cannot load diagram cells: graph not initialized');
       return;
     }
@@ -887,14 +887,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this._isInitialLoadInProgress = true;
       this.logger.debug('Setting initial load flag to prevent premature auto-save');
 
-      const graph = this.x6GraphAdapter.getGraph();
+      const graph = this.infraX6GraphAdapter.getGraph();
 
       // Use the shared diagram loading service for consistent cell loading
-      this.diagramLoadingService.loadCellsIntoGraph(
+      this.appDiagramLoadingService.loadCellsIntoGraph(
         cells,
         graph,
         this.dfdId || 'default-diagram',
-        this.x6GraphAdapter,
+        this.infraX6GraphAdapter,
         {
           clearExisting: false, // Don't clear for initial load (graph should be empty)
           suppressHistory: true, // Don't create history entries during initial load
@@ -943,7 +943,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       mockCell.attrs?.text?.text || mockCell.value || this.getDefaultLabelForType(nodeType);
 
     // Get proper port configuration for this node type
-    const portConfig = this.nodeConfigurationService.getNodePorts(nodeType);
+    const portConfig = this.infraNodeConfigurationService.getNodePorts(nodeType);
 
     // Handle position from either direct properties or geometry object
     const x = mockCell.x ?? mockCell.geometry?.x ?? 0;
@@ -1150,7 +1150,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Deletes the currently selected cell(s)
    */
   deleteSelected(): void {
-    this.facade.onDeleteSelected(this.x6GraphAdapter.isInitialized(), this.x6GraphAdapter);
+    this.facade.onDeleteSelected(
+      this.infraX6GraphAdapter.isInitialized(),
+      this.infraX6GraphAdapter,
+    );
     this.cdr.markForCheck();
   }
 
@@ -1165,11 +1168,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Shows the X6 history dialog with the rendered JSON of the graph history
    */
   showHistory(): void {
-    if (!this.x6GraphAdapter.isInitialized()) {
+    if (!this.infraX6GraphAdapter.isInitialized()) {
       this.logger.warn('Cannot show history: graph not initialized');
       return;
     }
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
 
     const dialogData: X6HistoryDialogData = {
       graph: graph,
@@ -1195,7 +1198,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Manages threats for the selected cell
    */
   manageThreats(): void {
-    const selectedCells = this.x6GraphAdapter.getSelectedCells();
+    const selectedCells = this.infraX6GraphAdapter.getSelectedCells();
     if (selectedCells.length !== 1) {
       this.logger.warn('Manage threats requires exactly one selected cell');
       return;
@@ -1209,7 +1212,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const selectedCell = selectedCells[0];
     const cellShape = selectedCell.shape || 'unknown';
     const localizedShapeName = this.getLocalizedShapeName(cellShape);
-    const cellLabel = this.x6GraphAdapter.getCellLabel(selectedCell);
+    const cellLabel = this.infraX6GraphAdapter.getCellLabel(selectedCell);
     const cellId = selectedCell.id;
 
     // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
@@ -1291,9 +1294,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] =
             [];
 
-          if (this.x6GraphAdapter && this.dfdId && this.diagramName) {
+          if (this.infraX6GraphAdapter && this.dfdId && this.diagramName) {
             try {
-              const graph = this.x6GraphAdapter.getGraph();
+              const graph = this.infraX6GraphAdapter.getGraph();
               const cellData = this.cellDataExtractionService.extractFromX6Graph(
                 graph,
                 this.dfdId,
@@ -1453,9 +1456,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           let cells: import('../tm/components/threat-editor-dialog/threat-editor-dialog.component').CellOption[] =
             [];
 
-          if (this.x6GraphAdapter && this.dfdId && this.diagramName) {
+          if (this.infraX6GraphAdapter && this.dfdId && this.diagramName) {
             try {
-              const graph = this.x6GraphAdapter.getGraph();
+              const graph = this.infraX6GraphAdapter.getGraph();
               const cellData = this.cellDataExtractionService.extractFromX6Graph(
                 graph,
                 this.dfdId,
@@ -1526,7 +1529,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Get the selected cell from the graph adapter
-    const selectedCells = this.x6GraphAdapter.getSelectedCells();
+    const selectedCells = this.infraX6GraphAdapter.getSelectedCells();
     if (selectedCells.length !== 1) {
       return;
     }
@@ -1545,7 +1548,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Get cell information for friendly object naming (same as manage threats)
     const cellShape = cell.shape || 'unknown';
     const localizedShapeName = this.getLocalizedShapeName(cellShape);
-    const cellLabel = this.x6GraphAdapter.getCellLabel(cell);
+    const cellLabel = this.infraX6GraphAdapter.getCellLabel(cell);
     const cellId = cell.id;
 
     // Format object name as: <shape>: <label> (id) or <shape>: (id) if no label
@@ -1594,8 +1597,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   closeDiagram(): void {
     // Save diagram changes before closing if we have the necessary IDs
-    if (this.threatModelId && this.dfdId && this.x6GraphAdapter.isInitialized()) {
-      const graph = this.x6GraphAdapter.getGraph();
+    if (this.threatModelId && this.dfdId && this.infraX6GraphAdapter.isInitialized()) {
+      const graph = this.infraX6GraphAdapter.getGraph();
       this.logger.info('Saving diagram changes before closing', {
         threatModelId: this.threatModelId,
         dfdId: this.dfdId,
@@ -1683,13 +1686,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Handle edge added events from the graph adapter
    */
   private handleEdgeAdded(edge: Edge): void {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     this.facade
       .handleEdgeAdded(
         edge,
         graph,
         this.dfdId || 'default-diagram',
-        this.x6GraphAdapter.isInitialized(),
+        this.infraX6GraphAdapter.isInitialized(),
       )
       .pipe(take(1))
       .subscribe({
@@ -1709,14 +1712,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     edgeId: string,
     vertices: Array<{ x: number; y: number }>,
   ): void {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     this.facade
       .handleEdgeVerticesChanged(
         edgeId,
         vertices,
         graph,
         this.dfdId || 'default-diagram',
-        this.x6GraphAdapter.isInitialized(),
+        this.infraX6GraphAdapter.isInitialized(),
       )
       .pipe(take(1))
       .subscribe({
@@ -1733,28 +1736,28 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Move selected cells forward in z-order
    */
   moveForward(): void {
-    this.facade.moveForward(this.x6GraphAdapter);
+    this.facade.moveForward(this.infraX6GraphAdapter);
   }
 
   /**
    * Move selected cells backward in z-order
    */
   moveBackward(): void {
-    this.facade.moveBackward(this.x6GraphAdapter);
+    this.facade.moveBackward(this.infraX6GraphAdapter);
   }
 
   /**
    * Move selected cells to front
    */
   moveToFront(): void {
-    this.facade.moveToFront(this.x6GraphAdapter);
+    this.facade.moveToFront(this.infraX6GraphAdapter);
   }
 
   /**
    * Move selected cells to back
    */
   moveToBack(): void {
-    this.facade.moveToBack(this.x6GraphAdapter);
+    this.facade.moveToBack(this.infraX6GraphAdapter);
   }
 
   /**
@@ -1768,7 +1771,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Edit the text/label of the right-clicked cell by invoking the label editor
    */
   editCellText(): void {
-    this.facade.editCellText(this.x6GraphAdapter);
+    this.facade.editCellText(this.infraX6GraphAdapter);
   }
 
   /**
@@ -1782,7 +1785,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const originalEdge = rightClickedCell;
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
 
     this.facade
       .addInverseConnection(originalEdge, graph, this.dfdId || 'default-diagram')
@@ -1802,7 +1805,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Routes to WebSocket for collaborative sessions, REST for solo editing
    */
   private autoSaveDiagram(reason: string): void {
-    if (!this.x6GraphAdapter.isInitialized() || !this.dfdId || !this.threatModelId) {
+    if (!this.infraX6GraphAdapter.isInitialized() || !this.dfdId || !this.threatModelId) {
       return;
     }
 
@@ -1818,10 +1821,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    if (!this.x6GraphAdapter.isInitialized()) {
+    if (!this.infraX6GraphAdapter.isInitialized()) {
       return;
     }
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
 
     // Both collaborative and solo modes benefit from periodic saves
     // Collaborative mode uses WebSocket with REST fallback for resilience
@@ -1857,7 +1860,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     } else {
       // Use local X6 history for solo editing
-      this.facade.undo(this.x6GraphAdapter.isInitialized(), this.x6GraphAdapter);
+      this.facade.undo(this.infraX6GraphAdapter.isInitialized(), this.infraX6GraphAdapter);
     }
   }
 
@@ -1878,7 +1881,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     } else {
       // Use local X6 history for solo editing
-      this.facade.redo(this.x6GraphAdapter.isInitialized(), this.x6GraphAdapter);
+      this.facade.redo(this.infraX6GraphAdapter.isInitialized(), this.infraX6GraphAdapter);
     }
   }
 
@@ -1886,11 +1889,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Apply remote operation to local graph
    */
   private applyRemoteOperationToGraph(operation: any): void {
-    if (!this.x6GraphAdapter.isInitialized()) {
+    if (!this.infraX6GraphAdapter.isInitialized()) {
       this.logger.error('Cannot apply remote operation: graph not initialized');
       return;
     }
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
 
     for (const cellOp of operation.cells) {
       switch (cellOp.operation) {
@@ -1955,7 +1958,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (key === 'width' || key === 'height') {
           cell.setSize({ [key]: value });
         } else if (key === 'label') {
-          this.x6GraphAdapter.setCellLabel(cell, value as string);
+          this.infraX6GraphAdapter.setCellLabel(cell, value as string);
         } else {
           cell.prop(key, value);
         }
@@ -2040,8 +2043,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
           }
 
-          if (this.x6GraphAdapter.isInitialized()) {
-            const graph = this.x6GraphAdapter.getGraph();
+          if (this.infraX6GraphAdapter.isInitialized()) {
+            const graph = this.infraX6GraphAdapter.getGraph();
             // Clear existing graph
             graph.clearCells();
 
@@ -2053,7 +2056,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         // Notify state service that resync is complete
-        this.dfdStateService.resyncComplete();
+        this.domainStateService.resyncComplete();
 
         this.logger.info('REST resync completed successfully');
         this.notificationService.showSuccess('Diagram synchronized with server').subscribe();
@@ -2078,7 +2081,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (key === 'width' || key === 'height') {
           existingCell.setSize({ [key]: value });
         } else if (key === 'label') {
-          this.x6GraphAdapter.setCellLabel(existingCell, value as string);
+          this.infraX6GraphAdapter.setCellLabel(existingCell, value as string);
         } else {
           existingCell.prop(key, value);
         }
@@ -2140,13 +2143,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       operationType: operation.operation,
     });
 
-    if (!this.x6GraphAdapter.isInitialized()) {
+    if (!this.infraX6GraphAdapter.isInitialized()) {
       this.logger.error('Cannot apply remote operation: graph not initialized');
       return;
     }
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
 
-    this.dfdStateService.setApplyingRemoteChange(true);
+    this.domainStateService.setApplyingRemoteChange(true);
     try {
       switch (operation.operation) {
         case 'add':
@@ -2162,7 +2165,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.logger.warn('Unknown remote operation type', operation.operation);
       }
     } finally {
-      this.dfdStateService.setApplyingRemoteChange(false);
+      this.domainStateService.setApplyingRemoteChange(false);
     }
   }
 
@@ -2172,24 +2175,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private applyCorrectedState(cells: WSCell[]): void {
     this.logger.info('Applying corrected state', { cellCount: cells.length });
 
-    this.dfdStateService.setApplyingRemoteChange(true);
-    if (!this.x6GraphAdapter.isInitialized()) {
+    this.domainStateService.setApplyingRemoteChange(true);
+    if (!this.infraX6GraphAdapter.isInitialized()) {
       this.logger.error('Cannot apply state correction: graph not initialized');
       return;
     }
 
     try {
-      const graph = this.x6GraphAdapter.getGraph();
+      const graph = this.infraX6GraphAdapter.getGraph();
       // Apply corrected state for each cell
       for (const cell of cells) {
         this.applyCellCorrection(cell, graph);
       }
     } finally {
-      this.dfdStateService.setApplyingRemoteChange(false);
+      this.domainStateService.setApplyingRemoteChange(false);
     }
 
     // Mark resync as complete
-    this.dfdStateService.resyncComplete();
+    this.domainStateService.resyncComplete();
   }
 
   /**
@@ -2304,15 +2307,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private captureDiagramSvg(): Promise<string | null> {
     return new Promise(resolve => {
-      if (!this.x6GraphAdapter.isInitialized()) {
+      if (!this.infraX6GraphAdapter.isInitialized()) {
         this.logger.warn('Cannot capture SVG - graph not initialized');
         resolve(null);
         return;
       }
 
-      const graph = this.x6GraphAdapter.getGraph();
+      const graph = this.infraX6GraphAdapter.getGraph();
 
-      const exportPrep = this.dfdExportService.prepareImageExport(graph);
+      const exportPrep = this.appExportService.prepareImageExport(graph);
       if (!exportPrep) {
         resolve(null);
         return; // prepareImageExport handles logging
@@ -2334,7 +2337,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       try {
         exportGraph.toSVG((svgString: string) => {
           try {
-            const base64Svg = this.dfdExportService.processSvg(svgString, true, exportPrep.viewBox);
+            const base64Svg = this.appExportService.processSvg(svgString, true, exportPrep.viewBox);
             this.logger.debug('Successfully captured and cleaned diagram SVG', {
               originalLength: svgString.length,
               base64Length: base64Svg.length,

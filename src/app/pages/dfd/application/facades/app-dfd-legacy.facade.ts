@@ -5,11 +5,11 @@
  * multiple specialized services. It implements the Facade pattern to simplify component dependencies.
  *
  * Key functionality:
- * - Coordinates node operations (creation, deletion, manipulation) via DfdNodeService
- * - Manages edge operations (connection validation, creation, vertices) via DfdEdgeService
- * - Handles event processing (keyboard, mouse, context menu) via DfdEventHandlersService
- * - Provides diagram export capabilities via DfdExportService
- * - Manages diagram loading and data operations via DfdDiagramService
+ * - Coordinates node operations (creation, deletion, manipulation) via InfraNodeService
+ * - Manages edge operations (connection validation, creation, vertices) via DomainEdgeService
+ * - Handles event processing (keyboard, mouse, context menu) via AppEventHandlersService
+ * - Provides diagram export capabilities via AppExportService
+ * - Manages diagram loading and data operations via AppDiagramService
  * - Simplifies component architecture by reducing direct service dependencies
  * - Provides consistent API for all DFD operations from a single entry point
  * - Coordinates cross-service operations that require multiple service interactions
@@ -19,13 +19,16 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Edge, Node, Graph } from '@antv/x6';
-import { ConnectionValidationArgs, MagnetValidationArgs } from './dfd-edge.service';
-import { NodeType } from '../domain/value-objects/node-info';
-import { DfdNodeService } from '../infrastructure/services/node.service';
-import { DfdEdgeService } from './dfd-edge.service';
-import { DfdEventHandlersService } from './dfd-event-handlers.service';
-import { DfdExportService } from './dfd-export.service';
-import { DfdDiagramService } from './dfd-diagram.service';
+import {
+  ConnectionValidationArgs,
+  MagnetValidationArgs,
+} from '../../domain/services/domain-edge.service';
+import { NodeType } from '../../domain/value-objects/node-info';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
+import { DomainEdgeService } from '../../domain/services/domain-edge.service';
+import { AppEventHandlersService } from '../services/app-event-handlers.service';
+import { AppExportService } from '../services/app-export.service';
+import { AppDiagramService } from '../services/app-diagram.service';
 
 /**
  * Facade service that simplifies DFD component dependencies by providing
@@ -35,13 +38,13 @@ import { DfdDiagramService } from './dfd-diagram.service';
  * and provides a cleaner API for coordinating operations.
  */
 @Injectable()
-export class DfdFacadeService {
+export class AppDfdLegacyFacade {
   constructor(
-    private nodeService: DfdNodeService,
-    private edgeService: DfdEdgeService,
-    private eventHandlersService: DfdEventHandlersService,
-    private exportService: DfdExportService,
-    private diagramService: DfdDiagramService,
+    private infraNodeService: InfraNodeService,
+    private infraEdgeService: DomainEdgeService,
+    private eventHandlersService: AppEventHandlersService,
+    private exportService: AppExportService,
+    private diagramService: AppDiagramService,
   ) {}
 
   // ===============================
@@ -58,7 +61,7 @@ export class DfdFacadeService {
     diagramId: string,
     isInitialized: boolean,
   ): Observable<any> {
-    return this.nodeService.addGraphNode(
+    return this.infraNodeService.addGraphNode(
       shapeType,
       containerWidth,
       containerHeight,
@@ -80,7 +83,7 @@ export class DfdFacadeService {
     diagramId: string,
     isInitialized: boolean,
   ): Observable<any> {
-    return this.edgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
+    return this.infraEdgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
   }
 
   /**
@@ -93,7 +96,7 @@ export class DfdFacadeService {
     diagramId: string,
     isInitialized: boolean,
   ): Observable<any> {
-    return this.edgeService.handleEdgeVerticesChanged(
+    return this.infraEdgeService.handleEdgeVerticesChanged(
       edgeId,
       vertices,
       graph,
@@ -106,7 +109,7 @@ export class DfdFacadeService {
    * Add an inverse connection for an edge
    */
   addInverseConnection(originalEdge: Edge, graph: Graph, diagramId: string): Observable<any> {
-    return this.edgeService.addInverseConnection(originalEdge, graph, diagramId);
+    return this.infraEdgeService.addInverseConnection(originalEdge, graph, diagramId);
   }
 
   // ===============================
@@ -116,8 +119,8 @@ export class DfdFacadeService {
   /**
    * Initialize event handlers
    */
-  initializeEventHandlers(x6GraphAdapter: any): void {
-    this.eventHandlersService.initialize(x6GraphAdapter);
+  initializeEventHandlers(infraX6GraphAdapter: any): void {
+    this.eventHandlersService.initialize(infraX6GraphAdapter);
   }
 
   /**
@@ -147,9 +150,13 @@ export class DfdFacadeService {
   onWindowResize(
     graphContainer: any,
     resizeTimeout: number | null,
-    x6GraphAdapter: any,
+    infraX6GraphAdapter: any,
   ): number | null {
-    return this.eventHandlersService.onWindowResize(graphContainer, resizeTimeout, x6GraphAdapter);
+    return this.eventHandlersService.onWindowResize(
+      graphContainer,
+      resizeTimeout,
+      infraX6GraphAdapter,
+    );
   }
 
   /**
@@ -159,16 +166,16 @@ export class DfdFacadeService {
     event: KeyboardEvent,
     diagramId: string,
     isInitialized: boolean,
-    x6GraphAdapter: any,
+    infraX6GraphAdapter: any,
   ): void {
-    this.eventHandlersService.onKeyDown(event, diagramId, isInitialized, x6GraphAdapter);
+    this.eventHandlersService.onKeyDown(event, diagramId, isInitialized, infraX6GraphAdapter);
   }
 
   /**
    * Delete selected cells
    */
-  onDeleteSelected(isInitialized: boolean, x6GraphAdapter: any): void {
-    this.eventHandlersService.onDeleteSelected(isInitialized, x6GraphAdapter);
+  onDeleteSelected(isInitialized: boolean, infraX6GraphAdapter: any): void {
+    this.eventHandlersService.onDeleteSelected(isInitialized, infraX6GraphAdapter);
   }
 
   /**
@@ -199,27 +206,27 @@ export class DfdFacadeService {
   /**
    * Z-order operations
    */
-  moveForward(x6GraphAdapter: any): void {
-    this.eventHandlersService.moveForward(x6GraphAdapter);
+  moveForward(infraX6GraphAdapter: any): void {
+    this.eventHandlersService.moveForward(infraX6GraphAdapter);
   }
 
-  moveBackward(x6GraphAdapter: any): void {
-    this.eventHandlersService.moveBackward(x6GraphAdapter);
+  moveBackward(infraX6GraphAdapter: any): void {
+    this.eventHandlersService.moveBackward(infraX6GraphAdapter);
   }
 
-  moveToFront(x6GraphAdapter: any): void {
-    this.eventHandlersService.moveToFront(x6GraphAdapter);
+  moveToFront(infraX6GraphAdapter: any): void {
+    this.eventHandlersService.moveToFront(infraX6GraphAdapter);
   }
 
-  moveToBack(x6GraphAdapter: any): void {
-    this.eventHandlersService.moveToBack(x6GraphAdapter);
+  moveToBack(infraX6GraphAdapter: any): void {
+    this.eventHandlersService.moveToBack(infraX6GraphAdapter);
   }
 
   /**
    * Edit cell text
    */
-  editCellText(x6GraphAdapter: any): void {
-    this.eventHandlersService.editCellText(x6GraphAdapter);
+  editCellText(infraX6GraphAdapter: any): void {
+    this.eventHandlersService.editCellText(infraX6GraphAdapter);
   }
 
   /**
@@ -246,12 +253,12 @@ export class DfdFacadeService {
   /**
    * Undo/redo operations
    */
-  undo(isInitialized: boolean, x6GraphAdapter: any): void {
-    this.eventHandlersService.undo(isInitialized, x6GraphAdapter);
+  undo(isInitialized: boolean, infraX6GraphAdapter: any): void {
+    this.eventHandlersService.undo(isInitialized, infraX6GraphAdapter);
   }
 
-  redo(isInitialized: boolean, x6GraphAdapter: any): void {
-    this.eventHandlersService.redo(isInitialized, x6GraphAdapter);
+  redo(isInitialized: boolean, infraX6GraphAdapter: any): void {
+    this.eventHandlersService.redo(isInitialized, infraX6GraphAdapter);
   }
 
   /**
@@ -295,56 +302,56 @@ export class DfdFacadeService {
    * Check if a magnet (port) is valid for connection
    */
   isMagnetValid(args: MagnetValidationArgs): boolean {
-    return this.edgeService.isMagnetValid(args);
+    return this.infraEdgeService.isMagnetValid(args);
   }
 
   /**
    * Check if a connection can be made between two ports
    */
   isConnectionValid(args: ConnectionValidationArgs): boolean {
-    return this.edgeService.isConnectionValid(args);
+    return this.infraEdgeService.isConnectionValid(args);
   }
 
   /**
    * Check if a connection can be made between two nodes based on DFD rules
    */
   isNodeConnectionValid(sourceNode: Node, targetNode: Node): boolean {
-    return this.edgeService.isNodeConnectionValid(sourceNode, targetNode);
+    return this.infraEdgeService.isNodeConnectionValid(sourceNode, targetNode);
   }
 
   /**
    * Validate node shape type
    */
   validateNodeShape(nodeType: string, nodeId: string): void {
-    this.edgeService.validateNodeShape(nodeType, nodeId);
+    this.infraEdgeService.validateNodeShape(nodeType, nodeId);
   }
 
   /**
    * Validate that an X6 node was created with the correct shape property
    */
   validateX6NodeShape(x6Node: Node): void {
-    this.edgeService.validateX6NodeShape(x6Node);
+    this.infraEdgeService.validateX6NodeShape(x6Node);
   }
 
   /**
    * Get valid connection targets for a given source shape
    */
   getValidConnectionTargets(sourceShape: string): string[] {
-    return this.edgeService.getValidConnectionTargets(sourceShape);
+    return this.infraEdgeService.getValidConnectionTargets(sourceShape);
   }
 
   /**
    * Get all valid node shape types
    */
   getValidNodeShapes(): string[] {
-    return this.edgeService.getValidNodeShapes();
+    return this.infraEdgeService.getValidNodeShapes();
   }
 
   /**
    * Check if two shapes can be connected according to DFD rules
    */
   canShapesConnect(sourceShape: string, targetShape: string): boolean {
-    return this.edgeService.canShapesConnect(sourceShape, targetShape);
+    return this.infraEdgeService.canShapesConnect(sourceShape, targetShape);
   }
 
   // ===============================
@@ -358,9 +365,14 @@ export class DfdFacadeService {
     cells: any[],
     graph: Graph,
     diagramId: string,
-    nodeConfigurationService: any,
+    infraNodeConfigurationService: any,
   ): void {
-    this.diagramService.loadDiagramCellsBatch(cells, graph, diagramId, nodeConfigurationService);
+    this.diagramService.loadDiagramCellsBatch(
+      cells,
+      graph,
+      diagramId,
+      infraNodeConfigurationService,
+    );
   }
 
   /**
@@ -396,7 +408,7 @@ export class DfdFacadeService {
    */
   createNodeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
     // Use existing node service with remote operation options
-    this.nodeService.createNodeFromRemoteOperation(graph, cellData, options);
+    this.infraNodeService.createNodeFromRemoteOperation(graph, cellData, options);
   }
 
   /**
@@ -404,7 +416,7 @@ export class DfdFacadeService {
    */
   createEdgeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
     // Use existing edge service with remote operation options
-    this.edgeService.createEdgeFromRemoteOperation(graph, cellData, options);
+    this.infraEdgeService.createEdgeFromRemoteOperation(graph, cellData, options);
   }
 
   /**
@@ -412,7 +424,7 @@ export class DfdFacadeService {
    */
   removeNodeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
     // Use existing node service with remote operation options
-    this.nodeService.removeNodeFromRemoteOperation(graph, cellId, options);
+    this.infraNodeService.removeNodeFromRemoteOperation(graph, cellId, options);
   }
 
   /**
@@ -420,6 +432,6 @@ export class DfdFacadeService {
    */
   removeEdgeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
     // Use existing edge service with remote operation options
-    this.edgeService.removeEdgeFromRemoteOperation(graph, cellId, options);
+    this.infraEdgeService.removeEdgeFromRemoteOperation(graph, cellId, options);
   }
 }

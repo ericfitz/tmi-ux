@@ -2,18 +2,18 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, timeout } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { GraphHistoryCoordinator } from './graph-history-coordinator.service';
-import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
-import { getX6ShapeForNodeType } from '../infrastructure/adapters/x6-shape-definitions';
-import { DfdNodeService } from '../infrastructure/services/node.service';
-import { EdgeService } from '../infrastructure/services/edge.service';
-import { NodeInfo, NodeType } from '../domain/value-objects/node-info';
-import { EdgeInfo } from '../domain/value-objects/edge-info';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
-import { CollaborativeOperationService } from './collaborative-operation.service';
-import { CellOperation } from '../../../core/types/websocket-message.types';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { InfraPortStateService } from '../../infrastructure/services/infra-port-state.service';
+import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
+import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
+import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
+import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { CellOperation } from '../../../../core/types/websocket-message.types';
 
 /**
  * Interface for diagram data
@@ -39,14 +39,14 @@ export interface DiagramLoadResult {
  * Handles diagram loading, validation, and error scenarios
  */
 @Injectable()
-export class DfdDiagramService {
+export class AppDiagramService {
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
     private historyCoordinator: GraphHistoryCoordinator,
-    private portStateManager: PortStateManagerService,
-    private nodeService: DfdNodeService,
-    private edgeService: EdgeService,
+    private portStateManager: InfraPortStateService,
+    private infraNodeService: InfraNodeService,
+    private infraEdgeService: InfraEdgeService,
     private collaborationService: DfdCollaborationService,
     private collaborativeOperationService: CollaborativeOperationService,
   ) {}
@@ -140,7 +140,7 @@ export class DfdDiagramService {
     cells: any[],
     graph: Graph,
     diagramId: string,
-    nodeConfigurationService: any,
+    infraNodeConfigurationService: any,
   ): void {
     this.logger.info('Loading diagram cells in batch with history suppression', {
       cellCount: cells.length,
@@ -156,7 +156,7 @@ export class DfdDiagramService {
 
       cells.forEach(cell => {
         try {
-          const convertedCell = this.convertMockCellToX6Format(cell, nodeConfigurationService);
+          const convertedCell = this.convertMockCellToX6Format(cell, infraNodeConfigurationService);
           convertedCells.push(convertedCell);
 
           // Separate nodes and edges for proper ordering
@@ -202,7 +202,7 @@ export class DfdDiagramService {
             const nodeInfo = this.convertX6ConfigToNodeInfo(nodeConfig);
 
             // Use infrastructure service instead of direct X6 call
-            const node = this.nodeService.createNodeFromInfo(graph, nodeInfo, {
+            const node = this.infraNodeService.createNodeFromInfo(graph, nodeInfo, {
               ensureVisualRendering: true,
               updatePortVisibility: false, // Will be handled in batch after all nodes/edges
               suppressHistory: true, // Already in atomic operation
@@ -273,7 +273,7 @@ export class DfdDiagramService {
             const edgeInfo = this.convertX6ConfigToEdgeInfo(edgeConfig);
 
             // Use infrastructure service instead of direct X6 call
-            const edge = this.edgeService.createEdge(graph, edgeInfo, {
+            const edge = this.infraEdgeService.createEdge(graph, edgeInfo, {
               ensureVisualRendering: true,
               updatePortVisibility: false, // Will be handled in batch after all nodes/edges
             });
@@ -334,20 +334,20 @@ export class DfdDiagramService {
    * Convert mock diagram cell data to proper X6 format
    * Handles both nodes and edges with proper conversion logic
    */
-  private convertMockCellToX6Format(mockCell: any, nodeConfigurationService: any): any {
+  private convertMockCellToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
     // Handle edges
     if (mockCell.shape === 'edge' || mockCell.edge === true) {
       return this.convertMockEdgeToX6Format(mockCell);
     }
 
     // Handle nodes
-    return this.convertMockNodeToX6Format(mockCell, nodeConfigurationService);
+    return this.convertMockNodeToX6Format(mockCell, infraNodeConfigurationService);
   }
 
   /**
    * Convert mock node data to proper X6 format
    */
-  private convertMockNodeToX6Format(mockCell: any, nodeConfigurationService: any): any {
+  private convertMockNodeToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
     // Get the node type from the shape
     const nodeType = mockCell.shape;
 
@@ -363,7 +363,7 @@ export class DfdDiagramService {
       this.getDefaultLabelForType(nodeType);
 
     // Get proper port configuration for this node type
-    const portConfig = nodeConfigurationService.getNodePorts(nodeType);
+    const portConfig = infraNodeConfigurationService.getNodePorts(nodeType);
 
     // Handle position from either direct properties or geometry object
     const x = mockCell.x ?? mockCell.geometry?.x ?? 0;

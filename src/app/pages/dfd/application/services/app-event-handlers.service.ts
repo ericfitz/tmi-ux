@@ -5,8 +5,8 @@ import { Router } from '@angular/router';
 import { Subscription, BehaviorSubject, Subject, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Cell } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
 import { FrameworkService } from '../../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
@@ -20,7 +20,7 @@ import {
 import {
   CellPropertiesDialogComponent,
   CellPropertiesDialogData,
-} from '../components/cell-properties-dialog/cell-properties-dialog.component';
+} from '../../presentation/components/cell-properties-dialog/cell-properties-dialog.component';
 
 /**
  * Interface for label change events
@@ -56,7 +56,7 @@ export interface ThreatChangeEvent {
  * Simplified to work directly with X6 without command bus
  */
 @Injectable()
-export class DfdEventHandlersService {
+export class AppEventHandlersService {
   private _rightClickedCell: Cell | null = null;
   private _selectedCells$ = new BehaviorSubject<Cell[]>([]);
   private _subscriptions = new Subscription();
@@ -74,7 +74,7 @@ export class DfdEventHandlersService {
 
   constructor(
     private logger: LoggerService,
-    private x6SelectionAdapter: X6SelectionAdapter,
+    private infraX6SelectionAdapter: InfraX6SelectionAdapter,
     private threatModelService: ThreatModelService,
     private frameworkService: FrameworkService,
     private dialog: MatDialog,
@@ -85,16 +85,16 @@ export class DfdEventHandlersService {
   /**
    * Initialize event handlers
    */
-  initialize(x6GraphAdapter: any): void {
+  initialize(infraX6GraphAdapter: any): void {
     // Store reference to graph adapter for later use
-    this._x6GraphAdapter = x6GraphAdapter;
+    this._x6GraphAdapter = infraX6GraphAdapter;
 
     // Subscribe to selection state changes
     this._subscriptions.add(
-      x6GraphAdapter.selectionChanged$.subscribe({
+      infraX6GraphAdapter.selectionChanged$.subscribe({
         next: () => {
           // Get selected cells directly from the adapter
-          const selectedCells = x6GraphAdapter.getSelectedCells();
+          const selectedCells = infraX6GraphAdapter.getSelectedCells();
           this._selectedCells$.next(selectedCells);
         },
         error: (error: unknown) => {
@@ -105,9 +105,11 @@ export class DfdEventHandlersService {
 
     // Subscribe to context menu events
     this._subscriptions.add(
-      x6GraphAdapter.cellContextMenu$.subscribe(({ cell, x, y }: { cell: any; x: any; y: any }) => {
-        this.openCellContextMenu(cell, x, y);
-      }),
+      infraX6GraphAdapter.cellContextMenu$.subscribe(
+        ({ cell, x, y }: { cell: any; x: any; y: any }) => {
+          this.openCellContextMenu(cell, x, y);
+        },
+      ),
     );
   }
 
@@ -132,7 +134,7 @@ export class DfdEventHandlersService {
     event: KeyboardEvent,
     _diagramId: string,
     isInitialized: boolean,
-    x6GraphAdapter: any,
+    infraX6GraphAdapter: any,
   ): void {
     // Only handle keys if the graph container has focus or if no input elements are focused
     const activeElement = document.activeElement;
@@ -146,7 +148,7 @@ export class DfdEventHandlersService {
       // Handle delete/backspace
       if (event.key === 'Delete' || event.key === 'Backspace') {
         event.preventDefault();
-        this.onDeleteSelected(isInitialized, x6GraphAdapter);
+        this.onDeleteSelected(isInitialized, infraX6GraphAdapter);
         return;
       }
     }
@@ -158,7 +160,7 @@ export class DfdEventHandlersService {
   onWindowResize(
     graphContainer: ElementRef,
     resizeTimeout: number | null,
-    x6GraphAdapter: any,
+    infraX6GraphAdapter: any,
   ): number | null {
     // Handle resize events immediately
     if (resizeTimeout) {
@@ -166,7 +168,7 @@ export class DfdEventHandlersService {
     }
 
     return window.setTimeout(() => {
-      const graph = x6GraphAdapter.getGraph();
+      const graph = infraX6GraphAdapter.getGraph();
       if (graph) {
         const container = graphContainer.nativeElement as HTMLElement;
         const width = container.clientWidth;
@@ -187,21 +189,21 @@ export class DfdEventHandlersService {
   /**
    * Deletes the currently selected cell(s) using the selection adapter
    */
-  onDeleteSelected(isInitialized: boolean, x6GraphAdapter: any): void {
+  onDeleteSelected(isInitialized: boolean, infraX6GraphAdapter: any): void {
     if (!isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
       return;
     }
 
-    const graph = x6GraphAdapter.getGraph();
+    const graph = infraX6GraphAdapter.getGraph();
 
     // Start atomic operation for collaborative broadcasting
-    const broadcaster = x6GraphAdapter.getDiagramOperationBroadcaster();
+    const broadcaster = infraX6GraphAdapter.getDiagramOperationBroadcaster();
     broadcaster.startAtomicOperation();
 
     try {
       // Delegate to the selection adapter for proper batched deletion
-      this.x6SelectionAdapter.deleteSelected(graph);
+      this.infraX6SelectionAdapter.deleteSelected(graph);
 
       // Commit collaborative operation after successful deletion
       broadcaster.commitAtomicOperation();
@@ -478,53 +480,53 @@ export class DfdEventHandlersService {
   /**
    * Move selected cells forward in z-order
    */
-  moveForward(x6GraphAdapter: any): void {
+  moveForward(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move forward operation');
       return;
     }
 
     this.logger.info('Moving cell forward', { cellId: this._rightClickedCell.id });
-    x6GraphAdapter.moveSelectedCellsForward();
+    infraX6GraphAdapter.moveSelectedCellsForward();
   }
 
   /**
    * Move selected cells backward in z-order
    */
-  moveBackward(x6GraphAdapter: any): void {
+  moveBackward(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move backward operation');
       return;
     }
 
     this.logger.info('Moving cell backward', { cellId: this._rightClickedCell.id });
-    x6GraphAdapter.moveSelectedCellsBackward();
+    infraX6GraphAdapter.moveSelectedCellsBackward();
   }
 
   /**
    * Move selected cells to front
    */
-  moveToFront(x6GraphAdapter: any): void {
+  moveToFront(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move to front operation');
       return;
     }
 
     this.logger.info('Moving cell to front', { cellId: this._rightClickedCell.id });
-    x6GraphAdapter.moveSelectedCellsToFront();
+    infraX6GraphAdapter.moveSelectedCellsToFront();
   }
 
   /**
    * Move selected cells to back
    */
-  moveToBack(x6GraphAdapter: any): void {
+  moveToBack(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move to back operation');
       return;
     }
 
     this.logger.info('Moving cell to back', { cellId: this._rightClickedCell.id });
-    x6GraphAdapter.moveSelectedCellsToBack();
+    infraX6GraphAdapter.moveSelectedCellsToBack();
   }
 
   /**
@@ -537,7 +539,7 @@ export class DfdEventHandlersService {
   /**
    * Edit the text/label of the right-clicked cell by invoking the label editor
    */
-  editCellText(x6GraphAdapter: any): void {
+  editCellText(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for text editing');
       return;
@@ -556,33 +558,33 @@ export class DfdEventHandlersService {
 
     // Access the private method through the adapter to add the label editor
     // Since _addLabelEditor is private, we'll call it through a public method we'll add
-    x6GraphAdapter.startLabelEditing(this._rightClickedCell, mockEvent);
+    infraX6GraphAdapter.startLabelEditing(this._rightClickedCell, mockEvent);
   }
 
   /**
    * Undo the last action using X6 history addon
    */
-  undo(isInitialized: boolean, x6GraphAdapter: any): void {
+  undo(isInitialized: boolean, infraX6GraphAdapter: any): void {
     if (!isInitialized) {
       this.logger.warn('Cannot undo: Graph is not initialized');
       return;
     }
 
     this.logger.info('Undo requested');
-    x6GraphAdapter.undo();
+    infraX6GraphAdapter.undo();
   }
 
   /**
    * Redo the last undone action using X6 history addon
    */
-  redo(isInitialized: boolean, x6GraphAdapter: any): void {
+  redo(isInitialized: boolean, infraX6GraphAdapter: any): void {
     if (!isInitialized) {
       this.logger.warn('Cannot redo: Graph is not initialized');
       return;
     }
 
     this.logger.info('Redo requested');
-    x6GraphAdapter.redo();
+    infraX6GraphAdapter.redo();
   }
 
   /**

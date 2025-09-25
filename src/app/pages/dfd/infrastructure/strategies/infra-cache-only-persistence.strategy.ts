@@ -15,19 +15,19 @@ import {
   LoadResult,
   SyncOperation,
   SyncResult,
-} from '../persistence-coordinator.service';
+} from '../../application/services/app-persistence-coordinator.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CacheOnlyPersistenceStrategy implements PersistenceStrategy {
+export class InfraCacheOnlyPersistenceStrategy implements PersistenceStrategy {
   readonly type = 'cache-only' as const;
   readonly priority = 50; // Lower priority than network strategies
 
   private readonly _cache = new Map<string, any>();
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.debug('CacheOnlyPersistenceStrategy initialized');
+    this.logger.debug('InfraCacheOnlyPersistenceStrategy initialized');
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {

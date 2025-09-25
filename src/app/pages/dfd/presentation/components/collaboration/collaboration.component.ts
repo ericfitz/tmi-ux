@@ -24,12 +24,12 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../../../core/services/logger.service';
 import {
   DfdCollaborationService,
   CollaborationUser,
   CollaborationSession,
-} from '../../../../core/services/dfd-collaboration.service';
+} from '../../../../../core/services/dfd-collaboration.service';
 import { CollaborationDialogComponent } from '../collaboration-dialog/collaboration-dialog.component';
 
 /**

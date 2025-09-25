@@ -10,7 +10,7 @@
  * - Implements embedding validation rules for different node types
  * - Provides embedding/unembedding operations with proper event handling
  * - Manages z-order adjustments for embedded nodes
- * - Coordinates with EmbeddingService for business logic validation
+ * - Coordinates with InfraEmbeddingService for business logic validation
  * - Handles visual feedback during embedding operations
  * - Supports automatic layout adjustments for embedded nodes
  * - Manages embedding constraints and business rules
@@ -22,20 +22,20 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { EmbeddingService } from '../services/embedding.service';
-import { X6ZOrderAdapter } from './x6-z-order.adapter';
+import { InfraEmbeddingService } from '../services/infra-embedding.service';
+import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 
 /**
  * X6 Embedding Adapter
  * Handles X6-specific embedding implementation
- * Works with EmbeddingService for business logic
+ * Works with InfraEmbeddingService for business logic
  */
 @Injectable()
-export class X6EmbeddingAdapter {
+export class InfraX6EmbeddingAdapter {
   constructor(
     private logger: LoggerService,
-    private embeddingService: EmbeddingService,
-    private x6ZOrderAdapter: X6ZOrderAdapter,
+    private infraEmbeddingService: InfraEmbeddingService,
+    private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
   ) {}
 
   /**
@@ -140,7 +140,7 @@ export class X6EmbeddingAdapter {
    * Get embedding depth of a node
    */
   getEmbeddingDepth(node: Node): number {
-    return this.embeddingService.calculateEmbeddingDepth(node);
+    return this.infraEmbeddingService.calculateEmbeddingDepth(node);
   }
 
   /**
@@ -383,7 +383,7 @@ export class X6EmbeddingAdapter {
    * Validate if embedding is allowed
    */
   private validateEmbedding(child: Node, parent: Node): boolean {
-    const validation = this.embeddingService.validateEmbedding(parent, child);
+    const validation = this.infraEmbeddingService.validateEmbedding(parent, child);
 
     if (!validation.isValid) {
       this.logger.warn('Embedding validation failed', {
@@ -418,10 +418,10 @@ export class X6EmbeddingAdapter {
       this.updateEmbeddingAppearance(node, parent);
 
       // Update z-order
-      this.x6ZOrderAdapter.applyEmbeddingZIndexes(parent, node);
+      this.infraX6ZOrderAdapter.applyEmbeddingZIndexes(parent, node);
 
       // Update connected edges z-order
-      this.x6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+      this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
     } catch (error) {
       this.logger.error('Error handling node embedded event', {
         nodeId: node.id,
@@ -446,11 +446,11 @@ export class X6EmbeddingAdapter {
 
     try {
       // Recalculate embedding appearance based on new embedding depth
-      const newDepth = this.embeddingService.calculateEmbeddingDepth(node);
+      const newDepth = this.infraEmbeddingService.calculateEmbeddingDepth(node);
       const fillColor =
         newDepth === 0
           ? this._getOriginalFillColorForShape(node.shape)
-          : this.embeddingService.calculateEmbeddingFillColor(newDepth);
+          : this.infraEmbeddingService.calculateEmbeddingFillColor(newDepth);
       this.applyEmbeddingVisualEffects(node, fillColor, newDepth);
 
       // Reset z-order - check if this is a security boundary node
@@ -460,10 +460,10 @@ export class X6EmbeddingAdapter {
 
       if (nodeType === 'security-boundary') {
         // Use specific rule for unembedded security boundary nodes
-        this.x6ZOrderAdapter.applyUnembeddedSecurityBoundaryZIndex(graph, node);
+        this.infraX6ZOrderAdapter.applyUnembeddedSecurityBoundaryZIndex(graph, node);
       } else {
         // Use general unembedding z-index for other node types
-        this.x6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
+        this.infraX6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
       }
     } catch (error) {
       this.logger.error('Error handling node unembedded event', {
@@ -484,7 +484,7 @@ export class X6EmbeddingAdapter {
 
     try {
       // Check if this is a z-order restoration case
-      this.x6ZOrderAdapter.handleNodeMovedZOrderRestoration(graph, node);
+      this.infraX6ZOrderAdapter.handleNodeMovedZOrderRestoration(graph, node);
 
       // Update embedding appearance if the node is embedded
       const parent = node.getParent();
@@ -504,13 +504,13 @@ export class X6EmbeddingAdapter {
    */
   private updateEmbeddingAppearance(node: Node, parent: Node): void {
     // Calculate embedding depth
-    const depth = this.embeddingService.calculateEmbeddingDepth(node);
+    const depth = this.infraEmbeddingService.calculateEmbeddingDepth(node);
 
     // Calculate fill color based on depth
     const fillColor =
       depth === 0
         ? this._getOriginalFillColorForShape(node.shape)
-        : this.embeddingService.calculateEmbeddingFillColor(depth);
+        : this.infraEmbeddingService.calculateEmbeddingFillColor(depth);
 
     // Apply visual changes
     this.applyEmbeddingVisualEffects(node, fillColor, depth);

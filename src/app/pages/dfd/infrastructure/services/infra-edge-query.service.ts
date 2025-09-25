@@ -37,7 +37,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
-export class EdgeQueryService {
+export class InfraEdgeQueryService {
   constructor(private readonly _logger: LoggerService) {}
 
   /**

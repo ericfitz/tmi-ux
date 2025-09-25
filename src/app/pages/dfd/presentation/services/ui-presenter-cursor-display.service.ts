@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Graph } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
-import { PRESENTER_CURSOR_CONFIG, PRESENTER_CURSOR_STYLES } from '../constants/presenter-constants';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { PRESENTER_CURSOR_CONFIG, PRESENTER_CURSOR_STYLES } from '../../constants/presenter-constants';
 
 export interface CursorPosition {
   x: number;
@@ -18,7 +18,7 @@ export interface CursorPosition {
 @Injectable({
   providedIn: 'root',
 })
-export class PresenterCursorDisplayService implements OnDestroy {
+export class UiPresenterCursorDisplayService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _graphContainer: HTMLElement | null = null;
   private _graph: Graph | null = null;
@@ -40,7 +40,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
     this._graphContainer = graphContainer;
     this._graph = graph;
 
-    this.logger.info('PresenterCursorDisplayService initialized');
+    this.logger.info('UiPresenterCursorDisplayService initialized');
   }
 
   /**
@@ -454,7 +454,7 @@ export class PresenterCursorDisplayService implements OnDestroy {
     this._graphContainer = null;
     this._graph = null;
 
-    this.logger.info('PresenterCursorDisplayService destroyed');
+    this.logger.info('UiPresenterCursorDisplayService destroyed');
   }
 
   /**

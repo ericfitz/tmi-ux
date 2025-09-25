@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
-import { EmbeddingService } from './embedding.service';
+import { InfraEmbeddingService } from './infra-embedding.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
@@ -57,8 +57,8 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   value: vi.fn().mockReturnValue(mockMatrix),
 });
 
-describe('EmbeddingService', () => {
-  let service: EmbeddingService;
+describe('InfraEmbeddingService', () => {
+  let service: InfraEmbeddingService;
   let mockLogger: MockLoggerService;
   let graph: Graph;
   let container: HTMLElement;
@@ -68,7 +68,7 @@ describe('EmbeddingService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new EmbeddingService(mockLogger as unknown as LoggerService);
+    service = new InfraEmbeddingService(mockLogger as unknown as LoggerService);
 
     // Create container
     container = document.createElement('div');

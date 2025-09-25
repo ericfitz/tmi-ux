@@ -17,12 +17,12 @@ import {
   LoadResult,
   SyncOperation,
   SyncResult,
-} from '../persistence-coordinator.service';
+} from '../../application/services/app-persistence-coordinator.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RestPersistenceStrategy implements PersistenceStrategy {
+export class InfraRestPersistenceStrategy implements PersistenceStrategy {
   readonly type = 'rest' as const;
   readonly priority = 100;
 
@@ -30,7 +30,7 @@ export class RestPersistenceStrategy implements PersistenceStrategy {
     private readonly http: HttpClient,
     private readonly logger: LoggerService,
   ) {
-    this.logger.debug('RestPersistenceStrategy initialized');
+    this.logger.debug('InfraRestPersistenceStrategy initialized');
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {

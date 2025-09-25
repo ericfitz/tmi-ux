@@ -1,22 +1,22 @@
 /**
- * Test suite for AutoSaveManager
+ * Test suite for AppAutoSaveManager
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { AutoSaveManager } from './auto-save-manager.service';
+import { AppAutoSaveManager } from './app-auto-save-manager.service';
 import {
   AutoSaveTriggerEvent,
   AutoSaveContext,
   AutoSavePolicy,
   ChangeAnalyzer,
   SaveDecisionMaker,
-} from '../types/auto-save.types';
-import { SaveResult } from '../types/persistence.types';
+} from '../../types/auto-save.types';
+import { SaveResult } from '../../types/persistence.types';
 
-describe('AutoSaveManager', () => {
-  let service: AutoSaveManager;
+describe('AppAutoSaveManager', () => {
+  let service: AppAutoSaveManager;
   let mockLogger: any;
   let mockPersistenceCoordinator: any;
   let autoSaveContext: AutoSaveContext;
@@ -41,7 +41,7 @@ describe('AutoSaveManager', () => {
     };
 
     // Create service directly without TestBed
-    service = new AutoSaveManager(mockLogger, mockPersistenceCoordinator);
+    service = new AppAutoSaveManager(mockLogger, mockPersistenceCoordinator);
 
     // Create auto-save context
     autoSaveContext = {

@@ -3,7 +3,7 @@
 import { MountConfig } from 'cypress/angular';
 import { DfdComponent } from './dfd.component';
 import { provideHttpClient } from '@angular/common/http';
-import { LoggerService } from '../../core/services/logger.service';
+import { LoggerService } from '../../../../../core/services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { ThreatModelService } from '../tm/services/threat-model.service';

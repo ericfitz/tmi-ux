@@ -4,12 +4,12 @@ import { Selection } from '@antv/x6-plugin-selection';
 import { Transform } from '@antv/x6-plugin-transform';
 import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { SelectionService } from '../services/selection.service';
+import { SelectionService } from '../services/infra-selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { X6CoreOperationsService } from '../services/x6-core-operations.service';
-// Note: DfdNodeService will be used for node deletion when removeNode method is available
-import { EdgeService } from '../services/edge.service';
+import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
+// Note: InfraNodeService will be used for node deletion when removeNode method is available
+import { InfraEdgeService } from '../services/infra-edge.service';
 
 /**
  * X6 Selection Adapter
@@ -17,7 +17,7 @@ import { EdgeService } from '../services/edge.service';
  * Works with SelectionService for business logic
  */
 @Injectable()
-export class X6SelectionAdapter {
+export class InfraX6SelectionAdapter {
   /**
    * Standard tool configurations for consistent behavior
    */
@@ -32,8 +32,8 @@ export class X6SelectionAdapter {
     private logger: LoggerService,
     private selectionService: SelectionService,
     private historyCoordinator: GraphHistoryCoordinator,
-    private x6CoreOps: X6CoreOperationsService,
-    private edgeService: EdgeService,
+    private x6CoreOps: InfraX6CoreOperationsService,
+    private infraEdgeService: InfraEdgeService,
   ) {}
 
   /**
@@ -241,11 +241,11 @@ export class X6SelectionAdapter {
     this.historyCoordinator.executeAtomicOperation(graph, () => {
       selectedCells.forEach(cell => {
         if (cell.isEdge()) {
-          // Use EdgeService for edge deletions (handles business logic and port visibility)
-          this.edgeService.removeEdge(graph, cell.id);
+          // Use InfraEdgeService for edge deletions (handles business logic and port visibility)
+          this.infraEdgeService.removeEdge(graph, cell.id);
         } else {
-          // Use X6CoreOperationsService for node deletions
-          // TODO: Replace with nodeService.removeNode() when DfdNodeService has removeNode method
+          // Use InfraX6CoreOperationsService for node deletions
+          // TODO: Replace with infraNodeService.removeNode() when InfraNodeService has removeNode method
           this.x6CoreOps.removeCellObject(graph, cell);
         }
       });
@@ -314,7 +314,7 @@ export class X6SelectionAdapter {
 
     // Use centralized history coordinator for consistent filtering and atomic batching
     const groupNode = this.historyCoordinator.executeAtomicOperation(graph, () => {
-      // Create group node using X6CoreOperationsService
+      // Create group node using InfraX6CoreOperationsService
       const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
 
       if (!createdGroupNode) {
@@ -354,7 +354,7 @@ export class X6SelectionAdapter {
               node.removeChild(child);
             });
 
-            // Remove the group node using X6CoreOperationsService
+            // Remove the group node using InfraX6CoreOperationsService
             this.x6CoreOps.removeCellObject(graph, node);
 
             this.logger.info('Ungrouped node', {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { optimize } from 'svgo/dist/svgo.browser.js';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
  * Service responsible for SVG optimization using SVGO

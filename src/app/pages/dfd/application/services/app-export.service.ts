@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from '../../../core/services/logger.service';
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
-import { SvgOptimizationService } from './svg-optimization.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { SvgOptimizationService } from '../../services/svg-optimization.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -11,10 +11,10 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 @Injectable({
   providedIn: 'root',
 })
-export class DfdExportService {
+export class AppExportService {
   constructor(
     private logger: LoggerService,
-    private x6GraphAdapter: X6GraphAdapter,
+    private infraX6GraphAdapter: InfraX6GraphAdapter,
     private svgOptimizationService: SvgOptimizationService,
   ) {}
 
@@ -22,7 +22,7 @@ export class DfdExportService {
    * Export the diagram to the specified format
    */
   exportDiagram(format: ExportFormat, threatModelName?: string, diagramName?: string): void {
-    const graph = this.x6GraphAdapter.getGraph();
+    const graph = this.infraX6GraphAdapter.getGraph();
     if (!graph) {
       this.logger.warn('Cannot export - graph not initialized');
       return;

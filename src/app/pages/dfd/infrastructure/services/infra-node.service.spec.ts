@@ -8,15 +8,15 @@
 
 import { Graph } from '@antv/x6';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
-import { NodeConfigurationService } from './node-configuration.service';
+import { InfraNodeConfigurationService } from './infra-node-configuration.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
-import { registerCustomShapes } from '../adapters/x6-shape-definitions';
-import { getX6ShapeForNodeType } from '../adapters/x6-shape-definitions';
+import { registerCustomShapes } from '../adapters/infra-x6-shape-definitions';
+import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { expect, beforeEach, afterEach, describe, it } from 'vitest';
 
-describe('NodeService - Core Functionality Tests', () => {
+describe('InfraNodeService - Core Functionality Tests', () => {
   let graph: Graph;
-  let nodeConfigurationService: NodeConfigurationService;
+  let infraNodeConfigurationService: InfraNodeConfigurationService;
 
   beforeEach(() => {
     // Initialize X6 cell extensions and register DFD shapes
@@ -30,8 +30,8 @@ describe('NodeService - Core Functionality Tests', () => {
       height: 600,
     });
 
-    // Create real NodeConfigurationService for proper port configuration
-    nodeConfigurationService = new NodeConfigurationService();
+    // Create real InfraNodeConfigurationService for proper port configuration
+    infraNodeConfigurationService = new InfraNodeConfigurationService();
   });
 
   afterEach(() => {
@@ -96,7 +96,7 @@ describe('NodeService - Core Functionality Tests', () => {
       const nodeTypes: NodeType[] = ['actor', 'process', 'store', 'security-boundary'];
 
       nodeTypes.forEach(nodeType => {
-        const portConfig = nodeConfigurationService.getNodePorts(nodeType);
+        const portConfig = infraNodeConfigurationService.getNodePorts(nodeType);
 
         expect(portConfig.groups).toBeDefined();
         expect(portConfig.items).toBeDefined();
@@ -113,18 +113,18 @@ describe('NodeService - Core Functionality Tests', () => {
     });
 
     it('should provide empty port configuration for text-box nodes', () => {
-      const portConfig = nodeConfigurationService.getNodePorts('text-box');
+      const portConfig = infraNodeConfigurationService.getNodePorts('text-box');
 
       expect(portConfig.groups).toEqual({});
       expect(portConfig.items).toEqual([]);
     });
 
     it('should indicate correct port capabilities for node types', () => {
-      expect(nodeConfigurationService.getNodeTypeInfo('text-box').hasPorts).toBe(false);
-      expect(nodeConfigurationService.getNodeTypeInfo('text-box').isTextbox).toBe(true);
+      expect(infraNodeConfigurationService.getNodeTypeInfo('text-box').hasPorts).toBe(false);
+      expect(infraNodeConfigurationService.getNodeTypeInfo('text-box').isTextbox).toBe(true);
 
-      expect(nodeConfigurationService.getNodeTypeInfo('process').hasPorts).toBe(true);
-      expect(nodeConfigurationService.getNodeTypeInfo('process').isTextbox).toBe(false);
+      expect(infraNodeConfigurationService.getNodeTypeInfo('process').hasPorts).toBe(true);
+      expect(infraNodeConfigurationService.getNodeTypeInfo('process').isTextbox).toBe(false);
     });
   });
 
@@ -168,7 +168,7 @@ describe('NodeService - Core Functionality Tests', () => {
         label: 'Port Test Node',
       });
 
-      const portConfig = nodeConfigurationService.getNodePorts(nodeInfo.type);
+      const portConfig = infraNodeConfigurationService.getNodePorts(nodeInfo.type);
 
       const node = graph.addNode({
         id: nodeInfo.id,
@@ -252,8 +252,8 @@ describe('NodeService - Core Functionality Tests', () => {
       ];
 
       nodeTypeZIndexMap.forEach(({ type, expectedZIndex }) => {
-        // Test NodeConfigurationService directly - this is what NodeService uses for defaults
-        const defaultZIndex = nodeConfigurationService.getNodeZIndex(type);
+        // Test InfraNodeConfigurationService directly - this is what InfraNodeService uses for defaults
+        const defaultZIndex = infraNodeConfigurationService.getNodeZIndex(type);
         expect(defaultZIndex).toBe(expectedZIndex);
       });
     });
@@ -279,10 +279,10 @@ describe('NodeService - Core Functionality Tests', () => {
 
         expect(nodeInfo.zIndex).toBe(expectedZIndex);
 
-        // Simulate NodeService logic: nodeInfo.zIndex || getNodeZIndex(type)
+        // Simulate InfraNodeService logic: nodeInfo.zIndex || getNodeZIndex(type)
         // Since nodeInfo.zIndex is always truthy (positive number), it should use nodeInfo.zIndex
         const x6NodeConfig = {
-          zIndex: nodeInfo.zIndex || nodeConfigurationService.getNodeZIndex(nodeInfo.type),
+          zIndex: nodeInfo.zIndex || infraNodeConfigurationService.getNodeZIndex(nodeInfo.type),
         };
 
         expect(x6NodeConfig.zIndex).toBe(expectedZIndex); // Uses nodeInfo.zIndex which is now correct
@@ -312,11 +312,11 @@ describe('NodeService - Core Functionality Tests', () => {
       // Verify the NodeInfo has the falsy zIndex
       expect(nodeInfoWithFalsyZIndex.zIndex).toBe(0);
 
-      // Simulate NodeService logic: since zIndex is 0 (falsy), should use type default
+      // Simulate InfraNodeService logic: since zIndex is 0 (falsy), should use type default
       const x6NodeConfig = {
         zIndex:
           nodeInfoWithFalsyZIndex.zIndex ||
-          nodeConfigurationService.getNodeZIndex(nodeInfoWithFalsyZIndex.type),
+          infraNodeConfigurationService.getNodeZIndex(nodeInfoWithFalsyZIndex.type),
       };
 
       expect(x6NodeConfig.zIndex).toBe(10); // Uses type default for 'process'
@@ -345,12 +345,12 @@ describe('NodeService - Core Functionality Tests', () => {
       // The explicit zIndex should be preserved
       expect(nodeInfoWithExplicitZIndex.zIndex).toBe(15);
 
-      // Simulate NodeService logic: nodeInfo.zIndex || getNodeZIndex(type)
+      // Simulate InfraNodeService logic: nodeInfo.zIndex || getNodeZIndex(type)
       // Since zIndex is 15 (truthy), should use 15
       const x6NodeConfig = {
         zIndex:
           nodeInfoWithExplicitZIndex.zIndex ||
-          nodeConfigurationService.getNodeZIndex(nodeInfoWithExplicitZIndex.type),
+          infraNodeConfigurationService.getNodeZIndex(nodeInfoWithExplicitZIndex.type),
       };
 
       expect(x6NodeConfig.zIndex).toBe(15); // Should use explicit zIndex, not default (10)

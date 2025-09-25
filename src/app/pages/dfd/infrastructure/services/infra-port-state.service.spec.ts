@@ -8,8 +8,8 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
-import { PortStateManagerService } from './port-state-manager.service';
-import { EdgeQueryService } from './edge-query.service';
+import { InfraPortStateService } from './infra-port-state.service';
+import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
@@ -57,9 +57,9 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   value: vi.fn().mockReturnValue(mockMatrix),
 });
 
-describe('PortStateManagerService', () => {
-  let service: PortStateManagerService;
-  let mockEdgeQueryService: EdgeQueryService;
+describe('InfraPortStateService', () => {
+  let service: InfraPortStateService;
+  let mockEdgeQueryService: InfraEdgeQueryService;
   let mockLogger: MockLoggerService;
   let graph: Graph;
   let container: HTMLElement;
@@ -68,7 +68,7 @@ describe('PortStateManagerService', () => {
     // Create mock logger
     mockLogger = createTypedMockLoggerService();
 
-    // Create mock EdgeQueryService
+    // Create mock InfraEdgeQueryService
     mockEdgeQueryService = {
       isPortConnected: vi.fn(),
       findEdgesConnectedToPort: vi.fn(),
@@ -77,7 +77,7 @@ describe('PortStateManagerService', () => {
     } as any;
 
     // Create service instance
-    service = new PortStateManagerService(mockEdgeQueryService, mockLogger);
+    service = new InfraPortStateService(mockEdgeQueryService, mockLogger);
 
     // Create container
     container = document.createElement('div');
@@ -152,7 +152,7 @@ describe('PortStateManagerService', () => {
         'visible',
       );
 
-      // Verify EdgeQueryService calls
+      // Verify InfraEdgeQueryService calls
       expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledWith(graph, node.id, 'port1');
       expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledWith(graph, node.id, 'port2');
       expect(mockEdgeQueryService.isPortConnected).toHaveBeenCalledWith(graph, node.id, 'port3');
@@ -171,7 +171,7 @@ describe('PortStateManagerService', () => {
 
       service.updateNodePortVisibility(graph, nodeWithoutPorts);
 
-      // Should not call EdgeQueryService for nodes without ports
+      // Should not call InfraEdgeQueryService for nodes without ports
       expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
     });
 
@@ -668,7 +668,7 @@ describe('PortStateManagerService', () => {
 
       service.updateNodePortVisibility(graph, nodeWithEmptyPorts);
 
-      // Should not call EdgeQueryService
+      // Should not call InfraEdgeQueryService
       expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
     });
 

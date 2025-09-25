@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DfdTooltipService } from '../../services/dfd-tooltip.service';
+import { UiTooltipService } from '../../presentation/services/ui-tooltip.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * X6 Tooltip Adapter
  * Handles X6-specific tooltip DOM manipulation and event handling
- * Delegates business logic to DfdTooltipService
+ * Delegates business logic to UiTooltipService
  */
 @Injectable()
 export class X6TooltipAdapter {
@@ -16,7 +16,7 @@ export class X6TooltipAdapter {
 
   constructor(
     private logger: LoggerService,
-    private tooltipService: DfdTooltipService,
+    private tooltipService: UiTooltipService,
   ) {}
 
   /**

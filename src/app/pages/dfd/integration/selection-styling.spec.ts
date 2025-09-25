@@ -21,23 +21,23 @@ import { JSDOM } from 'jsdom';
 
 import { createMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
-import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
-import { SelectionService } from '../infrastructure/services/selection.service';
-import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
-import { EdgeQueryService } from '../infrastructure/services/edge-query.service';
-import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
-import { EmbeddingService } from '../infrastructure/services/embedding.service';
-import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
-import { X6KeyboardHandler } from '../infrastructure/adapters/x6-keyboard-handler.service';
-import { ZOrderService } from '../infrastructure/services/z-order.service';
-import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { X6EmbeddingAdapter } from '../infrastructure/adapters/x6-embedding.adapter';
-import { X6EventLoggerService } from '../infrastructure/adapters/x6-event-logger.service';
-import { DfdEdgeService } from '../services/dfd-edge.service';
-import { DfdEventHandlersService } from '../services/dfd-event-handlers.service';
+import { InfraX6GraphAdapter } from '../infrastructure/adapters/infra-x6-graph.adapter';
+import { InfraX6SelectionAdapter } from '../infrastructure/adapters/infra-x6-selection.adapter';
+import { SelectionService } from '../presentation/services/ui-presenter-selection.service';
+import { InfraX6HistoryAdapter } from '../infrastructure/adapters/x6-history-manager';
+import { InfraEdgeQueryService } from '../infrastructure/services/infra-edge-query.service';
+import { InfraNodeConfigurationService } from '../infrastructure/services/infra-node-configuration.service';
+import { InfraEmbeddingService } from '../infrastructure/services/infra-embedding.service';
+import { InfraPortStateService } from '../infrastructure/services/infra-port-state.service';
+import { InfraX6KeyboardAdapter } from '../infrastructure/adapters/infra-x6-keyboard.adapter';
+import { ZOrderService } from '../infrastructure/services/infra-z-order.service';
+import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
+import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
+import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.service';
+import { DomainEdgeService } from '../domain/services/domain-edge.service';
+import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
 import { GraphHistoryCoordinator } from '../services/graph-history-coordinator.service';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo } from '../domain/value-objects/node-info';
 import { DiagramNode } from '../domain/value-objects/diagram-node';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
@@ -109,22 +109,22 @@ global.navigator = dom.window.navigator;
 describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
   let container: HTMLElement;
   let graph: Graph;
-  let adapter: X6GraphAdapter;
-  let selectionAdapter: X6SelectionAdapter;
-  let historyManager: X6HistoryManager;
+  let adapter: InfraX6GraphAdapter;
+  let selectionAdapter: InfraX6SelectionAdapter;
+  let historyManager: InfraX6HistoryAdapter;
   let mockLogger: MockLoggerService;
-  let edgeQueryService: EdgeQueryService;
-  let nodeConfigurationService: NodeConfigurationService;
-  let embeddingService: EmbeddingService;
-  let portStateManager: PortStateManagerService;
-  let keyboardHandler: X6KeyboardHandler;
+  let infraEdgeQueryService: InfraEdgeQueryService;
+  let infraNodeConfigurationService: InfraNodeConfigurationService;
+  let infraEmbeddingService: InfraEmbeddingService;
+  let portStateManager: InfraPortStateService;
+  let keyboardHandler: InfraX6KeyboardAdapter;
   let zOrderService: ZOrderService;
-  let zOrderAdapter: X6ZOrderAdapter;
-  let embeddingAdapter: X6EmbeddingAdapter;
+  let zOrderAdapter: InfraX6ZOrderAdapter;
+  let embeddingAdapter: InfraX6EmbeddingAdapter;
   let selectionService: SelectionService;
-  let x6EventLogger: X6EventLoggerService;
-  let edgeService: DfdEdgeService;
-  let eventHandlersService: DfdEventHandlersService;
+  let x6EventLogger: InfraX6EventLoggerAdapter;
+  let infraEdgeService: DomainEdgeService;
+  let eventHandlersService: AppEventHandlersService;
   let historyCoordinator: GraphHistoryCoordinator;
 
   beforeEach(() => {
@@ -136,43 +136,43 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
 
     // Initialize real services with minimal mocking
     mockLogger = createMockLoggerService() as unknown as MockLoggerService;
-    edgeQueryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
-    nodeConfigurationService = new NodeConfigurationService();
-    embeddingService = new EmbeddingService(mockLogger as unknown as LoggerService);
-    portStateManager = new PortStateManagerService(
-      edgeQueryService,
+    infraEdgeQueryService = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
+    infraNodeConfigurationService = new InfraNodeConfigurationService();
+    infraEmbeddingService = new InfraEmbeddingService(mockLogger as unknown as LoggerService);
+    portStateManager = new InfraPortStateService(
+      infraEdgeQueryService,
       mockLogger as unknown as LoggerService,
     );
-    keyboardHandler = new X6KeyboardHandler(mockLogger as unknown as LoggerService);
+    keyboardHandler = new InfraX6KeyboardAdapter(mockLogger as unknown as LoggerService);
     zOrderService = new ZOrderService(mockLogger as unknown as LoggerService);
-    zOrderAdapter = new X6ZOrderAdapter(mockLogger as unknown as LoggerService, zOrderService);
-    embeddingAdapter = new X6EmbeddingAdapter(
+    zOrderAdapter = new InfraX6ZOrderAdapter(mockLogger as unknown as LoggerService, zOrderService);
+    embeddingAdapter = new InfraX6EmbeddingAdapter(
       mockLogger as unknown as LoggerService,
-      embeddingService,
+      infraEmbeddingService,
       zOrderAdapter,
     );
-    historyManager = new X6HistoryManager(mockLogger as unknown as LoggerService);
-    x6EventLogger = new X6EventLoggerService(mockLogger as unknown as LoggerService);
-    edgeService = new DfdEdgeService(mockLogger as unknown as LoggerService);
-    eventHandlersService = new DfdEventHandlersService(mockLogger as unknown as LoggerService);
+    historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
+    x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
+    infraEdgeService = new DomainEdgeService(mockLogger as unknown as LoggerService);
+    eventHandlersService = new AppEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new GraphHistoryCoordinator(
       historyManager,
       mockLogger as unknown as LoggerService,
     );
 
-    // Initialize selection adapter first (required by X6GraphAdapter)
-    selectionAdapter = new X6SelectionAdapter(
+    // Initialize selection adapter first (required by InfraX6GraphAdapter)
+    selectionAdapter = new InfraX6SelectionAdapter(
       mockLogger as unknown as LoggerService,
       selectionService,
     );
 
     // Initialize real X6 graph with all adapters
-    adapter = new X6GraphAdapter(
+    adapter = new InfraX6GraphAdapter(
       mockLogger as unknown as LoggerService,
-      edgeQueryService,
-      nodeConfigurationService,
-      embeddingService,
+      infraEdgeQueryService,
+      infraNodeConfigurationService,
+      infraEmbeddingService,
       portStateManager,
       keyboardHandler,
       zOrderAdapter,
@@ -180,7 +180,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       historyManager,
       selectionAdapter,
       x6EventLogger,
-      edgeService,
+      infraEdgeService,
       eventHandlersService,
       historyCoordinator,
     );
