@@ -78,6 +78,10 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from '../../../tm/components/metadata-dialog/metadata-dialog.component';
+import {
+  CellPropertiesDialogComponent,
+  CellPropertiesDialogData,
+} from './cell-properties-dialog/cell-properties-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 
@@ -161,8 +165,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   canUndo = false;
   canRedo = false;
 
-  // Context menu position
+  // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
+  private _rightClickedCell: any = null;
 
   constructor(
     private logger: LoggerService,
@@ -233,7 +238,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.logger.info('DfdComponent v2 ngAfterViewInit called');
+    this.logger.info('DfdComponent v2 ngAfterViewInit called - starting initialization sequence');
 
     // First check if authorization is already loaded synchronously
     const currentPermission = this.authorizationService.getCurrentUserPermission();
@@ -414,6 +419,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           loading: state.loading,
           error: state.error,
         });
+        
+        // Set up edge event handlers when orchestrator becomes initialized
+        if (state.initialized && !this.isSystemInitialized) {
+          this.logger.info('DFD orchestrator just became initialized - setting up edge handlers');
+          this.setupEdgeObservableSubscriptions();
+        }
+        
         this.isSystemInitialized = state.initialized;
         this.cdr.markForCheck();
       }),
@@ -434,28 +446,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .subscribe(),
     );
 
-    // Set up edge event handlers for drag-and-drop edge creation
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (graph) {
-      // Handle edge added events (when user drags from port to port)
-      graph.on('edge:added', (data: { edge: any }) => {
-        this.handleEdgeAdded(data.edge);
-      });
+    // Remove the inline edge event handler setup - it will now be done when orchestrator is initialized
 
-      // Handle edge vertices changed events (when user moves edge vertices)
-      graph.on('edge:change:vertices', (data: { edge: any }) => {
-        this.handleEdgeVerticesChanged(data.edge);
-      });
-
-      this.logger.debug('Edge event handlers registered');
-    } else {
-      this.logger.warn('Graph not available for setting up edge event handlers');
-    }
+    // Set up context menu handlers
+    this.setupContextMenuHandlers();
   }
 
   private handleEdgeAdded(edge: any): void {
+    this.logger.info('DFD Component: handleEdgeAdded called', {
+      edgeId: edge?.id,
+      hasEdge: !!edge,
+      hasDfdId: !!this.dfdId,
+      isSystemInitialized: this.isSystemInitialized,
+    });
+
     if (!edge || !this.dfdId) {
-      this.logger.warn('Cannot handle edge added - missing edge or diagram ID');
+      this.logger.warn('Cannot handle edge added - missing edge or diagram ID', {
+        hasEdge: !!edge,
+        hasDfdId: !!this.dfdId,
+      });
       return;
     }
 
@@ -722,38 +731,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.info('Opening threat editor dialog for new threat creation on DFD page');
+    // Get the target cell (right-clicked or selected)
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    const cellId = targetCell?.id;
 
-    // Get selected cell information for context
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    const cellId = selectedCells.length === 1 ? selectedCells[0] : null;
-
-    if (cellId) {
-      const graph = this.appDfdOrchestrator.getGraph;
-      if (graph) {
-        const cell = graph.getCellById(cellId);
-        if (cell) {
-          this.logger.info('Opening threat editor with cell context', {
-            cellId,
-            cellType: cell.isNode() ? 'node' : 'edge',
-          });
-        }
-      }
-    }
+    this.logger.info('Opening threat editor dialog for new threat creation on DFD page', {
+      threatModelId: this.threatModelId,
+      dfdId: this.dfdId,
+      cellId,
+      cellType: targetCell?.isNode?.() ? 'node' : targetCell?.isEdge?.() ? 'edge' : 'unknown',
+    });
 
     // TODO: Implement threat editor dialog integration with DFD v2
     // This should open the threat editor dialog directly on the DFD page
-    // and pass the threat model ID and selected cell context
-    this.logger.info('Threat editor dialog integration needed for v2 architecture', {
-      threatModelId: this.threatModelId,
-      selectedCellId: cellId,
-    });
+    // and pass the threat model ID and cell context
+    alert(
+      `Threat Editor would open for:\n- Threat Model: ${this.threatModelId}\n- Diagram: ${this.dfdId}\n- Cell: ${cellId || 'none selected'}`,
+    );
   }
 
   manageThreats(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length !== 1) {
-      this.logger.warn('Manage threats requires exactly one selected cell');
+    // Get the target cell (right-clicked or selected)
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!targetCell) {
+      this.logger.warn('Manage threats requires a cell');
       return;
     }
 
@@ -762,35 +763,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const cellId = selectedCells[0];
-    this.logger.info('Managing threats for selected cell', {
+    const cellId = targetCell.id;
+    this.logger.info('Managing threats for cell', {
       cellId,
       threatModelId: this.threatModelId,
-    });
-
-    // Get the actual cell object from the graph to extract cell data
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for threat management');
-      return;
-    }
-
-    const cell = graph.getCellById(cellId);
-    if (!cell) {
-      this.logger.error('Selected cell not found in graph');
-      return;
-    }
-
-    // For now, just log the cell information - the threat management dialog integration
-    // will be implemented when the v2 architecture is complete
-    this.logger.info('Opening threat management dialog for cell', {
-      cellId,
-      cellType: cell.isNode() ? 'node' : 'edge',
+      cellType: targetCell.isNode() ? 'node' : 'edge',
     });
 
     // TODO: Implement threat management dialog integration with DFD v2
     // This should open the existing threats management dialog and populate it with threats for this cell
     // The dialog should be filtered to show only threats associated with this specific cell
+    alert(
+      `Threat Management would open for:\n- Threat Model: ${this.threatModelId}\n- Diagram: ${this.dfdId}\n- Cell: ${cellId}\n- Type: ${targetCell.isNode() ? 'node' : 'edge'}`,
+    );
   }
 
   closeDiagram(): void {
@@ -815,128 +800,98 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   editCellText(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length !== 1) {
-      this.logger.info('Edit cell text requires exactly one selected cell');
+    const cell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!cell) {
+      this.logger.info('Edit cell text requires a selected cell');
       return;
     }
 
-    this.logger.info('Edit cell text requested', { cellId: selectedCells[0] });
-    // TODO: Implement inline text editing for DFD v2
-    // This would involve getting the cell from the graph and enabling text editing
-    this.logger.info('Text editing integration needed for v2 architecture');
+    this.logger.info('Edit cell text requested', { cellId: cell.id });
+
+    // Use the graph adapter's label editing functionality
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (graphAdapter && graphAdapter.startLabelEditing) {
+      // Create a synthetic double-click event for the label editor
+      const syntheticEvent = new MouseEvent('dblclick', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 0,
+        clientY: 0,
+      });
+
+      // Trigger the label editor directly
+      graphAdapter.startLabelEditing(cell, syntheticEvent);
+      this.logger.debug('Label editor triggered for cell', { cellId: cell.id });
+    } else {
+      this.logger.warn('Label editing not available - graph adapter or method not found');
+    }
+  }
+
+  private getFirstSelectedCell(): any {
+    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
+    if (selectedCells.length === 0) return null;
+
+    const graph = this.appDfdOrchestrator.getGraph;
+    return graph ? graph.getCellById(selectedCells[0]) : null;
   }
 
   // Z-order methods
   moveForward(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move forward');
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!targetCell) {
+      this.logger.info('No cell available for move forward');
       return;
     }
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for move forward operation');
-      return;
-    }
-
-    selectedCells.forEach(cellId => {
-      const cell = graph.getCellById(cellId);
-      if (cell) {
-        cell.toFront();
-        this.logger.debug('Moved cell forward', { cellId });
-      }
-    });
+    // Use the facade's z-order functionality
+    this.dfdInfrastructure.moveSelectedForward();
+    this.logger.debug('Moved cell forward', { cellId: targetCell.id });
   }
 
   moveBackward(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move backward');
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!targetCell) {
+      this.logger.info('No cell available for move backward');
       return;
     }
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for move backward operation');
-      return;
-    }
-
-    selectedCells.forEach(cellId => {
-      const cell = graph.getCellById(cellId);
-      if (cell) {
-        cell.toBack();
-        this.logger.debug('Moved cell backward', { cellId });
-      }
-    });
+    // Use the facade's z-order functionality
+    this.dfdInfrastructure.moveSelectedBackward();
+    this.logger.debug('Moved cell backward', { cellId: targetCell.id });
   }
 
   moveToFront(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move to front');
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!targetCell) {
+      this.logger.info('No cell available for move to front');
       return;
     }
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for move to front operation');
-      return;
-    }
-
-    selectedCells.forEach(cellId => {
-      const cell = graph.getCellById(cellId);
-      if (cell) {
-        cell.toFront();
-        this.logger.debug('Moved cell to front', { cellId });
-      }
-    });
+    // Use the facade's z-order functionality
+    this.dfdInfrastructure.moveSelectedToFront();
+    this.logger.debug('Moved cell to front', { cellId: targetCell.id });
   }
 
   moveToBack(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for move to back');
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!targetCell) {
+      this.logger.info('No cell available for move to back');
       return;
     }
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for move to back operation');
-      return;
-    }
-
-    selectedCells.forEach(cellId => {
-      const cell = graph.getCellById(cellId);
-      if (cell) {
-        cell.toBack();
-        this.logger.debug('Moved cell to back', { cellId });
-      }
-    });
+    // Use the facade's z-order functionality
+    this.dfdInfrastructure.moveSelectedToBack();
+    this.logger.debug('Moved cell to back', { cellId: targetCell.id });
   }
 
   // Edge methods
   addInverseConnection(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length !== 1) {
-      this.logger.info('Add inverse connection requires exactly one selected edge');
+    const edge = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!edge || !edge.isEdge()) {
+      this.logger.info('Add inverse connection requires an edge');
       return;
     }
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for add inverse connection');
-      return;
-    }
-
-    const cell = graph.getCellById(selectedCells[0]);
-    if (!cell || !cell.isEdge()) {
-      this.logger.info('Selected cell is not an edge');
-      return;
-    }
-
-    const edge = cell;
     const diagramId = this.dfdId || 'default-diagram';
 
     // Use facade service for proper business logic and error handling
@@ -958,47 +913,121 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isRightClickedCellEdge(): boolean {
-    // For now, we don't have a context menu system in v2, so return false
-    // TODO: Implement context menu tracking for v2 architecture
-    return false;
+    return (
+      this._rightClickedCell && this._rightClickedCell.isEdge && this._rightClickedCell.isEdge()
+    );
+  }
+
+  getRightClickedCell(): any {
+    return this._rightClickedCell;
   }
 
   showCellProperties(): void {
-    const selectedCells = this.appDfdOrchestrator.getSelectedCells();
-    if (selectedCells.length !== 1) {
-      this.logger.info('Show cell properties requires exactly one selected cell');
-      return;
-    }
-
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Graph not available for show cell properties');
-      return;
-    }
-
-    const cell = graph.getCellById(selectedCells[0]);
-    if (!cell) {
-      this.logger.error('Selected cell not found in graph');
+    // Get the target cell (right-clicked or selected)
+    const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
+    if (!targetCell) {
+      this.logger.info('Show cell properties requires a cell');
       return;
     }
 
     // Log cell properties for debugging
     this.logger.info('Cell properties', {
-      id: cell.id,
-      shape: cell.shape,
-      position: cell.getPosition?.() || 'N/A',
-      size: cell.getSize?.() || 'N/A',
-      attrs: cell.getAttrs(),
-      data: cell.getData(),
+      id: targetCell.id,
+      shape: targetCell.shape,
+      position: targetCell.getPosition?.() || 'N/A',
+      size: targetCell.getSize?.() || 'N/A',
+      attrs: targetCell.getAttrs(),
+      data: targetCell.getData(),
     });
 
-    // TODO: Implement cell properties dialog for v2 architecture
-    this.logger.info('Cell properties dialog integration needed for v2 architecture');
+    // Open the cell properties dialog
+    const dialogData: CellPropertiesDialogData = {
+      cell: targetCell,
+    };
+
+    this.dialog.open(CellPropertiesDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+  }
+
+  // Edge Observable Subscriptions
+
+  private setupEdgeObservableSubscriptions(): void {
+    this.logger.info('DFD Component: Setting up edge observable subscriptions');
+    
+    // Subscribe to edge added events from the graph adapter
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (graphAdapter) {
+      this._subscriptions.add(
+        graphAdapter.edgeAdded$.pipe(takeUntil(this._destroy$)).subscribe(edge => {
+          this.logger.info('DFD Component: edgeAdded$ observable fired', {
+            edgeId: edge.id,
+          });
+          this.handleEdgeAdded(edge);
+        })
+      );
+      
+      this.logger.info('Edge observable subscriptions set up successfully');
+    } else {
+      this.logger.warn('Graph adapter not available for edge subscriptions');
+    }
   }
 
   // Context Menu Methods
 
+  private setupContextMenuHandlers(): void {
+    // Get the graph adapter's context menu observable through the facade
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (graphAdapter && graphAdapter.cellContextMenu$) {
+      this._subscriptions.add(
+        graphAdapter.cellContextMenu$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(({ cell, x, y }: { cell: any; x: number; y: number }) => {
+            this.openCellContextMenu(cell, x, y);
+          }),
+      );
+      this.logger.debug('Context menu handlers registered');
+    } else {
+      this.logger.warn('Context menu observable not available from graph adapter');
+    }
+  }
+
+  private openCellContextMenu(cell: any, x: number, y: number): void {
+    // Store the right-clicked cell for context menu actions
+    this._rightClickedCell = cell;
+
+    // Update context menu position
+    this.contextMenuPosition = {
+      x: `${x}px`,
+      y: `${y}px`,
+    };
+
+    // Select the cell that was right-clicked
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (graph && cell) {
+      graph.select(cell);
+      this.updateSelectionState();
+    }
+
+    // Open the context menu
+    if (this.contextMenuTrigger) {
+      this.contextMenuTrigger.openMenu();
+      this.cdr.markForCheck();
+    }
+
+    this.logger.debug('Context menu opened for cell', {
+      cellId: cell?.id,
+      cellType: cell?.isNode?.() ? 'node' : cell?.isEdge?.() ? 'edge' : 'unknown',
+      position: { x, y },
+    });
+  }
+
   onContextMenu(event: MouseEvent): void {
+    // This method is kept for any manual context menu triggers
     event.preventDefault();
     this.contextMenuPosition = {
       x: `${event.clientX}px`,

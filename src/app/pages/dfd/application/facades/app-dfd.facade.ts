@@ -366,6 +366,18 @@ export class AppDfdFacade {
   }
 
   // ========================================
+  // Infrastructure Access
+  // ========================================
+
+  /**
+   * Get the infrastructure graph adapter for advanced operations
+   * This should be used sparingly and only for operations that cannot be abstracted
+   */
+  get graphAdapter(): InfraX6GraphAdapter {
+    return this.infraX6GraphAdapter;
+  }
+
+  // ========================================
   // Utility Operations
   // ========================================
 

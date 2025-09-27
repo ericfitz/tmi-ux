@@ -294,6 +294,7 @@ export class InfraNodeService {
       case 'text-box':
         return this.transloco.translate('editor.nodeLabels.textbox');
       default:
+        // we probably should return an error string here that can be used to diagnose unexpected case
         return this.transloco.translate('editor.nodeLabels.node');
     }
   }

@@ -930,7 +930,9 @@ export class AppDfdOrchestrator {
         magnetConnectable: true,
       },
       connecting: {
-        snap: true,
+        snap: {
+          radius: 20,
+        },
         allowBlank: false,
         allowLoop: true,
         allowNode: false,
@@ -938,6 +940,8 @@ export class AppDfdOrchestrator {
         allowPort: true,
         allowMulti: true,
         highlight: true,
+        anchor: 'center',
+        connectionPoint: 'boundary',
         router: {
           name: 'normal',
         },

@@ -22,13 +22,13 @@ import { Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { TranslocoService } from '@jsverse/transloco';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Interface for connection validation arguments from X6
@@ -69,6 +69,7 @@ export class AppEdgeService {
 
   constructor(
     private logger: LoggerService,
+    private transloco: TranslocoService,
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
     private infraX6HistoryAdapter: InfraX6HistoryAdapter,
     private infraVisualEffectsService: InfraVisualEffectsService,
@@ -127,10 +128,47 @@ export class AppEdgeService {
       throw new Error('Edge references non-existent nodes');
     }
 
+    // Set default label for newly created edges if they don't have one
+    const currentLabel = this.getEdgeLabel(edge);
+    this.logger.debug('Edge label check on creation', {
+      edgeId: edge.id,
+      currentLabel,
+      hasGetLabel: !!(edge as any).getLabel,
+      hasSetLabel: !!(edge as any).setLabel,
+    });
+    
+    if (!currentLabel || currentLabel.trim() === '') {
+      const defaultLabel = this.getLocalizedFlowLabel();
+      
+      this.logger.info('Setting default label for new edge', {
+        edgeId: edge.id,
+        defaultLabel,
+        currentLanguage: this.transloco.getActiveLang(),
+        beforeUpdate: currentLabel,
+      });
+      
+      this.updateEdgeLabel(edge, defaultLabel);
+      
+      // Verify the label was set
+      const verifyLabel = this.getEdgeLabel(edge);
+      this.logger.info('Default label set verification', {
+        edgeId: edge.id,
+        expectedLabel: defaultLabel,
+        actualLabel: verifyLabel,
+        success: verifyLabel === defaultLabel,
+      });
+    } else {
+      this.logger.debug('Edge already has label, skipping default', {
+        edgeId: edge.id,
+        existingLabel: currentLabel,
+      });
+    }
+
     this.logger.info('Edge validated successfully', {
       edgeId: edge.id,
       sourceNodeId,
       targetNodeId,
+      label: this.getEdgeLabel(edge),
     });
 
     return of(void 0);
@@ -203,7 +241,7 @@ export class AppEdgeService {
 
     // Get the original edge's vertices and label
     const originalVertices = edge.getVertices();
-    const originalLabel = (edge as any).getLabel() || 'Flow';
+    const originalLabel = (edge as any).getLabel() || this.getLocalizedFlowLabel();
 
     // Process label for inverse edge
     const inverseLabel = this._processLabelForInverse(originalLabel);
@@ -446,7 +484,7 @@ export class AppEdgeService {
         targetNodeId,
         sourcePortId: sourcePortId || 'right',
         targetPortId: targetPortId || 'left',
-        label: label || DFD_STYLING.EDGES.DEFAULT_LABEL,
+        label: label || this.getLocalizedFlowLabel(),
       });
 
       // Delegate to InfraEdgeService for X6 operations (proper layered architecture)
@@ -838,6 +876,25 @@ export class AppEdgeService {
   canShapesConnect(sourceShape: string, targetShape: string): boolean {
     const allowedTargets = this.connectionRules[sourceShape];
     return allowedTargets ? allowedTargets.includes(targetShape) : false;
+  }
+
+  /**
+   * Get localized flow label with fallback for when translations aren't loaded yet
+   */
+  private getLocalizedFlowLabel(): string {
+    const translatedLabel = this.transloco.translate('editor.flowLabel');
+    
+    // If translation service returns the key itself, it means the translation wasn't found
+    // This can happen if translations aren't loaded yet or the key doesn't exist
+    if (translatedLabel === 'editor.flowLabel') {
+      this.logger.warn('Translation not available for editor.flowLabel, using fallback', {
+        currentLanguage: this.transloco.getActiveLang(),
+        returnedValue: translatedLabel,
+      });
+      return 'Flow';
+    }
+    
+    return translatedLabel;
   }
 
   /**

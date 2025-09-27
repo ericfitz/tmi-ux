@@ -152,6 +152,7 @@
   },
   "editor": {
     "diagramPrefix": "แผนภาพ:",
+    "flowLabel": "การไหล",
     "nodeLabels": {
       "actor": "ผู้กระทำ",
       "node": "โหนด",

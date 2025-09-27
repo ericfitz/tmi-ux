@@ -1380,9 +1380,49 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       return;
     }
 
-    // Get cell center using X6's native methods
-    const cellBBox = cell.getBBox();
-    const centerPoint = { x: cellBBox.x + cellBBox.width / 2, y: cellBBox.y + cellBBox.height / 2 };
+    // Get appropriate position based on cell type
+    let centerPoint: { x: number; y: number };
+
+    if (isNode) {
+      // For nodes, use center of bounding box
+      const cellBBox = cell.getBBox();
+      centerPoint = { x: cellBBox.x + cellBBox.width / 2, y: cellBBox.y + cellBBox.height / 2 };
+    } else {
+      // For edges, calculate midpoint from source and target positions
+      const edge = cell as any;
+      
+      try {
+        // Try to get the edge path and find midpoint
+        const sourcePoint = edge.getSourcePoint();
+        const targetPoint = edge.getTargetPoint();
+        
+        if (sourcePoint && targetPoint) {
+          // Calculate midpoint between source and target
+          centerPoint = {
+            x: (sourcePoint.x + targetPoint.x) / 2,
+            y: (sourcePoint.y + targetPoint.y) / 2,
+          };
+        } else {
+          // Fallback: use edge bounding box center
+          const edgeBBox = edge.getBBox();
+          centerPoint = {
+            x: edgeBBox.x + edgeBBox.width / 2,
+            y: edgeBBox.y + edgeBBox.height / 2,
+          };
+        }
+      } catch (error) {
+        // Final fallback: use edge bounding box center
+        this.logger.warn('Could not calculate edge midpoint, using bounding box', {
+          edgeId: edge.id,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+        const edgeBBox = edge.getBBox();
+        centerPoint = {
+          x: edgeBBox.x + edgeBBox.width / 2,
+          y: edgeBBox.y + edgeBBox.height / 2,
+        };
+      }
+    }
 
     // Transform to client coordinates using X6's coordinate system
     const clientPoint = this._graph.localToClient(centerPoint);

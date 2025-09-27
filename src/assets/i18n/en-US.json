@@ -152,6 +152,7 @@
   },
   "editor": {
     "diagramPrefix": "Diagram:",
+    "flowLabel": "Flow",
     "nodeLabels": {
       "actor": "Actor",
       "node": "Node",

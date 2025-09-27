@@ -152,6 +152,7 @@
   },
   "editor": {
     "diagramPrefix": "مخطط:",
+    "flowLabel": "تدفق",
     "nodeLabels": {
       "actor": "ممثل",
       "node": "عقدة",
