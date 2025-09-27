@@ -13,6 +13,11 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import { Graph, Node, Edge } from '@antv/x6';
+import '@antv/x6-plugin-export';
+import { Export } from '@antv/x6-plugin-export';
+import { Snapline } from '@antv/x6-plugin-snapline';
+import { Transform } from '@antv/x6-plugin-transform';
+import { History } from '@antv/x6-plugin-history';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -913,10 +918,23 @@ export class AppDfdOrchestrator {
       embedding: {
         enabled: true,
         findParent: 'bbox',
-        validate: (_args: { parent: Node; child: Node }) => {
-          // Use InfraEmbeddingService for validation logic via facade
-          // Note: This will be set up after DI is available
-          return true; // Default to allow, will be properly configured after facade initialization
+        validate: (args: { parent: Node; child: Node }) => {
+          this.logger.info('X6 embedding validation called', {
+            parentId: args.parent?.id,
+            childId: args.child?.id,
+            parentShape: args.parent?.shape,
+            childShape: args.child?.shape,
+          });
+          
+          const isValid = this.dfdInfrastructure.validateEmbedding(args.parent, args.child);
+          
+          this.logger.info('X6 embedding validation result', {
+            parentId: args.parent?.id,
+            childId: args.child?.id,
+            isValid,
+          });
+          
+          return isValid;
         },
       },
       interacting: {
@@ -948,16 +966,22 @@ export class AppDfdOrchestrator {
         connector: {
           name: 'smooth',
         },
-        validateMagnet: _args => {
-          // Will be configured after facade is initialized
-          return true;
+        validateMagnet: args => {
+          // Use facade to access magnet validation service
+          return this.dfdInfrastructure.isMagnetValid(args.magnet);
         },
         validateConnection: args => {
-          // Will be configured after facade is initialized
+          // Ensure all required properties exist before delegating to validation service
           if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
             return false;
           }
-          return true;
+          // Use facade to access connection validation service
+          return this.dfdInfrastructure.isConnectionValid(
+            args.sourceView,
+            args.targetView,
+            args.sourceMagnet,
+            args.targetMagnet,
+          );
         },
         createEdge: () => {
           // Generate UUID type 4 for UX-created edges
@@ -1065,6 +1089,9 @@ export class AppDfdOrchestrator {
       },
     });
 
+    // Setup X6 plugins (matching original implementation)
+    this._setupPlugins();
+
     // Create operation context
     this._operationContext = {
       graph: this._graph,
@@ -1078,13 +1105,12 @@ export class AppDfdOrchestrator {
       suppressBroadcast: false,
     };
 
-    // Initialize the graph adapter with the container element
-    // This ensures all infrastructure services can access the graph instance
-    this.dfdInfrastructure.initializeGraphAdapter(params.containerElement);
-    this.logger.debug('AppDfdOrchestrator: Graph adapter initialized');
+    // Pass the orchestrator-created graph to the infrastructure adapter
+    // This ensures the adapter uses our configured graph instead of creating its own
+    this.dfdInfrastructure.setGraphOnAdapter(this._graph);
+    this.logger.debug('AppDfdOrchestrator: Graph instance passed to adapter');
 
-    // Configure validation callbacks now that facade is available
-    this._configureValidationCallbacks();
+    // Note: Validation callbacks are now configured directly in graph options during creation
 
     // Configure auto-save manager
     this.appAutoSaveManager.setPolicyMode(params.autoSaveMode);
@@ -1285,36 +1311,68 @@ export class AppDfdOrchestrator {
   }
 
   /**
-   * Configure validation callbacks after facade is initialized
+   * Setup X6 plugins to match original implementation
    */
-  private _configureValidationCallbacks(): void {
+  private _setupPlugins(): void {
     if (!this._graph) return;
 
-    // Configure embedding validation
-    (this._graph as any).options.embedding.validate = (_args: { parent: Node; child: Node }) => {
-      // Use facade to access embedding service validation
-      // Note: This would need a method in the facade to access embedding validation
-      return true; // For now, allow all embedding
-    };
-
-    // Configure magnet validation
-    (this._graph as any).options.connecting.validateMagnet = (args: any) => {
-      return this.dfdInfrastructure.isMagnetValid(args.magnet);
-    };
-
-    // Configure connection validation
-    (this._graph as any).options.connecting.validateConnection = (args: any) => {
-      if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
-        return false;
-      }
-      return this.dfdInfrastructure.isConnectionValid(
-        args.sourceView,
-        args.targetView,
-        args.sourceMagnet,
-        args.targetMagnet,
+    // Check if the graph has the use method (not available in test mocks)
+    if (typeof this._graph.use === 'function') {
+      // Enable snapline plugin with red color (for visual feedback during drag/drop)
+      this._graph.use(
+        new Snapline({
+          enabled: true,
+          sharp: true,
+          className: 'dfd-snapline-red',
+        }),
       );
-    };
 
-    this.logger.debug('AppDfdOrchestrator: Validation callbacks configured');
+      // Enable history plugin with centralized filtering
+      // Start disabled - will be enabled after diagram load completes
+      this._graph.use(
+        new History({
+          stackSize: 10,
+          enabled: false, // Start disabled to prevent auto-saves during initialization
+          beforeAddCommand: (event: string, args: any) => {
+            // Basic filtering - could be enhanced with centralized coordinator
+            return this._shouldIncludeInHistory(event, args);
+          },
+        }),
+      );
+
+      // Enable transform plugin for resizing
+      this._graph.use(
+        new Transform({
+          resizing: {
+            enabled: true,
+            minWidth: 40,
+            minHeight: 30,
+            maxWidth: Number.MAX_SAFE_INTEGER,
+            maxHeight: Number.MAX_SAFE_INTEGER,
+            orthogonal: false,
+            restrict: false,
+            preserveAspectRatio: false,
+          },
+          rotating: false,
+        }),
+      );
+
+      // Enable export plugin for diagram export functionality
+      this._graph.use(new Export());
+
+      this.logger.debug('X6 plugins setup completed', {
+        plugins: ['Snapline', 'History', 'Transform', 'Export'],
+      });
+    }
   }
+
+  /**
+   * Determine if an operation should be included in history
+   */
+  private _shouldIncludeInHistory(event: string, _args: any): boolean {
+    // Basic filtering logic - exclude certain events from history
+    const excludedEvents = ['cell:highlight', 'cell:unhighlight', 'graph:resize'];
+    return !excludedEvents.includes(event);
+  }
+
 }

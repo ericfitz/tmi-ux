@@ -32,6 +32,7 @@ import { InfraNodeConfigurationService } from '../../infrastructure/services/inf
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
 
 /**
  * Facade for DFD infrastructure services
@@ -51,6 +52,7 @@ export class AppDfdFacade {
     private readonly infraVisualEffectsService: InfraVisualEffectsService,
     private readonly infraX6CoreOperationsService: InfraX6CoreOperationsService,
     private readonly historyCoordinator: GraphHistoryCoordinator,
+    private readonly infraEmbeddingService: InfraEmbeddingService,
   ) {
     this.logger.debug('AppDfdFacade initialized');
   }
@@ -66,6 +68,15 @@ export class AppDfdFacade {
   initializeGraphAdapter(containerElement: HTMLElement): void {
     this.logger.debug('AppDfdFacade: Initializing graph adapter');
     this.infraX6GraphAdapter.initialize(containerElement);
+  }
+
+  /**
+   * Set the graph instance on the adapter (for orchestrator-created graphs)
+   * This allows the orchestrator to create the graph and pass it to the infrastructure
+   */
+  setGraphOnAdapter(graph: any): void {
+    this.logger.debug('AppDfdFacade: Setting graph instance on adapter');
+    this.infraX6GraphAdapter.setGraph(graph);
   }
 
   // ========================================
@@ -174,6 +185,14 @@ export class AppDfdFacade {
    */
   isNodeConnectionValid(sourceNode: any, targetNode: any): boolean {
     return this.appEdgeService.isNodeConnectionValid(sourceNode, targetNode);
+  }
+
+  /**
+   * Validate embedding operation based on DFD rules
+   */
+  validateEmbedding(parent: any, child: any): boolean {
+    const result = this.infraEmbeddingService.validateEmbedding(parent, child);
+    return result.isValid;
   }
 
   /**

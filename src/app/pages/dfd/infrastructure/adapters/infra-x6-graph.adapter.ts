@@ -289,6 +289,47 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Set the graph instance and initialize adapters (for orchestrator-created graphs)
+   */
+  setGraph(graph: Graph): void {
+    if (this._graph) {
+      this.dispose();
+    }
+
+    this.logger.info('[DFD] Setting graph instance from orchestrator');
+    this._graph = graph;
+
+    // No need to setup plugins since orchestrator already did this
+    this._setupEventListeners();
+
+    // Setup selection events (crucial for port visibility and visual effects)
+    this._setupSelectionEvents();
+
+    // Setup history event handlers
+    this._historyManager.setupHistoryEvents(this._graph);
+
+    // Subscribe to history state changes from history manager
+    this._historyManager.historyChanged$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(({ canUndo, canRedo }) => {
+        this._historyChanged$.next({ canUndo, canRedo });
+      });
+
+    // Initialize X6 event logging (if service is available)
+    if (this._x6EventLogger) {
+      this._x6EventLogger.initializeEventLogging(this._graph);
+    }
+
+    // Setup keyboard handling using dedicated handler
+    this._keyboardHandler.setupKeyboardHandling(this._graph);
+
+    // Initialize embedding functionality using dedicated adapter
+    this._embeddingAdapter.initializeEmbedding(this._graph);
+
+    this.logger.debug('[DFD] X6 graph adapter configured with orchestrator graph');
+  }
+
+  /**
    * Check if the graph has been initialized
    */
   isInitialized(): boolean {
