@@ -1,0 +1,77 @@
+.session-expiry-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #f57c00; // Orange warning color
+  margin-bottom: 1rem;
+}
+
+.warning-icon {
+  color: #f57c00; // Orange warning color
+  font-size: 1.5rem;
+}
+
+.session-expiry-content {
+  min-width: 400px;
+  padding: 1rem 0;
+}
+
+.expiry-message {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  color: rgb(0 0 0 / 87%);
+}
+
+.countdown-display {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 2px solid #f57c00;
+  margin-bottom: 1rem;
+}
+
+.countdown-time {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #f57c00;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.session-expiry-actions {
+  padding: 1rem 0 0;
+  gap: 1rem;
+}
+
+.logout-button {
+  min-width: 100px;
+}
+
+.extend-button {
+  min-width: 140px;
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .expiry-message {
+    color: rgb(255 255 255 / 87%);
+  }
+  
+  .countdown-display {
+    background-color: #424242;
+    border-color: #ff9800;
+  }
+  
+  .countdown-time {
+    color: #ff9800;
+  }
+  
+  .session-expiry-title {
+    color: #ff9800;
+  }
+  
+  .warning-icon {
+    color: #ff9800;
+  }
+}

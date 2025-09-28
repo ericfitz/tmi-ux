@@ -146,34 +146,8 @@ export class ThreatModelAuthorizationService implements OnDestroy {
 
     const currentUserEmail = this.authService.userEmail;
     if (!currentUserEmail) {
-      // Check if this is due to an expired session vs lack of permissions
-      if (this.authService.isAuthenticated) {
-        // User appears authenticated but email is missing - check if this is due to session expiry
-        // Use the auth service's token validation to determine if logout is needed
-        this.authService.getValidTokenIfAvailable().subscribe({
-          next: (token) => {
-            if (!token) {
-              // No valid token available - this indicates session expiry
-              this.logger.error('Session expired - no valid token available despite authenticated state');
-              this.authService.logout();
-            } else {
-              // Token is valid but email is missing - likely a permissions issue, not session expiry
-              this.logger.warn('JWT valid but user email missing - possible permissions issue');
-            }
-          },
-          error: () => {
-            // Token validation failed - indicates session expiry
-            this.logger.error('Session expired - token validation failed');
-            this.authService.logout();
-          }
-        });
-        return null;
-      } else {
-        // User is not authenticated but accessing a page that requires authentication
-        this.logger.error('Unauthenticated user detected on protected page - redirecting to home');
-        this.authService.logout(); // This will clear any stale auth data and redirect to home
-        return null;
-      }
+      this.logger.warn('Cannot calculate user permission - no authenticated user');
+      return null;
     }
 
     const userAuth = authorizations.find(auth => auth.subject === currentUserEmail);

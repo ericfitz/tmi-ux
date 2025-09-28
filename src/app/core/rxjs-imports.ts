@@ -10,6 +10,7 @@ export { Subscription } from 'rxjs/internal/Subscription';
 export { of } from 'rxjs/internal/observable/of';
 export { from } from 'rxjs/internal/observable/from';
 export { interval } from 'rxjs/internal/observable/interval';
+export { timer } from 'rxjs/internal/observable/timer';
 
 // Operators
 export { map } from 'rxjs/internal/operators/map';

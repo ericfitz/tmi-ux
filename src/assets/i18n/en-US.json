@@ -371,6 +371,17 @@
     },
     "title": "Terms of Service"
   },
+  "sessionExpiry": {
+    "title": "Session Expiring Soon",
+    "message": "Your session will expire in {timeRemaining}. Would you like to extend your session or log out now?",
+    "timeFormat": {
+      "minutesSeconds": "{minutes}:{seconds}",
+      "minutes": "1 minute",
+      "seconds": "{seconds} seconds"
+    },
+    "extendButton": "Extend Session",
+    "logoutButton": "Log Out Now"
+  },
   "userPreferences": {
     "diagramAnimationEffects": "Diagram Animation Effects",
     "title": "User Preferences"

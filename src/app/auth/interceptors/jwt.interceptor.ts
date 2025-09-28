@@ -31,12 +31,19 @@ export class JwtInterceptor implements HttpInterceptor {
     '/oauth2/token/*',
   ];
 
+  // SessionManager service (will be injected if available)
+  private sessionManager: any = null;
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private logger: LoggerService,
   ) {
     this.logger.info('JWT Interceptor initialized');
+    // Get SessionManager from AuthService (avoids circular dependency)
+    setTimeout(() => {
+      this.sessionManager = (this.authService as any).sessionManagerService;
+    }, 0);
   }
 
   /**
@@ -182,6 +189,9 @@ export class JwtInterceptor implements HttpInterceptor {
         }
 
         this.logger.info('Token refresh successful - retrying original request');
+
+        // Notify SessionManager if available (timers will be reset by AuthService.storeToken)
+        // No additional action needed here as token storage will trigger session manager
 
         // Clone the original request with the new token
         const retryRequest = request.clone({
