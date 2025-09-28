@@ -6,7 +6,7 @@ import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/infra-selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 // Note: InfraNodeService will be used for node deletion when removeNode method is available
 import { InfraEdgeService } from '../services/infra-edge.service';
@@ -249,7 +249,7 @@ export class InfraX6SelectionAdapter {
           this.x6CoreOps.removeCellObject(graph, cell);
         }
       });
-    });
+    }, HISTORY_OPERATION_TYPES.MULTI_CELL_DELETE);
 
     this.logger.info('Deleted selected cells', { count: selectedCells.length });
   }
@@ -327,7 +327,7 @@ export class InfraX6SelectionAdapter {
       });
 
       return createdGroupNode;
-    });
+    }, HISTORY_OPERATION_TYPES.GROUP_CREATE);
 
     this.logger.info('Created group with nodes', {
       groupId: groupNode.id,
@@ -343,8 +343,8 @@ export class InfraX6SelectionAdapter {
   ungroupSelected(graph: Graph): void {
     const selectedNodes = this.getSelectedNodes(graph);
 
-    // Batch all ungrouping operations for proper undo/redo
-    graph.batchUpdate(() => {
+    // Use centralized history coordinator for atomic ungrouping operation
+    this.historyCoordinator.executeAtomicOperation(graph, () => {
       selectedNodes.forEach(node => {
         if (this.selectionService.canUngroupNode(node)) {
           const children = node.getChildren();
@@ -364,7 +364,7 @@ export class InfraX6SelectionAdapter {
           }
         }
       });
-    });
+    }, HISTORY_OPERATION_TYPES.GROUP_UNGROUP);
   }
 
   /**

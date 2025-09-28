@@ -438,7 +438,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       new Observable(_observer => {
         const interval = setInterval(() => {
           this.updateSelectionState();
-          this.updateHistoryState();
         }, 100);
         return () => clearInterval(interval);
       })
@@ -614,41 +613,31 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onUndo(): void {
     if (!this.canUndo || this.isReadOnlyMode) return;
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.warn('Cannot undo: Graph not available');
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (!graphAdapter) {
+      this.logger.warn('Cannot undo: Graph adapter not available');
       return;
     }
 
-    // Use X6's built-in undo functionality
-    const history = graph.history;
-    if (history && history.undo) {
-      history.undo();
-      this.logger.debug('Undo operation completed');
-      this.updateHistoryState();
-    } else {
-      this.logger.warn('Undo not available: History plugin not found');
-    }
+    // Use graph adapter's undo functionality
+    graphAdapter.undo();
+    this.logger.debug('Undo operation completed');
+    // History state will be updated automatically via observable
   }
 
   onRedo(): void {
     if (!this.canRedo || this.isReadOnlyMode) return;
 
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.warn('Cannot redo: Graph not available');
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (!graphAdapter) {
+      this.logger.warn('Cannot redo: Graph adapter not available');
       return;
     }
 
-    // Use X6's built-in redo functionality
-    const history = graph.history;
-    if (history && history.redo) {
-      history.redo();
-      this.logger.debug('Redo operation completed');
-      this.updateHistoryState();
-    } else {
-      this.logger.warn('Redo not available: History plugin not found');
-    }
+    // Use graph adapter's redo functionality
+    graphAdapter.redo();
+    this.logger.debug('Redo operation completed');
+    // History state will be updated automatically via observable
   }
 
   // Template compatibility methods
@@ -957,7 +946,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Edge Observable Subscriptions
 
   private setupEdgeObservableSubscriptions(): void {
-    this.logger.info('DFD Component: Setting up edge observable subscriptions');
+    this.logger.info('DFD Component: Setting up edge and history observable subscriptions');
 
     // Subscribe to edge added events from the graph adapter
     const graphAdapter = this.dfdInfrastructure.graphAdapter;
@@ -971,9 +960,48 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
       );
 
-      this.logger.info('Edge observable subscriptions set up successfully');
+      // Subscribe to history state changes for reactive undo/redo button states
+      this._subscriptions.add(
+        graphAdapter.historyChanged$.pipe(takeUntil(this._destroy$)).subscribe(({ canUndo, canRedo }) => {
+          const oldCanUndo = this.canUndo;
+          const oldCanRedo = this.canRedo;
+          
+          this.canUndo = canUndo;
+          this.canRedo = canRedo;
+          
+          // Only trigger change detection if state actually changed
+          if (oldCanUndo !== this.canUndo || oldCanRedo !== this.canRedo) {
+            this.logger.debugComponent('DFD', 'History state updated from observable', { canUndo, canRedo });
+            this.cdr.markForCheck();
+          }
+        }),
+      );
+
+      // Set initial history state
+      this.setInitialHistoryState();
+
+      this.logger.info('Edge and history observable subscriptions set up successfully');
     } else {
-      this.logger.warn('Graph adapter not available for edge subscriptions');
+      this.logger.warn('Graph adapter not available for edge and history subscriptions');
+    }
+  }
+
+  private setInitialHistoryState(): void {
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (graphAdapter) {
+      const canUndo = graphAdapter.canUndo();
+      const canRedo = graphAdapter.canRedo();
+      
+      this.canUndo = canUndo;
+      this.canRedo = canRedo;
+      
+      this.logger.debugComponent('DFD', 'Initial history state set', { canUndo, canRedo });
+      this.cdr.markForCheck();
+    } else {
+      // No graph adapter available, ensure buttons are disabled
+      this.canUndo = false;
+      this.canRedo = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -1159,37 +1187,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private updateHistoryState(): void {
-    if (!this.appDfdOrchestrator.getState().initialized) {
-      this.canUndo = false;
-      this.canRedo = false;
-      return;
-    }
-
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.canUndo = false;
-      this.canRedo = false;
-      return;
-    }
-
-    const history = graph.history;
-    const oldCanUndo = this.canUndo;
-    const oldCanRedo = this.canRedo;
-
-    if (history) {
-      this.canUndo = history.canUndo ? history.canUndo() : false;
-      this.canRedo = history.canRedo ? history.canRedo() : false;
-    } else {
-      this.canUndo = false;
-      this.canRedo = false;
-    }
-
-    // Only trigger change detection if state actually changed
-    if (oldCanUndo !== this.canUndo || oldCanRedo !== this.canRedo) {
-      this.cdr.markForCheck();
-    }
-  }
 
   private mapStringToNodeType(nodeType: string): NodeType {
     switch (nodeType) {

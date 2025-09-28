@@ -58,8 +58,11 @@ export class InfraX6HistoryAdapter {
       this._emitHistoryStateChange(graph);
     });
 
-    graph.on('history:change', () => {
-      this.logger.info('History change event fired - triggering auto-save');
+    graph.on('history:change', (args) => {
+      this.logger.info('History change event fired - triggering auto-save', {
+        args: args || {},
+        stackSize: (graph as any).history?.commands?.length || 0
+      });
       this._historyModified$.next();
       this._emitHistoryStateChange(graph);
     });

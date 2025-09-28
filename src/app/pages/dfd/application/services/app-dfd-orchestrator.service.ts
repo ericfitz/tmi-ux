@@ -86,7 +86,7 @@ export class AppDfdOrchestrator {
   private readonly _state$ = new BehaviorSubject<DfdState>(this._createInitialState());
   private readonly _stateChanged$ = new Subject<DfdState>();
 
-  private _graph: Graph | null = null;
+  // Graph is now managed by the infrastructure facade, not directly by the orchestrator
   private _initParams: DfdInitializationParams | null = null;
   private _operationContext: OperationContext | null = null;
   private _containerElement: HTMLElement | null = null;
@@ -260,7 +260,7 @@ export class AppDfdOrchestrator {
    * Manually save the diagram
    */
   save(): Observable<boolean> {
-    if (!this._initParams || !this._graph) {
+    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
@@ -490,7 +490,7 @@ export class AppDfdOrchestrator {
     switch (shortcut) {
       case 'ctrl+s':
         // Trigger manual save
-        if (this._initParams && this._graph) {
+        if (this._initParams && this.dfdInfrastructure.getGraph()) {
           this.saveManually().subscribe({
             next: () => this.logger.debug('Manual save triggered via keyboard shortcut'),
             error: error => this.logger.error('Manual save failed', { error }),
@@ -537,7 +537,8 @@ export class AppDfdOrchestrator {
    * Graph access
    */
   get getGraph(): any {
-    return this._graph;
+    // Delegate to the infrastructure facade which properly manages the graph
+    return this.dfdInfrastructure.getGraph();
   }
 
   /**
@@ -707,7 +708,7 @@ export class AppDfdOrchestrator {
    * Save/Load aliases
    */
   saveManually(): Observable<any> {
-    if (!this._initParams || !this._graph) {
+    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
@@ -859,10 +860,8 @@ export class AppDfdOrchestrator {
   destroy(): Observable<boolean> {
     this.logger.debug('AppDfdOrchestrator: Destroying DFD system');
 
-    if (this._graph) {
-      this._graph.dispose();
-      this._graph = null;
-    }
+    // Graph disposal is now handled by the infrastructure facade
+    this.dfdInfrastructure.dispose();
 
     this._updateState(this._createInitialState());
     this._initParams = null;
@@ -888,213 +887,19 @@ export class AppDfdOrchestrator {
    * Private implementation methods
    */
   private _performInitialization(params: DfdInitializationParams): Observable<boolean> {
-    // Create X6 graph instance with full configuration migrated from InfraX6GraphAdapter
-    this._graph = new Graph({
-      container: params.containerElement,
-      width: params.containerElement.clientWidth,
-      height: params.containerElement.clientHeight,
-      grid: {
-        size: 10,
-        visible: true,
-        type: 'dot',
-        args: {
-          color: '#000000', // Black grid dots
-        },
-      },
-      background: {
-        color: '#f5f5f5', // Light gray background to match toolbar and collaboration bar
-      },
-      panning: {
-        enabled: true,
-        modifiers: ['shift'],
-      },
-      mousewheel: {
-        enabled: true,
-        modifiers: ['shift'],
-        factor: 1.1,
-        maxScale: 1.5,
-        minScale: 0.5,
-      },
-      embedding: {
-        enabled: true,
-        findParent: 'bbox',
-        validate: (args: { parent: Node; child: Node }) => {
-          this.logger.info('X6 embedding validation called', {
-            parentId: args.parent?.id,
-            childId: args.child?.id,
-            parentShape: args.parent?.shape,
-            childShape: args.child?.shape,
-          });
+    // Initialize the graph through the infrastructure facade instead of creating our own
+    this.dfdInfrastructure.initializeGraph(params.containerElement);
+    
+    // The graph is now properly initialized with history filtering
+    // Continue with the rest of initialization
+    return this._continueInitialization(params);
+  }
 
-          const isValid = this.dfdInfrastructure.validateEmbedding(args.parent, args.child);
-
-          this.logger.info('X6 embedding validation result', {
-            parentId: args.parent?.id,
-            childId: args.child?.id,
-            isValid,
-          });
-
-          return isValid;
-        },
-      },
-      interacting: {
-        nodeMovable: true,
-        edgeMovable: true,
-        edgeLabelMovable: true,
-        arrowheadMovable: true,
-        vertexMovable: true,
-        vertexAddable: true,
-        vertexDeletable: true,
-        magnetConnectable: true,
-      },
-      connecting: {
-        snap: {
-          radius: 20,
-        },
-        allowBlank: false,
-        allowLoop: true,
-        allowNode: false,
-        allowEdge: false,
-        allowPort: true,
-        allowMulti: true,
-        highlight: true,
-        anchor: 'center',
-        connectionPoint: 'boundary',
-        router: {
-          name: 'normal',
-        },
-        connector: {
-          name: 'smooth',
-        },
-        validateMagnet: args => {
-          // Use facade to access magnet validation service
-          return this.dfdInfrastructure.isMagnetValid(args.magnet);
-        },
-        validateConnection: args => {
-          // Ensure all required properties exist before delegating to validation service
-          if (!args.sourceView || !args.targetView || !args.sourceMagnet || !args.targetMagnet) {
-            return false;
-          }
-          // Use facade to access connection validation service
-          return this.dfdInfrastructure.isConnectionValid(
-            args.sourceView,
-            args.targetView,
-            args.sourceMagnet,
-            args.targetMagnet,
-          );
-        },
-        createEdge: () => {
-          // Generate UUID type 4 for UX-created edges
-          const edgeId = uuidv4();
-
-          // Create edge with explicit markup (migrated from adapter)
-          const edge = new Edge({
-            id: edgeId,
-            shape: 'edge',
-            markup: [
-              {
-                tagName: 'path',
-                selector: 'wrap',
-                attrs: {
-                  fill: 'none',
-                  cursor: 'pointer',
-                  stroke: 'transparent',
-                  strokeLinecap: 'round',
-                },
-              },
-              {
-                tagName: 'path',
-                selector: 'line',
-                attrs: {
-                  fill: 'none',
-                  pointerEvents: 'none',
-                },
-              },
-            ],
-            attrs: {
-              wrap: {
-                connection: true,
-                strokeWidth: 10,
-                strokeLinecap: 'round',
-                strokeLinejoin: 'round',
-                stroke: 'transparent',
-                fill: 'none',
-              },
-              line: {
-                connection: true,
-                stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                strokeWidth: DFD_STYLING.DEFAULT_STROKE_WIDTH,
-                fill: 'none',
-                targetMarker: {
-                  name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
-                  size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
-                  fill: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                  stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
-                },
-              },
-            },
-            vertices: [],
-            labels: [
-              {
-                position: 0.5,
-                attrs: {
-                  text: {
-                    text: 'Data Flow',
-                    fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                    fill: '#333333',
-                    fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                    textAnchor: 'middle',
-                    dominantBaseline: 'middle',
-                  },
-                  rect: {
-                    fill: '#ffffff',
-                    stroke: 'none',
-                  },
-                },
-              },
-            ],
-            zIndex: 1,
-          });
-
-          return edge;
-        },
-      },
-      highlighting: {
-        magnetAdsorbed: {
-          name: 'stroke',
-          args: {
-            padding: 4,
-            attrs: {
-              strokeWidth: 4,
-              stroke: '#5F95FF',
-            },
-          },
-        },
-        magnetAvailable: {
-          name: 'stroke',
-          args: {
-            padding: 2,
-            attrs: {
-              strokeWidth: 2,
-              stroke: '#31d0c6',
-            },
-          },
-        },
-        nodeAvailable: {
-          name: 'className',
-          args: {
-            className: 'available',
-          },
-        },
-      },
-    });
-
-    // Setup X6 plugins (matching original implementation)
-    this._setupPlugins();
-
-    // Create operation context
+  private _continueInitialization(params: DfdInitializationParams): Observable<boolean> {
+    // Graph is now properly initialized by the facade with history filtering
+    // Create operation context using the facade's graph
     this._operationContext = {
-      graph: this._graph,
+      graph: this.dfdInfrastructure.getGraph(),
       diagramId: params.diagramId,
       threatModelId: params.threatModelId,
       userId: 'current-user', // In real implementation, get from auth service
@@ -1104,11 +909,6 @@ export class AppDfdOrchestrator {
       suppressHistory: false,
       suppressBroadcast: false,
     };
-
-    // Pass the orchestrator-created graph to the infrastructure adapter
-    // This ensures the adapter uses our configured graph instead of creating its own
-    this.dfdInfrastructure.setGraphOnAdapter(this._graph);
-    this.logger.debug('AppDfdOrchestrator: Graph instance passed to adapter');
 
     // Note: Validation callbacks are now configured directly in graph options during creation
 
@@ -1161,7 +961,7 @@ export class AppDfdOrchestrator {
   }
 
   private _triggerAutoSave(operation: GraphOperation, result: OperationResult): void {
-    if (!this._initParams || !this._graph) {
+    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return;
     }
 
@@ -1185,7 +985,7 @@ export class AppDfdOrchestrator {
   }
 
   private _triggerAutoSaveForBatch(_operations: GraphOperation[], results: OperationResult[]): void {
-    if (!this._initParams || !this._graph) {
+    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return;
     }
 
@@ -1209,12 +1009,12 @@ export class AppDfdOrchestrator {
   }
 
   private _getGraphData(): any {
-    if (!this._graph) {
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
       return { nodes: [], edges: [] };
     }
-
     return {
-      nodes: this._graph.getNodes().map(node => ({
+      nodes: graph.getNodes().map((node: any) => ({
         id: node.id,
         shape: node.shape,
         position: node.getPosition(),
@@ -1222,7 +1022,7 @@ export class AppDfdOrchestrator {
         attrs: node.getAttrs(),
         data: node.getData(),
       })),
-      edges: this._graph.getEdges().map(edge => ({
+      edges: graph.getEdges().map((edge: any) => ({
         id: edge.id,
         shape: edge.shape,
         source: edge.getSource(),
@@ -1234,24 +1034,25 @@ export class AppDfdOrchestrator {
   }
 
   private _loadGraphData(data: any): void {
-    if (!this._graph || !data) {
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph || !data) {
       return;
     }
 
     // Clear existing graph
-    this._graph.clearCells();
+    graph.clearCells();
 
     // Load nodes
     if (data.nodes) {
       data.nodes.forEach((nodeData: any) => {
-        this._graph!.addNode(nodeData);
+        graph.addNode(nodeData);
       });
     }
 
     // Load edges
     if (data.edges) {
       data.edges.forEach((edgeData: any) => {
-        this._graph!.addEdge(edgeData);
+        graph.addEdge(edgeData);
       });
     }
 
@@ -1310,68 +1111,7 @@ export class AppDfdOrchestrator {
     };
   }
 
-  /**
-   * Setup X6 plugins to match original implementation
-   */
-  private _setupPlugins(): void {
-    if (!this._graph) return;
+  // Plugin setup is now handled by the infrastructure facade/graph adapter
 
-    // Check if the graph has the use method (not available in test mocks)
-    if (typeof this._graph.use === 'function') {
-      // Enable snapline plugin with red color (for visual feedback during drag/drop)
-      this._graph.use(
-        new Snapline({
-          enabled: true,
-          sharp: true,
-          className: 'dfd-snapline-red',
-        }),
-      );
-
-      // Enable history plugin with centralized filtering
-      // Start disabled - will be enabled after diagram load completes
-      this._graph.use(
-        new History({
-          stackSize: 10,
-          enabled: false, // Start disabled to prevent auto-saves during initialization
-          beforeAddCommand: (event: string, args: any) => {
-            // Basic filtering - could be enhanced with centralized coordinator
-            return this._shouldIncludeInHistory(event, args);
-          },
-        }),
-      );
-
-      // Enable transform plugin for resizing
-      this._graph.use(
-        new Transform({
-          resizing: {
-            enabled: true,
-            minWidth: 40,
-            minHeight: 30,
-            maxWidth: Number.MAX_SAFE_INTEGER,
-            maxHeight: Number.MAX_SAFE_INTEGER,
-            orthogonal: false,
-            restrict: false,
-            preserveAspectRatio: false,
-          },
-          rotating: false,
-        }),
-      );
-
-      // Enable export plugin for diagram export functionality
-      this._graph.use(new Export());
-
-      this.logger.debug('X6 plugins setup completed', {
-        plugins: ['Snapline', 'History', 'Transform', 'Export'],
-      });
-    }
-  }
-
-  /**
-   * Determine if an operation should be included in history
-   */
-  private _shouldIncludeInHistory(event: string, _args: any): boolean {
-    // Basic filtering logic - exclude certain events from history
-    const excludedEvents = ['cell:highlight', 'cell:unhighlight', 'graph:resize'];
-    return !excludedEvents.includes(event);
-  }
+  // History filtering is now handled by the infrastructure facade/graph adapter
 }

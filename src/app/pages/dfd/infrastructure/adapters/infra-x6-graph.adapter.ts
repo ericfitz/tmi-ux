@@ -47,7 +47,7 @@ import { InfraX6HistoryAdapter } from './infra-x6-history.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
 import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 
@@ -682,6 +682,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this._historyManager.dispose();
     }
 
+    // Clean up history coordinator
+    if (this._historyCoordinator) {
+      this._historyCoordinator.dispose();
+    }
+
     // Clean up diagram operation broadcaster
     this._diagramOperationBroadcaster.dispose();
 
@@ -783,6 +788,13 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   private _setupEventListeners(): void {
     if (!this._graph) return;
 
+    // Subscribe to drag completion events for final-state history recording
+    this._historyCoordinator.dragCompletions$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(completion => {
+        this._handleDragCompletion(completion);
+      });
+
     // Node events
     this._graph.on('node:added', ({ node }: { node: Node }) => {
       this._nodeAdded$.next(node);
@@ -813,16 +825,28 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           const currentPos = new Point(current.x, current.y);
           const previousPos = new Point(previous.x, previous.y);
 
-          // Using simpler approach with initial positions
+          // Check if this is a drag operation or a programmatic move
+          if (this._historyCoordinator.isDragInProgress(node.id)) {
+            // This is part of a drag operation - update tracking but don't emit final event yet
+            this._historyCoordinator.updateDragTracking(node.id);
+            this.logger.debugComponent('X6Graph', 'Updated drag tracking for node move', {
+              nodeId: node.id,
+              position: currentPos,
+            });
+          } else {
+            // This might be the start of a drag or a programmatic move
+            // Start tracking in case this becomes a drag operation
+            this._historyCoordinator.startDragTracking(node.id, 'move', {
+              position: previous,
+            });
+          }
 
-          // Emit immediate event for UI responsiveness
+          // Always emit immediate event for UI responsiveness
           this._nodeMoved$.next({
             nodeId: node.id,
             position: currentPos,
             previous: previousPos,
           });
-
-          // Note: Drag completion provides superior tracking
         }
       },
     );
@@ -840,7 +864,23 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         previous?: { width: number; height: number };
       }) => {
         if (current && previous) {
-          // Emit immediate event for UI responsiveness
+          // Check if this is a resize drag operation
+          if (this._historyCoordinator.isDragInProgress(node.id)) {
+            // This is part of a resize operation - update tracking
+            this._historyCoordinator.updateDragTracking(node.id);
+            this.logger.debugComponent('X6Graph', 'Updated drag tracking for node resize', {
+              nodeId: node.id,
+              size: current,
+            });
+          } else {
+            // This might be the start of a resize or a programmatic size change
+            // Start tracking in case this becomes a resize operation
+            this._historyCoordinator.startDragTracking(node.id, 'resize', {
+              size: previous,
+            });
+          }
+
+          // Always emit immediate event for UI responsiveness
           this._nodeResized$.next({
             nodeId: node.id,
             width: current.width,
@@ -992,79 +1032,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       // to avoid duplicate updates and ensure proper history suppression
     });
 
-    // Selection events - TEMPORARILY COMMENTED OUT TO TEST HISTORY FILTERING
-    // this._graph.on(
-    //   'selection:changed',
-    //   ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
-    //     const selected = added.map((cell: Cell) => cell.id);
-    //     const deselected = removed.map((cell: Cell) => cell.id);
-
-    //     // Batch all selection visual effects to prevent multiple history disable/enable calls
-    //     if (this._graph) {
-    //       this._graph.batchUpdate(() => {
-    //         // Apply glow effects and tools to newly selected cells
-    //         added.forEach((cell: Cell) => {
-    //           this._selectedCells.add(cell.id);
-
-    //           if (cell.isNode()) {
-    //             const nodeType = (cell as any).getNodeTypeInfo
-    //               ? (cell as any).getNodeTypeInfo().type
-    //               : 'unknown';
-    //             if (nodeType === 'text-box') {
-    //               // For text-box shapes, apply glow to text element since body is transparent
-    //               cell.attr('text/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
-    //             } else {
-    //               // For all other node types, apply glow to body element
-    //               cell.attr('body/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
-    //               cell.attr('body/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
-    //             }
-    //           } else if (cell.isEdge()) {
-    //             cell.attr('line/filter', DFD_STYLING_HELPERS.getSelectionFilter('edge'));
-    //             cell.attr('line/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
-    //           }
-
-    //           // Add tools for selected cells (tools can be tracked in history)
-    //           if (cell.isNode()) {
-    //             this._addNodeTools(cell);
-    //           } else if (cell.isEdge()) {
-    //             this._addEdgeTools(cell);
-    //           }
-    //         });
-
-    //         // Remove glow effects and tools from deselected cells
-    //         removed.forEach((cell: Cell) => {
-    //           this._selectedCells.delete(cell.id);
-
-    //           if (cell.isNode()) {
-    //             const nodeType = (cell as any).getNodeTypeInfo
-    //               ? (cell as any).getNodeTypeInfo().type
-    //               : 'unknown';
-    //             if (nodeType === 'text-box') {
-    //               // For text-box shapes, remove glow from text element
-    //               cell.attr('text/filter', 'none');
-    //             } else {
-    //               // For all other node types, remove glow from body element
-    //               cell.attr('body/filter', 'none');
-    //               // Restore shape-specific default stroke width
-    //               const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType as any);
-    //               cell.attr('body/strokeWidth', defaultStrokeWidth);
-    //             }
-    //           } else if (cell.isEdge()) {
-    //             cell.attr('line/filter', 'none');
-    //             cell.attr('line/strokeWidth', DFD_STYLING.DEFAULT_STROKE_WIDTH);
-    //           }
-
-    //           // Remove tools from deselected cells (tools can be tracked in history)
-    //           cell.removeTools();
-    //         });
-    //       });
-    //     }
-
-    //     this._selectionChanged$.next({ selected, deselected });
-    //   },
-    // );
-
-    // For testing - just emit the event for observability
+    // Selection events - emit observable for coordination with selection adapter
     this._graph.on(
       'selection:changed',
       ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
@@ -1106,6 +1074,33 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         e.stopPropagation();
         e.preventDefault();
         this._addLabelEditor(cell, e);
+      }
+    });
+
+    // Mouse events to detect drag completion
+    this._graph.on('node:mouseup', ({ node }: { node: Node }) => {
+      // Finalize any ongoing drag operation for this node
+      if (this._historyCoordinator.isDragInProgress(node.id)) {
+        const finalState = this._getCellState(node);
+        this._historyCoordinator.finalizeDragTracking(node.id, finalState);
+      }
+    });
+
+    this._graph.on('edge:mouseup', ({ edge }: { edge: Edge }) => {
+      // Finalize any ongoing drag operation for this edge (vertex dragging)
+      if (this._historyCoordinator.isDragInProgress(edge.id)) {
+        const finalState = this._getCellState(edge);
+        this._historyCoordinator.finalizeDragTracking(edge.id, finalState);
+      }
+    });
+
+    // Global mouse up to catch any drag operations that might not have fired cell-specific events
+    this._graph.on('blank:mouseup', () => {
+      // Check if there are any drag operations in progress and finalize them
+      // This is a safety net for edge cases
+      if (this._historyCoordinator.isAnyDragInProgress()) {
+        this.logger.debugComponent('X6Graph', 'Blank mouseup detected during drag - safety finalization');
+        // We can't easily determine the final state here, so let the timeout handle it
       }
     });
   }
@@ -1312,6 +1307,22 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           vertices,
         });
 
+        // Check if this is a vertex drag operation
+        if (this._historyCoordinator.isDragInProgress(edge.id)) {
+          // This is part of a vertex drag operation - update tracking
+          this._historyCoordinator.updateDragTracking(edge.id);
+          this.logger.debugComponent('X6Graph', 'Updated drag tracking for edge vertices', {
+            edgeId: edge.id,
+            vertexCount: vertices.length,
+          });
+        } else {
+          // This might be the start of a vertex drag or a programmatic change
+          // Start tracking in case this becomes a drag operation
+          this._historyCoordinator.startDragTracking(edge.id, 'vertex', {
+            vertices: vertices.slice(), // Copy of current vertices as initial state
+          });
+        }
+
         // Update the edge metadata with new vertices
         if ((edge as any).setApplicationMetadata) {
           (edge as any).setApplicationMetadata(
@@ -1320,15 +1331,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           );
         }
 
-        // Emit immediate vertex change event for UI responsiveness
+        // Always emit immediate vertex change event for UI responsiveness
         this._edgeVerticesChanged$.next({
           edgeId: edge.id,
           vertices: vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y })),
         });
-
-        // Vertex changes are drag operations - emit immediate event for UI responsiveness
-        // History tracking will be handled by drag completion events
-        // TODO: Implement proper vertex drag completion tracking
       }
     };
 
@@ -1686,10 +1693,149 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Handle drag completion events by recording final state in history
+   */
+  private _handleDragCompletion(completion: any): void {
+    if (!this._graph) return;
+
+    const { cellId, dragType } = completion;
+    const cell = this._graph.getCellById(cellId);
+    
+    if (!cell) {
+      this.logger.warn('Drag completion for non-existent cell', { cellId });
+      return;
+    }
+
+    this.logger.debugComponent('X6Graph', 'Handling drag completion', {
+      cellId,
+      dragType,
+      duration: completion.duration,
+    });
+
+    // Record the final state change in history as an atomic operation
+    let operationType: string;
+    switch (dragType) {
+      case 'move':
+        operationType = HISTORY_OPERATION_TYPES.NODE_MOVE_FINAL;
+        break;
+      case 'resize':
+        operationType = HISTORY_OPERATION_TYPES.NODE_RESIZE_FINAL;
+        break;
+      case 'vertex':
+        operationType = HISTORY_OPERATION_TYPES.EDGE_VERTEX_CHANGE_FINAL;
+        break;
+      default:
+        operationType = 'drag-completion';
+    }
+
+    // Execute the final state recording as an atomic operation
+    this._historyCoordinator.executeFinalizeDragOperation(this._graph, () => {
+      // Get current state from the cell
+      const currentState = this._getCellState(cell);
+      
+      // Force a state change to trigger history recording
+      // This is a bit of a hack but ensures the final state is recorded
+      if (dragType === 'move' && cell.isNode()) {
+        const node = cell;
+        const position = node.getPosition();
+        // Force position update to trigger history
+        node.setPosition(position.x, position.y);
+      } else if (dragType === 'resize' && cell.isNode()) {
+        const node = cell;
+        const size = node.getSize();
+        // Force size update to trigger history
+        node.setSize(size.width, size.height);
+      } else if (dragType === 'vertex' && cell.isEdge()) {
+        const edge = cell;
+        const vertices = edge.getVertices();
+        // Force vertex update to trigger history
+        edge.setVertices(vertices);
+      }
+
+      return currentState;
+    }, operationType);
+  }
+
+  /**
+   * Get current state of a cell for history recording
+   */
+  private _getCellState(cell: any): any {
+    if (cell.isNode()) {
+      const node = cell as Node;
+      return {
+        position: node.getPosition(),
+        size: node.getSize(),
+      };
+    } else if (cell.isEdge()) {
+      const edge = cell as Edge;
+      return {
+        vertices: edge.getVertices(),
+      };
+    }
+    return {};
+  }
+
+  /**
    * Centralized history filtering logic using GraphHistoryCoordinator
    */
   private _shouldIncludeInHistory(event: string, args: any): boolean {
-    // Completely exclude tools from history
+    const result = this._shouldIncludeInHistoryInternal(event, args);
+    
+    // Log when events are being included to help debug unwanted history entries
+    if (result) {
+      this.logger.info('INCLUDING event in history', {
+        event,
+        cellId: args.cell?.id,
+        key: args.key,
+        options: args.options
+      });
+    }
+    
+    return result;
+  }
+
+  private _shouldIncludeInHistoryInternal(event: string, args: any): boolean {
+    // Priority 1: Exclude during diagram loading
+    if (this._historyCoordinator.isDiagramLoading()) {
+      this.logger.debugComponent('X6Graph', 'Excluding event during diagram loading', {
+        event,
+        cellId: args.cell?.id,
+      });
+      return false;
+    }
+
+    // Priority 2: Exclude based on current operation type
+    const currentOperationType = this._historyCoordinator.getCurrentOperationType();
+    if (currentOperationType && this._historyCoordinator.shouldExcludeOperationType(currentOperationType)) {
+      this.logger.debugComponent('X6Graph', 'Excluding event for excluded operation type', {
+        event,
+        operationType: currentOperationType,
+      });
+      return false;
+    }
+
+    // Priority 3: If any cell involved is currently being dragged, exclude from history
+    // This prevents interim drag states from cluttering history
+    if (args.cell && this._historyCoordinator.isDragInProgress(args.cell.id)) {
+      this.logger.debugComponent('X6Graph', 'Excluding event during drag operation', {
+        event,
+        cellId: args.cell.id,
+      });
+      return false;
+    }
+
+    // Also check for multi-cell operations where some cells might be dragging
+    if (args.added && Array.isArray(args.added)) {
+      const anyDragging = args.added.some((cell: any) => 
+        cell.id && this._historyCoordinator.isDragInProgress(cell.id)
+      );
+      if (anyDragging) {
+        this.logger.debugComponent('X6Graph', 'Excluding multi-cell event during drag');
+        return false;
+      }
+    }
+
+    // Priority 4: Completely exclude tools from history
     if (event === 'cell:change:tools') {
       // this.logger.debugComponent('X6Graph', 'Excluding tools event');
       return false;

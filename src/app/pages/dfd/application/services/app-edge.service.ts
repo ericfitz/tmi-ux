@@ -28,7 +28,7 @@ import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-hi
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
 
 /**
  * Interface for connection validation arguments from X6
@@ -287,7 +287,7 @@ export class AppEdgeService {
         this.updateEdgeLabel(createdInverseEdge, inverseLabel);
 
         return createdInverseEdge;
-      });
+      }, HISTORY_OPERATION_TYPES.EDGE_ADD_INVERSE);
 
       // Apply visual effects (z-order and highlighting) outside of history
       this.historyCoordinator.executeVisualEffect(graph, () => {
