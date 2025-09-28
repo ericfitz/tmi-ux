@@ -434,9 +434,8 @@ export class AppDfdOrchestrator {
       return [];
     }
 
-    // Use the known working X6 API: filter all cells for selected ones
-    const cells = graph.getCells();
-    const selectedCells = cells.filter((cell: any) => cell.isSelected && cell.isSelected());
+    // Use the native X6 getSelectedCells method
+    const selectedCells = graph.getSelectedCells();
     return selectedCells.map((cell: any) => cell.id);
   }
 
@@ -1185,7 +1184,7 @@ export class AppDfdOrchestrator {
     }
   }
 
-  private _triggerAutoSaveForBatch(operations: GraphOperation[], results: OperationResult[]): void {
+  private _triggerAutoSaveForBatch(_operations: GraphOperation[], results: OperationResult[]): void {
     if (!this._initParams || !this._graph) {
       return;
     }
