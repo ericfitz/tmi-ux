@@ -205,11 +205,19 @@ export class InfraX6KeyboardAdapter {
     // We need to access the internal grid configuration and update it
 
     const graphOptions = (this._graph as any).options as {
-      grid?: { size: number; visible: boolean };
+      grid?: { size: number; visible: boolean; type: string; args: any };
     };
     if (graphOptions?.grid) {
-      graphOptions.grid.size = newGridSize;
-      // Redraw the grid with the new size
+      // Update grid size while preserving all other grid configuration
+      graphOptions.grid = {
+        size: newGridSize,
+        visible: true,
+        type: 'dot',
+        args: {
+          color: '#000000', // Black grid dots
+        },
+      };
+      // Redraw the grid with the complete configuration
       this._graph.drawGrid();
     }
   }

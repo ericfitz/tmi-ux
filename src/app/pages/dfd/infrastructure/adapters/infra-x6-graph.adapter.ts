@@ -1431,12 +1431,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     } else {
       // For edges, calculate midpoint from source and target positions
       const edge = cell as any;
-      
+
       try {
         // Try to get the edge path and find midpoint
         const sourcePoint = edge.getSourcePoint();
         const targetPoint = edge.getTargetPoint();
-        
+
         if (sourcePoint && targetPoint) {
           // Calculate midpoint between source and target
           centerPoint = {

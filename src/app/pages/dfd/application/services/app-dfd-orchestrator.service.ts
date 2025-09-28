@@ -925,15 +925,15 @@ export class AppDfdOrchestrator {
             parentShape: args.parent?.shape,
             childShape: args.child?.shape,
           });
-          
+
           const isValid = this.dfdInfrastructure.validateEmbedding(args.parent, args.child);
-          
+
           this.logger.info('X6 embedding validation result', {
             parentId: args.parent?.id,
             childId: args.child?.id,
             isValid,
           });
-          
+
           return isValid;
         },
       },
@@ -1374,5 +1374,4 @@ export class AppDfdOrchestrator {
     const excludedEvents = ['cell:highlight', 'cell:unhighlight', 'graph:resize'];
     return !excludedEvents.includes(event);
   }
-
 }

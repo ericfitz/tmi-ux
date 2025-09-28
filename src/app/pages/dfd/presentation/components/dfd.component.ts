@@ -419,13 +419,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           loading: state.loading,
           error: state.error,
         });
-        
+
         // Set up edge event handlers when orchestrator becomes initialized
         if (state.initialized && !this.isSystemInitialized) {
           this.logger.info('DFD orchestrator just became initialized - setting up edge handlers');
           this.setupEdgeObservableSubscriptions();
         }
-        
+
         this.isSystemInitialized = state.initialized;
         this.cdr.markForCheck();
       }),
@@ -958,7 +958,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private setupEdgeObservableSubscriptions(): void {
     this.logger.info('DFD Component: Setting up edge observable subscriptions');
-    
+
     // Subscribe to edge added events from the graph adapter
     const graphAdapter = this.dfdInfrastructure.graphAdapter;
     if (graphAdapter) {
@@ -968,9 +968,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             edgeId: edge.id,
           });
           this.handleEdgeAdded(edge);
-        })
+        }),
       );
-      
+
       this.logger.info('Edge observable subscriptions set up successfully');
     } else {
       this.logger.warn('Graph adapter not available for edge subscriptions');

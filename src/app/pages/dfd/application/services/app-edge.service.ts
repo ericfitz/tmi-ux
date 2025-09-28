@@ -136,19 +136,19 @@ export class AppEdgeService {
       hasGetLabel: !!(edge as any).getLabel,
       hasSetLabel: !!(edge as any).setLabel,
     });
-    
+
     if (!currentLabel || currentLabel.trim() === '') {
       const defaultLabel = this.getLocalizedFlowLabel();
-      
+
       this.logger.info('Setting default label for new edge', {
         edgeId: edge.id,
         defaultLabel,
         currentLanguage: this.transloco.getActiveLang(),
         beforeUpdate: currentLabel,
       });
-      
+
       this.updateEdgeLabel(edge, defaultLabel);
-      
+
       // Verify the label was set
       const verifyLabel = this.getEdgeLabel(edge);
       this.logger.info('Default label set verification', {
@@ -883,7 +883,7 @@ export class AppEdgeService {
    */
   private getLocalizedFlowLabel(): string {
     const translatedLabel = this.transloco.translate('editor.flowLabel');
-    
+
     // If translation service returns the key itself, it means the translation wasn't found
     // This can happen if translations aren't loaded yet or the key doesn't exist
     if (translatedLabel === 'editor.flowLabel') {
@@ -893,7 +893,7 @@ export class AppEdgeService {
       });
       return 'Flow';
     }
-    
+
     return translatedLabel;
   }
 
