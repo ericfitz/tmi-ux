@@ -238,13 +238,13 @@ export function getX6ShapeForNodeType(nodeType: string): string {
 export function getEdgeAttrs(edgeType: string): Record<string, unknown> {
   const baseAttrs = {
     line: {
-      stroke: '#000000',
-      strokeWidth: 2,
+      stroke: DFD_STYLING.EDGES.STROKE,
+      strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
       targetMarker: {
-        name: 'classic',
-        size: 8,
-        fill: '#000000',
-        stroke: '#000000',
+        name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+        size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
+        fill: DFD_STYLING.EDGES.TARGET_MARKER.FILL,
+        stroke: DFD_STYLING.EDGES.TARGET_MARKER.STROKE,
       },
     },
   };
@@ -257,12 +257,28 @@ export function getEdgeAttrs(edgeType: string): Record<string, unknown> {
         ...baseAttrs,
         line: {
           ...baseAttrs.line,
-          stroke: '#000000',
-          strokeDasharray: '5 5',
+          stroke: DFD_STYLING.EDGES.TRUST_BOUNDARY.STROKE,
+          strokeWidth: DFD_STYLING.EDGES.TRUST_BOUNDARY.STROKE_WIDTH,
+          strokeDasharray: DFD_STYLING.EDGES.TRUST_BOUNDARY.STROKE_DASHARRAY,
           targetMarker: {
             ...baseAttrs.line.targetMarker,
-            fill: '#722ED1',
-            stroke: '#000000',
+            fill: DFD_STYLING.EDGES.TRUST_BOUNDARY.MARKER_FILL,
+            stroke: DFD_STYLING.EDGES.TRUST_BOUNDARY.MARKER_STROKE,
+          },
+        },
+      };
+    case 'control-flow':
+      return {
+        ...baseAttrs,
+        line: {
+          ...baseAttrs.line,
+          stroke: DFD_STYLING.EDGES.CONTROL_FLOW.STROKE,
+          strokeWidth: DFD_STYLING.EDGES.CONTROL_FLOW.STROKE_WIDTH,
+          strokeDasharray: DFD_STYLING.EDGES.CONTROL_FLOW.STROKE_DASHARRAY,
+          targetMarker: {
+            ...baseAttrs.line.targetMarker,
+            fill: DFD_STYLING.EDGES.CONTROL_FLOW.MARKER_FILL,
+            stroke: DFD_STYLING.EDGES.CONTROL_FLOW.MARKER_STROKE,
           },
         },
       };

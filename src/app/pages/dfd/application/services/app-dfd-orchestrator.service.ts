@@ -32,6 +32,7 @@ import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/in
 import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { NodeType } from '../../domain/value-objects/node-info';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import {
   GraphOperation,
   OperationContext,
@@ -1022,14 +1023,14 @@ export class AppDfdOrchestrator {
               },
               line: {
                 connection: true,
-                stroke: '#333333', // DFD_STYLING.EDGES.DEFAULT_STROKE
-                strokeWidth: 2, // DFD_STYLING.DEFAULT_STROKE_WIDTH
+                stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
+                strokeWidth: DFD_STYLING.DEFAULT_STROKE_WIDTH,
                 fill: 'none',
                 targetMarker: {
-                  name: 'classic',
-                  size: 8,
-                  fill: '#333333',
-                  stroke: '#333333',
+                  name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+                  size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
+                  fill: DFD_STYLING.EDGES.DEFAULT_STROKE,
+                  stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
                 },
               },
             },
@@ -1040,9 +1041,9 @@ export class AppDfdOrchestrator {
                 attrs: {
                   text: {
                     text: 'Data Flow',
-                    fontSize: 12,
+                    fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                     fill: '#333333',
-                    fontFamily: 'Arial, sans-serif',
+                    fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
                     textAnchor: 'middle',
                     dominantBaseline: 'middle',
                   },

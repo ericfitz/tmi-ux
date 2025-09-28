@@ -135,9 +135,9 @@ export class EdgeOperationValidator extends BaseOperationValidator {
 
     // Validate edge type
     if (!edgeData.edgeType) {
-      warnings.push('Edge type not specified, will default to "dataflow"');
+      warnings.push('Edge type not specified, will default to "data-flow"');
     } else {
-      const validEdgeTypes = ['dataflow', 'control-flow', 'trust-boundary'];
+      const validEdgeTypes = ['data-flow', 'control-flow', 'trust-boundary'];
       if (!validEdgeTypes.includes(edgeData.edgeType)) {
         warnings.push(
           `Unusual edge type '${edgeData.edgeType}', expected one of: ${validEdgeTypes.join(', ')}`,

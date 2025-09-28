@@ -11,6 +11,7 @@ import { InfraNodeService } from '../../infrastructure/services/infra-node.servi
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
@@ -448,11 +449,11 @@ export class AppDiagramService {
       zIndex: mockCell.zIndex || 1,
       attrs: {
         line: {
-          stroke: '#000000',
-          strokeWidth: 2,
+          stroke: DFD_STYLING.EDGES.STROKE,
+          strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
           targetMarker: {
-            name: 'classic',
-            size: 8,
+            name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+            size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
           },
         },
       },
@@ -963,8 +964,8 @@ export class AppDiagramService {
                 text: (cell as any).getLabel
                   ? (cell as any).getLabel()
                   : (cell.getAttrs() as any)?.text?.text || '',
-                fontSize: 14,
-                fill: '#000000',
+                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+                fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
               },
             },
             data: this.convertCellDataToArray(cell.getData()),
@@ -1003,11 +1004,11 @@ export class AppDiagramService {
             zIndex: cell.getZIndex(),
             attrs: {
               line: {
-                stroke: '#000000',
-                strokeWidth: 2,
+                stroke: DFD_STYLING.EDGES.STROKE,
+                strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
                 targetMarker: {
-                  name: 'classic',
-                  size: 8,
+                  name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+                  size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
                 },
               },
             },

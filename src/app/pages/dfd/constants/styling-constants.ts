@@ -32,6 +32,23 @@ export const DFD_STYLING = {
   TEXT_FONT_FAMILY: "'Roboto Condensed', Arial, sans-serif",
   ICON_FONT_FAMILY: 'Material Symbols Outlined',
 
+  // Raw color values (only used within this constants file)
+  _COLORS: {
+    WHITE: '#ffffff',
+    BLACK: '#000000',
+    GRAY: '#808080',
+    LIGHT_GRAY: '#f5f5f5',
+    DARK_GRAY: '#333333',
+    RED: '#d62728',
+    PURPLE: '#722ED1',
+  },
+  
+  _STROKE_WIDTHS: {
+    THIN: 1,
+    NORMAL: 2,
+    THICK: 3,
+  },
+
   // Selection styling effects
   SELECTION: {
     STROKE_WIDTH: 2,
@@ -63,6 +80,15 @@ export const DFD_STYLING = {
     MIN_WIDTH: 40,
     MIN_HEIGHT: 30,
     DEFAULT_FONT_WEIGHT: 400,
+
+    // Default node appearance (used as fallbacks)
+    FILL: '#ffffff',
+    STROKE: '#000000',
+    STROKE_WIDTH: 1,
+    
+    // Default node labels
+    LABEL_TEXT_COLOR: '#000000',
+    LABEL_BACKGROUND: 'transparent',
 
     // Shape-specific default styling (matches x6-shape-definitions.ts)
     ACTOR: {
@@ -103,12 +129,56 @@ export const DFD_STYLING = {
   // Edge styling constants
   EDGES: {
     DEFAULT_LABEL: 'Flow',
-    DEFAULT_STROKE: '#000000',
+    DEFAULT_STROKE: '#000000', // Used in orchestrator for createEdge
+    DEFAULT_STROKE_WIDTH: 2,
+    DEFAULT_FILL: 'none',
     ARROWHEAD: 'block',
     CONNECTOR: 'smooth',
     ROUTER: 'normal',
     SELECTION_BLUR_RADIUS: 6, // Edges use different blur radius than nodes
+    
+    // Default edge appearance (data-flow style)
+    STROKE: '#000000',
+    STROKE_WIDTH: 2,
+    FILL: 'none',
+    
+    // Default edge labels
+    LABEL_TEXT_COLOR: '#000000',
+    LABEL_BACKGROUND: '#ffffff',
+    LABEL_BORDER: '#000000',
+    LABEL_BORDER_WIDTH: 1,
+    
+    // Target marker (arrowhead) styling
+    TARGET_MARKER: {
+      NAME: 'classic',
+      SIZE: 8,
+      FILL: '#000000',
+      STROKE: '#000000',
+    },
+    
+    // Edge type specific styling
+    DATA_FLOW: {
+      STROKE: '#000000',
+      STROKE_WIDTH: 2,
+      MARKER_FILL: '#000000',
+      MARKER_STROKE: '#000000',
+    },
+    TRUST_BOUNDARY: {
+      STROKE: '#000000',
+      STROKE_WIDTH: 2,
+      STROKE_DASHARRAY: '5 5',
+      MARKER_FILL: '#722ED1',
+      MARKER_STROKE: '#000000',
+    },
+    CONTROL_FLOW: {
+      STROKE: '#d62728',
+      STROKE_WIDTH: 2,
+      STROKE_DASHARRAY: '3,3',
+      MARKER_FILL: '#d62728',
+      MARKER_STROKE: '#d62728',
+    },
   },
+
 
   // Port styling properties
   PORTS: {

@@ -208,16 +208,13 @@ export class InfraX6KeyboardAdapter {
       grid?: { size: number; visible: boolean; type: string; args: any };
     };
     if (graphOptions?.grid) {
-      // Update grid size while preserving all other grid configuration
-      graphOptions.grid = {
-        size: newGridSize,
-        visible: true,
-        type: 'dot',
-        args: {
-          color: '#000000', // Black grid dots
-        },
-      };
-      // Redraw the grid with the complete configuration
+      // Update only the grid size while preserving all other grid configuration
+      graphOptions.grid.size = newGridSize;
+      // Ensure visibility is maintained (don't override other grid properties)
+      if (graphOptions.grid.visible !== false) {
+        graphOptions.grid.visible = true;
+      }
+      // Redraw the grid with the updated configuration
       this._graph.drawGrid();
     }
   }

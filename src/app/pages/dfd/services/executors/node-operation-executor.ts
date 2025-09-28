@@ -11,6 +11,7 @@
 import { Observable, of, throwError } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import {
   GraphOperation,
@@ -336,11 +337,11 @@ export class NodeOperationExecutor implements OperationExecutor {
       size: nodeData.size || defaultSize,
       label: nodeData.label || defaultLabel,
       style: {
-        fill: '#ffffff',
-        stroke: '#000000',
-        strokeWidth: 1,
-        fontSize: 12,
-        textColor: '#000000',
+        fill: DFD_STYLING.NODES.FILL,
+        stroke: DFD_STYLING.NODES.STROKE,
+        strokeWidth: DFD_STYLING.NODES.STROKE_WIDTH,
+        fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+        textColor: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         ...nodeData.style,
       },
       properties: nodeData.properties || {},

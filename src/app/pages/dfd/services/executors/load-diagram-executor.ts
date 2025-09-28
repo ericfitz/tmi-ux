@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import { BaseOperationExecutor } from './base-operation-executor';
 import {
   GraphOperation,
@@ -186,14 +187,14 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       height: nodeData.height || 60,
       attrs: nodeData.attrs || {
         body: {
-          fill: '#ffffff',
-          stroke: '#000000',
-          strokeWidth: 1,
+          fill: DFD_STYLING.NODES.FILL,
+          stroke: DFD_STYLING.NODES.STROKE,
+          strokeWidth: DFD_STYLING.NODES.STROKE_WIDTH,
         },
         label: {
           text: nodeData.label || nodeData.attrs?.label?.text || 'Node',
-          fontSize: 14,
-          fill: '#000000',
+          fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+          fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
       },
       data: nodeData.data || {},
@@ -209,7 +210,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       target: edgeData.target,
       attrs: edgeData.attrs || {
         line: {
-          stroke: '#000000',
+          stroke: DFD_STYLING.EDGES.STROKE,
           strokeWidth: 1,
         },
       },

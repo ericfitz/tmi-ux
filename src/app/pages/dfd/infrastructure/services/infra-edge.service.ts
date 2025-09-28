@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
@@ -291,14 +292,14 @@ export class InfraEdgeService {
         },
         line: {
           connection: true,
-          stroke: '#000000',
-          strokeWidth: 2,
-          fill: 'none',
+          stroke: DFD_STYLING.EDGES.STROKE,
+          strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
+          fill: DFD_STYLING.EDGES.FILL,
           targetMarker: {
-            name: 'classic',
-            size: 8,
-            fill: '#000000',
-            stroke: '#000000',
+            name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+            size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
+            fill: DFD_STYLING.EDGES.TARGET_MARKER.FILL,
+            stroke: DFD_STYLING.EDGES.TARGET_MARKER.STROKE,
           },
           ...(attrs?.['line'] || {}),
         },

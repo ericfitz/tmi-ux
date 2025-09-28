@@ -7,6 +7,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 import { BaseOperationExecutor } from './base-operation-executor';
 import {
   GraphOperation,
@@ -97,8 +98,8 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         },
         attrs: {
           line: {
-            stroke: (edgeInfo as any).style?.stroke || '#000000',
-            strokeWidth: (edgeInfo as any).style?.strokeWidth || 1,
+            stroke: (edgeInfo as any).style?.stroke || DFD_STYLING.EDGES.STROKE,
+            strokeWidth: (edgeInfo as any).style?.strokeWidth || DFD_STYLING.EDGES.STROKE_WIDTH,
             strokeDasharray: (edgeInfo as any).style?.strokeDasharray || undefined,
           },
         },
@@ -119,13 +120,13 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
                   attrs: {
                     label: {
                       text: (edgeInfo as any).label || '',
-                      fontSize: (edgeInfo as any).style?.fontSize || 12,
-                      fill: (edgeInfo as any).style?.textColor || '#000000',
+                      fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
+                      fill: (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
                     },
                     body: {
-                      fill: (edgeInfo as any).style?.labelBackground || '#ffffff',
-                      stroke: (edgeInfo as any).style?.labelBorder || '#000000',
-                      strokeWidth: 1,
+                      fill: (edgeInfo as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
+                      stroke: (edgeInfo as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
+                      strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
                       rx: 3,
                       ry: 3,
                     },
@@ -135,7 +136,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
             : [],
         data: {
           ...(edgeInfo as any).properties,
-          edgeType: (edgeInfo as any).edgeType || 'dataflow',
+          edgeType: (edgeInfo as any).edgeType || 'data-flow',
         },
       };
 
@@ -206,13 +207,13 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
               attrs: {
                 label: {
                   text: (updates.labels[0] as any).text || '',
-                  fontSize: (updates.labels[0] as any).attrs?.label?.fontSize || 12,
-                  fill: (updates.labels[0] as any).attrs?.label?.fill || '#000000',
+                  fontSize: (updates.labels[0] as any).attrs?.label?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
+                  fill: (updates.labels[0] as any).attrs?.label?.fill || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
                 },
                 body: {
-                  fill: (updates as any).style?.labelBackground || '#ffffff',
-                  stroke: (updates as any).style?.labelBorder || '#000000',
-                  strokeWidth: 1,
+                  fill: (updates as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
+                  stroke: (updates as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
+                  strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
                   rx: 3,
                   ry: 3,
                 },
