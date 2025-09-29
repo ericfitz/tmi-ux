@@ -44,8 +44,6 @@ import {
 // DFD v2 Architecture
 import { AppDfdOrchestrator } from '../../application/services/app-dfd-orchestrator.service';
 import { AppAutoSaveManager } from '../../application/services/app-auto-save-manager.service';
-import { AppGraphOperationManager } from '../../application/services/app-graph-operation-manager.service';
-import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
 import { AppDfdFacade } from '../../application/facades/app-dfd.facade';
 
 // Infrastructure adapters and services
@@ -63,9 +61,6 @@ import { InfraPortStateService } from '../../infrastructure/services/infra-port-
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { AppEdgeService } from '../../application/services/app-edge.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
-import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 
 // Essential v1 components still needed
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -100,12 +95,8 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdCollaborationComponent,
   ],
   providers: [
-    // DFD v2 Architecture - Core Services with Facade
+    // DFD v2 Architecture - Component-scoped infrastructure services
     AppDfdFacade, // Facade encapsulates all infrastructure dependencies
-    AppDfdOrchestrator,
-    AppGraphOperationManager,
-    AppAutoSaveManager,
-    AppPersistenceCoordinator,
     // Infrastructure adapters and services required by InfraX6GraphAdapter
     InfraX6GraphAdapter,
     InfraX6ZOrderAdapter,
@@ -121,14 +112,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     InfraNodeService,
     InfraX6CoreOperationsService,
     InfraEdgeService,
-    AppEdgeService,
-    GraphHistoryCoordinator,
-    DiagramOperationBroadcaster,
-    // Essential services still needed
-    ThreatModelService,
-    ThreatModelAuthorizationService,
-    DfdCollaborationService,
-    CellDataExtractionService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],

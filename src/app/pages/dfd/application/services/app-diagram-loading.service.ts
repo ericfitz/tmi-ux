@@ -14,7 +14,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 import { AppDiagramService } from './app-diagram.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
 
 /**
  * Options for cell loading operations
@@ -38,7 +38,7 @@ export class AppDiagramLoadingService {
     private logger: LoggerService,
     private infraNodeConfigurationService: InfraNodeConfigurationService,
     private diagramService: AppDiagramService,
-    private historyCoordinator: GraphHistoryCoordinator,
+    private historyCoordinator: AppGraphHistoryCoordinator,
   ) {
     this.logger.info('AppDiagramLoadingService initialized');
   }

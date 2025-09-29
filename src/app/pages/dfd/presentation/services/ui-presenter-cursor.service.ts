@@ -4,7 +4,7 @@ import { filter, map } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
-import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { PRESENTER_CURSOR_CONFIG } from '../../constants/presenter-constants';
 
 export interface CursorPosition {
@@ -30,7 +30,7 @@ export class UiPresenterCursorService implements OnDestroy {
   constructor(
     private logger: LoggerService,
     private collaborationService: DfdCollaborationService,
-    private collaborativeOperationService: CollaborativeOperationService,
+    private collaborativeOperationService: InfraWebsocketCollaborationAdapter,
   ) {}
 
   /**

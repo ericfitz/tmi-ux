@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { Graph } from '@antv/x6';
-import { LoggerService } from '../../../core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
  * Interface for drag tracking data
@@ -27,12 +27,14 @@ interface DragCompletionEvent {
 }
 
 /**
- * GraphHistoryCoordinator service - manages what gets included in X6 history
+ * AppGraphHistoryCoordinator service - manages what gets included in X6 history
  * Provides proper filtering for visual effects, port visibility, and other non-semantic changes
  * Includes sophisticated drag completion tracking to ensure only final states are recorded
  */
-@Injectable()
-export class GraphHistoryCoordinator {
+@Injectable({
+  providedIn: 'root',
+})
+export class AppGraphHistoryCoordinator {
   private readonly _dragCompletions$ = new Subject<DragCompletionEvent>();
   private readonly _activeDrags = new Map<string, DragTrackingData>();
   private readonly _dragDebounceMap = new Map<string, number>();

@@ -55,7 +55,9 @@ export interface ThreatChangeEvent {
  * Includes cell label management functionality
  * Simplified to work directly with X6 without command bus
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppEventHandlersService {
   private _rightClickedCell: Cell | null = null;
   private _selectedCells$ = new BehaviorSubject<Cell[]>([]);

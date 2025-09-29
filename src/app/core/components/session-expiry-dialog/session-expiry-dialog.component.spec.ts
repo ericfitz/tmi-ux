@@ -83,12 +83,19 @@ describe('SessionExpiryDialogComponent', () => {
   });
 
   it('should format time remaining as seconds only when less than a minute', () => {
-    // Set expiry to 30 seconds from now
-    component.data.expiresAt = new Date(Date.now() + 30000);
+    // Mock current time to ensure consistent test results
+    const baseTime = 1000000000; // Fixed timestamp
+    const dateSpy = vi.spyOn(Date, 'now').mockReturnValue(baseTime);
+    
+    // Set expiry to 30 seconds from mocked time
+    component.data.expiresAt = new Date(baseTime + 30000);
 
     (component as any).updateTimeRemaining();
 
     expect(component.timeRemaining).toBe('30 seconds');
+    
+    // Restore only the Date.now mock
+    dateSpy.mockRestore();
   });
 
   it('should call onExtendSession and close dialog when extend button clicked', () => {

@@ -22,14 +22,14 @@ import { InfraX6KeyboardAdapter } from './infra-x6-keyboard.adapter';
 import { ZOrderService } from '../services/infra-z-order.service';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
-import { InfraX6HistoryAdapter } from './x6-history-manager';
+import { InfraX6HistoryAdapter } from './infra-x6-history.adapter';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { NodeInfo } from '../../domain/value-objects/node-info';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { InfraX6EventLoggerAdapter } from '../infrastructure/adapters/infra-x6-event-logger.adapter';
+import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 
 // Mock LoggerService for integration testing
 class MockLoggerService {
@@ -118,7 +118,7 @@ describe.skip('InfraX6GraphAdapter', () => {
   let historyManager: InfraX6HistoryAdapter;
   let x6EventLogger: InfraX6EventLoggerAdapter;
   let appEdgeService: AppEdgeService;
-  let historyCoordinator: GraphHistoryCoordinator;
+  let historyCoordinator: AppGraphHistoryCoordinator;
   let infraVisualEffectsService: any;
   let coreEdgeService: any;
   let x6CoreOps: any;
@@ -164,7 +164,7 @@ describe.skip('InfraX6GraphAdapter', () => {
       coreEdgeService,
     );
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator();
+    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)
     selectionAdapter = new InfraX6SelectionAdapter(

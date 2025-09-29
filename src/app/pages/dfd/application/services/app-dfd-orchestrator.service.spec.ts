@@ -2,6 +2,8 @@
  * Test suite for AppDfdOrchestrator
  */
 
+import '@angular/compiler';
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError, Subject } from 'rxjs';
 

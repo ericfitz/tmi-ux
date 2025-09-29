@@ -1,5 +1,5 @@
 /**
- * Collaborative Operation Service
+ * Infrastructure WebSocket Collaboration Adapter
  *
  * Handles WebSocket-based collaborative diagram operations for the DFD module.
  * Provides high-level API for sending diagram operations, managing operation IDs,
@@ -10,10 +10,10 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { AuthService } from '../../../auth/services/auth.service';
-import { WebSocketAdapter, WebSocketState } from '../../../core/services/websocket.adapter';
-import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { AuthService } from '../../../../auth/services/auth.service';
+import { WebSocketAdapter, WebSocketState } from '../../../../core/services/websocket.adapter';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import {
   DiagramOperationMessage,
   CellOperation,
@@ -26,7 +26,7 @@ import {
   PresenterSelectionMessage,
   CursorPosition,
   CollaborativeOperationConfig,
-} from '../../../core/types/websocket-message.types';
+} from '../../../../core/types/websocket-message.types';
 
 /**
  * Queued operation for retry/fallback handling
@@ -42,7 +42,7 @@ interface QueuedOperation {
 @Injectable({
   providedIn: 'root',
 })
-export class CollaborativeOperationService {
+export class InfraWebsocketCollaborationAdapter {
   private _config: CollaborativeOperationConfig | null = null;
 
   // Operation queue for offline/error scenarios

@@ -42,7 +42,9 @@ export class JwtInterceptor implements HttpInterceptor {
     this.logger.info('JWT Interceptor initialized');
     // Get SessionManager from AuthService (avoids circular dependency)
     setTimeout(() => {
-      this.sessionManager = (this.authService as unknown as { sessionManagerService: { onTokenRefreshed: () => void } }).sessionManagerService;
+      this.sessionManager = (
+        this.authService as unknown as { sessionManagerService: { onTokenRefreshed: () => void } }
+      ).sessionManagerService;
     }, 0);
   }
 

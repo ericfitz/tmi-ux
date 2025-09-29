@@ -20,13 +20,13 @@ import {
   DiagramOperationMessage,
 } from '../../../../core/types/websocket-message.types';
 import {
-  WebSocketService,
+  InfraDfdWebsocketAdapter,
   WebSocketDomainEvent,
   StateCorrectionEvent,
   HistoryOperationEvent,
   ResyncRequestedEvent,
   ParticipantsUpdatedEvent,
-} from '../../services/websocket.service';
+} from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
 
 /**
  * Represents the synchronization state of the diagram
@@ -107,7 +107,7 @@ export class AppStateService implements OnDestroy {
 
   constructor(
     private _logger: LoggerService,
-    private _webSocketService: WebSocketService,
+    private _webSocketService: InfraDfdWebsocketAdapter,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
   ) {
@@ -124,39 +124,39 @@ export class AppStateService implements OnDestroy {
     this._subscriptions.add(
       this._webSocketService.domainEvents$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processDomainEvent(event)),
+        .subscribe((event: any) => this._processDomainEvent(event)),
     );
 
     // Subscribe to specific events for targeted handling
     this._subscriptions.add(
       this._webSocketService.diagramOperations$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(message => this._processDiagramOperation(message)),
+        .subscribe((message: any) => this._processDiagramOperation(message)),
     );
 
     this._subscriptions.add(
       this._webSocketService.stateCorrections$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processStateCorrection(event)),
+        .subscribe((event: any) => this._processStateCorrection(event)),
     );
 
     this._subscriptions.add(
       this._webSocketService.historyOperations$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processHistoryOperation(event)),
+        .subscribe((event: any) => this._processHistoryOperation(event)),
     );
 
     this._subscriptions.add(
       this._webSocketService.resyncRequests$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processResyncRequest(event)),
+        .subscribe((event: any) => this._processResyncRequest(event)),
     );
 
     // Subscribe to participant management events
     this._subscriptions.add(
       this._webSocketService.participantsUpdated$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processParticipantsUpdate(event)),
+        .subscribe((event: any) => this._processParticipantsUpdate(event)),
     );
 
     this._logger.info('DFD state management initialized successfully');

@@ -2,6 +2,8 @@
  * Test suite for AppAutoSaveManager
  */
 
+import '@angular/compiler';
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -111,7 +113,7 @@ describe('AppAutoSaveManager', () => {
         timestamp: Date.now(),
       };
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
             expect(result).toBe(false);
@@ -171,7 +173,7 @@ describe('AppAutoSaveManager', () => {
     it('should execute manual save successfully', () => {
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.triggerManualSave(autoSaveContext).subscribe({
           next: (result: SaveResult) => {
             expect(result.success).toBe(true);
@@ -186,7 +188,7 @@ describe('AppAutoSaveManager', () => {
     it('should update state after successful manual save', () => {
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.triggerManualSave(autoSaveContext).subscribe({
           next: () => {
             const stats = service.getStats();
@@ -218,7 +220,7 @@ describe('AppAutoSaveManager', () => {
 
       // Now trigger manual save
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.triggerManualSave(autoSaveContext).subscribe({
           next: () => {
             expect(service.isPendingSave()).toBe(false);
@@ -270,7 +272,7 @@ describe('AppAutoSaveManager', () => {
       service.setPolicyMode('aggressive');
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
             // Trigger returns boolean, not SaveResult
@@ -287,7 +289,7 @@ describe('AppAutoSaveManager', () => {
     it('should not trigger auto-save when disabled', () => {
       service.disable();
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: _result => {
             expect(_result).toBe(false);
@@ -300,7 +302,7 @@ describe('AppAutoSaveManager', () => {
     });
 
     it('should track change count', () => {
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: () => {
             const state = service.getState();
@@ -351,7 +353,7 @@ describe('AppAutoSaveManager', () => {
         }),
       );
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
             expect(result).toBe(true); // Should trigger save
@@ -369,7 +371,7 @@ describe('AppAutoSaveManager', () => {
       service.setPolicyMode('conservative');
 
       // Single change should not trigger save in conservative mode
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: result => {
             expect(result).toBe(false); // No immediate save
@@ -402,7 +404,7 @@ describe('AppAutoSaveManager', () => {
       let completedTriggers = 0;
       const totalTriggers = 6; // One more than threshold
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         for (let i = 0; i < totalTriggers; i++) {
           service.trigger(triggerEvent, autoSaveContext).subscribe({
             next: _result => {
@@ -437,7 +439,7 @@ describe('AppAutoSaveManager', () => {
 
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.forceSave(autoSaveContext).subscribe({
           next: (result: SaveResult) => {
             expect(result.success).toBe(true);
@@ -476,7 +478,7 @@ describe('AppAutoSaveManager', () => {
         }),
       );
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.forceSave(autoSaveContext).subscribe({
           next: () => {
             expect(service.isPendingSave()).toBe(false);
@@ -575,7 +577,7 @@ describe('AppAutoSaveManager', () => {
 
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.triggerManualSave(autoSaveContext).subscribe({
           next: () => {
             const stats = service.getStats();
@@ -605,7 +607,7 @@ describe('AppAutoSaveManager', () => {
       const error = new Error('Save failed');
       mockPersistenceCoordinator.save.mockReturnValue(throwError(() => error));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.triggerManualSave(autoSaveContext).subscribe({
           next: () => reject(new Error('Should have failed')),
           error: err => {
@@ -646,7 +648,7 @@ describe('AppAutoSaveManager', () => {
       };
 
       // This should not throw even if internal processing fails
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>((resolve, reject) => {
         service.trigger(triggerEvent, autoSaveContext).subscribe({
           next: _result => {
             // Should complete without throwing

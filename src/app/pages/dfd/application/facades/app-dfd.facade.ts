@@ -31,7 +31,7 @@ import { AppEdgeService } from '../services/app-edge.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from '../services/app-graph-history-coordinator.service';
 import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
 
 /**
@@ -51,7 +51,7 @@ export class AppDfdFacade {
     private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
     private readonly infraVisualEffectsService: InfraVisualEffectsService,
     private readonly infraX6CoreOperationsService: InfraX6CoreOperationsService,
-    private readonly historyCoordinator: GraphHistoryCoordinator,
+    private readonly historyCoordinator: AppGraphHistoryCoordinator,
     private readonly infraEmbeddingService: InfraEmbeddingService,
   ) {
     this.logger.debug('AppDfdFacade initialized');

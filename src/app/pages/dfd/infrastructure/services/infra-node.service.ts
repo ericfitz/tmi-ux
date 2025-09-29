@@ -32,7 +32,7 @@ import { InfraX6ZOrderAdapter } from '../adapters/infra-x6-z-order.adapter';
 import { InfraNodeConfigurationService } from './infra-node-configuration.service';
 import { InfraVisualEffectsService } from './infra-visual-effects.service';
 import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 
 /**
@@ -50,7 +50,7 @@ export class InfraNodeService {
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
     private infraNodeConfigurationService: InfraNodeConfigurationService,
     private infraVisualEffectsService: InfraVisualEffectsService,
-    private historyCoordinator: GraphHistoryCoordinator,
+    private historyCoordinator: AppGraphHistoryCoordinator,
     private x6CoreOps: InfraX6CoreOperationsService,
   ) {}
 

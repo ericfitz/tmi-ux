@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Graph, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { AppStateService } from './app-state.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
 
 /**
@@ -17,18 +17,20 @@ import { CellOperation } from '../../../../core/types/websocket-message.types';
  * - Convert X6 events to CellOperation format
  * - Prevent echo effects when applying remote operations
  */
-@Injectable()
-export class DiagramOperationBroadcaster {
+@Injectable({
+  providedIn: 'root',
+})
+export class AppDiagramOperationBroadcaster {
   private _graph: Graph | null = null;
   private _pendingOperations: CellOperation[] = [];
   private _isInAtomicOperation = false;
   private _eventListeners: Array<{ event: string; handler: (...args: any[]) => void }> = [];
 
   constructor(
-    private collaborativeOperationService: CollaborativeOperationService,
+    private collaborativeOperationService: InfraWebsocketCollaborationAdapter,
     private appStateService: AppStateService,
     private collaborationService: DfdCollaborationService,
-    private historyCoordinator: GraphHistoryCoordinator,
+    private historyCoordinator: AppGraphHistoryCoordinator,
     private logger: LoggerService,
   ) {}
 
@@ -93,7 +95,7 @@ export class DiagramOperationBroadcaster {
             next: () => {
               this.logger.debug('Atomic operation broadcast successful');
             },
-            error: error => {
+            error: (error: unknown) => {
               this.logger.error('Failed to broadcast atomic operation', error);
             },
           });

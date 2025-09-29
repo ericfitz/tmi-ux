@@ -98,7 +98,10 @@ export class AuthService {
   }
 
   // SessionManager instance (injected via forwardRef to avoid circular dependency)
-  private sessionManagerService: { onTokenRefreshed: () => void; stopExpiryTimers: () => void } | null = null;
+  private sessionManagerService: {
+    onTokenRefreshed: () => void;
+    stopExpiryTimers: () => void;
+  } | null = null;
 
   constructor(
     private router: Router,
@@ -116,7 +119,10 @@ export class AuthService {
    * Set the session manager service (called by SessionManagerService to avoid circular dependency)
    * @param sessionManager SessionManagerService instance
    */
-  setSessionManager(sessionManager: { onTokenRefreshed: () => void; stopExpiryTimers: () => void }): void {
+  setSessionManager(sessionManager: {
+    onTokenRefreshed: () => void;
+    stopExpiryTimers: () => void;
+  }): void {
     this.sessionManagerService = sessionManager;
     this.logger.debugComponent('Auth', 'SessionManager service registered');
   }

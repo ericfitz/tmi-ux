@@ -24,7 +24,7 @@ import { createMockLoggerService, type MockLoggerService } from '../../../../tes
 import { InfraX6GraphAdapter } from '../infrastructure/adapters/infra-x6-graph.adapter';
 import { InfraX6SelectionAdapter } from '../infrastructure/adapters/infra-x6-selection.adapter';
 import { SelectionService } from '../presentation/services/ui-presenter-selection.service';
-import { InfraX6HistoryAdapter } from '../infrastructure/adapters/x6-history-manager';
+import { InfraX6HistoryAdapter } from '../infrastructure/adapters/infra-x6-history.adapter';
 // import { InfraVisualEffectsService } from '../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeQueryService } from '../infrastructure/services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../infrastructure/services/infra-node-configuration.service';
@@ -38,7 +38,7 @@ import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.serv
 // Removed imports to avoid Angular Material dependencies during integration tests
 // import { AppEdgeService } from '../application/services/app-edge.service';
 // import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
-import { GraphHistoryCoordinator } from '../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from '../application/services/app-graph-history-coordinator.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo } from '../domain/value-objects/node-info';
 import { DiagramNode } from '../domain/value-objects/diagram-node';
@@ -150,7 +150,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
   let x6EventLogger: InfraX6EventLoggerAdapter;
   let infraEdgeService: MockDfdEdgeService;
   let eventHandlersService: MockDfdEventHandlersService;
-  let historyCoordinator: GraphHistoryCoordinator;
+  let historyCoordinator: AppGraphHistoryCoordinator;
 
   beforeEach(() => {
     container = document.createElement('div');
@@ -180,9 +180,8 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
     // Use mock services to avoid Angular Material dependencies
     infraEdgeService = new MockDfdEdgeService() as any;
     eventHandlersService = new MockDfdEventHandlersService() as any;
-    historyCoordinator = new GraphHistoryCoordinator(
-      historyManager,
-      mockLogger as unknown as LoggerService,
+    historyCoordinator = new AppGraphHistoryCoordinator(
+      mockLogger as unknown as LoggerService
     );
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
 

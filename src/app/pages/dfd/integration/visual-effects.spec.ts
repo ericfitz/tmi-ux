@@ -32,11 +32,11 @@ import { InfraX6KeyboardAdapter } from '../infrastructure/adapters/infra-x6-keyb
 import { ZOrderService } from '../infrastructure/services/infra-z-order.service';
 import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
-import { InfraX6HistoryAdapter } from '../infrastructure/adapters/x6-history-manager';
+import { InfraX6HistoryAdapter } from '../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.service';
 import { AppEdgeService } from '../application/services/app-edge.service';
 import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
-import { GraphHistoryCoordinator } from '../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from '../application/services/app-graph-history-coordinator.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo } from '../domain/value-objects/node-info';
 import { DiagramNode } from '../domain/value-objects/diagram-node';
@@ -111,7 +111,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
   let x6EventLogger: InfraX6EventLoggerAdapter;
   let appEdgeService: AppEdgeService;
   let eventHandlersService: AppEventHandlersService;
-  let historyCoordinator: GraphHistoryCoordinator;
+  let historyCoordinator: AppGraphHistoryCoordinator;
 
   beforeEach(() => {
     container = document.createElement('div');
@@ -141,8 +141,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
     appEdgeService = new AppEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new AppEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator(
-      historyManager,
+    historyCoordinator = new AppGraphHistoryCoordinator(
       mockLogger as unknown as LoggerService,
     );
 

@@ -3,13 +3,14 @@ import { optimize } from 'svgo/dist/svgo.browser.js';
 import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
+ * Application SVG Optimization Service
  * Service responsible for SVG optimization using SVGO
  * Specifically configured for X6 graph-generated SVGs
  */
 @Injectable({
   providedIn: 'root',
 })
-export class SvgOptimizationService {
+export class AppSvgOptimizationService {
   constructor(private logger: LoggerService) {}
 
   /**

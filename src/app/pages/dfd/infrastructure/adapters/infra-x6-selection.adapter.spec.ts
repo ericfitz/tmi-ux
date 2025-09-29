@@ -11,7 +11,7 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { JSDOM } from 'jsdom';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { SelectionService } from '../../presentation/services/ui-presenter-selection.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
@@ -99,7 +99,7 @@ describe('InfraX6SelectionAdapter', () => {
   let graph: Graph;
   let mockLogger: MockLoggerService;
   let selectionService: SelectionService;
-  let historyCoordinator: GraphHistoryCoordinator;
+  let historyCoordinator: AppGraphHistoryCoordinator;
   let x6CoreOps: InfraX6CoreOperationsService;
   let infraEdgeService: InfraEdgeService;
   let container: HTMLElement;
@@ -126,7 +126,7 @@ describe('InfraX6SelectionAdapter', () => {
     // Create services
     mockLogger = createTypedMockLoggerService();
     selectionService = new SelectionService(mockLogger as any);
-    historyCoordinator = new GraphHistoryCoordinator();
+    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as any);
     x6CoreOps = new InfraX6CoreOperationsService(mockLogger as any);
 
     // Create mock services for InfraEdgeService

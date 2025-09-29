@@ -48,10 +48,10 @@ import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
 import {
-  GraphHistoryCoordinator,
+  AppGraphHistoryCoordinator,
   HISTORY_OPERATION_TYPES,
-} from '../../services/graph-history-coordinator.service';
-import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
+} from '../../application/services/app-graph-history-coordinator.service';
+import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 
 // Import the extracted shape definitions
@@ -128,8 +128,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _selectionAdapter: InfraX6SelectionAdapter,
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
     private readonly _edgeService: AppEdgeService,
-    private readonly _historyCoordinator: GraphHistoryCoordinator,
-    private readonly _diagramOperationBroadcaster: DiagramOperationBroadcaster,
+    private readonly _historyCoordinator: AppGraphHistoryCoordinator,
+    private readonly _diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
@@ -444,7 +444,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get the Diagram Operation Broadcaster for access to collaborative broadcasting
    */
-  getDiagramOperationBroadcaster(): DiagramOperationBroadcaster {
+  getDiagramOperationBroadcaster(): AppDiagramOperationBroadcaster {
     return this._diagramOperationBroadcaster;
   }
 
@@ -1272,12 +1272,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         }),
       );
 
-      // Enable history plugin with centralized filtering via GraphHistoryCoordinator
+      // Enable history plugin with centralized filtering via AppGraphHistoryCoordinator
       // History is always enabled - filtering happens via beforeAddCommand
       this._graph.use(
         new History({
           stackSize: 10,
-          enabled: true, // Always enabled - filtering handled by GraphHistoryCoordinator
+          enabled: true, // Always enabled - filtering handled by AppGraphHistoryCoordinator
           beforeAddCommand: (event: string, args: any) => {
             // Delegate filtering to the centralized history coordinator
             return this._shouldIncludeInHistory(event, args);
@@ -1871,7 +1871,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Centralized history filtering logic using GraphHistoryCoordinator
+   * Centralized history filtering logic using AppGraphHistoryCoordinator
    */
   private _shouldIncludeInHistory(event: string, args: any): boolean {
     const result = this._shouldIncludeInHistoryInternal(event, args);

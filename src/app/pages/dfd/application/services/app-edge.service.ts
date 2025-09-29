@@ -29,9 +29,9 @@ import { InfraVisualEffectsService } from '../../infrastructure/services/infra-v
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import {
-  GraphHistoryCoordinator,
+  AppGraphHistoryCoordinator,
   HISTORY_OPERATION_TYPES,
-} from '../../services/graph-history-coordinator.service';
+} from './app-graph-history-coordinator.service';
 
 /**
  * Interface for connection validation arguments from X6
@@ -54,7 +54,9 @@ export interface MagnetValidationArgs {
  * Consolidated service for edge handling, operations, and management in DFD diagrams
  * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppEdgeService {
   /**
    * Valid DFD node shape types
@@ -77,7 +79,7 @@ export class AppEdgeService {
     private infraX6HistoryAdapter: InfraX6HistoryAdapter,
     private infraVisualEffectsService: InfraVisualEffectsService,
     private infraEdgeService: InfraEdgeService,
-    private historyCoordinator: GraphHistoryCoordinator,
+    private historyCoordinator: AppGraphHistoryCoordinator,
   ) {}
 
   // ========================================

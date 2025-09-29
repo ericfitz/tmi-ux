@@ -4,7 +4,7 @@ import { map, catchError, timeout } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModelService } from '../../tm/services/threat-model.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
 import { InfraPortStateService } from '../../infrastructure/services/infra-port-state.service';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
@@ -13,7 +13,7 @@ import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
-import { CollaborativeOperationService } from '../../services/collaborative-operation.service';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
 
 /**
@@ -39,17 +39,19 @@ export interface DiagramLoadResult {
  * Service for managing DFD diagram data operations
  * Handles diagram loading, validation, and error scenarios
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppDiagramService {
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
-    private historyCoordinator: GraphHistoryCoordinator,
+    private historyCoordinator: AppGraphHistoryCoordinator,
     private portStateManager: InfraPortStateService,
     private infraNodeService: InfraNodeService,
     private infraEdgeService: InfraEdgeService,
     private collaborationService: DfdCollaborationService,
-    private collaborativeOperationService: CollaborativeOperationService,
+    private collaborativeOperationService: InfraWebsocketCollaborationAdapter,
   ) {}
 
   /**

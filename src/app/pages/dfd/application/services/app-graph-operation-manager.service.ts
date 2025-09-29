@@ -14,10 +14,10 @@ import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from '
 import { catchError, timeout, tap, finalize } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { NodeOperationExecutor } from '../../services/executors/node-operation-executor';
-import { EdgeOperationExecutor } from '../../services/executors/edge-operation-executor';
-import { BatchOperationExecutor } from '../../services/executors/batch-operation-executor';
-import { LoadDiagramExecutor } from '../../services/executors/load-diagram-executor';
+import { NodeOperationExecutor } from '../executors/node-operation-executor';
+import { EdgeOperationExecutor } from '../executors/edge-operation-executor';
+import { BatchOperationExecutor } from '../executors/batch-operation-executor';
+import { LoadDiagramExecutor } from '../executors/load-diagram-executor';
 import {
   GraphOperation,
   OperationContext,

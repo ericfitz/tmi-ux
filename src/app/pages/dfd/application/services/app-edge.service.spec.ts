@@ -6,6 +6,8 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
+import '@angular/compiler';
+
 import { Graph, Node, Edge } from '@antv/x6';
 import { AppEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './app-edge.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -13,7 +15,7 @@ import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-o
 import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
+import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
@@ -29,7 +31,7 @@ interface MockX6HistoryManager {
   executeCommand?: ReturnType<typeof vi.fn>;
 }
 
-interface MockGraphHistoryCoordinator {
+interface MockAppGraphHistoryCoordinator {
   executeVisualEffect: ReturnType<typeof vi.fn>;
 }
 
@@ -50,7 +52,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
   let mockX6HistoryManager: MockX6HistoryManager;
   let mockVisualEffectsService: MockVisualEffectsService;
   let mockEdgeService: MockEdgeService;
-  let mockGraphHistoryCoordinator: MockGraphHistoryCoordinator;
+  let mockGraphHistoryCoordinator: MockAppGraphHistoryCoordinator;
 
   beforeEach(() => {
     // Initialize X6 cell extensions and register DFD shapes
@@ -94,7 +96,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       mockX6HistoryManager as unknown as InfraX6HistoryAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,
-      mockGraphHistoryCoordinator as unknown as GraphHistoryCoordinator,
+      mockGraphHistoryCoordinator as unknown as AppGraphHistoryCoordinator,
     );
   });
 

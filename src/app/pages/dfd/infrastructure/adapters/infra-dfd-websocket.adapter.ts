@@ -1,5 +1,5 @@
 /**
- * WebSocket Service
+ * Infrastructure DFD WebSocket Adapter
  *
  * Handles all WebSocket message subscriptions for collaboration.
  * Transforms WebSocket messages into domain events and provides
@@ -10,13 +10,13 @@ import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
-import { LoggerService } from '../../../core/services/logger.service';
-import { WebSocketAdapter } from '../../../core/services/websocket.adapter';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import {
   ICollaborationNotificationService,
   COLLABORATION_NOTIFICATION_SERVICE,
-} from '../../../core/interfaces/index';
-import { DfdStateStore } from '../state/dfd.state';
+} from '../../../../core/interfaces/index';
+import { DfdStateStore } from '../../state/dfd.state';
 import {
   DiagramOperationMessage,
   AuthorizationDeniedMessage,
@@ -33,7 +33,7 @@ import {
   RemoveParticipantMessage,
   ParticipantsUpdateMessage,
   Participant,
-} from '../../../core/types/websocket-message.types';
+} from '../../../../core/types/websocket-message.types';
 
 /**
  * Domain events emitted by the WebSocket service
@@ -159,7 +159,7 @@ export type WebSocketDomainEvent =
 @Injectable({
   providedIn: 'root',
 })
-export class WebSocketService implements OnDestroy {
+export class InfraDfdWebsocketAdapter implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
 
