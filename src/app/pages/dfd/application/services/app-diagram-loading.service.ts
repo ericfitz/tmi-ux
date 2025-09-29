@@ -30,9 +30,7 @@ export interface CellLoadingOptions {
   source?: string;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppDiagramLoadingService {
   constructor(
     private logger: LoggerService,

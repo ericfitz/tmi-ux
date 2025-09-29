@@ -45,6 +45,10 @@ import {
 import { AppDfdOrchestrator } from '../../application/services/app-dfd-orchestrator.service';
 import { AppAutoSaveManager } from '../../application/services/app-auto-save-manager.service';
 import { AppDfdFacade } from '../../application/facades/app-dfd.facade';
+import { AppEdgeService } from '../../application/services/app-edge.service';
+import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppDiagramService } from '../../application/services/app-diagram.service';
+import { AppDiagramLoadingService } from '../../application/services/app-diagram-loading.service';
 
 // Infrastructure adapters and services
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
@@ -61,6 +65,7 @@ import { InfraPortStateService } from '../../infrastructure/services/infra-port-
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
+import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 
 // Essential v1 components still needed
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -95,8 +100,14 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdCollaborationComponent,
   ],
   providers: [
-    // DFD v2 Architecture - Component-scoped infrastructure services
+    // DFD v2 Architecture - Component-scoped services
+    AppDfdOrchestrator, // Main coordination service
     AppDfdFacade, // Facade encapsulates all infrastructure dependencies
+    AppEdgeService, // Application edge service
+    AppGraphHistoryCoordinator, // History coordination service
+    AppDiagramService, // Diagram data management service
+    AppDiagramLoadingService, // Diagram loading service
+    InfraVisualEffectsService, // Visual effects service
     // Infrastructure adapters and services required by InfraX6GraphAdapter
     InfraX6GraphAdapter,
     InfraX6ZOrderAdapter,

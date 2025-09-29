@@ -19,9 +19,7 @@ interface ActiveEffect {
  * Manages creation highlights with fade-out animations for programmatically created nodes and edges
  * Uses the same styling techniques as hover/selection effects but with customizable coloring
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class InfraVisualEffectsService {
   private readonly FADE_DURATION_MS = DFD_STYLING.CREATION.FADE_DURATION_MS;
   private readonly ANIMATION_FRAME_INTERVAL = DFD_STYLING.CREATION.ANIMATION_FRAME_INTERVAL;

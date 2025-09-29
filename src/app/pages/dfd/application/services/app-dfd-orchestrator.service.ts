@@ -72,9 +72,7 @@ export interface ExportFormat {
   readonly options?: Record<string, any>;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppDfdOrchestrator {
   private readonly _state$ = new BehaviorSubject<DfdState>(this._createInitialState());
   private readonly _stateChanged$ = new Subject<DfdState>();

@@ -31,9 +31,7 @@ interface DragCompletionEvent {
  * Provides proper filtering for visual effects, port visibility, and other non-semantic changes
  * Includes sophisticated drag completion tracking to ensure only final states are recorded
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppGraphHistoryCoordinator {
   private readonly _dragCompletions$ = new Subject<DragCompletionEvent>();
   private readonly _activeDrags = new Map<string, DragTrackingData>();

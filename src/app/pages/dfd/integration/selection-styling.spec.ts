@@ -156,9 +156,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
     appEdgeService = new AppEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new AppEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new AppGraphHistoryCoordinator(
-      mockLogger as unknown as LoggerService,
-    );
+    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)
     selectionAdapter = new InfraX6SelectionAdapter(

@@ -180,9 +180,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
     // Use mock services to avoid Angular Material dependencies
     infraEdgeService = new MockDfdEdgeService() as any;
     eventHandlersService = new MockDfdEventHandlersService() as any;
-    historyCoordinator = new AppGraphHistoryCoordinator(
-      mockLogger as unknown as LoggerService
-    );
+    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)

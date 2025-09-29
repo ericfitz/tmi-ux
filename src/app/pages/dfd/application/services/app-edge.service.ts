@@ -54,9 +54,7 @@ export interface MagnetValidationArgs {
  * Consolidated service for edge handling, operations, and management in DFD diagrams
  * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppEdgeService {
   /**
    * Valid DFD node shape types

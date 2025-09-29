@@ -38,9 +38,7 @@ import { InfraEmbeddingService } from '../../infrastructure/services/infra-embed
  * Facade for DFD infrastructure services
  * Provides simplified, high-level operations while managing complex dependencies internally
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppDfdFacade {
   constructor(
     private readonly logger: LoggerService,

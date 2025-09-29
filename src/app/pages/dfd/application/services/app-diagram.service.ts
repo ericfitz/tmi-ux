@@ -3,7 +3,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, timeout } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
 import { InfraPortStateService } from '../../infrastructure/services/infra-port-state.service';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
@@ -39,9 +39,7 @@ export interface DiagramLoadResult {
  * Service for managing DFD diagram data operations
  * Handles diagram loading, validation, and error scenarios
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppDiagramService {
   constructor(
     private logger: LoggerService,
