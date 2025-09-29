@@ -77,9 +77,11 @@ export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
 
   private updateTimeRemaining(): void {
     const remainingSeconds = this.getRemainingTimeInSeconds();
-    
+
     if (remainingSeconds <= 0) {
-      this.timeRemaining = this.transloco.translate('sessionExpiry.timeFormat.seconds', { seconds: '0' });
+      this.timeRemaining = this.transloco.translate('sessionExpiry.timeFormat.seconds', {
+        seconds: '0',
+      });
       return;
     }
 

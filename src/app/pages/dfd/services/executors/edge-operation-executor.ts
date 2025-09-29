@@ -121,11 +121,15 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
                     label: {
                       text: (edgeInfo as any).label || '',
                       fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
-                      fill: (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+                      fill:
+                        (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
                     },
                     body: {
-                      fill: (edgeInfo as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
-                      stroke: (edgeInfo as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
+                      fill:
+                        (edgeInfo as any).style?.labelBackground ||
+                        DFD_STYLING.EDGES.LABEL_BACKGROUND,
+                      stroke:
+                        (edgeInfo as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
                       strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
                       rx: 3,
                       ry: 3,
@@ -207,11 +211,16 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
               attrs: {
                 label: {
                   text: (updates.labels[0] as any).text || '',
-                  fontSize: (updates.labels[0] as any).attrs?.label?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
-                  fill: (updates.labels[0] as any).attrs?.label?.fill || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+                  fontSize:
+                    (updates.labels[0] as any).attrs?.label?.fontSize ||
+                    DFD_STYLING.DEFAULT_FONT_SIZE,
+                  fill:
+                    (updates.labels[0] as any).attrs?.label?.fill ||
+                    DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
                 },
                 body: {
-                  fill: (updates as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
+                  fill:
+                    (updates as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
                   stroke: (updates as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
                   strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
                   rx: 3,

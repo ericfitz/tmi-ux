@@ -32,7 +32,7 @@ export class JwtInterceptor implements HttpInterceptor {
   ];
 
   // SessionManager service (will be injected if available)
-  private sessionManager: any = null;
+  private sessionManager: { onTokenRefreshed: () => void } | null = null;
 
   constructor(
     private authService: AuthService,
@@ -42,7 +42,7 @@ export class JwtInterceptor implements HttpInterceptor {
     this.logger.info('JWT Interceptor initialized');
     // Get SessionManager from AuthService (avoids circular dependency)
     setTimeout(() => {
-      this.sessionManager = (this.authService as any).sessionManagerService;
+      this.sessionManager = (this.authService as unknown as { sessionManagerService: { onTokenRefreshed: () => void } }).sessionManagerService;
     }, 0);
   }
 

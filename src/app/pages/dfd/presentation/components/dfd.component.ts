@@ -962,19 +962,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Subscribe to history state changes for reactive undo/redo button states
       this._subscriptions.add(
-        graphAdapter.historyChanged$.pipe(takeUntil(this._destroy$)).subscribe(({ canUndo, canRedo }) => {
-          const oldCanUndo = this.canUndo;
-          const oldCanRedo = this.canRedo;
-          
-          this.canUndo = canUndo;
-          this.canRedo = canRedo;
-          
-          // Only trigger change detection if state actually changed
-          if (oldCanUndo !== this.canUndo || oldCanRedo !== this.canRedo) {
-            this.logger.debugComponent('DFD', 'History state updated from observable', { canUndo, canRedo });
-            this.cdr.markForCheck();
-          }
-        }),
+        graphAdapter.historyChanged$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(({ canUndo, canRedo }) => {
+            const oldCanUndo = this.canUndo;
+            const oldCanRedo = this.canRedo;
+
+            this.canUndo = canUndo;
+            this.canRedo = canRedo;
+
+            // Only trigger change detection if state actually changed
+            if (oldCanUndo !== this.canUndo || oldCanRedo !== this.canRedo) {
+              this.logger.debugComponent('DFD', 'History state updated from observable', {
+                canUndo,
+                canRedo,
+              });
+              this.cdr.markForCheck();
+            }
+          }),
       );
 
       // Set initial history state
@@ -991,10 +996,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (graphAdapter) {
       const canUndo = graphAdapter.canUndo();
       const canRedo = graphAdapter.canRedo();
-      
+
       this.canUndo = canUndo;
       this.canRedo = canRedo;
-      
+
       this.logger.debugComponent('DFD', 'Initial history state set', { canUndo, canRedo });
       this.cdr.markForCheck();
     } else {
@@ -1186,7 +1191,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.markForCheck();
     }
   }
-
 
   private mapStringToNodeType(nodeType: string): NodeType {
     switch (nodeType) {

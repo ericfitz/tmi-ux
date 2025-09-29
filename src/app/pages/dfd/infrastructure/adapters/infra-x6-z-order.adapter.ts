@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ZOrderService } from '../services/infra-z-order.service';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 
 /**
  * X6 Z-Order Adapter
@@ -34,11 +37,15 @@ export class InfraX6ZOrderAdapter {
     });
 
     // Group all z-order changes into a single atomic operation
-    this.historyCoordinator.executeAtomicOperation(graph, () => {
-      selectedCells.forEach(cell => {
-        this.moveCellForward(graph, cell);
-      });
-    }, HISTORY_OPERATION_TYPES.Z_ORDER_FORWARD);
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        selectedCells.forEach(cell => {
+          this.moveCellForward(graph, cell);
+        });
+      },
+      HISTORY_OPERATION_TYPES.Z_ORDER_FORWARD,
+    );
   }
 
   /**
@@ -56,11 +63,15 @@ export class InfraX6ZOrderAdapter {
     });
 
     // Group all z-order changes into a single atomic operation
-    this.historyCoordinator.executeAtomicOperation(graph, () => {
-      selectedCells.forEach(cell => {
-        this.moveCellBackward(graph, cell);
-      });
-    }, HISTORY_OPERATION_TYPES.Z_ORDER_BACKWARD);
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        selectedCells.forEach(cell => {
+          this.moveCellBackward(graph, cell);
+        });
+      },
+      HISTORY_OPERATION_TYPES.Z_ORDER_BACKWARD,
+    );
   }
 
   /**
@@ -78,11 +89,15 @@ export class InfraX6ZOrderAdapter {
     });
 
     // Group all z-order changes into a single atomic operation
-    this.historyCoordinator.executeAtomicOperation(graph, () => {
-      selectedCells.forEach(cell => {
-        this.moveCellToFront(graph, cell);
-      });
-    }, HISTORY_OPERATION_TYPES.Z_ORDER_TO_FRONT);
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        selectedCells.forEach(cell => {
+          this.moveCellToFront(graph, cell);
+        });
+      },
+      HISTORY_OPERATION_TYPES.Z_ORDER_TO_FRONT,
+    );
   }
 
   /**
@@ -100,11 +115,15 @@ export class InfraX6ZOrderAdapter {
     });
 
     // Group all z-order changes into a single atomic operation
-    this.historyCoordinator.executeAtomicOperation(graph, () => {
-      selectedCells.forEach(cell => {
-        this.moveCellToBack(graph, cell);
-      });
-    }, HISTORY_OPERATION_TYPES.Z_ORDER_TO_BACK);
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        selectedCells.forEach(cell => {
+          this.moveCellToBack(graph, cell);
+        });
+      },
+      HISTORY_OPERATION_TYPES.Z_ORDER_TO_BACK,
+    );
   }
 
   /**

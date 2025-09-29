@@ -14,6 +14,9 @@ export class InfraX6KeyboardAdapter {
   private _isDragging = false;
   private _originalGridSize = 10;
 
+  // Track if we're in pan mode to avoid interfering with X6's pan/zoom
+  private _isPanningBackground = false;
+
   // Store initial position of node when drag starts
   private _initialNodePositions = new Map<string, Point>();
 
@@ -30,7 +33,7 @@ export class InfraX6KeyboardAdapter {
     this._graph = graph;
     this._graphContainer = graph.container;
 
-    // Listen for shift key events on the document
+    // Listen for shift key events on the document, but be careful not to interfere with X6's pan/zoom
     document.addEventListener('keydown', this._handleKeyDown);
     document.addEventListener('keyup', this._handleKeyUp);
 
@@ -38,6 +41,14 @@ export class InfraX6KeyboardAdapter {
     graph.on('node:mousedown', this._handleNodeMouseDown);
     graph.on('node:mousemove', this._handleNodeMouseMove);
     graph.on('node:mouseup', this._handleNodeMouseUp);
+
+    // Listen for blank (background) mouse events to detect panning
+    graph.on('blank:mousedown', () => {
+      this._isPanningBackground = true;
+    });
+    graph.on('blank:mouseup', () => {
+      this._isPanningBackground = false;
+    });
 
     // Handle window blur to reset state if user switches windows while dragging
     window.addEventListener('blur', this._handleWindowBlur);
@@ -56,8 +67,10 @@ export class InfraX6KeyboardAdapter {
     document.removeEventListener('keyup', this._handleKeyUp);
     window.removeEventListener('blur', this._handleWindowBlur);
 
-    // Reset shift state and cursor when cleaning up
+    // Reset all state when cleaning up
     this._isShiftPressed = false;
+    this._isPanningBackground = false;
+    this._isDragging = false;
     this._clearCursorStyles();
   }
 
@@ -77,23 +90,39 @@ export class InfraX6KeyboardAdapter {
 
   /**
    * Handle keydown events to track shift key state
+   * Avoid interfering with X6's pan/zoom when user is interacting with background
    */
   private _handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'Shift' && !this._isShiftPressed) {
       this._isShiftPressed = true;
-      this._updateSnapToGrid();
-      this._updateCursor();
+
+      // Don't interfere with X6's pan/zoom if user is panning background
+      if (!this._isPanningBackground) {
+        // Only update snap-to-grid if we're actively dragging a node
+        if (this._isDragging) {
+          this._updateSnapToGrid();
+        }
+        this._updateCursor();
+      }
     }
   };
 
   /**
    * Handle keyup events to track shift key state
+   * Avoid interfering with X6's pan/zoom when user is interacting with background
    */
   private _handleKeyUp = (event: KeyboardEvent): void => {
     if (event.key === 'Shift' && this._isShiftPressed) {
       this._isShiftPressed = false;
-      this._updateSnapToGrid();
-      this._updateCursor();
+
+      // Don't interfere with X6's pan/zoom if user was panning background
+      if (!this._isPanningBackground) {
+        // Only update snap-to-grid if we're actively dragging a node
+        if (this._isDragging) {
+          this._updateSnapToGrid();
+        }
+        this._updateCursor();
+      }
     }
   };
 
@@ -181,6 +210,7 @@ export class InfraX6KeyboardAdapter {
    */
   private _handleWindowBlur = (): void => {
     this._isShiftPressed = false;
+    this._isPanningBackground = false; // Reset panning state on window blur
     if (this._isDragging) {
       // Remove global mouseup listener if dragging when window loses focus
       document.removeEventListener('mouseup', this._handleDocumentMouseUp);

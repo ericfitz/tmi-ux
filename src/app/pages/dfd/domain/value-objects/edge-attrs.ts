@@ -116,4 +116,3 @@ export const DEFAULT_EDGE_ATTRS: EdgeAttrs = {
     },
   },
 };
-

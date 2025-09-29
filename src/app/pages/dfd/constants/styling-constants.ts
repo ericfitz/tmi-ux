@@ -42,7 +42,7 @@ export const DFD_STYLING = {
     RED: '#d62728',
     PURPLE: '#722ED1',
   },
-  
+
   _STROKE_WIDTHS: {
     THIN: 1,
     NORMAL: 2,
@@ -85,7 +85,7 @@ export const DFD_STYLING = {
     FILL: '#ffffff',
     STROKE: '#000000',
     STROKE_WIDTH: 1,
-    
+
     // Default node labels
     LABEL_TEXT_COLOR: '#000000',
     LABEL_BACKGROUND: 'transparent',
@@ -136,18 +136,18 @@ export const DFD_STYLING = {
     CONNECTOR: 'smooth',
     ROUTER: 'normal',
     SELECTION_BLUR_RADIUS: 6, // Edges use different blur radius than nodes
-    
+
     // Default edge appearance (data-flow style)
     STROKE: '#000000',
     STROKE_WIDTH: 2,
     FILL: 'none',
-    
+
     // Default edge labels
     LABEL_TEXT_COLOR: '#000000',
     LABEL_BACKGROUND: '#ffffff',
     LABEL_BORDER: '#000000',
     LABEL_BORDER_WIDTH: 1,
-    
+
     // Target marker (arrowhead) styling
     TARGET_MARKER: {
       NAME: 'classic',
@@ -155,7 +155,7 @@ export const DFD_STYLING = {
       FILL: '#000000',
       STROKE: '#000000',
     },
-    
+
     // Edge type specific styling
     DATA_FLOW: {
       STROKE: '#000000',
@@ -178,7 +178,6 @@ export const DFD_STYLING = {
       MARKER_STROKE: '#d62728',
     },
   },
-
 
   // Port styling properties
   PORTS: {
@@ -212,6 +211,15 @@ export const DFD_STYLING = {
   // Animation and transition settings
   ANIMATIONS: {
     FADE_OPACITY_THRESHOLD: 0.05, // Below this, use 'none' instead of filter
+  },
+
+  // Z-Index constants for proper layering
+  Z_INDEX: {
+    SECURITY_BOUNDARY: 0, // Security boundaries go behind everything
+    NODE_DEFAULT: 1, // Default z-index for nodes
+    EDGE_DEFAULT: 1, // Default z-index for edges
+    SELECTION: 10, // Selection indicators on top
+    TOOLS: 20, // Node/edge tools on top of everything
   },
 } as const;
 

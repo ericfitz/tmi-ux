@@ -98,7 +98,7 @@ export class AuthService {
   }
 
   // SessionManager instance (injected via forwardRef to avoid circular dependency)
-  private sessionManagerService: any = null;
+  private sessionManagerService: { onTokenRefreshed: () => void; stopExpiryTimers: () => void } | null = null;
 
   constructor(
     private router: Router,
@@ -116,7 +116,7 @@ export class AuthService {
    * Set the session manager service (called by SessionManagerService to avoid circular dependency)
    * @param sessionManager SessionManagerService instance
    */
-  setSessionManager(sessionManager: any): void {
+  setSessionManager(sessionManager: { onTokenRefreshed: () => void; stopExpiryTimers: () => void }): void {
     this.sessionManagerService = sessionManager;
     this.logger.debugComponent('Auth', 'SessionManager service registered');
   }
@@ -1559,12 +1559,12 @@ export class AuthService {
     // Clear cached providers to force re-evaluation on next login
     this.cachedProviders = null;
     this.providersCacheTime = 0;
-    
+
     // Notify SessionManager to stop timers
     if (this.sessionManagerService) {
       this.sessionManagerService.stopExpiryTimers();
     }
-    
+
     this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');
   }
 

@@ -1,10 +1,13 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Subscription, timer } from '../../core/rxjs-imports';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthService } from './auth.service';
-import { SessionExpiryDialogComponent, SessionExpiryDialogData } from '../../core/components/session-expiry-dialog/session-expiry-dialog.component';
+import {
+  SessionExpiryDialogComponent,
+  SessionExpiryDialogData,
+} from '../../core/components/session-expiry-dialog/session-expiry-dialog.component';
 
 /**
  * Service for managing user sessions
@@ -21,7 +24,7 @@ export class SessionManagerService {
   private logoutTimer: Subscription | null = null;
 
   // Reference to the warning dialog
-  private warningDialog: any = null;
+  private warningDialog: MatDialogRef<SessionExpiryDialogComponent, string> | null = null;
 
   // Time before expiration to show warning (in milliseconds)
   private readonly warningTime = 5 * 60 * 1000; // 5 minutes
@@ -96,7 +99,7 @@ export class SessionManagerService {
           });
         });
       });
-      
+
       this.logger.debugComponent('SessionManager', 'Warning timer set', {
         warningTime: new Date(now.getTime() + timeToWarning).toISOString(),
       });
@@ -165,10 +168,10 @@ export class SessionManagerService {
       disableClose: true,
     });
 
-    this.warningDialog.afterClosed().subscribe((result: string) => {
+    this.warningDialog.afterClosed().subscribe((result: string | undefined) => {
       this.warningDialog = null;
       this.logger.debugComponent('SessionManager', 'Warning dialog closed', { result });
-      
+
       // If dialog was closed due to expiry and no action was taken, logout
       if (result === 'expired') {
         this.handleSessionTimeout();
@@ -216,7 +219,6 @@ export class SessionManagerService {
     }
   }
 
-
   /**
    * Handle session timeout
    * Logs out the user and redirects to home page
@@ -230,7 +232,6 @@ export class SessionManagerService {
     // Log out the user (this will clear auth data and redirect to home)
     this.authService.logout();
   }
-
 
   /**
    * Silently extend the session for test users

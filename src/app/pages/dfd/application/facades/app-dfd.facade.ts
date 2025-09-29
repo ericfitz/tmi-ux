@@ -225,6 +225,13 @@ export class AppDfdFacade {
   }
 
   /**
+   * Enable or disable history tracking
+   */
+  setHistoryEnabled(enabled: boolean): void {
+    this.infraX6GraphAdapter.setHistoryEnabled(enabled);
+  }
+
+  /**
    * Delete selected cells from the graph
    */
   deleteSelectedCells(): Observable<{ success: boolean; deletedCount: number }> {

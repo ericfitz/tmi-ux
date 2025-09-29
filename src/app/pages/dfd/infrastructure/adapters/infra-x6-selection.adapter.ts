@@ -6,7 +6,10 @@ import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/infra-selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 // Note: InfraNodeService will be used for node deletion when removeNode method is available
 import { InfraEdgeService } from '../services/infra-edge.service';
@@ -238,18 +241,22 @@ export class InfraX6SelectionAdapter {
     }
 
     // Use history coordinator to ensure proper atomic deletion with port visibility suppression
-    this.historyCoordinator.executeAtomicOperation(graph, () => {
-      selectedCells.forEach(cell => {
-        if (cell.isEdge()) {
-          // Use InfraEdgeService for edge deletions (handles business logic and port visibility)
-          this.infraEdgeService.removeEdge(graph, cell.id);
-        } else {
-          // Use InfraX6CoreOperationsService for node deletions
-          // TODO: Replace with infraNodeService.removeNode() when InfraNodeService has removeNode method
-          this.x6CoreOps.removeCellObject(graph, cell);
-        }
-      });
-    }, HISTORY_OPERATION_TYPES.MULTI_CELL_DELETE);
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        selectedCells.forEach(cell => {
+          if (cell.isEdge()) {
+            // Use InfraEdgeService for edge deletions (handles business logic and port visibility)
+            this.infraEdgeService.removeEdge(graph, cell.id);
+          } else {
+            // Use InfraX6CoreOperationsService for node deletions
+            // TODO: Replace with infraNodeService.removeNode() when InfraNodeService has removeNode method
+            this.x6CoreOps.removeCellObject(graph, cell);
+          }
+        });
+      },
+      HISTORY_OPERATION_TYPES.MULTI_CELL_DELETE,
+    );
 
     this.logger.info('Deleted selected cells', { count: selectedCells.length });
   }
@@ -313,21 +320,25 @@ export class InfraX6SelectionAdapter {
     const groupConfig = this.selectionService.getGroupConfiguration(boundingBox);
 
     // Use centralized history coordinator for consistent filtering and atomic batching
-    const groupNode = this.historyCoordinator.executeAtomicOperation(graph, () => {
-      // Create group node using InfraX6CoreOperationsService
-      const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
+    const groupNode = this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        // Create group node using InfraX6CoreOperationsService
+        const createdGroupNode = this.x6CoreOps.addNode(graph, groupConfig);
 
-      if (!createdGroupNode) {
-        throw new Error('Failed to create group node');
-      }
+        if (!createdGroupNode) {
+          throw new Error('Failed to create group node');
+        }
 
-      // Add nodes to group
-      selectedNodes.forEach(node => {
-        createdGroupNode.addChild(node);
-      });
+        // Add nodes to group
+        selectedNodes.forEach(node => {
+          createdGroupNode.addChild(node);
+        });
 
-      return createdGroupNode;
-    }, HISTORY_OPERATION_TYPES.GROUP_CREATE);
+        return createdGroupNode;
+      },
+      HISTORY_OPERATION_TYPES.GROUP_CREATE,
+    );
 
     this.logger.info('Created group with nodes', {
       groupId: groupNode.id,
@@ -344,27 +355,31 @@ export class InfraX6SelectionAdapter {
     const selectedNodes = this.getSelectedNodes(graph);
 
     // Use centralized history coordinator for atomic ungrouping operation
-    this.historyCoordinator.executeAtomicOperation(graph, () => {
-      selectedNodes.forEach(node => {
-        if (this.selectionService.canUngroupNode(node)) {
-          const children = node.getChildren();
-          if (children) {
-            // Remove children from group
-            children.forEach(child => {
-              node.removeChild(child);
-            });
+    this.historyCoordinator.executeAtomicOperation(
+      graph,
+      () => {
+        selectedNodes.forEach(node => {
+          if (this.selectionService.canUngroupNode(node)) {
+            const children = node.getChildren();
+            if (children) {
+              // Remove children from group
+              children.forEach(child => {
+                node.removeChild(child);
+              });
 
-            // Remove the group node using InfraX6CoreOperationsService
-            this.x6CoreOps.removeCellObject(graph, node);
+              // Remove the group node using InfraX6CoreOperationsService
+              this.x6CoreOps.removeCellObject(graph, node);
 
-            this.logger.info('Ungrouped node', {
-              groupId: node.id,
-              childCount: children.length,
-            });
+              this.logger.info('Ungrouped node', {
+                groupId: node.id,
+                childCount: children.length,
+              });
+            }
           }
-        }
-      });
-    }, HISTORY_OPERATION_TYPES.GROUP_UNGROUP);
+        });
+      },
+      HISTORY_OPERATION_TYPES.GROUP_UNGROUP,
+    );
   }
 
   /**

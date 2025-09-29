@@ -28,7 +28,10 @@ import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-hi
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 
 /**
  * Interface for connection validation arguments from X6
@@ -147,7 +150,11 @@ export class AppEdgeService {
         beforeUpdate: currentLabel,
       });
 
-      this.updateEdgeLabel(edge, defaultLabel);
+      // Set the label as a visual effect (without creating separate history entry)
+      // This makes edge creation + label setting atomic in the history
+      this.historyCoordinator.executeVisualEffect(graph, () => {
+        this.updateEdgeLabel(edge, defaultLabel);
+      });
 
       // Verify the label was set
       const verifyLabel = this.getEdgeLabel(edge);
@@ -251,43 +258,47 @@ export class AppEdgeService {
 
     try {
       // Execute all inverse connection operations as a single atomic operation
-      const inverseEdge = this.historyCoordinator.executeAtomicOperation(graph, () => {
-        // Step 1: Process the original edge vertices if needed (inside transaction)
-        let processedOriginalVertices = [...originalVertices];
-        if (originalVertices.length === 0) {
-          // Add a vertex at the center and move it perpendicular to the source-destination line
-          processedOriginalVertices = this._addCenterVertexToStraightEdge(edge);
-          // Update the original edge with the new vertex
-          edge.setVertices(processedOriginalVertices);
-        }
+      const inverseEdge = this.historyCoordinator.executeAtomicOperation(
+        graph,
+        () => {
+          // Step 1: Process the original edge vertices if needed (inside transaction)
+          let processedOriginalVertices = [...originalVertices];
+          if (originalVertices.length === 0) {
+            // Add a vertex at the center and move it perpendicular to the source-destination line
+            processedOriginalVertices = this._addCenterVertexToStraightEdge(edge);
+            // Update the original edge with the new vertex
+            edge.setVertices(processedOriginalVertices);
+          }
 
-        // Step 2: Calculate mirrored vertices for the inverse edge
-        const inverseVertices = this._mirrorVerticesAroundSourceTargetLine(
-          processedOriginalVertices,
-          edge,
-        );
+          // Step 2: Calculate mirrored vertices for the inverse edge
+          const inverseVertices = this._mirrorVerticesAroundSourceTargetLine(
+            processedOriginalVertices,
+            edge,
+          );
 
-        // Step 3: Create inverse EdgeInfo domain object (without label initially)
-        const inverseEdgeInfo = EdgeInfo.create({
-          id: inverseEdgeId,
-          sourceNodeId: targetNodeId, // Swap source and target for inverse
-          targetNodeId: sourceNodeId,
-          sourcePortId: targetPortId,
-          targetPortId: sourcePortId,
-          vertices: inverseVertices,
-        });
+          // Step 3: Create inverse EdgeInfo domain object (without label initially)
+          const inverseEdgeInfo = EdgeInfo.create({
+            id: inverseEdgeId,
+            sourceNodeId: targetNodeId, // Swap source and target for inverse
+            targetNodeId: sourceNodeId,
+            sourcePortId: targetPortId,
+            targetPortId: sourcePortId,
+            vertices: inverseVertices,
+          });
 
-        // Step 4: Create the inverse edge via InfraEdgeService (suppress history since we're in atomic operation)
-        const createdInverseEdge = this.infraEdgeService.createEdge(graph, inverseEdgeInfo, {
-          ensureVisualRendering: true,
-          updatePortVisibility: true,
-        });
+          // Step 4: Create the inverse edge via InfraEdgeService (suppress history since we're in atomic operation)
+          const createdInverseEdge = this.infraEdgeService.createEdge(graph, inverseEdgeInfo, {
+            ensureVisualRendering: true,
+            updatePortVisibility: true,
+          });
 
-        // Step 5: Set the label using the utility function (inside same transaction)
-        this.updateEdgeLabel(createdInverseEdge, inverseLabel);
+          // Step 5: Set the label using the utility function (inside same transaction)
+          this.updateEdgeLabel(createdInverseEdge, inverseLabel);
 
-        return createdInverseEdge;
-      }, HISTORY_OPERATION_TYPES.EDGE_ADD_INVERSE);
+          return createdInverseEdge;
+        },
+        HISTORY_OPERATION_TYPES.EDGE_ADD_INVERSE,
+      );
 
       // Apply visual effects (z-order and highlighting) outside of history
       this.historyCoordinator.executeVisualEffect(graph, () => {

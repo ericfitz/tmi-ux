@@ -47,7 +47,10 @@ import { InfraX6HistoryAdapter } from './infra-x6-history.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
-import { GraphHistoryCoordinator, HISTORY_OPERATION_TYPES } from '../../services/graph-history-coordinator.service';
+import {
+  GraphHistoryCoordinator,
+  HISTORY_OPERATION_TYPES,
+} from '../../services/graph-history-coordinator.service';
 import { DiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 
@@ -259,12 +262,97 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     this.logger.info('[DFD] Initializing X6 graph adapter');
 
-    // Create a new graph instance that will be used by infrastructure services
-    // Note: The main graph configuration is now handled by AppDfdOrchestrator
+    // Create a new graph instance with proper connecting configuration for flow creation
     this._graph = new Graph({
       container,
       width: container.clientWidth,
       height: container.clientHeight,
+      // Enable grid for visual guidance
+      grid: {
+        size: 10,
+        visible: true,
+        type: 'dot',
+        args: [
+          { color: '#cccccc', thickness: 1 }, // Primary grid
+          { color: '#e0e0e0', thickness: 1, factor: 4 }, // Secondary grid
+        ],
+      },
+      // Enable panning by dragging background
+      panning: {
+        enabled: true,
+        eventTypes: ['leftMouseDown', 'mouseWheel'],
+        modifiers: ['shift'], // Require shift key for panning
+      },
+      // Enable zooming with mouse wheel
+      mousewheel: {
+        enabled: true,
+        modifiers: ['shift'], // Zoom with Shift + Wheel (same as pan modifier)
+        factor: 1.1,
+        maxScale: 3,
+        minScale: 0.2,
+      },
+      // Enable basic interactions
+      interacting: {
+        nodeMovable: true,
+        edgeMovable: true,
+        edgeLabelMovable: true,
+        arrowheadMovable: true,
+        vertexMovable: true,
+        vertexAddable: true,
+        vertexDeletable: true,
+        magnetConnectable: true, // Essential for edge creation
+      },
+      // Enable interactive edge creation with proper port visibility
+      connecting: {
+        allowNode: false, // Force connections to use ports only
+        allowPort: true, // Enable port-to-port connections
+        allowBlank: false, // Don't allow starting edge from blank area
+        allowLoop: true, // Allow self-loops between different ports
+        allowMulti: true, // Allow multiple edges between same nodes
+        allowEdge: false, // Don't allow connecting to edges
+        snap: { radius: 20 }, // Snap to ports within 20px
+        highlight: true, // Highlight available connection points
+        // Validate magnets (ports) during connection
+        validateMagnet: ({ magnet }) => {
+          return this._edgeService?.isMagnetValid({ magnet }) ?? true;
+        },
+        // Validate connections between nodes
+        validateConnection: ({ sourceView, targetView, sourceMagnet, targetMagnet }) => {
+          if (!sourceView || !targetView || !sourceMagnet || !targetMagnet) {
+            return false;
+          }
+
+          const sourceNode = sourceView.cell;
+          const targetNode = targetView.cell;
+
+          if (!sourceNode.isNode() || !targetNode.isNode()) {
+            return false;
+          }
+
+          return (
+            this._edgeService?.isConnectionValid({
+              sourceView,
+              targetView,
+              sourceMagnet,
+              targetMagnet,
+            }) ?? true
+          );
+        },
+        // Create edges with proper styling and attributes
+        createEdge: () => {
+          return this._graph!.createEdge({
+            shape: 'edge', // Use standard X6 edge shape
+            attrs: {
+              line: {
+                stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
+                strokeWidth: DFD_STYLING.EDGES.DEFAULT_STROKE_WIDTH,
+                targetMarker: 'block',
+              },
+            },
+            zIndex: DFD_STYLING.Z_INDEX.EDGE_DEFAULT,
+          });
+        },
+      },
     });
 
     // Enable plugins and setup services that depend on the graph instance
@@ -1099,7 +1187,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       // Check if there are any drag operations in progress and finalize them
       // This is a safety net for edge cases
       if (this._historyCoordinator.isAnyDragInProgress()) {
-        this.logger.debugComponent('X6Graph', 'Blank mouseup detected during drag - safety finalization');
+        this.logger.debugComponent(
+          'X6Graph',
+          'Blank mouseup detected during drag - safety finalization',
+        );
         // We can't easily determine the final state here, so let the timeout handle it
       }
     });
@@ -1700,7 +1791,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     const { cellId, dragType } = completion;
     const cell = this._graph.getCellById(cellId);
-    
+
     if (!cell) {
       this.logger.warn('Drag completion for non-existent cell', { cellId });
       return;
@@ -1729,31 +1820,35 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     }
 
     // Execute the final state recording as an atomic operation
-    this._historyCoordinator.executeFinalizeDragOperation(this._graph, () => {
-      // Get current state from the cell
-      const currentState = this._getCellState(cell);
-      
-      // Force a state change to trigger history recording
-      // This is a bit of a hack but ensures the final state is recorded
-      if (dragType === 'move' && cell.isNode()) {
-        const node = cell;
-        const position = node.getPosition();
-        // Force position update to trigger history
-        node.setPosition(position.x, position.y);
-      } else if (dragType === 'resize' && cell.isNode()) {
-        const node = cell;
-        const size = node.getSize();
-        // Force size update to trigger history
-        node.setSize(size.width, size.height);
-      } else if (dragType === 'vertex' && cell.isEdge()) {
-        const edge = cell;
-        const vertices = edge.getVertices();
-        // Force vertex update to trigger history
-        edge.setVertices(vertices);
-      }
+    this._historyCoordinator.executeFinalizeDragOperation(
+      this._graph,
+      () => {
+        // Get current state from the cell
+        const currentState = this._getCellState(cell);
 
-      return currentState;
-    }, operationType);
+        // Force a state change to trigger history recording
+        // This is a bit of a hack but ensures the final state is recorded
+        if (dragType === 'move' && cell.isNode()) {
+          const node = cell;
+          const position = node.getPosition();
+          // Force position update to trigger history
+          node.setPosition(position.x, position.y);
+        } else if (dragType === 'resize' && cell.isNode()) {
+          const node = cell;
+          const size = node.getSize();
+          // Force size update to trigger history
+          node.setSize(size.width, size.height);
+        } else if (dragType === 'vertex' && cell.isEdge()) {
+          const edge = cell;
+          const vertices = edge.getVertices();
+          // Force vertex update to trigger history
+          edge.setVertices(vertices);
+        }
+
+        return currentState;
+      },
+      operationType,
+    );
   }
 
   /**
@@ -1780,17 +1875,17 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    */
   private _shouldIncludeInHistory(event: string, args: any): boolean {
     const result = this._shouldIncludeInHistoryInternal(event, args);
-    
+
     // Log when events are being included to help debug unwanted history entries
     if (result) {
       this.logger.info('INCLUDING event in history', {
         event,
         cellId: args.cell?.id,
         key: args.key,
-        options: args.options
+        options: args.options,
       });
     }
-    
+
     return result;
   }
 
@@ -1806,7 +1901,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Priority 2: Exclude based on current operation type
     const currentOperationType = this._historyCoordinator.getCurrentOperationType();
-    if (currentOperationType && this._historyCoordinator.shouldExcludeOperationType(currentOperationType)) {
+    if (
+      currentOperationType &&
+      this._historyCoordinator.shouldExcludeOperationType(currentOperationType)
+    ) {
       this.logger.debugComponent('X6Graph', 'Excluding event for excluded operation type', {
         event,
         operationType: currentOperationType,
@@ -1826,8 +1924,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Also check for multi-cell operations where some cells might be dragging
     if (args.added && Array.isArray(args.added)) {
-      const anyDragging = args.added.some((cell: any) => 
-        cell.id && this._historyCoordinator.isDragInProgress(cell.id)
+      const anyDragging = args.added.some(
+        (cell: any) => cell.id && this._historyCoordinator.isDragInProgress(cell.id),
       );
       if (anyDragging) {
         this.logger.debugComponent('X6Graph', 'Excluding multi-cell event during drag');

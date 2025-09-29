@@ -12,13 +12,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
-import { Graph, Node, Edge } from '@antv/x6';
 import '@antv/x6-plugin-export';
-import { Export } from '@antv/x6-plugin-export';
-import { Snapline } from '@antv/x6-plugin-snapline';
-import { Transform } from '@antv/x6-plugin-transform';
-import { History } from '@antv/x6-plugin-history';
-import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
@@ -32,7 +26,6 @@ import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/in
 import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { NodeType } from '../../domain/value-objects/node-info';
-import { DFD_STYLING } from '../../constants/styling-constants';
 import {
   GraphOperation,
   OperationContext,
@@ -889,7 +882,7 @@ export class AppDfdOrchestrator {
   private _performInitialization(params: DfdInitializationParams): Observable<boolean> {
     // Initialize the graph through the infrastructure facade instead of creating our own
     this.dfdInfrastructure.initializeGraph(params.containerElement);
-    
+
     // The graph is now properly initialized with history filtering
     // Continue with the rest of initialization
     return this._continueInitialization(params);
@@ -921,6 +914,16 @@ export class AppDfdOrchestrator {
         // If load fails, just continue with empty diagram
         this.logger.debug('No existing diagram data found, starting with empty diagram');
         return of(true);
+      }),
+      tap(() => {
+        // Enable history after initialization and loading is complete
+        // History starts disabled to prevent auto-saves during initialization
+        if (!params.collaborationEnabled) {
+          this.dfdInfrastructure.setHistoryEnabled(true);
+          this.logger.debug('History tracking enabled after initialization');
+        } else {
+          this.logger.debug('History tracking remains disabled for collaboration mode');
+        }
       }),
     );
   }
@@ -984,7 +987,10 @@ export class AppDfdOrchestrator {
     }
   }
 
-  private _triggerAutoSaveForBatch(_operations: GraphOperation[], results: OperationResult[]): void {
+  private _triggerAutoSaveForBatch(
+    _operations: GraphOperation[],
+    results: OperationResult[],
+  ): void {
     if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return;
     }

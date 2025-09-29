@@ -112,7 +112,9 @@ describe('SessionManagerService', () => {
 
   it('should logout if extend session fails', () => {
     mockAuthService.isTestUser = false;
-    mockAuthService.getValidToken.mockReturnValue(throwError(() => new Error('Token refresh failed')));
+    mockAuthService.getValidToken.mockReturnValue(
+      throwError(() => new Error('Token refresh failed')),
+    );
 
     // Call the private method
     (service as any).handleExtendSession();
@@ -160,7 +162,7 @@ describe('SessionManagerService', () => {
 
     expect(mockLogger.debugComponent).toHaveBeenCalledWith(
       'SessionManager',
-      'No token found, cannot start expiry timers'
+      'No token found, cannot start expiry timers',
     );
   });
 

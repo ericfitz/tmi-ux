@@ -127,6 +127,117 @@ export class GraphHistoryCoordinator {
   }
 
   /**
+   * Execute multiple operations as a single atomic transaction
+   * This creates one combined history entry instead of separate entries for each operation
+   */
+  executeAtomicTransaction<T>(
+    graph: Graph,
+    operation: () => T,
+    transactionName: string = 'atomic-operation',
+  ): T {
+    const historyPlugin = (graph as any).history;
+    if (
+      historyPlugin &&
+      typeof historyPlugin.disable === 'function' &&
+      typeof historyPlugin.enable === 'function'
+    ) {
+      // Get initial graph state before operations
+      const initialState = this._captureGraphState(graph);
+
+      // Temporarily disable history for the compound operations
+      historyPlugin.disable();
+      let result: T;
+
+      try {
+        // Execute all operations without individual history entries
+        result = operation();
+      } finally {
+        // Re-enable history after all operations complete
+        historyPlugin.enable();
+      }
+
+      // Get final graph state after operations
+      const finalState = this._captureGraphState(graph);
+
+      // Manually add a single combined history entry
+      this._addCombinedHistoryEntry(graph, initialState, finalState, transactionName);
+
+      return result;
+    } else {
+      // No history plugin available, execute directly
+      return operation();
+    }
+  }
+
+  /**
+   * Capture the current state of the graph for history comparison
+   */
+  private _captureGraphState(graph: Graph): any {
+    return {
+      cells: graph.getCells().map(cell => ({
+        id: cell.id,
+        type: cell.isNode() ? 'node' : 'edge',
+        data: cell.toJSON(),
+      })),
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Add a combined history entry representing the net change of a transaction
+   */
+  private _addCombinedHistoryEntry(
+    graph: Graph,
+    initialState: any,
+    finalState: any,
+    transactionName: string,
+  ): void {
+    try {
+      // Create a synthetic history command that represents the entire transaction
+      const historyPlugin = (graph as any).history;
+      if (historyPlugin && typeof historyPlugin.addCommand === 'function') {
+        const command = {
+          id: `${transactionName}-${Date.now()}`,
+          undo: () => {
+            // Restore to initial state
+            this._restoreGraphState(graph, initialState);
+          },
+          redo: () => {
+            // Restore to final state
+            this._restoreGraphState(graph, finalState);
+          },
+        };
+
+        historyPlugin.addCommand(command);
+        this.logger.debug(`Added atomic transaction to history: ${transactionName}`);
+      }
+    } catch (error) {
+      this.logger.warn('Failed to add combined history entry', { error, transactionName });
+    }
+  }
+
+  /**
+   * Restore graph to a specific state
+   */
+  private _restoreGraphState(graph: Graph, state: any): void {
+    try {
+      // Clear current graph
+      graph.clearCells();
+
+      // Restore cells from state
+      state.cells.forEach((cellState: any) => {
+        if (cellState.type === 'node') {
+          graph.addNode(cellState.data);
+        } else {
+          graph.addEdge(cellState.data);
+        }
+      });
+    } catch (error) {
+      this.logger.warn('Failed to restore graph state', { error });
+    }
+  }
+
+  /**
    * Get default options for operation - visual effects should be excluded
    */
   getDefaultOptionsForOperation(): any {
@@ -144,7 +255,11 @@ export class GraphHistoryCoordinator {
   startDragTracking(
     cellId: string,
     dragType: 'move' | 'resize' | 'vertex',
-    initialState: { position?: { x: number; y: number }; size?: { width: number; height: number }; vertices?: Array<{ x: number; y: number }> }
+    initialState: {
+      position?: { x: number; y: number };
+      size?: { width: number; height: number };
+      vertices?: Array<{ x: number; y: number }>;
+    },
   ): void {
     const trackingData: DragTrackingData = {
       cellId,
@@ -495,7 +610,8 @@ export const HISTORY_OPERATION_TYPES = {
 /**
  * Type for history operation type values
  */
-export type HistoryOperationType = typeof HISTORY_OPERATION_TYPES[keyof typeof HISTORY_OPERATION_TYPES];
+export type HistoryOperationType =
+  (typeof HISTORY_OPERATION_TYPES)[keyof typeof HISTORY_OPERATION_TYPES];
 
 /**
  * Operations that should be excluded from history

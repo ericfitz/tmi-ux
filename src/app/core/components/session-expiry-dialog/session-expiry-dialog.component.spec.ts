@@ -4,7 +4,10 @@
 
 import '@angular/compiler';
 
-import { SessionExpiryDialogComponent, SessionExpiryDialogData } from './session-expiry-dialog.component';
+import {
+  SessionExpiryDialogComponent,
+  SessionExpiryDialogData,
+} from './session-expiry-dialog.component';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 
 describe('SessionExpiryDialogComponent', () => {
@@ -18,14 +21,14 @@ describe('SessionExpiryDialogComponent', () => {
       close: vi.fn(),
       disableClose: false,
     };
-    
+
     mockTransloco = {
       translate: vi.fn(),
     };
-    
+
     const mockOnExtendSession = vi.fn();
     const mockOnLogout = vi.fn();
-    
+
     mockData = {
       expiresAt: new Date(Date.now() + 300000), // 5 minutes from now
       onExtendSession: mockOnExtendSession,
@@ -61,7 +64,7 @@ describe('SessionExpiryDialogComponent', () => {
   it('should format time remaining as minutes:seconds', () => {
     // Set expiry to 2 minutes 30 seconds from now
     component.data.expiresAt = new Date(Date.now() + 150000);
-    
+
     // Manually trigger update to test formatting
     (component as any).updateTimeRemaining();
 
@@ -73,7 +76,7 @@ describe('SessionExpiryDialogComponent', () => {
     const baseTime = Date.now();
     component.data.expiresAt = new Date(baseTime + 60000);
     vi.spyOn(Date, 'now').mockReturnValue(baseTime);
-    
+
     (component as any).updateTimeRemaining();
 
     expect(component.timeRemaining).toBe('1 minute');
@@ -82,7 +85,7 @@ describe('SessionExpiryDialogComponent', () => {
   it('should format time remaining as seconds only when less than a minute', () => {
     // Set expiry to 30 seconds from now
     component.data.expiresAt = new Date(Date.now() + 30000);
-    
+
     (component as any).updateTimeRemaining();
 
     expect(component.timeRemaining).toBe('30 seconds');
@@ -105,10 +108,10 @@ describe('SessionExpiryDialogComponent', () => {
   it('should calculate remaining time correctly', () => {
     const baseTime = Date.now();
     component.data.expiresAt = new Date(baseTime + 65000); // 1 minute 5 seconds
-    
+
     // Mock Date.now to return specific time
     vi.spyOn(Date, 'now').mockReturnValue(baseTime);
-    
+
     const remainingTime = (component as any).getRemainingTimeInSeconds();
     expect(remainingTime).toBe(64); // Account for timing precision
   });
@@ -116,9 +119,9 @@ describe('SessionExpiryDialogComponent', () => {
   it('should return zero for expired tokens', () => {
     const baseTime = Date.now();
     component.data.expiresAt = new Date(baseTime - 1000); // 1 second ago
-    
+
     vi.spyOn(Date, 'now').mockReturnValue(baseTime);
-    
+
     const remainingTime = (component as any).getRemainingTimeInSeconds();
     expect(remainingTime).toBe(0);
   });
@@ -128,7 +131,7 @@ describe('SessionExpiryDialogComponent', () => {
     const baseTime = Date.now();
     component.data.expiresAt = new Date(baseTime + 125000);
     vi.spyOn(Date, 'now').mockReturnValue(baseTime);
-    
+
     (component as any).updateTimeRemaining();
 
     expect(component.timeRemaining).toBe('2:04'); // Account for timing precision
@@ -138,9 +141,9 @@ describe('SessionExpiryDialogComponent', () => {
     // Create a mock subscription
     const mockSubscription = { unsubscribe: vi.fn() };
     (component as any).countdownSubscription = mockSubscription;
-    
+
     component.ngOnDestroy();
-    
+
     expect(mockSubscription.unsubscribe).toHaveBeenCalled();
     expect((component as any).countdownSubscription).toBeNull();
   });
