@@ -326,7 +326,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Update existing orchestrator read-only mode
       this.appDfdOrchestrator.setReadOnlyMode(this.isReadOnlyMode);
       this.configureAutoSave();
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
       return;
     }
 
@@ -347,6 +347,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.info('DFD Orchestrator initialization result', { success });
         if (success) {
           this.logger.info('DFD Orchestrator initialized successfully');
+
+          // Force immediate UI update after successful initialization
+          this.isSystemInitialized = this.appDfdOrchestrator.getState().initialized;
+          this.cdr.detectChanges();
 
           // Load diagram data if we have a dfdId
           if (this.dfdId) {
@@ -423,7 +427,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.isSystemInitialized = state.initialized;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
         this.logger.debug('Updated system initialization state and triggered change detection', {
           isSystemInitialized: this.isSystemInitialized,
           isReadOnlyMode: this.isReadOnlyMode,
@@ -434,7 +438,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Ensure UI state is in sync with current orchestrator state immediately
     const currentState = this.appDfdOrchestrator.getState();
     this.isSystemInitialized = currentState.initialized;
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
     this.logger.debug('Initial state sync completed', {
       isSystemInitialized: this.isSystemInitialized,
       orchestratorInitialized: currentState.initialized,
@@ -455,7 +459,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               orchestratorState: currentState.initialized,
             });
             this.isSystemInitialized = currentState.initialized;
-            this.cdr.markForCheck();
+            this.cdr.detectChanges();
           }
         }, 100);
         return () => clearInterval(interval);
@@ -996,7 +1000,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 canUndo,
                 canRedo,
               });
-              this.cdr.markForCheck();
+              this.cdr.detectChanges();
             }
           }),
       );
@@ -1020,12 +1024,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.canRedo = canRedo;
 
       this.logger.debugComponent('DFD', 'Initial history state set', { canUndo, canRedo });
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     } else {
       // No graph adapter available, ensure buttons are disabled
       this.canUndo = false;
       this.canRedo = false;
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     }
   }
 
@@ -1068,7 +1072,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Open the context menu
     if (this.contextMenuTrigger) {
       this.contextMenuTrigger.openMenu();
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     }
 
     this.logger.debug('Context menu opened for cell', {
@@ -1207,7 +1211,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       oldSelectedCellIsTextBox !== this.selectedCellIsTextBox ||
       oldSelectedCellIsSecurityBoundary !== this.selectedCellIsSecurityBoundary
     ) {
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     }
   }
 
