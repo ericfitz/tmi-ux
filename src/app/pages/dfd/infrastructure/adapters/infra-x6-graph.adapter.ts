@@ -1273,11 +1273,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       );
 
       // Enable history plugin with centralized filtering via GraphHistoryCoordinator
-      // Start disabled - will be enabled after diagram load completes
+      // History is always enabled - filtering happens via beforeAddCommand
       this._graph.use(
         new History({
           stackSize: 10,
-          enabled: false, // Start disabled to prevent auto-saves during initialization
+          enabled: true, // Always enabled - filtering handled by GraphHistoryCoordinator
           beforeAddCommand: (event: string, args: any) => {
             // Delegate filtering to the centralized history coordinator
             return this._shouldIncludeInHistory(event, args);

@@ -14,6 +14,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 import { AppDiagramService } from './app-diagram.service';
+import { GraphHistoryCoordinator } from '../../services/graph-history-coordinator.service';
 
 /**
  * Options for cell loading operations
@@ -37,6 +38,7 @@ export class AppDiagramLoadingService {
     private logger: LoggerService,
     private infraNodeConfigurationService: InfraNodeConfigurationService,
     private diagramService: AppDiagramService,
+    private historyCoordinator: GraphHistoryCoordinator,
   ) {
     this.logger.info('AppDiagramLoadingService initialized');
   }
@@ -74,17 +76,14 @@ export class AppDiagramLoadingService {
         this.logger.debug('Cleared existing cells from graph');
       }
 
-      // Handle history suppression
-      const historyManager = infraX6GraphAdapter.getHistoryManager();
-      let historyWasEnabled = false;
+      // Handle history suppression using GraphHistoryCoordinator
+      let wasLoadingStateSuppressed = false;
 
-      if (suppressHistory && historyManager) {
-        // InfraX6HistoryAdapter doesn't have isEnabled method, assume enabled by default for safety
-        historyWasEnabled = true;
-        if (historyWasEnabled) {
-          historyManager.disable(graph);
-          this.logger.debug('History tracking disabled for cell loading');
-        }
+      if (suppressHistory) {
+        // Set diagram loading state to suppress history via the coordinator
+        wasLoadingStateSuppressed = true;
+        this.historyCoordinator.setDiagramLoadingState(true);
+        this.logger.debug('Diagram loading state set - history recording suppressed');
       }
 
       try {
@@ -109,12 +108,11 @@ export class AppDiagramLoadingService {
           cellIds: graphCells.map(cell => cell.id),
         });
       } finally {
-        // Restore history state if it was modified
-        if (suppressHistory && historyManager && historyWasEnabled) {
-          // Clear any history entries that might have been created during loading
-          historyManager.clearHistory(graph);
-          historyManager.enable(graph);
-          this.logger.debug('History tracking re-enabled after cell loading');
+        // Restore diagram loading state if it was modified
+        if (wasLoadingStateSuppressed) {
+          // Clear the diagram loading state to allow normal history recording
+          this.historyCoordinator.setDiagramLoadingState(false);
+          this.logger.debug('Diagram loading state cleared - history recording restored');
         }
 
         // Update embedding appearances if requested

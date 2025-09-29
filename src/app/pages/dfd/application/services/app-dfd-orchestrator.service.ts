@@ -916,13 +916,11 @@ export class AppDfdOrchestrator {
         return of(true);
       }),
       tap(() => {
-        // Enable history after initialization and loading is complete
-        // History starts disabled to prevent auto-saves during initialization
-        if (!params.collaborationEnabled) {
-          this.dfdInfrastructure.setHistoryEnabled(true);
-          this.logger.debug('History tracking enabled after initialization');
-        } else {
-          this.logger.debug('History tracking remains disabled for collaboration mode');
+        // History is always enabled now - just clear the diagram loading state
+        // to allow normal history recording after initialization
+        this.logger.debug('Diagram initialization complete - history filtering via GraphHistoryCoordinator');
+        if (params.collaborationEnabled) {
+          this.logger.debug('Collaboration mode enabled - history managed by server');
         }
       }),
     );
