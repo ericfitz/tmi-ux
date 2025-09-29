@@ -17,9 +17,7 @@ import { CellOperation } from '../../../../core/types/websocket-message.types';
  * - Convert X6 events to CellOperation format
  * - Prevent echo effects when applying remote operations
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppDiagramOperationBroadcaster {
   private _graph: Graph | null = null;
   private _pendingOperations: CellOperation[] = [];

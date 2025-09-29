@@ -49,6 +49,7 @@ import { AppEdgeService } from '../../application/services/app-edge.service';
 import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { AppDiagramLoadingService } from '../../application/services/app-diagram-loading.service';
+import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 
 // Infrastructure adapters and services
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
@@ -107,6 +108,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppGraphHistoryCoordinator, // History coordination service
     AppDiagramService, // Diagram data management service
     AppDiagramLoadingService, // Diagram loading service
+    AppDiagramOperationBroadcaster, // Operation broadcaster service
     InfraVisualEffectsService, // Visual effects service
     // Infrastructure adapters and services required by InfraX6GraphAdapter
     InfraX6GraphAdapter,
