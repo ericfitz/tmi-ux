@@ -424,8 +424,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.isSystemInitialized = state.initialized;
         this.cdr.markForCheck();
+        this.logger.debug('Updated system initialization state and triggered change detection', {
+          isSystemInitialized: this.isSystemInitialized,
+          isReadOnlyMode: this.isReadOnlyMode,
+        });
       }),
     );
+
+    // Ensure UI state is in sync with current orchestrator state immediately
+    const currentState = this.appDfdOrchestrator.getState();
+    this.isSystemInitialized = currentState.initialized;
+    this.cdr.markForCheck();
+    this.logger.debug('Initial state sync completed', {
+      isSystemInitialized: this.isSystemInitialized,
+      orchestratorInitialized: currentState.initialized,
+    });
 
     // Set up interval to update selection and history state
     // TODO: Replace with proper observables when available from AppDfdOrchestrator
@@ -434,6 +447,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       new Observable(_observer => {
         const interval = setInterval(() => {
           this.updateSelectionState();
+          // Also check if system initialization state has changed and force update if needed
+          const currentState = this.appDfdOrchestrator.getState();
+          if (this.isSystemInitialized !== currentState.initialized) {
+            this.logger.debug('System initialization state mismatch detected, forcing sync', {
+              componentState: this.isSystemInitialized,
+              orchestratorState: currentState.initialized,
+            });
+            this.isSystemInitialized = currentState.initialized;
+            this.cdr.markForCheck();
+          }
         }, 100);
         return () => clearInterval(interval);
       })
