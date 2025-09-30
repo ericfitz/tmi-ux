@@ -19,9 +19,7 @@ import {
   SyncResult,
 } from '../../application/services/app-persistence-coordinator.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class WebSocketPersistenceStrategy implements PersistenceStrategy {
   readonly type = 'websocket' as const;
   readonly priority = 200; // Higher priority than REST for real-time operations

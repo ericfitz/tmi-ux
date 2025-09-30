@@ -93,9 +93,7 @@ const DEFAULT_POLICIES: Record<string, AutoSavePolicy> = {
   },
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppAutoSaveManager {
   private readonly _saveCompleted$ = new Subject<SaveResult>();
   private readonly _triggerEvent$ = new Subject<AutoSaveTriggerEvent>();

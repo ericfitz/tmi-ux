@@ -59,9 +59,7 @@ export interface DfdDiagramState {
   conflictCount: number;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppStateService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();

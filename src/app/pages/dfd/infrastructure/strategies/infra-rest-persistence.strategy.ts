@@ -20,9 +20,7 @@ import {
   SyncResult,
 } from '../../application/services/app-persistence-coordinator.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class InfraRestPersistenceStrategy implements PersistenceStrategy {
   readonly type = 'rest' as const;
   readonly priority = 100;

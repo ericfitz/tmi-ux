@@ -33,9 +33,7 @@ import {
   OperationSource,
 } from '../../types/graph-operation.types';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppGraphOperationManager implements IGraphOperationManager {
   private readonly _config$ = new BehaviorSubject<OperationConfig>(DEFAULT_OPERATION_CONFIG);
   private readonly _operationCompleted$ = new Subject<OperationCompletedEvent>();

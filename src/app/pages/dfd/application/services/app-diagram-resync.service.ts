@@ -13,7 +13,7 @@ import { debounceTime, switchMap, catchError, tap, takeUntil, finalize } from 'r
 import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { AppStateService } from './app-state.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
@@ -37,9 +37,7 @@ export interface ResyncResult {
   timestamp: number;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppDiagramResyncService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _resyncTrigger$ = new Subject<void>();

@@ -17,9 +17,7 @@ import {
   SyncResult,
 } from '../../application/services/app-persistence-coordinator.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class InfraCacheOnlyPersistenceStrategy implements PersistenceStrategy {
   readonly type = 'cache-only' as const;
   readonly priority = 50; // Lower priority than network strategies

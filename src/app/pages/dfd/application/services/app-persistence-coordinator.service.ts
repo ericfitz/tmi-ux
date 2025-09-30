@@ -104,9 +104,7 @@ const DEFAULT_CONFIG: PersistenceConfig = {
   fallbackStrategy: 'rest',
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class AppPersistenceCoordinator {
   private readonly _config$ = new BehaviorSubject<PersistenceConfig>(DEFAULT_CONFIG);
   private readonly _saveStatus$ = new Subject<SaveStatusEvent>();

@@ -50,6 +50,15 @@ import { AppGraphHistoryCoordinator } from '../../application/services/app-graph
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { AppDiagramLoadingService } from '../../application/services/app-diagram-loading.service';
 import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
+import { AppGraphOperationManager } from '../../application/services/app-graph-operation-manager.service';
+import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
+import { AppDiagramResyncService } from '../../application/services/app-diagram-resync.service';
+import { AppStateService } from '../../application/services/app-state.service';
+
+// Persistence strategies
+import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
+import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
+import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
 
 // Infrastructure adapters and services
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
@@ -118,6 +127,15 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppDiagramService, // Diagram data management service
     AppDiagramLoadingService, // Diagram loading service
     AppDiagramOperationBroadcaster, // Operation broadcaster service
+    AppGraphOperationManager, // Operation manager service
+    AppPersistenceCoordinator, // Persistence coordination service
+    AppAutoSaveManager, // Auto-save manager service (changed from root to component-scoped)
+    AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)
+    AppStateService, // State service (changed from root to component-scoped)
+    // Persistence strategies (changed from root to component-scoped)
+    InfraRestPersistenceStrategy,
+    WebSocketPersistenceStrategy,
+    InfraCacheOnlyPersistenceStrategy,
     InfraVisualEffectsService, // Visual effects service
     // Infrastructure adapters and services required by InfraX6GraphAdapter
     InfraX6GraphAdapter,
