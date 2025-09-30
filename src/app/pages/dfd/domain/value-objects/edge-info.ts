@@ -181,6 +181,8 @@ export class EdgeInfo {
     vertices?: Array<{ x: number; y: number }>;
     metadata?: Record<string, string>;
     customData?: Record<string, any>;
+    connector?: EdgeConnector;
+    router?: EdgeRouter;
   }): EdgeInfo {
     // Assign default ports if not specified
     const sourcePortId = data.sourcePortId || 'right';
@@ -209,7 +211,22 @@ export class EdgeInfo {
       ...(data.customData || {}),
     };
 
-    return new EdgeInfo(data.id, 'edge', source, target, 1, true, attrs, [], vertices, hybridData);
+    return new EdgeInfo(
+      data.id,
+      'edge',
+      source,
+      target,
+      1,
+      true,
+      attrs,
+      [],
+      vertices,
+      hybridData,
+      undefined,
+      undefined,
+      data.router,
+      data.connector,
+    );
   }
 
   /**

@@ -447,6 +447,8 @@ export class AppDiagramService {
       source,
       target,
       zIndex: mockCell.zIndex || 1,
+      connector: mockCell.connector || DFD_STYLING.EDGES.CONNECTOR,
+      router: mockCell.router || DFD_STYLING.EDGES.ROUTER,
       attrs: {
         line: {
           stroke: DFD_STYLING.EDGES.STROKE,

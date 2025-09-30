@@ -348,6 +348,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           const defaultLabel = this._edgeService.getLocalizedFlowLabel();
           return this._graph!.createEdge({
             shape: 'edge', // Use standard X6 edge shape
+            connector: DFD_STYLING.EDGES.CONNECTOR,
+            router: DFD_STYLING.EDGES.ROUTER,
             attrs: {
               line: {
                 stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,

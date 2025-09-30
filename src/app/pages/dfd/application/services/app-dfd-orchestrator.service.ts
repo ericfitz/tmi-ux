@@ -303,7 +303,13 @@ export class AppDfdOrchestrator {
     return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       map(result => {
         if (result.success && result.data) {
-          this._loadGraphData(result.data);
+          // TODO: Implement proper diagram loading via AppDiagramLoadingService
+          // The persistence coordinator currently returns stub data.
+          // Real diagram loading should go through:
+          // 1. AppDiagramService.loadDiagram() - fetches cells from API
+          // 2. AppDiagramLoadingService.loadCellsIntoGraph() - loads cells properly
+          // This ensures all edges get connector/router defaults from the domain layer
+          this.logger.warn('Persistence coordinator load() not yet implemented - returns stub data');
           this._updateState({
             loading: false,
             hasUnsavedChanges: false,
@@ -764,7 +770,13 @@ export class AppDfdOrchestrator {
     return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       tap(result => {
         if (result.success && result.data) {
-          this._loadGraphData(result.data);
+          // TODO: Implement proper diagram loading via AppDiagramLoadingService
+          // The persistence coordinator currently returns stub data.
+          // Real diagram loading should go through:
+          // 1. AppDiagramService.loadDiagram() - fetches cells from API
+          // 2. AppDiagramLoadingService.loadCellsIntoGraph() - loads cells properly
+          // This ensures all edges get connector/router defaults from the domain layer
+          this.logger.warn('Persistence coordinator loadDiagram() not yet implemented - returns stub data');
           this._updateState({
             loading: false,
             hasUnsavedChanges: false,
@@ -1037,34 +1049,6 @@ export class AppDfdOrchestrator {
     };
   }
 
-  private _loadGraphData(data: any): void {
-    const graph = this.dfdInfrastructure.getGraph();
-    if (!graph || !data) {
-      return;
-    }
-
-    // Clear existing graph
-    graph.clearCells();
-
-    // Load nodes
-    if (data.nodes) {
-      data.nodes.forEach((nodeData: any) => {
-        graph.addNode(nodeData);
-      });
-    }
-
-    // Load edges
-    if (data.edges) {
-      data.edges.forEach((edgeData: any) => {
-        graph.addEdge(edgeData);
-      });
-    }
-
-    this.logger.debug('Graph data loaded', {
-      nodeCount: data.nodes?.length || 0,
-      edgeCount: data.edges?.length || 0,
-    });
-  }
 
   private _markUnsavedChanges(): void {
     if (!this._state$.value.hasUnsavedChanges) {

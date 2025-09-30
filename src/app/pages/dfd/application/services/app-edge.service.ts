@@ -32,6 +32,7 @@ import {
   AppGraphHistoryCoordinator,
   HISTORY_OPERATION_TYPES,
 } from './app-graph-history-coordinator.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Interface for connection validation arguments from X6
@@ -247,6 +248,8 @@ export class AppEdgeService {
             sourcePortId: targetPortId,
             targetPortId: sourcePortId,
             vertices: inverseVertices,
+            connector: DFD_STYLING.EDGES.CONNECTOR as any,
+            router: DFD_STYLING.EDGES.ROUTER as any,
           });
 
           // Step 4: Create the inverse edge via InfraEdgeService (suppress history since we're in atomic operation)
@@ -459,6 +462,8 @@ export class AppEdgeService {
         sourcePortId: sourcePortId || 'right',
         targetPortId: targetPortId || 'left',
         label: label || this.getLocalizedFlowLabel(),
+        connector: DFD_STYLING.EDGES.CONNECTOR as any,
+        router: DFD_STYLING.EDGES.ROUTER as any,
       });
 
       // Delegate to InfraEdgeService for X6 operations (proper layered architecture)
