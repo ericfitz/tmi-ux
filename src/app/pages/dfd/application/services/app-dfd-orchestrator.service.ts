@@ -21,9 +21,11 @@ import {
   StrategySelectionContext,
 } from './app-persistence-coordinator.service';
 import { AppAutoSaveManager } from './app-auto-save-manager.service';
+import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
 import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
 import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
+import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { NodeType } from '../../domain/value-objects/node-info';
 import {
@@ -102,6 +104,8 @@ export class AppDfdOrchestrator {
     private readonly appGraphOperationManager: AppGraphOperationManager,
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appAutoSaveManager: AppAutoSaveManager,
+    private readonly appDiagramLoadingService: AppDiagramLoadingService,
+    private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
     private readonly restStrategy: InfraRestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
     private readonly cacheOnlyStrategy: InfraCacheOnlyPersistenceStrategy,
@@ -287,29 +291,57 @@ export class AppDfdOrchestrator {
    */
   load(diagramId?: string): Observable<boolean> {
     const targetDiagramId = diagramId || this._initParams?.diagramId;
+    const threatModelId = this._initParams?.threatModelId;
+
     if (!targetDiagramId) {
       return throwError(() => new Error('No diagram ID provided'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
+    if (!threatModelId) {
+      return throwError(() => new Error('No threat model ID available'));
+    }
+
+    this.logger.debug('AppDfdOrchestrator: Loading diagram', {
+      diagramId: targetDiagramId,
+      threatModelId,
+    });
 
     this._updateState({ loading: true });
 
     const loadOperation = {
       diagramId: targetDiagramId,
+      threatModelId,
       forceRefresh: false,
     };
 
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
+      this._updateState({ loading: false, error: 'Graph not initialized' });
+      return throwError(() => new Error('Graph not initialized'));
+    }
+
     return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       map(result => {
-        if (result.success && result.data) {
-          // TODO: Implement proper diagram loading via AppDiagramLoadingService
-          // The persistence coordinator currently returns stub data.
-          // Real diagram loading should go through:
-          // 1. AppDiagramService.loadDiagram() - fetches cells from API
-          // 2. AppDiagramLoadingService.loadCellsIntoGraph() - loads cells properly
+        if (result.success && result.data && result.data.cells) {
+          this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
+            cellCount: result.data.cells.length,
+          });
+
+          // Use AppDiagramLoadingService to properly load cells into the graph
           // This ensures all edges get connector/router defaults from the domain layer
-          this.logger.warn('Persistence coordinator load() not yet implemented - returns stub data');
+          this.appDiagramLoadingService.loadCellsIntoGraph(
+            result.data.cells,
+            graph,
+            targetDiagramId,
+            this.dfdInfrastructure.graphAdapter,
+            {
+              clearExisting: true,
+              suppressHistory: true,
+              updateEmbedding: true,
+              source: 'orchestrator-load',
+            },
+          );
+
           this._updateState({
             loading: false,
             hasUnsavedChanges: false,
@@ -317,6 +349,7 @@ export class AppDfdOrchestrator {
           });
           return true;
         }
+        this._updateState({ loading: false });
         return false;
       }),
       catchError(error => {
@@ -758,25 +791,52 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('No diagram ID provided'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Loading diagram', { diagramId: targetDiagramId });
+    const threatModelId = this._initParams?.threatModelId;
+    if (!threatModelId) {
+      return throwError(() => new Error('No threat model ID available'));
+    }
+
+    this.logger.debug('AppDfdOrchestrator: Loading diagram', {
+      diagramId: targetDiagramId,
+      threatModelId,
+    });
 
     this._updateState({ loading: true });
 
     const loadOperation = {
       diagramId: targetDiagramId,
-      forceRefresh: false,
+      threatModelId,
+      forceRefresh: shouldForceLoad,
     };
+
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
+      this._updateState({ loading: false, error: 'Graph not initialized' });
+      return throwError(() => new Error('Graph not initialized'));
+    }
 
     return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
       tap(result => {
-        if (result.success && result.data) {
-          // TODO: Implement proper diagram loading via AppDiagramLoadingService
-          // The persistence coordinator currently returns stub data.
-          // Real diagram loading should go through:
-          // 1. AppDiagramService.loadDiagram() - fetches cells from API
-          // 2. AppDiagramLoadingService.loadCellsIntoGraph() - loads cells properly
+        if (result.success && result.data && result.data.cells) {
+          this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
+            cellCount: result.data.cells.length,
+          });
+
+          // Use AppDiagramLoadingService to properly load cells into the graph
           // This ensures all edges get connector/router defaults from the domain layer
-          this.logger.warn('Persistence coordinator loadDiagram() not yet implemented - returns stub data');
+          this.appDiagramLoadingService.loadCellsIntoGraph(
+            result.data.cells,
+            graph,
+            targetDiagramId,
+            this.dfdInfrastructure.graphAdapter,
+            {
+              clearExisting: true,
+              suppressHistory: true,
+              updateEmbedding: true,
+              source: 'orchestrator-loadDiagram',
+            },
+          );
+
           this._updateState({
             loading: false,
             hasUnsavedChanges: false,

@@ -35,6 +35,7 @@ export interface SaveResult {
 
 export interface LoadOperation {
   readonly diagramId: string;
+  readonly threatModelId?: string;
   readonly forceRefresh?: boolean;
 }
 

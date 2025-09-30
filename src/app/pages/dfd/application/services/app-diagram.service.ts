@@ -39,7 +39,9 @@ export interface DiagramLoadResult {
  * Service for managing DFD diagram data operations
  * Handles diagram loading, validation, and error scenarios
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppDiagramService {
   constructor(
     private logger: LoggerService,

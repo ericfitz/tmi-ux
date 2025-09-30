@@ -9,6 +9,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { AppDiagramService } from '../../application/services/app-diagram.service';
 import {
   PersistenceStrategy,
   SaveOperation,
@@ -29,6 +30,7 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
   constructor(
     private readonly http: HttpClient,
     private readonly logger: LoggerService,
+    private readonly diagramService: AppDiagramService,
   ) {
     this.logger.debug('InfraRestPersistenceStrategy initialized');
   }
@@ -72,33 +74,57 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
   load(operation: LoadOperation): Observable<LoadResult> {
     this.logger.debug('REST load operation started', {
       diagramId: operation.diagramId,
+      threatModelId: operation.threatModelId,
       forceRefresh: operation.forceRefresh,
     });
 
-    // For now, return empty diagram data since we don't have the actual API endpoint
-    // In a real implementation, this would GET from /api/diagrams/{id}
-    return of({
-      success: true,
-      diagramId: operation.diagramId,
-      data: {
-        nodes: [],
-        edges: [],
-        metadata: {
-          diagramId: operation.diagramId,
-          version: 1,
-          created: new Date().toISOString(),
-          modified: new Date().toISOString(),
-        },
-      },
-      source: 'api' as const,
-      timestamp: Date.now(),
-    }).pipe(
-      map(result => {
-        this.logger.debug('REST load completed successfully', {
-          diagramId: operation.diagramId,
-          hasData: !!result.data,
-        });
-        return result;
+    if (!operation.threatModelId) {
+      const errorMessage = 'Threat model ID is required for loading diagram';
+      this.logger.error(errorMessage, { diagramId: operation.diagramId });
+      return of({
+        success: false,
+        diagramId: operation.diagramId,
+        source: 'api' as const,
+        timestamp: Date.now(),
+        error: errorMessage,
+      });
+    }
+
+    // Use AppDiagramService to load diagram data from the API
+    return this.diagramService.loadDiagram(operation.diagramId, operation.threatModelId).pipe(
+      map(loadResult => {
+        if (loadResult.success && loadResult.diagram) {
+          this.logger.debug('REST load completed successfully', {
+            diagramId: operation.diagramId,
+            cellCount: loadResult.diagram.cells?.length || 0,
+          });
+
+          // Return diagram cells in the expected format
+          return {
+            success: true,
+            diagramId: operation.diagramId,
+            data: {
+              cells: loadResult.diagram.cells || [],
+              name: loadResult.diagram.name,
+              threatModelId: loadResult.diagram.threatModelId,
+            },
+            source: 'api' as const,
+            timestamp: Date.now(),
+          };
+        } else {
+          const errorMessage = loadResult.error || 'Failed to load diagram';
+          this.logger.error('REST load failed', {
+            diagramId: operation.diagramId,
+            error: errorMessage,
+          });
+          return {
+            success: false,
+            diagramId: operation.diagramId,
+            source: 'api' as const,
+            timestamp: Date.now(),
+            error: errorMessage,
+          };
+        }
       }),
       catchError(error => {
         const errorMessage = `REST load failed: ${error.message || 'Unknown error'}`;
