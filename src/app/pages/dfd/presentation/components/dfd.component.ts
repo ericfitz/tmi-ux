@@ -85,6 +85,15 @@ import {
 } from './cell-properties-dialog/cell-properties-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
+import { FrameworkService } from '../../../../shared/services/framework.service';
+import {
+  ThreatEditorDialogComponent,
+  ThreatEditorDialogData,
+} from '../../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
+import {
+  ThreatsDialogComponent,
+  ThreatsDialogData,
+} from '../../../tm/components/threats-dialog/threats-dialog.component';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -179,6 +188,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
     private dfdInfrastructure: AppDfdFacade,
+    private frameworkService: FrameworkService,
   ) {
     this.logger.info('DfdComponent v2 constructor called');
 
@@ -754,11 +764,84 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cellType: targetCell?.isNode?.() ? 'node' : targetCell?.isEdge?.() ? 'edge' : 'unknown',
     });
 
-    // TODO: Implement threat editor dialog integration with DFD v2
-    // This should open the threat editor dialog directly on the DFD page
-    // and pass the threat model ID and cell context
-    alert(
-      `Threat Editor would open for:\n- Threat Model: ${this.threatModelId}\n- Diagram: ${this.dfdId}\n- Cell: ${cellId || 'none selected'}`,
+    // Load threat model to get framework information
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found', { id: this.threatModelId });
+            return;
+          }
+
+          const frameworkName = threatModel.threat_model_framework;
+
+          // Load framework to get threat types
+          this._subscriptions.add(
+            this.frameworkService.loadFramework(frameworkName).subscribe({
+              next: framework => {
+                if (!framework) {
+                  this.logger.warn('Framework not found, proceeding without framework', {
+                    frameworkName,
+                  });
+                }
+
+                // Extract diagram and cell data from X6 graph
+                const graph = this.appDfdOrchestrator.getGraph;
+                let cellData;
+
+                if (graph && this.dfdId && this.diagramName) {
+                  cellData = this.cellDataExtractionService.extractFromX6Graph(
+                    graph,
+                    this.dfdId,
+                    this.diagramName,
+                  );
+                } else {
+                  cellData = { diagrams: [], cells: [] };
+                }
+
+                // Determine shape type for threat type filtering
+                let shapeType: string | undefined;
+                if (targetCell?.isNode?.()) {
+                  const cellData = targetCell.getData();
+                  shapeType = cellData?.nodeType || targetCell.shape;
+                }
+
+                // Open the threat editor dialog
+                const dialogData: ThreatEditorDialogData = {
+                  threatModelId: this.threatModelId!,
+                  mode: 'create',
+                  diagramId: this.dfdId || undefined,
+                  cellId: cellId,
+                  diagrams: cellData.diagrams,
+                  cells: cellData.cells,
+                  framework: framework || undefined,
+                  shapeType: shapeType,
+                };
+
+                const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
+                  width: '650px',
+                  maxHeight: '90vh',
+                  panelClass: 'threat-editor-dialog-650',
+                  data: dialogData,
+                });
+
+                dialogRef.afterClosed().subscribe(result => {
+                  if (result) {
+                    this.logger.info('Threat editor closed with result, creating threat');
+                    this._createThreat(result);
+                  }
+                });
+              },
+              error: error => {
+                this.logger.error('Failed to load framework', error);
+              },
+            }),
+          );
+        },
+        error: error => {
+          this.logger.error('Failed to load threat model', error);
+        },
+      }),
     );
   }
 
@@ -782,11 +865,63 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cellType: targetCell.isNode() ? 'node' : 'edge',
     });
 
-    // TODO: Implement threat management dialog integration with DFD v2
-    // This should open the existing threats management dialog and populate it with threats for this cell
-    // The dialog should be filtered to show only threats associated with this specific cell
-    alert(
-      `Threat Management would open for:\n- Threat Model: ${this.threatModelId}\n- Diagram: ${this.dfdId}\n- Cell: ${cellId}\n- Type: ${targetCell.isNode() ? 'node' : 'edge'}`,
+    // Load threat model to get threats associated with this cell
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found', { id: this.threatModelId });
+            return;
+          }
+
+          // Filter threats for this specific cell
+          const cellThreats = (threatModel.threats || []).filter(threat => threat.cell_id === cellId);
+
+          this.logger.info('Found threats for cell', {
+            cellId,
+            threatCount: cellThreats.length,
+          });
+
+          // Extract diagram and cell data from X6 graph
+          const graph = this.appDfdOrchestrator.getGraph;
+          let cellData;
+
+          if (graph && this.dfdId && this.diagramName) {
+            cellData = this.cellDataExtractionService.extractFromX6Graph(
+              graph,
+              this.dfdId,
+              this.diagramName,
+            );
+          } else {
+            cellData = { diagrams: [], cells: [] };
+          }
+
+          // Get cell label for display
+          const cellLabel = targetCell.getLabel?.() || cellId;
+
+          // Open the threats dialog
+          const dialogData: ThreatsDialogData = {
+            threats: cellThreats,
+            isReadOnly: this.isReadOnlyMode,
+            objectType: targetCell.isNode() ? 'node' : 'edge',
+            objectName: cellLabel,
+            threatModelId: this.threatModelId || undefined,
+            diagramId: this.dfdId || undefined,
+            diagramName: this.diagramName || undefined,
+            diagrams: cellData.diagrams,
+            cells: cellData.cells,
+          };
+
+          this.dialog.open(ThreatsDialogComponent, {
+            width: '800px',
+            maxHeight: '90vh',
+            data: dialogData,
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to load threat model', error);
+        },
+      }),
     );
   }
 
@@ -1248,5 +1383,67 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.error('Failed to navigate to TM list', { error });
       });
     }
+  }
+
+  /**
+   * Helper method to create a new threat in the threat model
+   */
+  private _createThreat(threatData: any): void {
+    if (!this.threatModelId) {
+      this.logger.error('Cannot create threat: No threat model ID available');
+      return;
+    }
+
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found for threat creation', {
+              id: this.threatModelId,
+            });
+            return;
+          }
+
+          // Generate a unique ID for the new threat
+          const newThreat = {
+            id: `threat-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+            threat_model_id: this.threatModelId!,
+            name: threatData.name,
+            description: threatData.description,
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+            diagram_id: threatData.diagram_id,
+            cell_id: threatData.cell_id,
+            severity: threatData.severity,
+            score: threatData.score,
+            priority: threatData.priority,
+            mitigated: threatData.mitigated,
+            status: threatData.status,
+            threat_type: threatData.threat_type,
+            issue_url: threatData.issue_url,
+            metadata: threatData.metadata || [],
+          };
+
+          // Add the new threat to the threat model
+          const updatedThreats = [...(threatModel.threats || []), newThreat];
+          const updatedThreatModel = { ...threatModel, threats: updatedThreats };
+
+          // Save the updated threat model
+          this._subscriptions.add(
+            this.threatModelService.updateThreatModel(updatedThreatModel).subscribe({
+              next: () => {
+                this.logger.info('Threat created successfully', { threatId: newThreat.id });
+              },
+              error: error => {
+                this.logger.error('Failed to create threat', error);
+              },
+            }),
+          );
+        },
+        error: error => {
+          this.logger.error('Failed to load threat model for threat creation', error);
+        },
+      }),
+    );
   }
 }
