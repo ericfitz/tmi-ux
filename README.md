@@ -48,11 +48,10 @@ Comprehensive documentation is organized as follows:
 ### 🛠️ Developer Resources
 
 - **[CLAUDE.md](CLAUDE.md)** - AI assistant instructions and comprehensive project overview
-- **[/context](context/)** - Developer-specific implementation details and technical guides
-- **[Architecture Guide](docs/ARCHITECTURE.md)** - Complete architecture overview and patterns
-- **[Architecture Decision Records](docs/adr/)** - Key architectural decisions with context and rationale
-- **[Service Provisioning Standards](docs/SERVICE_PROVISIONING_STANDARDS.md)** - Where and how to provide services
-- **[Architecture Validation](docs/ARCHITECTURE_VALIDATION.md)** - How to validate architecture compliance
+- **[/docs/agent](docs/agent/)** - AI agent context and implementation guides
+- **[Architecture Guide](docs/reference/architecture/overview.md)** - Complete architecture overview and patterns
+- **[Service Provisioning Standards](docs/reference/architecture/service-provisioning.md)** - Where and how to provide services
+- **[Architecture Validation](docs/reference/architecture/validation.md)** - How to validate architecture compliance
 
 ## Shared Resources
 

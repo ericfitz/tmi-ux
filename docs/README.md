@@ -1,73 +1,82 @@
 # TMI-UX Documentation
 
-Welcome to the TMI-UX documentation. This directory contains comprehensive documentation for developers, architects, and contributors.
+Welcome to the TMI-UX documentation. This directory contains comprehensive documentation organized by audience and purpose.
 
 ## 📚 Documentation Structure
 
-### Architecture Documentation
-- **[Architecture Guide](ARCHITECTURE.md)** - Complete architecture overview, principles, and patterns
-- **[Architecture Decision Records](adr/)** - Key architectural decisions with context and rationale
-- **[Architecture Validation](ARCHITECTURE_VALIDATION.md)** - How to validate architecture compliance
-- **[Architecture TODO](ARCHITECTURE_TODO.md)** - Remaining architectural improvements
-- **[Architecture Violations](ARCHITECTURE_VIOLATIONS.md)** - Known violations and resolution plans
+### Reference Documentation (`reference/`)
 
-### Development Standards
-- **[Service Provisioning Standards](SERVICE_PROVISIONING_STANDARDS.md)** - How and where to provide services
-- **[Naming Conventions](NAMING_CONVENTIONS.md)** - File naming standards and patterns
-- **[Security Headers](SECURITY_HEADERS.md)** - HTTP security header implementation
+#### Architecture (`reference/architecture/`)
+- **[overview.md](reference/architecture/overview.md)** - Complete architecture overview, principles, and patterns
+- **[validation.md](reference/architecture/validation.md)** - How to validate architecture compliance
+- **[violations.md](reference/architecture/violations.md)** - Known violations and resolution plans
+- **[service-provisioning.md](reference/architecture/service-provisioning.md)** - How and where to provide services
+- **[naming-conventions.md](reference/architecture/naming-conventions.md)** - File naming standards and patterns
+- **[session-management.md](reference/architecture/session-management.md)** - Session and authentication architecture
+- **[autosave-data-modeling.md](reference/architecture/autosave-data-modeling.md)** - Auto-save data architecture
+- **[dfd-change-propagation/](reference/architecture/dfd-change-propagation/)** - DFD change propagation analysis
 
-### Performance & Optimization
-- **[Bundle Size Analysis](BUNDLE_SIZE_ANALYSIS.md)** - Bundle optimization and tree-shaking results
+#### Libraries (`reference/libraries/`)
+- **[x6-complete-guide.md](reference/libraries/x6-complete-guide.md)** - Comprehensive X6 graph library documentation
 
-### Technical Guides
-- **[Complete X6 Guide](X6_COMPLETE_GUIDE.md)** - Comprehensive X6 graph library documentation
-- **[WebSocket Collaboration](WEBSOCKET_COLLABORATION.md)** - Real-time collaboration implementation
+#### Features (`reference/features/`)
+- **[collaborative-editing.md](reference/features/collaborative-editing.md)** - Real-time collaboration implementation
+- **[dfd-graph-interaction.md](reference/features/dfd-graph-interaction.md)** - DFD user interaction guide
 
-### Implementation Plans
-- **[Enhanced Save Behavior](enhanced-save-behavior-implementation-plan.md)** - Auto-save functionality design
-- **[Autosave Data Modeling](autosave-data-modeling-architecture.md)** - Data architecture for auto-save
+#### Security (`reference/security/`)
+- **[headers.md](reference/security/headers.md)** - HTTP security header implementation
 
-### Diagrams
-- **authentication-component-architecture.png** - High level architecture diagram of authentication components
-- **authentication-flow.png** - OAuth authentication flow swimlane diagram
+### Developer Documentation (`developer/`)
+
+#### Setup (`developer/setup/`)
+- **[environment-configuration.md](developer/setup/environment-configuration.md)** - Environment setup and configuration
+- **[core-services.md](developer/setup/core-services.md)** - Core services overview
+- **[import-constants.md](developer/setup/import-constants.md)** - Import constant patterns
+
+#### Testing (`developer/testing/`)
+- **[testing-utilities.md](developer/testing/testing-utilities.md)** - Testing utilities and patterns
+
+#### Features (`developer/features/`)
+- **[validation-framework.md](developer/features/validation-framework.md)** - Validation framework usage
+
+### AI Agent Documentation (`agent/`)
+Context and implementation guides for AI coding agents:
+- **[README.md](agent/README.md)** - Agent documentation index
+- **[collaboration-participant-list-ux-design.md](agent/collaboration-participant-list-ux-design.md)** - Collaboration UX design
+- **[dfd-integration-testing-approach.md](agent/dfd-integration-testing-approach.md)** - DFD integration testing strategy
+- **[dfd-integration-test-plan.md](agent/dfd-integration-test-plan.md)** - DFD integration test plan
+- **[developers-guide-antvx6-graphing-library.md](agent/developers-guide-antvx6-graphing-library.md)** - X6 developer guide
+- **[interesting-x6-events.txt](agent/interesting-x6-events.txt)** - X6 event samples
+- **[pdf-report-diagram-rendering-design.md](agent/pdf-report-diagram-rendering-design.md)** - PDF diagram rendering design
+
+### Root-Level Documentation
+- **[README.md](README.md)** - Documentation index (this file)
+- **authentication-component-architecture.png** - Authentication component architecture diagram
+- **authentication-flow.png** - OAuth authentication flow diagram
+- Other diagrams and supporting files
 
 ## 🗺️ Quick Navigation
 
 ### For New Developers
-1. Start with [CLAUDE.md](../CLAUDE.md) - AI assistant guidance
-2. Read the [Architecture Guide](ARCHITECTURE.md)
-3. Review [Service Provisioning Standards](SERVICE_PROVISIONING_STANDARDS.md)
-4. Check [Naming Conventions](NAMING_CONVENTIONS.md)
+1. Start with [/CLAUDE.md](../CLAUDE.md) - AI assistant guidance and project overview
+2. Read the [Architecture Guide](reference/architecture/overview.md)
+3. Review [Service Provisioning Standards](reference/architecture/service-provisioning.md)
+4. Check [Environment Configuration](developer/setup/environment-configuration.md)
 
 ### For Contributors
-1. Review relevant [ADRs](adr/) for context
-2. Follow [Architecture Validation](ARCHITECTURE_VALIDATION.md) guidelines
-3. Update [Architecture TODO](ARCHITECTURE_TODO.md) when completing tasks
+1. Review [Architecture Validation](reference/architecture/validation.md) guidelines
+2. Check [Naming Conventions](reference/architecture/naming-conventions.md)
+3. Follow [Testing Utilities](developer/testing/testing-utilities.md) patterns
 
 ### For Architects
-1. Browse [Architecture Decision Records](adr/)
-2. Review [Architecture Guide](ARCHITECTURE.md)
-3. Monitor [Bundle Size Analysis](BUNDLE_SIZE_ANALYSIS.md)
+1. Review [Architecture Guide](reference/architecture/overview.md)
+2. Examine [DFD Change Propagation](reference/architecture/dfd-change-propagation/) analysis
+3. Study [Session Management](reference/architecture/session-management.md) architecture
 
-## 📂 Other Documentation Locations
-
-### Context Directory (`/context`)
-Developer-specific implementation details:
-- DFD (Data Flow Diagram) implementation guides
-- Collaborative editing design
-- Integration testing approaches
-- API references
-
-### Source Documentation
-- `/src/app/core/services/README.md` - Core services overview
-- `/src/app/pages/tm/validation/VALIDATION_USAGE.md` - Validation framework guide
-- `/src/environments/README.md` - Environment configuration
-- `/src/testing/README.md` - Testing guidelines
-
-### Root Documentation
-- `/README.md` - Project overview and setup
-- `/CLAUDE.md` - AI assistant instructions
-- `/AGENTS.md` - Additional AI agent guidance
+### For AI Agents
+1. Start with [Agent Documentation](agent/README.md)
+2. Review relevant implementation guides
+3. Check test plans and design documents
 
 ## 📝 Documentation Guidelines
 
@@ -80,36 +89,37 @@ Developer-specific implementation details:
 ### Documentation Standards
 1. Use clear, concise language
 2. Include code examples where helpful
-3. Keep documentation close to code
-4. Update the index when adding new docs
-5. Cross-reference related documentation
+3. Update indexes when adding new docs
+4. Cross-reference related documentation
+5. Use lowercase filenames (except README.md and special files)
 
-### Documentation Review
-All documentation should be:
-- Technically accurate
-- Up-to-date with current implementation
-- Free from duplication
-- Easy to navigate
+### Documentation Organization
+- **reference/** - Technical reference and architecture documentation
+- **developer/** - Setup guides, testing, and feature implementation
+- **agent/** - AI agent context and implementation plans
 
 ## 🔍 Finding Information
 
 ### By Topic
-- **Architecture**: Start with [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Services**: See [SERVICE_PROVISIONING_STANDARDS.md](SERVICE_PROVISIONING_STANDARDS.md)
-- **Testing**: Check `/src/testing/README.md`
-- **Security**: Review [SECURITY_HEADERS.md](SECURITY_HEADERS.md)
+- **Architecture**: Start with [overview.md](reference/architecture/overview.md)
+- **Services**: See [service-provisioning.md](reference/architecture/service-provisioning.md)
+- **Testing**: Check [testing-utilities.md](developer/testing/testing-utilities.md)
+- **Security**: Review [headers.md](reference/security/headers.md)
+- **Collaboration**: See [collaborative-editing.md](reference/features/collaborative-editing.md)
 
 ### By Role
-- **Frontend Developer**: Focus on component patterns in [ARCHITECTURE.md](ARCHITECTURE.md)
+- **Frontend Developer**: Focus on [overview.md](reference/architecture/overview.md) and [developer/](developer/)
 - **Backend Integration**: Review API docs in `/shared-api/docs/`
-- **DevOps**: Check environment setup in `/src/environments/README.md`
+- **DevOps**: Check [environment-configuration.md](developer/setup/environment-configuration.md)
+- **AI Agents**: Use [agent/](agent/) documentation
 
 ## 🤝 Contributing to Documentation
 
 1. Follow the existing format and style
-2. Update relevant indexes and cross-references
-3. Ensure no duplication of content
-4. Keep technical accuracy as priority
-5. Submit documentation updates with code changes
+2. Use lowercase filenames (except README.md and special files like LICENSE.txt)
+3. Update relevant indexes and cross-references
+4. Ensure no duplication of content
+5. Keep technical accuracy as priority
+6. Submit documentation updates with code changes
 
 For questions or suggestions about documentation, please create an issue or reach out to the team.

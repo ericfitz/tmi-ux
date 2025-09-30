@@ -1,46 +1,77 @@
-# Context Directory
+# AI Agent Documentation
 
 ## Overview
 
-This directory contains files to assist an AI code assistant in development and maintenance of this project.
+This directory contains context and implementation guidance for AI coding agents working on this project. These documents include architecture proposals, implementation plans, design documents, and technical context not intended for end users.
 
-AI assistants should use this directory for storage of development related documents like architecture proposals, implementation plans, progress tracking documents or other documents not intended to be exposed to end users.
+For user-facing documentation, see the parent [docs/](../) directory.
 
-Additional product documentation that is intended to be exposed to users of the project is stored in docs/
+## Current Directory Contents
 
-## Current directory contents
+AI assistants should update this list when adding or removing files.
 
-AI assistants should update this list whenever adding a new file, or when you discover an expected file is no longer present.
+### Design and Planning Documents
 
-- debug-component-names.md
-  Reference list of all debug component names for targeted logging configuration, organized by functional category (Auth, TM, DFD, etc.).
+- **collaboration-participant-list-ux-design.md**
+  UX design for collaboration participant list feature
 
-- DFD_GRAPH_INTERACTION.md
-  This file describes how the user interacts with the graphing page.
+- **pdf-report-diagram-rendering-design.md**
+  Design document for pre-rendered diagram storage to enable full diagram inclusion in PDF reports using stored PNG/SVG images
 
-- DFD_INTEGRATION_TESTING_APPROACH.md
-  This file describes the integration testing approach implemented for DFD services to eliminate mock logic duplication and improve test reliability.
+### Testing Documentation
 
-- DFD_INTEGRATION_TEST_PLAN.md
-  This file defines a comprehensive integration test plan for the DFD graph component using real X6 graph operations without mocking, specifically designed to catch styling and state issues like selection styling persistence after undo/redo operations.
+- **dfd-integration-testing-approach.md**
+  Integration testing approach for DFD services to eliminate mock logic duplication and improve test reliability
 
-- DFD_PUBLIC_API_REFERENCE.md
-  Comprehensive TypeScript API reference for the DFD component covering 60+ files, 550+ public methods, and complete layer-by-layer documentation.
+- **dfd-integration-test-plan.md**
+  Comprehensive integration test plan for the DFD graph component using real X6 graph operations, designed to catch styling and state issues
 
-- Interesting X6 Events.txt
-  Log samples of X6 graph events showing actual event data for node operations, edge connections, selection changes, and data modifications during diagram editing.
+### Implementation Guides
 
-- PDF_REPORT_DIAGRAM_RENDERING_DESIGN.md
-  Design document for implementing pre-rendered diagram storage to enable full diagram inclusion in PDF reports using stored PNG/SVG images.
+- **developers-guide-antvx6-graphing-library.md**
+  Developer guide for working with the AntV X6 graphing library
 
-## Removed Files
+### Reference Information
 
-The following files were previously in this directory but have been moved to their canonical locations:
+- **interesting-x6-events.txt**
+  Log samples of X6 graph events showing actual event data for node operations, edge connections, selection changes, and data modifications
 
-- authorization.md → shared-api/docs/AUTHORIZATION.md
-- CLIENT_INTEGRATION_GUIDE.md → shared-api/docs/CLIENT_INTEGRATION_GUIDE.md  
-- CLIENT_OAUTH_INTEGRATION.md → shared-api/docs/CLIENT_OAUTH_INTEGRATION.md
-- tmi_api_server_authentication.md → moved/merged with other auth documentation
-- tmi-server-integration-plan.md → moved/merged with other integration documentation
-- COLLABORATIVE_EDITING.md → consolidated into docs/WEBSOCKET_COLLABORATION.md
-- Developers Guide AntVX6 Graphing Library v2.md → consolidated into docs/X6_COMPLETE_GUIDE.md
+## Related Documentation
+
+### Architecture Documentation
+See [../reference/architecture/](../reference/architecture/) for:
+- Architecture overview and principles
+- Service provisioning standards
+- Naming conventions
+- Session management
+- DFD change propagation analysis
+
+### Developer Documentation
+See [../developer/](../developer/) for:
+- Environment configuration
+- Testing utilities
+- Core services setup
+- Feature implementation guides
+
+### Technical References
+See [../reference/](../reference/) for:
+- X6 complete guide
+- Collaborative editing implementation
+- Security headers
+- Feature documentation
+
+## Usage Guidelines for AI Agents
+
+1. **Implementation Plans**: Use this directory for storing implementation plans, progress tracking, and design documents
+2. **Context Documents**: Store technical context and background information here
+3. **Testing Strategies**: Document testing approaches and plans
+4. **Research Notes**: Keep research findings and technical analysis here
+
+## Files Moved to New Locations
+
+The documentation structure has been reorganized. Previous files have been moved to:
+
+- API documentation → `/shared-api/docs/`
+- Architecture documentation → `../reference/architecture/`
+- Feature documentation → `../reference/features/`
+- Developer guides → `../developer/`

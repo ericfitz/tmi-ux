@@ -94,7 +94,7 @@ The diagrams use Mermaid syntax and should render properly in GitHub, GitLab, or
 
 ## Related Documentation
 
-- [TMI-UX Architecture Guide](../../ARCHITECTURE.md) - Overall application architecture
-- [DFD Module Architecture](../../../context/dfd-module-architecture.md) - DFD-specific architectural patterns
-- [Collaboration System Design](../../../context/collaboration-system.md) - Collaborative editing implementation
-- [WebSocket API Specification](../../../shared-api/api-specs/tmi-asyncapi.yaml) - WebSocket message definitions
+- [TMI-UX Architecture Guide](../overview.md) - Overall application architecture
+- [Collaborative Editing](../../features/collaborative-editing.md) - Collaborative editing implementation
+- [DFD Graph Interaction](../../features/dfd-graph-interaction.md) - User interaction patterns
+- [WebSocket API Specification](../../../../shared-api/api-specs/tmi-asyncapi.yaml) - WebSocket message definitions

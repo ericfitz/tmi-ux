@@ -10,8 +10,8 @@ export const environment: Environment = {
   debugComponents: ['websocket-api', 'websocket-adapter'], // Enable component-specific debug logging for WebSocket messages
   apiUrl: 'http://localhost:8080',
   authTokenExpiryMinutes: 1440, // 24 hours for easier development
-  operatorName: 'TMI Operator (Development)',
-  operatorContact: 'dev@tmi.com',
+  operatorName: 'TMI Project (Development Demo)',
+  operatorContact: 'github@efitz.net',
   serverPort: 4200,
   serverInterface: 'localhost',
   enableTLS: false,
@@ -29,6 +29,7 @@ export const environment: Environment = {
     hstsPreload: false,
     frameOptions: 'DENY',
     referrerPolicy: 'strict-origin-when-cross-origin',
+    // explicitly do NOT request sensitive permissions
     permissionsPolicy: 'camera=(), microphone=(), geolocation=()',
     // CSP violations logged to console in development
   },
