@@ -875,7 +875,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Filter threats for this specific cell
-          const cellThreats = (threatModel.threats || []).filter(threat => threat.cell_id === cellId);
+          const cellThreats = (threatModel.threats || []).filter(
+            threat => threat.cell_id === cellId,
+          );
 
           this.logger.info('Found threats for cell', {
             cellId,
