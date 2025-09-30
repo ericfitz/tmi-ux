@@ -269,12 +269,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       height: container.clientHeight,
       // Enable grid for visual guidance
       grid: {
-        size: 10,
-        visible: true,
+        size: DFD_STYLING.GRID.SIZE,
+        visible: DFD_STYLING.GRID.VISIBLE,
         type: 'dot',
         args: [
-          { color: '#cccccc', thickness: 1 }, // Primary grid
-          { color: '#e0e0e0', thickness: 1, factor: 4 }, // Secondary grid
+          { color: DFD_STYLING.GRID.PRIMARY_COLOR, thickness: 1 }, // Primary grid
+          { color: DFD_STYLING.GRID.SECONDARY_COLOR, thickness: 1, factor: 4 }, // Secondary grid
         ],
       },
       // Enable panning by dragging background (only with shift key held)

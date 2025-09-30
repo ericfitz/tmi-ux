@@ -38,7 +38,8 @@
       "Bash(chmod:*)",
       "Bash(./scripts/dfd-refactor-setup.sh:*)",
       "Bash(./scripts/dfd-file-mover.sh:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(git restore:*)"
     ]
   },
   "enableAllProjectMcpServers": false

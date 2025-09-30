@@ -209,6 +209,13 @@ export const DFD_STYLING = {
   GRID: {
     SIZE: 10,
     VISIBLE: true,
+    PRIMARY_COLOR: '#666666',
+    SECONDARY_COLOR: '#888888',
+  },
+
+  // Canvas background
+  CANVAS: {
+    BACKGROUND_COLOR: '#f5f5f5', // Light gray background to match toolbar
   },
 
   // Zoom and pan constraints

@@ -161,11 +161,11 @@
     background-color: #f5f5f5 !important; // Ensure X6 elements use same background as toolbar/collaboration
   }
 
-  // Force grid dots to be black
+  // Grid dots use darker gray for better contrast against light background
   .x6-graph-grid .x6-graph-grid-pattern circle,
   .x6-graph-grid .x6-graph-grid-pattern rect {
-    fill: #000 !important;
-    stroke: #000 !important;
+    fill: #666 !important;
+    stroke: #666 !important;
   }
 
   .x6-graph-view {

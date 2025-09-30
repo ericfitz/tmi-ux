@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Point } from '../../domain/value-objects/point';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * X6 Keyboard Handler
@@ -13,6 +14,7 @@ export class InfraX6KeyboardAdapter {
   private _isShiftPressed = false;
   private _isDragging = false;
   private _originalGridSize = 10;
+  private _currentGridSize = 10;
 
   // Track if we're in pan mode to avoid interfering with X6's pan/zoom
   private _isPanningBackground = false;
@@ -231,19 +233,41 @@ export class InfraX6KeyboardAdapter {
     const shouldDisableSnap = this._isShiftPressed && this._isDragging;
     const newGridSize = shouldDisableSnap ? 1 : this._originalGridSize;
 
+    // Only redraw grid if the size actually changed
+    if (newGridSize === this._currentGridSize) {
+      return;
+    }
+
+    this._currentGridSize = newGridSize;
+
     // Update the grid size by modifying the graph options
     // We need to access the internal grid configuration and update it
 
     const graphOptions = (this._graph as any).options as {
-      grid?: { size: number; visible: boolean; type: string; args: any };
+      grid?: { size: number; visible: boolean; type: string; args: any[] };
     };
     if (graphOptions?.grid) {
-      // Update only the grid size while preserving all other grid configuration
+      // Update only the grid size while preserving all other grid configuration including colors
       graphOptions.grid.size = newGridSize;
       // Ensure visibility is maintained (don't override other grid properties)
       if (graphOptions.grid.visible !== false) {
         graphOptions.grid.visible = true;
       }
+      // Ensure grid args (colors) are preserved - they should already be there from initialization
+      // but verify they exist to prevent loss of styling
+      if (!graphOptions.grid.args || graphOptions.grid.args.length === 0) {
+        this.logger.debugComponent('X6Keyboard', 'Grid args missing, restoring defaults');
+        graphOptions.grid.args = [
+          { color: DFD_STYLING.GRID.PRIMARY_COLOR, thickness: 1 },
+          { color: DFD_STYLING.GRID.SECONDARY_COLOR, thickness: 1, factor: 4 },
+        ];
+      }
+      this.logger.debugComponent('X6Keyboard', 'Drawing grid with config', {
+        size: graphOptions.grid.size,
+        visible: graphOptions.grid.visible,
+        argsCount: graphOptions.grid.args?.length,
+        primaryColor: graphOptions.grid.args?.[0]?.color,
+      });
       // Redraw the grid with the updated configuration
       this._graph.drawGrid();
     }
