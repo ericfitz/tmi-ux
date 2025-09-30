@@ -40,12 +40,18 @@ export function registerCustomShapes(): void {
       ],
       attrs: {
         topLine: {
-          stroke: DFD_STYLING.NODES.STORE.STROKE === 'transparent' ? DFD_STYLING.DEFAULT_STROKE : DFD_STYLING.NODES.STORE.STROKE,
+          stroke:
+            DFD_STYLING.NODES.STORE.STROKE === 'transparent'
+              ? DFD_STYLING.DEFAULT_STROKE
+              : DFD_STYLING.NODES.STORE.STROKE,
           strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH || DFD_STYLING.DEFAULT_STROKE_WIDTH,
           refD: 'M 0 0 l 200 0',
         },
         bottomLine: {
-          stroke: DFD_STYLING.NODES.STORE.STROKE === 'transparent' ? DFD_STYLING.DEFAULT_STROKE : DFD_STYLING.NODES.STORE.STROKE,
+          stroke:
+            DFD_STYLING.NODES.STORE.STROKE === 'transparent'
+              ? DFD_STYLING.DEFAULT_STROKE
+              : DFD_STYLING.NODES.STORE.STROKE,
           strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH || DFD_STYLING.DEFAULT_STROKE_WIDTH,
           refY: '100%',
           refD: 'M 0 0 l 200 0',
