@@ -112,7 +112,7 @@
     "glob": "^11.0.3",
     "globals": "^16.4.0",
     "http-proxy-middleware": "3.0.5",
-    "jsdom": "^26.1.0",
+    "jsdom": "^27.0.0",
     "prettier": "^3.6.2",
     "stylelint": "^16.23.1",
     "stylelint-config-standard-scss": "^15.0.1",
@@ -132,7 +132,7 @@
   "pnpm": {
     "overrides": {
       "http-proxy-middleware": "3.0.5",
-      "vite": "7.1.5",
+      "vite": "7.1.7",
       "glob@<9.0.0": "^9.3.5",
       "rimraf@<4.0.0": "^4.4.1",
       "inflight@*": "^1.0.6",
