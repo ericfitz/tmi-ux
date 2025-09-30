@@ -264,7 +264,7 @@ describe('NodeInfo', () => {
       expect(nodeInfo.shape).toBe('process');
       expect(nodeInfo.position).toEqual({ x: 100, y: 100 });
       expect(nodeInfo.width).toBe(140); // Default process width
-      expect(nodeInfo.height).toBe(80); // Default process height
+      expect(nodeInfo.height).toBe(60); // Default process height
       expect(nodeInfo.attrs?.text?.text).toBe('Process'); // Default English label
     });
   });
@@ -539,7 +539,7 @@ describe('NodeInfo', () => {
       const types: NodeType[] = ['actor', 'process', 'store', 'security-boundary', 'text-box'];
       const expectedDimensions = [
         { width: 120, height: 60 }, // actor
-        { width: 140, height: 80 }, // process
+        { width: 140, height: 60 }, // process
         { width: 160, height: 60 }, // store
         { width: 200, height: 150 }, // security-boundary
         { width: 100, height: 40 }, // text-box

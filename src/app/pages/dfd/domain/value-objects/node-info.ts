@@ -3,6 +3,7 @@ import { NodeAttrs, createDefaultNodeAttrs } from './node-attrs';
 import { PortConfiguration, createDefaultPortConfiguration } from './port-configuration';
 import { Metadata } from './metadata';
 import { MarkupElement, CellTool } from './x6-types';
+import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
 /**
  * Node types supported in the DFD diagram
@@ -234,20 +235,7 @@ export class NodeInfo {
    * Gets default dimensions for a node type
    */
   private static getDefaultDimensions(type: NodeType): { width: number; height: number } {
-    switch (type) {
-      case 'actor':
-        return { width: 120, height: 60 };
-      case 'process':
-        return { width: 140, height: 80 };
-      case 'store':
-        return { width: 160, height: 60 };
-      case 'security-boundary':
-        return { width: 200, height: 150 };
-      case 'text-box':
-        return { width: 100, height: 40 };
-      default:
-        return { width: 120, height: 60 };
-    }
+    return DFD_STYLING_HELPERS.getDefaultDimensions(type);
   }
 
   /**

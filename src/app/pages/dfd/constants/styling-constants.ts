@@ -95,16 +95,22 @@ export const DFD_STYLING = {
       STROKE: '#000000',
       STROKE_WIDTH: 2,
       FILL: '#FFFFFF',
+      DEFAULT_WIDTH: 120,
+      DEFAULT_HEIGHT: 60,
     },
     PROCESS: {
       STROKE: '#000000',
       STROKE_WIDTH: 2,
       FILL: '#FFFFFF',
+      DEFAULT_WIDTH: 140,
+      DEFAULT_HEIGHT: 60,
     },
     STORE: {
       STROKE: 'transparent',
       STROKE_WIDTH: 0,
       FILL: '#FFFFFF',
+      DEFAULT_WIDTH: 160,
+      DEFAULT_HEIGHT: 60,
     },
     SECURITY_BOUNDARY: {
       STROKE: '#000000',
@@ -112,11 +118,15 @@ export const DFD_STYLING = {
       FILL: '#FFFFFF',
       STROKE_DASHARRAY: '5,5',
       DEFAULT_Z_INDEX: 1,
+      DEFAULT_WIDTH: 200,
+      DEFAULT_HEIGHT: 150,
     },
     TEXT_BOX: {
       STROKE: 'none',
       STROKE_WIDTH: 0,
       FILL: 'transparent',
+      DEFAULT_WIDTH: 100,
+      DEFAULT_HEIGHT: 40,
     },
 
     // Port configuration for all nodes
@@ -303,6 +313,7 @@ export const DFD_STYLING_HELPERS = {
     return !!(
       filter &&
       typeof filter === 'string' &&
+      // TODO: we should not hard code the value here but rather match a symbolic constant
       filter.includes('rgba(255, 0, 0') &&
       filter.includes('drop-shadow')
     );
@@ -372,6 +383,44 @@ export const DFD_STYLING_HELPERS = {
         return DFD_STYLING.NODES.TEXT_BOX.FILL;
       default:
         return DFD_STYLING.DEFAULT_FILL;
+    }
+  },
+
+  /**
+   * Get default dimensions for a specific node type
+   */
+  getDefaultDimensions(nodeType: NodeType): { width: number; height: number } {
+    switch (nodeType) {
+      case 'actor':
+        return {
+          width: DFD_STYLING.NODES.ACTOR.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.ACTOR.DEFAULT_HEIGHT,
+        };
+      case 'process':
+        return {
+          width: DFD_STYLING.NODES.PROCESS.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.PROCESS.DEFAULT_HEIGHT,
+        };
+      case 'store':
+        return {
+          width: DFD_STYLING.NODES.STORE.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.STORE.DEFAULT_HEIGHT,
+        };
+      case 'security-boundary':
+        return {
+          width: DFD_STYLING.NODES.SECURITY_BOUNDARY.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.SECURITY_BOUNDARY.DEFAULT_HEIGHT,
+        };
+      case 'text-box':
+        return {
+          width: DFD_STYLING.NODES.TEXT_BOX.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.TEXT_BOX.DEFAULT_HEIGHT,
+        };
+      default:
+        return {
+          width: DFD_STYLING.NODES.ACTOR.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.ACTOR.DEFAULT_HEIGHT,
+        };
     }
   },
 } as const;

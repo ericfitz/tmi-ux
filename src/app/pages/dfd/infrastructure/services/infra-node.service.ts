@@ -34,6 +34,7 @@ import { InfraVisualEffectsService } from './infra-visual-effects.service';
 import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
+import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
 /**
  * Consolidated service for node creation, management, and operations in DFD diagrams
@@ -87,8 +88,10 @@ export class InfraNodeService {
     containerWidth: number,
     containerHeight: number,
   ): { x: number; y: number } {
-    const nodeWidth = 120; // Default node width
-    const nodeHeight = 80; // Default node height
+    // Use actor dimensions as the default for grid calculation (most common node type)
+    const defaultDimensions = DFD_STYLING_HELPERS.getDefaultDimensions('actor');
+    const nodeWidth = defaultDimensions.width;
+    const nodeHeight = defaultDimensions.height;
     const padding = 50; // Padding from edges and between nodes
     const gridSpacingX = nodeWidth + padding;
     const gridSpacingY = nodeHeight + padding;
@@ -211,71 +214,23 @@ export class InfraNodeService {
   ): any {
     const x6Shape = getX6ShapeForNodeType(shapeType);
     const label = this.getDefaultLabelForType(shapeType);
-
-    // Base configuration with minimal styling - let CSS handle the appearance
-    const baseConfig = {
-      id: nodeId,
-      shape: x6Shape,
-      x: position.x,
-      y: position.y,
-      width: 120,
-      height: 80,
-      label,
-      zIndex: 1, // Temporary z-index, will be set properly after node creation
-    };
+    const dimensions = DFD_STYLING_HELPERS.getDefaultDimensions(shapeType);
 
     // Use InfraNodeConfigurationService to get the correct port configuration for this node type
     const portConfig = this.infraNodeConfigurationService.getNodePorts(shapeType);
 
-    // Adjust dimensions based on node type to match original styling
-    switch (shapeType) {
-      case 'process':
-        return {
-          ...baseConfig,
-          width: 120,
-          height: 60,
-          ports: portConfig,
-        };
-
-      case 'store':
-        return {
-          ...baseConfig,
-          width: 140,
-          height: 40,
-          ports: portConfig,
-        };
-
-      case 'actor':
-        return {
-          ...baseConfig,
-          width: 100,
-          height: 80,
-          ports: portConfig,
-        };
-
-      case 'security-boundary':
-        return {
-          ...baseConfig,
-          width: 200,
-          height: 150,
-          ports: portConfig,
-        };
-
-      case 'text-box':
-        return {
-          ...baseConfig,
-          width: 100,
-          height: 40,
-          ports: portConfig, // This will be empty for text-box nodes
-        };
-
-      default:
-        // Fallback for unknown node types
-        return {
-          ...baseConfig,
-          ports: portConfig,
-        };
-    }
+    // Base configuration with minimal styling - let CSS handle the appearance
+    return {
+      id: nodeId,
+      shape: x6Shape,
+      x: position.x,
+      y: position.y,
+      width: dimensions.width,
+      height: dimensions.height,
+      label,
+      zIndex: 1, // Temporary z-index, will be set properly after node creation
+      ports: portConfig,
+    };
   }
 
   /**

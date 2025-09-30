@@ -40,20 +40,20 @@ export function registerCustomShapes(): void {
       ],
       attrs: {
         topLine: {
-          stroke: '#333333',
-          strokeWidth: 2,
+          stroke: DFD_STYLING.NODES.STORE.STROKE === 'transparent' ? DFD_STYLING.DEFAULT_STROKE : DFD_STYLING.NODES.STORE.STROKE,
+          strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH || DFD_STYLING.DEFAULT_STROKE_WIDTH,
           refD: 'M 0 0 l 200 0',
         },
         bottomLine: {
-          stroke: '#333333',
-          strokeWidth: 2,
+          stroke: DFD_STYLING.NODES.STORE.STROKE === 'transparent' ? DFD_STYLING.DEFAULT_STROKE : DFD_STYLING.NODES.STORE.STROKE,
+          strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH || DFD_STYLING.DEFAULT_STROKE_WIDTH,
           refY: '100%',
           refD: 'M 0 0 l 200 0',
         },
         body: {
-          fill: '#FFFFFF',
-          stroke: 'transparent',
-          strokeWidth: 0,
+          fill: DFD_STYLING.NODES.STORE.FILL,
+          stroke: DFD_STYLING.NODES.STORE.STROKE,
+          strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH,
         },
         text: {
           refX: '50%',
@@ -62,7 +62,7 @@ export function registerCustomShapes(): void {
           textVerticalAnchor: 'middle',
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-          fill: '#000000',
+          fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
       },
     });
@@ -85,9 +85,9 @@ export function registerCustomShapes(): void {
       ],
       attrs: {
         body: {
-          strokeWidth: 2,
-          stroke: '#000000',
-          fill: '#FFFFFF',
+          strokeWidth: DFD_STYLING.NODES.ACTOR.STROKE_WIDTH,
+          stroke: DFD_STYLING.NODES.ACTOR.STROKE,
+          fill: DFD_STYLING.NODES.ACTOR.FILL,
           rx: 0,
           ry: 0,
         },
@@ -98,7 +98,7 @@ export function registerCustomShapes(): void {
           textVerticalAnchor: 'middle',
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-          fill: '#000000',
+          fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
       },
     });
@@ -121,9 +121,9 @@ export function registerCustomShapes(): void {
       ],
       attrs: {
         body: {
-          strokeWidth: 2,
-          stroke: '#000000',
-          fill: '#FFFFFF',
+          strokeWidth: DFD_STYLING.NODES.PROCESS.STROKE_WIDTH,
+          stroke: DFD_STYLING.NODES.PROCESS.STROKE,
+          fill: DFD_STYLING.NODES.PROCESS.FILL,
           rx: 30,
           ry: 30,
         },
@@ -134,7 +134,7 @@ export function registerCustomShapes(): void {
           textVerticalAnchor: 'middle',
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-          fill: '#000000',
+          fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
       },
     });
@@ -157,10 +157,10 @@ export function registerCustomShapes(): void {
       ],
       attrs: {
         body: {
-          strokeWidth: 2,
-          stroke: '#000000',
-          fill: '#FFFFFF',
-          strokeDasharray: '5 5',
+          strokeWidth: DFD_STYLING.NODES.SECURITY_BOUNDARY.STROKE_WIDTH,
+          stroke: DFD_STYLING.NODES.SECURITY_BOUNDARY.STROKE,
+          fill: DFD_STYLING.NODES.SECURITY_BOUNDARY.FILL,
+          strokeDasharray: DFD_STYLING.NODES.SECURITY_BOUNDARY.STROKE_DASHARRAY,
           rx: 10,
           ry: 10,
         },
@@ -171,7 +171,7 @@ export function registerCustomShapes(): void {
           textVerticalAnchor: 'middle',
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-          fill: '#000000',
+          fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
       },
     });
@@ -194,9 +194,9 @@ export function registerCustomShapes(): void {
       ],
       attrs: {
         body: {
-          stroke: 'none',
-          strokeWidth: 0,
-          fill: 'transparent',
+          stroke: DFD_STYLING.NODES.TEXT_BOX.STROKE,
+          strokeWidth: DFD_STYLING.NODES.TEXT_BOX.STROKE_WIDTH,
+          fill: DFD_STYLING.NODES.TEXT_BOX.FILL,
         },
         text: {
           refX: '50%',
@@ -205,7 +205,7 @@ export function registerCustomShapes(): void {
           textVerticalAnchor: 'middle',
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-          fill: '#000000',
+          fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
       },
     });

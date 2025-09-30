@@ -11,7 +11,7 @@
 import { Observable, of, throwError } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { DFD_STYLING } from '../../constants/styling-constants';
+import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import {
   GraphOperation,
@@ -392,20 +392,9 @@ export class NodeOperationExecutor implements OperationExecutor {
    * Get default size for node type to match InfraNodeService dimensions
    */
   private _getDefaultSizeForNodeType(nodeType: string): { width: number; height: number } {
-    switch (nodeType) {
-      case 'process':
-        return { width: 120, height: 60 };
-      case 'store':
-        return { width: 140, height: 40 };
-      case 'actor':
-        return { width: 100, height: 80 };
-      case 'security-boundary':
-        return { width: 200, height: 150 };
-      case 'text-box':
-        return { width: 100, height: 40 };
-      default:
-        return { width: 120, height: 60 };
-    }
+    return DFD_STYLING_HELPERS.getDefaultDimensions(
+      nodeType as 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box',
+    );
   }
 
   /**

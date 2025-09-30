@@ -277,16 +277,16 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           { color: '#e0e0e0', thickness: 1, factor: 4 }, // Secondary grid
         ],
       },
-      // Enable panning by dragging background
+      // Enable panning by dragging background (only with shift key held)
       panning: {
         enabled: true,
-        eventTypes: ['leftMouseDown', 'mouseWheel'],
+        eventTypes: ['leftMouseDown'], // Only left mouse drag, not mousewheel
         modifiers: ['shift'], // Require shift key for panning
       },
-      // Enable zooming with mouse wheel
+      // Enable zooming with mouse wheel (with shift key)
       mousewheel: {
         enabled: true,
-        modifiers: ['shift'], // Zoom with Shift + Wheel (same as pan modifier)
+        modifiers: ['shift'], // Zoom with Shift + Wheel
         factor: 1.1,
         maxScale: 3,
         minScale: 0.2,
@@ -301,6 +301,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         vertexAddable: true,
         vertexDeletable: true,
         magnetConnectable: true, // Essential for edge creation
+      },
+      // Enable embedding for drag-and-drop node nesting
+      embedding: {
+        enabled: true,
+        findParent: 'bbox', // Find parent based on bounding box overlap
       },
       // Enable interactive edge creation with proper port visibility
       connecting: {
@@ -340,6 +345,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         },
         // Create edges with proper styling and attributes
         createEdge: () => {
+          const defaultLabel = this._edgeService.getLocalizedFlowLabel();
           return this._graph!.createEdge({
             shape: 'edge', // Use standard X6 edge shape
             attrs: {
@@ -349,6 +355,21 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
                 targetMarker: 'block',
               },
             },
+            labels: [
+              {
+                position: 0.5,
+                attrs: {
+                  text: {
+                    text: defaultLabel,
+                    fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+                    fill: DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+                    fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+                    textAnchor: 'middle',
+                    textVerticalAnchor: 'middle',
+                  },
+                },
+              },
+            ],
             zIndex: DFD_STYLING.Z_INDEX.EDGE_DEFAULT,
           });
         },
@@ -1004,24 +1025,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     );
 
     // Edge lifecycle events for proper edge creation handling
-    this._graph.on('edge:connecting', ({ edge }: { edge: Edge }) => {
-      this.logger.debugComponent('X6Graph', 'edge:connecting event', {
-        edgeId: edge.id,
-        sourceId: edge.getSourceCellId(),
-        targetId: edge.getTargetCellId(),
-        attrs: edge.attr(),
-        lineAttrs: edge.attr('line'),
-      });
-
-      // Set connecting state and show all ports using port manager (with history disabled)
-      this._isConnecting = true;
-      this._historyManager.disable(this._graph!);
-      try {
-        this._portStateManager.showAllPorts(this._graph!);
-      } finally {
-        this._historyManager.enable(this._graph!);
-      }
-    });
+    // Note: X6 doesn't fire 'edge:connecting' reliably, so we handle it in edge:added when target is incomplete
 
     this._graph.on('edge:connected', ({ edge }: { edge: Edge }) => {
       this.logger.debugComponent('X6Graph', 'edge:connected event', {
@@ -1057,7 +1061,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
             },
           );
 
-          // Set edge z-order and update port visibility (all excluded from history as visual effects)
+          // Emit the edge added event first so label can be set
+          this.logger.debugComponent('X6Graph', 'Emitting edge added event');
+          this._edgeAdded$.next(edge);
+
+          // Then set edge z-order and update port visibility (all excluded from history as visual effects)
           this._historyCoordinator.executeVisualEffect(this._graph!, () => {
             // Set edge z-order to the higher of source or target node z-orders
             this._zOrderAdapter.setEdgeZOrderFromConnectedNodes(this._graph!, edge);
@@ -1066,10 +1074,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
             this._portStateManager.hideUnconnectedPorts(this._graph!);
             this._portStateManager.ensureConnectedPortsVisible(this._graph!, edge);
           });
-
-          // Simplified flow without command bus - just emit the edge added event
-          this.logger.debugComponent('X6Graph', 'Emitting edge added event');
-          this._edgeAdded$.next(edge);
         }, 50); // Small delay to ensure connection is fully established
       } else {
         this.logger.debugComponent('X6Graph', 'Invalid edge, removing', {
@@ -1090,27 +1094,36 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         edgeId: edge.id,
       });
 
-      // Reset connecting state and update port visibility using port manager (with history disabled)
+      // Reset connecting state and update port visibility using port manager (with history suppression)
       this._isConnecting = false;
-      this._historyManager.disable(this._graph!);
-      try {
+      this._historyCoordinator.executeVisualEffect(this._graph!, () => {
         this._portStateManager.hideUnconnectedPorts(this._graph!);
-      } finally {
-        this._historyManager.enable(this._graph!);
-      }
+      });
     });
 
     // The embedding adapter handles: node:embedding, node:embedded, node:change:parent, node:moved (embedding-related)
 
     // Edge events - handle addition and removal
     this._graph.on('edge:added', ({ edge }: { edge: Edge }) => {
+      const sourceId = edge.getSourceCellId();
+      const targetId = edge.getTargetCellId();
+
       this.logger.debugComponent('X6Graph', 'edge:added event', {
         edgeId: edge.id,
-        sourceId: edge.getSourceCellId(),
-        targetId: edge.getTargetCellId(),
+        sourceId,
+        targetId,
         attrs: edge.attr(),
         lineAttrs: edge.attr('line'),
       });
+
+      // If edge is being created (has source but no target yet), show all ports for connection
+      if (sourceId && !targetId) {
+        this.logger.debugComponent('X6Graph', 'Edge creation started - showing all ports');
+        this._isConnecting = true;
+        this._historyCoordinator.executeVisualEffect(this._graph!, () => {
+          this._portStateManager.showAllPorts(this._graph!);
+        });
+      }
     });
 
     this._graph.on('edge:removed', ({ edge }: { edge: Edge }) => {

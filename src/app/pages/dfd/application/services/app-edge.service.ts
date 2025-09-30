@@ -131,51 +131,14 @@ export class AppEdgeService {
       throw new Error('Edge references non-existent nodes');
     }
 
-    // Set default label for newly created edges if they don't have one
+    // Label is now set during edge creation in the createEdge callback
+    // Log the label for verification
     const currentLabel = this.getEdgeLabel(edge);
-    this.logger.debug('Edge label check on creation', {
-      edgeId: edge.id,
-      currentLabel,
-      hasGetLabel: !!(edge as any).getLabel,
-      hasSetLabel: !!(edge as any).setLabel,
-    });
-
-    if (!currentLabel || currentLabel.trim() === '') {
-      const defaultLabel = this.getLocalizedFlowLabel();
-
-      this.logger.info('Setting default label for new edge', {
-        edgeId: edge.id,
-        defaultLabel,
-        currentLanguage: this.transloco.getActiveLang(),
-        beforeUpdate: currentLabel,
-      });
-
-      // Set the label as a visual effect (without creating separate history entry)
-      // This makes edge creation + label setting atomic in the history
-      this.historyCoordinator.executeVisualEffect(graph, () => {
-        this.updateEdgeLabel(edge, defaultLabel);
-      });
-
-      // Verify the label was set
-      const verifyLabel = this.getEdgeLabel(edge);
-      this.logger.info('Default label set verification', {
-        edgeId: edge.id,
-        expectedLabel: defaultLabel,
-        actualLabel: verifyLabel,
-        success: verifyLabel === defaultLabel,
-      });
-    } else {
-      this.logger.debug('Edge already has label, skipping default', {
-        edgeId: edge.id,
-        existingLabel: currentLabel,
-      });
-    }
-
     this.logger.info('Edge validated successfully', {
       edgeId: edge.id,
       sourceNodeId,
       targetNodeId,
-      label: this.getEdgeLabel(edge),
+      label: currentLabel,
     });
 
     return of(void 0);
@@ -892,7 +855,7 @@ export class AppEdgeService {
   /**
    * Get localized flow label with fallback for when translations aren't loaded yet
    */
-  private getLocalizedFlowLabel(): string {
+  getLocalizedFlowLabel(): string {
     const translatedLabel = this.transloco.translate('editor.flowLabel');
 
     // If translation service returns the key itself, it means the translation wasn't found
