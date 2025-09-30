@@ -40,7 +40,10 @@
       "Bash(tree:*)",
       "Bash(chmod:*)",
       "Bash(git ls-tree:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git checkout:*)"
     ]
   },
   "enableAllProjectMcpServers": false
