@@ -43,9 +43,11 @@ src/app/
 │   └── utils/            # Utility functions
 ├── pages/                # Feature modules
 │   ├── dfd/              # Data Flow Diagram feature
-│   │   ├── domain/       # Domain objects
-│   │   ├── infrastructure/ # External integrations
-│   │   └── services/     # Feature services
+│   │   ├── domain/       # Pure domain objects (value objects, entities, events)
+│   │   ├── application/  # Application services and use cases
+│   │   ├── infrastructure/ # External integrations (X6, WebSocket)
+│   │   ├── presentation/ # UI components
+│   │   └── services/     # Legacy feature services
 │   └── tm/               # Threat Model feature
 ├── shared/               # Shared resources
 │   └── imports.ts        # Reusable import constants
@@ -86,11 +88,19 @@ Real-time features use a layered WebSocket architecture. See [ADR-004](adr/004-w
 - Technical implementations
 - Examples: `X6GraphAdapter`, `TranslocoHttpLoader`
 
-### Domain Services (`*/domain/`)
-- Pure business logic
-- Domain rules and validations
-- No external dependencies
-- Examples: Value objects, Domain events
+### Domain Layer (`*/domain/`)
+- Pure business logic without framework dependencies
+- Domain rules, validations, and business entities
+- Value objects, domain events, and domain entities
+- No Angular, RxJS, or third-party framework dependencies
+- Examples: `EdgeInfo`, `NodeInfo`, domain events
+
+### Application Services (`*/application/`)
+- Orchestrate use cases and coordinate between layers
+- Handle application-specific business workflows
+- Depend on domain objects and infrastructure services
+- Use Angular DI and reactive patterns
+- Examples: `AppEdgeService`, `AppStateService`, `AppDfdFacade`
 
 ## Best Practices
 

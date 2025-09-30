@@ -32,6 +32,23 @@ export const DFD_STYLING = {
   TEXT_FONT_FAMILY: "'Roboto Condensed', Arial, sans-serif",
   ICON_FONT_FAMILY: 'Material Symbols Outlined',
 
+  // Raw color values (only used within this constants file)
+  _COLORS: {
+    WHITE: '#ffffff',
+    BLACK: '#000000',
+    GRAY: '#808080',
+    LIGHT_GRAY: '#f5f5f5',
+    DARK_GRAY: '#333333',
+    RED: '#d62728',
+    PURPLE: '#722ED1',
+  },
+
+  _STROKE_WIDTHS: {
+    THIN: 1,
+    NORMAL: 2,
+    THICK: 3,
+  },
+
   // Selection styling effects
   SELECTION: {
     STROKE_WIDTH: 2,
@@ -64,21 +81,36 @@ export const DFD_STYLING = {
     MIN_HEIGHT: 30,
     DEFAULT_FONT_WEIGHT: 400,
 
+    // Default node appearance (used as fallbacks)
+    FILL: '#ffffff',
+    STROKE: '#000000',
+    STROKE_WIDTH: 1,
+
+    // Default node labels
+    LABEL_TEXT_COLOR: '#000000',
+    LABEL_BACKGROUND: 'transparent',
+
     // Shape-specific default styling (matches x6-shape-definitions.ts)
     ACTOR: {
       STROKE: '#000000',
       STROKE_WIDTH: 2,
       FILL: '#FFFFFF',
+      DEFAULT_WIDTH: 120,
+      DEFAULT_HEIGHT: 60,
     },
     PROCESS: {
       STROKE: '#000000',
       STROKE_WIDTH: 2,
       FILL: '#FFFFFF',
+      DEFAULT_WIDTH: 140,
+      DEFAULT_HEIGHT: 60,
     },
     STORE: {
       STROKE: 'transparent',
       STROKE_WIDTH: 0,
       FILL: '#FFFFFF',
+      DEFAULT_WIDTH: 160,
+      DEFAULT_HEIGHT: 60,
     },
     SECURITY_BOUNDARY: {
       STROKE: '#000000',
@@ -86,11 +118,15 @@ export const DFD_STYLING = {
       FILL: '#FFFFFF',
       STROKE_DASHARRAY: '5,5',
       DEFAULT_Z_INDEX: 1,
+      DEFAULT_WIDTH: 200,
+      DEFAULT_HEIGHT: 150,
     },
     TEXT_BOX: {
       STROKE: 'none',
       STROKE_WIDTH: 0,
       FILL: 'transparent',
+      DEFAULT_WIDTH: 100,
+      DEFAULT_HEIGHT: 40,
     },
 
     // Port configuration for all nodes
@@ -103,11 +139,54 @@ export const DFD_STYLING = {
   // Edge styling constants
   EDGES: {
     DEFAULT_LABEL: 'Flow',
-    DEFAULT_STROKE: '#000000',
+    DEFAULT_STROKE: '#000000', // Used in orchestrator for createEdge
+    DEFAULT_STROKE_WIDTH: 2,
+    DEFAULT_FILL: 'none',
     ARROWHEAD: 'block',
     CONNECTOR: 'smooth',
     ROUTER: 'normal',
     SELECTION_BLUR_RADIUS: 6, // Edges use different blur radius than nodes
+
+    // Default edge appearance (data-flow style)
+    STROKE: '#000000',
+    STROKE_WIDTH: 2,
+    FILL: 'none',
+
+    // Default edge labels
+    LABEL_TEXT_COLOR: '#000000',
+    LABEL_BACKGROUND: '#ffffff',
+    LABEL_BORDER: '#000000',
+    LABEL_BORDER_WIDTH: 1,
+
+    // Target marker (arrowhead) styling
+    TARGET_MARKER: {
+      NAME: 'classic',
+      SIZE: 8,
+      FILL: '#000000',
+      STROKE: '#000000',
+    },
+
+    // Edge type specific styling
+    DATA_FLOW: {
+      STROKE: '#000000',
+      STROKE_WIDTH: 2,
+      MARKER_FILL: '#000000',
+      MARKER_STROKE: '#000000',
+    },
+    TRUST_BOUNDARY: {
+      STROKE: '#000000',
+      STROKE_WIDTH: 2,
+      STROKE_DASHARRAY: '5 5',
+      MARKER_FILL: '#722ED1',
+      MARKER_STROKE: '#000000',
+    },
+    CONTROL_FLOW: {
+      STROKE: '#d62728',
+      STROKE_WIDTH: 2,
+      STROKE_DASHARRAY: '3,3',
+      MARKER_FILL: '#d62728',
+      MARKER_STROKE: '#d62728',
+    },
   },
 
   // Port styling properties
@@ -130,6 +209,13 @@ export const DFD_STYLING = {
   GRID: {
     SIZE: 10,
     VISIBLE: true,
+    PRIMARY_COLOR: '#666666',
+    SECONDARY_COLOR: '#888888',
+  },
+
+  // Canvas background
+  CANVAS: {
+    BACKGROUND_COLOR: '#f5f5f5', // Light gray background to match toolbar
   },
 
   // Zoom and pan constraints
@@ -142,6 +228,15 @@ export const DFD_STYLING = {
   // Animation and transition settings
   ANIMATIONS: {
     FADE_OPACITY_THRESHOLD: 0.05, // Below this, use 'none' instead of filter
+  },
+
+  // Z-Index constants for proper layering
+  Z_INDEX: {
+    SECURITY_BOUNDARY: 0, // Security boundaries go behind everything
+    NODE_DEFAULT: 1, // Default z-index for nodes
+    EDGE_DEFAULT: 1, // Default z-index for edges
+    SELECTION: 10, // Selection indicators on top
+    TOOLS: 20, // Node/edge tools on top of everything
   },
 } as const;
 
@@ -225,6 +320,7 @@ export const DFD_STYLING_HELPERS = {
     return !!(
       filter &&
       typeof filter === 'string' &&
+      // TODO: we should not hard code the value here but rather match a symbolic constant
       filter.includes('rgba(255, 0, 0') &&
       filter.includes('drop-shadow')
     );
@@ -294,6 +390,44 @@ export const DFD_STYLING_HELPERS = {
         return DFD_STYLING.NODES.TEXT_BOX.FILL;
       default:
         return DFD_STYLING.DEFAULT_FILL;
+    }
+  },
+
+  /**
+   * Get default dimensions for a specific node type
+   */
+  getDefaultDimensions(nodeType: NodeType): { width: number; height: number } {
+    switch (nodeType) {
+      case 'actor':
+        return {
+          width: DFD_STYLING.NODES.ACTOR.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.ACTOR.DEFAULT_HEIGHT,
+        };
+      case 'process':
+        return {
+          width: DFD_STYLING.NODES.PROCESS.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.PROCESS.DEFAULT_HEIGHT,
+        };
+      case 'store':
+        return {
+          width: DFD_STYLING.NODES.STORE.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.STORE.DEFAULT_HEIGHT,
+        };
+      case 'security-boundary':
+        return {
+          width: DFD_STYLING.NODES.SECURITY_BOUNDARY.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.SECURITY_BOUNDARY.DEFAULT_HEIGHT,
+        };
+      case 'text-box':
+        return {
+          width: DFD_STYLING.NODES.TEXT_BOX.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.TEXT_BOX.DEFAULT_HEIGHT,
+        };
+      default:
+        return {
+          width: DFD_STYLING.NODES.ACTOR.DEFAULT_WIDTH,
+          height: DFD_STYLING.NODES.ACTOR.DEFAULT_HEIGHT,
+        };
     }
   },
 } as const;

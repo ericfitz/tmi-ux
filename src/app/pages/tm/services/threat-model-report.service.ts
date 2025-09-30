@@ -116,6 +116,7 @@ export class ThreatModelReportService {
       const doc = await PDFDocument.create();
 
       // Register fontkit with pdf-lib for variable font support
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       doc.registerFontkit(fontkit as any);
 
       // Set document metadata

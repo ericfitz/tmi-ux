@@ -99,14 +99,34 @@ export default [
             message: 'Domain layer should be pure business logic without Angular dependencies.'
           },
           {
+            name: '@angular/material',
+            message: 'Domain layer should be pure business logic without Angular Material dependencies.'
+          },
+          {
+            name: '@angular/material/*',
+            message: 'Domain layer should be pure business logic without Angular Material dependencies.'
+          },
+          {
             name: 'rxjs',
+            message: 'Domain layer should be pure business logic without RxJS dependencies.'
+          },
+          {
+            name: 'rxjs/*',
             message: 'Domain layer should be pure business logic without RxJS dependencies.'
           }
         ],
         patterns: [
           {
-            group: ['../services/*', '../infrastructure/*', '../../infrastructure/*'],
-            message: 'Domain layer should not depend on infrastructure or services.'
+            group: ['../services/*', '../infrastructure/*', '../../infrastructure/*', '../application/*', '../../application/*'],
+            message: 'Domain layer should not depend on infrastructure, application, or service layers.'
+          },
+          {
+            group: ['@antv/*'],
+            message: 'Domain layer should not depend on X6 or other UI framework libraries.'
+          },
+          {
+            group: ['@jsverse/*'],
+            message: 'Domain layer should not depend on third-party framework libraries.'
           }
         ]
       }],

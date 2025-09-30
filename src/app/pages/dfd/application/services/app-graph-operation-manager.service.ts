@@ -1,0 +1,424 @@
+/**
+ * AppGraphOperationManager - Central orchestrator for all graph operations
+ *
+ * This service coordinates the execution of all graph operations, including:
+ * - Operation validation and execution
+ * - Executor management and routing
+ * - Statistics tracking and monitoring
+ * - Batch operation processing
+ * - Error handling and recovery
+ */
+
+import { Injectable } from '@angular/core';
+import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from 'rxjs';
+import { catchError, timeout, tap, finalize } from 'rxjs/operators';
+
+import { LoggerService } from '../../../../core/services/logger.service';
+import { NodeOperationExecutor } from '../executors/node-operation-executor';
+import { EdgeOperationExecutor } from '../executors/edge-operation-executor';
+import { BatchOperationExecutor } from '../executors/batch-operation-executor';
+import { LoadDiagramExecutor } from '../executors/load-diagram-executor';
+import {
+  GraphOperation,
+  OperationContext,
+  OperationResult,
+  OperationExecutor,
+  OperationValidator,
+  OperationConfig,
+  OperationStats,
+  OperationCompletedEvent,
+  IGraphOperationManager,
+  DEFAULT_OPERATION_CONFIG,
+  GraphOperationType,
+  OperationSource,
+} from '../../types/graph-operation.types';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AppGraphOperationManager implements IGraphOperationManager {
+  private readonly _config$ = new BehaviorSubject<OperationConfig>(DEFAULT_OPERATION_CONFIG);
+  private readonly _operationCompleted$ = new Subject<OperationCompletedEvent>();
+  private readonly _operationFailed$ = new Subject<{ operation: GraphOperation; error: string }>();
+  private readonly _operationValidated$ = new Subject<{
+    operation: GraphOperation;
+    valid: boolean;
+  }>();
+  private readonly _disposed$ = new Subject<void>();
+
+  private readonly _executors = new Map<string, OperationExecutor>();
+  private readonly _validators = new Map<string, OperationValidator>();
+  private readonly _pendingOperations = new Map<string, GraphOperation>();
+
+  private _stats: OperationStats = {
+    totalOperations: 0,
+    successfulOperations: 0,
+    failedOperations: 0,
+    averageExecutionTimeMs: 0,
+    operationsByType: {} as Record<GraphOperationType, number>,
+    operationsBySource: {} as Record<OperationSource, number>,
+    lastResetTime: new Date(),
+  };
+
+  private _totalExecutionTimeMs = 0;
+
+  constructor(private readonly logger: LoggerService) {
+    this.logger.debug('AppGraphOperationManager initialized');
+    this._initializeBuiltInExecutors();
+  }
+
+  /**
+   * Initialize built-in executors
+   */
+  private _initializeBuiltInExecutors(): void {
+    // Register all built-in executors
+    const nodeExecutor = new NodeOperationExecutor(this.logger);
+    const edgeExecutor = new EdgeOperationExecutor(this.logger);
+    const batchExecutor = new BatchOperationExecutor(this.logger);
+    const loadDiagramExecutor = new LoadDiagramExecutor(this.logger);
+
+    this.addExecutor(nodeExecutor);
+    this.addExecutor(edgeExecutor);
+    this.addExecutor(batchExecutor);
+    this.addExecutor(loadDiagramExecutor);
+
+    // Register individual executors with the batch executor for delegation
+    batchExecutor.registerExecutor('create-node', nodeExecutor);
+    batchExecutor.registerExecutor('update-node', nodeExecutor);
+    batchExecutor.registerExecutor('delete-node', nodeExecutor);
+    batchExecutor.registerExecutor('create-edge', edgeExecutor);
+    batchExecutor.registerExecutor('update-edge', edgeExecutor);
+    batchExecutor.registerExecutor('delete-edge', edgeExecutor);
+    batchExecutor.registerExecutor('load-diagram', loadDiagramExecutor);
+
+    this.logger.debug('Built-in executors initialized', {
+      executorCount: this._executors.size,
+      executorTypes: ['node', 'edge', 'batch', 'load-diagram'],
+    });
+  }
+
+  /**
+   * Configuration Management
+   */
+  getConfiguration(): Partial<OperationConfig> {
+    return { ...this._config$.value };
+  }
+
+  configure(config: Partial<OperationConfig>): void {
+    const currentConfig = this._config$.value;
+    const newConfig = { ...currentConfig, ...config };
+    this._config$.next(newConfig);
+    this.logger.debug('AppGraphOperationManager configuration updated', { config: newConfig });
+  }
+
+  /**
+   * Operation Execution
+   */
+  execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
+    const startTime = performance.now();
+
+    this.logger.debug('Executing operation', {
+      operationId: operation.id,
+      type: operation.type,
+      source: operation.source,
+    });
+
+    // Add to pending operations
+    this._pendingOperations.set(operation.id, operation);
+
+    // Find suitable executor
+    const executor = this._findExecutor(operation);
+    if (!executor) {
+      this._pendingOperations.delete(operation.id);
+      const error = `No suitable executor found for operation type: ${operation.type}`;
+      this.logger.error(error, { operation });
+      return throwError(() => new Error(error));
+    }
+
+    // Execute with timeout and error handling
+    const config = this._config$.value;
+    return executor.execute(operation, context).pipe(
+      timeout(config.operationTimeoutMs),
+      tap(result => {
+        const executionTime = performance.now() - startTime;
+        this._updateStats(operation, result, executionTime);
+        this._emitOperationCompleted(operation, result, context, executionTime);
+      }),
+      catchError(error => {
+        const executionTime = performance.now() - startTime;
+        const failureResult: OperationResult = {
+          success: false,
+          operationType: operation.type,
+          affectedCellIds: [],
+          timestamp: Date.now(),
+          error: error.message || 'Operation execution failed',
+        };
+        this._updateStats(operation, failureResult, executionTime);
+        this._emitOperationCompleted(operation, failureResult, context, executionTime);
+
+        // Emit operation failed event
+        this._operationFailed$.next({
+          operation,
+          error: error.message || 'Operation execution failed',
+        });
+
+        return throwError(() => error);
+      }),
+      finalize(() => {
+        this._pendingOperations.delete(operation.id);
+      }),
+    );
+  }
+
+  executeBatch(
+    operations: GraphOperation[],
+    context: OperationContext,
+  ): Observable<OperationResult[]> {
+    if (operations.length === 0) {
+      return of([]);
+    }
+
+    this.logger.debug('Executing batch operations', { count: operations.length });
+
+    // Execute all operations in parallel
+    const executions = operations.map(operation => this.execute(operation, context));
+
+    return forkJoin(executions).pipe(
+      catchError(error => {
+        this.logger.error('Batch operation failed', { error, operationCount: operations.length });
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  validate(operation: GraphOperation, context: OperationContext): Observable<boolean> {
+    const config = this._config$.value;
+
+    if (!config.enableValidation) {
+      return of(true);
+    }
+
+    // Find suitable validator
+    const validator = this._findValidator(operation);
+    if (!validator) {
+      // No validator available, consider it valid
+      return of(true);
+    }
+
+    try {
+      const result = validator.validate(operation, context);
+
+      // Emit validation event
+      this._operationValidated$.next({ operation, valid: result.valid });
+
+      return of(result.valid);
+    } catch (error) {
+      this.logger.error('Validation failed', { operation, error });
+
+      // Emit validation failed event
+      this._operationValidated$.next({ operation, valid: false });
+
+      return throwError(() => error);
+    }
+  }
+
+  canExecute(operation: GraphOperation, _context: OperationContext): boolean {
+    const executor = this._findExecutor(operation);
+    return executor !== null;
+  }
+
+  /**
+   * Executor Management
+   */
+  addExecutor(executor: OperationExecutor): void {
+    const key = this._getExecutorKey(executor);
+    this._executors.set(key, executor);
+    this.logger.debug('Executor added', { priority: executor.priority });
+  }
+
+  removeExecutor(executor: OperationExecutor): void {
+    const key = this._getExecutorKey(executor);
+    const removed = this._executors.delete(key);
+    if (removed) {
+      this.logger.debug('Executor removed', { priority: executor.priority });
+    }
+  }
+
+  addValidator(validator: OperationValidator): void {
+    const key = `${validator.constructor.name}-${Date.now()}`;
+    this._validators.set(key, validator);
+    this.logger.debug('Validator added');
+  }
+
+  removeValidator(validator: OperationValidator): void {
+    const key = `${validator.constructor.name}`;
+    // Find and remove validator by constructor name
+    const keys = Array.from(this._validators.keys()).filter(k => k.startsWith(key));
+    let removed = false;
+    keys.forEach(k => {
+      if (this._validators.get(k) === validator) {
+        this._validators.delete(k);
+        removed = true;
+      }
+    });
+    if (removed) {
+      this.logger.debug('Validator removed');
+    }
+  }
+
+  addInterceptor(_interceptor: any): void {
+    // For now, just log that interceptor was added
+    this.logger.debug('Interceptor added');
+  }
+
+  removeInterceptor(_interceptor: any): void {
+    // For now, just log that interceptor was removed
+    this.logger.debug('Interceptor removed');
+  }
+
+  /**
+   * Statistics and Monitoring
+   */
+  getStats(): OperationStats {
+    return { ...this._stats };
+  }
+
+  resetStats(): void {
+    this._stats = {
+      totalOperations: 0,
+      successfulOperations: 0,
+      failedOperations: 0,
+      averageExecutionTimeMs: 0,
+      operationsByType: {} as Record<GraphOperationType, number>,
+      operationsBySource: {} as Record<OperationSource, number>,
+      lastResetTime: new Date(),
+    };
+    this._totalExecutionTimeMs = 0;
+    this.logger.debug('Statistics reset');
+  }
+
+  get operationCompleted$(): Observable<OperationCompletedEvent> {
+    return this._operationCompleted$.asObservable();
+  }
+
+  get operationFailed$(): Observable<{ operation: GraphOperation; error: string }> {
+    return this._operationFailed$.asObservable();
+  }
+
+  get operationValidated$(): Observable<{ operation: GraphOperation; valid: boolean }> {
+    return this._operationValidated$.asObservable();
+  }
+
+  /**
+   * Pending Operations
+   */
+  isPending(operationId: string): boolean {
+    return this._pendingOperations.has(operationId);
+  }
+
+  getPendingOperations(): GraphOperation[] {
+    return Array.from(this._pendingOperations.values());
+  }
+
+  cancelOperation(operationId: string): boolean {
+    if (this._pendingOperations.has(operationId)) {
+      this._pendingOperations.delete(operationId);
+      this.logger.debug('Operation cancelled', { operationId });
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Cleanup
+   */
+  dispose(): void {
+    this._disposed$.next();
+    this._disposed$.complete();
+    this._operationCompleted$.complete();
+    this._operationFailed$.complete();
+    this._operationValidated$.complete();
+    this._config$.complete();
+    this._executors.clear();
+    this._validators.clear();
+    this._pendingOperations.clear();
+    this.logger.debug('AppGraphOperationManager disposed');
+  }
+
+  /**
+   * Private helper methods
+   */
+  private _findExecutor(operation: GraphOperation): OperationExecutor | null {
+    const executors = Array.from(this._executors.values())
+      .filter(executor => executor.canExecute(operation))
+      .sort((a, b) => b.priority - a.priority); // Higher priority first
+
+    return executors[0] || null;
+  }
+
+  private _findValidator(operation: GraphOperation): OperationValidator | null {
+    const validators = Array.from(this._validators.values()).filter(validator =>
+      validator.canValidate(operation),
+    );
+
+    return validators[0] || null;
+  }
+
+  private _getExecutorKey(executor: OperationExecutor): string {
+    return `${executor.constructor.name}-${executor.priority}`;
+  }
+
+  private _updateStats(
+    operation: GraphOperation,
+    result: OperationResult,
+    executionTimeMs: number,
+  ): void {
+    this._totalExecutionTimeMs += executionTimeMs;
+
+    // Create new stats object with updated values
+    const newOperationsByType = { ...this._stats.operationsByType };
+    if (!newOperationsByType[operation.type]) {
+      newOperationsByType[operation.type] = 0;
+    }
+    newOperationsByType[operation.type]++;
+
+    const newOperationsBySource = { ...this._stats.operationsBySource };
+    if (!newOperationsBySource[operation.source]) {
+      newOperationsBySource[operation.source] = 0;
+    }
+    newOperationsBySource[operation.source]++;
+
+    const newTotalOperations = this._stats.totalOperations + 1;
+    const newSuccessfulOperations = result.success
+      ? this._stats.successfulOperations + 1
+      : this._stats.successfulOperations;
+    const newFailedOperations = !result.success
+      ? this._stats.failedOperations + 1
+      : this._stats.failedOperations;
+
+    this._stats = {
+      totalOperations: newTotalOperations,
+      successfulOperations: newSuccessfulOperations,
+      failedOperations: newFailedOperations,
+      averageExecutionTimeMs: this._totalExecutionTimeMs / newTotalOperations,
+      operationsByType: newOperationsByType,
+      operationsBySource: newOperationsBySource,
+      lastResetTime: this._stats.lastResetTime,
+    };
+  }
+
+  private _emitOperationCompleted(
+    operation: GraphOperation,
+    result: OperationResult,
+    context: OperationContext,
+    executionTimeMs: number,
+  ): void {
+    const event: OperationCompletedEvent = {
+      operation,
+      result,
+      context,
+      executionTimeMs,
+    };
+    this._operationCompleted$.next(event);
+  }
+}

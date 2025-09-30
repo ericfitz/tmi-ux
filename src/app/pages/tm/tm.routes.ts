@@ -21,7 +21,9 @@ export const TM_ROUTES: Routes = [
   {
     path: ':id/dfd/:dfdId',
     loadComponent: () =>
-      import(/* webpackChunkName: "dfd" */ '../dfd/dfd.component').then(c => c.DfdComponent),
+      import(/* webpackChunkName: "dfd" */ '../dfd/presentation/components/dfd.component').then(
+        c => c.DfdComponent,
+      ),
     canActivate: [authGuard],
     resolve: {
       threatModel: threatModelResolver,

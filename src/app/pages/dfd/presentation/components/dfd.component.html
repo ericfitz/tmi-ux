@@ -1,0 +1,299 @@
+<div class="dfd-container">
+  <div class="title-row">
+    <div class="title-container">
+      <h1 class="page-title">
+        {{ 'editor.diagramPrefix' | transloco }}
+        {{ diagramName || ('editor.pageTitle' | transloco) }}
+        <span *ngIf="isReadOnlyMode" class="read-only-indicator">(Read Only)</span>
+      </h1>
+    </div>
+    <div class="collaboration-controls">
+      <app-dfd-collaboration></app-dfd-collaboration>
+    </div>
+  </div>
+
+  <div class="graph-toolbar">
+    <div class="toolbar-group">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="addGraphNode('actor')"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'editor.toolbar.tooltips.addActor' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >person</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="accent"
+        (click)="addGraphNode('process')"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'editor.toolbar.tooltips.addProcess' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >circle</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="warn"
+        (click)="addGraphNode('store')"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'editor.toolbar.tooltips.addStore' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >database</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="addGraphNode('security-boundary')"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'editor.toolbar.tooltips.addSecurityBoundary' | transloco"
+      >
+        <mat-icon fontSet="material-symbols-outlined">select</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="addGraphNode('text-box')"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'editor.toolbar.tooltips.addTextbox' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >text_fields</mat-icon
+        >
+      </button>
+
+      <span class="button-spacer"></span>
+
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="deleteSelected()"
+        [disabled]="!hasSelectedCells || isReadOnlyMode"
+        [matTooltip]="'editor.toolbar.tooltips.deleteSelected' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >delete</mat-icon
+        >
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <button mat-icon-button (click)="showHistory()" [matTooltip]="'Show X6 History'">
+        <mat-icon>history</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="undo()"
+        [disabled]="!canUndo || isReadOnlyMode"
+        [matTooltip]="'editor.toolbar.tooltips.undo' | transloco"
+      >
+        <mat-icon>undo</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="redo()"
+        [disabled]="!canRedo || isReadOnlyMode"
+        [matTooltip]="'editor.toolbar.tooltips.redo' | transloco"
+      >
+        <mat-icon>redo</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        color="primary"
+        [disabled]="!hasExactlyOneSelectedCell"
+        (click)="manageMetadata()"
+        [matTooltip]="'common.manageMetadata' | transloco"
+      >
+        <mat-icon>list</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        [disabled]="
+          !threatModelId ||
+          !hasExactlyOneSelectedCell ||
+          selectedCellIsTextBox ||
+          selectedCellIsSecurityBoundary
+        "
+        (click)="openThreatEditor()"
+        [matTooltip]="'common.addThreat' | transloco"
+      >
+        <div class="icon-overlay-container">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >skull</mat-icon
+          >
+          <mat-icon
+            class="overlay-icon"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >add</mat-icon
+          >
+        </div>
+      </button>
+
+      <button
+        mat-icon-button
+        [disabled]="!hasExactlyOneSelectedCell"
+        (click)="manageThreats()"
+        [matTooltip]="'common.manageThreats' | transloco"
+      >
+        <div class="icon-overlay-container">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >skull</mat-icon
+          >
+          <mat-icon
+            class="overlay-icon"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >list</mat-icon
+          >
+        </div>
+      </button>
+
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="exportMenu"
+        [matTooltip]="'editor.toolbar.tooltips.export' | transloco"
+      >
+        <mat-icon>save_alt</mat-icon>
+      </button>
+      <mat-menu #exportMenu="matMenu">
+        <button mat-menu-item (click)="exportDiagram('svg')">
+          <span>{{ 'editor.toolbar.exportMenu.exportAsSvg' | transloco }}</span>
+        </button>
+        <button mat-menu-item (click)="exportDiagram('png')">
+          <span>{{ 'editor.toolbar.exportMenu.exportAsPng' | transloco }}</span>
+        </button>
+        <button mat-menu-item (click)="exportDiagram('jpeg')">
+          <span>{{ 'editor.toolbar.exportMenu.exportAsJpeg' | transloco }}</span>
+        </button>
+      </mat-menu>
+
+      <button mat-icon-button (click)="closeDiagram()" [matTooltip]="'common.close' | transloco">
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >close</mat-icon
+        >
+      </button>
+    </div>
+  </div>
+
+  <div class="graph-container">
+    <div #graphContainer class="x6-graph"></div>
+
+    <!-- Cell context menu -->
+    <div
+      style="visibility: hidden; position: fixed"
+      [style.left]="contextMenuPosition.x"
+      [style.top]="contextMenuPosition.y"
+    >
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="cellContextMenu"
+        #contextMenuTrigger="matMenuTrigger"
+      ></button>
+    </div>
+    <mat-menu #cellContextMenu="matMenu">
+      <button mat-menu-item (click)="editCellText()" [disabled]="isReadOnlyMode">
+        <mat-icon>edit</mat-icon>
+        <span>{{ 'contextMenu.editText' | transloco }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="moveForward()" [disabled]="isReadOnlyMode">
+        <mat-icon>flip_to_front</mat-icon>
+        <span>{{ 'contextMenu.moveForward' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="moveBackward()" [disabled]="isReadOnlyMode">
+        <mat-icon>flip_to_back</mat-icon>
+        <span>{{ 'contextMenu.moveBackward' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="moveToFront()" [disabled]="isReadOnlyMode">
+        <mat-icon>vertical_align_top</mat-icon>
+        <span>{{ 'contextMenu.moveToFront' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="moveToBack()" [disabled]="isReadOnlyMode">
+        <mat-icon>vertical_align_bottom</mat-icon>
+        <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
+      </button>
+      <button
+        mat-menu-item
+        (click)="addInverseConnection()"
+        *ngIf="isRightClickedCellEdge()"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+      >
+        <mat-icon>swap_horiz</mat-icon>
+        <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button
+        mat-menu-item
+        (click)="deleteSelected()"
+        [disabled]="!hasSelectedCells || isReadOnlyMode"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >delete</mat-icon
+        >
+        <span>{{ 'editor.toolbar.tooltips.deleteSelected' | transloco }}</span>
+      </button>
+      <button
+        mat-menu-item
+        (click)="openThreatEditor()"
+        [disabled]="
+          !threatModelId ||
+          !hasExactlyOneSelectedCell ||
+          selectedCellIsTextBox ||
+          selectedCellIsSecurityBoundary ||
+          isReadOnlyMode
+        "
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >skull</mat-icon
+        >
+        <span>{{ 'common.addThreat' | transloco }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="showCellProperties()">
+        <mat-icon>visibility</mat-icon>
+        <span>Show object</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>

@@ -97,6 +97,12 @@ export class AuthService {
     return environment.defaultAuthProvider || 'local';
   }
 
+  // SessionManager instance (injected via forwardRef to avoid circular dependency)
+  private sessionManagerService: {
+    onTokenRefreshed: () => void;
+    stopExpiryTimers: () => void;
+  } | null = null;
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -107,6 +113,18 @@ export class AuthService {
     this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
     void this.checkAuthStatus();
+  }
+
+  /**
+   * Set the session manager service (called by SessionManagerService to avoid circular dependency)
+   * @param sessionManager SessionManagerService instance
+   */
+  setSessionManager(sessionManager: {
+    onTokenRefreshed: () => void;
+    stopExpiryTimers: () => void;
+  }): void {
+    this.sessionManagerService = sessionManager;
+    this.logger.debugComponent('Auth', 'SessionManager service registered');
   }
 
   /**
@@ -1215,7 +1233,7 @@ export class AuthService {
   }
 
   /**
-   * Store JWT token in local storage
+   * Store JWT token in local storage and notify SessionManager
    * @param token JWT token
    */
   private storeToken(token: JwtToken): void {
@@ -1259,6 +1277,11 @@ export class AuthService {
       });
     });
     this.jwtTokenSubject.next(token);
+
+    // Notify SessionManager of new token
+    if (this.sessionManagerService) {
+      this.sessionManagerService.onTokenRefreshed();
+    }
   }
 
   /**
@@ -1530,7 +1553,7 @@ export class AuthService {
   }
 
   /**
-   * Clear all authentication data
+   * Clear all authentication data and notify SessionManager
    */
   private clearAuthData(): void {
     localStorage.removeItem(this.tokenStorageKey);
@@ -1542,6 +1565,12 @@ export class AuthService {
     // Clear cached providers to force re-evaluation on next login
     this.cachedProviders = null;
     this.providersCacheTime = 0;
+
+    // Notify SessionManager to stop timers
+    if (this.sessionManagerService) {
+      this.sessionManagerService.stopExpiryTimers();
+    }
+
     this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');
   }
 

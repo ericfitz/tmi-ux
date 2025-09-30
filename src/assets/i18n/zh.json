@@ -152,6 +152,7 @@
   },
   "editor": {
     "diagramPrefix": "图表:",
+    "flowLabel": "数据流",
     "nodeLabels": {
       "actor": "外部实体",
       "node": "节点",

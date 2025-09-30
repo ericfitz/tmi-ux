@@ -1,0 +1,24 @@
+<h2 mat-dialog-title class="session-expiry-title">
+  <mat-icon class="warning-icon">warning</mat-icon>
+  {{ 'sessionExpiry.title' | transloco }}
+</h2>
+
+<mat-dialog-content class="session-expiry-content">
+  <p class="expiry-message">
+    {{ 'sessionExpiry.message' | transloco: { timeRemaining: timeRemaining } }}
+  </p>
+
+  <div class="countdown-display">
+    <span class="countdown-time">{{ timeRemaining }}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="session-expiry-actions">
+  <button mat-button color="warn" (click)="onLogout()" class="logout-button">
+    {{ 'navbar.logoutButton' | transloco }}
+  </button>
+
+  <button mat-raised-button color="primary" (click)="onExtendSession()" class="extend-button">
+    {{ 'sessionExpiry.extendButton' | transloco }}
+  </button>
+</mat-dialog-actions>

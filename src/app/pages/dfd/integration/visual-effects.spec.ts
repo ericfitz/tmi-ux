@@ -20,24 +20,24 @@ import { JSDOM } from 'jsdom';
 
 import { createMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 
-import { X6GraphAdapter } from '../infrastructure/adapters/x6-graph.adapter';
-import { X6SelectionAdapter } from '../infrastructure/adapters/x6-selection.adapter';
-import { SelectionService } from '../infrastructure/services/selection.service';
-import { VisualEffectsService } from '../infrastructure/services/visual-effects.service';
-import { EdgeQueryService } from '../infrastructure/services/edge-query.service';
-import { NodeConfigurationService } from '../infrastructure/services/node-configuration.service';
-import { EmbeddingService } from '../infrastructure/services/embedding.service';
-import { PortStateManagerService } from '../infrastructure/services/port-state-manager.service';
-import { X6KeyboardHandler } from '../infrastructure/adapters/x6-keyboard-handler.service';
-import { ZOrderService } from '../infrastructure/services/z-order.service';
-import { X6ZOrderAdapter } from '../infrastructure/adapters/x6-z-order.adapter';
-import { X6EmbeddingAdapter } from '../infrastructure/adapters/x6-embedding.adapter';
-import { X6HistoryManager } from '../infrastructure/adapters/x6-history-manager';
-import { X6EventLoggerService } from '../infrastructure/adapters/x6-event-logger.service';
-import { DfdEdgeService } from '../services/dfd-edge.service';
-import { DfdEventHandlersService } from '../services/dfd-event-handlers.service';
-import { GraphHistoryCoordinator } from '../services/graph-history-coordinator.service';
-import { LoggerService } from '../../../core/services/logger.service';
+import { InfraX6GraphAdapter } from '../infrastructure/adapters/infra-x6-graph.adapter';
+import { InfraX6SelectionAdapter } from '../infrastructure/adapters/infra-x6-selection.adapter';
+import { SelectionService } from '../presentation/services/ui-presenter-selection.service';
+import { InfraVisualEffectsService } from '../infrastructure/services/infra-visual-effects.service';
+import { InfraEdgeQueryService } from '../infrastructure/services/infra-edge-query.service';
+import { InfraNodeConfigurationService } from '../infrastructure/services/infra-node-configuration.service';
+import { InfraEmbeddingService } from '../infrastructure/services/infra-embedding.service';
+import { InfraPortStateService } from '../infrastructure/services/infra-port-state.service';
+import { InfraX6KeyboardAdapter } from '../infrastructure/adapters/infra-x6-keyboard.adapter';
+import { ZOrderService } from '../infrastructure/services/infra-z-order.service';
+import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
+import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
+import { InfraX6HistoryAdapter } from '../infrastructure/adapters/infra-x6-history.adapter';
+import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.service';
+import { AppEdgeService } from '../application/services/app-edge.service';
+import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
+import { AppGraphHistoryCoordinator } from '../application/services/app-graph-history-coordinator.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo } from '../domain/value-objects/node-info';
 import { DiagramNode } from '../domain/value-objects/diagram-node';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
@@ -92,26 +92,26 @@ global.navigator = dom.window.navigator;
 describe.skip('DFD Integration - Visual Effects', () => {
   let container: HTMLElement;
   let graph: Graph;
-  let adapter: X6GraphAdapter;
-  let selectionAdapter: X6SelectionAdapter;
-  let visualEffectsService: VisualEffectsService;
+  let adapter: InfraX6GraphAdapter;
+  let selectionAdapter: InfraX6SelectionAdapter;
+  let infraVisualEffectsService: InfraVisualEffectsService;
   let mockLogger: MockLoggerService;
 
   // Service dependencies
-  let edgeQueryService: EdgeQueryService;
-  let nodeConfigurationService: NodeConfigurationService;
-  let embeddingService: EmbeddingService;
-  let portStateManager: PortStateManagerService;
-  let keyboardHandler: X6KeyboardHandler;
+  let infraEdgeQueryService: InfraEdgeQueryService;
+  let infraNodeConfigurationService: InfraNodeConfigurationService;
+  let infraEmbeddingService: InfraEmbeddingService;
+  let portStateManager: InfraPortStateService;
+  let keyboardHandler: InfraX6KeyboardAdapter;
   let zOrderService: ZOrderService;
-  let zOrderAdapter: X6ZOrderAdapter;
-  let embeddingAdapter: X6EmbeddingAdapter;
+  let zOrderAdapter: InfraX6ZOrderAdapter;
+  let embeddingAdapter: InfraX6EmbeddingAdapter;
   let selectionService: SelectionService;
-  let historyManager: X6HistoryManager;
-  let x6EventLogger: X6EventLoggerService;
-  let edgeService: DfdEdgeService;
-  let eventHandlersService: DfdEventHandlersService;
-  let historyCoordinator: GraphHistoryCoordinator;
+  let historyManager: InfraX6HistoryAdapter;
+  let x6EventLogger: InfraX6EventLoggerAdapter;
+  let appEdgeService: AppEdgeService;
+  let eventHandlersService: AppEventHandlersService;
+  let historyCoordinator: AppGraphHistoryCoordinator;
 
   beforeEach(() => {
     container = document.createElement('div');
@@ -121,44 +121,41 @@ describe.skip('DFD Integration - Visual Effects', () => {
 
     // Initialize services
     mockLogger = createMockLoggerService() as unknown as MockLoggerService;
-    edgeQueryService = new EdgeQueryService(mockLogger as unknown as LoggerService);
-    nodeConfigurationService = new NodeConfigurationService();
-    embeddingService = new EmbeddingService(mockLogger as unknown as LoggerService);
-    portStateManager = new PortStateManagerService(
-      edgeQueryService,
+    infraEdgeQueryService = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
+    infraNodeConfigurationService = new InfraNodeConfigurationService();
+    infraEmbeddingService = new InfraEmbeddingService(mockLogger as unknown as LoggerService);
+    portStateManager = new InfraPortStateService(
+      infraEdgeQueryService,
       mockLogger as unknown as LoggerService,
     );
-    keyboardHandler = new X6KeyboardHandler(mockLogger as unknown as LoggerService);
+    keyboardHandler = new InfraX6KeyboardAdapter(mockLogger as unknown as LoggerService);
     zOrderService = new ZOrderService(mockLogger as unknown as LoggerService);
-    zOrderAdapter = new X6ZOrderAdapter(mockLogger as unknown as LoggerService, zOrderService);
-    embeddingAdapter = new X6EmbeddingAdapter(
+    zOrderAdapter = new InfraX6ZOrderAdapter(mockLogger as unknown as LoggerService, zOrderService);
+    embeddingAdapter = new InfraX6EmbeddingAdapter(
       mockLogger as unknown as LoggerService,
-      embeddingService,
+      infraEmbeddingService,
       zOrderAdapter,
     );
-    historyManager = new X6HistoryManager(mockLogger as unknown as LoggerService);
-    x6EventLogger = new X6EventLoggerService(mockLogger as unknown as LoggerService);
-    edgeService = new DfdEdgeService(mockLogger as unknown as LoggerService);
-    eventHandlersService = new DfdEventHandlersService(mockLogger as unknown as LoggerService);
+    historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
+    x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
+    appEdgeService = new AppEdgeService(mockLogger as unknown as LoggerService);
+    eventHandlersService = new AppEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new GraphHistoryCoordinator(
-      historyManager,
-      mockLogger as unknown as LoggerService,
-    );
+    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
 
-    // Initialize selection adapter first (required by X6GraphAdapter)
-    selectionAdapter = new X6SelectionAdapter(
+    // Initialize selection adapter first (required by InfraX6GraphAdapter)
+    selectionAdapter = new InfraX6SelectionAdapter(
       mockLogger as unknown as LoggerService,
       selectionService,
       historyCoordinator,
     );
 
     // Initialize main services
-    adapter = new X6GraphAdapter(
+    adapter = new InfraX6GraphAdapter(
       mockLogger as unknown as LoggerService,
-      edgeQueryService,
-      nodeConfigurationService,
-      embeddingService,
+      infraEdgeQueryService,
+      infraNodeConfigurationService,
+      infraEmbeddingService,
       portStateManager,
       keyboardHandler,
       zOrderAdapter,
@@ -166,12 +163,14 @@ describe.skip('DFD Integration - Visual Effects', () => {
       historyManager,
       selectionAdapter,
       x6EventLogger,
-      edgeService,
+      appEdgeService,
       eventHandlersService,
       historyCoordinator,
     );
 
-    visualEffectsService = new VisualEffectsService(mockLogger as unknown as LoggerService);
+    infraVisualEffectsService = new InfraVisualEffectsService(
+      mockLogger as unknown as LoggerService,
+    );
 
     // Initialize graph
     adapter.initialize(container);
@@ -180,7 +179,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
 
   afterEach(() => {
     // Clean up any active effects
-    visualEffectsService.clearAllActiveEffects();
+    infraVisualEffectsService.clearAllActiveEffects();
 
     if (container && container.parentNode) {
       container.parentNode.removeChild(container);
@@ -203,7 +202,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('actor', 'Test Node', { x: 100, y: 100 });
 
       // Apply creation effect with high opacity
-      visualEffectsService.applyCreationHighlight(node, graph);
+      infraVisualEffectsService.applyCreationHighlight(node, graph);
 
       // Should have creation effect applied
       StylingVerifier.verifyCreationEffect(node, 'actor', 0.9);
@@ -214,7 +213,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const customColor = { r: 255, g: 100, b: 50 }; // Orange
 
       // Apply creation effect with custom color
-      visualEffectsService.applyCreationHighlight(node, graph, customColor);
+      infraVisualEffectsService.applyCreationHighlight(node, graph, customColor);
 
       // Verify the filter contains the custom color
       const filter = node.attr('body/filter');
@@ -227,7 +226,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const textBox = createTestNode('text-box', 'Test Text', { x: 100, y: 100 });
 
       // Apply creation effect
-      visualEffectsService.applyCreationHighlight(textBox, graph);
+      infraVisualEffectsService.applyCreationHighlight(textBox, graph);
 
       // Text-box should apply effect to text element, not body
       const textFilter = textBox.attr('text/filter');
@@ -247,7 +246,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const edge = createTestEdge(sourceNode, targetNode);
 
       // Apply creation effect
-      visualEffectsService.applyCreationHighlight(edge, graph);
+      infraVisualEffectsService.applyCreationHighlight(edge, graph);
 
       // Edge should have creation effect on line element
       const lineFilter = edge.attr('line/filter');
@@ -264,7 +263,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       StylingVerifier.verifySelectionStyling(node, 'actor');
 
       // Try to apply creation effect - should be skipped
-      visualEffectsService.applyCreationHighlight(node, graph);
+      infraVisualEffectsService.applyCreationHighlight(node, graph);
 
       // Should still have selection styling, not creation effect
       StylingVerifier.verifySelectionStyling(node, 'actor');
@@ -278,11 +277,11 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('process', 'Test Node', { x: 100, y: 100 });
 
       // Apply first effect
-      visualEffectsService.applyCreationHighlight(node, graph);
+      infraVisualEffectsService.applyCreationHighlight(node, graph);
 
       // Try to apply second effect - should be skipped
       const customColor = { r: 255, g: 0, b: 0 };
-      visualEffectsService.applyCreationHighlight(node, graph, customColor);
+      infraVisualEffectsService.applyCreationHighlight(node, graph, customColor);
 
       // Should still have original blue effect, not red
       const filter = node.attr('body/filter');
@@ -296,7 +295,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('store', 'Test Node', { x: 100, y: 100 });
 
       // Apply creation effect
-      visualEffectsService.applyCreationHighlight(node, graph);
+      infraVisualEffectsService.applyCreationHighlight(node, graph);
 
       // Initially should have strong effect
       let filter = node.attr('body/filter');
@@ -321,7 +320,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('actor', 'Test Node', { x: 100, y: 100 });
 
       // Apply creation effect
-      visualEffectsService.applyCreationHighlight(node, graph);
+      infraVisualEffectsService.applyCreationHighlight(node, graph);
 
       // Wait for complete fade out
       await TestHelpers.waitForAnimationComplete();
@@ -344,21 +343,21 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('process', 'Test Node', { x: 100, y: 100 });
 
       // Initially not selected
-      expect(visualEffectsService.isCellSelected(node)).toBe(false);
+      expect(infraVisualEffectsService.isCellSelected(node)).toBe(false);
 
       // Select the node
       graph.select(node);
       StylingVerifier.verifySelectionStyling(node, 'process');
 
       // Should detect selection
-      expect(visualEffectsService.isCellSelected(node)).toBe(true);
+      expect(infraVisualEffectsService.isCellSelected(node)).toBe(true);
 
       // Deselect
       graph.unselect(node);
       StylingVerifier.verifyCleanStyling(node, 'process');
 
       // Should no longer detect selection
-      expect(visualEffectsService.isCellSelected(node)).toBe(false);
+      expect(infraVisualEffectsService.isCellSelected(node)).toBe(false);
     });
 
     it('should detect selection on text-box nodes', () => {
@@ -369,7 +368,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       StylingVerifier.verifySelectionStyling(textBox, 'text-box');
 
       // Should detect selection (text-box uses text/filter for selection)
-      expect(visualEffectsService.isCellSelected(textBox)).toBe(true);
+      expect(infraVisualEffectsService.isCellSelected(textBox)).toBe(true);
     });
 
     it('should detect selection on edges', () => {
@@ -382,7 +381,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       StylingVerifier.verifySelectionStyling(edge, 'edge');
 
       // Should detect selection
-      expect(visualEffectsService.isCellSelected(edge)).toBe(true);
+      expect(infraVisualEffectsService.isCellSelected(edge)).toBe(true);
     });
   });
 
@@ -396,7 +395,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
 
       // Apply effects to all nodes
       nodes.forEach(node => {
-        visualEffectsService.applyCreationHighlight(node, graph);
+        infraVisualEffectsService.applyCreationHighlight(node, graph);
       });
 
       // All should have creation effects
@@ -406,7 +405,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       });
 
       // Clear all effects
-      visualEffectsService.clearAllActiveEffects();
+      infraVisualEffectsService.clearAllActiveEffects();
 
       // Wait a moment for cleanup to complete
       setTimeout(() => {
@@ -421,7 +420,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
     it('should handle error cases gracefully', () => {
       // Try to apply effect to null cell
       expect(() => {
-        visualEffectsService.applyCreationHighlight(null as any, graph);
+        infraVisualEffectsService.applyCreationHighlight(null as any, graph);
       }).not.toThrow();
 
       // Should log warning for null cell
@@ -434,7 +433,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('actor', 'Test Node', { x: 100, y: 100 });
 
       // Apply effect without graph parameter (no batching)
-      visualEffectsService.applyCreationHighlight(node);
+      infraVisualEffectsService.applyCreationHighlight(node);
 
       // Should still work
       StylingVerifier.verifyCreationEffect(node, 'actor', 0.9);
@@ -446,7 +445,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       const node = createTestNode('process', 'Test Node', { x: 100, y: 100 });
       const customColor = { r: 100, g: 200, b: 50 };
 
-      visualEffectsService.applyCreationHighlight(node, graph, customColor);
+      infraVisualEffectsService.applyCreationHighlight(node, graph, customColor);
 
       const filter = node.attr('body/filter');
       const expectedFilter = DFD_STYLING_HELPERS.getCreationFilterWithColor(customColor, 0.9);
@@ -468,7 +467,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
     it('should use correct blur radius from constants', () => {
       const node = createTestNode('store', 'Test Node', { x: 100, y: 100 });
 
-      visualEffectsService.applyCreationHighlight(node, graph);
+      infraVisualEffectsService.applyCreationHighlight(node, graph);
 
       const filter = node.attr('body/filter');
       expect(filter).toContain(`${DFD_STYLING.CREATION.GLOW_BLUR_RADIUS}px`);

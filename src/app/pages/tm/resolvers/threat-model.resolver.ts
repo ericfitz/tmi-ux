@@ -35,6 +35,20 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
     threatModelId,
     url: state.url,
     forceRefresh,
+    routeParams: route.paramMap.keys.reduce(
+      (acc, key) => {
+        acc[key] = route.paramMap.get(key);
+        return acc;
+      },
+      {} as Record<string, string | null>,
+    ),
+    queryParams: route.queryParamMap.keys.reduce(
+      (acc, key) => {
+        acc[key] = route.queryParamMap.get(key);
+        return acc;
+      },
+      {} as Record<string, string | null>,
+    ),
   });
 
   // Load threat model with forced refresh to ensure fresh authorization data
