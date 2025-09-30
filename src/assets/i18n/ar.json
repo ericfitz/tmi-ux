@@ -246,6 +246,16 @@
     "lastUpdatedDate": "2025-04-06",
     "title": "سياسة الخصوصية"
   },
+  "sessionExpiry": {
+    "extendButton": "تمديد الجلسة",
+    "logoutButton": "تسجيل الخروج الآن",
+    "message": "جلستك على وشك الانتهاء. هل ترغب في تمديد جلستك أو تسجيل الخروج الآن؟",
+    "timeFormat": {
+      "minutesSeconds": "{{minutes}}:{{seconds}}",
+      "seconds": "{{seconds}} ثانية"
+    },
+    "title": "الجلسة على وشك الانتهاء"
+  },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
     "notAssociatedWithCell": "غير مرتبط بخلية",

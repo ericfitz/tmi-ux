@@ -246,6 +246,16 @@
     "lastUpdatedDate": "2025-04-06",
     "title": "Privacy Policy"
   },
+  "sessionExpiry": {
+    "extendButton": "Extend Session",
+    "logoutButton": "Log Out Now",
+    "message": "Your session is about to expire. Would you like to extend your session or log out now?",
+    "timeFormat": {
+      "minutesSeconds": "{{minutes}}:{{seconds}}",
+      "seconds": "{{seconds}} seconds"
+    },
+    "title": "Session Expiring Soon"
+  },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
     "notAssociatedWithCell": "Not Associated With a Cell",
@@ -370,17 +380,6 @@
       "title": "8. Governing Law"
     },
     "title": "Terms of Service"
-  },
-  "sessionExpiry": {
-    "title": "Session Expiring Soon",
-    "message": "Your session will expire in {timeRemaining}. Would you like to extend your session or log out now?",
-    "timeFormat": {
-      "minutesSeconds": "{minutes}:{seconds}",
-      "minutes": "1 minute",
-      "seconds": "{seconds} seconds"
-    },
-    "extendButton": "Extend Session",
-    "logoutButton": "Log Out Now"
   },
   "userPreferences": {
     "diagramAnimationEffects": "Diagram Animation Effects",

@@ -246,6 +246,16 @@
     "lastUpdatedDate": "2025-04-06",
     "title": "นโยบายความเป็นส่วนตัว"
   },
+  "sessionExpiry": {
+    "extendButton": "ขยายเวลาเซสชัน",
+    "logoutButton": "ออกจากระบบตอนนี้",
+    "message": "เซสชันของคุณกำลังจะหมดอายุ คุณต้องการขยายเวลาเซสชันหรือออกจากระบบตอนนี้?",
+    "timeFormat": {
+      "minutesSeconds": "{{minutes}}:{{seconds}}",
+      "seconds": "{{seconds}} วินาที"
+    },
+    "title": "เซสชันกำลังจะหมดอายุ"
+  },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",

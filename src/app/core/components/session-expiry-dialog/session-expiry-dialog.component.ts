@@ -88,10 +88,7 @@ export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
 
-    if (remainingSeconds === 60) {
-      // Exactly 1 minute remaining (special case)
-      this.timeRemaining = this.transloco.translate('sessionExpiry.timeFormat.minutes');
-    } else if (minutes > 0) {
+    if (minutes > 0) {
       // Format as MM:SS
       const formattedSeconds = seconds.toString().padStart(2, '0');
       this.timeRemaining = this.transloco.translate('sessionExpiry.timeFormat.minutesSeconds', {

@@ -246,6 +246,16 @@
     "lastUpdatedDate": "2025-04-06",
     "title": "Datenschutzrichtlinie"
   },
+  "sessionExpiry": {
+    "extendButton": "Sitzung verlängern",
+    "logoutButton": "Jetzt abmelden",
+    "message": "Ihre Sitzung läuft bald ab. Möchten Sie Ihre Sitzung verlängern oder sich jetzt abmelden?",
+    "timeFormat": {
+      "minutesSeconds": "{{minutes}}:{{seconds}}",
+      "seconds": "{{seconds}} Sekunden"
+    },
+    "title": "Sitzung läuft bald ab"
+  },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",

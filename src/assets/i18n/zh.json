@@ -246,6 +246,16 @@
     "lastUpdatedDate": "2025-04-06",
     "title": "隐私政策"
   },
+  "sessionExpiry": {
+    "extendButton": "延长会话",
+    "logoutButton": "立即退出",
+    "message": "您的会话即将过期。您想要延长会话还是立即退出登录？",
+    "timeFormat": {
+      "minutesSeconds": "{{minutes}}:{{seconds}}",
+      "seconds": "{{seconds}}秒"
+    },
+    "title": "会话即将过期"
+  },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
     "notAssociatedWithCell": "未关联单元格",
