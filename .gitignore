@@ -43,13 +43,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# AI assistant files
-.claude
-.claude/*
-CLAUDE.local.md
-.clinerules
-CLAUDE.md
-
 # Local environment files
 src/environments/environment.local.ts
 src/environments/environment.dev.ts
