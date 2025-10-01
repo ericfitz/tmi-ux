@@ -1,3 +1,5 @@
+![Logo](public/TMI-Logo-512x512.png)
+
 # TMI UX
 
 Angular-based user interface for the TMI application.
