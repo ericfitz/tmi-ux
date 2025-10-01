@@ -16,6 +16,7 @@
 .session-expiry-content {
   min-width: 400px;
   padding: 1rem 0;
+  text-align: center;
 }
 
 .expiry-message {
@@ -26,12 +27,13 @@
 }
 
 .countdown-display {
+  display: inline-block;
   text-align: center;
-  padding: 1rem;
+  padding: 1rem 2rem;
   background-color: var(--color-background-lighter);
   border-radius: 8px;
   border: 2px solid var(--color-warning-dark);
-  margin-bottom: 1rem;
+  margin: 0 auto 1rem;
 }
 
 .countdown-time {
@@ -42,7 +44,7 @@
 }
 
 .session-expiry-actions {
-  padding: 1rem 0 0;
+  padding: 1rem 1.5rem 1rem 0;
   gap: 1rem;
 }
 
