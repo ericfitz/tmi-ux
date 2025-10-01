@@ -269,6 +269,8 @@ export class AppDfdOrchestrator {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
+      userEmail: this.authService.userEmail,
+      userName: this.authService.username,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -816,6 +818,8 @@ export class AppDfdOrchestrator {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
+      userEmail: this.authService.userEmail,
+      userName: this.authService.username,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -1124,6 +1128,8 @@ export class AppDfdOrchestrator {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
+      userEmail: this.authService.userEmail,
+      userName: this.authService.username,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -1148,6 +1154,8 @@ export class AppDfdOrchestrator {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
+      userEmail: this.authService.userEmail,
+      userName: this.authService.username,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -1176,6 +1184,8 @@ export class AppDfdOrchestrator {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
+      userEmail: this.authService.userEmail,
+      userName: this.authService.username,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };

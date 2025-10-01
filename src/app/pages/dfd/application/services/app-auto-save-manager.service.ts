@@ -25,6 +25,8 @@ export interface AutoSaveContext {
   readonly diagramId: string;
   readonly threatModelId: string;
   readonly userId: string;
+  readonly userEmail: string;
+  readonly userName?: string;
   readonly diagramData: any;
   readonly preferredStrategy?: string;
 }
@@ -226,6 +228,8 @@ export class AppAutoSaveManager {
       metadata: {
         threatModelId: context.threatModelId,
         userId: context.userId,
+        userEmail: context.userEmail,
+        userName: context.userName,
         saveType: 'manual',
         timestamp: Date.now(),
       },
@@ -517,6 +521,8 @@ export class AppAutoSaveManager {
       metadata: {
         threatModelId: context.threatModelId,
         userId: context.userId,
+        userEmail: context.userEmail,
+        userName: context.userName,
         saveType: 'auto',
         timestamp: Date.now(),
       },
