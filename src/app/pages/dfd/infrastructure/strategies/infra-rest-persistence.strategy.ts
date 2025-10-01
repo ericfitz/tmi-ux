@@ -10,6 +10,7 @@ import { map, catchError } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import {
   PersistenceStrategy,
   SaveOperation,
@@ -29,6 +30,7 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
     private readonly http: HttpClient,
     private readonly logger: LoggerService,
     private readonly diagramService: AppDiagramService,
+    private readonly threatModelService: ThreatModelService,
   ) {
     this.logger.debug('InfraRestPersistenceStrategy initialized');
   }
@@ -38,19 +40,36 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
       diagramId: operation.diagramId,
     });
 
-    // For now, simulate a successful save since we don't have the actual API endpoint
-    // In a real implementation, this would POST to /api/diagrams/{id}
-    return of({
-      success: true,
-      operationId: `save-${Date.now()}`,
-      diagramId: operation.diagramId,
-      timestamp: Date.now(),
-    }).pipe(
-      map(result => {
+    // Extract threatModelId from metadata
+    const threatModelId = operation.metadata?.['threatModelId'];
+    if (!threatModelId) {
+      const errorMessage = 'Threat model ID is required for saving diagram';
+      this.logger.error(errorMessage, { diagramId: operation.diagramId });
+      return of({
+        success: false,
+        operationId: `save-${Date.now()}`,
+        diagramId: operation.diagramId,
+        timestamp: Date.now(),
+        error: errorMessage,
+      });
+    }
+
+    // Convert the diagram data to cells format
+    // operation.data should already be in the format { nodes: [], edges: [] }
+    const cells = this._convertDataToCells(operation.data);
+
+    // Use the threatModelService to save via PATCH
+    return this.threatModelService.patchDiagramCells(threatModelId, operation.diagramId, cells).pipe(
+      map(() => {
         this.logger.debug('REST save completed successfully', {
           diagramId: operation.diagramId,
         });
-        return result;
+        return {
+          success: true,
+          operationId: `save-${Date.now()}`,
+          diagramId: operation.diagramId,
+          timestamp: Date.now(),
+        };
       }),
       catchError(error => {
         const errorMessage = `REST save failed: ${error.message || 'Unknown error'}`;
@@ -67,6 +86,19 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
         });
       }),
     );
+  }
+
+  private _convertDataToCells(data: any): any[] {
+    // Convert from { nodes: [], edges: [] } to cells array format
+    const nodes = (data.nodes || []).map((node: any) => ({
+      ...node,
+      type: 'node',
+    }));
+    const edges = (data.edges || []).map((edge: any) => ({
+      ...edge,
+      type: 'edge',
+    }));
+    return [...nodes, ...edges];
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {

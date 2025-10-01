@@ -54,3 +54,7 @@ localization_dedup_plan.*
 .ck/
 .ck/**
 *.log
+
+# local copy of server docs
+docs-server
+docs-server/**

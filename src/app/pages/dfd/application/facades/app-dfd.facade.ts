@@ -353,6 +353,13 @@ export class AppDfdFacade {
     }
   }
 
+  /**
+   * Get observable for history modifications (for auto-save)
+   */
+  get historyModified$(): Observable<void> {
+    return this.infraX6GraphAdapter.historyModified$;
+  }
+
   // ========================================
   // Visual Operations
   // ========================================

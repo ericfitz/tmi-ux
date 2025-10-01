@@ -15,6 +15,7 @@ import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import '@antv/x6-plugin-export';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { AuthService } from '../../../../auth/services/auth.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import {
   AppPersistenceCoordinator,
@@ -102,6 +103,7 @@ export class AppDfdOrchestrator {
 
   constructor(
     private readonly logger: LoggerService,
+    private readonly authService: AuthService,
     private readonly appGraphOperationManager: AppGraphOperationManager,
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appAutoSaveManager: AppAutoSaveManager,
@@ -265,7 +267,8 @@ export class AppDfdOrchestrator {
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
-      userId: 'current-user', // In real implementation, get from auth service
+      threatModelId: this._initParams.threatModelId,
+      userId: this.authService.userId,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -811,7 +814,8 @@ export class AppDfdOrchestrator {
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
-      userId: 'current-user',
+      threatModelId: this._initParams.threatModelId,
+      userId: this.authService.userId,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -1030,7 +1034,7 @@ export class AppDfdOrchestrator {
       graph: this.dfdInfrastructure.getGraph(),
       diagramId: params.diagramId,
       threatModelId: params.threatModelId,
-      userId: 'current-user', // In real implementation, get from auth service
+      userId: this.authService.userId, // In real implementation, get from auth service
       isCollaborating: params.collaborationEnabled,
       permissions: ['read', 'write'],
       suppressValidation: false,
@@ -1068,6 +1072,12 @@ export class AppDfdOrchestrator {
     this.appGraphOperationManager.operationCompleted$.subscribe(event => {
       this._markUnsavedChanges();
       this._triggerAutoSave(event.operation, event.result);
+    });
+
+    // Listen to history modifications and trigger auto-save
+    this.dfdInfrastructure.historyModified$.subscribe(() => {
+      this._markUnsavedChanges();
+      this._triggerAutoSaveFromHistory();
     });
 
     // Listen to auto-save completed events
@@ -1112,7 +1122,32 @@ export class AppDfdOrchestrator {
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
-      userId: 'current-user',
+      threatModelId: this._initParams.threatModelId,
+      userId: this.authService.userId,
+      diagramData: this._getGraphData(),
+      preferredStrategy: 'websocket',
+    };
+
+    if (this.appAutoSaveManager.trigger) {
+      this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
+    }
+  }
+
+  private _triggerAutoSaveFromHistory(): void {
+    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
+      return;
+    }
+
+    const triggerEvent = {
+      type: 'operation-completed' as const,
+      operationType: 'history-change',
+      timestamp: Date.now(),
+    };
+
+    const autoSaveContext = {
+      diagramId: this._initParams.diagramId,
+      threatModelId: this._initParams.threatModelId,
+      userId: this.authService.userId,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };
@@ -1139,7 +1174,8 @@ export class AppDfdOrchestrator {
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
-      userId: 'current-user',
+      threatModelId: this._initParams.threatModelId,
+      userId: this.authService.userId,
       diagramData: this._getGraphData(),
       preferredStrategy: 'websocket',
     };

@@ -23,6 +23,7 @@ import {
 // Simple interfaces that match what the tests expect
 export interface AutoSaveContext {
   readonly diagramId: string;
+  readonly threatModelId: string;
   readonly userId: string;
   readonly diagramData: any;
   readonly preferredStrategy?: string;
@@ -223,6 +224,7 @@ export class AppAutoSaveManager {
       data: context.diagramData,
       strategyType: context.preferredStrategy,
       metadata: {
+        threatModelId: context.threatModelId,
         userId: context.userId,
         saveType: 'manual',
         timestamp: Date.now(),
@@ -513,6 +515,7 @@ export class AppAutoSaveManager {
       data: context.diagramData,
       strategyType: context.preferredStrategy,
       metadata: {
+        threatModelId: context.threatModelId,
         userId: context.userId,
         saveType: 'auto',
         timestamp: Date.now(),
