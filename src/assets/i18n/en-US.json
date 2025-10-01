@@ -224,24 +224,27 @@
     "stopPresenting": "Stop Presenting"
   },
   "privacy": {
-    "changesContent": "The Operator may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
+    "changesContent": "We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
     "changesTitle": "Changes to This Policy",
-    "complianceContent": "The Operator will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
+    "complianceContent": "We will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
     "complianceTitle": "Legal Compliance",
     "contactContent": {
-      "part1": "If you have any questions about this Privacy Policy, please feel free to contact the operator of this web site via the contact information on the ",
+      "part1": "If you have any questions about this Privacy Policy, please feel free to contact the Operator of this web site via the contact information on the ",
       "part2": " page."
     },
     "contactTitle": "Contact Us",
-    "dataContent": "The Operator does not collect, store, or process any personal data from users. The Operator does not track your activities, store your information, or share any data about you with third parties for any purpose.",
+    "dataContent": "The web site uses OpenID Connect and OAuth to secure your data, storing only your user ID, email, and name from the provider for login and display purposes.",
+    "dataContent2": "Your threat models are safely stored and may be used to enhance our service.",
+    "dataContent3": "We keep logs only as long as needed for support and operations, then delete them automatically.",
+    "dataContent4": "Your data stays private- we do not sell or share it with anyone, except as required by law.",
     "dataTitle": "No Data Collection or Storage",
     "intro1": {
-      "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the ",
+      "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the Operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
-    "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
+    "intro2": "We are committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "lastUpdated": "Last updated: ",
-    "lastUpdatedDate": "2025-04-06",
+    "lastUpdatedDate": "2025-09-30",
     "title": "Privacy Policy"
   },
   "sessionExpiry": {
@@ -333,25 +336,25 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "If you have any questions about these Terms, please feel free to contact the operator of this web site via the contact information on the ",
+      "part1": "If you have any questions about these Terms, please feel free to contact the Operator of this web site via the contact information on the ",
       "part2": " page."
     },
     "intro": {
-      "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the operator listed on the ",
+      "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the Operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
     "lastUpdated": "Last updated: ",
-    "lastUpdatedDate": "2025-04-06",
+    "lastUpdatedDate": "2025-09-30",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
       "title": "1. Acceptance of Terms"
     },
     "section2": {
-      "content": "You may use the website for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the website or its underlying systems.",
-      "title": "2. Use of the Website"
+      "content": "You may use the web site for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the web site or its underlying systems.",
+      "title": "2. Use of the Web Site"
     },
     "section3": {
-      "content": "The website is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.",
+      "content": "The web site is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.",
       "title": "3. No Warranty"
     },
     "section4": {
@@ -361,16 +364,16 @@
     "section5": {
       "content": {
         "part1": "This website runs the TMI open source software. Its source code is available at the link provided on the ",
-        "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. The operator of this web site may not be affiliated with the TMI project or its creators."
+        "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the Operator of this web site is not affiliated with the TMI project or its creators."
       },
       "title": "5. Open Source Software"
     },
     "section6": {
-      "content": "The Operator may update these Terms at any time. Continued use of the website after changes constitutes acceptance of the updated Terms.",
+      "content": "The Operator may update these Terms at any time. Continued use of the web site after changes constitutes acceptance of the updated Terms.",
       "title": "6. Changes to Terms"
     },
     "section7": {
-      "content": "The Operator reserves the right to suspend or terminate access to the website at The Operator's discretion, without notice, for any reason.",
+      "content": "The Operator reserves the right to suspend or terminate access to the web site at The Operator's discretion, without notice, for any reason.",
       "title": "7. Termination"
     },
     "section8": {
