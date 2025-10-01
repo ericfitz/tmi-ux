@@ -12,10 +12,10 @@
         <mat-label>{{ 'threatModels.sourceCodeName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
         <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('required')">
-          {{ 'threatModels.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
         <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('maxlength')">
-          {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
         </mat-error>
       </mat-form-field>
 
@@ -29,7 +29,7 @@
           tabindex="2"
         ></textarea>
         <mat-error *ngIf="sourceCodeForm.get('description')?.hasError('maxlength')">
-          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
         </mat-error>
       </mat-form-field>
 
@@ -42,7 +42,7 @@
           <mat-option value="other">{{ 'common.other' | transloco }}</mat-option>
         </mat-select>
         <mat-error *ngIf="sourceCodeForm.get('type')?.hasError('required')">
-          {{ 'threatModels.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
       </mat-form-field>
 
@@ -50,10 +50,10 @@
         <mat-label>{{ 'threatModels.sourceCodeUrl' | transloco }}</mat-label>
         <input matInput formControlName="url" type="url" tabindex="4" />
         <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('required')">
-          {{ 'threatModels.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
         <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('maxlength')">
-          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
         </mat-error>
       </mat-form-field>
 
@@ -74,7 +74,7 @@
           <input matInput formControlName="refValue" tabindex="6" />
           <mat-hint>{{ 'threatModels.sourceCodeRefValueHint' | transloco }}</mat-hint>
           <mat-error *ngIf="sourceCodeForm.get('refValue')?.hasError('maxlength')">
-            {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
           </mat-error>
         </mat-form-field>
 
@@ -83,7 +83,7 @@
           <input matInput formControlName="subPath" tabindex="7" />
           <mat-hint>{{ 'threatModels.sourceCodeSubPathHint' | transloco }}</mat-hint>
           <mat-error *ngIf="sourceCodeForm.get('subPath')?.hasError('maxlength')">
-            {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
           </mat-error>
         </mat-form-field>
       </div>

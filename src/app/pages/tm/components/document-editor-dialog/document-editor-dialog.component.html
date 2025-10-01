@@ -12,10 +12,10 @@
         <mat-label>{{ 'threatModels.documentName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
         <mat-error *ngIf="documentForm.get('name')?.hasError('required')">
-          {{ 'threatModels.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
         <mat-error *ngIf="documentForm.get('name')?.hasError('maxlength')">
-          {{ 'threatModels.validation.maxLength' | transloco: { max: 256 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
         </mat-error>
       </mat-form-field>
 
@@ -23,10 +23,10 @@
         <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
         <input matInput formControlName="url" type="url" tabindex="2" />
         <mat-error *ngIf="documentForm.get('url')?.hasError('required')">
-          {{ 'threatModels.validation.required' | transloco }}
+          {{ 'common.validation.required' | transloco }}
         </mat-error>
         <mat-error *ngIf="documentForm.get('url')?.hasError('maxlength')">
-          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
         </mat-error>
       </mat-form-field>
 
@@ -40,7 +40,7 @@
           tabindex="3"
         ></textarea>
         <mat-error *ngIf="documentForm.get('description')?.hasError('maxlength')">
-          {{ 'threatModels.validation.maxLength' | transloco: { max: 1024 } }}
+          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
         </mat-error>
       </mat-form-field>
     </div>

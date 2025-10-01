@@ -92,6 +92,10 @@ import {
   CellPropertiesDialogComponent,
   CellPropertiesDialogData,
 } from './cell-properties-dialog/cell-properties-dialog.component';
+import {
+  X6HistoryDialogComponent,
+  X6HistoryDialogData,
+} from './x6-history-dialog/x6-history-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -593,27 +597,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Get the X6 history information
-    const history = graph.history;
-    if (!history) {
-      this.logger.warn('Cannot show history: History not available on graph');
-      return;
-    }
+    // Open the X6 history dialog
+    const dialogData: X6HistoryDialogData = {
+      graph: graph,
+    };
 
-    // Create a simple alert dialog showing history info
-    const undoStackLength = history.undoStack ? history.undoStack.length : 0;
-    const redoStackLength = history.redoStack ? history.redoStack.length : 0;
-
-    const message = `History Information:\n\nUndo Stack: ${undoStackLength} operations\nRedo Stack: ${redoStackLength} operations\n\nTotal History Length: ${undoStackLength + redoStackLength}`;
-
-    // Use simple alert for now - can be replaced with a proper dialog later
-    alert(message);
-
-    this.logger.info('Showed X6 history information', {
-      undoStackLength,
-      redoStackLength,
-      totalHistory: undoStackLength + redoStackLength,
+    this.dialog.open(X6HistoryDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: dialogData,
     });
+
+    this.logger.info('Opened X6 history dialog');
   }
 
   onAddNode(nodeType: NodeType): void {
