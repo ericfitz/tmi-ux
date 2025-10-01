@@ -2,6 +2,7 @@
   "about": {
     "bugReport": "File a Bug: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "contactjurisdiction": "Legal Jurisdiction: ",
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
     "contacttitle": "Operated By",
@@ -16,6 +17,7 @@
     "opensourcetitle": "Open Source",
     "sourceCode": "Source Code: ",
     "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
     "sourcetitle": "TMI Application",
     "title": "About TMI"
   },
@@ -237,7 +239,7 @@
     "dataContent2": "Your threat models are safely stored and may be used to enhance our service.",
     "dataContent3": "We keep logs only as long as needed for support and operations, then delete them automatically.",
     "dataContent4": "Your data stays private- we do not sell or share it with anyone, except as required by law.",
-    "dataTitle": "No Data Collection or Storage",
+    "dataTitle": "Data Collection and Storage",
     "intro1": {
       "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the Operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
@@ -383,6 +385,8 @@
     "title": "Terms of Service"
   },
   "userPreferences": {
+    "colorBlindMode": "Color Blind Mode",
+    "deleteMyData": "Delete All My Data",
     "diagramAnimationEffects": "Diagram Animation Effects",
     "title": "User Preferences"
   }

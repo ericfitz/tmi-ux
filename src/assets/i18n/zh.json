@@ -2,6 +2,7 @@
   "about": {
     "bugReport": "提交错误：",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "contactjurisdiction": "法律管辖区：",
     "contactoperator": "运营者：",
     "contactoperatordetails": "运营者联系方式：",
     "contacttitle": "运营者",
@@ -16,6 +17,7 @@
     "opensourcetitle": "开源软件",
     "sourceCode": "源代码：",
     "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
     "sourcetitle": "TMI 应用程序",
     "title": "关于 TMI"
   },
@@ -224,24 +226,27 @@
     "stopPresenting": "停止演示"
   },
   "privacy": {
-    "changesContent": "运营商可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
+    "changesContent": "我们可能会不时更新本隐私政策。任何变更都将在本页上发布，并更新\"最后更新\"日期。",
     "changesTitle": "本政策的变更",
-    "complianceContent": "运营商只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
+    "complianceContent": "我们只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
     "complianceTitle": "法律合规",
     "contactContent": {
       "part1": "如果您对本隐私政策有任何疑问，请随时通过",
       "part2": "页面上的联系信息与本网站的运营商联系。"
     },
     "contactTitle": "联系我们",
-    "dataContent": "运营商不收集、存储或处理用户的任何个人数据。运营商不会跟踪您的活动，存储您的信息，或出于任何目的与第三方共享有关您的任何数据。",
-    "dataTitle": "无数据收集或存储",
+    "dataContent": "本网站使用OpenID Connect和OAuth来保护您的数据，仅存储来自提供商的用户ID、电子邮件和姓名，用于登录和显示目的。",
+    "dataContent2": "您的威胁模型将被安全存储，并可能用于改进我们的服务。",
+    "dataContent3": "我们仅在支持和运营需要时保留日志，然后自动删除。",
+    "dataContent4": "您的数据保持私密 - 我们不会向任何人出售或共享，除非法律要求。",
+    "dataTitle": "数据收集和存储",
     "intro1": {
       "part1": "本网站是由本网站",
       "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序(\"TMI\")的一个实例。"
     },
-    "intro2": "运营商致力于保护您的隐私。本隐私政策解释了如何处理您的信息。",
+    "intro2": "我们致力于保护您的隐私。本隐私政策解释了如何处理您的信息。",
     "lastUpdated": "最后更新: ",
-    "lastUpdatedDate": "2025-04-06",
+    "lastUpdatedDate": "2025-09-30",
     "title": "隐私政策"
   },
   "sessionExpiry": {
@@ -341,13 +346,13 @@
       "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序的一个实例。"
     },
     "lastUpdated": "最后更新: ",
-    "lastUpdatedDate": "2025-04-06",
+    "lastUpdatedDate": "2025-09-30",
     "section1": {
       "content": "通过访问和使用本网站，您接受并同意受本协议的条款和规定的约束。如果您不同意这些条款，请不要使用本网站。",
       "title": "1. 接受条款"
     },
     "section2": {
-      "content": "本网站按原样提供，利用TMI，一个根据Apache 2.0许可证授权的开源软件。您只能将网站用于合法目的。您同意不滥用、破坏或尝试未经授权访问网站或其底层系统。",
+      "content": "您只能将网站用于合法目的。您同意不滥用、破坏或尝试未经授权访问网站或其底层系统。",
       "title": "2. 网站使用"
     },
     "section3": {
@@ -361,7 +366,7 @@
     "section5": {
       "content": {
         "part1": "本网站运行TMI软件，其源代码可在本网站",
-        "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。本网站的运营商可能与TMI项目或其创建者无关。"
+        "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。除非另有说明，本网站的运营商与TMI项目或其创建者无关。"
       },
       "title": "5. 开源软件"
     },
@@ -380,6 +385,8 @@
     "title": "服务条款"
   },
   "userPreferences": {
+    "colorBlindMode": "色盲模式",
+    "deleteMyData": "删除我的所有数据",
     "diagramAnimationEffects": "图表动画效果",
     "title": "用户偏好"
   }

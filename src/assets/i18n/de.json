@@ -2,6 +2,7 @@
   "about": {
     "bugReport": "Fehler melden: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "contactjurisdiction": "Rechtliche Zuständigkeit: ",
     "contactoperator": "Betreiber: ",
     "contactoperatordetails": "Kontaktinformation des Betreibers: ",
     "contacttitle": "Betrieben von",
@@ -16,6 +17,7 @@
     "opensourcetitle": "Open Source",
     "sourceCode": "Quellcode: ",
     "sourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
     "sourcetitle": "TMI-Anwendung",
     "title": "Über TMI"
   },
@@ -224,24 +226,27 @@
     "stopPresenting": "Präsentation beenden"
   },
   "privacy": {
-    "changesContent": "Der Betreiber kann diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
+    "changesContent": "Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite mit einem aktualisierten \"Zuletzt aktualisiert\"-Datum veröffentlicht.",
     "changesTitle": "Änderungen an dieser Richtlinie",
-    "complianceContent": "Der Betreiber wird Informationen nur dann offenlegen, wenn er gesetzlich dazu verpflichtet ist, z.B. als Reaktion auf eine gültige behördliche Anordnung oder Vorladung. In solchen Fällen wird der Betreiber die geltenden gesetzlichen Verpflichtungen einhalten.",
+    "complianceContent": "Wir werden Informationen nur dann offenlegen, wenn wir gesetzlich dazu verpflichtet sind, z.B. als Reaktion auf eine gültige behördliche Anordnung oder Vorladung. In solchen Fällen wird der Betreiber die geltenden gesetzlichen Verpflichtungen einhalten.",
     "complianceTitle": "Gesetzliche Konformität",
     "contactContent": {
       "part1": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der ",
       "part2": "-Seite an den Betreiber dieser Website."
     },
     "contactTitle": "Kontaktiere uns",
-    "dataContent": "Der Betreiber sammelt, speichert oder verarbeitet keine personenbezogenen Daten von Benutzern. Der Betreiber verfolgt nicht Ihre Aktivitäten, speichert Ihre Informationen nicht und teilt keine Daten über Sie mit Dritten für irgendeinen Zweck.",
-    "dataTitle": "Keine Datenerfassung oder -speicherung",
+    "dataContent": "Die Website verwendet OpenID Connect und OAuth zur Sicherung Ihrer Daten und speichert nur Ihre Benutzer-ID, E-Mail und Ihren Namen vom Anbieter für Anmelde- und Anzeigezwecke.",
+    "dataContent2": "Ihre Bedrohungsmodelle werden sicher gespeichert und können zur Verbesserung unseres Dienstes verwendet werden.",
+    "dataContent3": "Wir bewahren Protokolle nur so lange auf, wie sie für Support und Betrieb benötigt werden, und löschen sie dann automatisch.",
+    "dataContent4": "Ihre Daten bleiben privat - wir verkaufen oder teilen sie mit niemandem, außer wie gesetzlich vorgeschrieben.",
+    "dataTitle": "Datenerfassung und Speicherung",
     "intro1": {
       "part1": "Diese Website ist eine Instanz einer Open-Source-Webanwendung (\"TMI\"), die vom auf der ",
       "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
     },
-    "intro2": "Der Betreiber verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",
+    "intro2": "Wir verpflichten uns zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",
     "lastUpdated": "Zuletzt aktualisiert: ",
-    "lastUpdatedDate": "2025-04-06",
+    "lastUpdatedDate": "2025-09-30",
     "title": "Datenschutzrichtlinie"
   },
   "sessionExpiry": {
@@ -341,13 +346,13 @@
       "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
     },
     "lastUpdated": "Zuletzt aktualisiert: ",
-    "lastUpdatedDate": "2025-04-06",
+    "lastUpdatedDate": "2025-09-30",
     "section1": {
       "content": "Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich damit einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie diese Website bitte nicht.",
       "title": "1. Annahme der Bedingungen"
     },
     "section2": {
-      "content": "Diese Website wird im Ist-Zustand bereitgestellt und verwendet TMI, eine Open-Source-Software, die unter der Apache 2.0-Lizenz lizenziert ist. Sie dürfen die Website nur für rechtmäßige Zwecke nutzen. Sie verpflichten sich, die Website oder ihre zugrunde liegenden Systeme nicht zu missbrauchen, zu stören oder zu versuchen, unbefugten Zugriff darauf zu erlangen.",
+      "content": "Sie dürfen die Website nur für rechtmäßige Zwecke nutzen. Sie verpflichten sich, die Website oder ihre zugrunde liegenden Systeme nicht zu missbrauchen, zu stören oder zu versuchen, unbefugten Zugriff darauf zu erlangen.",
       "title": "2. Nutzung der Website"
     },
     "section3": {
@@ -361,7 +366,7 @@
     "section5": {
       "content": {
         "part1": "Diese Website verwendet die TMI-Software, und ihr Quellcode ist über den auf der ",
-        "part2": "-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Der Betreiber dieser Website ist möglicherweise nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden."
+        "part2": "-Seite dieser Website angegebenen Link verfügbar. Ihre Nutzung der Software unterliegt ihren Open-Source-Lizenzbedingungen. Wir sind nicht für die Software selbst verantwortlich, sondern nur für den Betrieb dieser Instanz. Sofern nicht anders angegeben, ist der Betreiber dieser Website nicht mit dem TMI-Projekt oder seinen Entwicklern verbunden."
       },
       "title": "5. Open-Source-Software"
     },
@@ -380,6 +385,8 @@
     "title": "Nutzungsbedingungen"
   },
   "userPreferences": {
+    "colorBlindMode": "Farbblindmodus",
+    "deleteMyData": "Alle meine Daten löschen",
     "diagramAnimationEffects": "Diagramm-Animationseffekte",
     "title": "Benutzereinstellungen"
   }

@@ -46,6 +46,16 @@
     </p>
 
     <p class="page-content">
+      {{ 'about.sourceCode' | transloco: { url: '' }
+      }}<a
+        href="{{ 'about.sourceCodeUrl2' | transloco }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'about.sourceCodeUrl2' | transloco }}</a
+      >
+    </p>
+
+    <p class="page-content">
       {{ 'about.bugReport' | transloco: { url: '' }
       }}<a
         href="{{ 'about.bugReportUrl' | transloco }}"
