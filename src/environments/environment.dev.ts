@@ -12,6 +12,7 @@ export const environment: Environment = {
   authTokenExpiryMinutes: 1440, // 24 hours for easier development
   operatorName: 'TMI Project (Development Demo)',
   operatorContact: 'github@efitz.net',
+  operatorJurisdiction: 'Florida, United States of America',
   serverPort: 4200,
   serverInterface: 'localhost',
   enableTLS: false,

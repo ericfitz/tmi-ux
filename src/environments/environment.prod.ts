@@ -27,6 +27,7 @@ export const environment: Environment = {
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator',
   operatorContact: 'contact@example.com',
+  operatorJurisdiction: '',
   oauth: {},
   securityConfig: {
     enableHSTS: true,

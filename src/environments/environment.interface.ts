@@ -67,6 +67,13 @@ export interface Environment {
   operatorContact: string;
 
   /**
+   * Jurisdiction information for the operator of this TMI instance
+   * Example: 'United States', 'European Union', 'California, USA'
+   * Default: ''
+   */
+  operatorJurisdiction: string;
+
+  /**
    * Port on which the application server will listen
    * Default: 4200
    */

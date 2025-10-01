@@ -11,6 +11,7 @@ export const environment: Environment = {
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Test)',
   operatorContact: 'contact@example.com',
+  operatorJurisdiction: '',
   oauth: {
     local: {
       enabled: true, // Enable local provider for testing

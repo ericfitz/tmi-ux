@@ -97,6 +97,21 @@ export const environment: Environment = {
   operatorContact: 'contact@example.com',
 
   /**
+   * Jurisdiction information for the operator of this TMI instance
+   * This will be displayed on the About page to indicate the
+   * legal jurisdiction under which the service operates
+   *
+   * Examples:
+   * - 'United States'
+   * - 'European Union'
+   * - 'California, USA'
+   * - 'United Kingdom'
+   *
+   * Default: ''
+   */
+  operatorJurisdiction: '',
+
+  /**
    * Port on which the application server will listen
    * This controls the port number used by the Angular dev server
    *

@@ -13,6 +13,7 @@ import { OperatorService } from '../../core/services/operator.service';
 export class AboutComponent implements OnInit {
   operatorName = '';
   operatorContact = '';
+  operatorJurisdiction = '';
   openSourceProjects = [
     { name: 'AntV/X6', url: 'https://x6.antv.vision/en' },
     { name: 'TypeScript', url: 'https://www.typescriptlang.org/' },
@@ -30,5 +31,6 @@ export class AboutComponent implements OnInit {
   ngOnInit(): void {
     this.operatorName = this.operatorService.getOperatorName();
     this.operatorContact = this.operatorService.getOperatorContact();
+    this.operatorJurisdiction = this.operatorService.getOperatorJurisdiction();
   }
 }

@@ -12,6 +12,7 @@ export const environment: Environment = {
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Staging)',
   operatorContact: 'contact@example.com',
+  operatorJurisdiction: '',
   oauth: {
     local: {
       enabled: false, // Disable local provider in staging

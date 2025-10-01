@@ -23,6 +23,13 @@ export class OperatorService {
   }
 
   /**
+   * Get the jurisdiction information for the operator of this TMI instance
+   */
+  getOperatorJurisdiction(): string {
+    return environment.operatorJurisdiction;
+  }
+
+  /**
    * Check if operator information is configured (non-empty)
    */
   hasOperatorInfo(): boolean {
