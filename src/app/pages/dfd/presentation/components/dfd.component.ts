@@ -741,7 +741,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.exportDiagram(format).subscribe({
       next: blob => {
         // Create download link
-        const url = URL.createObjectURL(blob as Blob);
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.download = `${this.diagramName || 'diagram'}.${format}`;

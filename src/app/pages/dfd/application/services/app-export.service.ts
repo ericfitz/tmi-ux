@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
-import { SvgOptimizationService } from '../../services/svg-optimization.service';
+import { SvgOptimizationService } from '../../../dfd/services/svg-optimization.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
 /**
  * Service responsible for diagram export functionality in DFD diagrams
+ * Provides helper methods for export preparation and SVG optimization
  */
 @Injectable({
   providedIn: 'root',
@@ -14,17 +14,21 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
 export class AppExportService {
   constructor(
     private logger: LoggerService,
-    private infraX6GraphAdapter: InfraX6GraphAdapter,
     private svgOptimizationService: SvgOptimizationService,
   ) {}
 
   /**
    * Export the diagram to the specified format
+   * @deprecated This method is deprecated. Use the orchestrator's export method instead.
    */
-  exportDiagram(format: ExportFormat, threatModelName?: string, diagramName?: string): void {
-    const graph = this.infraX6GraphAdapter.getGraph();
+  exportDiagram(
+    format: ExportFormat,
+    threatModelName?: string,
+    diagramName?: string,
+    graph?: any
+  ): void {
     if (!graph) {
-      this.logger.warn('Cannot export - graph not initialized');
+      this.logger.warn('Cannot export - graph not provided');
       return;
     }
 

@@ -22,6 +22,7 @@ import {
 } from './app-persistence-coordinator.service';
 import { AppAutoSaveManager } from './app-auto-save-manager.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
+import { AppExportService } from './app-export.service';
 import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
 import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
 import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
@@ -70,7 +71,7 @@ export interface DfdStats {
 }
 
 export interface ExportFormat {
-  readonly format: 'svg' | 'png' | 'pdf' | 'json';
+  readonly format: 'svg' | 'png' | 'jpeg' | 'pdf' | 'json';
   readonly options?: Record<string, any>;
 }
 
@@ -105,6 +106,7 @@ export class AppDfdOrchestrator {
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appAutoSaveManager: AppAutoSaveManager,
     private readonly appDiagramLoadingService: AppDiagramLoadingService,
+    private readonly appExportService: AppExportService,
     private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
     private readonly restStrategy: InfraRestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
@@ -366,7 +368,7 @@ export class AppDfdOrchestrator {
   /**
    * Export diagram in various formats
    */
-  export(format: ExportFormat): Observable<string | Blob> {
+  export(format: ExportFormat): Observable<Blob> {
     const graph = this.getGraph;
     if (!graph) {
       return throwError(() => new Error('DFD system not initialized'));
@@ -376,14 +378,77 @@ export class AppDfdOrchestrator {
 
     switch (format.format) {
       case 'svg': {
-        const svgString = graph.toSVG();
-        return of(new Blob([svgString], { type: 'image/svg+xml' }));
+        if (graph.toSVG) {
+          return new Observable<Blob>(observer => {
+            try {
+              // Prepare export with proper viewBox calculation
+              const exportPrep = this.appExportService.prepareImageExport(graph);
+              if (!exportPrep) {
+                observer.error(new Error('Failed to prepare SVG export - no cells to export'));
+                return;
+              }
+
+              graph.toSVG((svgString: string) => {
+                try {
+                  // Optimize SVG for export
+                  const optimizedSvg = this.appExportService.processSvg(
+                    svgString,
+                    false,
+                    exportPrep.viewBox
+                  );
+                  const blob = new Blob([optimizedSvg], { type: 'image/svg+xml' });
+                  observer.next(blob);
+                  observer.complete();
+                } catch (error) {
+                  observer.error(error);
+                }
+              }, exportPrep.exportOptions);
+            } catch (error) {
+              observer.error(error);
+            }
+          });
+        }
+        return throwError(() => new Error('SVG export not supported by graph library'));
       }
       case 'png': {
         if (graph.toPNG) {
-          return of(graph.toPNG());
+          return new Observable<Blob>(observer => {
+            try {
+              graph.toPNG((dataUri: string) => {
+                try {
+                  const blob = this._dataUriToBlob(dataUri, 'image/png');
+                  observer.next(blob);
+                  observer.complete();
+                } catch (error) {
+                  observer.error(error);
+                }
+              }, { backgroundColor: 'white', padding: 20, quality: 1 });
+            } catch (error) {
+              observer.error(error);
+            }
+          });
         }
         return throwError(() => new Error('PNG export not supported by graph library'));
+      }
+      case 'jpeg': {
+        if (graph.toJPEG) {
+          return new Observable<Blob>(observer => {
+            try {
+              graph.toJPEG((dataUri: string) => {
+                try {
+                  const blob = this._dataUriToBlob(dataUri, 'image/jpeg');
+                  observer.next(blob);
+                  observer.complete();
+                } catch (error) {
+                  observer.error(error);
+                }
+              }, { backgroundColor: 'white', padding: 20, quality: 0.8 });
+            } catch (error) {
+              observer.error(error);
+            }
+          });
+        }
+        return throwError(() => new Error('JPEG export not supported by graph library'));
       }
       case 'json': {
         const jsonString = JSON.stringify(this._getGraphData(), null, 2);
@@ -866,7 +931,7 @@ export class AppDfdOrchestrator {
   /**
    * Export aliases
    */
-  exportDiagram(format: string): Observable<string | Blob> {
+  exportDiagram(format: string): Observable<Blob> {
     return this.export({ format: format as any });
   }
 
@@ -1107,6 +1172,21 @@ export class AppDfdOrchestrator {
         data: edge.getData(),
       })),
     };
+  }
+
+  /**
+   * Convert data URI to Blob for image exports
+   */
+  private _dataUriToBlob(dataUri: string, mimeType: string): Blob {
+    const byteString = atob(dataUri.split(',')[1]);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([arrayBuffer], { type: mimeType });
   }
 
   private _markUnsavedChanges(): void {

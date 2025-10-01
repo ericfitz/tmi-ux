@@ -43,7 +43,8 @@
       "Bash(git restore:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr checkout:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Read(//tmp/**)"
     ]
   },
   "enableAllProjectMcpServers": false

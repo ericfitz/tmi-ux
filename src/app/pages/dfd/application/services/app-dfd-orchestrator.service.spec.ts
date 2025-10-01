@@ -27,8 +27,14 @@ vi.mock('@antv/x6', () => {
     getSelectedCells: vi.fn().mockReturnValue([]),
 
     // Export methods
-    toSVG: vi.fn().mockReturnValue('<svg></svg>'),
-    toPNG: vi.fn().mockReturnValue(new Blob()),
+    toSVG: vi.fn((callback: (svgString: string) => void) => {
+      // Simulate X6's callback-based API
+      callback('<svg></svg>');
+    }),
+    toPNG: vi.fn((callback: (dataUri: string) => void) => {
+      // Simulate X6's callback-based API with a base64 data URI
+      callback('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+    }),
 
     // Mock properties that don't exist
     selectAll: vi.fn(),
@@ -664,10 +670,11 @@ describe('AppDfdOrchestrator', () => {
 
     it('should export diagram as PNG', () => {
       const mockGraph = {
-        toPNG: vi.fn(),
+        toPNG: vi.fn((callback: (dataUri: string) => void) => {
+          // Simulate X6's callback-based API with a base64 data URI
+          callback('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+        }),
       };
-      const mockBlob = new Blob(['png data'], { type: 'image/png' });
-      mockGraph.toPNG.mockReturnValue(mockBlob);
 
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
 
@@ -676,6 +683,10 @@ describe('AppDfdOrchestrator', () => {
           next: (blob: Blob) => {
             expect(blob.type).toBe('image/png');
             expect(mockGraph.toPNG).toHaveBeenCalled();
+            expect(mockGraph.toPNG).toHaveBeenCalledWith(
+              expect.any(Function),
+              expect.objectContaining({ backgroundColor: 'white', padding: 20, quality: 1 })
+            );
             resolve();
           },
           error: reject,
@@ -685,7 +696,10 @@ describe('AppDfdOrchestrator', () => {
 
     it('should export diagram as SVG', () => {
       const mockGraph = {
-        toSVG: vi.fn().mockReturnValue('<svg>test</svg>'),
+        toSVG: vi.fn((callback: (svgString: string) => void) => {
+          // Simulate X6's callback-based API
+          callback('<svg>test</svg>');
+        }),
       };
 
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
@@ -695,6 +709,10 @@ describe('AppDfdOrchestrator', () => {
           next: (blob: Blob) => {
             expect(blob.type).toBe('image/svg+xml');
             expect(mockGraph.toSVG).toHaveBeenCalled();
+            expect(mockGraph.toSVG).toHaveBeenCalledWith(
+              expect.any(Function),
+              expect.objectContaining({ padding: 20 })
+            );
             resolve();
           },
           error: reject,
