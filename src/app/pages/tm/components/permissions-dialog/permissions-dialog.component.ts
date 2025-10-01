@@ -157,13 +157,13 @@ export interface PermissionsDialogData {
         border-radius: 4px;
         padding: 8px 12px;
         margin-bottom: 12px;
-        font-family: Roboto, Arial, sans-serif;
+        font-family: var(--font-family-primary);
       }
 
       .info-field {
         display: flex;
         margin-bottom: 6px;
-        font-size: 14px;
+        font-size: var(--font-size-base);
         align-items: center;
       }
 
@@ -172,7 +172,7 @@ export interface PermissionsDialogData {
       }
 
       .info-label {
-        font-weight: 500;
+        font-weight: var(--font-weight-medium);
         min-width: 120px;
         color: rgb(0 0 0 / 70%);
       }
@@ -208,7 +208,7 @@ export interface PermissionsDialogData {
 
       .table-field input,
       .table-field mat-select {
-        font-size: 14px;
+        font-size: var(--font-size-base);
       }
 
       /* Make role column narrower */

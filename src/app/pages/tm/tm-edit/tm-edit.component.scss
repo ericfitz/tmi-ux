@@ -107,10 +107,10 @@ mat-card-header {
   margin-bottom: 8px;
 
   .mat-mdc-card-title {
-    font-family: Roboto, Arial, sans-serif;
-    font-size: 16px;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-md);
     margin-bottom: 0;
-    font-weight: bold;
+    font-weight: var(--font-weight-bold);
   }
 }
 
@@ -141,7 +141,7 @@ mat-card-header {
   border-radius: 4px;
   padding: 8px 12px;
   margin-bottom: 12px;
-  font-family: Roboto, Arial, sans-serif;
+  font-family: var(--font-family-primary);
 }
 
 .info-field {
@@ -181,7 +181,7 @@ mat-card-header {
 .info-value {
   color: rgb(0 0 0 / 87%);
   flex: 1;
-  font-family: Roboto, Arial, sans-serif;
+  font-family: var(--font-family-primary);
 }
 
 .copy-button {
@@ -195,10 +195,10 @@ mat-card-header {
   vertical-align: middle;
 
   .mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
+    font-size: var(--icon-size-sm);
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    line-height: var(--icon-size-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -207,9 +207,9 @@ mat-card-header {
 
 // Specific styling for external edit button icons
 .issue-url-container .external-edit-button .mat-icon {
-  font-size: 24px; // Back to full size
-  width: 24px;
-  height: 24px;
+  font-size: var(--icon-size-lg);
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
 }
 
 .metadata-section {
@@ -239,7 +239,7 @@ mat-card-header {
   ::ng-deep .mat-mdc-form-field-infix {
     padding: 6px 0;
     min-height: unset;
-    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-family: var(--font-family-primary);
   }
 
   ::ng-deep .mat-mdc-form-field-subscript-wrapper {
@@ -257,21 +257,21 @@ mat-card-header {
 
   input,
   mat-select {
-    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-family: var(--font-family-primary);
   }
 }
 
 .mat-mdc-header-cell {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: rgb(0 0 0 / 70%);
   text-align: left;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-family: var(--font-family-primary);
   padding: 0 6px;
 }
 
 .mat-mdc-cell {
   padding: 3px 6px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-family: var(--font-family-primary);
 }
 
 .mat-mdc-row:hover {
@@ -283,7 +283,7 @@ mat-card-header {
   font-style: italic;
   padding: 12px 0;
   text-align: center;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-family: var(--font-family-primary);
 }
 
 .diagram-item,

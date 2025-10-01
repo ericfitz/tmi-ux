@@ -40,10 +40,10 @@ mat-dialog-content {
 
 // Common styles for button icons (placeholder selectors)
 %button-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
+  font-size: var(--icon-size-md);
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  line-height: var(--icon-size-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,10 +51,10 @@ mat-dialog-content {
 
 // Smaller button icon (placeholder selector)
 %small-button-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
+  font-size: var(--icon-size-sm);
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  line-height: var(--icon-size-sm);
 }
 
 // Issue URL container with form field and external edit button
@@ -75,9 +75,9 @@ mat-dialog-content {
 
 // Specific styling for external edit button icons
 .issue-url-container .external-edit-button .mat-icon {
-  font-size: 24px; // Back to full size
-  width: 24px;
-  height: 24px;
+  font-size: var(--icon-size-lg);
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
 }
 
 // Specific styling for view-only URL links
@@ -238,10 +238,10 @@ mat-dialog-content {
   margin-top: 8px;
 
   h3 {
-    font-size: 15px;
-    font-weight: 500;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
     margin-bottom: 8px;
-    font-family: Roboto, Arial, sans-serif;
+    font-family: var(--font-family-primary);
   }
 }
 
@@ -263,7 +263,7 @@ mat-dialog-content {
   width: 100%;
 
   input {
-    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-family: var(--font-family-primary);
   }
 }
 
@@ -296,7 +296,7 @@ mat-dialog-content {
   ::ng-deep .mat-mdc-form-field-infix {
     padding: 4px 0;
     min-height: unset;
-    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-family: var(--font-family-primary);
   }
 
   ::ng-deep .mat-mdc-form-field-subscript-wrapper {
@@ -338,18 +338,18 @@ mat-dialog-content {
 }
 
 .mat-mdc-header-cell {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: rgb(0 0 0 / 70%);
   text-align: left;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-family: var(--font-family-primary);
   padding: 0 4px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
 }
 
 .mat-mdc-cell {
   padding: 2px 4px;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
-  font-size: 13px;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
 }
 
 .mat-mdc-row:hover {
@@ -361,7 +361,7 @@ mat-dialog-content {
   font-style: italic;
   padding: 12px 0;
   text-align: center;
-  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-family: var(--font-family-primary);
 }
 
 // Keep the original metadata grid styles for view-only mode

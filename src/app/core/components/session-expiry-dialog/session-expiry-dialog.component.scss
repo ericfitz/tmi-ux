@@ -35,10 +35,10 @@
 }
 
 .countdown-time {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   color: var(--color-warning-dark);
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-family-monospace);
 }
 
 .session-expiry-actions {

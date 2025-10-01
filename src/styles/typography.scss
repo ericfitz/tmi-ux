@@ -1,0 +1,138 @@
+/**
+ * Centralized Typography System
+ *
+ * This file contains all typography-related definitions used throughout the application.
+ * Typography includes font families, sizes, weights, and related utilities.
+ */
+
+// =============================================================================
+// FONT FAMILIES
+// =============================================================================
+
+$font-family-primary: 'Roboto Condensed', arial, sans-serif;
+$font-family-monospace: 'Roboto Mono', monospace;
+$font-family-icons: 'Material Symbols Outlined', sans-serif;
+
+// =============================================================================
+// FONT SIZES
+// =============================================================================
+
+// Base font size for rem calculations (browser default is typically 16px)
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.8125rem; // 13px
+$font-size-base: 0.875rem; // 14px
+$font-size-md: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.25rem; // 20px
+$font-size-2xl: 1.5rem; // 24px
+$font-size-3xl: 2rem; // 32px
+$font-size-4xl: 3rem; // 48px
+
+// =============================================================================
+// FONT WEIGHTS
+// =============================================================================
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// =============================================================================
+// ICON SIZES
+// =============================================================================
+
+$icon-size-sm: 16px; // Small buttons
+$icon-size-md: 18px; // Standard buttons
+$icon-size-lg: 24px; // Large buttons, external links
+$icon-size-xl: 32px; // Large UI elements
+$icon-size-2xl: 48px; // Extra large icons
+
+// =============================================================================
+// CSS CUSTOM PROPERTIES (Modern theming support)
+// =============================================================================
+
+:root {
+  // Font Families
+  --font-family-primary: #{$font-family-primary};
+  --font-family-monospace: #{$font-family-monospace};
+  --font-family-icons: #{$font-family-icons};
+
+  // Font Sizes
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-base: #{$font-size-base};
+  --font-size-md: #{$font-size-md};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-2xl: #{$font-size-2xl};
+  --font-size-3xl: #{$font-size-3xl};
+  --font-size-4xl: #{$font-size-4xl};
+
+  // Font Weights
+  --font-weight-normal: #{$font-weight-normal};
+  --font-weight-medium: #{$font-weight-medium};
+  --font-weight-semibold: #{$font-weight-semibold};
+  --font-weight-bold: #{$font-weight-bold};
+
+  // Icon Sizes
+  --icon-size-sm: #{$icon-size-sm};
+  --icon-size-md: #{$icon-size-md};
+  --icon-size-lg: #{$icon-size-lg};
+  --icon-size-xl: #{$icon-size-xl};
+  --icon-size-2xl: #{$icon-size-2xl};
+}
+
+// =============================================================================
+// UTILITY MIXINS
+// =============================================================================
+
+// Apply monospace font for code/technical displays
+@mixin code-font {
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
+// Standardized button icon styling
+@mixin button-icon($size: 'md') {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @if $size == 'sm' {
+    font-size: var(--icon-size-sm);
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    line-height: var(--icon-size-sm);
+  } @else if $size == 'md' {
+    font-size: var(--icon-size-md);
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+    line-height: var(--icon-size-md);
+  } @else if $size == 'lg' {
+    font-size: var(--icon-size-lg);
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+    line-height: var(--icon-size-lg);
+  }
+}
+
+// =============================================================================
+// PLACEHOLDER SELECTORS (for @extend)
+// =============================================================================
+
+%code-font {
+  @include code-font;
+}
+
+%button-icon-sm {
+  @include button-icon('sm');
+}
+
+%button-icon-md {
+  @include button-icon('md');
+}
+
+%button-icon-lg {
+  @include button-icon('lg');
+}

@@ -13,11 +13,11 @@
 }
 
 .dialog-subtitle {
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
   color: rgb(0 0 0 / 60%);
   margin: -12px 24px 8px;
   padding: 0;
   line-height: 1.4;
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-family-monospace);
 }

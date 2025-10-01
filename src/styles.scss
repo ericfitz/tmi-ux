@@ -1,7 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Import color system first
+// Import core systems
 @use 'styles/colors';
+@use 'styles/typography';
 
 // Import FontAwesome
 @import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -15,7 +16,7 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
-  font-family: 'Material Symbols Outlined', sans-serif;
+  font-family: var(--font-family-icons);
   font-weight: normal;
   font-style: normal;
   line-height: 1;
@@ -38,7 +39,7 @@ body {
 }
 
 body {
-  font-family: 'Roboto Condensed', Arial, sans-serif;
+  font-family: var(--font-family-primary);
   display: flex;
   flex-direction: column;
 }
@@ -59,7 +60,7 @@ html[dir='rtl'] {
 .page-title {
   margin-bottom: 16px;
   color: var(--color-primary);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .page-content {

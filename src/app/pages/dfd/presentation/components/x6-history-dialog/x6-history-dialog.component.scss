@@ -3,8 +3,8 @@
 }
 
 .json-textarea {
-  font-family: monospace;
-  font-size: 12px;
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-xs);
   line-height: 1.4;
   white-space: pre;
   overflow: auto;
