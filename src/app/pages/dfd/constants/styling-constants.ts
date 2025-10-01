@@ -69,7 +69,9 @@ export const DFD_STYLING = {
 
   // Creation highlight effects
   CREATION: {
-    GLOW_COLOR: 'rgba(0, 150, 255, 0.9)',
+    GLOW_COLOR: 'rgba(0, 150, 255, 0.9)', // Blue for local operations
+    GLOW_COLOR_RGB: { r: 0, g: 150, b: 255 }, // RGB values for local operations
+    REMOTE_GLOW_COLOR_RGB: { r: 0, g: 255, b: 0 }, // Green RGB for remote operations
     GLOW_BLUR_RADIUS: 12,
     FADE_DURATION_MS: 500,
     ANIMATION_FRAME_INTERVAL: 16, // ~60fps
@@ -331,6 +333,20 @@ export const DFD_STYLING_HELPERS = {
    */
   getSelectionGlowColorPrefix(): string {
     return DFD_STYLING.SELECTION.GLOW_COLOR_PREFIX;
+  },
+
+  /**
+   * Get remote creation highlight color (green to distinguish from local blue)
+   */
+  getRemoteCreationColor(): { r: number; g: number; b: number } {
+    return DFD_STYLING.CREATION.REMOTE_GLOW_COLOR_RGB;
+  },
+
+  /**
+   * Get local creation highlight color (blue)
+   */
+  getLocalCreationColor(): { r: number; g: number; b: number } {
+    return DFD_STYLING.CREATION.GLOW_COLOR_RGB;
   },
 
   /**

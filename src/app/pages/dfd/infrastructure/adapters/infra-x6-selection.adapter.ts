@@ -11,7 +11,6 @@ import {
   HISTORY_OPERATION_TYPES,
 } from '../../application/services/app-graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
-import { InfraNodeService } from '../services/infra-node.service';
 import { InfraEdgeService } from '../services/infra-edge.service';
 
 /**
@@ -30,15 +29,22 @@ export class InfraX6SelectionAdapter {
   private selectedCells = new Set<string>();
   private historyController: { disable: () => void; enable: () => void } | null = null;
   private portStateManager: any = null;
+  private infraNodeService: any = null; // Set via setNodeService to avoid circular dependency
 
   constructor(
     private logger: LoggerService,
     private selectionService: SelectionService,
     private historyCoordinator: AppGraphHistoryCoordinator,
     private x6CoreOps: InfraX6CoreOperationsService,
-    private infraNodeService: InfraNodeService,
     private infraEdgeService: InfraEdgeService,
   ) {}
+
+  /**
+   * Set node service for node deletion (injected to avoid circular dependency)
+   */
+  setNodeService(nodeService: any): void {
+    this.infraNodeService = nodeService;
+  }
 
   /**
    * Set port state manager for coordinating port visibility during hover
@@ -250,8 +256,13 @@ export class InfraX6SelectionAdapter {
             // Use InfraEdgeService for edge deletions (handles business logic and port visibility)
             this.infraEdgeService.removeEdge(graph, cell.id);
           } else {
-            // Use InfraNodeService for node deletions (handles edges, embeddings, and all cleanup)
-            this.infraNodeService.removeNode(graph, cell.id);
+            // Use InfraNodeService for node deletions if available (handles edges, embeddings, and all cleanup)
+            if (this.infraNodeService && this.infraNodeService.removeNode) {
+              this.infraNodeService.removeNode(graph, cell.id);
+            } else {
+              // Fallback to core operations if node service not yet injected
+              this.x6CoreOps.removeCellObject(graph, cell);
+            }
           }
         });
       },

@@ -378,11 +378,11 @@ export class InfraNodeService {
 
     // Apply visual effects for remote operations (green color to distinguish from local operations)
     if (options?.applyVisualEffects && node) {
-      this.infraVisualEffectsService.applyCreationHighlight(node, graph, {
-        r: 0,
-        g: 255,
-        b: 0,
-      });
+      this.infraVisualEffectsService.applyCreationHighlight(
+        node,
+        graph,
+        DFD_STYLING_HELPERS.getRemoteCreationColor(),
+      );
     }
   }
 

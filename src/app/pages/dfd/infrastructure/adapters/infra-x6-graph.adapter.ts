@@ -1336,6 +1336,13 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Inject node service into selection adapter (called externally to avoid circular dependency)
+   */
+  injectNodeService(nodeService: any): void {
+    this._selectionAdapter.setNodeService(nodeService);
+  }
+
+  /**
    * Setup selection event handlers - delegates to InfraX6SelectionAdapter
    */
   private _setupSelectionEvents(): void {

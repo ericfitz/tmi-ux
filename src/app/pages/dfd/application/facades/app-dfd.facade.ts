@@ -66,6 +66,9 @@ export class AppDfdFacade {
   initializeGraphAdapter(containerElement: HTMLElement): void {
     this.logger.debug('AppDfdFacade: Initializing graph adapter');
     this.infraX6GraphAdapter.initialize(containerElement);
+
+    // Inject node service into selection adapter to avoid circular dependency
+    this.infraX6GraphAdapter.injectNodeService(this.infraNodeService);
   }
 
   /**
