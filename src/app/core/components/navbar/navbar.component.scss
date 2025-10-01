@@ -24,8 +24,8 @@
 .app-title {
   margin-left: 8px;
   margin-right: 16px;
-  font-weight: 500;
-  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-md);
 }
 
 .language-selector {

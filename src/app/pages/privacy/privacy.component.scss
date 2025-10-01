@@ -13,7 +13,7 @@
 }
 
 .page-content {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   line-height: 1.6;
   margin-bottom: 16px;
 }
@@ -22,5 +22,5 @@ h2 {
   color: var(--color-theme-cyan);
   margin-top: 24px;
   margin-bottom: 12px;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }

@@ -17,14 +17,14 @@
 }
 
 .page-content {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   line-height: 1.6;
   margin-bottom: 16px;
 
   a {
     color: #1976d2;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 
     &:hover {
       text-decoration: underline;
