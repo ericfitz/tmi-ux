@@ -29,8 +29,11 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
 import { InfraX6GraphAdapter } from '../adapters/infra-x6-graph.adapter';
 import { InfraX6ZOrderAdapter } from '../adapters/infra-x6-z-order.adapter';
+import { InfraX6EmbeddingAdapter } from '../adapters/infra-x6-embedding.adapter';
 import { InfraNodeConfigurationService } from './infra-node-configuration.service';
 import { InfraVisualEffectsService } from './infra-visual-effects.service';
+import { InfraEdgeService } from './infra-edge.service';
+import { InfraPortStateService } from './infra-port-state.service';
 import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
@@ -49,8 +52,11 @@ export class InfraNodeService {
     private transloco: TranslocoService,
     private infraX6GraphAdapter: InfraX6GraphAdapter,
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
+    private infraX6EmbeddingAdapter: InfraX6EmbeddingAdapter,
     private infraNodeConfigurationService: InfraNodeConfigurationService,
     private infraVisualEffectsService: InfraVisualEffectsService,
+    private infraEdgeService: InfraEdgeService,
+    private infraPortStateService: InfraPortStateService,
     private historyCoordinator: AppGraphHistoryCoordinator,
     private x6CoreOps: InfraX6CoreOperationsService,
   ) {}
@@ -370,10 +376,13 @@ export class InfraNodeService {
       updatePortVisibility: options?.updatePortVisibility ?? true,
     });
 
-    // Apply visual effects for remote operations (different color to distinguish)
+    // Apply visual effects for remote operations (green color to distinguish from local operations)
     if (options?.applyVisualEffects && node) {
-      // TODO: Apply creation highlight with green color for remote operations
-      // this.infraVisualEffectsService.applyCreationHighlight(node, graph, '#00ff00');
+      this.infraVisualEffectsService.applyCreationHighlight(node, graph, {
+        r: 0,
+        g: 255,
+        b: 0,
+      });
     }
   }
 
@@ -408,5 +417,172 @@ export class InfraNodeService {
       label: cellData.label || '',
       data: cellData.data || {},
     };
+  }
+
+  /**
+   * Remove a node with comprehensive cleanup of edges and embeddings
+   * Handles:
+   * - Removal of all connected edges (source or target)
+   * - Embedding hierarchy updates (parent/child relationships)
+   * - Z-order and visual effects updates
+   * - Port visibility updates
+   * - All operations in a single atomic transaction
+   */
+  removeNode(
+    graph: Graph,
+    nodeId: string,
+    options: {
+      suppressHistory?: boolean;
+      suppressErrors?: boolean;
+      logOperation?: boolean;
+    } = {},
+  ): boolean {
+    const { suppressHistory = false, suppressErrors = false, logOperation = true } = options;
+
+    try {
+      const node = graph.getCellById(nodeId);
+
+      if (!node || !node.isNode()) {
+        if (logOperation) {
+          this.logger.warn('Node not found for removal', { nodeId });
+        }
+        return false;
+      }
+
+      if (logOperation) {
+        this.logger.debugComponent('InfraNodeService', 'Removing node with full cleanup', {
+          nodeId,
+        });
+      }
+
+      // Execute all removal operations as a single compound operation for history
+      const executeRemoval = () => {
+        // 1. Get all connected edges before removal
+        const connectedEdges = graph.getConnectedEdges(node) || [];
+        const affectedNodeIds = new Set<string>();
+
+        // Collect nodes that will need port visibility updates
+        connectedEdges.forEach(edge => {
+          const sourceId = edge.getSourceCellId();
+          const targetId = edge.getTargetCellId();
+          if (sourceId && sourceId !== nodeId) affectedNodeIds.add(sourceId);
+          if (targetId && targetId !== nodeId) affectedNodeIds.add(targetId);
+        });
+
+        // 2. Handle embedding relationships
+        const parent = node.getParent();
+        const children = node.getChildren();
+
+        // Re-parent children to the removed node's parent (or null if no grandparent)
+        if (children && children.length > 0) {
+          children.forEach(child => {
+            if (child.isNode()) {
+              if (parent && parent.isNode()) {
+                // Move child to grandparent
+                child.setParent(parent);
+                if (logOperation) {
+                  this.logger.debugComponent(
+                    'InfraNodeService',
+                    'Re-parented child to grandparent',
+                    {
+                      childId: child.id,
+                      newParentId: parent.id,
+                      removedNodeId: nodeId,
+                    },
+                  );
+                }
+              } else {
+                // Unembed child (make it a root node)
+                child.removeFromParent();
+                if (logOperation) {
+                  this.logger.debugComponent('InfraNodeService', 'Unembedded child node', {
+                    childId: child.id,
+                    removedNodeId: nodeId,
+                  });
+                }
+              }
+            }
+          });
+        }
+
+        // 3. Remove all connected edges using InfraEdgeService for proper cleanup
+        connectedEdges.forEach(edge => {
+          this.infraEdgeService.removeEdge(graph, edge.id);
+        });
+
+        // 4. Remove the node itself
+        this.x6CoreOps.removeNode(graph, nodeId, {
+          suppressErrors,
+          logOperation,
+        });
+
+        // 5. Update port visibility for all affected nodes
+        affectedNodeIds.forEach(affectedNodeId => {
+          const affectedNode = graph.getCellById(affectedNodeId);
+          if (affectedNode && affectedNode.isNode()) {
+            this.infraPortStateService.updateNodePortVisibility(graph, affectedNode);
+          }
+        });
+
+        // 6. Update embedding styles and z-order for affected nodes
+        if (parent && parent.isNode()) {
+          // Update parent's appearance if it lost a child
+          this.infraX6EmbeddingAdapter.updateAllEmbeddingAppearances(graph);
+        }
+
+        if (children && children.length > 0) {
+          // Update children appearances and z-orders after re-parenting
+          children.forEach(child => {
+            if (child.isNode()) {
+              const newParent = child.getParent();
+              if (newParent && newParent.isNode()) {
+                // Child was re-parented to grandparent
+                this.infraX6ZOrderAdapter.applyEmbeddingZIndexes(newParent, child);
+                this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(
+                  graph,
+                  child,
+                  child.getZIndex() ?? 15,
+                );
+              } else {
+                // Child was unembedded
+                this.infraX6ZOrderAdapter.applyUnembeddingZIndex(graph, child);
+                this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(
+                  graph,
+                  child,
+                  child.getZIndex() ?? 10,
+                );
+              }
+            }
+          });
+        }
+      };
+
+      // Execute with or without history based on options
+      if (suppressHistory) {
+        this.historyCoordinator.executeRemoteOperation(graph, executeRemoval);
+      } else {
+        this.historyCoordinator.executeCompoundOperation(graph, executeRemoval);
+      }
+
+      if (logOperation) {
+        this.logger.debugComponent('InfraNodeService', 'Node removed with full cleanup', {
+          nodeId,
+          connectedEdgesRemoved: (graph.getConnectedEdges(node) || []).length,
+        });
+      }
+
+      return true;
+    } catch (error) {
+      this.logger.error('Error removing node', {
+        nodeId,
+        error,
+      });
+
+      if (!suppressErrors) {
+        throw error;
+      }
+
+      return false;
+    }
   }
 }

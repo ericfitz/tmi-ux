@@ -31,7 +31,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, Subscription, Observable } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
@@ -472,28 +472,39 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       orchestratorInitialized: currentState.initialized,
     });
 
-    // Set up interval to update selection and history state
-    // TODO: Replace with proper observables when available from AppDfdOrchestrator
+    // Subscribe to selection changes from orchestrator
     this._subscriptions.add(
-      // Poll selection state every 100ms
-      new Observable(_observer => {
-        const interval = setInterval(() => {
+      this.appDfdOrchestrator.selectionChanged$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(() => {
           this.updateSelectionState();
-          // Also check if system initialization state has changed and force update if needed
-          const currentState = this.appDfdOrchestrator.getState();
-          if (this.isSystemInitialized !== currentState.initialized) {
-            this.logger.debug('System initialization state mismatch detected, forcing sync', {
+        }),
+    );
+
+    // Subscribe to history changes from orchestrator
+    this._subscriptions.add(
+      this.appDfdOrchestrator.historyChanged$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(({ canUndo, canRedo }) => {
+          this.logger.debug('History state changed', { canUndo, canRedo });
+          this.cdr.detectChanges();
+        }),
+    );
+
+    // Subscribe to orchestrator state changes for initialization tracking
+    this._subscriptions.add(
+      this.appDfdOrchestrator.state$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(state => {
+          if (this.isSystemInitialized !== state.initialized) {
+            this.logger.debug('System initialization state changed', {
               componentState: this.isSystemInitialized,
-              orchestratorState: currentState.initialized,
+              orchestratorState: state.initialized,
             });
-            this.isSystemInitialized = currentState.initialized;
+            this.isSystemInitialized = state.initialized;
             this.cdr.detectChanges();
           }
-        }, 100);
-        return () => clearInterval(interval);
-      })
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(),
+        }),
     );
 
     // Remove the inline edge event handler setup - it will now be done when orchestrator is initialized

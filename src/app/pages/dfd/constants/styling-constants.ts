@@ -54,6 +54,7 @@ export const DFD_STYLING = {
     STROKE_WIDTH: 2,
     STROKE_COLOR: '#000000',
     GLOW_COLOR: 'rgba(255, 0, 0, 0.8)',
+    GLOW_COLOR_PREFIX: 'rgba(255, 0, 0', // Color prefix for filter detection
     GLOW_BLUR_RADIUS: 8,
     FILTER_TEMPLATE: (blur: number, color: string) => `drop-shadow(0 0 ${blur}px ${color})`,
   },
@@ -320,8 +321,7 @@ export const DFD_STYLING_HELPERS = {
     return !!(
       filter &&
       typeof filter === 'string' &&
-      // TODO: we should not hard code the value here but rather match a symbolic constant
-      filter.includes('rgba(255, 0, 0') &&
+      filter.includes(DFD_STYLING.SELECTION.GLOW_COLOR_PREFIX) &&
       filter.includes('drop-shadow')
     );
   },
@@ -330,7 +330,7 @@ export const DFD_STYLING_HELPERS = {
    * Extract selection glow color for comparison
    */
   getSelectionGlowColorPrefix(): string {
-    return 'rgba(255, 0, 0'; // Extract color prefix from selection glow color
+    return DFD_STYLING.SELECTION.GLOW_COLOR_PREFIX;
   },
 
   /**

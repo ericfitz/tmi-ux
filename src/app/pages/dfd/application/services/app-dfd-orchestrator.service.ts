@@ -571,6 +571,33 @@ export class AppDfdOrchestrator {
     );
   }
 
+  get selectionChanged$(): Observable<string[]> {
+    return this.dfdInfrastructure.selectionChanged$.pipe(map(change => change.selected));
+  }
+
+  get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
+    return this.dfdInfrastructure.historyChanged$;
+  }
+
+  get operationCompleted$(): Observable<any> {
+    return this.appGraphOperationManager.operationCompleted$;
+  }
+
+  get saveCompleted$(): Observable<any> {
+    return this.appPersistenceCoordinator.saveStatus$;
+  }
+
+  get loadCompleted$(): Observable<any> {
+    return this.appPersistenceCoordinator.loadStatus$;
+  }
+
+  get error$(): Observable<string> {
+    return this._state$.pipe(
+      map(state => state.error),
+      filter(error => error !== null),
+    );
+  }
+
   private _previousCollaborationState = false;
 
   /**

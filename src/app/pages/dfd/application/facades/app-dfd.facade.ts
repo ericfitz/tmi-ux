@@ -408,6 +408,20 @@ export class AppDfdFacade {
     return this.infraX6GraphAdapter;
   }
 
+  /**
+   * Observable that emits when selection changes
+   */
+  get selectionChanged$(): Observable<{ selected: string[]; deselected: string[] }> {
+    return this.infraX6GraphAdapter.selectionChanged$;
+  }
+
+  /**
+   * Observable that emits when history state changes (undo/redo availability)
+   */
+  get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
+    return this.infraX6GraphAdapter.historyChanged$;
+  }
+
   // ========================================
   // Utility Operations
   // ========================================

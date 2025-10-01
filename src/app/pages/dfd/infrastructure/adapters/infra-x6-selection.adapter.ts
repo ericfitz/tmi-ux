@@ -11,7 +11,7 @@ import {
   HISTORY_OPERATION_TYPES,
 } from '../../application/services/app-graph-history-coordinator.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
-// Note: InfraNodeService will be used for node deletion when removeNode method is available
+import { InfraNodeService } from '../services/infra-node.service';
 import { InfraEdgeService } from '../services/infra-edge.service';
 
 /**
@@ -36,6 +36,7 @@ export class InfraX6SelectionAdapter {
     private selectionService: SelectionService,
     private historyCoordinator: AppGraphHistoryCoordinator,
     private x6CoreOps: InfraX6CoreOperationsService,
+    private infraNodeService: InfraNodeService,
     private infraEdgeService: InfraEdgeService,
   ) {}
 
@@ -249,9 +250,8 @@ export class InfraX6SelectionAdapter {
             // Use InfraEdgeService for edge deletions (handles business logic and port visibility)
             this.infraEdgeService.removeEdge(graph, cell.id);
           } else {
-            // Use InfraX6CoreOperationsService for node deletions
-            // TODO: Replace with infraNodeService.removeNode() when InfraNodeService has removeNode method
-            this.x6CoreOps.removeCellObject(graph, cell);
+            // Use InfraNodeService for node deletions (handles edges, embeddings, and all cleanup)
+            this.infraNodeService.removeNode(graph, cell.id);
           }
         });
       },
