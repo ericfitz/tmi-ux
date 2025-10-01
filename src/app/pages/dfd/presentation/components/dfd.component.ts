@@ -474,11 +474,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to selection changes from orchestrator
     this._subscriptions.add(
-      this.appDfdOrchestrator.selectionChanged$
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(() => {
-          this.updateSelectionState();
-        }),
+      this.appDfdOrchestrator.selectionChanged$.pipe(takeUntil(this._destroy$)).subscribe(() => {
+        this.updateSelectionState();
+      }),
     );
 
     // Subscribe to history changes from orchestrator
@@ -493,18 +491,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to orchestrator state changes for initialization tracking
     this._subscriptions.add(
-      this.appDfdOrchestrator.state$
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(state => {
-          if (this.isSystemInitialized !== state.initialized) {
-            this.logger.debug('System initialization state changed', {
-              componentState: this.isSystemInitialized,
-              orchestratorState: state.initialized,
-            });
-            this.isSystemInitialized = state.initialized;
-            this.cdr.detectChanges();
-          }
-        }),
+      this.appDfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
+        if (this.isSystemInitialized !== state.initialized) {
+          this.logger.debug('System initialization state changed', {
+            componentState: this.isSystemInitialized,
+            orchestratorState: state.initialized,
+          });
+          this.isSystemInitialized = state.initialized;
+          this.cdr.detectChanges();
+        }
+      }),
     );
 
     // Remove the inline edge event handler setup - it will now be done when orchestrator is initialized

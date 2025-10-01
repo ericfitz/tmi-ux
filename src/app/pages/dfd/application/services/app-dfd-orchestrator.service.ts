@@ -399,7 +399,7 @@ export class AppDfdOrchestrator {
                   const optimizedSvg = this.appExportService.processSvg(
                     svgString,
                     false,
-                    exportPrep.viewBox
+                    exportPrep.viewBox,
                   );
                   const blob = new Blob([optimizedSvg], { type: 'image/svg+xml' });
                   observer.next(blob);
@@ -419,15 +419,18 @@ export class AppDfdOrchestrator {
         if (graph.toPNG) {
           return new Observable<Blob>(observer => {
             try {
-              graph.toPNG((dataUri: string) => {
-                try {
-                  const blob = this._dataUriToBlob(dataUri, 'image/png');
-                  observer.next(blob);
-                  observer.complete();
-                } catch (error) {
-                  observer.error(error);
-                }
-              }, { backgroundColor: 'white', padding: 20, quality: 1 });
+              graph.toPNG(
+                (dataUri: string) => {
+                  try {
+                    const blob = this._dataUriToBlob(dataUri, 'image/png');
+                    observer.next(blob);
+                    observer.complete();
+                  } catch (error) {
+                    observer.error(error);
+                  }
+                },
+                { backgroundColor: 'white', padding: 20, quality: 1 },
+              );
             } catch (error) {
               observer.error(error);
             }
@@ -439,15 +442,18 @@ export class AppDfdOrchestrator {
         if (graph.toJPEG) {
           return new Observable<Blob>(observer => {
             try {
-              graph.toJPEG((dataUri: string) => {
-                try {
-                  const blob = this._dataUriToBlob(dataUri, 'image/jpeg');
-                  observer.next(blob);
-                  observer.complete();
-                } catch (error) {
-                  observer.error(error);
-                }
-              }, { backgroundColor: 'white', padding: 20, quality: 0.8 });
+              graph.toJPEG(
+                (dataUri: string) => {
+                  try {
+                    const blob = this._dataUriToBlob(dataUri, 'image/jpeg');
+                    observer.next(blob);
+                    observer.complete();
+                  } catch (error) {
+                    observer.error(error);
+                  }
+                },
+                { backgroundColor: 'white', padding: 20, quality: 0.8 },
+              );
             } catch (error) {
               observer.error(error);
             }

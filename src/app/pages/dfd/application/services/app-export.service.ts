@@ -25,7 +25,7 @@ export class AppExportService {
     format: ExportFormat,
     threatModelName?: string,
     diagramName?: string,
-    graph?: any
+    graph?: any,
   ): void {
     if (!graph) {
       this.logger.warn('Cannot export - graph not provided');

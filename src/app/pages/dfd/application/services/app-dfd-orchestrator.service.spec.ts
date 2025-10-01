@@ -33,7 +33,9 @@ vi.mock('@antv/x6', () => {
     }),
     toPNG: vi.fn((callback: (dataUri: string) => void) => {
       // Simulate X6's callback-based API with a base64 data URI
-      callback('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+      callback(
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      );
     }),
 
     // Mock properties that don't exist
@@ -672,7 +674,9 @@ describe('AppDfdOrchestrator', () => {
       const mockGraph = {
         toPNG: vi.fn((callback: (dataUri: string) => void) => {
           // Simulate X6's callback-based API with a base64 data URI
-          callback('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+          callback(
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+          );
         }),
       };
 
@@ -685,7 +689,7 @@ describe('AppDfdOrchestrator', () => {
             expect(mockGraph.toPNG).toHaveBeenCalled();
             expect(mockGraph.toPNG).toHaveBeenCalledWith(
               expect.any(Function),
-              expect.objectContaining({ backgroundColor: 'white', padding: 20, quality: 1 })
+              expect.objectContaining({ backgroundColor: 'white', padding: 20, quality: 1 }),
             );
             resolve();
           },
@@ -711,7 +715,7 @@ describe('AppDfdOrchestrator', () => {
             expect(mockGraph.toSVG).toHaveBeenCalled();
             expect(mockGraph.toSVG).toHaveBeenCalledWith(
               expect.any(Function),
-              expect.objectContaining({ padding: 20 })
+              expect.objectContaining({ padding: 20 }),
             );
             resolve();
           },

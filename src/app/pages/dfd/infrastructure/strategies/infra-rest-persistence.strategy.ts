@@ -59,33 +59,35 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
     const cells = this._convertDataToCells(operation.data);
 
     // Use the threatModelService to save via PATCH
-    return this.threatModelService.patchDiagramCells(threatModelId, operation.diagramId, cells).pipe(
-      map(() => {
-        this.logger.debug('REST save completed successfully', {
-          diagramId: operation.diagramId,
-        });
-        return {
-          success: true,
-          operationId: `save-${Date.now()}`,
-          diagramId: operation.diagramId,
-          timestamp: Date.now(),
-        };
-      }),
-      catchError(error => {
-        const errorMessage = `REST save failed: ${error.message || 'Unknown error'}`;
-        this.logger.error(errorMessage, {
-          diagramId: operation.diagramId,
-          error,
-        });
-        return of({
-          success: false,
-          operationId: `save-${Date.now()}`,
-          diagramId: operation.diagramId,
-          timestamp: Date.now(),
-          error: errorMessage,
-        });
-      }),
-    );
+    return this.threatModelService
+      .patchDiagramCells(threatModelId, operation.diagramId, cells)
+      .pipe(
+        map(() => {
+          this.logger.debug('REST save completed successfully', {
+            diagramId: operation.diagramId,
+          });
+          return {
+            success: true,
+            operationId: `save-${Date.now()}`,
+            diagramId: operation.diagramId,
+            timestamp: Date.now(),
+          };
+        }),
+        catchError(error => {
+          const errorMessage = `REST save failed: ${error.message || 'Unknown error'}`;
+          this.logger.error(errorMessage, {
+            diagramId: operation.diagramId,
+            error,
+          });
+          return of({
+            success: false,
+            operationId: `save-${Date.now()}`,
+            diagramId: operation.diagramId,
+            timestamp: Date.now(),
+            error: errorMessage,
+          });
+        }),
+      );
   }
 
   private _convertDataToCells(data: any): any[] {
