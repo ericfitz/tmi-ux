@@ -128,7 +128,7 @@ global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
 // TODO: Convert to Cypress due to Angular CDK JIT compilation issues in vitest environment
-describe.skip('DFD Integration - History and Styling Interaction', () => {
+describe('DFD Integration - History and Styling Interaction', () => {
   let container: HTMLElement;
   let graph: Graph;
   let adapter: InfraX6GraphAdapter;

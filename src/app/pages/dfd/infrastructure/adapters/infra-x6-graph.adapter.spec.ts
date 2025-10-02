@@ -103,7 +103,7 @@ global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
 // TODO: Convert to Cypress due to Angular CDK JIT compilation issues in vitest environment
-describe.skip('InfraX6GraphAdapter', () => {
+describe('InfraX6GraphAdapter', () => {
   let adapter: InfraX6GraphAdapter;
   let selectionAdapter: InfraX6SelectionAdapter;
   let container: HTMLElement;

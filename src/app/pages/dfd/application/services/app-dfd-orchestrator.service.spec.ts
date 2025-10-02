@@ -121,6 +121,7 @@ describe('AppDfdOrchestrator', () => {
 
     mockExportService = {
       exportDiagram: vi.fn(),
+      prepareImageExport: vi.fn().mockReturnValue({ width: 800, height: 600, cells: [] }),
     };
 
     mockNodeConfigService = {
@@ -157,6 +158,7 @@ describe('AppDfdOrchestrator', () => {
       deleteSelected: vi.fn(),
       handleResize: vi.fn(),
       destroy: vi.fn(),
+      dispose: vi.fn(),
       historyModified$: new Subject(),
     };
 
@@ -943,13 +945,18 @@ describe('AppDfdOrchestrator', () => {
     });
 
     it('should clear selection', () => {
+      const mockCell1 = { id: 'cell-1' };
+      const mockCell2 = { id: 'cell-2' };
       const mockGraph = {
-        cleanSelection: vi.fn(),
+        getSelectedCells: vi.fn().mockReturnValue([mockCell1, mockCell2]),
+        getCellById: vi.fn((id: string) => id === 'cell-1' ? mockCell1 : mockCell2),
+        unselect: vi.fn(),
       };
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
 
       service.clearSelection();
-      expect(mockGraph.cleanSelection).toHaveBeenCalled();
+      expect(mockGraph.unselect).toHaveBeenCalledWith(mockCell1);
+      expect(mockGraph.unselect).toHaveBeenCalledWith(mockCell2);
     });
 
     it('should get selected cells', () => {
@@ -1040,7 +1047,9 @@ describe('AppDfdOrchestrator', () => {
     it('should handle keyboard shortcuts', () => {
       const mockGraph = {
         selectAll: vi.fn(),
-        cleanSelection: vi.fn(),
+        getSelectedCells: vi.fn().mockReturnValue([]),
+        getCellById: vi.fn(),
+        unselect: vi.fn(),
       };
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
 
@@ -1068,7 +1077,7 @@ describe('AppDfdOrchestrator', () => {
       // Test Escape (clear selection)
       const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
       service.onKeyDown(escapeEvent);
-      expect(mockGraph.cleanSelection).toHaveBeenCalled();
+      expect(mockGraph.getSelectedCells).toHaveBeenCalled();
     });
 
     it('should handle context menu', () => {

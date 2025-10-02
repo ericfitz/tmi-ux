@@ -71,7 +71,7 @@ describe('SessionExpiryDialogComponent', () => {
     expect(component.timeRemaining).toBe('2:30');
   });
 
-  it('should format time remaining as "1 minute" when exactly 60 seconds left', () => {
+  it('should format time remaining as "1:00" when exactly 60 seconds left', () => {
     // Set expiry to exactly 60 seconds from now
     const baseTime = Date.now();
     component.data.expiresAt = new Date(baseTime + 60000);
@@ -79,13 +79,13 @@ describe('SessionExpiryDialogComponent', () => {
 
     (component as any).updateTimeRemaining();
 
-    expect(component.timeRemaining).toBe('1 minute');
+    expect(component.timeRemaining).toBe('1:00');
   });
 
   it('should format time remaining as seconds only when less than a minute', () => {
     // Mock current time to ensure consistent test results
     const baseTime = 1000000000; // Fixed timestamp
-    const dateSpy = vi.spyOn(Date, 'now').mockReturnValue(baseTime);
+    vi.setSystemTime(new Date(baseTime));
 
     // Set expiry to 30 seconds from mocked time
     component.data.expiresAt = new Date(baseTime + 30000);
@@ -94,8 +94,7 @@ describe('SessionExpiryDialogComponent', () => {
 
     expect(component.timeRemaining).toBe('30 seconds');
 
-    // Restore only the Date.now mock
-    dateSpy.mockRestore();
+    vi.useRealTimers();
   });
 
   it('should call onExtendSession and close dialog when extend button clicked', () => {
@@ -114,13 +113,14 @@ describe('SessionExpiryDialogComponent', () => {
 
   it('should calculate remaining time correctly', () => {
     const baseTime = Date.now();
+    vi.setSystemTime(new Date(baseTime));
+
     component.data.expiresAt = new Date(baseTime + 65000); // 1 minute 5 seconds
 
-    // Mock Date.now to return specific time
-    vi.spyOn(Date, 'now').mockReturnValue(baseTime);
-
     const remainingTime = (component as any).getRemainingTimeInSeconds();
-    expect(remainingTime).toBe(64); // Account for timing precision
+    expect(remainingTime).toBe(65);
+
+    vi.useRealTimers();
   });
 
   it('should return zero for expired tokens', () => {
@@ -134,14 +134,17 @@ describe('SessionExpiryDialogComponent', () => {
   });
 
   it('should format seconds with leading zeros in minutes:seconds format', () => {
-    // Set expiry to exactly 2 minutes 5 seconds from now (125 seconds)
+    // Set expiry to exactly 2 minutes 4 seconds from now (124 seconds)
     const baseTime = Date.now();
-    component.data.expiresAt = new Date(baseTime + 125000);
-    vi.spyOn(Date, 'now').mockReturnValue(baseTime);
+    vi.setSystemTime(new Date(baseTime));
+
+    component.data.expiresAt = new Date(baseTime + 124000);
 
     (component as any).updateTimeRemaining();
 
-    expect(component.timeRemaining).toBe('2:04'); // Account for timing precision
+    expect(component.timeRemaining).toBe('2:04');
+
+    vi.useRealTimers();
   });
 
   it('should stop countdown when component is destroyed', () => {
