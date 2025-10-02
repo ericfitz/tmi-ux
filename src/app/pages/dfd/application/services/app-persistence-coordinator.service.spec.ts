@@ -7,8 +7,8 @@ import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import {
+  AppPersistenceCoordinator,
   SaveOperation,
   SaveResult,
   LoadOperation,
@@ -16,12 +16,14 @@ import {
   SyncOperation,
   SyncResult,
   CacheStatus,
-} from '../../types/persistence.types';
+} from './app-persistence-coordinator.service';
 
 describe('AppPersistenceCoordinator', () => {
   let service: AppPersistenceCoordinator;
   let mockLogger: any;
   let mockStrategy: any;
+  let mockServerConnection: any;
+  let mockWebSocketAdapter: any;
 
   beforeEach(() => {
     // Create logger spy
@@ -30,6 +32,18 @@ describe('AppPersistenceCoordinator', () => {
       debug: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
+    };
+
+    // Create server connection mock
+    mockServerConnection = {
+      isConnected: vi.fn().mockReturnValue(true),
+      onConnectionStatusChange: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
+    };
+
+    // Create websocket adapter mock
+    mockWebSocketAdapter = {
+      isConnected: vi.fn().mockReturnValue(true),
+      send: vi.fn(),
     };
 
     // Create strategy spy
@@ -42,7 +56,7 @@ describe('AppPersistenceCoordinator', () => {
     };
 
     // Create service directly without TestBed
-    service = new AppPersistenceCoordinator(mockLogger);
+    service = new AppPersistenceCoordinator(mockLogger, mockServerConnection, mockWebSocketAdapter);
   });
 
   describe('Service Initialization', () => {

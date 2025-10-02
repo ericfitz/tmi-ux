@@ -72,6 +72,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
 
     mockTransloco = {
       translate: vi.fn((key: string) => key),
+      getActiveLang: vi.fn(() => 'en'),
     };
 
     mockX6ZOrderAdapter = {

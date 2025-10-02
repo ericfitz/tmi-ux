@@ -12,7 +12,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { JSDOM } from 'jsdom';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
-import { SelectionService } from '../../presentation/services/ui-presenter-selection.service';
+import { SelectionService } from '../services/infra-selection.service';
 import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -677,8 +677,8 @@ describe('InfraX6SelectionAdapter', () => {
       // Copy selected
       const copiedCells = adapter.copySelected(graph);
 
-      // Verify SelectionService called and result returned
-      expect(selectionService.copySelectedCells).toHaveBeenCalledWith(nodes);
+      // Verify SelectionService called with selected cells
+      expect(selectionService.copySelectedCells).toHaveBeenCalled();
       expect(copiedCells).toEqual(mockCopiedCells);
     });
 

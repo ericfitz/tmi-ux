@@ -14,7 +14,7 @@ import { JSDOM } from 'jsdom';
 
 import { InfraX6GraphAdapter } from './infra-x6-graph.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
-import { UiPresenterSelectionService } from '../../presentation/services/ui-presenter-selection.service';
+import { SelectionService } from '../services/infra-selection.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
@@ -32,6 +32,9 @@ import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
 import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
+import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
+import { InfraEdgeService } from '../services/infra-edge.service';
 
 // Mock LoggerService for integration testing
 class MockLoggerService {
@@ -116,14 +119,15 @@ describe('InfraX6GraphAdapter', () => {
   let zOrderService: ZOrderService;
   let zOrderAdapter: InfraX6ZOrderAdapter;
   let embeddingAdapter: InfraX6EmbeddingAdapter;
-  let selectionService: UiPresenterSelectionService;
+  let selectionService: SelectionService;
   let historyManager: InfraX6HistoryAdapter;
   let x6EventLogger: InfraX6EventLoggerAdapter;
   let appEdgeService: AppEdgeService;
   let historyCoordinator: AppGraphHistoryCoordinator;
+  let diagramOperationBroadcaster: AppDiagramOperationBroadcaster;
   let infraVisualEffectsService: any;
-  let coreEdgeService: any;
-  let x6CoreOps: any;
+  let infraEdgeService: InfraEdgeService;
+  let x6CoreOps: InfraX6CoreOperationsService;
 
   beforeEach(() => {
     // Create DOM container for X6 graph
@@ -137,8 +141,6 @@ describe('InfraX6GraphAdapter', () => {
 
     // Create mock services for dependencies
     infraVisualEffectsService = { applyEffect: vi.fn(), removeEffect: vi.fn() };
-    coreEdgeService = { addEdge: vi.fn(), removeEdge: vi.fn(), updateEdge: vi.fn() };
-    x6CoreOps = { addNode: vi.fn(), removeNode: vi.fn() };
 
     // Create real service instances for integration testing
     infraEdgeQueryService = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
@@ -158,15 +160,18 @@ describe('InfraX6GraphAdapter', () => {
     );
     historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
     x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
+    infraEdgeService = new InfraEdgeService(mockLogger as unknown as LoggerService);
+    x6CoreOps = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
     appEdgeService = new AppEdgeService(
       mockLogger as unknown as LoggerService,
       zOrderAdapter,
       historyManager,
       infraVisualEffectsService,
-      coreEdgeService,
+      infraEdgeService,
     );
-    selectionService = new UiPresenterSelectionService(mockLogger as unknown as LoggerService);
+    selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
+    diagramOperationBroadcaster = new AppDiagramOperationBroadcaster(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)
     selectionAdapter = new InfraX6SelectionAdapter(
@@ -174,7 +179,7 @@ describe('InfraX6GraphAdapter', () => {
       selectionService,
       historyCoordinator,
       x6CoreOps,
-      coreEdgeService,
+      infraEdgeService,
     );
 
     // Create InfraX6GraphAdapter with real dependencies
@@ -192,6 +197,7 @@ describe('InfraX6GraphAdapter', () => {
       x6EventLogger,
       appEdgeService,
       historyCoordinator,
+      diagramOperationBroadcaster,
       x6CoreOps,
     );
 

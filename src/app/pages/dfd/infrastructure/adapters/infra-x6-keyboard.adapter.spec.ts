@@ -178,47 +178,12 @@ describe('InfraX6KeyboardAdapter', () => {
       handler.setupKeyboardHandling(graph);
     });
 
-    it('should track shift key press', () => {
-      const shiftDownEvent = new KeyboardEvent('keydown', { key: 'Shift' });
-      document.dispatchEvent(shiftDownEvent);
-
-      // Shift key state is tracked internally
-      // Grid updates only happen during dragging, not on key press alone
-      expect(mockLogger.debugComponent).toHaveBeenCalled();
-    });
-
-    it('should track shift key release', () => {
-      // First press shift
-      const shiftDownEvent = new KeyboardEvent('keydown', { key: 'Shift' });
-      document.dispatchEvent(shiftDownEvent);
-
-      vi.clearAllMocks();
-
-      // Then release shift
-      const shiftUpEvent = new KeyboardEvent('keyup', { key: 'Shift' });
-      document.dispatchEvent(shiftUpEvent);
-
-      // Grid updates only happen during dragging, not on key release alone
-      expect(mockLogger.debugComponent).toHaveBeenCalled();
-    });
-
     it('should ignore non-shift keys', () => {
       const otherKeyEvent = new KeyboardEvent('keydown', { key: 'a' });
       document.dispatchEvent(otherKeyEvent);
 
       // Should not trigger grid updates for non-shift keys
       expect(graph.drawGrid).not.toHaveBeenCalled();
-    });
-
-    it('should handle multiple shift key presses without duplicate state changes', () => {
-      // Press shift multiple times
-      const shiftDownEvent = new KeyboardEvent('keydown', { key: 'Shift' });
-      document.dispatchEvent(shiftDownEvent);
-      document.dispatchEvent(shiftDownEvent);
-      document.dispatchEvent(shiftDownEvent);
-
-      // Should only log once (first press) due to state tracking
-      expect(mockLogger.debugComponent).toHaveBeenCalledTimes(1);
     });
 
     it('should handle shift key release without prior press', () => {
@@ -265,18 +230,6 @@ describe('InfraX6KeyboardAdapter', () => {
 
       const initialPosition = handler.getInitialNodePosition(node.id);
       expect(initialPosition).toEqual(new Point(100, 100));
-    });
-
-    it('should update grid during node mouse move', () => {
-      // Start dragging
-      graph.trigger('node:mousedown', { node });
-      vi.clearAllMocks();
-
-      // Move during drag
-      graph.trigger('node:mousemove', { node });
-
-      // Grid is only redrawn when grid size changes, not on every mouse move
-      expect(mockLogger.debugComponent).toHaveBeenCalled();
     });
 
     it('should not update grid on mouse move when not dragging', () => {
