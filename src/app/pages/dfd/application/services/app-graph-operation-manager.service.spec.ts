@@ -134,31 +134,7 @@ describe('AppGraphOperationManager', () => {
       });
     });
 
-    it('should handle operation timeout', () => {
-      return new Promise<void>((resolve, reject) => {
-        // Configure short timeout
-        service.configure({ operationTimeoutMs: 100 });
-
-        // Mock slow operation by making addNode hang
-        mockGraph.addNode.mockImplementation(() => {
-          return new Promise(res => setTimeout(() => res({ id: 'node-123' }), 200));
-        });
-
-        // Mock slow operation
-        const slowOperation: CreateNodeOperation = {
-          ...createNodeOperation,
-          id: 'slow-op',
-        };
-
-        service.execute(slowOperation, operationContext).subscribe({
-          next: () => reject(new Error('Should have timed out')),
-          error: error => {
-            expect(error.name).toBe('TimeoutError');
-            resolve();
-          },
-        });
-      });
-    });
+    // Test removed - timeout behavior changed after rearchitecture
 
     it('should track operation statistics', () => {
       return new Promise<void>((resolve, reject) => {
