@@ -14,7 +14,7 @@ import { JSDOM } from 'jsdom';
 
 import { InfraX6GraphAdapter } from './infra-x6-graph.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
-import { SelectionService } from '../../presentation/services/ui-presenter-selection.service';
+import { UiPresenterSelectionService } from '../../presentation/services/ui-presenter-selection.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
@@ -116,7 +116,7 @@ describe('InfraX6GraphAdapter', () => {
   let zOrderService: ZOrderService;
   let zOrderAdapter: InfraX6ZOrderAdapter;
   let embeddingAdapter: InfraX6EmbeddingAdapter;
-  let selectionService: SelectionService;
+  let selectionService: UiPresenterSelectionService;
   let historyManager: InfraX6HistoryAdapter;
   let x6EventLogger: InfraX6EventLoggerAdapter;
   let appEdgeService: AppEdgeService;
@@ -165,7 +165,7 @@ describe('InfraX6GraphAdapter', () => {
       infraVisualEffectsService,
       coreEdgeService,
     );
-    selectionService = new SelectionService(mockLogger as unknown as LoggerService);
+    selectionService = new UiPresenterSelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)

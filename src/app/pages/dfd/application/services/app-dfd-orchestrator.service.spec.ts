@@ -116,12 +116,20 @@ describe('AppDfdOrchestrator', () => {
     };
 
     mockDiagramLoadingService = {
-      loadDiagram: vi.fn().mockReturnValue(of({ success: true, data: { nodes: [], edges: [] } })),
+      loadDiagram: vi.fn().mockReturnValue(of({ success: true, data: { cells: [] } })),
+      loadCellsIntoGraph: vi.fn(),
     };
 
     mockExportService = {
       exportDiagram: vi.fn(),
-      prepareImageExport: vi.fn().mockReturnValue({ width: 800, height: 600, cells: [] }),
+      prepareImageExport: vi.fn().mockReturnValue({
+        width: 800,
+        height: 600,
+        cells: [],
+        viewBox: '0 0 800 600',
+        exportOptions: { padding: 20 },
+      }),
+      processSvg: vi.fn((svgString: string) => svgString),
     };
 
     mockNodeConfigService = {
@@ -149,9 +157,39 @@ describe('AppDfdOrchestrator', () => {
       priority: 10,
     };
 
+    // Create a mock graph that will be returned by facade.getGraph()
+    const mockGraph = {
+      dispose: vi.fn(),
+      resize: vi.fn(),
+      clearCells: vi.fn(),
+      addNode: vi.fn(),
+      addEdge: vi.fn(),
+      getCells: vi.fn().mockReturnValue([]),
+      getNodes: vi.fn().mockReturnValue([]),
+      getEdges: vi.fn().mockReturnValue([]),
+      getCellById: vi.fn(),
+      select: vi.fn(),
+      unselect: vi.fn(),
+      getSelectedCells: vi.fn().mockReturnValue([]),
+      toSVG: vi.fn((callback: (svgString: string) => void) => {
+        callback('<svg></svg>');
+      }),
+      toPNG: vi.fn((callback: (dataUri: string) => void) => {
+        callback(
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        );
+      }),
+      selectAll: vi.fn(),
+      cleanSelection: vi.fn(),
+      on: vi.fn(),
+      off: vi.fn(),
+      emit: vi.fn(),
+    };
+
     mockDfdFacade = {
       initializeGraph: vi.fn().mockReturnValue(of(true)),
-      getGraph: vi.fn(),
+      getGraph: vi.fn().mockReturnValue(mockGraph),
+      graphAdapter: {},
       selectAll: vi.fn(),
       clearSelection: vi.fn(),
       getSelectedCells: vi.fn().mockReturnValue([]),
@@ -232,7 +270,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -361,7 +399,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -414,9 +452,17 @@ describe('AppDfdOrchestrator', () => {
       // Create a new service instance that's not initialized
       const uninitializedService = new AppDfdOrchestrator(
         mockLogger,
+        mockAuthService,
         mockGraphOperationManager,
         mockPersistenceCoordinator,
         mockAutoSaveManager,
+        mockDiagramLoadingService,
+        mockExportService,
+        mockNodeConfigService,
+        mockRestStrategy,
+        mockWebSocketStrategy,
+        mockCacheStrategy,
+        mockDfdFacade,
       );
 
       return new Promise<void>((resolve, reject) => {
@@ -507,7 +553,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -613,7 +659,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -654,7 +700,7 @@ describe('AppDfdOrchestrator', () => {
         success: true,
         operationId: 'load-123',
         diagramId: 'test-diagram',
-        data: { nodes: [], edges: [] },
+        data: { cells: [] },
         timestamp: Date.now(),
         metadata: {},
       };
@@ -700,7 +746,7 @@ describe('AppDfdOrchestrator', () => {
         success: true,
         operationId: 'force-load-123',
         diagramId: 'test-diagram',
-        data: { nodes: [], edges: [] },
+        data: { cells: [] },
         timestamp: Date.now(),
         metadata: {},
       };
@@ -732,7 +778,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -861,7 +907,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -925,7 +971,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -1025,7 +1071,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
@@ -1102,7 +1148,7 @@ describe('AppDfdOrchestrator', () => {
           success: true,
           operationId: 'load-123',
           diagramId: 'test-diagram',
-          data: { nodes: [], edges: [] },
+          data: { cells: [] },
           timestamp: Date.now(),
           metadata: {},
         }),
