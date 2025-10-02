@@ -950,22 +950,122 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   closeDiagram(): void {
     this.logger.info('Closing diagram');
 
-    // Save any pending changes before closing
+    // Save any pending changes before closing (with SVG thumbnail for better diagram previews)
     if (this.appDfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
-      this.appDfdOrchestrator.saveManually().subscribe({
-        next: () => {
-          this.logger.info('Diagram saved before closing');
-          this._navigateAway();
-        },
-        error: error => {
-          this.logger.error('Failed to save diagram before closing', { error });
-          // Navigate away even if save failed
-          this._navigateAway();
-        },
-      });
+      this.logger.info('Saving diagram with SVG thumbnail before closing');
+
+      // Capture SVG thumbnail then save
+      this._captureDiagramSvgThumbnail()
+        .then(base64Svg => {
+          const imageData = {
+            svg: base64Svg || undefined,
+          };
+
+          // Save diagram with image data
+          this.appDfdOrchestrator.saveManuallyWithImage(imageData).subscribe({
+            next: () => {
+              this.logger.info('Diagram and thumbnail saved before closing');
+              this._navigateAway();
+            },
+            error: (error: unknown) => {
+              this.logger.error('Failed to save diagram with thumbnail before closing', { error });
+              // Fall back to save without thumbnail
+              this._fallbackSaveAndClose();
+            },
+          });
+        })
+        .catch((error: unknown) => {
+          this.logger.error('Error capturing SVG thumbnail, saving without image', error);
+          // Fall back to save without thumbnail
+          this._fallbackSaveAndClose();
+        });
     } else {
       this._navigateAway();
     }
+  }
+
+  /**
+   * Fallback save without thumbnail (used when thumbnail capture fails)
+   */
+  private _fallbackSaveAndClose(): void {
+    this.appDfdOrchestrator.saveManually().subscribe({
+      next: () => {
+        this.logger.info('Diagram saved before closing (without thumbnail)');
+        this._navigateAway();
+      },
+      error: (error: unknown) => {
+        this.logger.error('Failed to save diagram before closing', { error });
+        // Navigate away even if save failed
+        this._navigateAway();
+      },
+    });
+  }
+
+  /**
+   * Capture SVG from the current graph and return as base64 encoded string (for thumbnails)
+   */
+  private _captureDiagramSvgThumbnail(): Promise<string | null> {
+    return new Promise(resolve => {
+      const graphAdapter = this.dfdInfrastructure.graphAdapter;
+      if (!graphAdapter || !graphAdapter.isInitialized()) {
+        this.logger.warn('Cannot capture SVG - graph not initialized');
+        resolve(null);
+        return;
+      }
+
+      const graph = graphAdapter.getGraph();
+      if (!graph) {
+        this.logger.warn('Cannot capture SVG - graph is null');
+        resolve(null);
+        return;
+      }
+
+      // Get export service from infrastructure
+      const exportService = this.dfdInfrastructure.exportService;
+      if (!exportService) {
+        this.logger.warn('Cannot capture SVG - export service not available');
+        resolve(null);
+        return;
+      }
+
+      const exportPrep = exportService.prepareImageExport(graph);
+      if (!exportPrep) {
+        resolve(null);
+        return; // prepareImageExport handles logging
+      }
+
+      // Cast graph to access export methods added by the X6 export plugin
+      const exportGraph = graph as {
+        toSVG: (
+          callback: (svgString: string) => void,
+          options?: {
+            padding?: number;
+            viewBox?: string;
+            preserveAspectRatio?: string;
+            copyStyles?: boolean;
+          },
+        ) => void;
+      };
+
+      try {
+        exportGraph.toSVG((svgString: string) => {
+          try {
+            const base64Svg = exportService.processSvg(svgString, true, exportPrep.viewBox);
+            this.logger.debug('Successfully captured and cleaned diagram SVG thumbnail', {
+              originalLength: svgString.length,
+              base64Length: base64Svg.length,
+            });
+            resolve(base64Svg);
+          } catch (error: unknown) {
+            this.logger.error('Error encoding SVG to base64', error);
+            resolve(null);
+          }
+        }, exportPrep.exportOptions);
+      } catch (error: unknown) {
+        this.logger.error('Error capturing SVG', error);
+        resolve(null);
+      }
+    });
   }
 
   editCellText(): void {

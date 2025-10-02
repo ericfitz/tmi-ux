@@ -873,6 +873,45 @@ export class AppDfdOrchestrator {
     );
   }
 
+  /**
+   * Save diagram manually with image data (for thumbnails)
+   */
+  saveManuallyWithImage(imageData: { svg?: string }): Observable<any> {
+    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
+      return throwError(() => new Error('DFD system not initialized'));
+    }
+
+    this.logger.debug('AppDfdOrchestrator: Manual save with image triggered', {
+      hasSvg: !!imageData.svg,
+    });
+
+    const graph = this.dfdInfrastructure.getGraph();
+
+    // Use AppDiagramService (accessed via loading service) to save with image data
+    return (this.appDiagramLoadingService as any).diagramService
+      .saveDiagramChangesWithImage(
+        graph,
+        this._initParams.diagramId,
+        this._initParams.threatModelId,
+        imageData,
+      )
+      .pipe(
+        tap((success: boolean) => {
+          if (success) {
+            this._updateState({
+              hasUnsavedChanges: false,
+              lastSaved: new Date(),
+            });
+            this.logger.info('Diagram saved with image successfully');
+          }
+        }),
+        catchError((error: unknown) => {
+          this.logger.error('Manual save with image failed', { error });
+          return throwError(() => error);
+        }),
+      );
+  }
+
   loadDiagram(forceLoad?: boolean): Observable<any>;
   loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<any>;
   loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<any> {

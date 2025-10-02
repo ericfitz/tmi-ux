@@ -372,6 +372,18 @@ export class AppDiagramService {
     const width = mockCell.width ?? mockCell.geometry?.width ?? 80;
     const height = mockCell.height ?? mockCell.geometry?.height ?? 80;
 
+    // Log position data for debugging positioning issues
+    if (x === 0 && y === 0 && !mockCell.x && !mockCell.geometry?.x) {
+      this.logger.warn('Node has no position data, defaulting to (0,0)', {
+        nodeId: mockCell.id,
+        shape: nodeType,
+        mockCellKeys: Object.keys(mockCell),
+        hasX: 'x' in mockCell,
+        hasY: 'y' in mockCell,
+        hasGeometry: 'geometry' in mockCell,
+      });
+    }
+
     // Create base configuration
     const cellConfig: any = {
       id: mockCell.id,

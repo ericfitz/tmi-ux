@@ -87,7 +87,7 @@ export class AppEdgeService {
 
   /**
    * Handle edge added events from the graph adapter
-   * Now simplified to just validate the edge without domain model sync
+   * Validates the edge - auto-save will be triggered by X6 history changes
    */
   handleEdgeAdded(
     edge: Edge,
@@ -141,6 +141,9 @@ export class AppEdgeService {
       targetNodeId,
       label: currentLabel,
     });
+
+    // Note: X6 history plugin automatically tracks this edge addition,
+    // and the auto-save manager will be notified via history change events
 
     return of(void 0);
   }

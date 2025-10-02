@@ -28,6 +28,7 @@ import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-grap
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { AppEdgeService } from '../services/app-edge.service';
+import { AppExportService } from '../services/app-export.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
@@ -46,6 +47,7 @@ export class AppDfdFacade {
     private readonly infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
     private readonly infraNodeService: InfraNodeService,
     private readonly appEdgeService: AppEdgeService,
+    private readonly appExportService: AppExportService,
     private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
     private readonly infraVisualEffectsService: InfraVisualEffectsService,
     private readonly infraX6CoreOperationsService: InfraX6CoreOperationsService,
@@ -423,6 +425,13 @@ export class AppDfdFacade {
    */
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
     return this.infraX6GraphAdapter.historyChanged$;
+  }
+
+  /**
+   * Get the export service for diagram export and thumbnail operations
+   */
+  get exportService(): AppExportService {
+    return this.appExportService;
   }
 
   // ========================================
