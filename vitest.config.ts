@@ -11,9 +11,15 @@ export default defineConfig({
       '@testing': resolve(__dirname, './src/testing'),
     },
   },
+  optimizeDeps: {
+    // Don't pre-bundle these to ensure JIT compiler is available
+    exclude: ['@angular/compiler'],
+    include: ['@angular/common', '@angular/core', '@angular/platform-browser-dynamic'],
+  },
   plugins: [
     angular({
       tsconfig: './tsconfig.spec.json',
+      jit: true, // Enable JIT compilation mode
     }),
   ],
   test: {

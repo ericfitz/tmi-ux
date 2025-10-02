@@ -31,6 +31,13 @@ export {
   type MockHttpClient,
 } from './mock-http-client.service';
 
+// PlatformLocation service mocks
+export {
+  createMockPlatformLocation,
+  createTypedMockPlatformLocation,
+  type MockPlatformLocation,
+} from './mock-platform-location.service';
+
 /**
  * Factory function to create all commonly used mocks
  * Use this when you need multiple mocks in a single test file

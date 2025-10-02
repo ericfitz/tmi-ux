@@ -109,8 +109,59 @@ The integration testing approach was successfully implemented for `EdgeService` 
 - **Actual port visibility updates** verified in tests
 - **Improved test reliability** and maintainability
 
+## Angular + Vitest + JIT Compilation Setup
+
+### Critical Setup Requirements
+
+When testing Angular services with Vitest that use `@Injectable()` decorators:
+
+1. **Always import `@angular/compiler` at the top of test files**:
+   ```typescript
+   import '@angular/compiler';
+
+   import { describe, it, expect, beforeEach } from 'vitest';
+   // ... rest of imports
+   ```
+
+2. **Zone.js Setup**: The global `test-setup.ts` imports `zone-setup.ts` which loads Zone.js but does NOT initialize TestBed globally (TestBed state is not serializable across vitest's forked processes)
+
+3. **Service Instantiation Options**:
+   - **Direct instantiation**: `new ServiceName(dependencies)` - Requires all dependencies to be provided manually
+   - **TestBed**: Can be used per test file by calling `TestBed.initTestEnvironment()` in `beforeAll()` hook
+   - **Recommendation**: Use direct instantiation for integration tests (real services), use TestBed only when absolutely necessary
+
+### Common Issues and Solutions
+
+#### Issue: "JIT compilation failed for injectable [class PlatformLocation]"
+**Solution**: Add `import '@angular/compiler';` at the top of the test file
+
+#### Issue: "ServiceName2 is not a constructor" or "No provider found for ServiceName2"
+**Cause**: Angular's JIT compiler compiles the service twice when using TestBed incorrectly
+**Solution**: Either:
+- Use direct instantiation: `new ServiceName(deps)`
+- Or properly initialize TestBed in `beforeAll()` with lazy imports
+
+#### Issue: "Cannot read properties of undefined (reading 'subscribe')"
+**Cause**: Missing mock dependencies or incomplete mock implementations
+**Solution**: Ensure all service dependencies are provided and all observable/subject properties are mocked
+
+### Testing Strategy Decision Tree
+
+```
+Is this a high-level orchestrator/coordinator?
+├─ YES → Mock all dependencies (test orchestration logic only)
+│        Example: AppDfdOrchestrator with 12 mocked dependencies
+│
+└─ NO → Use integration testing approach
+         ├─ Create real service instances
+         ├─ Only mock cross-cutting concerns (LoggerService)
+         └─ Test actual service integration
+              Example: EdgeService with real PortStateManager
+```
+
 ## Future Considerations
 
 - Apply similar approach to other service test files when mock logic duplication becomes an issue
 - Consider hybrid approaches where some dependencies are real and others are mocked based on testing needs
 - Document service dependency chains to help determine optimal testing strategies
+- **All test files that use X6 Graph or Angular services with @Injectable() must import '@angular/compiler'**

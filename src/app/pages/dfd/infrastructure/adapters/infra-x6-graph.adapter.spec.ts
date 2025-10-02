@@ -6,6 +6,8 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
+import '@angular/compiler';
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph } from '@antv/x6';
 import { JSDOM } from 'jsdom';

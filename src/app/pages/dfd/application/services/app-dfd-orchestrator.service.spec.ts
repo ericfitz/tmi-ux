@@ -61,18 +61,31 @@ import { AutoSaveState } from '../../types/auto-save.types';
 describe('AppDfdOrchestrator', () => {
   let service: AppDfdOrchestrator;
   let mockLogger: any;
+  let mockAuthService: any;
   let mockGraphOperationManager: any;
   let mockPersistenceCoordinator: any;
   let mockAutoSaveManager: any;
+  let mockDiagramLoadingService: any;
+  let mockExportService: any;
+  let mockNodeConfigService: any;
+  let mockRestStrategy: any;
+  let mockWebSocketStrategy: any;
+  let mockCacheStrategy: any;
+  let mockDfdFacade: any;
   let mockContainerElement: HTMLElement;
 
   beforeEach(() => {
-    // Create spies
+    // Create all 12 required mocks
     mockLogger = {
       info: vi.fn(),
       debug: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
+    };
+
+    mockAuthService = {
+      getCurrentUser: vi.fn().mockReturnValue(of({ id: 'user-1', email: 'test@example.com' })),
+      isAuthenticated: vi.fn().mockReturnValue(of(true)),
     };
 
     mockGraphOperationManager = {
@@ -87,6 +100,9 @@ describe('AppDfdOrchestrator', () => {
       save: vi.fn(),
       load: vi.fn(),
       sync: vi.fn(),
+      addStrategy: vi.fn(),
+      setFallbackStrategy: vi.fn(),
+      getStrategies: vi.fn().mockReturnValue([]),
     };
 
     mockAutoSaveManager = {
@@ -99,18 +115,71 @@ describe('AppDfdOrchestrator', () => {
       saveCompleted$: new Subject(),
     };
 
+    mockDiagramLoadingService = {
+      loadDiagram: vi.fn().mockReturnValue(of({ success: true, data: { nodes: [], edges: [] } })),
+    };
+
+    mockExportService = {
+      exportDiagram: vi.fn(),
+    };
+
+    mockNodeConfigService = {
+      getNodeConfiguration: vi.fn(),
+    };
+
+    mockRestStrategy = {
+      save: vi.fn(),
+      load: vi.fn(),
+      type: 'rest',
+      priority: 100,
+    };
+
+    mockWebSocketStrategy = {
+      save: vi.fn(),
+      load: vi.fn(),
+      type: 'websocket',
+      priority: 90,
+    };
+
+    mockCacheStrategy = {
+      save: vi.fn(),
+      load: vi.fn(),
+      type: 'cache',
+      priority: 10,
+    };
+
+    mockDfdFacade = {
+      initializeGraph: vi.fn().mockReturnValue(of(true)),
+      getGraph: vi.fn(),
+      selectAll: vi.fn(),
+      clearSelection: vi.fn(),
+      getSelectedCells: vi.fn().mockReturnValue([]),
+      deleteSelected: vi.fn(),
+      handleResize: vi.fn(),
+      destroy: vi.fn(),
+      historyModified$: new Subject(),
+    };
+
     // Create mock container element
     mockContainerElement = document.createElement('div');
     mockContainerElement.style.width = '800px';
     mockContainerElement.style.height = '600px';
     document.body.appendChild(mockContainerElement);
 
-    // Create service directly without TestBed
+    // Create service with all 12 dependencies
     service = new AppDfdOrchestrator(
       mockLogger,
+      mockAuthService,
       mockGraphOperationManager,
       mockPersistenceCoordinator,
       mockAutoSaveManager,
+      mockDiagramLoadingService,
+      mockExportService,
+      mockNodeConfigService,
+      mockRestStrategy,
+      mockWebSocketStrategy,
+      mockCacheStrategy,
+      mockDfdFacade,
     );
   });
 

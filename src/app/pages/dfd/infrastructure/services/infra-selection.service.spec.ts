@@ -6,9 +6,11 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
+import '@angular/compiler';
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
-import { SelectionService } from '../../presentation/services/ui-presenter-selection.service';
+import { SelectionService } from './infra-selection.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
