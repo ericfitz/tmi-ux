@@ -48,6 +48,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
   let service: AppEdgeService;
   let graph: Graph;
   let mockLogger: MockLoggerService;
+  let mockTransloco: any;
   let mockX6ZOrderAdapter: MockX6ZOrderAdapter;
   let mockX6HistoryManager: MockX6HistoryManager;
   let mockVisualEffectsService: MockVisualEffectsService;
@@ -68,6 +69,10 @@ describe('AppEdgeService - Comprehensive Tests', () => {
 
     // Create mocks for complex dependencies
     mockLogger = createTypedMockLoggerService();
+
+    mockTransloco = {
+      translate: vi.fn((key: string) => key),
+    };
 
     mockX6ZOrderAdapter = {
       setEdgeZOrderFromConnectedNodes: vi.fn(),
@@ -92,6 +97,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     // Create service instance
     service = new AppEdgeService(
       mockLogger as unknown as LoggerService,
+      mockTransloco,
       mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
       mockX6HistoryManager as unknown as InfraX6HistoryAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,

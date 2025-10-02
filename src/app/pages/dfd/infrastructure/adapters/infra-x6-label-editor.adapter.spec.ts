@@ -155,7 +155,8 @@ describe('X6LabelEditorAdapter', () => {
       expect(input).toBeTruthy();
       expect(input.value).toBe('Test Node');
       expect(input.style.position).toBe('absolute');
-      expect(input.style.border).toBe('2px solid rgb(0, 123, 255)');
+      // Border may be in hex (#007bff) or rgb format depending on environment
+      expect(input.style.border).toMatch(/2px solid (#007bff|rgb\(0, 123, 255\))/);
     });
 
     it('should position input element correctly for node', () => {

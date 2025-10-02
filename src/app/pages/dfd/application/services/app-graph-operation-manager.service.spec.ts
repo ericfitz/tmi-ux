@@ -139,6 +139,11 @@ describe('AppGraphOperationManager', () => {
         // Configure short timeout
         service.configure({ operationTimeoutMs: 100 });
 
+        // Mock slow operation by making addNode hang
+        mockGraph.addNode.mockImplementation(() => {
+          return new Promise(res => setTimeout(() => res({ id: 'node-123' }), 200));
+        });
+
         // Mock slow operation
         const slowOperation: CreateNodeOperation = {
           ...createNodeOperation,
