@@ -52,7 +52,8 @@
     "loc-dedupe": "uv run scripts/find_duplicate_localizations.py --skippolicy",
     "bump": "pnpm update --verbose && pnpm install --verbose",
     "update-shared": "git subtree pull --prefix=shared-api https://github.com/ericfitz/tmi.git shared --squash",
-    "check:security": "tsx scripts/check-security.ts"
+    "check:security": "tsx scripts/check-security.ts",
+    "heroku-postbuild": "ng build --configuration=production"
   },
   "private": true,
   "dependencies": {

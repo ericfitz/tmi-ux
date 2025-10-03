@@ -44,7 +44,8 @@
       "Bash(gh pr view:*)",
       "Bash(gh pr checkout:*)",
       "Bash(git checkout:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(heroku:*)"
     ]
   },
   "enableAllProjectMcpServers": false
