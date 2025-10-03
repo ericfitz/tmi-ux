@@ -15,7 +15,7 @@ export const environment: Environment = {
   apiUrl: 'https://api.tmi.dev',
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Project (Development Demo)',
-  operatorContact: 'github@efitz.net',
+  operatorContact: 'https://github.com/ericfitz/tmi/discussions',
   operatorJurisdiction: 'Florida, United States of America',
   oauth: {},
   securityConfig: {

@@ -11,7 +11,7 @@ export const environment: Environment = {
   apiUrl: 'http://localhost:8080',
   authTokenExpiryMinutes: 1440, // 24 hours for easier development
   operatorName: 'TMI Project (Development Demo)',
-  operatorContact: 'github@efitz.net',
+  operatorContact: 'https://github.com/ericfitz/tmi/discussions',
   operatorJurisdiction: 'Florida, United States of America',
   serverPort: 4200,
   serverInterface: 'localhost',
