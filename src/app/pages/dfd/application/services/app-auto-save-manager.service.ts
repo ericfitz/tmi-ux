@@ -75,9 +75,9 @@ const DEFAULT_POLICIES: Record<string, AutoSavePolicy> = {
   },
   normal: {
     mode: 'normal',
-    changeThreshold: 3,
-    timeThresholdMs: 15000,
-    debounceMs: 1000,
+    changeThreshold: 1, // Changed from 3 to 1 to trigger save after each change
+    timeThresholdMs: 0, // Changed from 15000 to 0 to allow saves at any time
+    debounceMs: 5000, // 5 second debounce to batch rapid changes
     maxRetryAttempts: 3,
   },
   conservative: {
@@ -454,12 +454,14 @@ export class AppAutoSaveManager {
   }
 
   private _processTrigger(event: AutoSaveTriggerEvent): void {
-    // In a real implementation, this would contain the context
-    // For now, we'll just log that the trigger was processed
     this.logger.debug('Processing debounced trigger', {
       type: event.type,
       operationType: event.operationType,
     });
+
+    // Note: The actual save is triggered by _shouldTriggerSave() which is called
+    // from trigger() method. This method is just for logging debounced events.
+    // The save context is not available here due to the debouncing pipeline.
   }
 
   private _shouldTriggerSave(event: AutoSaveTriggerEvent, context: AutoSaveContext): boolean {

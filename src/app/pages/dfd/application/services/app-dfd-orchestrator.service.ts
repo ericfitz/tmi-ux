@@ -1222,15 +1222,23 @@ export class AppDfdOrchestrator {
       timestamp: Date.now(),
     };
 
+    const graphData = this._getGraphData();
+
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
-      diagramData: this._getGraphData(),
+      diagramData: graphData,
       preferredStrategy: 'websocket',
     };
+
+    this.logger.info('[ORCHESTRATOR-DEBUG] Auto-save context created from history', {
+      diagramId: autoSaveContext.diagramId,
+      nodeCount: graphData.nodes?.length || 0,
+      edgeCount: graphData.edges?.length || 0,
+    });
 
     if (this.appAutoSaveManager.trigger) {
       this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
