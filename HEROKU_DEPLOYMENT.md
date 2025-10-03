@@ -18,26 +18,7 @@ The deployment uses a simplified approach:
 
 ## Deployment Steps
 
-### 1. Create Environment File
-
-Before first deployment, run the configuration script to create `environment.heroku.ts`:
-
-```bash
-bash scripts/configure-heroku-env.sh
-```
-
-This creates `src/environments/environment.heroku.ts` with:
-- `apiUrl`: https://api.tmi.dev
-- `operatorName`: TMI Project (Development Demo)
-- `operatorContact`: github@efitz.net
-- `operatorJurisdiction`: Florida, United States of America
-- `logLevel`: INFO
-- `authTokenExpiryMinutes`: 60
-- Security headers configured for production
-
-**Note**: This file is gitignored and only exists locally/on Heroku build servers.
-
-### 2. Deploy to Heroku
+### Deploy to Heroku
 
 ```bash
 git push heroku main
@@ -50,7 +31,7 @@ This triggers:
 
 **Note**: `PORT` is automatically set by Heroku and should not be configured manually.
 
-### 3. Verify Deployment
+### Verify Deployment
 
 Check the app status:
 ```bash
@@ -77,18 +58,20 @@ heroku buildpacks --app tmi-ux
 
 To change the Heroku environment configuration:
 
-1. Edit the values in `scripts/configure-heroku-env.sh`
-2. Run the script to regenerate `environment.heroku.ts`:
+1. Edit `src/environments/environment.heroku.ts` directly, or
+2. Edit values in `scripts/configure-heroku-env.sh` and run it to regenerate the file:
    ```bash
    bash scripts/configure-heroku-env.sh
    ```
-3. Commit the script changes (but NOT environment.heroku.ts - it's gitignored)
+3. Commit the changes:
+   ```bash
+   git add src/environments/environment.heroku.ts
+   git commit -m "Update Heroku configuration"
+   ```
 4. Deploy:
    ```bash
    git push heroku main
    ```
-
-Alternatively, manually edit `src/environments/environment.heroku.ts` locally before deploying.
 
 ## Troubleshooting
 
@@ -101,7 +84,6 @@ heroku logs --tail --app tmi-ux
 
 Common issues:
 - **Missing buildpack**: Ensure pnpm buildpack is added
-- **Missing environment.heroku.ts**: Run `scripts/configure-heroku-env.sh` before deploying
 - **Build timeout**: Check for large dependencies
 
 ### Runtime Errors
@@ -119,8 +101,8 @@ The server uses `process.env.PORT` which Heroku sets automatically. If the serve
 
 ## Files Involved
 
-- `scripts/configure-heroku-env.sh` - Generates environment.heroku.ts
-- `src/environments/environment.heroku.ts` - Heroku environment config (gitignored)
+- `scripts/configure-heroku-env.sh` - Script to generate environment.heroku.ts
+- `src/environments/environment.heroku.ts` - Heroku environment config (committed to repo)
 - `angular.json` - Contains `heroku` build configuration
 - `Procfile` - Tells Heroku how to run the app
 - `package.json` - Contains `heroku-postbuild` and `build:heroku` scripts
@@ -130,4 +112,4 @@ The server uses `process.env.PORT` which Heroku sets automatically. If the serve
 
 Unlike typical server apps that read environment variables at runtime, Angular applications require environment configuration at build time. The configuration values are compiled directly into the JavaScript bundle.
 
-We use a gitignored `environment.heroku.ts` file that must exist before building. This keeps deployment simple while preventing sensitive configuration from being committed to the repository.
+The `environment.heroku.ts` file is committed to the repository and contains the configuration for Heroku deployments. Since it only contains public API URLs and operator information (no secrets), it's safe to commit.
