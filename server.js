@@ -20,11 +20,11 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Serve static files from the Angular app build output
-app.use(express.static(path.join(__dirname, 'dist/tmi-ux')));
+app.use(express.static(path.join(__dirname, 'dist/tmi-ux/browser')));
 
-// For all GET requests, serve the Angular index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/tmi-ux/index.html'));
+// For all GET requests not matching static files, serve the Angular index.html (SPA fallback)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/tmi-ux/browser/index.html'));
 });
 
 // Use the port provided by Heroku or default to 8080

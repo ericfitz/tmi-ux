@@ -25,17 +25,14 @@ RUN pnpm run build:heroku
 # Stage 2: Production server
 FROM node:20-alpine
 
-# Install pnpm for production dependencies
-RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
-
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Create minimal package.json for runtime dependencies only
+RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
 
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
+# Install only runtime dependencies
+RUN npm install --omit=dev
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
