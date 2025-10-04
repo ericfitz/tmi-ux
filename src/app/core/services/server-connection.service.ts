@@ -314,7 +314,8 @@ export class ServerConnectionService implements OnDestroy {
     this.logger.debugComponent('ServerConnection', 'Performing HTTP health check');
 
     // Use the root API endpoint as defined in tmi-openapi.json
-    const statusEndpoint = environment.apiUrl.replace('/api', '');
+    // Remove trailing /api if present (e.g., 'http://localhost:8080/api' -> 'http://localhost:8080')
+    const statusEndpoint = environment.apiUrl.replace(/\/api$/, '');
 
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {

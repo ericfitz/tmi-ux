@@ -10,9 +10,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies
-RUN corepack enable && corepack prepare pnpm@10.12.1 --activate && \
-    pnpm install --frozen-lockfile
+# Install dependencies (pnpm is pre-installed in the -dev image)
+RUN pnpm install --frozen-lockfile
 
 # Copy application source
 COPY . .
@@ -45,5 +44,5 @@ EXPOSE 8080
 ENV PORT=8080
 ENV NODE_ENV=production
 
-# Start the server
-CMD ["node", "server.js"]
+# Start the server (entrypoint is already set to /usr/bin/node in base image)
+CMD ["server.js"]

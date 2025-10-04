@@ -8,10 +8,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Set up a basic rate limiter: max 100 requests per 15 minutes per IP
+// Set up a basic rate limiter for static file server
+// More permissive limits since this serves an SPA with many static assets
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Limit each IP to 1000 requests per windowMs (static files + API health checks)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
