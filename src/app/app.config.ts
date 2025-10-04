@@ -31,6 +31,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { BidiModule } from '@angular/cdk/bidi';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
@@ -66,6 +68,18 @@ function initializeSecurityMonitoring(securityConfig: SecurityConfigService): ()
 function initializeDialogDirection(_dialogDirection: DialogDirectionService): () => void {
   return () => {
     // Service initialization happens in constructor
+  };
+}
+
+// Material Icons initialization function
+function initializeMaterialIcons(
+  iconRegistry: MatIconRegistry,
+  _sanitizer: DomSanitizer
+): () => void {
+  return () => {
+    // Register the Material Symbols Outlined font set
+    iconRegistry.registerFontClassAlias('material-symbols-outlined', 'material-symbols-outlined');
+    iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
   };
 }
 
@@ -117,6 +131,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeDialogDirection,
       deps: [DialogDirectionService],
+      multi: true,
+    },
+    // Initialize Material Icons
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeMaterialIcons,
+      deps: [MatIconRegistry, DomSanitizer],
       multi: true,
     },
     // Provide services with interface tokens to satisfy DI requirements
