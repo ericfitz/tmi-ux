@@ -2,10 +2,7 @@
 # Uses hosted-container configuration (environment.hosted-container.ts)
 
 # Stage 1: Build the Angular application
-FROM node:20-alpine AS builder
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
+FROM cgr.dev/chainguard/node:latest-dev AS builder
 
 # Set working directory
 WORKDIR /app
@@ -14,7 +11,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate && \
+    pnpm install --frozen-lockfile
 
 # Copy application source
 COPY . .
@@ -23,7 +21,7 @@ COPY . .
 RUN pnpm run build:hosted-container
 
 # Stage 2: Production server
-FROM node:20-alpine
+FROM cgr.dev/chainguard/node:latest
 
 # Set working directory
 WORKDIR /app
@@ -39,14 +37,6 @@ COPY --from=builder /app/dist ./dist
 
 # Copy server file
 COPY server.js ./
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
-
-# Switch to non-root user
-USER nodejs
 
 # Expose port 8080 (Cloud Run default)
 EXPOSE 8080
