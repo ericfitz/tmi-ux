@@ -318,7 +318,10 @@ describe('NodeOperationExecutor', () => {
             try {
               expect(result.success).toBe(true);
 
-              expect(mockNode.setAttrByPath).toHaveBeenCalledWith('label/text', 'Only Label Update');
+              expect(mockNode.setAttrByPath).toHaveBeenCalledWith(
+                'label/text',
+                'Only Label Update',
+              );
               expect(mockNode.setPosition).not.toHaveBeenCalled();
               expect(mockNode.setSize).not.toHaveBeenCalled();
 

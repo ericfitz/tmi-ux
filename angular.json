@@ -153,7 +153,7 @@
               "extractLicenses": false,
               "sourceMap": true
             },
-            "heroku": {
+            "hosted-container": {
               "budgets": [
                 {
                   "type": "initial",
@@ -170,7 +170,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.heroku.ts"
+                  "with": "src/environments/environment.hosted-container.ts"
                 }
               ]
             }

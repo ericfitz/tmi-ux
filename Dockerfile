@@ -1,5 +1,5 @@
 # Multi-stage build for TMI-UX on Google Cloud Run
-# Uses Heroku configuration (environment.heroku.ts)
+# Uses hosted-container configuration (environment.hosted-container.ts)
 
 # Stage 1: Build the Angular application
 FROM node:20-alpine AS builder
@@ -19,8 +19,8 @@ RUN pnpm install --frozen-lockfile
 # Copy application source
 COPY . .
 
-# Build the application with Heroku configuration
-RUN pnpm run build:heroku
+# Build the application with hosted-container configuration
+RUN pnpm run build:hosted-container
 
 # Stage 2: Production server
 FROM node:20-alpine

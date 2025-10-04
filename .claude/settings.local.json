@@ -47,7 +47,10 @@
       "Read(//tmp/**)",
       "Bash(heroku:*)",
       "Bash(gcloud:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(/opt/homebrew/share/google-cloud-sdk/bin/gcloud run services list)",
+      "Bash(/opt/homebrew/bin/python3:*)",
+      "Bash(CLOUDSDK_PYTHON=/opt/homebrew/bin/python3 /opt/homebrew/share/google-cloud-sdk/bin/gcloud run services list)"
     ]
   },
   "enableAllProjectMcpServers": false

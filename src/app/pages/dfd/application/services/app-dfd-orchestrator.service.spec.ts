@@ -995,7 +995,7 @@ describe('AppDfdOrchestrator', () => {
       const mockCell2 = { id: 'cell-2' };
       const mockGraph = {
         getSelectedCells: vi.fn().mockReturnValue([mockCell1, mockCell2]),
-        getCellById: vi.fn((id: string) => id === 'cell-1' ? mockCell1 : mockCell2),
+        getCellById: vi.fn((id: string) => (id === 'cell-1' ? mockCell1 : mockCell2)),
         unselect: vi.fn(),
       };
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);

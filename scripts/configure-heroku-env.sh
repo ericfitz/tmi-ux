@@ -1,20 +1,20 @@
 #!/bin/bash
 
-# Script to create environment.heroku.ts for tmi-ux Heroku deployment
+# Script to create environment.hosted-container.ts for tmi-ux hosted container deployment
 # This file is committed to the repository
 
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ENV_FILE="${SCRIPT_DIR}/../src/environments/environment.heroku.ts"
+ENV_FILE="${SCRIPT_DIR}/../src/environments/environment.hosted-container.ts"
 
-echo "Creating environment.heroku.ts for Heroku deployment..."
+echo "Creating environment.hosted-container.ts for hosted container deployment..."
 
 cat > "${ENV_FILE}" << 'EOF'
 /**
- * Heroku Environment Configuration
+ * Hosted Container Environment Configuration
  *
- * This file contains the environment configuration for Heroku deployment.
+ * This file contains the environment configuration for hosted container deployment.
  * Values are configured for the production TMI API at https://api.tmi.dev
  *
  * To regenerate this file, run: scripts/configure-heroku-env.sh
@@ -46,8 +46,8 @@ EOF
 echo "✓ Created ${ENV_FILE}"
 echo ""
 echo "Remember to commit this file:"
-echo "  git add src/environments/environment.heroku.ts"
-echo "  git commit -m 'Update Heroku environment configuration'"
+echo "  git add src/environments/environment.hosted-container.ts"
+echo "  git commit -m 'Update hosted container environment configuration'"
 echo ""
 echo "Then deploy to Heroku:"
 echo "  git push heroku main"

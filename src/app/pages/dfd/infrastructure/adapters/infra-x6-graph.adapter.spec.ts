@@ -171,7 +171,9 @@ describe('InfraX6GraphAdapter', () => {
     );
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
-    diagramOperationBroadcaster = new AppDiagramOperationBroadcaster(mockLogger as unknown as LoggerService);
+    diagramOperationBroadcaster = new AppDiagramOperationBroadcaster(
+      mockLogger as unknown as LoggerService,
+    );
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)
     selectionAdapter = new InfraX6SelectionAdapter(
