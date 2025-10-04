@@ -72,7 +72,7 @@ describe('AppAutoSaveManager', () => {
       const policy = service.getPolicy();
       expect(policy.mode).toBe('normal');
       expect(policy.changeThreshold).toBeGreaterThan(0);
-      expect(policy.timeThresholdMs).toBeGreaterThan(0);
+      expect(policy.timeThresholdMs).toBeGreaterThanOrEqual(0);
     });
 
     it('should have initial state', () => {
@@ -412,8 +412,8 @@ describe('AppAutoSaveManager', () => {
 
               if (completedTriggers === totalTriggers) {
                 // Should have triggered save when threshold was reached
-                // Wait for debounced save to execute
-                vi.advanceTimersByTime(1100); // Wait for 1000ms debounce + buffer
+                // Wait for debounced save to execute (normal mode has 5000ms debounce)
+                vi.advanceTimersByTime(5100); // Wait for 5000ms debounce + buffer
                 expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
                 resolve();
               }

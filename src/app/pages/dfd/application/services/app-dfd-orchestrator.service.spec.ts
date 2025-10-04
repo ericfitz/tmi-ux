@@ -900,6 +900,9 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        collaborationEnabled: false,
+        readOnly: false,
+        autoSaveMode: 'normal',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(

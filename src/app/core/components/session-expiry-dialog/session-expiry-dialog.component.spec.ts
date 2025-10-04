@@ -62,13 +62,19 @@ describe('SessionExpiryDialogComponent', () => {
   });
 
   it('should format time remaining as minutes:seconds', () => {
-    // Set expiry to 2 minutes 30 seconds from now
-    component.data.expiresAt = new Date(Date.now() + 150000);
+    // Mock current time to ensure consistent test results
+    const baseTime = Date.now();
+    vi.setSystemTime(new Date(baseTime));
+
+    // Set expiry to 2 minutes 30 seconds from mocked time
+    component.data.expiresAt = new Date(baseTime + 150000);
 
     // Manually trigger update to test formatting
     (component as any).updateTimeRemaining();
 
     expect(component.timeRemaining).toBe('2:30');
+
+    vi.useRealTimers();
   });
 
   it('should format time remaining as "1:00" when exactly 60 seconds left', () => {

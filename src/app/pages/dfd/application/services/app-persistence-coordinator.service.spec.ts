@@ -43,12 +43,12 @@ describe('AppPersistenceCoordinator', () => {
       send: vi.fn(),
     };
 
-    // Create strategy spy
+    // Create strategy spy - using 'cache-only' type so it's always available
     mockStrategy = {
       save: vi.fn(),
       load: vi.fn(),
       sync: vi.fn(),
-      type: 'test-strategy',
+      type: 'cache-only',
       priority: 100,
     };
 
@@ -84,7 +84,7 @@ describe('AppPersistenceCoordinator', () => {
 
     it('should allow removing strategies', () => {
       service.addStrategy(mockStrategy);
-      service.removeStrategy('test-strategy');
+      service.removeStrategy('cache-only');
       const strategies = service.getStrategies();
 
       expect(strategies).not.toContain(mockStrategy);
@@ -117,10 +117,10 @@ describe('AppPersistenceCoordinator', () => {
 
     it('should allow setting fallback strategy', () => {
       service.addStrategy(mockStrategy);
-      service.setFallbackStrategy('test-strategy');
+      service.setFallbackStrategy('cache-only');
 
       // Should not throw error
-      expect(() => service.setFallbackStrategy('test-strategy')).not.toThrow();
+      expect(() => service.setFallbackStrategy('cache-only')).not.toThrow();
     });
   });
 
@@ -132,7 +132,7 @@ describe('AppPersistenceCoordinator', () => {
       saveOperation = {
         diagramId: 'test-diagram',
         data: { nodes: [], edges: [] },
-        strategyType: 'test-strategy',
+        strategyType: 'cache-only',
         metadata: { userId: 'test-user' },
       };
 
@@ -196,7 +196,7 @@ describe('AppPersistenceCoordinator', () => {
     beforeEach(() => {
       syncOperation = {
         diagramId: 'test-diagram',
-        strategyType: 'test-strategy',
+        strategyType: 'cache-only',
         lastSyncTimestamp: Date.now() - 10000,
       };
 
