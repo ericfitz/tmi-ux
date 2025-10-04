@@ -1,0 +1,138 @@
+/**
+ * Self-hosted Font Definitions
+ *
+ * All fonts are bundled with the application to eliminate external dependencies
+ * and ensure consistent rendering across all deployment environments.
+ */
+
+// =============================================================================
+// ROBOTO CONDENSED (Primary Font)
+// =============================================================================
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  src: url('/assets/fonts/roboto-condensed/RobotoCondensed-VariableFont.ttf')
+    format('truetype');
+}
+
+// =============================================================================
+// ROBOTO MONO (Monospace Font)
+// =============================================================================
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url('/assets/fonts/roboto-mono/RobotoMono-VariableFont.ttf') format('truetype');
+}
+
+// =============================================================================
+// MATERIAL SYMBOLS OUTLINED (Icon Font)
+// =============================================================================
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url('/assets/fonts/material-symbols/MaterialSymbolsOutlined-VariableFont.ttf')
+    format('truetype');
+}
+
+// =============================================================================
+// NOTO SANS (Base Font for International Support)
+// =============================================================================
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSans-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSans-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+// =============================================================================
+// NOTO SANS - LANGUAGE-SPECIFIC VARIANTS
+// =============================================================================
+
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansArabic-VariableFont_wdth,wght.ttf') format('truetype');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Noto Sans Hebrew';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansHebrew-VariableFont_wdth,wght.ttf') format('truetype');
+  unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansJP-VariableFont_wght.ttf') format('truetype');
+  unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansKR-VariableFont_wght.ttf') format('truetype');
+  unicode-range: U+AC00-D7A3, U+1100-11FF, U+3130-318F, U+A960-A97F, U+D7B0-D7FF;
+}
+
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansSC-VariableFont_wght.ttf') format('truetype');
+  unicode-range: U+4E00-9FFF, U+3400-4DBF, U+20000-2A6DF;
+}
+
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansThai-VariableFont_wdth,wght.ttf') format('truetype');
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: 'Noto Sans Symbols';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/assets/fonts/ttf/NotoSansSymbols-VariableFont_wght.ttf') format('truetype');
+  unicode-range: U+2000-206F, U+2190-21FF, U+2200-22FF, U+2300-23FF, U+2400-243F, U+2440-245F,
+    U+2460-24FF, U+2500-257F, U+2580-259F, U+25A0-25FF, U+2600-26FF, U+2700-27BF;
+}

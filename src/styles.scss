@@ -1,8 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Import core systems
+// Import core systems (@use must come before @import)
 @use 'styles/colors';
 @use 'styles/typography';
+
+// Import fonts
+@import 'styles/fonts';
 
 // Import FontAwesome
 @import '@fortawesome/fontawesome-free/css/all.min.css';
