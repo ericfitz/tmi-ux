@@ -252,12 +252,12 @@ export class CollaborationSessionService implements OnDestroy {
    * Load real collaboration sessions from server
    */
   private loadRealSessions(): Observable<CollaborationSession[]> {
-    this.logger.info('Loading collaboration sessions from server');
-
-    // Always use HTTP API to load sessions - WebSocket is only for real-time updates
+    // Always use REST API to load sessions - WebSocket is only for real-time updates
     return this.requestSessionsViaHttp().pipe(
       map(sessions => {
-        this.logger.info('Loaded sessions from HTTP API', { count: sessions.length });
+        this.logger.debug('Loaded collaboration sessions from REST API', {
+          count: sessions.length,
+        });
         this._sessions$.next(sessions);
         return sessions;
       }),

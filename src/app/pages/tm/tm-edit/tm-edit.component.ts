@@ -1617,11 +1617,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     try {
-      this.logger.info('Generating PDF report', {
-        threatModelId: this.threatModel.id,
-        threatModelName: this.threatModel.name,
-      });
-
       await this.threatModelReportService.generateReport(this.threatModel);
 
       this.logger.info('PDF report generation completed successfully');

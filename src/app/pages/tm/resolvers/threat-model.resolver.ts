@@ -55,12 +55,6 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
   return threatModelService.getThreatModelById(threatModelId, forceRefresh).pipe(
     tap(threatModel => {
       if (threatModel) {
-        logger.info('Threat model resolved successfully', {
-          id: threatModel.id,
-          name: threatModel.name,
-          authorizationCount: threatModel.authorization.length,
-        });
-
         // Set authorization in the authorization service
         authorizationService.setAuthorization(threatModel.id, threatModel.authorization);
 

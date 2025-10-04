@@ -34,9 +34,6 @@ export class FrameworkService {
 
     return forkJoin(frameworkRequests).pipe(
       map(frameworks => {
-        this.logger.info('Successfully loaded framework files', {
-          count: frameworks.length,
-        });
         return frameworks.map(framework => this._convertToFrameworkModel(framework));
       }),
     );

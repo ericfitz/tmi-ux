@@ -112,6 +112,37 @@ mat-card-header {
     margin-bottom: 0;
     font-weight: var(--font-weight-bold);
   }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  // Also apply to direct button children (for cards with single add button)
+  > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 .threat-model-form {
@@ -390,6 +421,18 @@ mat-card-header {
   gap: 4px;
   align-items: center;
   align-self: center; /* Center the buttons vertically within the list item */
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 // Tooltip styling for document items
@@ -406,6 +449,18 @@ mat-card-header {
   gap: 4px;
   align-items: center;
   align-self: center; /* Center the buttons vertically within the list item */
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 // Specific styling for threats list items to ensure proper vertical centering
@@ -569,6 +624,26 @@ mat-card-header {
 
     &:visited {
       color: #7b1fa2;
+    }
+  }
+}
+
+// Ensure action buttons in source code items have centered icons
+.source-code-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  align-self: center;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }

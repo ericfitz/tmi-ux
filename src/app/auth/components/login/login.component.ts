@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
     this.loadProviders();
 
     this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
-      this.logger.info('LoginComponent received query params', params);
+      this.logger.debug('LoginComponent received query params', params);
 
       this.returnUrl = params.returnUrl || '/tm';
       const code = params.code;
@@ -163,7 +163,6 @@ export class LoginComponent implements OnInit {
 
   private handleOAuthCallback(response: OAuthResponse): void {
     this.isLoading = true;
-    this.logger.info('Handling OAuth callback in LoginComponent');
     this.authService.handleOAuthCallback(response).subscribe({
       next: success => {
         this.isLoading = false;

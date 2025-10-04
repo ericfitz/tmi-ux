@@ -89,13 +89,6 @@ export class ThreatModelAuthorizationService implements OnDestroy {
 
     this._currentThreatModelId = threatModelId;
     this._authorizationSubject.next(authorization);
-
-    const userPermission = this.calculateUserPermission(authorization);
-    this.logger.info('Authorization updated', {
-      threatModelId,
-      authorizationCount: authorization.length,
-      currentUserPermission: userPermission,
-    });
   }
 
   /**

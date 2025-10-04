@@ -60,11 +60,6 @@ export class LoggerService {
     this.debugComponents = new Set(environment.debugComponents || []);
 
     this.info(`Logger initialized with level: ${this.logLevel}`);
-    if (this.debugComponents.size > 0) {
-      this.info(
-        `Component-specific debug logging enabled for: ${Array.from(this.debugComponents).join(', ')}`,
-      );
-    }
   }
 
   /**
