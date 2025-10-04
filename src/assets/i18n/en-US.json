@@ -251,6 +251,7 @@
   },
   "sessionExpiry": {
     "extendButton": "Extend Session",
+    "extending": "Extending your session, please wait...",
     "logoutButton": "Log Out Now",
     "message": "Your session is about to expire. Would you like to extend your session or log out now?",
     "timeFormat": {
@@ -300,7 +301,7 @@
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
     "noPermissions": "No Permissions Defined",
-    "noSourceCode": "No Source Code Repositories Added Yet",
+    "noSourceCode": "No Source Code Repository References Added Yet",
     "noThreats": "No Threats Defined Yet",
     "pageTitle": "Threat Models",
     "permissionsRole": "Role",
@@ -326,12 +327,12 @@
     "tooltips": {
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",
-      "addSourceCode": "Add Source Code Repository",
+      "addSourceCode": "Add Source Code Repository Reference",
       "deleteDiagram": "Delete Diagram",
       "deleteDocument": "Delete Document",
-      "deleteSourceCode": "Delete Source Code Repository",
+      "deleteSourceCode": "Delete Source Code Repository Reference",
       "deleteThreat": "Delete Threat",
-      "editSourceCode": "Edit Source Code Repository",
+      "editSourceCode": "Edit Source Code Repository Reference",
       "loadFromDesktop": "Load From Desktop"
     },
     "yourThreatModels": "Your Threat Models"

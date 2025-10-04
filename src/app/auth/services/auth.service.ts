@@ -1703,32 +1703,42 @@ export class AuthService {
       return of(false);
     }
 
-    try {
-      const currentProfile = this.userProfile;
-      if (!currentProfile) {
-        this.logger.error('No user profile found for session extension');
-        return of(false);
-      }
-
-      // Create a new token with extended expiration
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1); // Extend by 1 hour
-
-      const extendedToken: JwtToken = {
-        token: 'mock.jwt.token.extended',
-        expiresIn: 3600,
-        expiresAt,
-      };
-
-      // Store the extended token
-      this.storeToken(extendedToken);
-
-      this.logger.info(`Session extended for test user: ${currentProfile.email}`);
-      return of(true);
-    } catch (error) {
-      this.logger.error('Error extending test user session', error);
+    const currentProfile = this.userProfile;
+    if (!currentProfile) {
+      this.logger.error('No user profile found for session extension');
       return of(false);
     }
+
+    // Create a new token with extended expiration
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Extend by 1 hour
+
+    const extendedToken: JwtToken = {
+      token: 'mock.jwt.token.extended',
+      expiresIn: 3600,
+      expiresAt,
+    };
+
+    // Store the extended token and wait for completion
+    // This ensures the token is persisted before returning success
+    return from(this.storeTokenEncrypted(extendedToken)).pipe(
+      map(() => {
+        // Update in-memory token AFTER storage succeeds
+        this.jwtTokenSubject.next(extendedToken);
+
+        // Notify SessionManager of new token
+        if (this.sessionManagerService) {
+          this.sessionManagerService.onTokenRefreshed();
+        }
+
+        this.logger.info(`Session extended for test user: ${currentProfile.email}`);
+        return true;
+      }),
+      catchError(error => {
+        this.logger.error('Error extending test user session - storage failed', error);
+        return of(false);
+      }),
+    );
   }
 
   /**

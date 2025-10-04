@@ -251,6 +251,7 @@
   },
   "sessionExpiry": {
     "extendButton": "Sitzung verlängern",
+    "extending": "Ihre Sitzung wird verlängert, bitte warten...",
     "logoutButton": "Jetzt abmelden",
     "message": "Ihre Sitzung läuft bald ab. Möchten Sie Ihre Sitzung verlängern oder sich jetzt abmelden?",
     "timeFormat": {
@@ -300,7 +301,7 @@
     "noDocuments": "Noch keine Dokumente hinzugefügt",
     "noItemsMessage": "Sie haben noch keine Bedrohungsmodelle.",
     "noPermissions": "Keine Berechtigungen definiert",
-    "noSourceCode": "Noch keine Quellcode-Repositories hinzugefügt",
+    "noSourceCode": "Noch keine Quellcode-Repository-Referenzen hinzugefügt",
     "noThreats": "Noch keine Bedrohungen definiert",
     "pageTitle": "Bedrohungsmodelle",
     "permissionsRole": "Rolle",
@@ -326,12 +327,12 @@
     "tooltips": {
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",
-      "addSourceCode": "Quellcode-Repository hinzufügen",
+      "addSourceCode": "Quellcode-Repository-Referenz hinzufügen",
       "deleteDiagram": "Diagramm löschen",
       "deleteDocument": "Dokument löschen",
-      "deleteSourceCode": "Quellcode-Repository löschen",
+      "deleteSourceCode": "Quellcode-Repository-Referenz löschen",
       "deleteThreat": "Bedrohung löschen",
-      "editSourceCode": "Quellcode-Repository bearbeiten",
+      "editSourceCode": "Quellcode-Repository-Referenz bearbeiten",
       "loadFromDesktop": "Vom Desktop laden"
     },
     "yourThreatModels": "Ihre Bedrohungsmodelle"

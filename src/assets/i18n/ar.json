@@ -251,6 +251,7 @@
   },
   "sessionExpiry": {
     "extendButton": "تمديد الجلسة",
+    "extending": "جاري تمديد جلستك، يرجى الانتظار...",
     "logoutButton": "تسجيل الخروج الآن",
     "message": "جلستك على وشك الانتهاء. هل ترغب في تمديد جلستك أو تسجيل الخروج الآن؟",
     "timeFormat": {
@@ -300,7 +301,7 @@
     "noDocuments": "لم تتم إضافة أي وثائق بعد",
     "noItemsMessage": "ليس لديك أي نماذج تهديدات حتى الآن.",
     "noPermissions": "لم يتم تحديد أي أذونات",
-    "noSourceCode": "لم يتم إضافة أي مستودعات كود مصدري بعد",
+    "noSourceCode": "لم يتم إضافة أي مراجع مستودعات كود مصدري بعد",
     "noThreats": "لم يتم تحديد أي تهديدات بعد",
     "pageTitle": "نماذج التهديدات",
     "permissionsRole": "الدور",
@@ -326,12 +327,12 @@
     "tooltips": {
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",
-      "addSourceCode": "إضافة مستودع كود مصدري",
+      "addSourceCode": "إضافة مرجع مستودع كود مصدري",
       "deleteDiagram": "حذف المخطط",
       "deleteDocument": "حذف الوثيقة",
-      "deleteSourceCode": "حذف مستودع الكود المصدري",
+      "deleteSourceCode": "حذف مرجع مستودع الكود المصدري",
       "deleteThreat": "حذف التهديد",
-      "editSourceCode": "تحرير مستودع الكود المصدري",
+      "editSourceCode": "تحرير مرجع مستودع الكود المصدري",
       "loadFromDesktop": "تحميل من سطح المكتب"
     },
     "yourThreatModels": "نماذج التهديدات الخاصة بك"

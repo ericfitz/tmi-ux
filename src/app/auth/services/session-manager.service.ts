@@ -244,6 +244,10 @@ export class SessionManagerService {
       next: success => {
         if (success) {
           this.logger.info('Test user session extended successfully');
+          // Close the warning dialog since session was extended
+          if (this.warningDialog) {
+            this.warningDialog.close('extend');
+          }
         } else {
           this.logger.error('Failed to extend test user session - logging out');
           // Fall back to logout if extension fails

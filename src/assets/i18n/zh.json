@@ -251,6 +251,7 @@
   },
   "sessionExpiry": {
     "extendButton": "延长会话",
+    "extending": "正在延长您的会话，请稍候...",
     "logoutButton": "立即退出",
     "message": "您的会话即将过期。您想要延长会话还是立即退出登录？",
     "timeFormat": {
@@ -300,7 +301,7 @@
     "noDocuments": "尚未添加文档",
     "noItemsMessage": "您还没有任何威胁模型。",
     "noPermissions": "未定义权限",
-    "noSourceCode": "尚未添加源代码存储库",
+    "noSourceCode": "尚未添加源代码存储库引用",
     "noThreats": "尚未定义威胁",
     "pageTitle": "威胁模型",
     "permissionsRole": "角色",
@@ -326,12 +327,12 @@
     "tooltips": {
       "addDiagram": "添加图表",
       "addDocument": "添加文档",
-      "addSourceCode": "添加源代码存储库",
+      "addSourceCode": "添加源代码存储库引用",
       "deleteDiagram": "删除图表",
       "deleteDocument": "删除文档",
-      "deleteSourceCode": "删除源代码存储库",
+      "deleteSourceCode": "删除源代码存储库引用",
       "deleteThreat": "删除威胁",
-      "editSourceCode": "编辑源代码存储库",
+      "editSourceCode": "编辑源代码存储库引用",
       "loadFromDesktop": "从桌面加载"
     },
     "yourThreatModels": "您的威胁模型"

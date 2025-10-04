@@ -21,6 +21,7 @@ export interface SessionExpiryDialogData {
 })
 export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
   timeRemaining = '';
+  isExtending = false;
   private countdownSubscription: Subscription | null = null;
 
   constructor(
@@ -41,9 +42,10 @@ export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
   }
 
   onExtendSession(): void {
+    this.isExtending = true;
     this.stopCountdown();
     this.data.onExtendSession();
-    this.dialogRef.close('extend');
+    // Note: Dialog will be closed by SessionManager when extension completes
   }
 
   onLogout(): void {
