@@ -208,7 +208,7 @@
     "noProvidersConfigured": "未配置身份验证提供程序。",
     "oauthFailed": "OAuth身份验证失败。请重试。",
     "pleaseSignIn": "请登录以继续。",
-    "title": "登录TMI",
+    "title": "登录到TMI",
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },
   "navbar": {

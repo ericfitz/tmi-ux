@@ -203,12 +203,12 @@
       "title": "Lokale Entwicklungsanmeldung",
       "userName": "Lokaler Benutzer"
     },
-    "loggingInWith": "Anmelden mit {{provider}}...",
+    "loggingInWith": "Anmeldung mit {{provider}}...",
     "loginWith": "Anmelden mit",
     "noProvidersConfigured": "Keine Authentifizierungsanbieter konfiguriert.",
     "oauthFailed": "OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "pleaseSignIn": "Bitte melden Sie sich an, um fortzufahren.",
-    "title": "Bei TMI anmelden",
+    "title": "Bei TMI Anmelden",
     "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
   },
   "navbar": {

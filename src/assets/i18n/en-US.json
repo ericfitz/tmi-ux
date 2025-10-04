@@ -192,23 +192,23 @@
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "login": {
-    "chooseMethod": "Choose your login method:",
+    "chooseMethod": "Choose your sign in method:",
     "loadingProviders": "Loading authentication providers...",
     "local": {
       "emailInvalid": "Please enter a valid email address",
       "emailLabel": "Email Address",
       "emailRequired": "Email address is required",
-      "loginButton": "Login",
+      "loginButton": "Sign in",
       "subtitle": "Enter your email address for testing",
-      "title": "Local Development Login",
+      "title": "Local Development Sign In",
       "userName": "Local User"
     },
-    "loggingInWith": "Logging in with {{provider}}...",
-    "loginWith": "Login with",
+    "loggingInWith": "Signing in with {{provider}}...",
+    "loginWith": "Sign in with",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed. Please try again.",
     "pleaseSignIn": "Please sign in to continue.",
-    "title": "Login to TMI",
+    "title": "Sign In to TMI",
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {
