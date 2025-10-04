@@ -14,6 +14,7 @@ import { Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 
 /**
@@ -243,7 +244,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.diagramOptions = [...this.diagramOptions, ...remainingDiagrams];
     }
 
-    this.logger.info('Diagram options initialized:', {
+    this.logger.debug('Diagram options initialized:', {
       currentDiagramId: this.data.diagramId,
       optionsCount: this.diagramOptions.length,
       firstOption: this.diagramOptions[0]?.name,
@@ -266,7 +267,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           tt.appliesTo.includes(this.data.shapeType!),
         );
 
-        this.logger.info('Filtering threat types by shape type', {
+        this.logger.debug('Filtering threat types by shape type', {
           framework: this.data.framework.name,
           shapeType: this.data.shapeType,
           filteredThreatTypes: applicableThreatTypes.map(tt => tt.name),
@@ -276,7 +277,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
       this.threatTypeOptions = applicableThreatTypes.map(tt => tt.name);
 
-      this.logger.info('Threat type options initialized from framework', {
+      this.logger.debug('Threat type options initialized from framework', {
         framework: this.data.framework.name,
         shapeType: this.data.shapeType || 'none',
         threatTypes: this.threatTypeOptions,
@@ -305,7 +306,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Apply initial filtering based on current diagram selection
     this.filterCellOptions();
 
-    this.logger.info('Cell options initialized:', {
+    this.logger.debug('Cell options initialized:', {
       currentCellId: this.data.cellId,
       currentDiagramId: this.data.diagramId,
       totalCells: this.allCellOptions.length,
@@ -376,7 +377,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.cellOptions = [...this.cellOptions, ...filteredCells];
     }
 
-    this.logger.info('Filtered cell options:', {
+    this.logger.debug('Filtered cell options:', {
       selectedDiagramId: diagramId as string,
       totalAvailableCells: this.allCellOptions.length,
       filteredCellCount: filteredCells.length,
@@ -395,7 +396,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     if (diagramControl) {
       this.diagramChangeSubscription = diagramControl.valueChanges.subscribe(
         (diagramId: string) => {
-          this.logger.info('Diagram selection changed, filtering cells', {
+          this.logger.debug('Diagram selection changed, filtering cells', {
             newDiagramId: diagramId,
             previousCellId: this.threatForm.get('cell_id')?.value as string,
           });
@@ -408,7 +409,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
             const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
             if (!cellExists) {
-              this.logger.info(
+              this.logger.debug(
                 'Current cell not available in selected diagram, resetting to not associated',
                 {
                   currentCellId: currentCellId,
@@ -432,15 +433,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     // Log initialization context
     const openedFrom = new Error().stack?.includes('dfd.component') ? 'DFD Editor' : 'TM Edit';
-    this.logger.info('ThreatEditorDialog initialized with data:', {
+    this.logger.info('Threat editor dialog opened', {
       mode: this.data.mode,
       threatModelId: this.data.threatModelId,
-      hasThreat: !!this.data.threat,
       openedFrom,
     });
 
     // Log detailed initialization data for debugging
-    this.logger.info('Detailed initialization data:', {
+    this.logger.debug('Detailed initialization data:', {
       source: openedFrom,
       dialogData: JSON.stringify(this.data),
       threatData: this.data.threat
@@ -461,12 +461,12 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     this.dialogSource = openedFrom;
 
     const currentLang = this.translocoService.getActiveLang();
-    this.logger.info('Current language:', currentLang);
+    this.logger.debug('Current language:', currentLang);
 
     // First load English as fallback
     this.translocoService.load('en-US').subscribe({
       next: () => {
-        this.logger.info('English translations loaded successfully');
+        this.logger.debug('English translations loaded successfully');
 
         // Then load current language if not English
         if (currentLang !== 'en-US') {
@@ -474,7 +474,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
             next: () => {
               // Force translation update
               this.translocoService.setActiveLang(currentLang);
-              this.logger.info('Translations loaded successfully for language: ' + currentLang);
+              this.logger.debug('Translations loaded successfully for language: ' + currentLang);
 
               // Initialize dropdown options after translations are loaded
               this.initializeDiagramOptions();
@@ -484,7 +484,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               // Force change detection to update the translations
               setTimeout(() => {
                 this.dialogRef.updateSize();
-                this.logger.info('Dialog size updated to force refresh');
+                this.logger.debug('Dialog size updated to force refresh');
               }, 100);
             },
             error: (err: unknown) => {
@@ -510,7 +510,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           // Force change detection to update the translations
           setTimeout(() => {
             this.dialogRef.updateSize();
-            this.logger.info('Dialog size updated to force refresh');
+            this.logger.debug('Dialog size updated to force refresh');
           }, 100);
         }
       },
@@ -585,7 +585,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.initialIssueUrlValue = this.data.threat.issue_url || '';
 
       // Debug log the threat data being used for form population
-      this.logger.info('Populating threat editor form with threat data', {
+      this.logger.debug('Populating threat editor form with threat data', {
         threatId: this.data.threat.id,
         name: this.data.threat.name,
         description: this.data.threat.description,
@@ -615,7 +615,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       });
 
       // Debug log the form values after patching
-      this.logger.info('Form values after patching', {
+      this.logger.debug('Form values after patching', {
         formValues: this.threatForm.value as ThreatFormValues,
       });
 
@@ -628,19 +628,21 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Force translations to be applied
     this.forceTranslationUpdate();
 
-    // Subscribe to language changes
-    this.langSubscription = this.languageService.currentLanguage$.subscribe(language => {
-      this.currentLocale = language.code;
-      this.currentDirection = language.rtl ? 'rtl' : 'ltr';
-      // Force change detection to update the date format and translations
-      this.dialogRef.updateSize();
-      this.forceTranslationUpdate();
+    // Subscribe to language changes (skip first emission since we already initialized)
+    this.langSubscription = this.languageService.currentLanguage$
+      .pipe(skip(1))
+      .subscribe(language => {
+        this.currentLocale = language.code;
+        this.currentDirection = language.rtl ? 'rtl' : 'ltr';
+        // Force change detection to update the date format and translations
+        this.dialogRef.updateSize();
+        this.forceTranslationUpdate();
 
-      // Reinitialize dropdown options when language changes
-      this.initializeDiagramOptions();
-      this.initializeCellOptions();
-      this.initializeThreatTypeOptions();
-    });
+        // Reinitialize dropdown options when language changes
+        this.initializeDiagramOptions();
+        this.initializeCellOptions();
+        this.initializeThreatTypeOptions();
+      });
 
     // Also subscribe to direction changes
     this.directionSubscription = this.languageService.direction$.subscribe(direction => {
@@ -677,7 +679,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       const formFields = document.querySelectorAll('.mat-form-field');
       const labels = document.querySelectorAll('.mat-form-field-label');
 
-      this.logger.info('Form field initialization in ngAfterViewInit:', {
+      this.logger.debug('Form field initialization in ngAfterViewInit:', {
         source: this.dialogSource,
         formFieldsCount: formFields.length,
         labelsCount: labels.length,

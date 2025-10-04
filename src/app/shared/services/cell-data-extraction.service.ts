@@ -72,7 +72,7 @@ export class CellDataExtractionService {
    * @returns DiagramCellData containing diagrams and cells for dropdowns
    */
   extractFromThreatModel(threatModel: ThreatModel, diagramId?: string): DiagramCellData {
-    this.logger.info('Extracting cell data from threat model', {
+    this.logger.debug('Extracting cell data from threat model', {
       threatModelId: threatModel.id,
       diagramCount: threatModel.diagrams?.length || 0,
       filterByDiagram: !!diagramId,
@@ -108,7 +108,7 @@ export class CellDataExtractionService {
       });
     }
 
-    this.logger.info('Extracted cell data from threat model', {
+    this.logger.debug('Extracted cell data from threat model', {
       diagramCount: diagrams.length,
       cellCount: cells.length,
       sampleCells: cells.slice(0, 3).map(c => ({
@@ -130,7 +130,7 @@ export class CellDataExtractionService {
    * @returns DiagramCellData containing current diagram and its cells
    */
   extractFromX6Graph(x6Graph: X6Graph, diagramId: string, diagramName: string): DiagramCellData {
-    this.logger.info('Extracting cell data from X6 graph', {
+    this.logger.debug('Extracting cell data from X6 graph', {
       diagramId,
       diagramName,
       hasGraph: !!x6Graph,
@@ -151,7 +151,7 @@ export class CellDataExtractionService {
       if (x6Graph && typeof x6Graph.getCells === 'function') {
         const x6Cells = x6Graph.getCells();
 
-        this.logger.info('Found X6 cells in graph', {
+        this.logger.debug('Found X6 cells in graph', {
           totalCells: x6Cells.length,
         });
 
@@ -168,7 +168,7 @@ export class CellDataExtractionService {
       this.logger.error('Error extracting cells from X6 graph', error);
     }
 
-    this.logger.info('Extracted cell data from X6 graph', {
+    this.logger.debug('Extracted cell data from X6 graph', {
       diagramCount: diagrams.length,
       cellCount: cells.length,
       sampleCells: cells.slice(0, 3).map(c => ({

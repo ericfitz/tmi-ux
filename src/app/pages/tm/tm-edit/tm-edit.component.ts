@@ -545,7 +545,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // If editing a threat, refresh the threat model to get the latest threat data from server
     if (mode === 'edit' && threat) {
-      this.logger.info('Refreshing threat model data before opening threat editor', {
+      this.logger.debug('Refreshing threat model data before opening threat editor', {
         threatId: threat.id,
         threatModelId: this.threatModel.id,
       });
@@ -566,7 +566,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               });
               this.openThreatEditorWithData(threat, shapeType, mode);
             } else {
-              this.logger.info('Using refreshed threat data for editor', {
+              this.logger.debug('Using refreshed threat data for editor', {
                 threatId: updatedThreat.id,
                 hasAllProperties: !!(
                   updatedThreat.priority &&
@@ -622,7 +622,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         availableFrameworks: this.frameworks.map(f => f.name),
       });
     } else {
-      this.logger.info('Using framework for threat editor', {
+      this.logger.debug('Using framework for threat editor', {
         currentFrameworkName,
         frameworkThreatTypes: framework.threatTypes.map(tt => tt.name),
         shapeType: shapeType || 'none',
