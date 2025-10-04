@@ -1,0 +1,21 @@
+# robots.txt for TMI (Threat Modeling Improved)
+# This file controls how search engine crawlers interact with the application
+
+# Allow all web crawlers to access the site
+User-agent: *
+Allow: /
+
+# Disallow crawling of authentication endpoints
+Disallow: /auth/
+Disallow: /login
+
+# Disallow crawling of API endpoints (if any client-side routes exist)
+Disallow: /api/
+
+# Disallow crawling of user-specific or dynamic content
+Disallow: /tm/
+Disallow: /dfd/
+Disallow: /pages/
+
+# Sitemap location (update this URL when you have a sitemap)
+# Sitemap: https://yourdomain.com/sitemap.xml
