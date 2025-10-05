@@ -196,4 +196,20 @@ export class LoginComponent implements OnInit {
     this.logger.error('Login error:', authError);
     this.authService.handleAuthError(authError); // Propagate error through auth service
   }
+
+  /**
+   * Get the logo path for a given OAuth provider
+   */
+  getProviderLogoPath(providerId: string): string | null {
+    const logoMap: Record<string, string> = {
+      google: 'assets/signin-logos/Google_G_logo.svg',
+      github: 'assets/signin-logos/GitHub/SVG/GitHub_Invertocat_Dark.svg',
+      microsoft: 'assets/signin-logos/Microsoft/ms-symbollockup_mssymbol_19.svg',
+      gitlab: 'assets/signin-logos/GitLab/gitlab-logo-500-rgb.svg',
+      local: 'TMI-Logo.svg',
+      test: 'assets/signin-logos/test.svg',
+    };
+
+    return logoMap[providerId] || null;
+  }
 }

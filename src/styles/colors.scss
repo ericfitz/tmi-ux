@@ -43,16 +43,8 @@ $border-light: #e0e0e0;
 $border-material: rgb(0 0 0 / 12%);
 
 // OAuth Provider Colors
-$google-color: #4285f4;
-$google-color-hover: #3367d6;
-$github-color: #24292e;
-$github-color-hover: #1a1e22;
-$microsoft-color: #00a1f1;
-$microsoft-color-hover: #0078d4;
 $test-color: #dc3545;
 $test-color-hover: #c82333;
-$local-color: #6c757d;
-$local-color-hover: #5a6268;
 
 // DFD-Specific Colors
 $dfd-selection-color: rgb(255 0 0 / 80%);
@@ -111,16 +103,8 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-border-material: #{$border-material};
 
   // OAuth Provider Colors
-  --color-google: #{$google-color};
-  --color-google-hover: #{$google-color-hover};
-  --color-github: #{$github-color};
-  --color-github-hover: #{$github-color-hover};
-  --color-microsoft: #{$microsoft-color};
-  --color-microsoft-hover: #{$microsoft-color-hover};
   --color-test: #{$test-color};
   --color-test-hover: #{$test-color-hover};
-  --color-local: #{$local-color};
-  --color-local-hover: #{$local-color-hover};
 
   // DFD-Specific Colors
   --color-dfd-selection: #{$dfd-selection-color};
@@ -205,14 +189,4 @@ $role-host-color: #ffc107; // Gold color for session host
 
 @mixin background-info {
   background-color: var(--color-info);
-}
-
-// OAuth provider button mixins
-@mixin oauth-button($provider) {
-  background-color: var(--color-#{$provider});
-  color: white;
-
-  &:hover {
-    background-color: var(--color-#{$provider}-hover);
-  }
 }

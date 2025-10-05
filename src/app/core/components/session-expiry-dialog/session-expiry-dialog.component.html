@@ -5,7 +5,9 @@
 
 <mat-dialog-content class="session-expiry-content">
   <p class="expiry-message">
-    {{ isExtending ? ('sessionExpiry.extending' | transloco) : ('sessionExpiry.message' | transloco) }}
+    {{
+      isExtending ? ('sessionExpiry.extending' | transloco) : ('sessionExpiry.message' | transloco)
+    }}
   </p>
 
   <div class="countdown-display" *ngIf="!isExtending">
@@ -14,11 +16,23 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="session-expiry-actions">
-  <button mat-button color="warn" (click)="onLogout()" class="logout-button" [disabled]="isExtending">
+  <button
+    mat-button
+    color="warn"
+    (click)="onLogout()"
+    class="logout-button"
+    [disabled]="isExtending"
+  >
     {{ 'navbar.logoutButton' | transloco }}
   </button>
 
-  <button mat-raised-button color="primary" (click)="onExtendSession()" class="extend-button" [disabled]="isExtending">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onExtendSession()"
+    class="extend-button"
+    [disabled]="isExtending"
+  >
     {{ 'sessionExpiry.extendButton' | transloco }}
   </button>
 </mat-dialog-actions>

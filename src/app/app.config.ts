@@ -74,7 +74,7 @@ function initializeDialogDirection(_dialogDirection: DialogDirectionService): ()
 // Material Icons initialization function
 function initializeMaterialIcons(
   iconRegistry: MatIconRegistry,
-  _sanitizer: DomSanitizer
+  _sanitizer: DomSanitizer,
 ): () => void {
   return () => {
     // Register the Material Symbols Outlined font set
