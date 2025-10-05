@@ -127,8 +127,13 @@ pnpm run check           # Run type checking and validation
 
 # Build
 pnpm run build           # Build for development
-pnpm run build:prod      # Build for production
-pnpm run build:staging   # Build for staging
+pnpm run build:prod      # Build for production (auto-bumps version)
+pnpm run build:staging   # Build for staging (auto-bumps version)
+
+# Versioning
+pnpm run validate:deployment  # Check commit format and versioning readiness
+pnpm run version:set-minor    # Set next build to bump minor version
+pnpm run version:set-patch    # Set next build to bump patch version
 
 # Internationalization
 pnpm run check-i18n      # Check for missing translation keys
@@ -217,6 +222,77 @@ The application uses WebSockets for real-time collaboration:
 - Uses @jsverse/transloco for i18n
 - Translation files in `src/assets/i18n/`
 - Run `pnpm run i18n:check-keys` to validate translation completeness
+
+### Automatic Semantic Versioning
+
+The project uses automatic semantic versioning for deployment builds. Version bumps are determined by commit messages following the Conventional Commits specification.
+
+#### How It Works
+
+1. **Deployment builds** (`build:prod`, `build:staging`, `build:hosted-container`) automatically bump version before building
+2. **Version determination** (hybrid approach):
+   - Primary: Analyzes commits since last `v*` tag using Conventional Commits format
+   - Fallback: Uses explicit version bump setting (via `version:set-minor` or `version:set-patch`)
+   - CI builds: Fails if no conventional commits and no explicit version set
+   - Local builds: Prompts interactively if no conventional commits found
+
+3. **Version bump rules**:
+   - `feat:` commits → minor version bump (0.x.0)
+   - `fix:`, `chore:`, `refactor:`, `docs:`, `perf:`, `test:`, `ci:`, `build:` → patch bump (0.0.x)
+   - Major version remains at 0 until launch
+
+4. **Git integration**:
+   - Updates `package.json` version field
+   - Creates commit: `chore: bump version to X.Y.Z`
+   - Creates annotated git tag: `vX.Y.Z`
+
+#### Commit Message Format (Conventional Commits)
+
+Format: `<type>: <description>`
+
+Valid types:
+- `feat`: New feature (triggers **minor** bump)
+- `fix`: Bug fix (triggers **patch** bump)
+- `chore`: Maintenance, dependencies, tooling
+- `docs`: Documentation changes
+- `refactor`: Code refactoring without behavior change
+- `perf`: Performance improvements
+- `test`: Test additions or modifications
+- `ci`: CI/CD configuration changes
+- `build`: Build system changes
+
+Examples:
+```
+feat: add user authentication
+fix: correct login validation bug
+chore: update dependencies
+docs: update API documentation
+```
+
+**Note**: The commit message hook is in **warning mode** - it alerts you about non-conventional commits but doesn't block them. This allows gradual adoption while maintaining automatic versioning capability.
+
+#### Versioning Commands
+
+```bash
+# Check versioning readiness before deployment
+pnpm run validate:deployment
+
+# Override automatic version detection (optional)
+pnpm run version:set-minor  # Next build will bump minor version
+pnpm run version:set-patch  # Next build will bump patch version
+
+# Deployment builds (automatically bump version)
+pnpm run build:prod
+pnpm run build:staging
+pnpm run build:hosted-container
+```
+
+#### Best Practices
+
+- Use conventional commit format for all commits (though not enforced)
+- Run `pnpm run validate:deployment` before deploying to check commit coverage
+- If you need specific version control, use `version:set-minor` or `version:set-patch` before building
+- In CI/CD, ensure commits follow conventional format or set VERSION_BUMP explicitly
 
 ## Code Style Guidelines
 
