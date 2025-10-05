@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "type": "module",
   "scripts": {
     "ng": "ng",
@@ -57,6 +57,7 @@
     "check:security": "tsx scripts/check-security.ts",
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
+    "deploy:heroku": "./scripts/push-heroku.sh",
     "validate:deployment": "tsx scripts/validate-deployment.ts",
     "version:set-minor": "bash scripts/set-version-bump.sh minor",
     "version:set-patch": "bash scripts/set-version-bump.sh patch"
