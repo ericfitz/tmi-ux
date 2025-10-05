@@ -1312,10 +1312,20 @@ export class AppDfdOrchestrator {
     const graphJson = graph.toJSON();
     const cells = graphJson.cells || [];
 
+    // Also get cells directly from the graph to compare
+    const directCells = graph.getCells();
+    const directEdges = graph.getEdges();
+    const directNodes = graph.getNodes();
+
     this.logger.debug('[ORCHESTRATOR-DEBUG] _getGraphData called', {
       totalCells: cells.length,
       nodes: cells.filter((c: any) => c.shape !== 'edge').length,
       edges: cells.filter((c: any) => c.shape === 'edge').length,
+      directCellsCount: directCells.length,
+      directNodesCount: directNodes.length,
+      directEdgesCount: directEdges.length,
+      directEdgeIds: directEdges.map((e: any) => e.id),
+      toJSONEdgeIds: cells.filter((c: any) => c.shape === 'edge').map((c: any) => c.id),
     });
 
     // Separate into nodes and edges with type field for backend
