@@ -6,7 +6,19 @@
  */
 
 // =============================================================================
-// ROBOTO CONDENSED (Primary Font)
+// ROBOTO (Material Design Default Font)
+// =============================================================================
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/assets/fonts/roboto/Roboto-VariableFont.ttf') format('truetype');
+}
+
+// =============================================================================
+// ROBOTO CONDENSED (Alternative Font)
 // =============================================================================
 
 @font-face {

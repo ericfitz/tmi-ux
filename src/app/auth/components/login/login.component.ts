@@ -207,6 +207,7 @@ export class LoginComponent implements OnInit {
       microsoft: 'assets/signin-logos/microsoft-signin-logo.svg',
       gitlab: 'assets/signin-logos/gitlab-signin-logo.svg',
       local: 'TMI-Logo.svg',
+      test: 'assets/signin-logos/test-signin-logo.svg',
     };
 
     return logoMap[providerId] || null;
