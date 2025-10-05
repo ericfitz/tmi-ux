@@ -282,10 +282,22 @@ pnpm run version:set-minor  # Next build will bump minor version
 pnpm run version:set-patch  # Next build will bump patch version
 
 # Deployment builds (automatically bump version)
-pnpm run build:prod
-pnpm run build:staging
-pnpm run build:hosted-container
+pnpm run build:prod      # Auto-bumps version
+pnpm run build:staging   # Auto-bumps version
+
+# Container builds (use deployment script)
+./scripts/push-heroku.sh  # Bumps version, then builds & deploys container
 ```
+
+#### Container Deployments
+
+For containerized deployments (Heroku, Cloud Run, etc.), version bumping happens **outside** the Docker build:
+
+- **Heroku**: Use `./scripts/push-heroku.sh` - it bumps version, then builds and deploys
+- **Manual container builds**: Run `./node_modules/.bin/tsx scripts/version-bump.ts` before `docker build`
+- **CI/CD pipelines**: Add version bump step before container build stage
+
+The `build:hosted-container` script does NOT auto-bump version (scripts/ is excluded from Docker context).
 
 #### Best Practices
 
@@ -293,6 +305,7 @@ pnpm run build:hosted-container
 - Run `pnpm run validate:deployment` before deploying to check commit coverage
 - If you need specific version control, use `version:set-minor` or `version:set-patch` before building
 - In CI/CD, ensure commits follow conventional format or set VERSION_BUMP explicitly
+- For container deployments, always version before building the container
 
 ## Code Style Guidelines
 

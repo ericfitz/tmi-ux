@@ -55,7 +55,6 @@
     "bump": "pnpm update --verbose && pnpm install --verbose",
     "update-shared": "git subtree pull --prefix=shared-api https://github.com/ericfitz/tmi.git shared --squash",
     "check:security": "tsx scripts/check-security.ts",
-    "prebuild:hosted-container": "tsx scripts/version-bump.ts",
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
     "validate:deployment": "tsx scripts/validate-deployment.ts",
