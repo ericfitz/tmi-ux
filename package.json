@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "type": "module",
   "scripts": {
     "ng": "ng",
@@ -79,7 +79,7 @@
     "@antv/x6-plugin-selection": "^2.2.2",
     "@antv/x6-plugin-snapline": "^2.1.7",
     "@antv/x6-plugin-transform": "^2.1.8",
-    "@jsverse/transloco": "^7.6.1",
+    "@jsverse/transloco": "^8.0.2",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "fontkit": "^2.0.4",
@@ -102,7 +102,7 @@
     "@angular/compiler-cli": "^20.3.2",
     "@eslint/js": "^9.36.0",
     "@testing-library/angular": "^18.1.0",
-    "@types/jsdom": "^21.1.7",
+    "@types/jsdom": "^27.0.0",
     "@types/node": "^24.6.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
