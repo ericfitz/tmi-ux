@@ -48,7 +48,8 @@
       "Bash(heroku:*)",
       "Bash(gcloud:*)",
       "Bash(echo:*)",
-      "Bash(docker:*)"
+      "Bash(docker:*)",
+      "Bash(git tag:*)"
     ]
   },
   "enableAllProjectMcpServers": false

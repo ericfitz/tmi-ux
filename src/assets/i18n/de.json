@@ -240,8 +240,8 @@
       "part2": "-Seite an den Betreiber dieser Website."
     },
     "contactTitle": "Kontaktiere uns",
-    "dataContent": "Die Website verwendet OpenID Connect und OAuth zur Sicherung Ihrer Daten und speichert nur Ihre Benutzer-ID, E-Mail und Ihren Namen vom Anbieter für Anmelde- und Anzeigezwecke.",
-    "dataContent2": "Ihre Bedrohungsmodelle werden sicher gespeichert und können zur Verbesserung unseres Dienstes verwendet werden.",
+    "dataContent": "Die Website verwendet OpenID Connect zur Anmeldung und OAuth zur Zugriffskontrolle und speichert nur Ihre Benutzer-ID, E-Mail und Ihren Namen vom Anbieter für Anmelde- und Anzeigezwecke.",
+    "dataContent2": "Ihre Bedrohungsmodelle werden vom Server gespeichert, bis Sie sie löschen, und können zur Verbesserung unseres Service verwendet werden.",
     "dataContent3": "Wir bewahren Protokolle nur so lange auf, wie sie für Support und Betrieb benötigt werden, und löschen sie dann automatisch.",
     "dataContent4": "Ihre Daten bleiben privat - wir verkaufen oder teilen sie mit niemandem, außer wie gesetzlich vorgeschrieben.",
     "dataTitle": "Datenerfassung und Speicherung",
@@ -251,7 +251,7 @@
     },
     "intro2": "Wir verpflichten uns zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",
     "lastUpdated": "Zuletzt aktualisiert: ",
-    "lastUpdatedDate": "2025-09-30",
+    "lastUpdatedDate": "2025-10-04",
     "title": "Datenschutzrichtlinie"
   },
   "sessionExpiry": {

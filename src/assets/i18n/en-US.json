@@ -240,8 +240,8 @@
       "part2": " page."
     },
     "contactTitle": "Contact Us",
-    "dataContent": "The web site uses OpenID Connect and OAuth to secure your data, storing only your user ID, email, and name from the provider for login and display purposes.",
-    "dataContent2": "Your threat models are safely stored and may be used to enhance our service.",
+    "dataContent": "The web site uses OpenID Connect for sign-in and OAuth for access control, storing only your user ID, email, and name from the provider for login and display purposes.",
+    "dataContent2": "Your threat models are stored by the server until you delete them and may be used to enhance our service.",
     "dataContent3": "We keep logs only as long as needed for support and operations, then delete them automatically.",
     "dataContent4": "Your data stays private- we do not sell or share it with anyone, except as required by law.",
     "dataTitle": "Data Collection and Storage",
@@ -251,7 +251,7 @@
     },
     "intro2": "We are committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "lastUpdated": "Last updated: ",
-    "lastUpdatedDate": "2025-09-30",
+    "lastUpdatedDate": "2025-10-04",
     "title": "Privacy Policy"
   },
   "sessionExpiry": {

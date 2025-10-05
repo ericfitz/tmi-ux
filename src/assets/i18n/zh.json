@@ -240,8 +240,8 @@
       "part2": "页面上的联系信息与本网站的运营商联系。"
     },
     "contactTitle": "联系我们",
-    "dataContent": "本网站使用OpenID Connect和OAuth来保护您的数据，仅存储来自提供商的用户ID、电子邮件和姓名，用于登录和显示目的。",
-    "dataContent2": "您的威胁模型将被安全存储，并可能用于改进我们的服务。",
+    "dataContent": "本网站使用 OpenID Connect 进行登录，使用 OAuth 进行访问控制，仅存储您的用户 ID、电子邮件和来自提供商的姓名，用于登录和显示目的。",
+    "dataContent2": "您的威胁模型由服务器存储，直到您删除它们，并可能用于改进我们的服务。",
     "dataContent3": "我们仅在支持和运营需要时保留日志，然后自动删除。",
     "dataContent4": "您的数据保持私密 - 我们不会向任何人出售或共享，除非法律要求。",
     "dataTitle": "数据收集和存储",
@@ -251,7 +251,7 @@
     },
     "intro2": "我们致力于保护您的隐私。本隐私政策解释了如何处理您的信息。",
     "lastUpdated": "最后更新: ",
-    "lastUpdatedDate": "2025-09-30",
+    "lastUpdatedDate": "2025-10-04",
     "title": "隐私政策"
   },
   "sessionExpiry": {
