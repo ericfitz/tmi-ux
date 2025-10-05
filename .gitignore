@@ -54,6 +54,7 @@ localization_dedup_plan.*
 .ck/
 .ck/**
 *.log
+.version-bump-type
 
 # local copy of server docs
 docs-server

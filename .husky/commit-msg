@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/h"
+
+# Conventional Commit Validator (Warning Mode)
+# This hook validates commit message format but does NOT block commits
+# To upgrade to strict mode later, uncomment the exit line
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Skip validation for merge commits
+if echo "$COMMIT_MSG" | grep -qE "^Merge (branch|remote-tracking branch)"; then
+  exit 0
+fi
+
+# Skip validation for commits that start with "chore: bump version"
+if echo "$COMMIT_MSG" | grep -qE "^chore: bump version"; then
+  exit 0
+fi
+
+# Conventional commit pattern
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo ""
+  echo "⚠️  WARNING: Commit message does not follow Conventional Commits format"
+  echo ""
+  echo "   Expected format: <type>: <description>"
+  echo "   Example: feat: add user authentication"
+  echo "   Example: fix: correct login validation bug"
+  echo ""
+  echo "   Valid types: feat, fix, docs, style, refactor, perf, test, build, ci, chore"
+  echo ""
+  echo "   Your commit will proceed, but this may affect automatic versioning."
+  echo "   See: https://www.conventionalcommits.org/"
+  echo ""
+
+  # Uncomment the following line to make this hook strict (blocking)
+  # exit 1
+fi
+
+exit 0
