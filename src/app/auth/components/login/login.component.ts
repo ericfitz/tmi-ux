@@ -202,12 +202,11 @@ export class LoginComponent implements OnInit {
    */
   getProviderLogoPath(providerId: string): string | null {
     const logoMap: Record<string, string> = {
-      google: 'assets/signin-logos/Google_G_logo.svg',
-      github: 'assets/signin-logos/GitHub/SVG/GitHub_Invertocat_Dark.svg',
-      microsoft: 'assets/signin-logos/Microsoft/ms-symbollockup_mssymbol_19.svg',
-      gitlab: 'assets/signin-logos/GitLab/gitlab-logo-500-rgb.svg',
+      google: 'assets/signin-logos/google-signin-logo.svg',
+      github: 'assets/signin-logos/github-signin-logo.svg',
+      microsoft: 'assets/signin-logos/microsoft-signin-logo.svg',
+      gitlab: 'assets/signin-logos/gitlab-signin-logo.svg',
       local: 'TMI-Logo.svg',
-      test: 'assets/signin-logos/test.svg',
     };
 
     return logoMap[providerId] || null;
