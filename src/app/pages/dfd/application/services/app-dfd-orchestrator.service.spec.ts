@@ -194,6 +194,7 @@ describe('AppDfdOrchestrator', () => {
       clearSelection: vi.fn(),
       getSelectedCells: vi.fn().mockReturnValue([]),
       deleteSelected: vi.fn(),
+      deleteSelectedCells: vi.fn().mockReturnValue(of({ success: true, deletedCount: 0 })),
       handleResize: vi.fn(),
       destroy: vi.fn(),
       dispose: vi.fn(),
@@ -589,35 +590,22 @@ describe('AppDfdOrchestrator', () => {
     it('should delete selected cells when cells are selected', () => {
       // Mock graph with selected cells
       const mockGraph = {
-        getSelectedCells: vi.fn(),
+        getSelectedCells: vi.fn().mockReturnValue([{ id: 'cell-1' }]),
       };
-      const mockCell = {
-        isNode: vi.fn().mockReturnValue(true),
-        id: 'cell-1',
-      };
-      mockGraph.getSelectedCells.mockReturnValue([mockCell]);
 
       // Replace the graph in the service
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
+      vi.spyOn(service, 'getSelectedCells').mockReturnValue(['cell-1']);
 
-      const batchResults = [
-        {
-          success: true,
-          operationId: 'delete-123',
-          operationType: 'delete-node',
-          affectedCellIds: ['cell-1'],
-          timestamp: Date.now(),
-          metadata: {},
-        },
-      ];
-
-      mockGraphOperationManager.executeBatch.mockReturnValue(of(batchResults));
+      // Mock the facade to return success
+      mockDfdFacade.deleteSelectedCells.mockReturnValue(of({ success: true, deletedCount: 1 }));
 
       return new Promise<void>((resolve, reject) => {
         service.deleteSelectedCells().subscribe({
           next: (result: OperationResult) => {
             expect(result.success).toBe(true);
-            expect(mockGraphOperationManager.executeBatch).toHaveBeenCalled();
+            expect(mockDfdFacade.deleteSelectedCells).toHaveBeenCalled();
+            expect(result.affectedCellIds).toEqual(['cell-1']);
             resolve();
           },
           error: reject,

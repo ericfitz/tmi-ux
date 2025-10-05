@@ -653,6 +653,30 @@ export class AppDfdOrchestrator {
         return true;
       }
 
+      case 'delete':
+      case 'backspace': {
+        // Delete selected cells
+        if (this._state$.value.readOnly) {
+          this.logger.debug('Cannot delete cells in read-only mode');
+          return true; // Prevent default behavior
+        }
+
+        const selectedCells = this.getSelectedCells();
+        if (selectedCells.length > 0) {
+          this.deleteSelectedCells().subscribe({
+            next: result => {
+              if (result.success) {
+                this.logger.debug('Selected cells deleted via keyboard shortcut', {
+                  count: result.metadata?.['deletedCount'],
+                });
+              }
+            },
+            error: error => this.logger.error('Delete via keyboard failed', { error }),
+          });
+        }
+        return true;
+      }
+
       default:
         // Unhandled shortcut
         return false;
@@ -804,8 +828,13 @@ export class AppDfdOrchestrator {
   }
 
   deleteSelectedCells(): Observable<OperationResult> {
-    const selectedCells = this.getSelectedCells();
-    if (selectedCells.length === 0) {
+    const graph = this.getGraph;
+    if (!graph) {
+      return throwError(() => new Error('Graph not initialized'));
+    }
+
+    const selectedCellIds = this.getSelectedCells();
+    if (selectedCellIds.length === 0) {
       return of({
         success: true,
         operationId: `delete-none-${Date.now()}`,
@@ -816,24 +845,22 @@ export class AppDfdOrchestrator {
       });
     }
 
-    const deleteOperations = selectedCells.map(cellId => ({
-      id: `delete-${cellId}-${Date.now()}`,
-      type: 'delete-node' as const,
-      source: 'user-interaction' as const,
-      priority: 'normal' as const,
-      timestamp: Date.now(),
-      nodeId: cellId,
-    }));
-
-    return this.executeBatch(deleteOperations).pipe(
-      map(results => ({
-        success: results.every(r => r.success),
+    // Use the infrastructure facade's deleteSelectedCells method which properly handles
+    // both nodes and edges with correct port visibility updates
+    return this.dfdInfrastructure.deleteSelectedCells().pipe(
+      map(result => ({
+        success: result.success,
         operationId: `batch-delete-${Date.now()}`,
         operationType: 'delete-node' as const,
-        affectedCellIds: results.flatMap(r => r.affectedCellIds),
+        affectedCellIds: selectedCellIds,
         timestamp: Date.now(),
-        metadata: { deletedCount: results.length },
+        metadata: { deletedCount: result.deletedCount },
       })),
+      tap(result => {
+        if (result.success) {
+          this._markUnsavedChanges();
+        }
+      }),
     );
   }
 

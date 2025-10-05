@@ -236,6 +236,7 @@ export class AppDfdFacade {
 
   /**
    * Delete selected cells from the graph
+   * Uses proper service layers for correct port visibility updates and history tracking
    */
   deleteSelectedCells(): Observable<{ success: boolean; deletedCount: number }> {
     try {
@@ -249,27 +250,26 @@ export class AppDfdFacade {
         });
       }
 
-      // Delete each selected cell
-      selectedCells.forEach(cell => {
+      const deletedCount = selectedCells.length;
+
+      // Delete each selected cell using proper service layers
+      selectedCells.forEach((cell: any) => {
         if (cell.isNode()) {
-          this.infraX6CoreOperationsService.removeNode(graph, cell.id, {
-            suppressErrors: false,
-            logOperation: true,
-          });
+          // For nodes, use infraNodeService for proper cleanup (handles edges, embeddings, etc.)
+          this.infraNodeService.removeNode(graph, cell.id);
         } else if (cell.isEdge()) {
-          this.infraX6CoreOperationsService.removeEdge(graph, cell.id, {
-            suppressErrors: false,
-            logOperation: true,
-          });
+          // For edges, use appEdgeService which delegates to InfraEdgeService
+          // This ensures proper port visibility updates
+          this.appEdgeService.removeEdgeFromRemoteOperation(graph, cell.id, {});
         }
       });
 
       this.logger.debug('Deleted selected cells via facade', {
-        deletedCount: selectedCells.length,
+        deletedCount,
       });
 
       return new Observable(observer => {
-        observer.next({ success: true, deletedCount: selectedCells.length });
+        observer.next({ success: true, deletedCount });
         observer.complete();
       });
     } catch (error) {

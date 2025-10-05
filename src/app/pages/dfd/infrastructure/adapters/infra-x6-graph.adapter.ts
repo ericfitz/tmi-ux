@@ -1387,6 +1387,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
   /**
    * Centralized cell deletion handler - uses history coordinator for proper atomic deletion
+   * with correct port visibility updates
    */
   private _handleCellDeletion(cell: Cell): void {
     const cellType = cell.isNode() ? 'node' : 'edge';
@@ -1394,11 +1395,40 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Use history coordinator for atomic deletion with port visibility suppression
     if (this._graph) {
+      // For edges, capture the source and target nodes before deletion for port visibility update
+      let sourceNodeId: string | undefined;
+      let targetNodeId: string | undefined;
+
+      if (cell.isEdge()) {
+        sourceNodeId = (cell).getSourceCellId();
+        targetNodeId = (cell).getTargetCellId();
+      }
+
+      // Delete the cell atomically
       this._historyCoordinator.executeAtomicOperation(this._graph, () => {
         this._x6CoreOps.removeCellObject(this._graph!, cell);
       });
 
-      this.logger.info(`[DFD] ${cellType} removed via atomic operation`, {
+      // Update port visibility for affected nodes (edges only)
+      if (cell.isEdge() && (sourceNodeId || targetNodeId)) {
+        // Use executeVisualEffect to suppress port visibility changes from history
+        this._historyCoordinator.executeVisualEffect(this._graph, () => {
+          if (sourceNodeId) {
+            const sourceNode = this._graph!.getCellById(sourceNodeId);
+            if (sourceNode && sourceNode.isNode()) {
+              this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
+            }
+          }
+          if (targetNodeId) {
+            const targetNode = this._graph!.getCellById(targetNodeId);
+            if (targetNode && targetNode.isNode()) {
+              this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
+            }
+          }
+        });
+      }
+
+      this.logger.info(`[DFD] ${cellType} removed via atomic operation with port visibility`, {
         cellId: cell.id,
       });
     }
