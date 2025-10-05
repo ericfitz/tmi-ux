@@ -15,12 +15,44 @@ interface FontConfig {
 }
 
 /**
+ * Page size configurations in PDF points (1 point = 1/72 inch)
+ */
+const PAGE_SIZES = {
+  LETTER: { width: 612, height: 792 }, // 8.5" × 11"
+  A4: { width: 595, height: 842 }, // 210mm × 297mm
+} as const;
+
+type PageSize = keyof typeof PAGE_SIZES;
+
+/**
+ * Margin configurations in PDF points
+ * All margins are uniform (same for top, bottom, left, right)
+ */
+const MARGINS = {
+  WIDE: 72, // 1.0 inch
+  NORMAL: 54, // 0.75 inch
+  NARROW: 36, // 0.5 inch
+} as const;
+
+type MarginSize = keyof typeof MARGINS;
+
+/**
+ * Print DPI for high-quality diagram rendering
+ */
+const PRINT_DPI = 300;
+const SCREEN_DPI = 72; // PDF points are 72 DPI
+
+/**
  * Service responsible for generating PDF reports from threat models using pdf-lib
  */
 @Injectable({
   providedIn: 'root',
 })
 export class ThreatModelReportService {
+  // PDF layout configuration (will be user-configurable in the future)
+  private pageSize: PageSize = 'LETTER';
+  private marginSize: MarginSize = 'NORMAL';
+
   private fontConfigs: Map<string, FontConfig> = new Map([
     [
       'en-US',
@@ -103,6 +135,52 @@ export class ThreatModelReportService {
   ) {}
 
   /**
+   * Get the current page dimensions
+   */
+  private getPageDimensions(): { width: number; height: number } {
+    return PAGE_SIZES[this.pageSize];
+  }
+
+  /**
+   * Get the current margin size in points
+   */
+  private getMargin(): number {
+    return MARGINS[this.marginSize];
+  }
+
+  /**
+   * Get the printable area width (page width - left margin - right margin)
+   */
+  private getPrintableWidth(): number {
+    const margin = this.getMargin();
+    return this.getPageDimensions().width - 2 * margin;
+  }
+
+  /**
+   * Calculate the DPI scale factor for converting screen points to print resolution
+   */
+  private getPrintDpiScale(): number {
+    return PRINT_DPI / SCREEN_DPI; // 300 / 72 = 4.166...
+  }
+
+  /**
+   * Add a new page to the PDF document with configured dimensions
+   */
+  private addNewPage(doc: PDFDocument): PDFPage {
+    const pageDims = this.getPageDimensions();
+    return doc.addPage([pageDims.width, pageDims.height]);
+  }
+
+  /**
+   * Get the starting Y position for a new page (page height - top margin)
+   */
+  private getStartingYPosition(): number {
+    const pageDims = this.getPageDimensions();
+    const margin = this.getMargin();
+    return pageDims.height - margin;
+  }
+
+  /**
    * Generate a PDF report for the given threat model
    */
   async generateReport(threatModel: ThreatModel): Promise<void> {
@@ -130,7 +208,7 @@ export class ThreatModelReportService {
       await this.loadFonts(doc);
 
       // Generate report content
-      this.generateReportContent(doc, threatModel);
+      await this.generateReportContent(doc, threatModel);
 
       // Save the PDF
       await this.savePdf(doc, threatModel.name);
@@ -217,9 +295,9 @@ export class ThreatModelReportService {
   /**
    * Generate the complete report content
    */
-  private generateReportContent(doc: PDFDocument, threatModel: ThreatModel): void {
-    let page = doc.addPage();
-    let yPosition = page.getHeight() - 50;
+  private async generateReportContent(doc: PDFDocument, threatModel: ThreatModel): Promise<void> {
+    let page = this.addNewPage(doc);
+    let yPosition = this.getStartingYPosition();
 
     // Title
     yPosition = this.addTitle(page, threatModel.name, yPosition);
@@ -229,7 +307,7 @@ export class ThreatModelReportService {
 
     // Diagrams Section
     if (threatModel.diagrams && threatModel.diagrams.length > 0) {
-      const result = this.addDiagramsSection(doc, page, threatModel, yPosition);
+      const result = await this.addDiagramsSection(doc, page, threatModel, yPosition);
       page = result.page;
       yPosition = result.yPosition;
     }
@@ -255,6 +333,128 @@ export class ThreatModelReportService {
   }
 
   /**
+   * Convert base64-encoded SVG to PNG Uint8Array for pdf-lib
+   * Renders at 300 DPI for print quality
+   * @param base64Svg Base64-encoded SVG string
+   * @param displayWidth Display width in PDF points (72 DPI)
+   * @returns Promise resolving to PNG data as Uint8Array and dimensions
+   */
+  private async convertSvgToPng(
+    base64Svg: string,
+    displayWidth: number,
+  ): Promise<{ pngData: Uint8Array; width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Decode base64 SVG
+        const svgString = atob(base64Svg);
+
+        // Parse SVG to extract dimensions
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        const svgElement = svgDoc.querySelector('svg');
+
+        if (!svgElement) {
+          throw new Error('Invalid SVG: no svg element found');
+        }
+
+        // Extract original dimensions from SVG
+        let originalWidth = 800;
+        let originalHeight = 600;
+
+        // Try to get dimensions from width/height attributes
+        const widthAttr = svgElement.getAttribute('width');
+        const heightAttr = svgElement.getAttribute('height');
+
+        if (widthAttr && heightAttr) {
+          originalWidth = parseFloat(widthAttr);
+          originalHeight = parseFloat(heightAttr);
+        } else {
+          // Try to get dimensions from viewBox
+          const viewBox = svgElement.getAttribute('viewBox');
+          if (viewBox) {
+            const [, , vbWidth, vbHeight] = viewBox.split(/\s+/).map(parseFloat);
+            if (vbWidth && vbHeight) {
+              originalWidth = vbWidth;
+              originalHeight = vbHeight;
+            }
+          }
+        }
+
+        // Calculate aspect ratio and display dimensions
+        const aspectRatio = originalHeight / originalWidth;
+        const displayHeight = Math.round(displayWidth * aspectRatio);
+
+        // Calculate canvas size for 300 DPI print quality
+        // PDF points are 72 DPI, so we scale by PRINT_DPI / SCREEN_DPI
+        const dpiScale = this.getPrintDpiScale(); // 300 / 72 ≈ 4.167
+        const canvasWidth = Math.round(displayWidth * dpiScale);
+        const canvasHeight = Math.round(displayHeight * dpiScale);
+
+        // Create high-resolution canvas for 300 DPI output
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          throw new Error('Failed to get canvas context');
+        }
+
+        // Scale the context to render at 300 DPI
+        ctx.scale(dpiScale, dpiScale);
+
+        // Create image and load SVG
+        const img = new Image();
+
+        img.onload = () => {
+          // Fill white background
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+          // Draw SVG image at display size (rendered at 300 DPI due to scale)
+          ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+
+          // Convert canvas to blob with maximum quality
+          canvas.toBlob(
+            blob => {
+              if (!blob) {
+                reject(new Error('Failed to convert canvas to blob'));
+                return;
+              }
+
+              // Convert blob to Uint8Array
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                if (reader.result instanceof ArrayBuffer) {
+                  // Return PNG data with display dimensions (not canvas dimensions)
+                  resolve({
+                    pngData: new Uint8Array(reader.result),
+                    width: displayWidth,
+                    height: displayHeight,
+                  });
+                } else {
+                  reject(new Error('Failed to read blob as ArrayBuffer'));
+                }
+              };
+              reader.onerror = () => reject(new Error('Failed to read blob'));
+              reader.readAsArrayBuffer(blob);
+            },
+            'image/png',
+            1.0,
+          );
+        };
+
+        img.onerror = () => reject(new Error('Failed to load SVG image'));
+
+        // Set image source to base64 SVG
+        img.src = `data:image/svg+xml;base64,${base64Svg}`;
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    });
+  }
+
+  /**
    * Add report title
    */
   private addTitle(page: PDFPage, title: string, yPosition: number): number {
@@ -274,7 +474,7 @@ export class ThreatModelReportService {
       color: rgb(0, 0, 0),
     });
 
-    return yPosition - 50;
+    return yPosition - 30;
   }
 
   /**
@@ -285,6 +485,8 @@ export class ThreatModelReportService {
     threatModel: ThreatModel,
     yPosition: number,
   ): number {
+    const margin = this.getMargin();
+
     if (!this.currentFont) {
       throw new Error('No font loaded for PDF generation');
     }
@@ -292,7 +494,7 @@ export class ThreatModelReportService {
     const sectionTitle = this.transloco.translate('threatModels.details');
 
     page.drawText(sectionTitle, {
-      x: 50,
+      x: margin,
       y: yPosition,
       size: 18,
       font: this.currentFont,
@@ -327,7 +529,7 @@ export class ThreatModelReportService {
 
     summaryItems.forEach(item => {
       page.drawText(`${item.label}: ${item.value}`, {
-        x: 50,
+        x: margin,
         y: yPosition,
         size: 12,
         font: this.currentFont!,
@@ -342,21 +544,24 @@ export class ThreatModelReportService {
   /**
    * Add diagrams section
    */
-  private addDiagramsSection(
+  private async addDiagramsSection(
     doc: PDFDocument,
     page: PDFPage,
     threatModel: ThreatModel,
     yPosition: number,
-  ): { page: PDFPage; yPosition: number } {
+  ): Promise<{ page: PDFPage; yPosition: number }> {
+    const margin = this.getMargin();
+    const printableWidth = this.getPrintableWidth();
+
     if (yPosition < 200) {
-      page = doc.addPage();
-      yPosition = page.getHeight() - 50;
+      page = this.addNewPage(doc);
+      yPosition = this.getStartingYPosition();
     }
 
     const sectionTitle = this.transloco.translate('threatModels.diagrams');
 
     page.drawText(sectionTitle, {
-      x: 50,
+      x: margin,
       y: yPosition,
       size: 18,
       font: this.currentFont,
@@ -367,7 +572,7 @@ export class ThreatModelReportService {
 
     if (!threatModel.diagrams || threatModel.diagrams.length === 0) {
       page.drawText(this.transloco.translate('common.noDataAvailable'), {
-        x: 50,
+        x: margin,
         y: yPosition,
         size: 12,
         font: this.currentFont!,
@@ -376,14 +581,14 @@ export class ThreatModelReportService {
       return { page, yPosition: yPosition - 20 };
     }
 
-    threatModel.diagrams.forEach((diagram, index) => {
-      if (index > 0 || yPosition < 350) {
-        page = doc.addPage();
-        yPosition = page.getHeight() - 50;
+    for (const [index, diagram] of threatModel.diagrams.entries()) {
+      if (index > 0 || yPosition < 400) {
+        page = this.addNewPage(doc);
+        yPosition = this.getStartingYPosition();
       }
 
       page.drawText(diagram.name, {
-        x: 50,
+        x: margin,
         y: yPosition,
         size: 14,
         font: this.currentFont!,
@@ -392,32 +597,40 @@ export class ThreatModelReportService {
 
       yPosition -= 30;
 
-      // Add SVG placeholder - pdf-lib doesn't support SVG directly
+      // Render diagram image if SVG data is available
       if (diagram.image?.svg) {
         try {
-          // Draw a placeholder rectangle for the diagram
-          page.drawRectangle({
-            x: 50,
-            y: yPosition - 200,
-            width: 400,
-            height: 200,
-            borderColor: rgb(0.8, 0.8, 0.8),
-            borderWidth: 1,
+          // Use full printable width for diagrams (responsive to page size and margins)
+          const diagramWidth = printableWidth;
+
+          // Convert SVG to high-DPI PNG (300 DPI for print quality)
+          const { pngData, width, height } = await this.convertSvgToPng(
+            diagram.image.svg,
+            diagramWidth,
+          );
+
+          // Embed PNG in PDF
+          const image = await doc.embedPng(pngData);
+
+          // Check if we need a new page for the image
+          if (yPosition - height < margin) {
+            page = this.addNewPage(doc);
+            yPosition = this.getStartingYPosition();
+          }
+
+          // Draw the image at display size (PNG is 300 DPI internally)
+          page.drawImage(image, {
+            x: margin,
+            y: yPosition - height,
+            width: width,
+            height: height,
           });
 
-          page.drawText(`Diagram: ${diagram.name}`, {
-            x: 250 - this.currentFont!.widthOfTextAtSize(`Diagram: ${diagram.name}`, 10) / 2,
-            y: yPosition - 100,
-            size: 10,
-            font: this.currentFont!,
-            color: rgb(0.4, 0.4, 0.4),
-          });
-
-          yPosition -= 220;
+          yPosition -= height + 20;
         } catch (error) {
-          this.logger.warn('Failed to render SVG diagram', { diagramId: diagram.id, error });
+          this.logger.warn('Failed to render diagram image', { diagramId: diagram.id, error });
           page.drawText('Diagram could not be rendered', {
-            x: 50,
+            x: margin,
             y: yPosition,
             size: 10,
             font: this.currentFont!,
@@ -425,8 +638,18 @@ export class ThreatModelReportService {
           });
           yPosition -= 20;
         }
+      } else {
+        // No SVG data - show placeholder
+        page.drawText('No diagram image available', {
+          x: margin,
+          y: yPosition,
+          size: 10,
+          font: this.currentFont!,
+          color: rgb(0.4, 0.4, 0.4),
+        });
+        yPosition -= 20;
       }
-    });
+    }
 
     return { page, yPosition };
   }
@@ -440,19 +663,21 @@ export class ThreatModelReportService {
     documents: Document[],
     yPosition: number,
   ): { page: PDFPage; yPosition: number } {
+    const margin = this.getMargin();
+
     if (!this.currentFont) {
       throw new Error('No font loaded for PDF generation');
     }
 
     if (yPosition < 200) {
-      page = doc.addPage();
-      yPosition = page.getHeight() - 50;
+      page = this.addNewPage(doc);
+      yPosition = this.getStartingYPosition();
     }
 
     const sectionTitle = this.transloco.translate('common.objectTypes.documents');
 
     page.drawText(sectionTitle, {
-      x: 50,
+      x: margin,
       y: yPosition,
       size: 18,
       font: this.currentFont,
@@ -463,7 +688,7 @@ export class ThreatModelReportService {
 
     if (documents.length === 0) {
       page.drawText(this.transloco.translate('common.noDataAvailable'), {
-        x: 50,
+        x: margin,
         y: yPosition,
         size: 12,
         font: this.currentFont,
@@ -484,9 +709,9 @@ export class ThreatModelReportService {
 
     // Table rows
     documents.forEach(document => {
-      if (yPosition < 50) {
-        page = doc.addPage();
-        yPosition = page.getHeight() - 50;
+      if (yPosition < margin) {
+        page = this.addNewPage(doc);
+        yPosition = this.getStartingYPosition();
       }
 
       const rowData: string[] = [
@@ -510,19 +735,21 @@ export class ThreatModelReportService {
     sources: Source[],
     yPosition: number,
   ): { page: PDFPage; yPosition: number } {
+    const margin = this.getMargin();
+
     if (!this.currentFont) {
       throw new Error('No font loaded for PDF generation');
     }
 
     if (yPosition < 200) {
-      page = doc.addPage();
-      yPosition = page.getHeight() - 50;
+      page = this.addNewPage(doc);
+      yPosition = this.getStartingYPosition();
     }
 
     const sectionTitle = this.transloco.translate('common.objectTypes.sourceCode');
 
     page.drawText(sectionTitle, {
-      x: 50,
+      x: margin,
       y: yPosition,
       size: 18,
       font: this.currentFont,
@@ -533,7 +760,7 @@ export class ThreatModelReportService {
 
     if (sources.length === 0) {
       page.drawText(this.transloco.translate('common.noDataAvailable'), {
-        x: 50,
+        x: margin,
         y: yPosition,
         size: 12,
         font: this.currentFont,
@@ -555,9 +782,9 @@ export class ThreatModelReportService {
 
     // Table rows
     sources.forEach(source => {
-      if (yPosition < 50) {
-        page = doc.addPage();
-        yPosition = page.getHeight() - 50;
+      if (yPosition < margin) {
+        page = this.addNewPage(doc);
+        yPosition = this.getStartingYPosition();
       }
 
       const rowData: string[] = [
@@ -582,19 +809,21 @@ export class ThreatModelReportService {
     threats: Threat[],
     yPosition: number,
   ): { page: PDFPage; yPosition: number } {
+    const margin = this.getMargin();
+
     if (!this.currentFont) {
       throw new Error('No font loaded for PDF generation');
     }
 
     if (yPosition < 200) {
-      page = doc.addPage();
-      yPosition = page.getHeight() - 50;
+      page = this.addNewPage(doc);
+      yPosition = this.getStartingYPosition();
     }
 
-    const sectionTitle = this.transloco.translate('threatModels.threats');
+    const sectionTitle = this.transloco.translate('common.objectTypes.threats');
 
     page.drawText(sectionTitle, {
-      x: 50,
+      x: margin,
       y: yPosition,
       size: 18,
       font: this.currentFont,
@@ -605,7 +834,7 @@ export class ThreatModelReportService {
 
     if (threats.length === 0) {
       page.drawText(this.transloco.translate('common.noDataAvailable'), {
-        x: 50,
+        x: margin,
         y: yPosition,
         size: 12,
         font: this.currentFont,
@@ -627,9 +856,9 @@ export class ThreatModelReportService {
 
     // Table rows
     threats.forEach(threat => {
-      if (yPosition < 50) {
-        page = doc.addPage();
-        yPosition = page.getHeight() - 50;
+      if (yPosition < margin) {
+        page = this.addNewPage(doc);
+        yPosition = this.getStartingYPosition();
       }
 
       const rowData: string[] = [
@@ -654,12 +883,14 @@ export class ThreatModelReportService {
     yPosition: number,
     isHeader: boolean,
   ): number {
+    const margin = this.getMargin();
+
     if (!this.currentFont) {
       throw new Error('No font loaded for PDF generation');
     }
 
     const columnWidths = [120, 120, 120, 120];
-    const startX = 50;
+    const startX = margin;
     let currentX = startX;
     const fontSize = isHeader ? 12 : 10;
     const color = isHeader ? rgb(0, 0, 0) : rgb(0.2, 0.2, 0.2);
