@@ -377,18 +377,19 @@ export class AppDiagramService {
     // Get proper port configuration for this node type
     const portConfig = infraNodeConfigurationService.getNodePorts(nodeType);
 
-    // Handle position from either direct properties or geometry object
-    const x = mockCell.x ?? mockCell.geometry?.x ?? 0;
-    const y = mockCell.y ?? mockCell.geometry?.y ?? 0;
-    const width = mockCell.width ?? mockCell.geometry?.width ?? 80;
-    const height = mockCell.height ?? mockCell.geometry?.height ?? 80;
+    // Handle position from X6 format (position object), fallback to flat properties or geometry
+    const x = mockCell.position?.x ?? mockCell.x ?? mockCell.geometry?.x ?? 0;
+    const y = mockCell.position?.y ?? mockCell.y ?? mockCell.geometry?.y ?? 0;
+    const width = mockCell.size?.width ?? mockCell.width ?? mockCell.geometry?.width ?? 80;
+    const height = mockCell.size?.height ?? mockCell.height ?? mockCell.geometry?.height ?? 80;
 
     // Log position data for debugging positioning issues
-    if (x === 0 && y === 0 && !mockCell.x && !mockCell.geometry?.x) {
+    if (x === 0 && y === 0 && !mockCell.position?.x && !mockCell.x && !mockCell.geometry?.x) {
       this.logger.warn('Node has no position data, defaulting to (0,0)', {
         nodeId: mockCell.id,
         shape: nodeType,
         mockCellKeys: Object.keys(mockCell),
+        hasPosition: 'position' in mockCell,
         hasX: 'x' in mockCell,
         hasY: 'y' in mockCell,
         hasGeometry: 'geometry' in mockCell,

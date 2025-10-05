@@ -55,8 +55,19 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
     }
 
     // Convert the diagram data to cells format
-    // operation.data should already be in the format { nodes: [], edges: [] }
-    const cells = this._convertDataToCells(operation.data);
+    // operation.data is in format { nodes: [], edges: [] } from X6's toJSON()
+    // Just combine them into a single cells array
+    const cells = [
+      ...(operation.data.nodes || []),
+      ...(operation.data.edges || []),
+    ];
+
+    this.logger.debug('REST save: cells prepared', {
+      diagramId: operation.diagramId,
+      totalCells: cells.length,
+      nodes: operation.data.nodes?.length || 0,
+      edges: operation.data.edges?.length || 0,
+    });
 
     // Use the threatModelService to save via PATCH
     return this.threatModelService
@@ -88,19 +99,6 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
           });
         }),
       );
-  }
-
-  private _convertDataToCells(data: any): any[] {
-    // Convert from { nodes: [], edges: [] } to cells array format
-    const nodes = (data.nodes || []).map((node: any) => ({
-      ...node,
-      type: 'node',
-    }));
-    const edges = (data.edges || []).map((edge: any) => ({
-      ...edge,
-      type: 'edge',
-    }));
-    return [...nodes, ...edges];
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {

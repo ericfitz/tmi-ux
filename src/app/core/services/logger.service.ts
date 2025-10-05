@@ -41,6 +41,16 @@ const LOG_LEVEL_PRIORITY = {
 };
 
 /**
+ * URL query parameters that should be redacted in logs
+ */
+const SENSITIVE_URL_PARAMS = ['access_token', 'token', 'refresh_token', 'api_key', 'apikey'];
+
+/**
+ * Number of characters to show at start and end of redacted values
+ */
+const REDACTION_VISIBLE_CHARS = 4;
+
+/**
  * A service for standardized application logging
  * Logs are formatted with ISO8601 timestamps and configurable log levels
  */
@@ -77,7 +87,8 @@ export class LoggerService {
    */
   debug(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.debug(this.formatMessage(LogLevel.DEBUG, message), ...optionalParams);
+      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+      console.debug(this.formatMessage(LogLevel.DEBUG, message), ...redactedParams);
     }
   }
 
@@ -88,9 +99,10 @@ export class LoggerService {
    */
   debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
+      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.debug(
         this.formatMessage(LogLevel.DEBUG, `[${component}] ${message}`),
-        ...optionalParams,
+        ...redactedParams,
       );
     }
   }
@@ -100,7 +112,8 @@ export class LoggerService {
    */
   info(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage(LogLevel.INFO, message), ...optionalParams);
+      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+      console.info(this.formatMessage(LogLevel.INFO, message), ...redactedParams);
     }
   }
 
@@ -109,7 +122,8 @@ export class LoggerService {
    */
   warn(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage(LogLevel.WARN, message), ...optionalParams);
+      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+      console.warn(this.formatMessage(LogLevel.WARN, message), ...redactedParams);
     }
   }
 
@@ -118,7 +132,8 @@ export class LoggerService {
    */
   error(message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(this.formatMessage(LogLevel.ERROR, message), ...optionalParams);
+      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+      console.error(this.formatMessage(LogLevel.ERROR, message), ...redactedParams);
     }
   }
 
@@ -149,5 +164,48 @@ export class LoggerService {
   private formatMessage(level: LogLevel, message: string): string {
     const timestamp = new Date().toISOString();
     return `${timestamp} [${level}] ${message}`;
+  }
+
+  /**
+   * Redact sensitive URL parameters from a URL string
+   * Shows first and last few characters of sensitive values with [...REDACTED...] in between
+   */
+  private redactUrl(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      const params = urlObj.searchParams;
+
+      SENSITIVE_URL_PARAMS.forEach(param => {
+        if (params.has(param)) {
+          const value = params.get(param) || '';
+          if (value.length > REDACTION_VISIBLE_CHARS * 2) {
+            const start = value.substring(0, REDACTION_VISIBLE_CHARS);
+            const end = value.substring(value.length - REDACTION_VISIBLE_CHARS);
+            params.set(param, `${start}...[REDACTED]...${end}`);
+          } else {
+            // If value is too short, just show [REDACTED]
+            params.set(param, '[REDACTED]');
+          }
+        }
+      });
+
+      return urlObj.toString();
+    } catch {
+      // If URL parsing fails, return original string
+      return url;
+    }
+  }
+
+  /**
+   * Redact sensitive information from parameters before logging
+   */
+  private redactSensitiveData(param: unknown): unknown {
+    if (typeof param === 'string') {
+      // Check if it looks like a URL
+      if (param.startsWith('http://') || param.startsWith('https://')) {
+        return this.redactUrl(param);
+      }
+    }
+    return param;
   }
 }

@@ -67,11 +67,14 @@ export class MockDataService implements OnDestroy {
       localStorage: localStorage.getItem('useMockData'),
     });
 
-    // Load JSON data on initialization
-    this.loadMockData();
-
-    // Initialize mock collaboration sessions
-    this.initializeMockCollaborationSessions();
+    // Only load mock data if we're using it
+    if (this.getInitialMockState()) {
+      this.logger.debugComponent('MockData', 'Loading mock data (useMockData is enabled)');
+      this.loadMockData();
+      this.initializeMockCollaborationSessions();
+    } else {
+      this.logger.debugComponent('MockData', 'Skipping mock data load (useMockData is disabled)');
+    }
   }
 
   // Public observable for components to subscribe to
@@ -112,6 +115,13 @@ export class MockDataService implements OnDestroy {
     this.logger.debugComponent('MockData', `Mock data ${useMock ? 'enabled' : 'disabled'}`, {
       useMock,
     });
+
+    // Load mock data if enabling for the first time
+    if (useMock && !this._dataLoaded) {
+      this.logger.debugComponent('MockData', 'Loading mock data (enabled via toggle)');
+      this.loadMockData();
+      this.initializeMockCollaborationSessions();
+    }
   }
 
   /**
@@ -119,6 +129,11 @@ export class MockDataService implements OnDestroy {
    * @returns Array of ThreatModel objects
    */
   getMockThreatModels(): ThreatModel[] {
+    // Ensure data is loaded if mock data is being used
+    if (this.isUsingMockData && !this._dataLoaded) {
+      this.logger.warn('Mock data requested but not loaded - loading now');
+      this.loadMockData();
+    }
     return [...this._mockThreatModels];
   }
 

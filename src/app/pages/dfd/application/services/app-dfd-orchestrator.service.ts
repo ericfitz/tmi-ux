@@ -1280,24 +1280,33 @@ export class AppDfdOrchestrator {
     if (!graph) {
       return { nodes: [], edges: [] };
     }
-    return {
-      nodes: graph.getNodes().map((node: any) => ({
-        id: node.id,
-        shape: node.shape,
-        position: node.getPosition(),
-        size: node.getSize(),
-        attrs: node.getAttrs(),
-        data: node.getData(),
-      })),
-      edges: graph.getEdges().map((edge: any) => ({
-        id: edge.id,
-        shape: edge.shape,
-        source: edge.getSource(),
-        target: edge.getTarget(),
-        attrs: edge.getAttrs(),
-        data: edge.getData(),
-      })),
-    };
+
+    // Use X6's native toJSON() for proper serialization in X6 format
+    const graphJson = graph.toJSON();
+    const cells = graphJson.cells || [];
+
+    this.logger.debug('[ORCHESTRATOR-DEBUG] _getGraphData called', {
+      totalCells: cells.length,
+      nodes: cells.filter((c: any) => c.shape !== 'edge').length,
+      edges: cells.filter((c: any) => c.shape === 'edge').length,
+    });
+
+    // Separate into nodes and edges with type field for backend
+    const nodes = cells
+      .filter((cell: any) => cell.shape !== 'edge')
+      .map((cell: any) => ({
+        ...cell,
+        type: 'node',
+      }));
+
+    const edges = cells
+      .filter((cell: any) => cell.shape === 'edge')
+      .map((cell: any) => ({
+        ...cell,
+        type: 'edge',
+      }));
+
+    return { nodes, edges };
   }
 
   /**

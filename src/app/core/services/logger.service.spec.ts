@@ -298,4 +298,113 @@ describe('LoggerService', () => {
       expect(consoleSpy.info).toHaveBeenCalledWith(expect.stringContaining(longMessage));
     });
   });
+
+  describe('Sensitive Data Redaction', () => {
+    beforeEach(() => {
+      service.setLogLevel(LogLevel.DEBUG);
+    });
+
+    it('should redact access_token from URL parameters', () => {
+      const url =
+        'http://localhost:4200/oauth2/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9&token_type=Bearer';
+      service.debug('Current URL', url);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const redactedUrl = lastCall[1] as string;
+
+      // URL encoding converts [...REDACTED...] to ...%5BREDACTED%5D...
+      expect(redactedUrl).toContain('%5BREDACTED%5D');
+      expect(redactedUrl).toContain('eyJh'); // First 4 chars
+      expect(redactedUrl).toContain('VCJ9'); // Last 4 chars
+      expect(redactedUrl).not.toContain(
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      ); // Full token should not appear
+    });
+
+    it('should redact multiple sensitive parameters from URLs', () => {
+      const url =
+        'http://example.com/api?access_token=secret123456&api_key=key987654321&other=public';
+      service.info('API call', url);
+
+      const calls = consoleSpy.info.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const redactedUrl = lastCall[1] as string;
+
+      expect(redactedUrl).toContain('%5BREDACTED%5D');
+      expect(redactedUrl).toContain('other=public'); // Non-sensitive param should remain
+      expect(redactedUrl).not.toContain('secret123456');
+      expect(redactedUrl).not.toContain('key987654321');
+    });
+
+    it('should handle short sensitive values with just [REDACTED]', () => {
+      const url = 'http://example.com/api?token=short';
+      service.warn('Request', url);
+
+      const calls = consoleSpy.warn.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const redactedUrl = lastCall[1] as string;
+
+      expect(redactedUrl).toContain('%5BREDACTED%5D');
+      expect(redactedUrl).not.toContain('short');
+    });
+
+    it('should not redact non-URL strings', () => {
+      const normalString = 'This is just a normal string with access_token word in it';
+      service.debug('Message', normalString);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const param = lastCall[1] as string;
+
+      expect(param).toBe(normalString); // Should remain unchanged
+      expect(param).not.toContain('[REDACTED]');
+    });
+
+    it('should handle invalid URLs gracefully', () => {
+      const invalidUrl = 'not-a-valid-url-but-starts-with-http://';
+      service.error('Error', invalidUrl);
+
+      const calls = consoleSpy.error.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const param = lastCall[1] as string;
+
+      expect(param).toBe(invalidUrl); // Should return original on parse failure
+    });
+
+    it('should redact tokens in all log levels', () => {
+      const url = 'https://example.com?refresh_token=verylongtoken123456789';
+
+      service.debug('Debug', url);
+      service.info('Info', url);
+      service.warn('Warn', url);
+      service.error('Error', url);
+
+      expect(consoleSpy.debug.mock.calls[0][1]).toContain('%5BREDACTED%5D');
+      expect(consoleSpy.info.mock.calls[consoleSpy.info.mock.calls.length - 1][1]).toContain(
+        '%5BREDACTED%5D',
+      );
+      expect(consoleSpy.warn.mock.calls[consoleSpy.warn.mock.calls.length - 1][1]).toContain(
+        '%5BREDACTED%5D',
+      );
+      expect(consoleSpy.error.mock.calls[0][1]).toContain('%5BREDACTED%5D');
+    });
+
+    it('should redact tokens in debugComponent method', () => {
+      const url =
+        'http://localhost:4200/oauth2/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5YzRhOGIzZGMyNTE5ZWRlMTYiLCJyZXR1cm5VcmwiOiIvdG0ifQ==&token_type=Bearer';
+      service.debugComponent('App', 'Current URL', url);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const redactedUrl = lastCall[1] as string;
+
+      expect(redactedUrl).toContain('%5BREDACTED%5D');
+      expect(redactedUrl).toContain('eyJh'); // First 4 chars
+      expect(redactedUrl).toContain('fQ%3D%3D'); // Last 4 chars URL-encoded (== becomes %3D%3D)
+      expect(redactedUrl).not.toContain(
+        'eyJhbGciOiJIUzI1NiIsInR5YzRhOGIzZGMyNTE5ZWRlMTYiLCJyZXR1cm5VcmwiOiIvdG0ifQ==',
+      ); // Full token
+    });
+  });
 });

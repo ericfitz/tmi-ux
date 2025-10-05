@@ -14,14 +14,25 @@ export interface CursorPosition {
   y: number;
 }
 
+/**
+ * Cell in X6 native toJSON format
+ * Matches X6's serialization format with position and size objects
+ */
 export interface Cell {
   id: string;
   shape: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  position?: {
+    x: number;
+    y: number;
+  };
+  size?: {
+    width: number;
+    height: number;
+  };
+  attrs?: Record<string, unknown>;
   label?: string;
+  source?: unknown; // For edges - X6 source format
+  target?: unknown; // For edges - X6 target format
   [key: string]: unknown;
 }
 
