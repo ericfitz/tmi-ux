@@ -376,7 +376,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debug('Attempting to initialize DFD Orchestrator', initParams);
     this.appDfdOrchestrator.initialize(initParams).subscribe({
       next: success => {
-        this.logger.info('DFD Orchestrator initialization result', { success });
+        this.logger.debugComponent('DfdComponent', 'DFD Orchestrator initialization result', {
+          success,
+        });
         if (success) {
           this.logger.info('DFD Orchestrator initialized successfully');
 
@@ -454,7 +456,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Set up edge event handlers when orchestrator becomes initialized
         if (state.initialized && !this.isSystemInitialized) {
-          this.logger.info('DFD orchestrator just became initialized - setting up edge handlers');
+          this.logger.debugComponent(
+            'DfdComponent',
+            'DFD orchestrator just became initialized - setting up edge handlers',
+          );
           this.setupEdgeObservableSubscriptions();
         }
 
@@ -567,7 +572,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.loadDiagram(dfdId).subscribe({
       next: result => {
         if (result.success) {
-          this.logger.info('Diagram loaded successfully via AppDfdOrchestrator');
+          this.logger.debugComponent(
+            'DfdComponent',
+            'Diagram loaded successfully via AppDfdOrchestrator',
+          );
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
         }
@@ -1226,7 +1234,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Edge Observable Subscriptions
 
   private setupEdgeObservableSubscriptions(): void {
-    this.logger.info('DFD Component: Setting up edge and history observable subscriptions');
+    this.logger.debugComponent(
+      'DfdComponent',
+      'Setting up edge and history observable subscriptions',
+    );
 
     // Subscribe to edge added events from the graph adapter
     const graphAdapter = this.dfdInfrastructure.graphAdapter;
@@ -1265,7 +1276,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Set initial history state
       this.setInitialHistoryState();
 
-      this.logger.info('Edge and history observable subscriptions set up successfully');
+      this.logger.debugComponent(
+        'DfdComponent',
+        'Edge and history observable subscriptions set up successfully',
+      );
     } else {
       this.logger.warn('Graph adapter not available for edge and history subscriptions');
     }

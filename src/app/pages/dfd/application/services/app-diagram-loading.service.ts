@@ -59,7 +59,7 @@ export class AppDiagramLoadingService {
       source = 'unknown',
     } = options;
 
-    this.logger.info('Loading diagram cells into graph', {
+    this.logger.debugComponent('DfdDiagram', 'Loading diagram cells into graph', {
       cellCount: cells.length,
       diagramId,
       source,
@@ -94,10 +94,14 @@ export class AppDiagramLoadingService {
           this.infraNodeConfigurationService,
         );
 
-        this.logger.info('Successfully loaded cells into graph using AppDiagramService', {
-          cellCount: cells.length,
-          source,
-        });
+        this.logger.debugComponent(
+          'DfdDiagram',
+          'Successfully loaded cells into graph using AppDiagramService',
+          {
+            cellCount: cells.length,
+            source,
+          },
+        );
 
         // Verify cells were added
         const graphCells = graph.getCells();

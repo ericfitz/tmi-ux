@@ -743,7 +743,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     }
 
     this._embeddingAdapter.updateAllEmbeddingAppearances(this._graph);
-    this.logger.info('Updated embedding appearances for all nodes in graph');
+    this.logger.debugComponent('X6Graph', 'Updated embedding appearances for all nodes in graph');
   }
 
   /**
@@ -1899,7 +1899,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     const result = this._shouldIncludeInHistoryInternal(event, args);
 
     // Log when events are being included to help debug unwanted history entries
-    if (result) {
+    // Exclude position changes from logging as they're very noisy during drags
+    if (result && args.key !== 'position') {
       this.logger.info('INCLUDING event in history', {
         event,
         cellId: args.cell?.id,

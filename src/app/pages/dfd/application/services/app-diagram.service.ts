@@ -175,7 +175,7 @@ export class AppDiagramService {
         }
       });
 
-      this.logger.info('Starting atomic operation for diagram loading', {
+      this.logger.debugComponent('DfdDiagram', 'Starting atomic operation for diagram loading', {
         nodeCount: nodes.length,
         edgeCount: edges.length,
       });
@@ -183,18 +183,23 @@ export class AppDiagramService {
       // Use history coordinator for batch loading with history suppression
       // executeRemoteOperation disables history during the operation
       this.historyCoordinator.executeRemoteOperation(graph, () => {
-        this.logger.info('Inside atomic operation - clearing existing cells');
+        this.logger.debugComponent(
+          'DfdDiagram',
+          'Inside atomic operation - clearing existing cells',
+        );
         // Clear existing graph first
         graph.clearCells();
 
-        this.logger.info('Adding nodes to graph', { nodeCount: nodes.length });
+        this.logger.debugComponent('DfdDiagram', 'Adding nodes to graph', {
+          nodeCount: nodes.length,
+        });
         // Add nodes first, then edges (to ensure proper dependencies)
         // Track nodes that have parent relationships to establish after all nodes are created
         const nodesWithParents: Array<{ nodeId: string; parentId: string }> = [];
 
         nodes.forEach((nodeConfig, index) => {
           try {
-            this.logger.info(`Adding node ${index + 1}/${nodes.length}`, {
+            this.logger.debugComponent('DfdDiagram', `Adding node ${index + 1}/${nodes.length}`, {
               nodeId: nodeConfig.id,
               shape: nodeConfig.shape,
             });
@@ -219,7 +224,7 @@ export class AppDiagramService {
               nodesWithParents.push({ nodeId: nodeConfig.id, parentId: nodeConfig.parent });
             }
 
-            this.logger.info(`Successfully added node ${nodeInfo.id}`);
+            this.logger.debugComponent('DfdDiagram', `Successfully added node ${nodeInfo.id}`);
           } catch (error) {
             this.logger.error('Error adding node during batch load', {
               nodeId: nodeConfig.id,
@@ -230,7 +235,7 @@ export class AppDiagramService {
         });
 
         // Establish parent-child relationships after all nodes are created
-        this.logger.info('Establishing embedding relationships', {
+        this.logger.debugComponent('DfdDiagram', 'Establishing embedding relationships', {
           count: nodesWithParents.length,
         });
         nodesWithParents.forEach(({ nodeId, parentId }) => {
@@ -240,7 +245,7 @@ export class AppDiagramService {
 
             if (childNode && parentNode && childNode.isNode() && parentNode.isNode()) {
               childNode.setParent(parentNode);
-              this.logger.info('Established embedding relationship', {
+              this.logger.debugComponent('DfdDiagram', 'Established embedding relationship', {
                 childId: nodeId,
                 parentId: parentId,
               });
@@ -261,10 +266,12 @@ export class AppDiagramService {
           }
         });
 
-        this.logger.info('Adding edges to graph', { edgeCount: edges.length });
+        this.logger.debugComponent('DfdDiagram', 'Adding edges to graph', {
+          edgeCount: edges.length,
+        });
         edges.forEach((edgeConfig, index) => {
           try {
-            this.logger.info(`Adding edge ${index + 1}/${edges.length}`, {
+            this.logger.debugComponent('DfdDiagram', `Adding edge ${index + 1}/${edges.length}`, {
               edgeId: edgeConfig.id,
               source: edgeConfig.source?.cell,
               target: edgeConfig.target?.cell,
@@ -284,7 +291,7 @@ export class AppDiagramService {
               edge.setZIndex(edgeConfig.zIndex);
             }
 
-            this.logger.info(`Successfully added edge ${edgeInfo.id}`);
+            this.logger.debugComponent('DfdDiagram', `Successfully added edge ${edgeInfo.id}`);
           } catch (error) {
             this.logger.error('Error adding edge during batch load', {
               edgeId: edgeConfig.id,
@@ -305,9 +312,9 @@ export class AppDiagramService {
         return convertedCells;
       });
 
-      this.logger.info('Atomic operation completed - checking graph state');
+      this.logger.debugComponent('DfdDiagram', 'Atomic operation completed - checking graph state');
       const graphCellsAfterLoad = graph.getCells();
-      this.logger.info('Graph state after atomic operation', {
+      this.logger.debugComponent('DfdDiagram', 'Graph state after atomic operation', {
         totalCellsInGraph: graphCellsAfterLoad.length,
         cellIds: graphCellsAfterLoad.map(cell => cell.id),
       });
@@ -322,9 +329,13 @@ export class AppDiagramService {
       // Fit the graph to show all content
       graph.centerContent();
 
-      this.logger.info('Successfully loaded diagram cells in batch - final graph state', {
-        finalCellCount: graph.getCells().length,
-      });
+      this.logger.debugComponent(
+        'DfdDiagram',
+        'Successfully loaded diagram cells in batch - final graph state',
+        {
+          finalCellCount: graph.getCells().length,
+        },
+      );
     } catch (error) {
       this.logger.error('Error in batch loading diagram cells', error);
       throw error;

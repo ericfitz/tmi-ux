@@ -158,7 +158,7 @@ export class InfraX6EmbeddingAdapter {
       }
     });
 
-    this.logger.info('Updated all embedding appearances', {
+    this.logger.debugComponent('X6Embedding', 'Updated all embedding appearances', {
       totalNodes: nodes.length,
       embeddedNodes: nodes.filter(n => n.getParent()?.isNode()).length,
     });
