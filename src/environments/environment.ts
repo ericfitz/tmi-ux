@@ -31,7 +31,7 @@ export const environment: Environment = {
   oauth: {
     local: {
       enabled: true,
-      icon: 'fa-solid fa-laptop-code',
+      icon: 'computer',
     },
   },
 };

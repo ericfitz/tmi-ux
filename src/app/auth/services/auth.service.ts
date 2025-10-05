@@ -432,7 +432,7 @@ export class AuthService {
       fallbackProviders.push({
         id: 'local',
         name: 'Local Development',
-        icon: environment.oauth?.local?.icon || 'fa-solid fa-laptop-code',
+        icon: environment.oauth?.local?.icon || 'computer',
         auth_url: this.localProvider.buildAuthUrl(''),
         redirect_uri: `${window.location.origin}/oauth2/callback`,
         client_id: 'local-development',

@@ -28,7 +28,7 @@ import { LoggerService } from '../../../core/services/logger.service';
       <mat-card class="auth-card">
         <mat-card-header>
           <div class="header-with-icon">
-            <i class="fa-solid fa-laptop-code local-icon"></i>
+            <span class="material-symbols-outlined local-icon">computer</span>
             <div>
               <mat-card-title>{{ 'login.local.title' | transloco }}</mat-card-title>
               <mat-card-subtitle>{{ 'login.local.subtitle' | transloco }}</mat-card-subtitle>

@@ -132,8 +132,8 @@ export interface Environment {
       enabled?: boolean;
 
       /**
-       * FontAwesome icon class for local provider
-       * Default: 'fa-solid fa-laptop-code'
+       * Material icon name for local provider
+       * Default: 'computer'
        */
       icon?: string;
     };

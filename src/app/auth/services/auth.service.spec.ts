@@ -49,7 +49,7 @@ vi.mock('../../../environments/environment', () => ({
     oauth: {
       local: {
         enabled: true,
-        icon: 'fa-solid fa-laptop-code',
+        icon: 'computer',
       },
     },
   },
@@ -135,7 +135,7 @@ describe('AuthService', () => {
       {
         id: 'test',
         name: 'Test Provider',
-        icon: 'fa-solid fa-flask',
+        icon: 'science',
         auth_url: 'http://localhost:8080/oauth2/authorize/test',
         redirect_uri: 'http://localhost:8080/oauth2/callback',
         client_id: 'mock-client-id',
@@ -470,7 +470,7 @@ describe('AuthService', () => {
           {
             id: 'local',
             name: 'Local Development',
-            icon: 'fa-solid fa-laptop-code',
+            icon: 'computer',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
             redirect_uri: expect.stringContaining('/oauth2/callback'),
             client_id: 'local-development',
@@ -508,7 +508,7 @@ describe('AuthService', () => {
           {
             id: 'local',
             name: 'Local Development',
-            icon: 'fa-solid fa-laptop-code',
+            icon: 'computer',
             auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
             redirect_uri: expect.stringContaining('/oauth2/callback'),
             client_id: 'local-development',

@@ -73,14 +73,14 @@
       <!-- No providers configured -->
       <div *ngIf="!providersLoading && availableProviders.length === 0">
         <div class="no-providers">
-          <i class="fa-solid fa-exclamation-triangle warning-icon"></i>
+          <span class="material-symbols-outlined warning-icon">warning</span>
           <p>{{ 'login.noProvidersConfigured' | transloco }}</p>
         </div>
       </div>
 
       <!-- Error display -->
       <div *ngIf="error" class="error-message">
-        <i class="fa-solid fa-exclamation-circle error-icon"></i>
+        <span class="material-symbols-outlined error-icon">error</span>
         <span *ngIf="error.startsWith('login.'); else rawError">{{ error | transloco }}</span>
         <ng-template #rawError>
           <span>{{ error }}</span>

@@ -15,7 +15,7 @@ export const environment: Environment = {
   oauth: {
     local: {
       enabled: true, // Enable local provider for testing
-      icon: 'fa-solid fa-laptop-code',
+      icon: 'computer',
     },
   },
 };

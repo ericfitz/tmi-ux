@@ -5,10 +5,7 @@
 @use 'styles/typography';
 @use 'styles/fonts';
 
-// Import FontAwesome
-@import '@fortawesome/fontawesome-free/css/all.min.css';
-
-// Note: Custom Material theme with Roboto Condensed typography is included via angular.json
+// Note: The pre-built azure-blue theme is included via angular.json
 
 // Material Symbols settings for filled icons
 .material-symbols-outlined {
