@@ -1,6 +1,6 @@
 {
   "about": {
-    "bugReport": "File a Bug: ",
+    "bugReport": "File a bug report or request a feature: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactjurisdiction": "Legal Jurisdiction: ",
     "contactoperator": "Operator: ",
@@ -15,11 +15,15 @@
       "paragraph2-outro": " open-source project for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application."
     },
     "opensourcetitle": "Open Source",
-    "sourceCode": "Source Code: ",
-    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
-    "sourcetitle": "TMI Application",
-    "title": "About TMI"
+    "server": "Server",
+    "serverSourceCode": "Server Source Code: ",
+    "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourcetitle": "TMI Project",
+    "title": "About TMI",
+    "version": "Version Information",
+    "webApplication": "Web Application",
+    "webApplicationSourceCode": "Web Application Source Code: ",
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "auth": {
     "unauthorized": {
@@ -214,6 +218,7 @@
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy User Email to Clipboard",
+    "home": "Home",
     "logoutButton": "Logout",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",

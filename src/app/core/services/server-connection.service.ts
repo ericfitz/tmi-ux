@@ -82,6 +82,7 @@ export class ServerConnectionService implements OnDestroy {
   private _isMonitoring = false;
   private _baseRetryDelay = 1000;
   private _maxRetryInterval = 300000; // 5 minutes
+  private _serverVersion: string | null = null;
 
   constructor(
     private http: HttpClient,
@@ -117,6 +118,14 @@ export class ServerConnectionService implements OnDestroy {
    */
   get currentDetailedStatus(): DetailedConnectionStatus {
     return this._detailedConnectionStatus$.value;
+  }
+
+  /**
+   * Get server version from last successful health check
+   * @returns Server version string or null if not yet retrieved
+   */
+  getServerVersion(): string | null {
+    return this._serverVersion;
   }
 
   ngOnDestroy(): void {
@@ -322,6 +331,11 @@ export class ServerConnectionService implements OnDestroy {
         if (response.status?.code === 'OK') {
           this.logger.debugComponent('ServerConnection', 'Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
+
+          // Store server version from health response
+          if (response.service?.build) {
+            this._serverVersion = response.service.build;
+          }
 
           // Update detailed status as well
           const currentDetailed = this._detailedConnectionStatus$.value;

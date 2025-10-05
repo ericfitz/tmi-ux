@@ -1,6 +1,6 @@
 {
   "about": {
-    "bugReport": "รายงานบัก: ",
+    "bugReport": "รายงานบักหรือขอคุณสมบัติ: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactjurisdiction": "เขตอำนาจทางกฎหมาย: ",
     "contactoperator": "ผู้ดำเนินการ: ",
@@ -15,11 +15,15 @@
       "paragraph2-outro": " โอเพนซอร์สสำหรับการให้แรงบันดาลใจที่ช่วยกำหนดวิสัยทัศน์และแนวทางของเราในการสร้างแอปพลิเคชันที่ปลอดภัยและเป็นมิตรกับผู้ใช้"
     },
     "opensourcetitle": "โอเพนซอร์ส",
-    "sourceCode": "รหัสต้นฉบับ: ",
-    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
-    "sourcetitle": "แอปพลิเคชัน TMI",
-    "title": "เกี่ยวกับ TMI"
+    "server": "เซิร์ฟเวอร์",
+    "serverSourceCode": "รหัสต้นฉบับเซิร์ฟเวอร์: ",
+    "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourcetitle": "โครงการ TMI",
+    "title": "เกี่ยวกับ TMI",
+    "version": "ข้อมูลเวอร์ชัน",
+    "webApplication": "เว็บแอปพลิเคชัน",
+    "webApplicationSourceCode": "รหัสต้นฉบับเว็บแอปพลิเคชัน: ",
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "auth": {
     "unauthorized": {
@@ -214,6 +218,7 @@
   "navbar": {
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
     "copyUserEmail": "คัดลอกอีเมลผู้ใช้ไปยังคลิปบอร์ด",
+    "home": "หน้าแรก",
     "logoutButton": "ออกจากระบบ",
     "serverStatus": {
       "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",

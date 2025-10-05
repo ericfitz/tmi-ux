@@ -1,6 +1,6 @@
 {
   "about": {
-    "bugReport": "Fehler melden: ",
+    "bugReport": "Fehlerbericht einreichen oder Funktion anfordern: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactjurisdiction": "Rechtliche Zuständigkeit: ",
     "contactoperator": "Betreiber: ",
@@ -15,11 +15,15 @@
       "paragraph2-outro": " Open-Source-Projekt, das Inspiration für unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung geliefert hat."
     },
     "opensourcetitle": "Open Source",
-    "sourceCode": "Quellcode: ",
-    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
-    "sourcetitle": "TMI-Anwendung",
-    "title": "Über TMI"
+    "server": "Server",
+    "serverSourceCode": "Server-Quellcode: ",
+    "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourcetitle": "TMI-Projekt",
+    "title": "Über TMI",
+    "version": "Versionsinformationen",
+    "webApplication": "Webanwendung",
+    "webApplicationSourceCode": "Webanwendungs-Quellcode: ",
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "auth": {
     "unauthorized": {
@@ -214,6 +218,7 @@
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "copyUserEmail": "Benutzer-E-Mail in Zwischenablage kopieren",
+    "home": "Startseite",
     "logoutButton": "Abmelden",
     "serverStatus": {
       "noServerConfigured": "Kein Server konfiguriert",

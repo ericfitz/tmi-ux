@@ -1,6 +1,6 @@
 {
   "about": {
-    "bugReport": "提交错误：",
+    "bugReport": "提交错误报告或功能请求：",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactjurisdiction": "法律管辖区：",
     "contactoperator": "运营者：",
@@ -15,11 +15,15 @@
       "paragraph2-outro": "开源项目提供的灵感，帮助塑造了我们构建安全且用户友好的应用程序的愿景和方法。"
     },
     "opensourcetitle": "开源软件",
-    "sourceCode": "源代码：",
-    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
-    "sourcetitle": "TMI 应用程序",
-    "title": "关于 TMI"
+    "server": "服务器",
+    "serverSourceCode": "服务器源代码：",
+    "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourcetitle": "TMI 项目",
+    "title": "关于 TMI",
+    "version": "版本信息",
+    "webApplication": "Web应用程序",
+    "webApplicationSourceCode": "Web应用程序源代码：",
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "auth": {
     "unauthorized": {
@@ -214,6 +218,7 @@
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
     "copyUserEmail": "复制用户邮箱到剪贴板",
+    "home": "主页",
     "logoutButton": "退出登录",
     "serverStatus": {
       "noServerConfigured": "未配置服务器",

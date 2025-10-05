@@ -1,6 +1,6 @@
 {
   "about": {
-    "bugReport": "الإبلاغ عن خلل: ",
+    "bugReport": "الإبلاغ عن خلل أو طلب ميزة: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactjurisdiction": "الولاية القضائية القانونية: ",
     "contactoperator": "المشغل: ",
@@ -15,11 +15,15 @@
       "paragraph2-outro": " مفتوح المصدر لتوفير الإلهام الذي ساعد في تشكيل رؤيتنا ونهجنا لبناء تطبيق آمن وسهل الاستخدام."
     },
     "opensourcetitle": "البرمجيات مفتوحة المصدر",
-    "sourceCode": "الكود المصدري: ",
-    "sourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourceCodeUrl2": "https://github.com/ericfitz/tmi-ux",
-    "sourcetitle": "تطبيق تي إم آي",
-    "title": "حول تي إم آي"
+    "server": "الخادم",
+    "serverSourceCode": "الكود المصدري للخادم: ",
+    "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "sourcetitle": "مشروع تي إم آي",
+    "title": "حول تي إم آي",
+    "version": "معلومات الإصدار",
+    "webApplication": "تطبيق الويب",
+    "webApplicationSourceCode": "الكود المصدري لتطبيق الويب: ",
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "auth": {
     "unauthorized": {
@@ -214,6 +218,7 @@
   "navbar": {
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
+    "home": "الصفحة الرئيسية",
     "logoutButton": "تسجيل الخروج",
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",

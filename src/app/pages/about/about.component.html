@@ -34,28 +34,41 @@
       {{ 'about.contactjurisdiction' | transloco }}<strong>{{ operatorJurisdiction }}</strong>
     </p>
   </div>
+
+  <div class="version-title-row">
+    <h1 class="page-title" [transloco]="'about.version'">Version Information</h1>
+  </div>
+
+  <div class="version-content-row">
+    <p class="page-content">
+      {{ 'about.webApplication' | transloco }}: <strong>{{ webApplicationVersion }}</strong>
+    </p>
+
+    <p class="page-content">{{ 'about.server' | transloco }}: <strong>{{ serverVersion }}</strong></p>
+  </div>
+
   <div class="source-title-row">
-    <h1 class="page-title" [transloco]="'about.sourcetitle'">TMI Source Code</h1>
+    <h1 class="page-title" [transloco]="'about.sourcetitle'">TMI Project</h1>
   </div>
 
   <div class="contact-content-row">
     <p class="page-content">
-      {{ 'about.sourceCode' | transloco: { url: '' }
+      {{ 'about.serverSourceCode' | transloco: { url: '' }
       }}<a
-        href="{{ 'about.sourceCodeUrl' | transloco }}"
+        href="{{ 'about.serverSourceCodeUrl' | transloco }}"
         target="_blank"
         rel="noopener noreferrer"
-        >{{ 'about.sourceCodeUrl' | transloco }}</a
+        >{{ 'about.serverSourceCodeUrl' | transloco }}</a
       >
     </p>
 
     <p class="page-content">
-      {{ 'about.sourceCode' | transloco: { url: '' }
+      {{ 'about.webApplicationSourceCode' | transloco: { url: '' }
       }}<a
-        href="{{ 'about.sourceCodeUrl2' | transloco }}"
+        href="{{ 'about.webappSourceCodeUrl' | transloco }}"
         target="_blank"
         rel="noopener noreferrer"
-        >{{ 'about.sourceCodeUrl2' | transloco }}</a
+        >{{ 'about.webappSourceCodeUrl' | transloco }}</a
       >
     </p>
 
