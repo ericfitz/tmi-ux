@@ -27,7 +27,8 @@ export interface AutoSaveContext {
   readonly userId: string;
   readonly userEmail: string;
   readonly userName?: string;
-  readonly diagramData: any;
+  readonly diagramData?: any; // Optional for backward compatibility
+  readonly getDiagramData?: () => any; // Callback to get fresh data when save executes
   readonly preferredStrategy?: string;
 }
 
@@ -509,6 +510,9 @@ export class AppAutoSaveManager {
 
     this.logger.debug('Executing auto-save', { diagramId: context.diagramId });
 
+    // Get fresh diagram data - use callback if available, otherwise use captured data
+    const diagramData = context.getDiagramData ? context.getDiagramData() : context.diagramData;
+
     const startTime = performance.now();
     this._stats = {
       ...this._stats,
@@ -518,7 +522,7 @@ export class AppAutoSaveManager {
 
     const saveOperation: SaveOperation = {
       diagramId: context.diagramId,
-      data: context.diagramData,
+      data: diagramData,
       strategyType: context.preferredStrategy,
       metadata: {
         threatModelId: context.threatModelId,

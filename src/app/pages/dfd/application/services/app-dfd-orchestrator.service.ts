@@ -1229,7 +1229,7 @@ export class AppDfdOrchestrator {
       userId: this.authService.userId,
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
-      diagramData: this._getGraphData(),
+      getDiagramData: () => this._getGraphData(), // Use callback to get fresh data
       preferredStrategy: 'websocket',
     };
 
@@ -1249,23 +1249,15 @@ export class AppDfdOrchestrator {
       timestamp: Date.now(),
     };
 
-    const graphData = this._getGraphData();
-
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
       userId: this.authService.userId,
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
-      diagramData: graphData,
+      getDiagramData: () => this._getGraphData(), // Use callback to get fresh data
       preferredStrategy: 'websocket',
     };
-
-    this.logger.info('[ORCHESTRATOR-DEBUG] Auto-save context created from history', {
-      diagramId: autoSaveContext.diagramId,
-      nodeCount: graphData.nodes?.length || 0,
-      edgeCount: graphData.edges?.length || 0,
-    });
 
     if (this.appAutoSaveManager.trigger) {
       this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
@@ -1293,7 +1285,7 @@ export class AppDfdOrchestrator {
       userId: this.authService.userId,
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
-      diagramData: this._getGraphData(),
+      getDiagramData: () => this._getGraphData(), // Use callback to get fresh data
       preferredStrategy: 'websocket',
     };
 
