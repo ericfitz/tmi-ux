@@ -73,15 +73,20 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
     return this.threatModelService
       .patchDiagramCells(threatModelId, operation.diagramId, cells)
       .pipe(
-        map(() => {
+        map(response => {
           this.logger.debug('REST save completed successfully', {
             diagramId: operation.diagramId,
+            updateVector: response.update_vector,
           });
           return {
             success: true,
             operationId: `save-${Date.now()}`,
             diagramId: operation.diagramId,
             timestamp: Date.now(),
+            metadata: {
+              update_vector: response.update_vector, // Pass to auto-save manager
+              cellsSaved: cells.length,
+            },
           };
         }),
         catchError(error => {

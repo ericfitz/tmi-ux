@@ -32,8 +32,13 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {
+    const isUndo = operation.metadata?.['isUndo'] === true;
+    const isRedo = operation.metadata?.['isRedo'] === true;
+
     this.logger.debug('WebSocket save operation started', {
       diagramId: operation.diagramId,
+      isUndo,
+      isRedo,
     });
 
     if (!this.webSocketAdapter.isConnected) {
@@ -42,35 +47,52 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
       return throwError(() => new Error(error));
     }
 
-    // For now, simulate a successful save
-    // In a real implementation, this would send via WebSocket and wait for acknowledgment
+    // For undo/redo in collaboration mode, send history operation message
+    if (isUndo || isRedo) {
+      const message = {
+        type: 'history-operation',
+        operation_type: isUndo ? 'undo' : 'redo',
+        diagram_id: operation.diagramId,
+        user_id: operation.metadata?.['userId'],
+        timestamp: Date.now(),
+      };
+
+      this.logger.info('Sending WebSocket history operation', {
+        operationType: message.operation_type,
+        diagramId: operation.diagramId,
+      });
+
+      // Send via WebSocket
+      this.webSocketAdapter.send(message);
+
+      return of({
+        success: true,
+        operationId: `ws-history-${Date.now()}`,
+        diagramId: operation.diagramId,
+        timestamp: Date.now(),
+        metadata: {
+          sentViaWebSocket: true,
+          operationType: message.operation_type,
+        },
+      });
+    }
+
+    // For regular changes in collaboration mode, changes are already
+    // broadcast via other WebSocket messages (cell-added, cell-changed, etc.)
+    // so we just acknowledge success without additional action
+    this.logger.debug('WebSocket save (non-undo/redo) - changes already broadcast', {
+      diagramId: operation.diagramId,
+    });
+
     return of({
       success: true,
       operationId: `ws-save-${Date.now()}`,
       diagramId: operation.diagramId,
       timestamp: Date.now(),
-    }).pipe(
-      map(result => {
-        this.logger.debug('WebSocket save completed successfully', {
-          diagramId: operation.diagramId,
-        });
-        return result;
-      }),
-      catchError(error => {
-        const errorMessage = `WebSocket save failed: ${error.message || 'Unknown error'}`;
-        this.logger.error(errorMessage, {
-          diagramId: operation.diagramId,
-          error,
-        });
-        return of({
-          success: false,
-          operationId: `ws-save-${Date.now()}`,
-          diagramId: operation.diagramId,
-          timestamp: Date.now(),
-          error: errorMessage,
-        });
-      }),
-    );
+      metadata: {
+        note: 'Changes broadcast via real-time WebSocket events',
+      },
+    });
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {
