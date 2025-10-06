@@ -365,7 +365,7 @@ describe('AppAutoSaveManager (History-Based)', () => {
       const error = new Error('Save failed');
       mockPersistenceCoordinator.save.mockReturnValue(throwError(() => error));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>(resolve => {
         service.trigger(1, autoSaveContext, false, false).subscribe({
           error: () => {
             const tracking = service.getSaveTracking();

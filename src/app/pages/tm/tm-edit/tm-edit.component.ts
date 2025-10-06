@@ -744,6 +744,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   deleteThreat(threat: Threat, event: Event): void {
     // Prevent event propagation to avoid opening the threat editor
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel || !this.threatModel.threats) {
       return;
@@ -848,6 +850,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   renameDiagram(diagram: Diagram, event: Event): void {
     // Prevent event propagation to avoid navigating to the diagram
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel) {
       return;
@@ -946,6 +950,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   deleteDiagram(diagram: Diagram, event: Event): void {
     // Prevent event propagation to avoid navigating to the diagram
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel || !this.threatModel.diagrams || !this.canEdit) {
       if (!this.canEdit) {
@@ -1043,6 +1049,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   editDocument(document: Document, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel) {
       return;
@@ -1094,6 +1102,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   deleteDocument(document: Document, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel || !this.threatModel.documents) {
       return;
@@ -1190,6 +1200,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   editSourceCode(sourceCode: Source, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel) {
       return;
@@ -1245,6 +1257,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   deleteSourceCode(sourceCode: Source, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel || !this.threatModel.sourceCode) {
       return;
@@ -1299,6 +1313,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   openSourceCodeMetadataDialog(sourceCode: Source, event: Event): void {
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     const dialogData: MetadataDialogData = {
       metadata: sourceCode.metadata || [],
@@ -1346,6 +1362,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   openDocumentMetadataDialog(document: Document, event: Event): void {
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     const dialogData: MetadataDialogData = {
       metadata: document.metadata || [],
@@ -1511,6 +1529,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   openDiagramMetadataDialog(diagram: Diagram, event: Event): void {
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     const dialogData: MetadataDialogData = {
       metadata: diagram.metadata || [],
@@ -1557,6 +1577,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   openThreatMetadataDialog(threat: Threat, event: Event): void {
     event.stopPropagation();
+    // Remove focus from the button to restore non-focused state
+    (event.target as HTMLElement)?.blur();
 
     const dialogData: MetadataDialogData = {
       metadata: threat.metadata || [],
