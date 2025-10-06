@@ -280,4 +280,20 @@ export class ThreatsDialogComponent implements OnInit {
   close(): void {
     this.dialogRef.close();
   }
+
+  /**
+   * Gets the tabindex for the add button
+   * @returns The tabindex value after all delete buttons
+   */
+  getAddButtonTabIndex(): number {
+    return this.dataSource.data.length + 1;
+  }
+
+  /**
+   * Gets the tabindex for the close button
+   * @returns The tabindex value after the add button
+   */
+  getCloseButtonTabIndex(): number {
+    return this.dataSource.data.length + 2;
+  }
 }

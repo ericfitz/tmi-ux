@@ -5,7 +5,13 @@
   </p>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-raised-button color="primary" (click)="onClose()">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onClose()"
+    tabindex="1"
+    [attr.aria-label]="'common.ok' | transloco"
+  >
     {{ 'common.ok' | transloco }}
   </button>
 </mat-dialog-actions>

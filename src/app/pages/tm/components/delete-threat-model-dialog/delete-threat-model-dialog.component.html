@@ -20,10 +20,23 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-raised-button color="primary" (click)="onCancel()" cdkFocusInitial>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onCancel()"
+    cdkFocusInitial
+    tabindex="1"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
     {{ 'common.cancel' | transloco }}
   </button>
-  <button mat-button color="warn" (click)="onConfirmDelete()">
+  <button
+    mat-button
+    color="warn"
+    (click)="onConfirmDelete()"
+    tabindex="2"
+    [attr.aria-label]="'common.deleteConfirm' | transloco"
+  >
     <mat-icon>delete</mat-icon>
     {{ 'common.deleteConfirm' | transloco }}
   </button>

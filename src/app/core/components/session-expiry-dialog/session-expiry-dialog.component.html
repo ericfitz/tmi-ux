@@ -22,6 +22,8 @@
     (click)="onLogout()"
     class="logout-button"
     [disabled]="isExtending"
+    tabindex="1"
+    [attr.aria-label]="'navbar.logoutButton' | transloco"
   >
     {{ 'navbar.logoutButton' | transloco }}
   </button>
@@ -32,6 +34,8 @@
     (click)="onExtendSession()"
     class="extend-button"
     [disabled]="isExtending"
+    tabindex="2"
+    [attr.aria-label]="'sessionExpiry.extendButton' | transloco"
   >
     {{ 'sessionExpiry.extendButton' | transloco }}
   </button>

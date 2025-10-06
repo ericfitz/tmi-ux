@@ -91,7 +91,12 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" tabindex="9">
+  <button
+    mat-button
+    (click)="onCancel()"
+    tabindex="8"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
     {{ 'common.cancel' | transloco }}
   </button>
   <button
@@ -99,7 +104,8 @@
     color="primary"
     [disabled]="sourceCodeForm.invalid"
     (click)="onSubmit()"
-    tabindex="8"
+    tabindex="9"
+    [attr.aria-label]="mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)"
   >
     {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
   </button>

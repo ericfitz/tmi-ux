@@ -23,6 +23,7 @@ interface CheckboxChangeEvent {
         <mat-checkbox
           [(ngModel)]="preferences.animations"
           (change)="onAnimationPreferenceChange($event)"
+          tabindex="1"
         >
           <span [transloco]="'userPreferences.diagramAnimationEffects'"
             >Diagram animation effects</span
@@ -31,7 +32,14 @@ interface CheckboxChangeEvent {
       </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="close()" [transloco]="'common.close'">Close</button>
+      <button
+        mat-button
+        (click)="close()"
+        [transloco]="'common.close'"
+        tabindex="2"
+        [attr.aria-label]="'common.close' | transloco"
+        >Close</button
+      >
     </mat-dialog-actions>
   `,
   styles: [

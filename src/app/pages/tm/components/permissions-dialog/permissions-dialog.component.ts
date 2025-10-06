@@ -56,6 +56,7 @@ export interface PermissionsDialogData {
                       [value]="auth.subject"
                       (blur)="updatePermissionSubject(i, $event)"
                       placeholder="User Email"
+                      [attr.tabindex]="i * 4 + 1"
                     />
                   </mat-form-field>
                   <span *ngIf="data.isReadOnly">{{ auth.subject }}</span>
@@ -72,6 +73,7 @@ export interface PermissionsDialogData {
                     <mat-select
                       [value]="auth.role"
                       (selectionChange)="updatePermissionRole(i, $event)"
+                      [attr.tabindex]="i * 4 + 2"
                     >
                       <mat-option value="owner">{{ 'common.roles.owner' | transloco }}</mat-option>
                       <mat-option value="writer">{{
@@ -97,6 +99,8 @@ export interface PermissionsDialogData {
                       (click)="setAsOwner(i)"
                       [matTooltip]="'threatModels.setAsOwner' | transloco"
                       [disabled]="auth.subject === data.owner"
+                      [attr.tabindex]="i * 4 + 3"
+                      [attr.aria-label]="'threatModels.setAsOwner' | transloco"
                     >
                       <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
                     </button>
@@ -105,6 +109,8 @@ export interface PermissionsDialogData {
                       color="warn"
                       (click)="deletePermission(i)"
                       [matTooltip]="'common.delete' | transloco"
+                      [attr.tabindex]="i * 4 + 4"
+                      [attr.aria-label]="'common.delete' | transloco"
                     >
                       <mat-icon>delete</mat-icon>
                     </button>
@@ -124,14 +130,33 @@ export interface PermissionsDialogData {
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
-        <button mat-button color="primary" (click)="addPermission()" *ngIf="!data.isReadOnly">
+        <button
+          mat-button
+          color="primary"
+          (click)="addPermission()"
+          *ngIf="!data.isReadOnly"
+          [attr.tabindex]="getAddPermissionButtonTabIndex()"
+          [attr.aria-label]="'threatModels.addPermission' | transloco"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'threatModels.addPermission'">Add Permission</span>
         </button>
-        <button mat-button (click)="close()">
+        <button
+          mat-button
+          (click)="close()"
+          [attr.tabindex]="getCloseButtonTabIndex()"
+          [attr.aria-label]="'common.cancel' | transloco"
+        >
           <span [transloco]="'common.cancel'">Close</span>
         </button>
-        <button mat-raised-button color="primary" (click)="save()" *ngIf="!data.isReadOnly">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="save()"
+          *ngIf="!data.isReadOnly"
+          [attr.tabindex]="getSaveButtonTabIndex()"
+          [attr.aria-label]="'common.save' | transloco"
+        >
           <span [transloco]="'common.save'">Save</span>
         </button>
       </mat-dialog-actions>
@@ -441,5 +466,29 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   close(): void {
     this.dialogRef.close();
+  }
+
+  /**
+   * Gets the tabindex for the add permission button
+   * @returns The tabindex value after all table rows
+   */
+  getAddPermissionButtonTabIndex(): number {
+    return this.permissionsDataSource.data.length * 4 + 1;
+  }
+
+  /**
+   * Gets the tabindex for the close button
+   * @returns The tabindex value after the add button
+   */
+  getCloseButtonTabIndex(): number {
+    return this.permissionsDataSource.data.length * 4 + 2;
+  }
+
+  /**
+   * Gets the tabindex for the save button
+   * @returns The tabindex value after the close button
+   */
+  getSaveButtonTabIndex(): number {
+    return this.permissionsDataSource.data.length * 4 + 3;
   }
 }

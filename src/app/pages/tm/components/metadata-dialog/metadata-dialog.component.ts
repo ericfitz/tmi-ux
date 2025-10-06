@@ -344,4 +344,28 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   cancel(): void {
     this.dialogRef.close();
   }
+
+  /**
+   * Gets the tabindex for the add button
+   * @returns The tabindex value after all table rows
+   */
+  getAddButtonTabIndex(): number {
+    return this.dataSource.data.length * 3 + 1;
+  }
+
+  /**
+   * Gets the tabindex for the cancel button
+   * @returns The tabindex value after the add button
+   */
+  getCancelButtonTabIndex(): number {
+    return this.dataSource.data.length * 3 + 2;
+  }
+
+  /**
+   * Gets the tabindex for the save button
+   * @returns The tabindex value after the cancel button
+   */
+  getSaveButtonTabIndex(): number {
+    return this.dataSource.data.length * 3 + 3;
+  }
 }

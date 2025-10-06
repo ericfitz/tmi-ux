@@ -5,7 +5,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
-        <input matInput formControlName="name" />
+        <input matInput formControlName="name" tabindex="1" />
         <mat-error *ngIf="diagramForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
@@ -17,10 +17,17 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" tabindex="2" [attr.aria-label]="'common.cancel' | transloco">
     {{ 'common.cancel' | transloco }}
   </button>
-  <button mat-raised-button color="primary" [disabled]="diagramForm.invalid" (click)="onSubmit()">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="diagramForm.invalid"
+    (click)="onSubmit()"
+    tabindex="3"
+    [attr.aria-label]="'threatModels.rename' | transloco"
+  >
     {{ 'threatModels.rename' | transloco }}
   </button>
 </mat-dialog-actions>

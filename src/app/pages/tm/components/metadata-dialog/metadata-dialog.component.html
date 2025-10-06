@@ -22,7 +22,7 @@
                 (blur)="updateKey(i, $event)"
                 [placeholder]="'common.metadataKey' | transloco"
                 [readonly]="data.isReadOnly"
-                [tabindex]="i * 2 + 1"
+                [attr.tabindex]="i * 3 + 1"
               />
             </mat-form-field>
           </td>
@@ -41,7 +41,7 @@
                 (blur)="updateValue(i, $event)"
                 [placeholder]="'common.metadataValue' | transloco"
                 [readonly]="data.isReadOnly"
-                [tabindex]="i * 2 + 2"
+                [attr.tabindex]="i * 3 + 2"
               />
             </mat-form-field>
           </td>
@@ -59,6 +59,8 @@
               (click)="deleteItem(i)"
               [matTooltip]="'common.delete' | transloco"
               [disabled]="data.isReadOnly"
+              [attr.tabindex]="i * 3 + 3"
+              [attr.aria-label]="'common.delete' | transloco"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -76,14 +78,33 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="dialog-actions">
-    <button mat-button color="primary" (click)="addItem()" [disabled]="data.isReadOnly">
+    <button
+      mat-button
+      color="primary"
+      (click)="addItem()"
+      [disabled]="data.isReadOnly"
+      [attr.tabindex]="getAddButtonTabIndex()"
+      [attr.aria-label]="'common.addMetadata' | transloco"
+    >
       <mat-icon>add</mat-icon>
       {{ 'common.addMetadata' | transloco }}
     </button>
-    <button mat-button (click)="cancel()">
+    <button
+      mat-button
+      (click)="cancel()"
+      [attr.tabindex]="getCancelButtonTabIndex()"
+      [attr.aria-label]="'common.cancel' | transloco"
+    >
       {{ 'common.cancel' | transloco }}
     </button>
-    <button mat-raised-button color="primary" (click)="save()" [disabled]="data.isReadOnly">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="save()"
+      [disabled]="data.isReadOnly"
+      [attr.tabindex]="getSaveButtonTabIndex()"
+      [attr.aria-label]="'common.save' | transloco"
+    >
       {{ 'common.save' | transloco }}
     </button>
   </mat-dialog-actions>

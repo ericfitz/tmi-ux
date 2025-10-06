@@ -50,7 +50,9 @@
       "Bash(echo:*)",
       "Bash(docker:*)",
       "Bash(git tag:*)",
-      "Bash(./scripts/push-heroku.sh:*)"
+      "Bash(./scripts/push-heroku.sh:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   },
   "enableAllProjectMcpServers": false

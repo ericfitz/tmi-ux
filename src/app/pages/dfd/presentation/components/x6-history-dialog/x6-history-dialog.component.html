@@ -15,9 +15,9 @@
 </div>
 
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onCopyToClipboard()">
+  <button mat-button (click)="onCopyToClipboard()" tabindex="1" aria-label="Copy to clipboard">
     <mat-icon>content_copy</mat-icon>
     Copy to clipboard
   </button>
-  <button mat-button (click)="onClose()">OK</button>
+  <button mat-button (click)="onClose()" tabindex="2" aria-label="OK">OK</button>
 </div>

@@ -4,7 +4,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.diagramType' | transloco }}</mat-label>
-        <mat-select formControlName="type">
+        <mat-select formControlName="type" tabindex="1">
           <mat-option *ngFor="let type of diagramTypes" [value]="type.value">
             {{ type.label }}
           </mat-option>
@@ -14,7 +14,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
-        <input matInput formControlName="name" />
+        <input matInput formControlName="name" tabindex="2" />
         <mat-error *ngIf="diagramForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
@@ -26,7 +26,7 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" tabindex="3" [attr.aria-label]="'common.cancel' | transloco">
     {{ 'common.cancel' | transloco }}
   </button>
   <button
@@ -35,6 +35,8 @@
     type="submit"
     [disabled]="diagramForm.invalid"
     (click)="onSubmit()"
+    tabindex="4"
+    [attr.aria-label]="'common.ok' | transloco"
   >
     {{ 'common.ok' | transloco }}
   </button>

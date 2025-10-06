@@ -46,6 +46,8 @@
               (click)="deleteThreat(i); $event.stopPropagation()"
               [matTooltip]="'common.delete' | transloco"
               [disabled]="data.isReadOnly"
+              [attr.tabindex]="i + 1"
+              [attr.aria-label]="'common.delete' | transloco"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -69,11 +71,24 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="dialog-actions">
-    <button mat-button color="primary" (click)="addThreat()" [disabled]="data.isReadOnly">
+    <button
+      mat-button
+      color="primary"
+      (click)="addThreat()"
+      [disabled]="data.isReadOnly"
+      [attr.tabindex]="getAddButtonTabIndex()"
+      [attr.aria-label]="'common.objectTypes.threats' | transloco"
+    >
       <mat-icon>add</mat-icon>
       Add {{ 'common.objectTypes.threats' | transloco }}
     </button>
-    <button mat-raised-button color="primary" (click)="close()">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="close()"
+      [attr.tabindex]="getCloseButtonTabIndex()"
+      [attr.aria-label]="'common.close' | transloco"
+    >
       {{ 'common.close' | transloco }}
     </button>
   </mat-dialog-actions>

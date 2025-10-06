@@ -196,5 +196,12 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="closeDialog()">{{ 'common.close' | transloco }}</button>
+  <button
+    mat-button
+    (click)="closeDialog()"
+    tabindex="100"
+    [attr.aria-label]="'common.close' | transloco"
+  >
+    {{ 'common.close' | transloco }}
+  </button>
 </mat-dialog-actions>
