@@ -552,10 +552,14 @@ describe('InfraX6EmbeddingAdapter', () => {
       expect(childNode.setAttrs).toHaveBeenCalled(); // Depth 1 appearance
       expect(grandchildNode.setAttrs).toHaveBeenCalled(); // Depth 2 appearance
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Updated all embedding appearances', {
-        totalNodes: 3,
-        embeddedNodes: 2,
-      });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'X6Embedding',
+        'Updated all embedding appearances',
+        {
+          totalNodes: 3,
+          embeddedNodes: 2,
+        },
+      );
     });
   });
 

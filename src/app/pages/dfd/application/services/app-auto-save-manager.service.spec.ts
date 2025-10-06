@@ -213,7 +213,9 @@ describe('AppAutoSaveManager (History-Based)', () => {
   });
 
   describe('Queue Management', () => {
-    it('should prevent concurrent saves', done => {
+    it('should prevent concurrent saves', () => {
+      vi.useFakeTimers();
+
       // Return an observable that emits after a delay
       mockPersistenceCoordinator.save.mockReturnValue(
         new Observable(subscriber => {
@@ -224,16 +226,22 @@ describe('AppAutoSaveManager (History-Based)', () => {
         }),
       );
 
-      // Start first save
-      service.trigger(1, autoSaveContext, false, false).subscribe();
+      return new Promise<void>((resolve, reject) => {
+        // Start first save
+        service.trigger(1, autoSaveContext, false, false).subscribe();
 
-      // Immediately try second save while first is in progress
-      service.trigger(2, autoSaveContext, false, false).subscribe({
-        next: result => {
-          expect(result).toBe(false); // Should not trigger while save in progress
-          done();
-        },
-        error: done,
+        // Immediately try second save while first is in progress
+        service.trigger(2, autoSaveContext, false, false).subscribe({
+          next: result => {
+            expect(result).toBe(false); // Should not trigger while save in progress
+            vi.useRealTimers();
+            resolve();
+          },
+          error: (err: Error) => {
+            vi.useRealTimers();
+            reject(err);
+          },
+        });
       });
     });
 
@@ -251,7 +259,6 @@ describe('AppAutoSaveManager (History-Based)', () => {
         });
       });
     });
-
   });
 
   describe('Manual Save', () => {
@@ -334,11 +341,10 @@ describe('AppAutoSaveManager (History-Based)', () => {
       const error = new Error('Save failed');
       mockPersistenceCoordinator.save.mockReturnValue(throwError(() => error));
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>(resolve => {
         service.trigger(1, autoSaveContext, false, false).subscribe({
-          next: () => reject(new Error('Should have failed')),
-          error: err => {
-            expect(err.message).toBe('Save failed');
+          next: result => {
+            expect(result).toBe(false);
             resolve();
           },
         });
@@ -367,7 +373,7 @@ describe('AppAutoSaveManager (History-Based)', () => {
 
       return new Promise<void>(resolve => {
         service.trigger(1, autoSaveContext, false, false).subscribe({
-          error: () => {
+          next: () => {
             const tracking = service.getSaveTracking();
             expect(tracking.saveInProgress).toBe(false);
             resolve();

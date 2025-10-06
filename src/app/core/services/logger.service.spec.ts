@@ -317,9 +317,7 @@ describe('LoggerService', () => {
       expect(redactedUrl).toContain('%5BREDACTED%5D');
       expect(redactedUrl).toContain('eyJh'); // First 4 chars
       expect(redactedUrl).toContain('VCJ9'); // Last 4 chars
-      expect(redactedUrl).not.toContain(
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-      ); // Full token should not appear
+      expect(redactedUrl).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'); // Full token should not appear
     });
 
     it('should redact multiple sensitive parameters from URLs', () => {

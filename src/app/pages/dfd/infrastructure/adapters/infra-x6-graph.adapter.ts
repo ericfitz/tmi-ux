@@ -1408,8 +1408,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       let targetNodeId: string | undefined;
 
       if (cell.isEdge()) {
-        sourceNodeId = (cell).getSourceCellId();
-        targetNodeId = (cell).getTargetCellId();
+        sourceNodeId = cell.getSourceCellId();
+        targetNodeId = cell.getTargetCellId();
       }
 
       // Delete the cell atomically

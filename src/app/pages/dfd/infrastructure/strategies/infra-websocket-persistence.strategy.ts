@@ -116,7 +116,10 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
         },
       })),
       catchError(error => {
-        this.logger.error('Failed to send diagram_operation', { error, diagramId: operation.diagramId });
+        this.logger.error('Failed to send diagram_operation', {
+          error,
+          diagramId: operation.diagramId,
+        });
         return throwError(() => error);
       }),
     );
@@ -137,7 +140,7 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
       for (const node of data.nodes) {
         operations.push({
           id: node.id,
-          operation: 'update',  // All cells in save operation are updates
+          operation: 'update', // All cells in save operation are updates
           data: node,
         });
       }

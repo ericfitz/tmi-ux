@@ -57,10 +57,7 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
     // Convert the diagram data to cells format
     // operation.data is in format { nodes: [], edges: [] } from X6's toJSON()
     // Just combine them into a single cells array
-    const cells = [
-      ...(operation.data.nodes || []),
-      ...(operation.data.edges || []),
-    ];
+    const cells = [...(operation.data.nodes || []), ...(operation.data.edges || [])];
 
     this.logger.debug('REST save: cells prepared', {
       diagramId: operation.diagramId,

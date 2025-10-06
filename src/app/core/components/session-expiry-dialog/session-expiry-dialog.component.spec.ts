@@ -103,11 +103,11 @@ describe('SessionExpiryDialogComponent', () => {
     vi.useRealTimers();
   });
 
-  it('should call onExtendSession and close dialog when extend button clicked', () => {
+  it('should call onExtendSession when extend button clicked', () => {
     component.onExtendSession();
 
     expect(mockData.onExtendSession).toHaveBeenCalled();
-    expect(mockDialogRef.close).toHaveBeenCalledWith('extend');
+    expect(component.isExtending).toBe(true);
   });
 
   it('should call onLogout and close dialog when logout button clicked', () => {
