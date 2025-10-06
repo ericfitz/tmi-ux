@@ -61,7 +61,9 @@
     [disabled]="documentForm.invalid"
     (click)="onSubmit()"
     tabindex="5"
-    [attr.aria-label]="mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)"
+    [attr.aria-label]="
+      mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
+    "
   >
     {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
   </button>

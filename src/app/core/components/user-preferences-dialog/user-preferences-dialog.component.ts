@@ -38,8 +38,9 @@ interface CheckboxChangeEvent {
         [transloco]="'common.close'"
         tabindex="2"
         [attr.aria-label]="'common.close' | transloco"
-        >Close</button
       >
+        Close
+      </button>
     </mat-dialog-actions>
   `,
   styles: [

@@ -101,7 +101,15 @@
       <!-- Score field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.score' | transloco }}</mat-label>
-        <input matInput type="number" formControlName="score" min="0" max="10" step="0.1" tabindex="5" />
+        <input
+          matInput
+          type="number"
+          formControlName="score"
+          min="0"
+          max="10"
+          step="0.1"
+          tabindex="5"
+        />
       </mat-form-field>
 
       <!-- Priority field -->
@@ -209,7 +217,12 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" tabindex="13" [attr.aria-label]="'common.cancel' | transloco">
+  <button
+    mat-button
+    (click)="onCancel()"
+    tabindex="13"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
     {{ 'common.cancel' | transloco }}
   </button>
   <button

@@ -105,7 +105,9 @@
     [disabled]="sourceCodeForm.invalid"
     (click)="onSubmit()"
     tabindex="9"
-    [attr.aria-label]="mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)"
+    [attr.aria-label]="
+      mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
+    "
   >
     {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
   </button>

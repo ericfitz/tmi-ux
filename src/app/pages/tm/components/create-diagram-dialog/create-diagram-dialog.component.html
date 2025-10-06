@@ -26,7 +26,12 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" tabindex="3" [attr.aria-label]="'common.cancel' | transloco">
+  <button
+    mat-button
+    (click)="onCancel()"
+    tabindex="3"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
     {{ 'common.cancel' | transloco }}
   </button>
   <button
