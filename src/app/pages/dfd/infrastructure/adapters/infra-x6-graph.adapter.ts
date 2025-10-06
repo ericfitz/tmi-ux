@@ -1672,6 +1672,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     };
 
     textarea.addEventListener('keydown', (event: KeyboardEvent) => {
+      // Stop propagation for all keys to prevent them from triggering graph-level keyboard shortcuts
+      event.stopPropagation();
+
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         commitEdit();
