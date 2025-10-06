@@ -207,6 +207,9 @@ export class X6LabelEditorAdapter {
     });
 
     input.addEventListener('keydown', event => {
+      // Stop propagation for all keys to prevent them from triggering graph-level keyboard shortcuts
+      event.stopPropagation();
+
       if (event.key === 'Enter') {
         event.preventDefault();
         this.finishLabelEditing(graph);
