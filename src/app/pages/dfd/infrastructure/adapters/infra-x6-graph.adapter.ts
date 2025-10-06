@@ -398,8 +398,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
 
-    // Initialize collaborative operation broadcasting
-    this._diagramOperationBroadcaster.initializeListeners(this._graph);
+    // Note: DiagramOperationBroadcaster initialization removed - now handled by
+    // WebSocketPersistenceStrategy via auto-save (single unified system)
 
     // Trigger an initial resize to ensure the graph fits the container properly
     this._scheduleInitialResize(container);
