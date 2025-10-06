@@ -406,6 +406,31 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.logger.info('DfdComponent v2 ngOnDestroy called');
 
+    // Save diagram with SVG thumbnail before destroying component
+    if (this.appDfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
+      this.logger.info('Saving diagram with SVG thumbnail on component destroy');
+
+      this._captureDiagramSvgThumbnail()
+        .then(base64Svg => {
+          const imageData = {
+            svg: base64Svg || undefined,
+          };
+
+          // Fire-and-forget save (component is already being destroyed)
+          this.appDfdOrchestrator.saveManuallyWithImage(imageData).subscribe({
+            next: () => {
+              this.logger.info('Diagram and thumbnail saved on destroy');
+            },
+            error: (error: unknown) => {
+              this.logger.error('Failed to save diagram with thumbnail on destroy', { error });
+            },
+          });
+        })
+        .catch((error: unknown) => {
+          this.logger.error('Error capturing SVG thumbnail on destroy', error);
+        });
+    }
+
     this._destroy$.next();
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
