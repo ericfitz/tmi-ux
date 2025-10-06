@@ -1,32 +1,23 @@
 /**
- * Test suite for AppAutoSaveManager
+ * Test suite for AppAutoSaveManager (History-Based, Zero-Debouncing Architecture)
  */
 
 import '@angular/compiler';
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { of, throwError, Observable } from 'rxjs';
 
 import { AppAutoSaveManager } from './app-auto-save-manager.service';
-import {
-  AutoSaveTriggerEvent,
-  AutoSaveContext,
-  AutoSavePolicy,
-  ChangeAnalyzer,
-  SaveDecisionMaker,
-} from '../../types/auto-save.types';
+import { AutoSaveContext } from '../../types/auto-save.types';
 import { SaveResult } from '../../types/persistence.types';
 
-describe('AppAutoSaveManager', () => {
+describe('AppAutoSaveManager (History-Based)', () => {
   let service: AppAutoSaveManager;
   let mockLogger: any;
   let mockPersistenceCoordinator: any;
   let autoSaveContext: AutoSaveContext;
 
   beforeEach(() => {
-    // Use fake timers for debouncing tests
-    vi.useFakeTimers();
-
     // Create logger spy
     mockLogger = {
       info: vi.fn(),
@@ -42,21 +33,19 @@ describe('AppAutoSaveManager', () => {
       sync: vi.fn(),
     };
 
-    // Create service directly without TestBed
+    // Create service
     service = new AppAutoSaveManager(mockLogger, mockPersistenceCoordinator);
 
-    // Create auto-save context
+    // Create auto-save context with lazy data callback
     autoSaveContext = {
       diagramId: 'test-diagram',
+      threatModelId: 'test-tm',
       userId: 'test-user',
-      diagramData: { nodes: [], edges: [] },
-      preferredStrategy: 'websocket',
+      userEmail: 'test@example.com',
+      userName: 'Test User',
+      getDiagramData: () => ({ nodes: [{ id: 'node1' }], edges: [{ id: 'edge1' }] }),
+      preferredStrategy: 'rest',
     };
-  });
-
-  afterEach(() => {
-    // Restore real timers
-    vi.useRealTimers();
   });
 
   describe('Service Initialization', () => {
@@ -68,19 +57,21 @@ describe('AppAutoSaveManager', () => {
       expect(service.isEnabled()).toBe(true);
     });
 
-    it('should have default policy', () => {
+    it('should have default policy with auto mode', () => {
       const policy = service.getPolicy();
-      expect(policy.mode).toBe('normal');
-      expect(policy.changeThreshold).toBeGreaterThan(0);
-      expect(policy.timeThresholdMs).toBeGreaterThanOrEqual(0);
+      expect(policy.mode).toBe('auto');
+      expect(policy.maxQueueDepth).toBe(100);
+      expect(policy.maxRetryAttempts).toBe(3);
     });
 
-    it('should have initial state', () => {
-      const state = service.getState();
-      expect(state.enabled).toBe(true);
-      expect(state.pendingSave).toBe(false);
-      expect(state.lastSaveTime).toBeNull();
-      expect(state.changesSinceLastSave).toBe(0);
+    it('should have initial save tracking state', () => {
+      const tracking = service.getSaveTracking();
+      expect(tracking.localHistoryIndex).toBe(0);
+      expect(tracking.lastSavedHistoryIndex).toBe(0);
+      expect(tracking.serverUpdateVector).toBe(0);
+      expect(tracking.lastSavedUpdateVector).toBe(0);
+      expect(tracking.saveInProgress).toBe(false);
+      expect(tracking.pendingHistoryChanges).toBe(0);
     });
   });
 
@@ -93,30 +84,14 @@ describe('AppAutoSaveManager', () => {
       expect(service.isEnabled()).toBe(true);
     });
 
-    it('should update state when enabled/disabled', () => {
+    it('should not trigger saves when disabled', () => {
       service.disable();
-      let state = service.getState();
-      expect(state.enabled).toBe(false);
-
-      service.enable();
-      state = service.getState();
-      expect(state.enabled).toBe(true);
-    });
-
-    it('should ignore triggers when disabled', () => {
-      service.disable();
-
-      const triggerEvent: AutoSaveTriggerEvent = {
-        type: 'operation-completed',
-        operationType: 'create-node',
-        affectedCellIds: ['node-1'],
-        timestamp: Date.now(),
-      };
 
       return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
+        service.trigger(1, autoSaveContext, false, false).subscribe({
           next: result => {
             expect(result).toBe(false);
+            expect(mockPersistenceCoordinator.save).not.toHaveBeenCalled();
             resolve();
           },
           error: reject,
@@ -126,56 +101,173 @@ describe('AppAutoSaveManager', () => {
   });
 
   describe('Policy Management', () => {
-    it('should allow setting policy', () => {
-      const newPolicy: AutoSavePolicy = {
-        mode: 'aggressive',
-        changeThreshold: 1,
-        timeThresholdMs: 5000,
-        maxDelayMs: 10000,
-      };
-
-      service.setPolicy(newPolicy);
+    it('should allow setting policy mode', () => {
+      service.setPolicyMode('manual');
       const policy = service.getPolicy();
-
-      expect(policy.mode).toBe('aggressive');
-      expect(policy.changeThreshold).toBe(1);
-      expect(policy.timeThresholdMs).toBe(5000);
+      expect(policy.mode).toBe('manual');
     });
 
-    it('should allow setting policy mode only', () => {
-      service.setPolicyMode('conservative');
+    it('should allow setting full policy', () => {
+      service.setPolicy({
+        mode: 'manual',
+        maxQueueDepth: 50,
+        maxRetryAttempts: 5,
+      });
+
       const policy = service.getPolicy();
-
-      expect(policy.mode).toBe('conservative');
-    });
-
-    it('should update state when policy changes', () => {
-      service.setPolicyMode('aggressive');
-      const state = service.getState();
-
-      expect(state.mode).toBe('aggressive');
+      expect(policy.mode).toBe('manual');
+      expect(policy.maxQueueDepth).toBe(50);
+      expect(policy.maxRetryAttempts).toBe(5);
     });
   });
 
-  describe('Manual Save', () => {
+  describe('History-Based Triggers', () => {
     let saveResult: SaveResult;
 
     beforeEach(() => {
       saveResult = {
         success: true,
-        operationId: 'manual-save-123',
+        operationId: 'save-123',
+        diagramId: 'test-diagram',
+        timestamp: Date.now(),
+        metadata: { update_vector: 1 },
+      };
+      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
+    });
+
+    it('should trigger save for new history index', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.trigger(1, autoSaveContext, false, false).subscribe({
+          next: result => {
+            expect(result).toBe(true);
+            expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should deduplicate already-saved history index', () => {
+      // First save at index 1
+      return service
+        .trigger(1, autoSaveContext, false, false)
+        .toPromise()
+        .then(() => {
+          // Try to save same index again
+          return new Promise<void>((resolve, reject) => {
+            service.trigger(1, autoSaveContext, false, false).subscribe({
+              next: result => {
+                expect(result).toBe(false);
+                expect(mockPersistenceCoordinator.save).toHaveBeenCalledTimes(1);
+                resolve();
+              },
+              error: reject,
+            });
+          });
+        });
+    });
+
+    it('should track history index and update_vector after save', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.trigger(5, autoSaveContext, false, false).subscribe({
+          next: () => {
+            const tracking = service.getSaveTracking();
+            expect(tracking.lastSavedHistoryIndex).toBe(5);
+            expect(tracking.serverUpdateVector).toBe(1);
+            expect(tracking.lastSavedUpdateVector).toBe(1);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should mark undo operations in metadata', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.trigger(2, autoSaveContext, true, false).subscribe({
+          next: () => {
+            const saveCall = mockPersistenceCoordinator.save.mock.calls[0][0];
+            expect(saveCall.metadata.isUndo).toBe(true);
+            expect(saveCall.metadata.isRedo).toBe(false);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should mark redo operations in metadata', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.trigger(2, autoSaveContext, false, true).subscribe({
+          next: () => {
+            const saveCall = mockPersistenceCoordinator.save.mock.calls[0][0];
+            expect(saveCall.metadata.isUndo).toBe(false);
+            expect(saveCall.metadata.isRedo).toBe(true);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+  });
+
+  describe('Queue Management', () => {
+    it('should prevent concurrent saves', done => {
+      // Return an observable that emits after a delay
+      mockPersistenceCoordinator.save.mockReturnValue(
+        new Observable(subscriber => {
+          setTimeout(() => {
+            subscriber.next({ success: true, operationId: 'slow', metadata: {} });
+            subscriber.complete();
+          }, 100);
+        }),
+      );
+
+      // Start first save
+      service.trigger(1, autoSaveContext, false, false).subscribe();
+
+      // Immediately try second save while first is in progress
+      service.trigger(2, autoSaveContext, false, false).subscribe({
+        next: result => {
+          expect(result).toBe(false); // Should not trigger while save in progress
+          done();
+        },
+        error: done,
+      });
+    });
+
+    it('should enforce max queue depth', () => {
+      service.setPolicy({ mode: 'auto', maxQueueDepth: 5, maxRetryAttempts: 3 });
+
+      return new Promise<void>((resolve, reject) => {
+        // Try to save with queue depth > 5 (index 10 when lastSaved is -1)
+        service.trigger(10, autoSaveContext, false, false).subscribe({
+          next: result => {
+            expect(result).toBe(false); // Should reject due to queue depth
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+  });
+
+  describe('Manual Save', () => {
+    it('should execute manual save successfully', () => {
+      const saveResult: SaveResult = {
+        success: true,
+        operationId: 'manual-save',
         diagramId: 'test-diagram',
         timestamp: Date.now(),
         metadata: {},
       };
-    });
-
-    it('should execute manual save successfully', () => {
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
       return new Promise<void>((resolve, reject) => {
         service.triggerManualSave(autoSaveContext).subscribe({
-          next: (result: SaveResult) => {
+          next: result => {
             expect(result.success).toBe(true);
             expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
             resolve();
@@ -185,56 +277,17 @@ describe('AppAutoSaveManager', () => {
       });
     });
 
-    it('should update state after successful manual save', () => {
-      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
-
-      return new Promise<void>((resolve, reject) => {
-        service.triggerManualSave(autoSaveContext).subscribe({
-          next: () => {
-            const stats = service.getStats();
-            expect(stats.manualSaves).toBe(1);
-
-            const state = service.getState();
-            expect(state.changesSinceLastSave).toBe(0);
-            expect(state.lastSaveTime).not.toBeNull();
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should cancel pending auto-save when manual save triggered', () => {
-      // First trigger an auto-save that would be delayed
-      service.setPolicyMode('conservative');
-
-      const triggerEvent: AutoSaveTriggerEvent = {
-        type: 'operation-completed',
-        operationType: 'create-node',
-        affectedCellIds: ['node-1'],
-        timestamp: Date.now(),
-      };
-
-      // This should not trigger immediate save in conservative mode
-      service.trigger(triggerEvent, autoSaveContext).subscribe();
-
-      // Now trigger manual save
-      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
-      return new Promise<void>((resolve, reject) => {
-        service.triggerManualSave(autoSaveContext).subscribe({
-          next: () => {
-            expect(service.isPendingSave()).toBe(false);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
     it('should emit save completed event', () => {
+      const saveResult: SaveResult = {
+        success: true,
+        operationId: 'manual-save',
+        diagramId: 'test-diagram',
+        timestamp: Date.now(),
+        metadata: {},
+      };
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>(resolve => {
         service.saveCompleted$.subscribe(result => {
           expect(result.success).toBe(true);
           resolve();
@@ -245,376 +298,47 @@ describe('AppAutoSaveManager', () => {
     });
   });
 
-  describe('Auto-Save Triggers', () => {
-    let triggerEvent: AutoSaveTriggerEvent;
-    let saveResult: SaveResult;
-
-    beforeEach(() => {
-      triggerEvent = {
-        type: 'operation-completed',
-        operationType: 'create-node',
-        affectedCellIds: ['node-1'],
-        timestamp: Date.now(),
-      };
-
-      saveResult = {
-        success: true,
-        operationId: 'auto-save-123',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {},
-      };
-
-      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
+  describe('Server Update Vector Tracking', () => {
+    it('should update server update_vector', () => {
+      service.updateServerUpdateVector(42);
+      const tracking = service.getSaveTracking();
+      expect(tracking.serverUpdateVector).toBe(42);
     });
 
-    it('should trigger auto-save in aggressive mode', () => {
-      service.setPolicyMode('aggressive');
-      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
-
-      return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
-          next: result => {
-            // Trigger returns boolean, not SaveResult
-            expect(result).toBe(true);
-            // Advance timers to trigger debounced save
-            vi.advanceTimersByTime(100); // aggressive mode debounce is 100ms
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should not trigger auto-save when disabled', () => {
-      service.disable();
-
-      return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
-          next: _result => {
-            expect(_result).toBe(false);
-            expect(mockPersistenceCoordinator.save).not.toHaveBeenCalled();
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should track change count', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
-          next: () => {
-            const state = service.getState();
-            expect(state.changesSinceLastSave).toBe(1);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should emit trigger events', () => {
-      return new Promise<void>((resolve, _reject) => {
-        service.events$.subscribe(event => {
-          if (event.type === 'trigger-received') {
-            expect(event.triggerEvent).toBe(triggerEvent);
-            expect(event.context).toBe(autoSaveContext);
-            resolve();
-          }
-        });
-
-        service.trigger(triggerEvent, autoSaveContext).subscribe();
-      });
-    });
-  });
-
-  describe('Save Decision Making', () => {
-    let triggerEvent: AutoSaveTriggerEvent;
-
-    beforeEach(() => {
-      triggerEvent = {
-        type: 'operation-completed',
-        operationType: 'create-node',
-        affectedCellIds: ['node-1'],
-        timestamp: Date.now(),
-      };
-    });
-
-    it('should save immediately in aggressive mode', () => {
-      service.setPolicyMode('aggressive');
-      mockPersistenceCoordinator.save.mockReturnValue(
-        of({
-          success: true,
-          operationId: 'save-123',
-          diagramId: 'test-diagram',
-          timestamp: Date.now(),
-          metadata: {},
-        }),
-      );
-
-      return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
-          next: result => {
-            expect(result).toBe(true); // Should trigger save
-            // Advance timers to trigger the debounced save
-            vi.advanceTimersByTime(150); // Wait for 100ms debounce + buffer
-            expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should be conservative in conservative mode', () => {
-      service.setPolicyMode('conservative');
-
-      // Single change should not trigger save in conservative mode
-      return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
-          next: result => {
-            expect(result).toBe(false); // No immediate save
-            expect(mockPersistenceCoordinator.save).not.toHaveBeenCalled();
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should respect change threshold in normal mode', () => {
-      service.setPolicyMode('normal');
-      const policy = service.getPolicy();
-
-      // Set a high change threshold
-      service.setPolicy({ ...policy, changeThreshold: 5 });
-
-      mockPersistenceCoordinator.save.mockReturnValue(
-        of({
-          success: true,
-          operationId: 'save-123',
-          diagramId: 'test-diagram',
-          timestamp: Date.now(),
-          metadata: {},
-        }),
-      );
-
-      // Trigger multiple changes
-      let completedTriggers = 0;
-      const totalTriggers = 6; // One more than threshold
-
-      return new Promise<void>((resolve, reject) => {
-        for (let i = 0; i < totalTriggers; i++) {
-          service.trigger(triggerEvent, autoSaveContext).subscribe({
-            next: _result => {
-              completedTriggers++;
-
-              if (completedTriggers === totalTriggers) {
-                // Should have triggered save when threshold was reached
-                // Wait for debounced save to execute (normal mode has 5000ms debounce)
-                vi.advanceTimersByTime(5100); // Wait for 5000ms debounce + buffer
-                expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
-                resolve();
-              }
-            },
-            error: reject,
-          });
-        }
-      });
-    });
-  });
-
-  describe('Force Save', () => {
-    it('should bypass all policies and save immediately', () => {
-      service.setPolicyMode('manual'); // Use valid policy mode
-
-      const saveResult: SaveResult = {
-        success: true,
-        operationId: 'force-save-123',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {},
-      };
-
-      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
-
-      return new Promise<void>((resolve, reject) => {
-        service.forceSave(autoSaveContext).subscribe({
-          next: (result: SaveResult) => {
-            expect(result.success).toBe(true);
-            expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
-
-            const stats = service.getStats();
-            expect(stats.manualSaves).toBe(1); // Force save counts as manual save
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should cancel pending save before forcing', () => {
-      // Set up a pending save
-      service.setPolicyMode('conservative');
-
-      const triggerEvent: AutoSaveTriggerEvent = {
-        type: 'operation-completed',
-        operationType: 'create-node',
-        affectedCellIds: ['node-1'],
-        timestamp: Date.now(),
-      };
-
-      service.trigger(triggerEvent, autoSaveContext).subscribe();
-
-      // Now force save
-      mockPersistenceCoordinator.save.mockReturnValue(
-        of({
-          success: true,
-          operationId: 'force-save-123',
-          diagramId: 'test-diagram',
-          timestamp: Date.now(),
-          metadata: {},
-        }),
-      );
-
-      return new Promise<void>((resolve, reject) => {
-        service.forceSave(autoSaveContext).subscribe({
-          next: () => {
-            expect(service.isPendingSave()).toBe(false);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-  });
-
-  describe('Pending Save Management', () => {
-    it('should track pending saves', () => {
-      expect(service.isPendingSave()).toBe(false);
-      expect(service.getNextScheduledSave()).toBeNull();
-    });
-
-    it('should allow cancelling pending saves', () => {
-      // Initially no pending save
-      expect(service.cancelPendingSave()).toBe(false);
-    });
-  });
-
-  describe('Component Extension', () => {
-    it('should allow adding change analyzers', () => {
-      const mockAnalyzer: ChangeAnalyzer = {
-        priority: 100,
-        analyze: vi.fn().mockReturnValue({
-          isSignificant: true,
-          significance: 0.8,
-          changeType: 'test',
-          metadata: {},
-        }),
-      };
-
-      expect(() => service.addAnalyzer(mockAnalyzer)).not.toThrow();
-    });
-
-    it('should allow removing change analyzers', () => {
-      const mockAnalyzer: ChangeAnalyzer = {
-        priority: 100,
-        analyze: vi.fn(),
-      };
-
-      service.addAnalyzer(mockAnalyzer);
-      expect(() => service.removeAnalyzer(mockAnalyzer)).not.toThrow();
-    });
-
-    it('should allow adding decision makers', () => {
-      const mockDecisionMaker: SaveDecisionMaker = {
-        priority: 100,
-        decide: vi.fn().mockReturnValue({
-          shouldSave: true,
-          timing: 'immediate',
-          reason: 'test decision',
-        }),
-      };
-
-      expect(() => service.addDecisionMaker(mockDecisionMaker)).not.toThrow();
-    });
-
-    it('should allow adding event listeners', () => {
-      const mockHandler = {
-        handleEvent: vi.fn(),
-      };
-
-      expect(() => service.addEventListener(mockHandler)).not.toThrow();
-      expect(() => service.removeEventListener(mockHandler)).not.toThrow();
-    });
-  });
-
-  describe('Configuration Management', () => {
-    it('should allow configuration updates', () => {
-      const newConfig = {
-        enableAutoSave: false,
-        debounceTimeMs: 2000,
-      };
-
-      service.configure(newConfig);
-      const config = service.getConfiguration();
-
-      // Note: The exact properties depend on the AutoSaveConfig interface
-      expect(config).toBeDefined();
-    });
-  });
-
-  describe('Statistics and Monitoring', () => {
-    it('should track statistics correctly', () => {
+    it('should extract update_vector from save response', () => {
       const saveResult: SaveResult = {
         success: true,
         operationId: 'save-123',
         diagramId: 'test-diagram',
         timestamp: Date.now(),
-        metadata: {},
+        metadata: { update_vector: 99 },
       };
-
       mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
       return new Promise<void>((resolve, reject) => {
-        service.triggerManualSave(autoSaveContext).subscribe({
+        service.trigger(1, autoSaveContext, false, false).subscribe({
           next: () => {
-            const stats = service.getStats();
-            expect(stats.totalSaves).toBe(1);
-            expect(stats.successfulSaves).toBe(1);
-            expect(stats.manualSaves).toBe(1);
+            const tracking = service.getSaveTracking();
+            expect(tracking.serverUpdateVector).toBe(99);
+            expect(tracking.lastSavedUpdateVector).toBe(99);
             resolve();
           },
           error: reject,
         });
       });
     });
-
-    it('should reset statistics', () => {
-      service.resetStats();
-      const stats = service.getStats();
-
-      expect(stats.totalSaves).toBe(0);
-      expect(stats.successfulSaves).toBe(0);
-      expect(stats.failedSaves).toBe(0);
-      expect(stats.manualSaves).toBe(0);
-    });
   });
 
   describe('Error Handling', () => {
-    it('should handle save operation failures', () => {
+    it('should handle save failures', () => {
       const error = new Error('Save failed');
       mockPersistenceCoordinator.save.mockReturnValue(throwError(() => error));
 
       return new Promise<void>((resolve, reject) => {
-        service.triggerManualSave(autoSaveContext).subscribe({
+        service.trigger(1, autoSaveContext, false, false).subscribe({
           next: () => reject(new Error('Should have failed')),
           error: err => {
             expect(err.message).toBe('Save failed');
-
-            const stats = service.getStats();
-            expect(stats.failedSaves).toBe(1);
             resolve();
           },
         });
@@ -625,93 +349,87 @@ describe('AppAutoSaveManager', () => {
       const error = new Error('Save failed');
       mockPersistenceCoordinator.save.mockReturnValue(throwError(() => error));
 
-      return new Promise<void>((resolve, _reject) => {
+      return new Promise<void>(resolve => {
         service.saveFailed$.subscribe(failure => {
-          expect(failure.error).toBe('Save failed');
-          expect(failure.context).toBe(autoSaveContext);
+          expect(failure.error).toContain('Save failed');
           resolve();
         });
 
-        service.triggerManualSave(autoSaveContext).subscribe({
-          next: () => {},
-          error: () => {}, // Ignore error for this test
+        service.trigger(1, autoSaveContext, false, false).subscribe({
+          error: () => {}, // Ignore error
         });
       });
     });
 
-    it('should handle trigger processing errors gracefully', () => {
-      const triggerEvent: AutoSaveTriggerEvent = {
-        type: 'operation-completed',
-        operationType: 'create-node',
-        affectedCellIds: ['node-1'],
-        timestamp: Date.now(),
-      };
+    it('should reset saveInProgress flag on error', () => {
+      const error = new Error('Save failed');
+      mockPersistenceCoordinator.save.mockReturnValue(throwError(() => error));
 
-      // This should not throw even if internal processing fails
       return new Promise<void>((resolve, reject) => {
-        service.trigger(triggerEvent, autoSaveContext).subscribe({
-          next: _result => {
-            // Should complete without throwing
+        service.trigger(1, autoSaveContext, false, false).subscribe({
+          error: () => {
+            const tracking = service.getSaveTracking();
+            expect(tracking.saveInProgress).toBe(false);
+            resolve();
+          },
+        });
+      });
+    });
+  });
+
+  describe('Statistics', () => {
+    it('should track save statistics', () => {
+      const saveResult: SaveResult = {
+        success: true,
+        operationId: 'save-123',
+        diagramId: 'test-diagram',
+        timestamp: Date.now(),
+        metadata: {},
+      };
+      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
+
+      return new Promise<void>((resolve, reject) => {
+        service.trigger(1, autoSaveContext, false, false).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.totalSaves).toBe(1);
+            expect(stats.successfulSaves).toBe(1);
+            expect(stats.autoSaves).toBe(1);
             resolve();
           },
           error: reject,
         });
       });
     });
+
+    it('should reset statistics', () => {
+      service.resetStats();
+      const stats = service.getStats();
+      expect(stats.totalSaves).toBe(0);
+      expect(stats.successfulSaves).toBe(0);
+      expect(stats.failedSaves).toBe(0);
+    });
   });
 
   describe('State Observables', () => {
-    it('should emit state changes', () => {
-      let stateEmissions = 0;
+    it('should emit save completed events', () => {
+      const saveResult: SaveResult = {
+        success: true,
+        operationId: 'save-123',
+        diagramId: 'test-diagram',
+        timestamp: Date.now(),
+        metadata: {},
+      };
+      mockPersistenceCoordinator.save.mockReturnValue(of(saveResult));
 
-      return new Promise<void>((resolve, _reject) => {
-        service.state$.subscribe(state => {
-          stateEmissions++;
-
-          if (stateEmissions === 1) {
-            // Initial state
-            expect(state.enabled).toBe(true);
-          } else if (stateEmissions === 2) {
-            // After disable
-            expect(state.enabled).toBe(false);
-            resolve();
-          }
-        });
-
-        // Trigger state change
-        service.disable();
-      });
-    });
-
-    it('should emit events', () => {
-      return new Promise<void>((resolve, _reject) => {
-        service.events$.subscribe(event => {
-          expect(event.type).toBeDefined();
-          expect(event.timestamp).toBeDefined();
+      return new Promise<void>(resolve => {
+        service.saveCompleted$.subscribe(result => {
+          expect(result.success).toBe(true);
           resolve();
         });
 
-        // Trigger an event
-        const triggerEvent: AutoSaveTriggerEvent = {
-          type: 'operation-completed',
-          operationType: 'create-node',
-          affectedCellIds: ['node-1'],
-          timestamp: Date.now(),
-        };
-
-        service.trigger(triggerEvent, autoSaveContext).subscribe();
+        service.trigger(1, autoSaveContext, false, false).subscribe();
       });
-    });
-  });
-
-  describe('Cleanup', () => {
-    it('should dispose cleanly', () => {
-      expect(() => service.dispose()).not.toThrow();
-    });
-
-    it('should cancel pending saves on dispose', () => {
-      service.dispose();
-      expect(service.isPendingSave()).toBe(false);
     });
   });
 });
