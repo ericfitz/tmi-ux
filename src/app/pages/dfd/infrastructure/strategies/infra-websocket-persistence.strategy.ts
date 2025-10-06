@@ -9,6 +9,8 @@ import { map, catchError } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
+import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
+import { CellOperation } from '../../../../core/types/websocket-message.types';
 import {
   PersistenceStrategy,
   SaveOperation,
@@ -27,6 +29,7 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
   constructor(
     private readonly logger: LoggerService,
     private readonly webSocketAdapter: WebSocketAdapter,
+    private readonly collaborationAdapter: InfraWebsocketCollaborationAdapter,
   ) {
     this.logger.debug('WebSocketPersistenceStrategy initialized');
   }
@@ -75,22 +78,83 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
       });
     }
 
-    // For regular changes in collaboration mode, changes are already
-    // broadcast via other WebSocket messages (cell-added, cell-changed, etc.)
-    // so we just acknowledge success without additional action
-    this.logger.debug('WebSocket save (non-undo/redo) - changes already broadcast', {
+    // For regular changes in collaboration mode, send diagram_operation message
+    this.logger.debug('WebSocket save (regular changes) - sending diagram_operation', {
       diagramId: operation.diagramId,
+      hasData: !!operation.data,
     });
 
-    return of({
-      success: true,
-      operationId: `ws-save-${Date.now()}`,
+    // Convert diagram data to cell operations
+    const cellOperations = this._convertDiagramDataToCellOperations(operation.data);
+
+    if (cellOperations.length === 0) {
+      this.logger.warn('No cell operations to broadcast', { diagramId: operation.diagramId });
+      return of({
+        success: true,
+        operationId: `ws-save-empty-${Date.now()}`,
+        diagramId: operation.diagramId,
+        timestamp: Date.now(),
+        metadata: { note: 'No changes to broadcast' },
+      });
+    }
+
+    this.logger.info('Sending diagram_operation via collaboration adapter', {
       diagramId: operation.diagramId,
-      timestamp: Date.now(),
-      metadata: {
-        note: 'Changes broadcast via real-time WebSocket events',
-      },
+      cellCount: cellOperations.length,
     });
+
+    // Send diagram operation via WebSocket collaboration adapter
+    return this.collaborationAdapter.sendDiagramOperation(cellOperations).pipe(
+      map(() => ({
+        success: true,
+        operationId: `ws-save-${Date.now()}`,
+        diagramId: operation.diagramId,
+        timestamp: Date.now(),
+        metadata: {
+          sentViaWebSocket: true,
+          cellOperations: cellOperations.length,
+        },
+      })),
+      catchError(error => {
+        this.logger.error('Failed to send diagram_operation', { error, diagramId: operation.diagramId });
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  /**
+   * Convert diagram data to cell operations
+   */
+  private _convertDiagramDataToCellOperations(data: any): CellOperation[] {
+    if (!data) {
+      return [];
+    }
+
+    const operations: CellOperation[] = [];
+
+    // Add operations for all nodes
+    if (data.nodes && Array.isArray(data.nodes)) {
+      for (const node of data.nodes) {
+        operations.push({
+          id: node.id,
+          operation: 'update',  // All cells in save operation are updates
+          data: node,
+        });
+      }
+    }
+
+    // Add operations for all edges
+    if (data.edges && Array.isArray(data.edges)) {
+      for (const edge of data.edges) {
+        operations.push({
+          id: edge.id,
+          operation: 'update',
+          data: edge,
+        });
+      }
+    }
+
+    return operations;
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {
