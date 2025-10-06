@@ -247,8 +247,13 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
   /**
    * Observable for when history is actually modified (for auto-save)
+   * Emits the history index and whether the change was from undo/redo
    */
-  get historyModified$(): Observable<void> {
+  get historyModified$(): Observable<{
+    historyIndex: number;
+    isUndo: boolean;
+    isRedo: boolean;
+  }> {
     return this._historyManager.historyModified$;
   }
 

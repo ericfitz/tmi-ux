@@ -11,7 +11,11 @@ import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-consta
 @Injectable()
 export class InfraX6HistoryAdapter {
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
-  private readonly _historyModified$ = new Subject<void>();
+  private readonly _historyModified$ = new Subject<{
+    historyIndex: number;
+    isUndo: boolean;
+    isRedo: boolean;
+  }>();
   private portStateManager: any = null;
 
   // Private properties to track previous undo/redo states
@@ -29,8 +33,13 @@ export class InfraX6HistoryAdapter {
 
   /**
    * Observable for when history is actually modified (for auto-save)
+   * Emits the history index and whether the change was from undo/redo
    */
-  get historyModified$(): Observable<void> {
+  get historyModified$(): Observable<{
+    historyIndex: number;
+    isUndo: boolean;
+    isRedo: boolean;
+  }> {
     return this._historyModified$.asObservable();
   }
 
@@ -47,23 +56,28 @@ export class InfraX6HistoryAdapter {
   setupHistoryEvents(graph: Graph): void {
     // History events for undo/redo state tracking
     graph.on('history:undo', () => {
-      this.logger.info('History undo event fired');
+      const historyIndex = (graph as any).history?.commands?.length || 0;
+      this.logger.info('History undo event fired', { historyIndex });
       this._cleanupVisualEffectsAfterRestore(graph);
+      this._historyModified$.next({ historyIndex, isUndo: true, isRedo: false });
       this._emitHistoryStateChange(graph);
     });
 
     graph.on('history:redo', () => {
-      this.logger.info('History redo event fired');
+      const historyIndex = (graph as any).history?.commands?.length || 0;
+      this.logger.info('History redo event fired', { historyIndex });
       this._cleanupVisualEffectsAfterRestore(graph);
+      this._historyModified$.next({ historyIndex, isUndo: false, isRedo: true });
       this._emitHistoryStateChange(graph);
     });
 
     graph.on('history:change', args => {
-      this.logger.info('History change event fired - triggering auto-save', {
+      const historyIndex = (graph as any).history?.commands?.length || 0;
+      this.logger.info('History change event fired', {
+        historyIndex,
         args: args || {},
-        stackSize: (graph as any).history?.commands?.length || 0,
       });
-      this._historyModified$.next();
+      this._historyModified$.next({ historyIndex, isUndo: false, isRedo: false });
       this._emitHistoryStateChange(graph);
     });
 

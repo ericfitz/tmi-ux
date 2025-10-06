@@ -360,8 +360,13 @@ export class AppDfdFacade {
 
   /**
    * Get observable for history modifications (for auto-save)
+   * Emits the history index and whether the change was from undo/redo
    */
-  get historyModified$(): Observable<void> {
+  get historyModified$(): Observable<{
+    historyIndex: number;
+    isUndo: boolean;
+    isRedo: boolean;
+  }> {
     return this.infraX6GraphAdapter.historyModified$;
   }
 
