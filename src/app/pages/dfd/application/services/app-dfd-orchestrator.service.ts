@@ -269,7 +269,7 @@ export class AppDfdOrchestrator {
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
       diagramData: this._getGraphData(),
-      preferredStrategy: 'websocket',
+      preferredStrategy: this._state$.value.collaborating ? 'websocket' : 'rest',
     };
 
     return this.appAutoSaveManager.triggerManualSave(autoSaveContext).pipe(
@@ -878,7 +878,7 @@ export class AppDfdOrchestrator {
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
       diagramData: this._getGraphData(),
-      preferredStrategy: 'websocket',
+      preferredStrategy: this._state$.value.collaborating ? 'websocket' : 'rest',
     };
 
     return this.appAutoSaveManager.triggerManualSave(autoSaveContext).pipe(
