@@ -67,7 +67,7 @@ describe('AppAutoSaveManager (History-Based)', () => {
     it('should have initial save tracking state', () => {
       const tracking = service.getSaveTracking();
       expect(tracking.localHistoryIndex).toBe(0);
-      expect(tracking.lastSavedHistoryIndex).toBe(0);
+      expect(tracking.lastSavedHistoryIndex).toBe(-1);
       expect(tracking.serverUpdateVector).toBe(0);
       expect(tracking.lastSavedUpdateVector).toBe(0);
       expect(tracking.saveInProgress).toBe(false);

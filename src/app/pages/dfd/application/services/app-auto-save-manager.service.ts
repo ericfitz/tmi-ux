@@ -106,7 +106,7 @@ export class AppAutoSaveManager {
   // History and version tracking
   private _saveTracking: SaveTracking = {
     localHistoryIndex: 0,
-    lastSavedHistoryIndex: 0,
+    lastSavedHistoryIndex: -1,  // Start at -1 so first save at index 0 triggers
     serverUpdateVector: 0,
     lastSavedUpdateVector: 0,
     saveInProgress: false,
